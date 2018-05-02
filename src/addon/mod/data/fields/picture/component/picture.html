@@ -1,0 +1,17 @@
+<span *ngIf="mode == 'edit'" [core-mark-required]="field.required"></span>
+
+<core-input-errors *ngIf="error && mode == 'edit'" [errorMessages]="error"></core-input-errors>
+
+<input *ngIf="mode == 'search'" type="text" [placeholder]="field.name" [name]="'f_'+field.id">
+
+<core-attachments *ngIf="mode == 'edit'" [files]="files" [maxSize]="maxSizeBytes" maxSubmissions="1" [component]="component" [componentId]="componentId" [allowOffline]="true"></core-attachments>
+
+<ion-item *ngIf="mode == 'edit'" [formGroup]="form">
+    <ion-label>{{ 'addon.mod_data.alttext' | translate }}</ion-label>
+    <ion-input type="text" [formControlName]="'f_'+field.id+'_alttext'" [(ngModel)]="alttext" [placeholder]=" 'addon.mod_data.alttext' | translate" ></ion-input>
+    <span class="placeholder-icon" item-right>°N</span>
+</ion-item>
+
+<span *ngIf="mode == 'list' && imageUrl" (click)="viewAction()"><img [src]="imageUrl" [alt]="title" [title]="title" class="core-media-adapt-width list_picture" core-external-content/></span>
+
+<img *ngIf="mode == 'show' && imageUrl" [src]="imageUrl" [alt]="title" [title]="title" class="core-media-adapt-width list_picture" [width]="width" [height]="height" core-external-content/>

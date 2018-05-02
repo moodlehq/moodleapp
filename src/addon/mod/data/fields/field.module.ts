@@ -14,11 +14,33 @@
 
 import { NgModule } from '@angular/core';
 import { AddonModDataFieldCheckboxModule } from './checkbox/checkbox.module';
+import { AddonModDataFieldDateModule } from './date/date.module';
+import { AddonModDataFieldFileModule } from './file/file.module';
+import { AddonModDataFieldLatlongModule } from './latlong/latlong.module';
+import { AddonModDataFieldMenuModule } from './menu/menu.module';
+import { AddonModDataFieldMultimenuModule } from './multimenu/multimenu.module';
+import { AddonModDataFieldNumberModule } from './number/number.module';
+import { AddonModDataFieldPictureModule } from './picture/picture.module';
+import { AddonModDataFieldRadiobuttonModule } from './radiobutton/radiobutton.module';
+import { AddonModDataFieldTextModule } from './text/text.module';
+import { AddonModDataFieldTextareaModule } from './textarea/textarea.module';
+import { AddonModDataFieldUrlModule } from './url/url.module';
 
 @NgModule({
     declarations: [],
     imports: [
-        AddonModDataFieldCheckboxModule
+        AddonModDataFieldCheckboxModule,
+        AddonModDataFieldDateModule,
+        AddonModDataFieldFileModule,
+        AddonModDataFieldLatlongModule,
+        AddonModDataFieldMenuModule,
+        AddonModDataFieldMultimenuModule,
+        AddonModDataFieldNumberModule,
+        AddonModDataFieldPictureModule,
+        AddonModDataFieldRadiobuttonModule,
+        AddonModDataFieldTextModule,
+        AddonModDataFieldTextareaModule,
+        AddonModDataFieldUrlModule
     ],
     providers: [
     ],

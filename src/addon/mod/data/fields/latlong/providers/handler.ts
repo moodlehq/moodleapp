@@ -14,15 +14,15 @@
 import { Injector, Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AddonModDataFieldHandler } from '../../../providers/fields-delegate';
-import { AddonModDataFieldCheckboxComponent } from '../component/checkbox';
+import { AddonModDataFieldLatlongComponent } from '../component/latlong';
 
 /**
- * Handler for checkbox data field plugin.
+ * Handler for latlong data field plugin.
  */
 @Injectable()
-export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandler {
-    name = 'AddonModDataFieldCheckboxHandler';
-    type = 'checkbox';
+export class AddonModDataFieldLatlongHandler implements AddonModDataFieldHandler {
+    name = 'AddonModDataFieldLatlongHandler';
+    type = 'latlong';
 
     constructor(private translate: TranslateService) { }
 
@@ -35,7 +35,7 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(injector: Injector, plugin: any): any | Promise<any> {
-        return AddonModDataFieldCheckboxComponent;
+        return AddonModDataFieldLatlongComponent;
     }
 
     /**
@@ -46,30 +46,13 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      * @return {any}            With name and value of the data to be sent.
      */
     getFieldSearchData(field: any, inputData: any): any {
-        const fieldName = 'f_' + field.id,
-            reqName = 'f_' + field.id + '_allreq';
+        const fieldName = 'f_' + field.id;
 
-        const checkboxes = [],
-            values = [];
-        inputData[fieldName].forEach((value, option) => {
-            if (value) {
-                checkboxes.push(option);
-            }
-        });
-        if (checkboxes.length > 0) {
-            values.push({
+        if (inputData[fieldName]) {
+            return [{
                 name: fieldName,
-                value: checkboxes
-            });
-
-            if (inputData[reqName]['1']) {
-                values.push({
-                    name: reqName,
-                    value: true
-                });
-            }
-
-            return values;
+                value: inputData[fieldName]
+            }];
         }
 
         return false;
@@ -83,22 +66,26 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      * @return {any}            With name and value of the data to be sent.
      */
     getFieldEditData(field: any, inputData: any, originalFieldData: any): any {
-        const fieldName = 'f_' + field.id;
+        const fieldName = 'f_' + field.id,
+            values = [];
 
-        const checkboxes = [];
-        inputData[fieldName].forEach((value, option) => {
-            if (value) {
-                checkboxes.push(option);
-            }
-        });
-        if (checkboxes.length > 0) {
-            return [{
+        if (inputData[fieldName + '_0']) {
+            values.push({
                 fieldid: field.id,
-                value: checkboxes
-            }];
+                subfield: '0',
+                value: inputData[fieldName + '_0']
+            });
         }
 
-        return false;
+        if (inputData[fieldName + '_1']) {
+            values.push({
+                fieldid: field.id,
+                subfield: '1',
+                value: inputData[fieldName + '_1']
+            });
+        }
+
+        return values;
     }
 
     /**
@@ -111,17 +98,12 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      */
     hasFieldDataChanged(field: any, inputData: any, originalFieldData: any): Promise<boolean> | boolean {
         const fieldName = 'f_' + field.id,
-            checkboxes = [];
+            lat = inputData[fieldName + '_0'] || '',
+            long = inputData[fieldName + '_1'] || '',
+            originalLat = (originalFieldData && originalFieldData.content) || '',
+            originalLong = (originalFieldData && originalFieldData.content1) || '';
 
-        inputData[fieldName].forEach((value, option) => {
-            if (value) {
-                checkboxes.push(option);
-            }
-        });
-
-        originalFieldData = (originalFieldData && originalFieldData.content) || '';
-
-        return checkboxes.join('##') != originalFieldData;
+        return lat != originalLat || long != originalLong;
     }
 
     /**
@@ -132,7 +114,19 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      * @return {string | false}                  String with the notification or false.
      */
     getFieldsNotifications(field: any, inputData: any): string | false {
-        if (field.required && (!inputData || !inputData.length || !inputData[0].value)) {
+        let valueCount = 0;
+
+        // The lat long class has two values that need to be checked.
+        inputData.forEach((value) => {
+            if (typeof value.value != 'undefined' && value.value != '') {
+                valueCount++;
+            }
+        });
+
+        // If we get here then only one field has been filled in.
+        if (valueCount == 1) {
+            return this.translate.instant('addon.mod_data.latlongboth');
+        } else if (field.required && valueCount == 0) {
             return this.translate.instant('addon.mod_data.errormustsupplyvalue');
         }
 
@@ -148,7 +142,8 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      * @return {any}                     Data overriden
      */
     overrideData(originalContent: any, offlineContent: any, offlineFiles?: any): any {
-        originalContent.content = (offlineContent[''] && offlineContent[''].join('##')) || '';
+        originalContent.content = offlineContent[0] || '';
+        originalContent.content1 = offlineContent[1] || '';
 
         return originalContent;
     }

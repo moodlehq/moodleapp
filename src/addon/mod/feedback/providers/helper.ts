@@ -47,7 +47,6 @@ export class AddonModFeedbackHelperProvider {
     protected getActivityHistoryBackCounter(pageName: string, instance: number, paramName: string, prefix: string,
             navCtrl: NavController): number {
         let historyInstance, params,
-            backTimes = 0,
             view = navCtrl.getActive();
 
         while (!view.isFirst()) {
@@ -60,9 +59,7 @@ export class AddonModFeedbackHelperProvider {
             historyInstance = params.get(paramName) ? params.get(paramName) : params.get('module').instance;
 
             // Check we are not changing to another activity.
-            if (historyInstance && historyInstance == instance) {
-                backTimes++;
-            } else {
+            if (!historyInstance || historyInstance != instance) {
                 break;
             }
 

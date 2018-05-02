@@ -18,17 +18,16 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
 
 /**
- * Component to render data checkbox field.
+ * Component to render data multimenu field.
  */
 @Component({
-    selector: 'addon-mod-data-field-checkbox',
-    templateUrl: 'checkbox.html'
+    selector: 'addon-mod-data-field-multimenu',
+    templateUrl: 'multimenu.html'
 })
-export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginComponent implements OnInit {
+export class AddonModDataFieldMultimenuComponent extends AddonModDataFieldPluginComponent implements OnInit {
 
     control: FormControl;
-    options: number;
-    values = {};
+    options = [];
 
     constructor(protected fb: FormBuilder, protected domUtils: CoreDomUtilsProvider, protected textUtils: CoreTextUtilsProvider,
             element: ElementRef) {
@@ -45,21 +44,20 @@ export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginC
 
     protected render(): void {
         if (this.mode == 'show') {
-            this.value.content = this.value.content.split('##').join('<br>');
-
             return;
         }
 
-        this.options = this.field.param1.split('\n');
+        this.options = this.field.param1.split('\n').map((option) => {
+            return { key: option, value: option };
+        });
 
-        if (this.mode == 'edit' && this.value) {
-            this.values = {};
-
+        if (this.mode == 'edit' && this.value && this.value.content) {
             this.value.content.split('##').forEach((value) => {
-                this.values[value] = true;
+                const x = this.options.findIndex((option) => value == option.key);
+                if (x >= 0) {
+                    this.options[x].selected = true;
+                }
             });
-
-            //this.control = this.fb.control(text);
         }
     }
 }

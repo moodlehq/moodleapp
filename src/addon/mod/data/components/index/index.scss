@@ -1,3 +1,28 @@
 addon-mod-data-index {
+    .core-data-contents {
+      overflow: visible;
+      white-space: normal;
+      word-break: break-word;
+      padding: $content-padding;
+      background-color: white;
+      border-top-width: 1px;
+      border-bottom-width: 1px;
+      border-right-width: 0;
+      border-left-width: 0;
+      border-style: solid;
+      border-color: $list-border-color;
 
+      table, tbody {
+        display: block;
+      }
+
+      tr {
+        @extend .row;
+        padding: 0;
+      }
+
+      td, th {
+        @extend .col;
+      }
+    }
 }

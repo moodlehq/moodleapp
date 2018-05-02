@@ -42,6 +42,8 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
     @Input() text: string; // The HTML text to display.
     @Input() javascript: string; // The Javascript to execute in the component.
     @Input() jsData: any; // Data to pass to the fake component.
+    @Input() extraImports: any[] = []; // Extra import modules.
+    @Input() extraProviders: any[] = []; // Extra providers.
     @Output() created: EventEmitter<any> = new EventEmitter(); // Will emit an event when the component is instantiated.
 
     // Get the container where to put the content.
@@ -61,7 +63,8 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if ((changes.text || changes.javascript) && this.text) {
             // Create a new component and a new module.
-            this.compileProvider.createAndCompileComponent(this.text, this.getComponentClass()).then((factory) => {
+            this.compileProvider.createAndCompileComponent(this.text, this.getComponentClass(), this.extraImports)
+                    .then((factory) => {
                 // Destroy previous components.
                 this.componentRef && this.componentRef.destroy();
 
@@ -95,7 +98,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
             constructor() {
                 // If there is some javascript to run, prepare the instance.
                 if (compileInstance.javascript) {
-                    compileInstance.compileProvider.injectLibraries(this);
+                    compileInstance.compileProvider.injectLibraries(this, compileInstance.extraProviders);
                 }
 
                 // Always add these elements, they could be needed on component init (componentObservable).

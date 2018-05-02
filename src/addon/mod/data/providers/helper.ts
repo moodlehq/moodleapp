@@ -113,7 +113,7 @@ export class AddonModDataHelperProvider {
             replace = new RegExp(replace, 'gi');
 
             // Replace field by a generic directive.
-            const render = '<addon-mod-data-field-plugin mode="search" field="fields[' + field.id +
+            const render = '<addon-mod-data-field-plugin mode="search" [field]="fields[' + field.id +
                 ']"></addon-mod-data-field-plugin>';
             template = template.replace(replace, render);
         });
@@ -156,13 +156,13 @@ export class AddonModDataHelperProvider {
             replace = new RegExp(replace, 'gi');
 
             // Replace field by a generic directive.
-            render = '<addon-mod-data-field-plugin field="fields[' + field.id + ']" value="entries[' + entry.id + '].contents[' +
-                    field.id + ']" mode="' + mode + '" database="data" (viewAction)="gotoEntry(' + entry.id +
+            render = '<addon-mod-data-field-plugin [field]="fields[' + field.id + ']" [value]="entries[' + entry.id +
+                    '].contents[' + field.id + ']" mode="' + mode + '" [database]="data" (viewAction)="gotoEntry(' + entry.id +
                     ')"></addon-mod-data-field-plugin>';
             template = template.replace(replace, render);
         });
 
-        for (const action in actions) {
+        /*for (const action in actions) {
             replace = new RegExp('##' + action + '##', 'gi');
             // Is enabled?
             if (actions[action]) {
@@ -179,7 +179,7 @@ export class AddonModDataHelperProvider {
             } else {
                 template = template.replace(replace, '');
             }
-        }
+        }*/
 
         return template;
     }

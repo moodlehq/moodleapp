@@ -15,24 +15,31 @@ import { Component, OnInit, ElementRef } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { AddonModDataProvider } from '../../../providers/data';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
 
 /**
- * Component to render data checkbox field.
+ * Component to render data number field.
  */
 @Component({
-    selector: 'addon-mod-data-field-checkbox',
-    templateUrl: 'checkbox.html'
+    selector: 'addon-mod-data-field-textarea',
+    templateUrl: 'textarea.html'
 })
-export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginComponent implements OnInit {
+export class AddonModDataFieldTextareaComponent extends AddonModDataFieldPluginComponent implements OnInit {
 
     control: FormControl;
-    options: number;
-    values = {};
+    component: string;
+    componentId: number;
 
     constructor(protected fb: FormBuilder, protected domUtils: CoreDomUtilsProvider, protected textUtils: CoreTextUtilsProvider,
             element: ElementRef) {
         super();
+    }
+
+    format(value: any): string {
+        const files = (value && value.files) || [];
+
+        return value ? this.textUtils.replacePluginfileUrls(value.content, files) : '';
     }
 
     /**
@@ -45,21 +52,18 @@ export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginC
 
     protected render(): void {
         if (this.mode == 'show') {
-            this.value.content = this.value.content.split('##').join('<br>');
+            this.component = AddonModDataProvider.COMPONENT;
+            this.componentId = this.database.coursemodule;
 
             return;
         }
 
-        this.options = this.field.param1.split('\n');
+        // Check if rich text editor is enabled.
+        if (this.mode == 'edit') {
+            const files = (this.value && this.value.files) || [],
+                text = this.value ? this.textUtils.replacePluginfileUrls(this.value.content, files) : '';
 
-        if (this.mode == 'edit' && this.value) {
-            this.values = {};
-
-            this.value.content.split('##').forEach((value) => {
-                this.values[value] = true;
-            });
-
-            //this.control = this.fb.control(text);
+            this.control = this.fb.control(text);
         }
     }
 }

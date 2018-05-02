@@ -13,18 +13,22 @@
 // limitations under the License.
 import { Injector, Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreFileSessionProvider } from '@providers/file-session';
 import { AddonModDataFieldHandler } from '../../../providers/fields-delegate';
-import { AddonModDataFieldCheckboxComponent } from '../component/checkbox';
+import { AddonModDataProvider } from '../../../providers/data';
+import { AddonModDataFieldFileComponent } from '../component/file';
+import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 
 /**
- * Handler for checkbox data field plugin.
+ * Handler for file data field plugin.
  */
 @Injectable()
-export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandler {
-    name = 'AddonModDataFieldCheckboxHandler';
-    type = 'checkbox';
+export class AddonModDataFieldFileHandler implements AddonModDataFieldHandler {
+    name = 'AddonModDataFieldFileHandler';
+    type = 'file';
 
-    constructor(private translate: TranslateService) { }
+    constructor(private translate: TranslateService, private fileSessionprovider: CoreFileSessionProvider,
+        private fileUploaderProvider: CoreFileUploaderProvider) { }
 
     /**
      * Return the Component to use to display the plugin data.
@@ -35,7 +39,7 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(injector: Injector, plugin: any): any | Promise<any> {
-        return AddonModDataFieldCheckboxComponent;
+        return AddonModDataFieldFileComponent;
     }
 
     /**
@@ -46,30 +50,13 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      * @return {any}            With name and value of the data to be sent.
      */
     getFieldSearchData(field: any, inputData: any): any {
-        const fieldName = 'f_' + field.id,
-            reqName = 'f_' + field.id + '_allreq';
+        const fieldName = 'f_' + field.id;
 
-        const checkboxes = [],
-            values = [];
-        inputData[fieldName].forEach((value, option) => {
-            if (value) {
-                checkboxes.push(option);
-            }
-        });
-        if (checkboxes.length > 0) {
-            values.push({
+        if (inputData[fieldName]) {
+            return [{
                 name: fieldName,
-                value: checkboxes
-            });
-
-            if (inputData[reqName]['1']) {
-                values.push({
-                    name: reqName,
-                    value: true
-                });
-            }
-
-            return values;
+                value: inputData[fieldName]
+            }];
         }
 
         return false;
@@ -83,22 +70,27 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      * @return {any}            With name and value of the data to be sent.
      */
     getFieldEditData(field: any, inputData: any, originalFieldData: any): any {
-        const fieldName = 'f_' + field.id;
+        const files = this.getFieldEditFiles(field);
 
-        const checkboxes = [];
-        inputData[fieldName].forEach((value, option) => {
-            if (value) {
-                checkboxes.push(option);
-            }
-        });
-        if (checkboxes.length > 0) {
+        if (files.length) {
             return [{
                 fieldid: field.id,
-                value: checkboxes
+                subfield: 'file',
+                files: files
             }];
         }
 
         return false;
+    }
+
+    /**
+     * Get field edit files in the input data.
+     *
+     * @param  {any} field        Defines the field..
+     * @return {any}             With name and value of the data to be sent.
+     */
+    getFieldEditFiles(field: any): any {
+        return this.fileSessionprovider.getFiles(AddonModDataProvider.COMPONENT,  field.dataid + '_' + field.id);
     }
 
     /**
@@ -110,18 +102,14 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      * @return {Promise<boolean> | boolean} If the field has changes.
      */
     hasFieldDataChanged(field: any, inputData: any, originalFieldData: any): Promise<boolean> | boolean {
-        const fieldName = 'f_' + field.id,
-            checkboxes = [];
+        const files = this.fileSessionprovider.getFiles(AddonModDataProvider.COMPONENT,  field.dataid + '_' + field.id) || [];
+        let originalFiles = (originalFieldData && originalFieldData.files) || [];
 
-        inputData[fieldName].forEach((value, option) => {
-            if (value) {
-                checkboxes.push(option);
-            }
-        });
+        if (originalFiles.length) {
+            originalFiles = [originalFiles[0]];
+        }
 
-        originalFieldData = (originalFieldData && originalFieldData.content) || '';
-
-        return checkboxes.join('##') != originalFieldData;
+        return this.fileUploaderProvider.areFileListDifferent(files, originalFiles);
     }
 
     /**
@@ -148,7 +136,13 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      * @return {any}                     Data overriden
      */
     overrideData(originalContent: any, offlineContent: any, offlineFiles?: any): any {
-        originalContent.content = (offlineContent[''] && offlineContent[''].join('##')) || '';
+        if (offlineContent && offlineContent.file && offlineContent.file.offline > 0 && offlineFiles && offlineFiles.length > 0) {
+            originalContent.content = offlineFiles[0].filename;
+            originalContent.files = [offlineFiles[0]];
+        } else if (offlineContent && offlineContent.file && offlineContent.file.online && offlineContent.file.online.length > 0) {
+            originalContent.content = offlineContent.file.online[0].filename;
+            originalContent.files = [offlineContent.file.online[0]];
+        }
 
         return originalContent;
     }

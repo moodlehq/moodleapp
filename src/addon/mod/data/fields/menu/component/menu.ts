@@ -18,17 +18,17 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
 
 /**
- * Component to render data checkbox field.
+ * Component to render data menu field.
  */
 @Component({
-    selector: 'addon-mod-data-field-checkbox',
-    templateUrl: 'checkbox.html'
+    selector: 'addon-mod-data-field-menu',
+    templateUrl: 'menu.html'
 })
-export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginComponent implements OnInit {
+export class AddonModDataFieldMenuComponent extends AddonModDataFieldPluginComponent implements OnInit {
 
     control: FormControl;
-    options: number;
-    values = {};
+    val: string;
+    options = [];
 
     constructor(protected fb: FormBuilder, protected domUtils: CoreDomUtilsProvider, protected textUtils: CoreTextUtilsProvider,
             element: ElementRef) {
@@ -45,21 +45,13 @@ export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginC
 
     protected render(): void {
         if (this.mode == 'show') {
-            this.value.content = this.value.content.split('##').join('<br>');
-
             return;
         }
 
         this.options = this.field.param1.split('\n');
 
         if (this.mode == 'edit' && this.value) {
-            this.values = {};
-
-            this.value.content.split('##').forEach((value) => {
-                this.values[value] = true;
-            });
-
-            //this.control = this.fb.control(text);
+            this.val = this.value.content;
         }
     }
 }

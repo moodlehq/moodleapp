@@ -1,0 +1,7 @@
+<span *ngIf="mode == 'edit'" [core-mark-required]="field.required"></span>
+
+<core-input-errors *ngIf="error && mode == 'edit'" [control]="form.controls['f_'+field.id]" [errorMessages]="error"></core-input-errors>
+
+<ion-input *ngIf="mode != 'show'" type="url" [formControlName]="'f_'+field.id" [placeholder]="field.name" [(ngModel)]="val"></ion-input>
+
+<a *ngIf="mode == 'show' && value && value.content" [href]="value.content" core-link capture-link="true">{{field.name}}</a>

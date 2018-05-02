@@ -23,6 +23,7 @@ import { AddonModDataProvider } from '../../providers/data';
 import { AddonModDataHelperProvider } from '../../providers/helper';
 import { AddonModDataOfflineProvider } from '../../providers/offline';
 import { AddonModDataSyncProvider } from '../../providers/sync';
+import { AddonModDataComponentsModule } from '../components.module';
 import * as moment from 'moment';
 
 /**
@@ -33,6 +34,7 @@ import * as moment from 'moment';
     templateUrl: 'index.html',
 })
 export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComponent {
+
     component = AddonModDataProvider.COMPONENT;
     moduleName = 'data';
 
@@ -65,13 +67,16 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     offlineEntries: any;
     entriesRendered = '';
     cssTemplate = '';
+    extraImports = [AddonModDataComponentsModule];
+    jsData;
 
     protected syncEventName = AddonModDataSyncProvider.AUTO_SYNCED;
     protected entryChangedObserver: any;
     protected hasComments = false;
+    protected fieldsArray: any;
 
     constructor(injector: Injector, private dataProvider: AddonModDataProvider, private dataHelper: AddonModDataHelperProvider,
-            private dataOffline: AddonModDataOfflineProvider, @Optional() private content: Content,
+            private dataOffline: AddonModDataOfflineProvider, @Optional() @Optional() content: Content,
             private dataSync: AddonModDataSyncProvider, private timeUtils: CoreTimeUtilsProvider,
             private groupsProvider: CoreGroupsProvider, private commentsProvider: CoreCommentsProvider,
             private modalCtrl: ModalController, private utils: CoreUtilsProvider) {
@@ -216,8 +221,8 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                 fields.forEach((field) => {
                     this.fields[field.id] = field;
                 });
-                this.fields = this.utils.objectToArray(this.fields);
-                this.advancedSearch = this.dataHelper.displayAdvancedSearchFields(this.data.asearchtemplate, this.fields);
+                this.fieldsArray = this.utils.objectToArray(this.fields);
+                this.advancedSearch = this.dataHelper.displayAdvancedSearchFields(this.data.asearchtemplate, this.fieldsArray);
 
                 return this.fetchEntriesData();
             });
@@ -283,7 +288,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                         };
 
                         if (offlineActions.length > 0) {
-                            promises.push(this.dataHelper.applyOfflineActions(entry, offlineActions, this.fields));
+                            promises.push(this.dataHelper.applyOfflineActions(entry, offlineActions, this.fieldsArray));
                         } else {
                             promises.push(Promise.resolve(entry));
                         }
@@ -299,7 +304,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                     entry.contents = contents;
 
                     if (typeof this.offlineActions[entry.id] != 'undefined') {
-                        promises.push(this.dataHelper.applyOfflineActions(entry, this.offlineActions[entry.id], this.fields));
+                        promises.push(this.dataHelper.applyOfflineActions(entry, this.offlineActions[entry.id], this.fieldsArray));
                     } else {
                         promises.push(Promise.resolve(entry));
                     }
@@ -318,12 +323,19 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
                         const actions = this.dataHelper.getActions(this.data, this.access, entry);
 
-                        entriesHTML += this.dataHelper.displayShowFields(this.data.listtemplate, this.fields, entry, 'list',
+                        entriesHTML += this.dataHelper.displayShowFields(this.data.listtemplate, this.fieldsArray, entry, 'list',
                             actions);
                     });
                     entriesHTML += this.data.listtemplatefooter || '';
 
                     this.entriesRendered = entriesHTML;
+
+                    // Pass the input data to the component.
+                    this.jsData = {
+                        fields: this.fields,
+                        entries: this.entries,
+                        data: this.data
+                    };
                 });
             } else if (!this.search.searching) {
                 // Empty and no searching.
@@ -356,7 +368,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
         if (this.search.searchingAdvanced) {
             this.search.advanced = this.dataHelper.getSearchDataFromForm(document.forms['addon-mod_data-advanced-search-form'],
-                this.fields);
+                this.fieldsArray);
             this.search.searching = this.search.advanced.length > 0;
         } else {
             this.search.searching = this.search.text.length > 0;

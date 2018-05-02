@@ -38,13 +38,13 @@ export class AddonModDataFieldPluginComponent implements OnInit {
     fieldLoaded: boolean;
 
     constructor(protected injector: Injector, protected dataDelegate: AddonModDataFieldsDelegate,
-            protected dataProvider: AddonModDataProvider) { }
+            protected dataProvider: AddonModDataProvider) {
+    }
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
-        console.error('HERE');
         if (!this.field) {
             this.fieldLoaded = true;
 
@@ -65,6 +65,7 @@ export class AddonModDataFieldPluginComponent implements OnInit {
                     error: this.error,
                     viewAction: this.viewAction
                 };
+
             } else {
                 this.fieldLoaded = true;
             }

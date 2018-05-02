@@ -63,7 +63,7 @@
             {{ cssTemplate }}
         </style>
 
-        <core-compile-html [text]="entriesRendered"></core-compile-html>
+        <core-compile-html [text]="entriesRendered" [jsData]="jsData" [extraImports]="extraImports"></core-compile-html>
     </div>
 
     <ion-grid *ngIf="search.page > 0 || hasNextPage">

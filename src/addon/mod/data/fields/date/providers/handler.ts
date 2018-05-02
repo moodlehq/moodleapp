@@ -14,15 +14,15 @@
 import { Injector, Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AddonModDataFieldHandler } from '../../../providers/fields-delegate';
-import { AddonModDataFieldCheckboxComponent } from '../component/checkbox';
+import { AddonModDataFieldDateComponent } from '../component/date';
 
 /**
- * Handler for checkbox data field plugin.
+ * Handler for date data field plugin.
  */
 @Injectable()
-export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandler {
-    name = 'AddonModDataFieldCheckboxHandler';
-    type = 'checkbox';
+export class AddonModDataFieldDateHandler implements AddonModDataFieldHandler {
+    name = 'AddonModDataFieldDateHandler';
+    type = 'date';
 
     constructor(private translate: TranslateService) { }
 
@@ -35,7 +35,7 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(injector: Injector, plugin: any): any | Promise<any> {
-        return AddonModDataFieldCheckboxComponent;
+        return AddonModDataFieldDateComponent;
     }
 
     /**
@@ -47,27 +47,30 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      */
     getFieldSearchData(field: any, inputData: any): any {
         const fieldName = 'f_' + field.id,
-            reqName = 'f_' + field.id + '_allreq';
+            enabledName = 'f_' + field.id + '_z';
 
-        const checkboxes = [],
-            values = [];
-        inputData[fieldName].forEach((value, option) => {
-            if (value) {
-                checkboxes.push(option);
-            }
-        });
-        if (checkboxes.length > 0) {
+        if (inputData[enabledName]['1']) {
+            const values = [],
+                date = inputData[fieldName].split('-'),
+                year = date[0],
+                month = date[1],
+                day = date[2];
             values.push({
-                name: fieldName,
-                value: checkboxes
+                name: fieldName + '_y',
+                value: year
             });
-
-            if (inputData[reqName]['1']) {
-                values.push({
-                    name: reqName,
-                    value: true
-                });
-            }
+            values.push({
+                name: fieldName + '_m',
+                value: month
+            });
+            values.push({
+                name: fieldName + '_d',
+                value: day
+            });
+            values.push({
+                name: enabledName,
+                value: 1
+            });
 
             return values;
         }
@@ -85,17 +88,29 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
     getFieldEditData(field: any, inputData: any, originalFieldData: any): any {
         const fieldName = 'f_' + field.id;
 
-        const checkboxes = [];
-        inputData[fieldName].forEach((value, option) => {
-            if (value) {
-                checkboxes.push(option);
-            }
-        });
-        if (checkboxes.length > 0) {
-            return [{
+       if (inputData[fieldName]) {
+            const values = [],
+                date = inputData[fieldName].split('-'),
+                year = date[0],
+                month = date[1],
+                day = date[2];
+            values.push({
                 fieldid: field.id,
-                value: checkboxes
-            }];
+                subfield: 'year',
+                value: year
+            });
+            values.push({
+                fieldid: field.id,
+                subfield: 'month',
+                value: month
+            });
+            values.push({
+                fieldid: field.id,
+                subfield: 'day',
+                value: day
+            });
+
+            return values;
         }
 
         return false;
@@ -111,17 +126,12 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      */
     hasFieldDataChanged(field: any, inputData: any, originalFieldData: any): Promise<boolean> | boolean {
         const fieldName = 'f_' + field.id,
-            checkboxes = [];
+            input = inputData[fieldName] || '';
 
-        inputData[fieldName].forEach((value, option) => {
-            if (value) {
-                checkboxes.push(option);
-            }
-        });
+        originalFieldData = (originalFieldData && originalFieldData.content &&
+                new Date(originalFieldData.content * 1000).toISOString().substr(0, 10)) || '';
 
-        originalFieldData = (originalFieldData && originalFieldData.content) || '';
-
-        return checkboxes.join('##') != originalFieldData;
+        return input != originalFieldData;
     }
 
     /**
@@ -132,7 +142,9 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      * @return {string | false}                  String with the notification or false.
      */
     getFieldsNotifications(field: any, inputData: any): string | false {
-        if (field.required && (!inputData || !inputData.length || !inputData[0].value)) {
+        if (field.required &&
+                (!inputData || inputData.length < 2 || !inputData[0].value || !inputData[1].value || !inputData[2].value)) {
+
             return this.translate.instant('addon.mod_data.errormustsupplyvalue');
         }
 
@@ -148,7 +160,11 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      * @return {any}                     Data overriden
      */
     overrideData(originalContent: any, offlineContent: any, offlineFiles?: any): any {
-        originalContent.content = (offlineContent[''] && offlineContent[''].join('##')) || '';
+        let date = Date.UTC(offlineContent['year'] || '', offlineContent['month'] ? offlineContent['month'] - 1 : null,
+            offlineContent['day'] || null);
+        date = Math.floor(date / 1000);
+
+        originalContent.content = date || '';
 
         return originalContent;
     }

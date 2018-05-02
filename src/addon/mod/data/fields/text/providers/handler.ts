@@ -14,17 +14,17 @@
 import { Injector, Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AddonModDataFieldHandler } from '../../../providers/fields-delegate';
-import { AddonModDataFieldCheckboxComponent } from '../component/checkbox';
+import { AddonModDataFieldTextComponent } from '../component/text';
 
 /**
- * Handler for checkbox data field plugin.
+ * Handler for number data field plugin.
  */
 @Injectable()
-export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandler {
-    name = 'AddonModDataFieldCheckboxHandler';
-    type = 'checkbox';
+export class AddonModDataFieldTextHandler implements AddonModDataFieldHandler {
+    name = 'AddonModDataFieldTextHandler';
+    type = 'text';
 
-    constructor(private translate: TranslateService) { }
+    constructor(protected translate: TranslateService) { }
 
     /**
      * Return the Component to use to display the plugin data.
@@ -35,7 +35,7 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(injector: Injector, plugin: any): any | Promise<any> {
-        return AddonModDataFieldCheckboxComponent;
+        return AddonModDataFieldTextComponent;
     }
 
     /**
@@ -46,30 +46,13 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      * @return {any}            With name and value of the data to be sent.
      */
     getFieldSearchData(field: any, inputData: any): any {
-        const fieldName = 'f_' + field.id,
-            reqName = 'f_' + field.id + '_allreq';
+        const fieldName = 'f_' + field.id;
 
-        const checkboxes = [],
-            values = [];
-        inputData[fieldName].forEach((value, option) => {
-            if (value) {
-                checkboxes.push(option);
-            }
-        });
-        if (checkboxes.length > 0) {
-            values.push({
+        if (inputData[fieldName]) {
+            return [{
                 name: fieldName,
-                value: checkboxes
-            });
-
-            if (inputData[reqName]['1']) {
-                values.push({
-                    name: reqName,
-                    value: true
-                });
-            }
-
-            return values;
+                value: inputData[fieldName]
+            }];
         }
 
         return false;
@@ -85,16 +68,10 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
     getFieldEditData(field: any, inputData: any, originalFieldData: any): any {
         const fieldName = 'f_' + field.id;
 
-        const checkboxes = [];
-        inputData[fieldName].forEach((value, option) => {
-            if (value) {
-                checkboxes.push(option);
-            }
-        });
-        if (checkboxes.length > 0) {
+        if (inputData[fieldName]) {
             return [{
                 fieldid: field.id,
-                value: checkboxes
+                value: inputData[fieldName]
             }];
         }
 
@@ -111,17 +88,10 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      */
     hasFieldDataChanged(field: any, inputData: any, originalFieldData: any): Promise<boolean> | boolean {
         const fieldName = 'f_' + field.id,
-            checkboxes = [];
-
-        inputData[fieldName].forEach((value, option) => {
-            if (value) {
-                checkboxes.push(option);
-            }
-        });
-
+            input = inputData[fieldName] || '';
         originalFieldData = (originalFieldData && originalFieldData.content) || '';
 
-        return checkboxes.join('##') != originalFieldData;
+        return input != originalFieldData;
     }
 
     /**
@@ -148,7 +118,7 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      * @return {any}                     Data overriden
      */
     overrideData(originalContent: any, offlineContent: any, offlineFiles?: any): any {
-        originalContent.content = (offlineContent[''] && offlineContent[''].join('##')) || '';
+        originalContent.content = offlineContent[''] || '';
 
         return originalContent;
     }
