@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, Optional } from '@angular/core';
+import { NavController } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { Subject } from 'rxjs';
@@ -39,7 +40,8 @@ export class CoreSitePluginsPluginContentComponent implements OnInit {
     invalidateObservable: Subject<void>; // An observable to notify observers when to invalidate data.
     jsData: any; // Data to pass to the component.
 
-    constructor(protected domUtils: CoreDomUtilsProvider, protected sitePluginsProvider: CoreSitePluginsProvider) {
+    constructor(protected domUtils: CoreDomUtilsProvider, protected sitePluginsProvider: CoreSitePluginsProvider,
+            @Optional() protected navCtrl: NavController) {
         this.onContentLoaded = new EventEmitter();
         this.onLoadingContent = new EventEmitter();
         this.invalidateObservable = new Subject<void>();
@@ -67,6 +69,11 @@ export class CoreSitePluginsPluginContentComponent implements OnInit {
             this.otherData = result.otherdata;
             this.jsData = this.sitePluginsProvider.createDataForJS(this.initResult, result);
 
+            // Pass some methods as jsData so they can be called from the template too.
+            this.jsData.openContent = this.openContent.bind(this);
+            this.jsData.refreshContent = this.refreshContent.bind(this);
+            this.jsData.updateContent = this.updateContent.bind(this);
+
             this.onContentLoaded.emit(refresh);
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.errorloadingcontent', true);
@@ -76,11 +83,29 @@ export class CoreSitePluginsPluginContentComponent implements OnInit {
     }
 
     /**
+     * Open a new page with a new content.
+     *
+     * @param {string} title The title to display with the new content.
+     * @param {any} args New params.
+     * @param {string} [component] New component. If not provided, current component
+     * @param {string} [method] New method. If not provided, current method
+     */
+    openContent(title: string, args: any, component?: string, method?: string): void {
+        this.navCtrl.push('CoreSitePluginsPluginPage', {
+            title: title,
+            component: component || this.component,
+            method: method || this.method,
+            args: args,
+            initResult: this.initResult
+        });
+    }
+
+    /**
      * Refresh the data.
      *
-     * @param {boolean} [showSpinner] Whether to show spinner while refreshing.
+     * @param {boolean} [showSpinner=true] Whether to show spinner while refreshing.
      */
-    refreshData(showSpinner?: boolean): Promise<any> {
+    refreshContent(showSpinner: boolean = true): Promise<any> {
         if (showSpinner) {
             this.dataLoaded = false;
         }
@@ -95,13 +120,13 @@ export class CoreSitePluginsPluginContentComponent implements OnInit {
     /**
      * Update the content, usually with a different method or params.
      *
-     * @param {string} component New component.
-     * @param {string} method New method.
      * @param {any} args New params.
+     * @param {string} [component] New component. If not provided, current component
+     * @param {string} [method] New method. If not provided, current method
      */
-    updateContent(component: string, method: string, args: any): void {
-        this.component = component;
-        this.method = method;
+    updateContent(args: any, component?: string, method?: string): void {
+        this.component = component || this.component;
+        this.method = method || this.method;
         this.args = args;
         this.dataLoaded = false;
 

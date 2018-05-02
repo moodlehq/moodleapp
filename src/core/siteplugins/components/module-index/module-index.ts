@@ -89,7 +89,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
         if (this.content) {
             this.refreshIcon = 'spinner';
 
-            return Promise.resolve(this.content.refreshData()).finally(() => {
+            return Promise.resolve(this.content.refreshContent(false)).finally(() => {
                 refresher && refresher.complete();
                 done && done();
             });

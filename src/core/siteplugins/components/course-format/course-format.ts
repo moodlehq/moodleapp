@@ -63,6 +63,6 @@ export class CoreSitePluginsCourseFormatComponent implements OnInit {
      * @return {Promise<any>} Promise resolved when done.
      */
     doRefresh(refresher?: any, done?: () => void): Promise<any> {
-        return Promise.resolve(this.content.refreshData());
+        return Promise.resolve(this.content.refreshContent(false));
     }
 }
