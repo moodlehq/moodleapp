@@ -18,8 +18,6 @@ import { CoreFileProvider } from '@providers/file';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreConstants } from '@core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
@@ -36,8 +34,7 @@ export class AddonRemoteThemesProvider {
     protected stylesEls: {[siteId: string]: {element: HTMLStyleElement, hash: string}} = {};
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private fileProvider: CoreFileProvider,
-            private filepoolProvider: CoreFilepoolProvider, private http: Http, private utils: CoreUtilsProvider,
-            private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider) {
+            private filepoolProvider: CoreFilepoolProvider, private http: Http, private utils: CoreUtilsProvider) {
         this.logger = logger.getInstance('AddonRemoteThemesProvider');
     }
 
@@ -225,7 +222,8 @@ export class AddonRemoteThemesProvider {
                 }
 
                 // Styles have been loaded, now treat the CSS.
-                this.treatCSSCode(siteId, data.fileUrl, data.styles).catch(() => {
+                this.filepoolProvider.treatCSSCode(siteId, data.fileUrl, data.styles, AddonRemoteThemesProvider.COMPONENT, 2)
+                        .catch(() => {
                     // Ignore errors.
                 });
             });
@@ -302,56 +300,6 @@ export class AddonRemoteThemesProvider {
             document.head.removeChild(this.stylesEls[siteId].element);
             delete this.stylesEls[siteId];
         }
-    }
-
-    /**
-     * Search for files in a CSS code and try to download them. Once downloaded, replace their URLs
-     * and store the result in the CSS file.
-     *
-     * @param {string} siteId  Site ID.
-     * @param {string} fileUrl CSS file URL.
-     * @param {string} cssCode CSS code.
-     * @return {Promise<string>} Promise resolved with the CSS code.
-     */
-    protected treatCSSCode(siteId: string, fileUrl: string, cssCode: string): Promise<string> {
-        if (!this.fileProvider.isAvailable()) {
-            return Promise.reject(null);
-        }
-
-        const urls = this.domUtils.extractUrlsFromCSS(cssCode),
-            promises = [];
-        let filePath,
-            updated = false;
-
-        // Get the path of the CSS file.
-        promises.push(this.filepoolProvider.getFilePathByUrl(siteId, fileUrl).then((path) => {
-            filePath = path;
-        }));
-
-        urls.forEach((url) => {
-            // Download the file only if it's an online URL.
-            if (url.indexOf('http') == 0) {
-                promises.push(this.filepoolProvider.downloadUrl(siteId, url, false, AddonRemoteThemesProvider.COMPONENT, 2)
-                        .then((fileUrl) => {
-                    if (fileUrl != url) {
-                        cssCode = cssCode.replace(new RegExp(this.textUtils.escapeForRegex(url), 'g'), fileUrl);
-                        updated = true;
-                    }
-                }).catch((error) => {
-                    // It shouldn't happen. Ignore errors.
-                    this.logger.warn('Error treating file ', url, error);
-                }));
-            }
-        });
-
-        return Promise.all(promises).then(() => {
-            // All files downloaded. Store the result if it has changed.
-            if (updated) {
-                return this.fileProvider.writeFile(filePath, cssCode);
-            }
-        }).then(() => {
-            return cssCode;
-        });
     }
 
     /**

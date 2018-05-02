@@ -58,6 +58,8 @@ export interface CoreSitePluginsHandler {
  */
 @Injectable()
 export class CoreSitePluginsProvider {
+    static COMPONENT = 'CoreSitePlugins';
+
     protected ROOT_CACHE_KEY = 'CoreSitePlugins:';
 
     protected logger;
