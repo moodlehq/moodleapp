@@ -1,6 +1,6 @@
 {
-    "app_id" : "com.moodle.moodlemobile",
-    "appname": "Moodle Mobile",
+    "app_id" : "com.nrc.moodlemobile",
+    "appname": "NRC Demo App",
     "desktopappname": "Moodle Desktop",
     "versioncode" : "2023",
     "versionname" : "3.4.2",
