@@ -21,6 +21,7 @@ import { AddonModLessonComponentsModule } from './components/components.module';
 import { AddonModLessonProvider } from './providers/lesson';
 import { AddonModLessonOfflineProvider } from './providers/lesson-offline';
 import { AddonModLessonSyncProvider } from './providers/lesson-sync';
+import { AddonModLessonHelperProvider } from './providers/helper';
 import { AddonModLessonModuleHandler } from './providers/module-handler';
 import { AddonModLessonPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModLessonSyncCronHandler } from './providers/sync-cron-handler';
@@ -38,6 +39,7 @@ import { AddonModLessonReportLinkHandler } from './providers/report-link-handler
         AddonModLessonProvider,
         AddonModLessonOfflineProvider,
         AddonModLessonSyncProvider,
+        AddonModLessonHelperProvider,
         AddonModLessonModuleHandler,
         AddonModLessonPrefetchHandler,
         AddonModLessonSyncCronHandler,

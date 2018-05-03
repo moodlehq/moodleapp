@@ -1,0 +1,11 @@
+page-addon-mod-lesson-player {
+    .addon-mod_lesson-slideshow {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    ion-input[padding-left] input[padding-left] {
+        // Applying padding-left to the ion-input applies it twice since it's replicated in the inner input.
+        padding-left: 0;
+    }
+}
