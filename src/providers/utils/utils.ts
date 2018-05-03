@@ -626,7 +626,11 @@ export class CoreUtilsProvider {
      * @return {boolean} Whether the error was returned by the WebService.
      */
     isWebServiceError(error: any): boolean {
-        return typeof error.errorcode == 'undefined' && typeof error.warningcode == 'undefined';
+        return typeof error.warningcode != 'undefined' || (typeof error.errorcode != 'undefined' &&
+                error.errorcode != 'invalidtoken' && error.errorcode != 'userdeleted' && error.errorcode != 'upgraderunning' &&
+                error.errorcode != 'forcepasswordchangenotice' && error.errorcode != 'usernotfullysetup' &&
+                error.errorcode != 'sitepolicynotagreed' && error.errorcode != 'sitemaintenance' &&
+                (error.errorcode != 'accessexception' || error.message.indexOf('Invalid token - token expired') == -1));
     }
 
     /**

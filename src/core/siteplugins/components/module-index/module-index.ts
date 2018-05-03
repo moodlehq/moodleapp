@@ -37,7 +37,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     component: string;
     method: string;
     args: any;
-    bootstrapResult: any;
+    initResult: any;
 
     // Data for context menu.
     externalUrl: string;
@@ -69,7 +69,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
                     courseid: this.courseId,
                     cmid: this.module.id
                 };
-                this.bootstrapResult = handler.bootstrapResult;
+                this.initResult = handler.initResult;
             }
 
             // Get the data for the context menu.
@@ -89,7 +89,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
         if (this.content) {
             this.refreshIcon = 'spinner';
 
-            return Promise.resolve(this.content.refreshData()).finally(() => {
+            return Promise.resolve(this.content.refreshContent(false)).finally(() => {
                 refresher && refresher.complete();
                 done && done();
             });

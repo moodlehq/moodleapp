@@ -38,7 +38,7 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
     type: string;
 
     constructor(name: string, protected title: string, protected plugin: any, protected handlerSchema: any,
-            protected bootstrapResult: any, protected sitePluginsProvider: CoreSitePluginsProvider) {
+            protected initResult: any, protected sitePluginsProvider: CoreSitePluginsProvider) {
         super(name);
 
         this.priority = handlerSchema.priority;
@@ -59,14 +59,14 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
     isEnabledForUser(user: any, courseId: number, navOptions?: any, admOptions?: any): boolean | Promise<boolean> {
         // First check if it's enabled for the user.
         const enabledForUser = this.sitePluginsProvider.isHandlerEnabledForUser(user.id, this.handlerSchema.restricttocurrentuser,
-                this.bootstrapResult.restrict);
+                this.initResult.restrict);
         if (!enabledForUser) {
             return false;
         }
 
         // Enabled for user, check if it's enabled for the course.
         return this.sitePluginsProvider.isHandlerEnabledForCourse(
-                courseId, this.handlerSchema.restricttoenrolledcourses, this.bootstrapResult.restrict);
+                courseId, this.handlerSchema.restricttoenrolledcourses, this.initResult.restrict);
     }
 
     /**
@@ -92,7 +92,7 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
                         courseid: courseId,
                         userid: user.id
                     },
-                    bootstrapResult: this.bootstrapResult
+                    initResult: this.initResult
                 });
             }
         };

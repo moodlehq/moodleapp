@@ -32,14 +32,14 @@ export class CoreSitePluginsPluginPage {
     component: string;
     method: string;
     args: any;
-    bootstrapResult: any;
+    initResult: any;
 
     constructor(params: NavParams) {
         this.title = params.get('title');
         this.component = params.get('component');
         this.method = params.get('method');
         this.args = params.get('args');
-        this.bootstrapResult = params.get('bootstrapResult');
+        this.initResult = params.get('initResult');
     }
 
     /**
@@ -48,7 +48,7 @@ export class CoreSitePluginsPluginPage {
      * @param {any} refresher Refresher.
      */
     refreshData(refresher: any): void {
-        this.content.refreshData().finally(() => {
+        this.content.refreshContent(false).finally(() => {
             refresher.complete();
         });
     }

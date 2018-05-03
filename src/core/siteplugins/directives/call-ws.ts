@@ -74,7 +74,7 @@ export class CoreSitePluginsCallWSDirective extends CoreSitePluginsCallWSOnClick
         if (this.utils.isTrueOrOne(this.goBackOnSuccess)) {
             this.navCtrl.pop();
         } else if (this.utils.isTrueOrOne(this.refreshOnSuccess) && this.parentContent) {
-            this.parentContent.refreshData(true);
+            this.parentContent.refreshContent(true);
         }
     }
 }

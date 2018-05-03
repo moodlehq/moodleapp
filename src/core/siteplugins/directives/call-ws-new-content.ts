@@ -53,8 +53,8 @@ import { CoreSitePluginsPluginContentComponent } from '../components/plugin-cont
     selector: '[core-site-plugins-call-ws-new-content]'
 })
 export class CoreSitePluginsCallWSNewContentDirective extends CoreSitePluginsCallWSOnClickBaseDirective {
-    @Input() component: string; // The component of the new content.
-    @Input() method: string; // The method to get the new content.
+    @Input() component: string; // The component of the new content. If not provided, use the same component as current page.
+    @Input() method: string; // The method to get the new content. If not provided, use the same method as current page.
     @Input() args: any; // The params to get the new content.
     @Input() title: string; // The title to display with the new content. Only if samePage=false.
     @Input() samePage: boolean | string; // Whether to display the content in same page or open a new one. Defaults to new page.
@@ -84,15 +84,15 @@ export class CoreSitePluginsCallWSNewContentDirective extends CoreSitePluginsCal
         if (this.utils.isTrueOrOne(this.samePage)) {
             // Update the parent content (if it exists).
             if (this.parentContent) {
-                this.parentContent.updateContent(this.component, this.method, args);
+                this.parentContent.updateContent(args, this.component, this.method);
             }
         } else {
             this.navCtrl.push('CoreSitePluginsPluginPage', {
                 title: this.title,
-                component: this.component,
-                method: this.method,
+                component: this.component || (this.parentContent && this.parentContent.component),
+                method: this.method || (this.parentContent && this.parentContent.method),
                 args: args,
-                bootstrapResult: this.parentContent && this.parentContent.bootstrapResult
+                initResult: this.parentContent && this.parentContent.initResult
             });
         }
     }

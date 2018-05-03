@@ -13,12 +13,15 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
+import { Http } from '@angular/http';
 import { CoreEventsProvider } from '@providers/events';
+import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLangProvider } from '@providers/lang';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSite } from '@classes/site';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from './siteplugins';
 import { CoreCompileProvider } from '@core/compile/providers/compile';
@@ -56,12 +59,12 @@ export class CoreSitePluginsHelperProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider,  private injector: Injector,
             private mainMenuDelegate: CoreMainMenuDelegate, private moduleDelegate: CoreCourseModuleDelegate,
-            private userDelegate: CoreUserDelegate, private langProvider: CoreLangProvider,
+            private userDelegate: CoreUserDelegate, private langProvider: CoreLangProvider, private http: Http,
             private sitePluginsProvider: CoreSitePluginsProvider, private prefetchDelegate: CoreCourseModulePrefetchDelegate,
-            private compileProvider: CoreCompileProvider, private utils: CoreUtilsProvider,
+            private compileProvider: CoreCompileProvider, private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider,
             private courseOptionsDelegate: CoreCourseOptionsDelegate, eventsProvider: CoreEventsProvider,
             private courseFormatDelegate: CoreCourseFormatDelegate, private profileFieldDelegate: CoreUserProfileFieldDelegate,
-            private textUtils: CoreTextUtilsProvider) {
+            private textUtils: CoreTextUtilsProvider, private filepoolProvider: CoreFilepoolProvider) {
         this.logger = logger.getInstance('CoreSitePluginsHelperProvider');
 
         // Fetch the plugins on login.
@@ -89,19 +92,77 @@ export class CoreSitePluginsHelperProvider {
     }
 
     /**
-     * Bootstrap a handler if it has some bootstrap method.
+     * Download the styles for a handler (if any).
+     *
+     * @param {any} plugin Data of the plugin.
+     * @param {string} handlerName Name of the handler in the plugin.
+     * @param {any} handlerSchema Data about the handler.
+     * @param {string} [siteId] Site ID. If not provided, current site.
+     * @return {Promise<string>} Promise resolved with the CSS code.
+     */
+    downloadStyles(plugin: any, handlerName: string, handlerSchema: any, siteId?: string): Promise<string> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            // Get the absolute URL. If it's a relative URL, add the site URL to it.
+            let url = handlerSchema.styles && handlerSchema.styles.url;
+            if (url && !this.urlUtils.isAbsoluteURL(url)) {
+                url = this.textUtils.concatenatePaths(site.getURL(), url);
+            }
+
+            const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
+                componentId = uniqueName + '#main';
+
+            // Remove the CSS files for this handler that aren't used anymore. Don't block the call for this.
+            this.filepoolProvider.getFilesByComponent(site.id, CoreSitePluginsProvider.COMPONENT, componentId).then((files) => {
+                files.forEach((file) => {
+                    if (file.url != url) {
+                        // It's not the current file, delete it.
+                        this.filepoolProvider.removeFileByUrl(site.id, file.url).catch(() => {
+                            // Ignore errors.
+                        });
+                    }
+                });
+            }).catch(() => {
+                // Ignore errors.
+            });
+
+            if (!url) {
+                // No styles.
+                return '';
+            }
+
+            // Download the file if not downloaded or the version changed.
+            return this.filepoolProvider.downloadUrl(site.id, url, false, CoreSitePluginsProvider.COMPONENT, componentId, 0,
+                   undefined, undefined, undefined, handlerSchema.styles.version).then((url) => {
+
+                // File is downloaded, get the contents.
+                return this.http.get(url).toPromise();
+            }).then((response): any => {
+                const text = response && response.text();
+
+                if (typeof text == 'string') {
+                    return text;
+                } else {
+                    return Promise.reject(null);
+                }
+            });
+        });
+    }
+
+    /**
+     * Execute a handler's init method if it has any.
      *
      * @param {any} plugin Data of the plugin.
      * @param {any} handlerSchema Data about the handler.
      * @return {Promise<any>} Promise resolved when done. It returns the results of the getContent call and the data returned by
-     *                        the bootstrap JS (if any).
+     *                        the init JS (if any).
      */
-    protected bootstrapHandler(plugin: any, handlerSchema: any): Promise<any> {
-        if (!handlerSchema.bootstrap) {
+    protected executeHandlerInit(plugin: any, handlerSchema: any): Promise<any> {
+        if (!handlerSchema.init) {
             return Promise.resolve({});
         }
 
-        return this.executeMethodAndJS(plugin, handlerSchema.bootstrap);
+        return this.executeMethodAndJS(plugin, handlerSchema.init, true);
     }
 
     /**
@@ -109,12 +170,16 @@ export class CoreSitePluginsHelperProvider {
      *
      * @param {any} plugin Data of the plugin.
      * @param {string} method The method to call.
+     * @param {boolean} [isInit] Whether it's the init method.
      * @return {Promise<any>} Promise resolved when done. It returns the results of the getContent call and the data returned by
      *                        the JS (if any).
      */
-    protected executeMethodAndJS(plugin: any, method: string): Promise<any> {
+    protected executeMethodAndJS(plugin: any, method: string, isInit?: boolean): Promise<any> {
         const siteId = this.sitesProvider.getCurrentSiteId(),
-            preSets = {getFromCache: false}; // Try to ignore cache.
+            preSets = {
+                getFromCache: false, // Try to ignore cache.
+                deleteCacheIfWSError: isInit // If the init WS call returns an exception we won't use cached data.
+            };
 
         return this.sitePluginsProvider.getContent(plugin.component, method, {}, preSets).then((result) => {
             if (!result.javascript || this.sitesProvider.getCurrentSiteId() != siteId) {
@@ -281,6 +346,35 @@ export class CoreSitePluginsHelperProvider {
     }
 
     /**
+     * Load the styles for a handler.
+     *
+     * @param {any} plugin Data of the plugin.
+     * @param {string} handlerName Name of the handler in the plugin.
+     * @param {string} fileUrl CSS file URL.
+     * @param {string} cssCode CSS code.
+     * @param {number} [version] Styles version.
+     * @param {string} [siteId] Site ID. If not provided, current site.
+     */
+    loadStyles(plugin: any, handlerName: string, fileUrl: string, cssCode: string, version?: number, siteId?: string): void {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        // Create the style and add it to the header.
+        const styleEl = document.createElement('style'),
+            uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName);
+
+        styleEl.setAttribute('id', 'siteplugin-' + uniqueName);
+        styleEl.innerHTML = cssCode;
+
+        document.head.appendChild(styleEl);
+
+        // Styles have been loaded, now treat the CSS.
+        this.filepoolProvider.treatCSSCode(siteId, fileUrl, cssCode, CoreSitePluginsProvider.COMPONENT, uniqueName, version)
+                .catch(() => {
+            // Ignore errors.
+        });
+    }
+
+    /**
      * Register a site plugin handler in the right delegate.
      *
      * @param {any} plugin Data of the plugin.
@@ -290,8 +384,28 @@ export class CoreSitePluginsHelperProvider {
      */
     registerHandler(plugin: any, handlerName: string, handlerSchema: any): Promise<any> {
 
-        // Wait for the bootstrap JS to be executed.
-        return this.bootstrapHandler(plugin, handlerSchema).then((result) => {
+        // Wait for the init JS to be executed and for the styles to be downloaded.
+        const promises = [],
+            siteId = this.sitesProvider.getCurrentSiteId();
+        let result,
+            cssCode;
+
+        promises.push(this.downloadStyles(plugin, handlerName, handlerSchema, siteId).then((code) => {
+            cssCode = code;
+        }).catch((error) => {
+            this.logger.error('Error getting styles for plugin', handlerName, handlerSchema, error);
+        }));
+
+        promises.push(this.executeHandlerInit(plugin, handlerSchema).then((initResult) => {
+            result = initResult;
+        }));
+
+        return Promise.all(promises).then(() => {
+            if (cssCode) {
+                // Load the styles.
+                this.loadStyles(plugin, handlerName, handlerSchema.styles.url, cssCode, handlerSchema.styles.version, siteId);
+            }
+
             let promise;
 
             switch (handlerSchema.delegate) {
@@ -331,12 +445,12 @@ export class CoreSitePluginsHelperProvider {
                         plugin: plugin,
                         handlerName: handlerName,
                         handlerSchema: handlerSchema,
-                        bootstrapResult: result
+                        initResult: result
                     });
                 }
             });
         }).catch((err) => {
-            this.logger.error('Error executing bootstrap method', handlerSchema.bootstrap, err);
+            this.logger.error('Error executing init method', handlerSchema.init, err);
         });
     }
 
@@ -346,11 +460,11 @@ export class CoreSitePluginsHelperProvider {
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
      * @param {any} handlerSchema Data about the handler.
-     * @param {any} bootstrapResult Result of the bootstrap WS call.
+     * @param {any} initResult Result of the init WS call.
      * @return {string} A string to identify the handler.
      */
-    protected registerCourseFormatHandler(plugin: any, handlerName: string, handlerSchema: any, bootstrapResult: any): string {
-        this.logger.debug('Register site plugin in course format delegate:', plugin, handlerSchema, bootstrapResult);
+    protected registerCourseFormatHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any): string {
+        this.logger.debug('Register site plugin in course format delegate:', plugin, handlerSchema, initResult);
 
         // Create and register the handler.
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
@@ -366,10 +480,10 @@ export class CoreSitePluginsHelperProvider {
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
      * @param {any} handlerSchema Data about the handler.
-     * @param {any} bootstrapResult Result of the bootstrap WS call.
+     * @param {any} initResult Result of the init WS call.
      * @return {string} A string to identify the handler.
      */
-    protected registerCourseOptionHandler(plugin: any, handlerName: string, handlerSchema: any, bootstrapResult: any): string {
+    protected registerCourseOptionHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any): string {
         if (!handlerSchema.displaydata) {
             // Required data not provided, stop.
             this.logger.warn('Ignore site plugin because it doesn\'t provide displaydata', plugin, handlerSchema);
@@ -377,14 +491,14 @@ export class CoreSitePluginsHelperProvider {
             return;
         }
 
-        this.logger.debug('Register site plugin in course option delegate:', plugin, handlerSchema, bootstrapResult);
+        this.logger.debug('Register site plugin in course option delegate:', plugin, handlerSchema, initResult);
 
         // Create and register the handler.
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
             prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title);
 
         this.courseOptionsDelegate.registerHandler(new CoreSitePluginsCourseOptionHandler(uniqueName, prefixedTitle, plugin,
-                handlerSchema, bootstrapResult, this.sitePluginsProvider));
+                handlerSchema, initResult, this.sitePluginsProvider));
 
         return uniqueName;
     }
@@ -395,10 +509,10 @@ export class CoreSitePluginsHelperProvider {
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
      * @param {any} handlerSchema Data about the handler.
-     * @param {any} bootstrapResult Result of the bootstrap WS call.
+     * @param {any} initResult Result of the init WS call.
      * @return {string} A string to identify the handler.
      */
-    protected registerMainMenuHandler(plugin: any, handlerName: string, handlerSchema: any, bootstrapResult: any): string {
+    protected registerMainMenuHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any): string {
         if (!handlerSchema.displaydata) {
             // Required data not provided, stop.
             this.logger.warn('Ignore site plugin because it doesn\'t provide displaydata', plugin, handlerSchema);
@@ -406,14 +520,14 @@ export class CoreSitePluginsHelperProvider {
             return;
         }
 
-        this.logger.debug('Register site plugin in main menu delegate:', plugin, handlerSchema, bootstrapResult);
+        this.logger.debug('Register site plugin in main menu delegate:', plugin, handlerSchema, initResult);
 
         // Create and register the handler.
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
             prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title);
 
         this.mainMenuDelegate.registerHandler(
-                new CoreSitePluginsMainMenuHandler(uniqueName, prefixedTitle, plugin, handlerSchema, bootstrapResult));
+                new CoreSitePluginsMainMenuHandler(uniqueName, prefixedTitle, plugin, handlerSchema, initResult));
 
         return uniqueName;
     }
@@ -424,10 +538,10 @@ export class CoreSitePluginsHelperProvider {
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
      * @param {any} handlerSchema Data about the handler.
-     * @param {any} bootstrapResult Result of the bootstrap WS call.
+     * @param {any} initResult Result of the init WS call.
      * @return {string} A string to identify the handler.
      */
-    protected registerModuleHandler(plugin: any, handlerName: string, handlerSchema: any, bootstrapResult: any): string {
+    protected registerModuleHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any): string {
         if (!handlerSchema.displaydata) {
             // Required data not provided, stop.
             this.logger.warn('Ignore site plugin because it doesn\'t provide displaydata', plugin, handlerSchema);
@@ -435,7 +549,7 @@ export class CoreSitePluginsHelperProvider {
             return;
         }
 
-        this.logger.debug('Register site plugin in module delegate:', plugin, handlerSchema, bootstrapResult);
+        this.logger.debug('Register site plugin in module delegate:', plugin, handlerSchema, initResult);
 
         // Create and register the handler.
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
@@ -458,10 +572,10 @@ export class CoreSitePluginsHelperProvider {
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
      * @param {any} handlerSchema Data about the handler.
-     * @param {any} bootstrapResult Result of the bootstrap WS call.
+     * @param {any} initResult Result of the init WS call.
      * @return {string} A string to identify the handler.
      */
-    protected registerUserProfileHandler(plugin: any, handlerName: string, handlerSchema: any, bootstrapResult: any): string {
+    protected registerUserProfileHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any): string {
         if (!handlerSchema.displaydata) {
             // Required data not provided, stop.
             this.logger.warn('Ignore site plugin because it doesn\'t provide displaydata', plugin, handlerSchema);
@@ -469,14 +583,14 @@ export class CoreSitePluginsHelperProvider {
             return;
         }
 
-        this.logger.debug('Register site plugin in user profile delegate:', plugin, handlerSchema, bootstrapResult);
+        this.logger.debug('Register site plugin in user profile delegate:', plugin, handlerSchema, initResult);
 
         // Create and register the handler.
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
             prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title);
 
         this.userDelegate.registerHandler(new CoreSitePluginsUserProfileHandler(uniqueName, prefixedTitle, plugin, handlerSchema,
-                bootstrapResult, this.sitePluginsProvider));
+                initResult, this.sitePluginsProvider));
 
         return uniqueName;
     }
@@ -487,10 +601,10 @@ export class CoreSitePluginsHelperProvider {
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
      * @param {any} handlerSchema Data about the handler.
-     * @param {any} bootstrapResult Result of the bootstrap WS call.
+     * @param {any} initResult Result of the init WS call.
      * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
      */
-    protected registerUserProfileFieldHandler(plugin: any, handlerName: string, handlerSchema: any, bootstrapResult: any)
+    protected registerUserProfileFieldHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any)
             : string | Promise<string> {
         if (!handlerSchema.method) {
             // Required data not provided, stop.
@@ -499,7 +613,7 @@ export class CoreSitePluginsHelperProvider {
             return;
         }
 
-        this.logger.debug('Register site plugin in user profile field delegate:', plugin, handlerSchema, bootstrapResult);
+        this.logger.debug('Register site plugin in user profile field delegate:', plugin, handlerSchema, initResult);
 
         // Execute the main method and its JS. The template returned will be used in the profile field component.
         return this.executeMethodAndJS(plugin, handlerSchema.method).then((result) => {

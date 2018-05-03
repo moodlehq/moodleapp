@@ -22,6 +22,7 @@ import { CoreLoggerProvider } from './logger';
 import { CorePluginFileDelegate } from './plugin-file-delegate';
 import { CoreSitesProvider } from './sites';
 import { CoreWSProvider } from './ws';
+import { CoreDomUtilsProvider } from './utils/dom';
 import { CoreMimetypeUtilsProvider } from './utils/mimetype';
 import { CoreTextUtilsProvider } from './utils/text';
 import { CoreTimeUtilsProvider } from './utils/time';
@@ -435,7 +436,7 @@ export class CoreFilepoolProvider {
             private sitesProvider: CoreSitesProvider, private wsProvider: CoreWSProvider, private textUtils: CoreTextUtilsProvider,
             private utils: CoreUtilsProvider, private mimeUtils: CoreMimetypeUtilsProvider, private urlUtils: CoreUrlUtilsProvider,
             private timeUtils: CoreTimeUtilsProvider, private eventsProvider: CoreEventsProvider, initDelegate: CoreInitDelegate,
-            network: Network, private pluginFileDelegate: CorePluginFileDelegate) {
+            network: Network, private pluginFileDelegate: CorePluginFileDelegate, private domUtils: CoreDomUtilsProvider) {
         this.logger = logger.getInstance('CoreFilepoolProvider');
 
         this.appDB = this.appProvider.getDB();
@@ -625,13 +626,14 @@ export class CoreFilepoolProvider {
      * @param {Function} [onProgress] Function to call on progress.
      * @param {number} [priority=0] The priority this file should get in the queue (range 0-999).
      * @param {any} [options] Extra options (isexternalfile, repositorytype).
+     * @param {number} [revision] File revision. If not defined, it will be calculated using the URL.
      * @return {Promise} Resolved on success.
      */
     addToQueueByUrl(siteId: string, fileUrl: string, component?: string, componentId?: string | number, timemodified: number = 0,
-            filePath?: string, onProgress?: (event: any) => any, priority: number = 0, options: any = {}): Promise<any> {
+            filePath?: string, onProgress?: (event: any) => any, priority: number = 0, options: any = {}, revision?: number)
+            : Promise<any> {
         let fileId,
             link,
-            revision,
             queueDeferred;
 
         if (!this.fileProvider.isAvailable()) {
@@ -646,7 +648,7 @@ export class CoreFilepoolProvider {
             return this.fixPluginfileURL(siteId, fileUrl).then((fileUrl) => {
                 const primaryKey = { siteId: siteId, fileId: fileId };
 
-                revision = this.getRevisionFromUrl(fileUrl);
+                revision = revision || this.getRevisionFromUrl(fileUrl);
                 fileId = this.getFileIdByUrl(fileUrl);
 
                 // Set up the component.
@@ -747,10 +749,12 @@ export class CoreFilepoolProvider {
      * @param {boolean} [downloadUnknown] True to download file in WiFi if their size is unknown, false otherwise.
      *                                    Ignored if checkSize=false.
      * @param {any} [options] Extra options (isexternalfile, repositorytype).
+     * @param {number} [revision] File revision. If not defined, it will be calculated using the URL.
      * @return {Promise<any>} Promise resolved when the file is downloaded.
      */
     protected addToQueueIfNeeded(siteId: string, fileUrl: string, component: string, componentId?: string | number,
-            timemodified: number = 0, checkSize: boolean = true, downloadUnknown?: boolean, options: any = {}): Promise<any> {
+            timemodified: number = 0, checkSize: boolean = true, downloadUnknown?: boolean, options: any = {}, revision?: number)
+            : Promise<any> {
         let promise;
 
         if (checkSize) {
@@ -779,16 +783,17 @@ export class CoreFilepoolProvider {
                 if (sizeUnknown) {
                     if (downloadUnknown && isWifi) {
                         return this.addToQueueByUrl(
-                            siteId, fileUrl, component, componentId, timemodified, undefined, undefined, 0, options);
+                            siteId, fileUrl, component, componentId, timemodified, undefined, undefined, 0, options, revision);
                     }
                 } else if (size <= this.DOWNLOAD_THRESHOLD || (isWifi && size <= this.WIFI_DOWNLOAD_THRESHOLD)) {
                     return this.addToQueueByUrl(
-                        siteId, fileUrl, component, componentId, timemodified, undefined, undefined, 0, options);
+                        siteId, fileUrl, component, componentId, timemodified, undefined, undefined, 0, options, revision);
                 }
             });
         } else {
             // No need to check size, just add it to the queue.
-            return this.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified, undefined, undefined, 0, options);
+            return this.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified, undefined, undefined, 0, options,
+                    revision);
         }
     }
 
@@ -1155,6 +1160,7 @@ export class CoreFilepoolProvider {
      * @param {number} [timemodified=0] The time this file was modified. Can be used to check file state.
      * @param {string} [filePath] Filepath to download the file to. If not defined, download to the filepool folder.
      * @param {any} [options] Extra options (isexternalfile, repositorytype).
+     * @param {number} [revision] File revision. If not defined, it will be calculated using the URL.
      * @return {Promise<any>} Resolved with internal URL on success, rejected otherwise.
      * @description
      * Downloads a file on the spot.
@@ -1164,7 +1170,8 @@ export class CoreFilepoolProvider {
      * invalidateFileByUrl to trigger a download.
      */
     downloadUrl(siteId: string, fileUrl: string, ignoreStale?: boolean, component?: string, componentId?: string | number,
-            timemodified: number = 0, onProgress?: (event: any) => any, filePath?: string, options: any = {}): Promise<any> {
+            timemodified: number = 0, onProgress?: (event: any) => any, filePath?: string, options: any = {}, revision?: number)
+            : Promise<any> {
         let fileId,
             promise;
 
@@ -1174,7 +1181,7 @@ export class CoreFilepoolProvider {
 
                 options = Object.assign({}, options); // Create a copy to prevent modifying the original object.
                 options.timemodified = timemodified || 0;
-                options.revision = this.getRevisionFromUrl(fileUrl);
+                options.revision = revision || this.getRevisionFromUrl(fileUrl);
                 fileId = this.getFileIdByUrl(fileUrl);
 
                 return this.hasFileInPool(siteId, fileId).then((fileObject) => {
@@ -1585,15 +1592,16 @@ export class CoreFilepoolProvider {
      * @param {string} fileUrl File URL.
      * @param {number} [timemodified=0] The time this file was modified.
      * @param {string} [filePath] Filepath to download the file to. If defined, no extension will be added.
+     * @param {number} [revision] File revision. If not defined, it will be calculated using the URL.
      * @return {Promise<string>} Promise resolved with the file state.
      */
-    getFileStateByUrl(siteId: string, fileUrl: string, timemodified: number = 0, filePath?: string): Promise<string> {
-        let fileId,
-            revision;
+    getFileStateByUrl(siteId: string, fileUrl: string, timemodified: number = 0, filePath?: string, revision?: number)
+            : Promise<string> {
+        let fileId;
 
         return this.fixPluginfileURL(siteId, fileUrl).then((fixedUrl) => {
             fileUrl = fixedUrl;
-            revision = this.getRevisionFromUrl(fileUrl);
+            revision = revision || this.getRevisionFromUrl(fileUrl);
             fileId = this.getFileIdByUrl(fileUrl);
 
             // Check if the file is in queue (waiting to be downloaded).
@@ -1638,6 +1646,7 @@ export class CoreFilepoolProvider {
      * @param {boolean} [downloadUnknown] True to download file in WiFi if their size is unknown, false otherwise.
      *                                    Ignored if checkSize=false.
      * @param {any} [options] Extra options (isexternalfile, repositorytype).
+     * @param {number} [revision] File revision. If not defined, it will be calculated using the URL.
      * @return {Promise<string>} Resolved with the URL to use.
      * @description
      * This will return a URL pointing to the content of the requested URL.
@@ -1647,21 +1656,20 @@ export class CoreFilepoolProvider {
      */
     protected getFileUrlByUrl(siteId: string, fileUrl: string, component: string, componentId?: string | number,
             mode: string = 'url', timemodified: number = 0, checkSize: boolean = true, downloadUnknown?: boolean,
-            options: any = {}): Promise<string> {
+            options: any = {}, revision?: number): Promise<string> {
 
-        let fileId,
-            revision;
+        let fileId;
         const addToQueue = (fileUrl): void => {
                 // Add the file to queue if needed and ignore errors.
                 this.addToQueueIfNeeded(siteId, fileUrl, component, componentId, timemodified, checkSize,
-                    downloadUnknown, options).catch(() => {
+                    downloadUnknown, options, revision).catch(() => {
                         // Ignore errors.
                     });
             };
 
         return this.fixPluginfileURL(siteId, fileUrl).then((fixedUrl) => {
             fileUrl = fixedUrl;
-            revision = this.getRevisionFromUrl(fileUrl);
+            revision = revision || this.getRevisionFromUrl(fileUrl);
             fileId = this.getFileIdByUrl(fileUrl);
 
             return this.hasFileInPool(siteId, fileId).then((entry) => {
@@ -2083,15 +2091,16 @@ export class CoreFilepoolProvider {
      * @param {boolean} [downloadUnknown] True to download file in WiFi if their size is unknown, false otherwise.
      *                                    Ignored if checkSize=false.
      * @param {any} [options] Extra options (isexternalfile, repositorytype).
+     * @param {number} [revision] File revision. If not defined, it will be calculated using the URL.
      * @return {Promise<string>} Resolved with the URL to use.
      * @description
      * This will return a URL pointing to the content of the requested URL.
      * The URL returned is compatible to use with IMG tags.
      */
     getSrcByUrl(siteId: string, fileUrl: string, component: string, componentId?: string | number, timemodified: number = 0,
-            checkSize: boolean = true, downloadUnknown?: boolean, options: any = {}): Promise<string> {
+            checkSize: boolean = true, downloadUnknown?: boolean, options: any = {}, revision?: number): Promise<string> {
         return this.getFileUrlByUrl(siteId, fileUrl, component, componentId, 'src',
-            timemodified, checkSize, downloadUnknown, options);
+            timemodified, checkSize, downloadUnknown, options, revision);
     }
 
     /**
@@ -2125,15 +2134,16 @@ export class CoreFilepoolProvider {
      * @param {boolean} [downloadUnknown] True to download file in WiFi if their size is unknown, false otherwise.
      *                                    Ignored if checkSize=false.
      * @param {any} [options] Extra options (isexternalfile, repositorytype).
+     * @param {number} [revision] File revision. If not defined, it will be calculated using the URL.
      * @return {Promise<string>} Resolved with the URL to use.
      * @description
      * This will return a URL pointing to the content of the requested URL.
      * The URL returned is compatible to use with a local browser.
      */
     getUrlByUrl(siteId: string, fileUrl: string, component: string, componentId?: string | number, timemodified: number = 0,
-            checkSize: boolean = true, downloadUnknown?: boolean, options: any = {}): Promise<string> {
+            checkSize: boolean = true, downloadUnknown?: boolean, options: any = {}, revision?: number): Promise<string> {
         return this.getFileUrlByUrl(siteId, fileUrl, component, componentId, 'url',
-            timemodified, checkSize, downloadUnknown, options);
+            timemodified, checkSize, downloadUnknown, options, revision);
     }
 
     /**
@@ -2800,6 +2810,58 @@ export class CoreFilepoolProvider {
                     this.triggerPackageStatusChanged(siteId, status, component, componentId);
                 });
             });
+        });
+    }
+
+    /**
+     * Search for files in a CSS code and try to download them. Once downloaded, replace their URLs
+     * and store the result in the CSS file.
+     *
+     * @param {string} siteId  Site ID.
+     * @param {string} fileUrl CSS file URL.
+     * @param {string} cssCode CSS code.
+     * @param {string} [component] The component to link the file to.
+     * @param {string|number} [componentId] An ID to use in conjunction with the component.
+     * @param {number} [revision] Revision to use in all files. If not defined, it will be calculated using the URL of each file.
+     * @return {Promise<string>} Promise resolved with the CSS code.
+     */
+    treatCSSCode(siteId: string, fileUrl: string, cssCode: string, component?: string, componentId?: string | number,
+            revision?: number): Promise<string> {
+
+        const urls = this.domUtils.extractUrlsFromCSS(cssCode),
+            promises = [];
+        let filePath,
+            updated = false;
+
+        // Get the path of the CSS file.
+        promises.push(this.getFilePathByUrl(siteId, fileUrl).then((path) => {
+            filePath = path;
+        }));
+
+        urls.forEach((url) => {
+            // Download the file only if it's an online URL.
+            if (url.indexOf('http') == 0) {
+                promises.push(this.downloadUrl(siteId, url, false, component, componentId, 0, undefined, undefined, undefined,
+                        revision).then((fileUrl) => {
+
+                    if (fileUrl != url) {
+                        cssCode = cssCode.replace(new RegExp(this.textUtils.escapeForRegex(url), 'g'), fileUrl);
+                        updated = true;
+                    }
+                }).catch((error) => {
+                    // It shouldn't happen. Ignore errors.
+                    this.logger.warn('Error treating file ', url, error);
+                }));
+            }
+        });
+
+        return Promise.all(promises).then(() => {
+            // All files downloaded. Store the result if it has changed.
+            if (updated) {
+                return this.fileProvider.writeFile(filePath, cssCode);
+            }
+        }).then(() => {
+            return cssCode;
         });
     }
 
