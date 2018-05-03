@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.moodle.moodlemobile" version="3.4.2">
-  <name>Moodle Mobile</name>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.NRC.moodlemobile" version="3.4.2">
+  <name>NRC Demo App</name>
   <description>
-        Moodle Mobile official app
+       NRC Demo App
     </description>
   <author href="http://moodle.com" email="mobile@moodle.com">
-        Moodle Mobile team
+        Intact Media
     </author>
   <content src="index.html"/>
   <access origin="*"/>
