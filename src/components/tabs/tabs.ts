@@ -107,7 +107,23 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
         if (this.getIndex(tab) == -1) {
             this.tabs.push(tab);
             this.sortTabs();
+
+            if (this.initialized && this.tabs.length > 1 && this.tabBarHeight == 0) {
+                // Calculate the tabBarHeight again now that there is more than 1 tab and the bar will be seen.
+                // Use timeout to wait for the view to be rendered. 0 ms should be enough, use 50 to be sure.
+                setTimeout(() => {
+                    this.calculateTabBarHeight();
+                }, 50);
+            }
         }
+    }
+
+    /**
+     * Calculate the tab bar height.
+     */
+    calculateTabBarHeight(): void {
+        this.tabBarHeight = this.topTabsElement.offsetHeight;
+        this.originalTabsContainer.style.paddingBottom = this.tabBarHeight + 'px';
     }
 
     /**
@@ -161,8 +177,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
         }
 
         // Setup tab scrolling.
-        this.tabBarHeight = this.topTabsElement.offsetHeight;
-        this.originalTabsContainer.style.paddingBottom = this.tabBarHeight + 'px';
+        this.calculateTabBarHeight();
         if (this.content) {
             if (!this.parentScrollable) {
                 // Parent scroll element (if core-tabs is inside a ion-content).
@@ -184,6 +199,11 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
      * @param {any} e Scroll event.
      */
     showHideTabs(e: any): void {
+        if (!this.tabBarHeight) {
+            // We don't have the tab bar height, this means the tab bar isn't shown.
+            return;
+        }
+
         if (this.tabsShown && e.target.scrollTop - this.tabBarHeight > this.tabBarHeight) {
             this.tabBarElement.classList.add('tabs-hidden');
             this.tabsShown = false;
