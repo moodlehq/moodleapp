@@ -17,7 +17,9 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { AddonModLessonProvider } from './lesson';
+import * as moment from 'moment';
 
 /**
  * Helper service that provides some features for quiz.
@@ -28,7 +30,7 @@ export class AddonModLessonHelperProvider {
     protected div = document.createElement('div'); // A div element to search in HTML code.
 
     constructor(private domUtils: CoreDomUtilsProvider, private fb: FormBuilder, private translate: TranslateService,
-            private textUtils: CoreTextUtilsProvider) { }
+            private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider) { }
 
     /**
      * Given the HTML of next activity link, format it to extract the href and the text.
@@ -53,6 +55,33 @@ export class AddonModLessonHelperProvider {
             label: anchor.innerHTML,
             href: anchor.href
         };
+    }
+
+    /**
+     * Given the HTML of an answer from a content page, extract the data to render the answer.
+     *
+     * @param  {String} html Answer's HTML.
+     * @return {{buttonText: string, content: string}} Data to render the answer.
+     */
+    getContentPageAnswerDataFromHtml(html: string): {buttonText: string, content: string} {
+        const data = {
+                buttonText: '',
+                content: ''
+            };
+
+        // Search the input button.
+        this.div.innerHTML = html;
+        const button = <HTMLInputElement> this.div.querySelector('input[type="button"]');
+
+        if (button) {
+            // Extract the button content and remove it from the HTML.
+            data.buttonText = button.value;
+            button.remove();
+        }
+
+        data.content = this.div.innerHTML.trim();
+
+        return data;
     }
 
     /**
@@ -319,6 +348,103 @@ export class AddonModLessonHelperProvider {
         }
 
         return question;
+    }
+
+    /**
+     * Given the HTML of an answer from a question page, extract the data to render the answer.
+     *
+     * @param {string} html Answer's HTML.
+     * @return {any} Object with the data to render the answer. If the answer doesn't require any parsing, return a string with
+     *               the HTML.
+     */
+    getQuestionPageAnswerDataFromHtml(html: string): any {
+        const data: any = {};
+
+        this.div.innerHTML = html;
+
+        // Check if it has a checkbox.
+        let input = <HTMLInputElement> this.div.querySelector('input[type="checkbox"][name*="answer"]');
+
+        if (input) {
+            // Truefalse or multichoice.
+            data.isCheckbox = true;
+            data.checked = !!input.checked;
+            data.name = input.name;
+            data.highlight = !!this.div.querySelector('.highlight');
+
+            input.remove();
+            data.content = this.div.innerHTML.trim();
+
+            return data;
+        }
+
+        // Check if it has an input text or number.
+        input = <HTMLInputElement> this.div.querySelector('input[type="number"],input[type="text"]');
+        if (input) {
+            // Short answer or numeric.
+            data.isText = true;
+            data.value = input.value;
+
+            return data;
+        }
+
+        // Check if it has a select.
+        const select = <HTMLSelectElement> this.div.querySelector('select');
+        if (select && select.options) {
+            // Matching.
+            const selectedOption = select.options[select.selectedIndex];
+            data.isSelect = true;
+            data.id = select.id;
+            if (selectedOption) {
+                data.value = selectedOption.value;
+            } else {
+                data.value = '';
+            }
+
+            select.remove();
+            data.content = this.div.innerHTML.trim();
+
+            return data;
+        }
+
+        // The answer doesn't need any parsing, return the HTML as it is.
+        return html;
+    }
+
+    /**
+     * Get a label to identify a retake (lesson attempt).
+     *
+     * @param {any} retake Retake object.
+     * @param {boolean} [includeDuration] Whether to include the duration of the retake.
+     * @return {string} Retake label.
+     */
+    getRetakeLabel(retake: any, includeDuration?: boolean): string {
+        const data = {
+                retake: retake.try + 1,
+                grade: '',
+                timestart: '',
+                duration: ''
+            },
+            hasGrade = retake.grade != null;
+
+        if (hasGrade || retake.end) {
+            // Retake finished with or without grade (if the lesson only has content pages, it has no grade).
+            if (hasGrade) {
+                data.grade = this.translate.instant('core.percentagenumber', {$a: retake.grade});
+            }
+            data.timestart = moment(retake.timestart * 1000).format('LLL');
+            if (includeDuration) {
+                data.duration = this.timeUtils.formatTime(retake.timeend - retake.timestart);
+            }
+        } else {
+            // The user has not completed the retake.
+            data.grade = this.translate.instant('addon.mod_lesson.notcompleted');
+            if (retake.timestart) {
+                data.timestart = moment(retake.timestart * 1000).format('LLL');
+            }
+        }
+
+        return this.translate.instant('addon.mod_lesson.retakelabel' + (includeDuration ? 'full' : 'short'), data);
     }
 
     /**

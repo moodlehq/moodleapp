@@ -12,7 +12,7 @@
                 <core-format-text [component]="component" [componentId]="componentId" [text]="option.text"></core-format-text>
                 <p *ngIf="option.feedback" class="core-question-feedback-container"><core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback"></core-format-text></p>
             </ion-label>
-            <ion-checkbox [name]="option.name" [(ngModel)]="option.checked" [disabled]="option.disabled" item-end></ion-checkbox>
+            <ion-checkbox [attr.name]="option.name" [(ngModel)]="option.checked" [disabled]="option.disabled" item-end></ion-checkbox>
 
             <!-- ion-checkbox doesn't use an input. Create a hidden input to hold the value. -->
             <input item-content type="hidden" [ngModel]="option.checked" [attr.name]="option.name">
