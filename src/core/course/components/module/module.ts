@@ -139,7 +139,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         this.spinner = true;
 
         // Get download size to ask for confirm if it's high.
-        this.prefetchHandler.getDownloadSize(this.module, this.courseId).then((size) => {
+        this.prefetchHandler.getDownloadSize(this.module, this.courseId, true).then((size) => {
             return this.courseHelper.prefetchModule(this.prefetchHandler, this.module, size, this.courseId, refresh);
         }).catch((error) => {
             // Error, hide spinner.

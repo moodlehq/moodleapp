@@ -462,7 +462,9 @@ export class AddonModLessonProvider {
             return;
         }
 
-        if (typeof data.answer == 'object') {
+        if (typeof data['answer[text]'] != 'undefined') {
+            studentAnswer = data['answer[text]'];
+        } else if (typeof data.answer == 'object') {
             studentAnswer = data.answer.text;
         } else {
             studentAnswer = data.answer;
