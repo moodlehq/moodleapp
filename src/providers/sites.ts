@@ -975,6 +975,8 @@ export class CoreSitesProvider {
             this.logger.debug(`Restore session in site ${siteId}`);
 
             return this.loadSite(siteId);
+        }).catch(() => {
+            // No current session.
         });
     }
 

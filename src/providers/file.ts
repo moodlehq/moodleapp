@@ -918,7 +918,9 @@ export class CoreFileProvider {
      * @return {Promise<any>} Promise resolved when done.
      */
     clearTmpFolder(): Promise<any> {
-        return this.removeDir(CoreFileProvider.TMPFOLDER);
+        return this.removeDir(CoreFileProvider.TMPFOLDER).catch(() => {
+            // Ignore errors because the folder might not exist.
+        });
     }
 
     /**

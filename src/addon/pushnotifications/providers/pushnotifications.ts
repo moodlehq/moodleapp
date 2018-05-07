@@ -264,6 +264,11 @@ export class AddonPushNotificationsProvider {
                     return previous + parseInt(counter, 10);
                 }, 0);
 
+                if (!this.appProvider.isDesktop() && !this.appProvider.isMobile()) {
+                    // Browser doesn't have an app badge, stop.
+                    return total;
+                }
+
                 // Set the app badge.
                 return this.badge.set(total).then(() => {
                     return total;

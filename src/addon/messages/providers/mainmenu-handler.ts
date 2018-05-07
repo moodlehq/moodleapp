@@ -129,7 +129,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
      */
     execute(siteId?: string): Promise<any> {
         if (this.sitesProvider.isCurrentSite(siteId)) {
-            this.eventsProvider.trigger(AddonMessagesProvider.READ_CRON_EVENT, undefined, siteId);
+            this.eventsProvider.trigger(AddonMessagesProvider.READ_CRON_EVENT, {}, siteId);
         }
 
         if (this.appProvider.isDesktop() && this.localNotificationsProvider.isAvailable()) {

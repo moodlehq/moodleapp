@@ -133,24 +133,26 @@ export class AddonRemoteThemesProvider {
      * Get remote styles of a certain site.
      *
      * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<{fileUrl: string, styles: string}>} Promise resolved with the styles and the URL of the CSS file.
+     * @return {Promise<{fileUrl: string, styles: string}>} Promise resolved with the styles and the URL of the CSS file,
+     *                                                      resolved with undefined if no styles to load.
      */
     get(siteId?: string): Promise<{fileUrl: string, styles: string}> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        let fileUrl;
-
         return this.sitesProvider.getSite(siteId).then((site) => {
             const infos = site.getInfo();
+            let promise,
+                fileUrl;
+
             if (infos && infos.mobilecssurl) {
                 fileUrl = infos.mobilecssurl;
 
                 if (this.fileProvider.isAvailable()) {
                     // The file system is available. Download the file and remove old CSS files if needed.
-                    return this.downloadFileAndRemoveOld(siteId, fileUrl);
+                    promise = this.downloadFileAndRemoveOld(siteId, fileUrl);
                 } else {
                     // Return the online URL.
-                    return fileUrl;
+                    promise = Promise.resolve(fileUrl);
                 }
             } else {
                 if (infos && infos.mobilecssurl === '') {
@@ -158,20 +160,22 @@ export class AddonRemoteThemesProvider {
                     this.filepoolProvider.removeFilesByComponent(siteId, AddonRemoteThemesProvider.COMPONENT, 1);
                 }
 
-                return Promise.reject(null);
+                return;
             }
-        }).then((url) => {
-            this.logger.debug('Loading styles from: ', url);
 
-            // Get the CSS content using HTTP because we will treat the styles before saving them in the file.
-            return this.http.get(url).toPromise();
-        }).then((response): any => {
-            const text = response && response.text();
-            if (typeof text == 'string') {
-                return {fileUrl: fileUrl, styles: this.get35Styles(text)};
-            } else {
-                return Promise.reject(null);
-            }
+            return promise.then((url) => {
+                this.logger.debug('Loading styles from: ', url);
+
+                // Get the CSS content using HTTP because we will treat the styles before saving them in the file.
+                return this.http.get(url).toPromise();
+            }).then((response): any => {
+                const text = response && response.text();
+                if (typeof text == 'string') {
+                    return {fileUrl: fileUrl, styles: this.get35Styles(text)};
+                } else {
+                    return Promise.reject(null);
+                }
+            });
         });
     }
 
@@ -208,6 +212,11 @@ export class AddonRemoteThemesProvider {
             this.disableElement(this.stylesEls[siteId].element, disabled);
 
             return this.get(siteId).then((data) => {
+                if (typeof data == 'undefined') {
+                    // Nothing to load.
+                    return;
+                }
+
                 const hash = <string> Md5.hashAsciiStr(data.styles);
 
                 // Update the styles only if they have changed.
@@ -271,6 +280,8 @@ export class AddonRemoteThemesProvider {
     preloadCurrentSite(): Promise<any> {
         return this.sitesProvider.getStoredCurrentSiteId().then((siteId) => {
             return this.addSite(siteId);
+        }, () => {
+            // No current site stored.
         });
     }
 

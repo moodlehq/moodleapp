@@ -58,11 +58,12 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
 
     /**
      * Get all messages pending to be sent in the site.
-     * @param  {boolean} [onlyDeviceOffline=false] True to only sync discussions that failed because device was offline,
-     * @param  {string} [siteId]                   Site ID to sync. If not defined, sync all sites.
-     * @param {Promise<any>}     Promise resolved if sync is successful, rejected if sync fails.
+     *
+     * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} [onlyDeviceOffline=false] True to only sync discussions that failed because device was offline.
+     * @param {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected syncAllDiscussionsFunc(onlyDeviceOffline: boolean = false, siteId?: string): Promise<any> {
+    protected syncAllDiscussionsFunc(siteId?: string, onlyDeviceOffline: boolean = false): Promise<any> {
         const promise = onlyDeviceOffline ?
             this.messagesOffline.getAllDeviceOfflineMessages(siteId) :
             this.messagesOffline.getAllMessages(siteId);
