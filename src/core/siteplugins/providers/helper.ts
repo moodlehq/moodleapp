@@ -34,6 +34,7 @@ import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delega
 import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
 import { CoreUserDelegate } from '@core/user/providers/user-delegate';
 import { CoreUserProfileFieldDelegate } from '@core/user/providers/user-profile-field-delegate';
+import { CoreSettingsDelegate } from '@core/settings/providers/delegate';
 import { AddonMessageOutputDelegate } from '@addon/messageoutput/providers/delegate';
 
 // Handler classes.
@@ -44,6 +45,7 @@ import { CoreSitePluginsModulePrefetchHandler } from '../classes/module-prefetch
 import { CoreSitePluginsMainMenuHandler } from '../classes/main-menu-handler';
 import { CoreSitePluginsUserProfileHandler } from '../classes/user-handler';
 import { CoreSitePluginsUserProfileFieldHandler } from '../classes/user-profile-field-handler';
+import { CoreSitePluginsSettingsHandler } from '../classes/settings-handler';
 import { CoreSitePluginsMessageOutputHandler } from '../classes/message-output-handler';
 
 /**
@@ -67,7 +69,7 @@ export class CoreSitePluginsHelperProvider {
             private courseOptionsDelegate: CoreCourseOptionsDelegate, eventsProvider: CoreEventsProvider,
             private courseFormatDelegate: CoreCourseFormatDelegate, private profileFieldDelegate: CoreUserProfileFieldDelegate,
             private textUtils: CoreTextUtilsProvider, private filepoolProvider: CoreFilepoolProvider,
-            private messageOutputDelegate: AddonMessageOutputDelegate) {
+            private settingsDelegate: CoreSettingsDelegate, private messageOutputDelegate: AddonMessageOutputDelegate) {
         this.logger = logger.getInstance('CoreSitePluginsHelperProvider');
 
         // Fetch the plugins on login.
@@ -436,7 +438,11 @@ export class CoreSitePluginsHelperProvider {
                     promise = Promise.resolve(this.registerUserProfileFieldHandler(plugin, handlerName, handlerSchema, result));
                     break;
 
-                case 'AddonMessageOutputHandler':
+                case 'CoreSettingsDelegate':
+                    promise = Promise.resolve(this.registerSettingsHandler(plugin, handlerName, handlerSchema, result));
+                    break;
+
+                case 'AddonMessageOutputDelegate':
                     promise = Promise.resolve(this.registerMessageOutputHandler(plugin, handlerName, handlerSchema, result));
                     break;
 
@@ -540,7 +546,7 @@ export class CoreSitePluginsHelperProvider {
     }
 
     /**
-     * Given a handler in an plugin, register it in the main menu delegate.
+     * Given a handler in an plugin, register it in the message output delegate.
      *
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
@@ -601,6 +607,35 @@ export class CoreSitePluginsHelperProvider {
         }
 
         return modName;
+    }
+
+    /**
+     * Given a handler in an plugin, register it in the settings delegate.
+     *
+     * @param {any} plugin Data of the plugin.
+     * @param {string} handlerName Name of the handler in the plugin.
+     * @param {any} handlerSchema Data about the handler.
+     * @param {any} initResult Result of the init WS call.
+     * @return {string} A string to identify the handler.
+     */
+    protected registerSettingsHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any): string {
+        if (!handlerSchema.displaydata) {
+            // Required data not provided, stop.
+            this.logger.warn('Ignore site plugin because it doesn\'t provide displaydata', plugin, handlerSchema);
+
+            return;
+        }
+
+        this.logger.debug('Register site plugin in settings delegate:', plugin, handlerSchema, initResult);
+
+        // Create and register the handler.
+        const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
+            prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title);
+
+        this.settingsDelegate.registerHandler(
+                new CoreSitePluginsSettingsHandler(uniqueName, prefixedTitle, plugin, handlerSchema, initResult));
+
+        return uniqueName;
     }
 
     /**
