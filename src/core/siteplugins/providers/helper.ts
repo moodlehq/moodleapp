@@ -34,6 +34,7 @@ import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delega
 import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
 import { CoreUserDelegate } from '@core/user/providers/user-delegate';
 import { CoreUserProfileFieldDelegate } from '@core/user/providers/user-profile-field-delegate';
+import { AddonMessageOutputDelegate } from '@addon/messageoutput/providers/delegate';
 
 // Handler classes.
 import { CoreSitePluginsCourseFormatHandler } from '../classes/course-format-handler';
@@ -43,6 +44,7 @@ import { CoreSitePluginsModulePrefetchHandler } from '../classes/module-prefetch
 import { CoreSitePluginsMainMenuHandler } from '../classes/main-menu-handler';
 import { CoreSitePluginsUserProfileHandler } from '../classes/user-handler';
 import { CoreSitePluginsUserProfileFieldHandler } from '../classes/user-profile-field-handler';
+import { CoreSitePluginsMessageOutputHandler } from '../classes/message-output-handler';
 
 /**
  * Helper service to provide functionalities regarding site plugins. It basically has the features to load and register site
@@ -64,7 +66,8 @@ export class CoreSitePluginsHelperProvider {
             private compileProvider: CoreCompileProvider, private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider,
             private courseOptionsDelegate: CoreCourseOptionsDelegate, eventsProvider: CoreEventsProvider,
             private courseFormatDelegate: CoreCourseFormatDelegate, private profileFieldDelegate: CoreUserProfileFieldDelegate,
-            private textUtils: CoreTextUtilsProvider, private filepoolProvider: CoreFilepoolProvider) {
+            private textUtils: CoreTextUtilsProvider, private filepoolProvider: CoreFilepoolProvider,
+            private messageOutputDelegate: AddonMessageOutputDelegate) {
         this.logger = logger.getInstance('CoreSitePluginsHelperProvider');
 
         // Fetch the plugins on login.
@@ -433,6 +436,10 @@ export class CoreSitePluginsHelperProvider {
                     promise = Promise.resolve(this.registerUserProfileFieldHandler(plugin, handlerName, handlerSchema, result));
                     break;
 
+                case 'AddonMessageOutputHandler':
+                    promise = Promise.resolve(this.registerMessageOutputHandler(plugin, handlerName, handlerSchema, result));
+                    break;
+
                 default:
                     // Nothing to do.
                     promise = Promise.resolve();
@@ -528,6 +535,36 @@ export class CoreSitePluginsHelperProvider {
 
         this.mainMenuDelegate.registerHandler(
                 new CoreSitePluginsMainMenuHandler(uniqueName, prefixedTitle, plugin, handlerSchema, initResult));
+
+        return uniqueName;
+    }
+
+    /**
+     * Given a handler in an plugin, register it in the main menu delegate.
+     *
+     * @param {any} plugin Data of the plugin.
+     * @param {string} handlerName Name of the handler in the plugin.
+     * @param {any} handlerSchema Data about the handler.
+     * @param {any} initResult Result of the init WS call.
+     * @return {string} A string to identify the handler.
+     */
+    protected registerMessageOutputHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any): string {
+        if (!handlerSchema.displaydata) {
+            // Required data not provided, stop.
+            this.logger.warn('Ignore site plugin because it doesn\'t provide displaydata', plugin, handlerSchema);
+
+            return;
+        }
+
+        this.logger.debug('Register site plugin in message output delegate:', plugin, handlerSchema, initResult);
+
+        // Create and register the handler.
+        const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
+            prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title),
+            processorName = plugin.component.replace('message_', '');
+
+        this.messageOutputDelegate.registerHandler(new CoreSitePluginsMessageOutputHandler(uniqueName, processorName,
+                prefixedTitle, plugin, handlerSchema, initResult));
 
         return uniqueName;
     }
