@@ -18,7 +18,7 @@ import { ModalController } from 'ionic-angular';
 /**
  * Base class for component to render a feedback plugin.
  */
-export class AddonModAssignFeedbackPluginComponent {
+export class AddonModAssignFeedbackPluginComponentBase {
     @Input() assign: any; // The assignment.
     @Input() submission: any; // The submission.
     @Input() plugin: any; // The plugin object.

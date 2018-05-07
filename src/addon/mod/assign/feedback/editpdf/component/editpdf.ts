@@ -15,7 +15,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from 'ionic-angular';
 import { AddonModAssignProvider } from '../../../providers/assign';
-import { AddonModAssignFeedbackPluginComponent } from '../../../classes/feedback-plugin-component';
+import { AddonModAssignFeedbackPluginComponentBase } from '../../../classes/feedback-plugin-component';
 
 /**
  * Component to render a edit pdf feedback plugin.
@@ -24,7 +24,7 @@ import { AddonModAssignFeedbackPluginComponent } from '../../../classes/feedback
     selector: 'addon-mod-assign-feedback-edit-pdf',
     templateUrl: 'editpdf.html'
 })
-export class AddonModAssignFeedbackEditPdfComponent extends AddonModAssignFeedbackPluginComponent implements OnInit {
+export class AddonModAssignFeedbackEditPdfComponent extends AddonModAssignFeedbackPluginComponentBase implements OnInit {
 
     component = AddonModAssignProvider.COMPONENT;
     files: any[];
