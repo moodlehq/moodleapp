@@ -42,7 +42,7 @@ import { BehaviorSubject } from 'rxjs';
 export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
     @Input() text: string; // The HTML text to display.
     @Input() javascript: string; // The Javascript to execute in the component.
-    @Input() jsData; // Data to pass to the fake component.
+    @Input() jsData: any; // Data to pass to the fake component.
 
     // Get the container where to put the content.
     @ViewChild('dynamicComponent', { read: ViewContainerRef }) container: ViewContainerRef;
@@ -98,12 +98,12 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
                 // If there is some javascript to run, prepare the instance.
                 if (compileInstance.javascript) {
                     compileInstance.compileProvider.injectLibraries(this);
-
-                    // Add some more components and classes.
-                    this['ChangeDetectorRef'] = compileInstance.cdr;
-                    this['NavController'] = compileInstance.navCtrl;
-                    this['componentContainer'] = compileInstance.element;
                 }
+
+                // Always add these elements, they could be needed on component init (componentObservable).
+                this['ChangeDetectorRef'] = compileInstance.cdr;
+                this['NavController'] = compileInstance.navCtrl;
+                this['componentContainer'] = compileInstance.element;
 
                 // Add the data passed to the component.
                 for (const name in compileInstance.jsData) {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 /**
  * Component to render a "seen" hidden input for informationitem question behaviour.
@@ -27,8 +27,8 @@ export class AddonQbehaviourInformationItemComponent {
     @Input() componentId: number; // ID of the component the question belongs to.
     @Input() attemptId: number; // Attempt ID.
     @Input() offlineEnabled?: boolean | string; // Whether the question can be answered in offline.
-    @Input() buttonClicked: EventEmitter<any>; // Should emit an event when a behaviour button is clicked.
-    @Input() onAbort: EventEmitter<void>; // Should emit an event if the question should be aborted.
+    @Output() buttonClicked: EventEmitter<any>; // Should emit an event when a behaviour button is clicked.
+    @Output() onAbort: EventEmitter<void>; // Should emit an event if the question should be aborted.
 
     constructor() {
         // Nothing to do.

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Input, EventEmitter, Injector } from '@angular/core';
+import { Input, Output, EventEmitter, Injector } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -27,8 +27,8 @@ export class CoreQuestionBaseComponent {
     @Input() componentId: number; // ID of the component the question belongs to.
     @Input() attemptId: number; // Attempt ID.
     @Input() offlineEnabled?: boolean | string; // Whether the question can be answered in offline.
-    @Input() buttonClicked: EventEmitter<any>; // Should emit an event when a behaviour button is clicked.
-    @Input() onAbort: EventEmitter<void>; // Should emit an event if the question should be aborted.
+    @Output() buttonClicked: EventEmitter<any>; // Should emit an event when a behaviour button is clicked.
+    @Output() onAbort: EventEmitter<void>; // Should emit an event if the question should be aborted.
 
     protected logger;
     protected questionHelper: CoreQuestionHelperProvider;
