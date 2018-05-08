@@ -18,15 +18,19 @@ import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
+import { CorePipesModule } from '@pipes/pipes.module';
 import { CoreCourseComponentsModule } from '@core/course/components/components.module';
 import { AddonModDataIndexComponent } from './index/index';
 import { AddonModDataFieldPluginComponent } from './field-plugin/field-plugin';
+import { AddonModDataActionComponent } from './action/action';
 import { CoreCompileHtmlComponentModule } from '@core/compile/components/compile-html/compile-html.module';
+import { CoreCommentsComponentsModule } from '@core/comments/components/components.module';
 
 @NgModule({
     declarations: [
         AddonModDataIndexComponent,
-        AddonModDataFieldPluginComponent
+        AddonModDataFieldPluginComponent,
+        AddonModDataActionComponent
     ],
     imports: [
         CommonModule,
@@ -34,14 +38,17 @@ import { CoreCompileHtmlComponentModule } from '@core/compile/components/compile
         TranslateModule.forChild(),
         CoreComponentsModule,
         CoreDirectivesModule,
+        CorePipesModule,
         CoreCourseComponentsModule,
-        CoreCompileHtmlComponentModule
+        CoreCompileHtmlComponentModule,
+        CoreCommentsComponentsModule
     ],
     providers: [
     ],
     exports: [
         AddonModDataIndexComponent,
-        AddonModDataFieldPluginComponent
+        AddonModDataFieldPluginComponent,
+        AddonModDataActionComponent
     ],
     entryComponents: [
         AddonModDataIndexComponent

@@ -162,7 +162,7 @@ export class AddonModDataHelperProvider {
             template = template.replace(replace, render);
         });
 
-        /*for (const action in actions) {
+        for (const action in actions) {
             replace = new RegExp('##' + action + '##', 'gi');
             // Is enabled?
             if (actions[action]) {
@@ -172,14 +172,14 @@ export class AddonModDataHelperProvider {
                 } else if (action == 'approvalstatus') {
                     render = this.translate.instant('addon.mod_data.' + (entry.approved ? 'approved' : 'notapproved'));
                 } else {
-                    render = '<addon-mod-data-action action="' + action + '" entry="entries[' + entry.id +
-                                ']" mode="' + mode + '" database="data"></addon-mod-data-action>';
+                    render = '<addon-mod-data-action action="' + action + '" [entry]="entries[' + entry.id +
+                                ']" mode="' + mode + '" [database]="data"></addon-mod-data-action>';
                 }
                 template = template.replace(replace, render);
             } else {
                 template = template.replace(replace, '');
             }
-        }*/
+        }
 
         return template;
     }

@@ -17,7 +17,7 @@ import { AddonModDataFieldsDelegate } from '../../providers/fields-delegate';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 
 /**
- * Component that displays an assignment feedback plugin.
+ * Component that displays a database field plugin.
  */
 @Component({
     selector: 'addon-mod-data-field-plugin',

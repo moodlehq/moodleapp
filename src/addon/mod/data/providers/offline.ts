@@ -132,6 +132,21 @@ export class AddonModDataOfflineProvider {
     }
 
     /**
+     * Get an stored entry data.
+     *
+     * @param  {number} dataId      Database ID.
+     * @param  {number} entryId     Database entry Id.
+     * @param  {string} action      Action to be done
+     * @param  {string} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise<any>}       Promise resolved with entry.
+     */
+    getEntry(dataId: number, entryId: number, action: string, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.getDb().getRecord(this.SURVEY_TABLE, {dataid: dataId, entryid: entryId, action: action});
+        });
+    }
+
+    /**
      * Get an all stored entry actions data.
      *
      * @param  {number} dataId      Database ID.
