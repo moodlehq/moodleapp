@@ -1,16 +1,17 @@
-<ion-list *ngIf="mode != 'show'">
+<span *ngIf="mode != 'show'" [formGroup]="form">
     <span *ngIf="mode == 'edit'" [core-mark-required]="field.required"></span>
-    <ion-item *ngFor="let option of options" [formGroup]="form">
-        <ion-label>{{ option }}</ion-label>
-        <ion-checkbox item-end [formControlName]="'f_'+field.id" [(ngModel)]="values[option]">
-        </ion-checkbox>
-        <core-input-errors *ngIf="error && mode == 'edit'" [control]="form.controls['f_'+field.id]" [errorMessages]="errors"></core-input-errors>
-    </ion-item>
+    <core-input-errors *ngIf="error && mode == 'edit'" [control]="form.controls['f_'+field.id]" [errorMessages]="error"></core-input-errors>
 
-    <ion-item *ngIf="mode == 'search'" [formGroup]="form">
+    <ion-select [formControlName]="'f_'+field.id" multiple="true" [placeholder]="'addon.mod_data.menuchoose' | translate" core-input-errors [selectOptions]="{title: field.name}">
+        <ion-option *ngFor="let option of options" [value]="option.value">{{option.key}}</ion-option>
+    </ion-select>
+
+
+    <ion-item *ngIf="mode == 'search'">
         <ion-label>{{ 'addon.mod_data.selectedrequired' | translate }}</ion-label>
-        <ion-checkbox item-end [formControlName]="'f_'+field.id+'_allreq'" [(ngModel)]="values['f_'+field.id+'_allreq']">
+        <ion-checkbox item-end [formControlName]="'f_'+field.id+'_allreq'" [(ngModel)]="search['f_'+field.id+'_allreq']">
         </ion-checkbox>
     </ion-item>
-</ion-list>
+</span>
+
 <core-format-text *ngIf="mode == 'show' && value && value.content" [text]="value.content"></core-format-text>

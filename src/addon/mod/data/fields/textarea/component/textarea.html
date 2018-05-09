@@ -1,10 +1,13 @@
-<span *ngIf="mode == 'edit'" [core-mark-required]="field.required"></span>
+<span *ngIf="mode != 'show'" [formGroup]="form">
 
-<core-input-errors *ngIf="error && mode == 'edit'" [control]="form.controls['f_'+field.id]" [errorMessages]="error"></core-input-errors>
+    <span *ngIf="mode == 'edit'" [core-mark-required]="field.required"></span>
 
-<input *ngIf="mode == 'search'" type="text" [placeholder]="field.name" [name]="'f_'+field.id">
+    <core-input-errors *ngIf="error && mode == 'edit'" [control]="form.controls['f_'+field.id]" [errorMessages]="error"></core-input-errors>
 
-<core-rich-text-editor *ngIf="mode == 'edit'" item-content [control]="form.controls['f_'+field.id]" [placeholder]="field.name" [formControlName]="'f_'+field.id"></core-rich-text-editor>
-<!-- @todo: [component]="component" [componentId]="componentId" -->
+    <ion-input *ngIf="mode == 'search'" type="text" [placeholder]="field.name" [formControlName]="'f_'+field.id"></ion-input>
+
+    <core-rich-text-editor *ngIf="mode == 'edit'" item-content [control]="form.controls['f_'+field.id]" [placeholder]="field.name" [formControlName]="'f_'+field.id"></core-rich-text-editor>
+    <!-- @todo: [component]="component" [componentId]="componentId" -->
+</span>
 
 <core-format-text *ngIf="mode == 'show' && value" [text]="value.content" [component]="component" [componentId]="componentId"></core-format-text>

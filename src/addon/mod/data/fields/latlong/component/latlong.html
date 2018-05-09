@@ -1,17 +1,19 @@
-<ion-input *ngIf="mode == 'search'" type="text" [placeholder]="field.name" [formControlName]="'f_'+field.id"></ion-input>
+<span *ngIf="mode != 'show'" [formGroup]="form">
+    <ion-input *ngIf="mode == 'search'" type="text" [placeholder]="field.name" [formControlName]="'f_'+field.id"></ion-input>
 
-<span *ngIf="mode == 'edit'" [core-mark-required]="field.required"></span>
+    <span *ngIf="mode == 'edit'" [core-mark-required]="field.required"></span>
 
-<core-input-errors *ngIf="error && mode == 'edit'" [control]="form.controls['f_'+field.id]" [errorMessages]="errors"></core-input-errors>
+    <core-input-errors *ngIf="error && mode == 'edit'" [control]="form.controls['f_'+field.id]" [errorMessages]="errors"></core-input-errors>
 
-<ion-item *ngIf="mode == 'edit'" [formGroup]="form">
-    <ion-input type="text" [formControlName]="'f_'+field.id+'_0'" [(ngModel)]="north" maxlength="10" core-input-errors></ion-input>
-    <span class="placeholder-icon" item-right>°N</span>
-</ion-item>
-<ion-item *ngIf="mode == 'edit'" [formGroup]="form">
-    <ion-input type="text" [formControlName]="'f_'+field.id+'_1'" [(ngModel)]="east" maxlength="10" core-input-errors></ion-input>
-    <span class="placeholder-icon" item-right>°E</span>
-</ion-item>
+    <ion-item *ngIf="mode == 'edit'" [formGroup]="form">
+        <ion-input type="text" [formControlName]="'f_'+field.id+'_0'" [(ngModel)]="north" maxlength="10" core-input-errors></ion-input>
+        <span class="placeholder-icon" item-right>°N</span>
+    </ion-item>
+    <ion-item *ngIf="mode == 'edit'" [formGroup]="form">
+        <ion-input type="text" [formControlName]="'f_'+field.id+'_1'" [(ngModel)]="east" maxlength="10" core-input-errors></ion-input>
+        <span class="placeholder-icon" item-right>°E</span>
+    </ion-item>
+</span>
 
 
 <span *ngIf="mode == 'show' && value">

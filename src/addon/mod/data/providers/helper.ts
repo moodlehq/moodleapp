@@ -93,46 +93,6 @@ export class AddonModDataHelperProvider {
     }
 
     /**
-     * Displays Advanced Search Fields.
-     *
-     * @param {string} template Template HMTL.
-     * @param {any[]}  fields   Fields that defines every content in the entry.
-     * @return {string}         Generated HTML.
-     */
-    displayAdvancedSearchFields(template: string, fields: any[]): string {
-        if (!template) {
-            return '';
-        }
-
-        let replace;
-
-        // Replace the fields found on template.
-        fields.forEach((field) => {
-            replace = '[[' + field.name + ']]';
-            replace = replace.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
-            replace = new RegExp(replace, 'gi');
-
-            // Replace field by a generic directive.
-            const render = '<addon-mod-data-field-plugin mode="search" [field]="fields[' + field.id +
-                ']"></addon-mod-data-field-plugin>';
-            template = template.replace(replace, render);
-        });
-
-        // Not pluginable other search elements.
-        // Replace firstname field by the text input.
-        replace = new RegExp('##fn##', 'gi');
-        let render = '<input type="text" name="firstname" placeholder="{{ \'addon.mod_data.authorfirstname\' | translate }}">';
-        template = template.replace(replace, render);
-
-        // Replace lastname field by the text input.
-        replace = new RegExp('##ln##', 'gi');
-        render = '<input type="text" name="lastname" placeholder="{{ \'addon.mod_data.authorlastname\' | translate }}">';
-        template = template.replace(replace, render);
-
-        return template;
-    }
-
-    /**
      * Displays fields for being shown.
      *
      * @param {string} template   Template HMTL.
@@ -213,55 +173,6 @@ export class AddonModDataHelperProvider {
             delcheck: false,
             export: false
         };
-    }
-
-    /**
-     * Retrieve the entered data in search in a form.
-     * We don't use ng-model because it doesn't detect changes done by JavaScript.
-     *
-     * @param  {any}   form     Form (DOM element).
-     * @param  {any[]} fields   Fields that defines every content in the entry.
-     * @return {any[]}          Array with the answers.
-     */
-    getSearchDataFromForm(form: any, fields: any[]): any[] {
-        if (!form || !form.elements) {
-            return [];
-        }
-
-        const searchedData = this.domUtils.getDataFromForm(form);
-
-        // Filter and translate fields to each field plugin.
-        const advancedSearch = [];
-        fields.forEach((field) => {
-            const fieldData = this.fieldsDelegate.getFieldSearchData(field, searchedData);
-
-            if (fieldData) {
-                fieldData.forEach((data) => {
-                    data.value = JSON.stringify(data.value);
-                    // WS wants values in Json format.
-                    advancedSearch.push(data);
-                });
-            }
-        });
-
-        // Not pluginable other search elements.
-        if (searchedData['firstname']) {
-            // WS wants values in Json format.
-            advancedSearch.push({
-                name: 'firstname',
-                value: JSON.stringify(searchedData['firstname'])
-            });
-        }
-
-        if (searchedData['lastname']) {
-            // WS wants values in Json format.
-            advancedSearch.push({
-                name: 'lastname',
-                value: JSON.stringify(searchedData['lastname'])
-            });
-        }
-
-        return advancedSearch;
     }
 
     /**

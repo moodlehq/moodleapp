@@ -11,10 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { Component, OnInit, ElementRef } from '@angular/core';
-import { FormBuilder, FormControl } from '@angular/forms';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
 
 /**
@@ -26,14 +25,13 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
 })
 export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginComponent implements OnInit {
 
-    control: FormControl;
     values = {};
     enable: boolean;
     val: any;
+    format: string;
 
-    constructor(protected fb: FormBuilder, protected domUtils: CoreDomUtilsProvider, protected textUtils: CoreTextUtilsProvider,
-            element: ElementRef) {
-        super();
+    constructor(protected fb: FormBuilder, protected timeUtils: CoreTimeUtilsProvider) {
+        super(fb);
     }
 
     /**
@@ -49,15 +47,23 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginCompo
             return;
         }
 
-        if (this.mode == 'edit' && this.value) {
-            this.enable = true;
-        } else {
+        if (!this.value) {
             this.value = {
                 content: Math.floor(Date.now() / 1000)
             };
-            this.enable = false;
         }
 
         this.val = new Date(this.value.content * 1000);
+
+        this.format = this.timeUtils.getLocalizedDateFormat('LL');
+
+        if (this.mode == 'search') {
+            this.addControl('f_' + this.field.id + '_z');
+            this.search['f_' + this.field.id] = this.search['f_' + this.field.id + '_y'] ? new Date(
+                this.search['f_' + this.field.id + '_y'] + '-' + this.search['f_' + this.field.id + '_m'] + '-' +
+                this.search['f_' + this.field.id + '_d']) : this.val;
+        }
+
+        this.addControl('f_' + this.field.id, this.val);
     }
 }

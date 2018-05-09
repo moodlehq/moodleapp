@@ -1,7 +1,9 @@
-<span *ngIf="mode == 'edit'" [core-mark-required]="field.required"></span>
+<span *ngIf="mode != 'show'" [formGroup]="form">
+    <span *ngIf="mode == 'edit'" [core-mark-required]="field.required"></span>
 
-<core-input-errors *ngIf="error && mode == 'edit'" [control]="form.controls['f_'+field.id]" [errorMessages]="error"></core-input-errors>
+    <core-input-errors *ngIf="error && mode == 'edit'" [control]="form.controls['f_'+field.id]" [errorMessages]="error"></core-input-errors>
 
-<ion-input *ngIf="mode != 'show'" type="text" [formControlName]="'f_'+field.id" [placeholder]="field.name" [(ngModel)]="val"></ion-input>
+    <ion-input type="text" [formControlName]="'f_'+field.id" [placeholder]="field.name" [(ngModel)]="val"></ion-input>
+</span>
 
 <core-format-text *ngIf="mode == 'show' && value && value.content" [text]="value.content"></core-format-text>

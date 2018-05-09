@@ -1,28 +1,59 @@
-core-tabs {
-    .core-tabs-bar {
-        left: 0;
-        position: relative;
-        z-index: $z-index-toolbar;
-        display: flex;
-        width: 100%;
+.core-tabs-bar {
+    left: 0;
+    position: relative;
+    z-index: $z-index-toolbar;
+    display: flex;
+    width: 100%;
+    background: $core-top-tabs-background;
+
+    > a {
+        @extend .tab-button;
+
         background: $core-top-tabs-background;
+        color: $core-top-tabs-color !important;
+        font-size: 1.6rem;
+        border: 0;
 
-        > a {
-            @extend .tab-button;
-
-            background: $core-top-tabs-background;
-            color: $core-top-tabs-color !important;
-            font-size: 1.6rem;
-            border: 0;
-
-            &[aria-selected=true] {
-                color: $core-top-tabs-color-active !important;
-                border: 0 !important;
-                border-bottom: 2px solid $core-top-tabs-color-active !important;
-            }
+        &[aria-selected=true] {
+            color: $core-top-tabs-color-active !important;
+            border: 0 !important;
+            border-bottom: 2px solid $core-top-tabs-color-active !important;
         }
     }
+}
 
+.md .core-tabs-bar > a {
+    // @extend .tabs-md .tab-button;
+    min-height: $tabs-md-tab-min-height;
+
+    font-weight: $tabs-md-tab-font-weight;
+    color: $tabs-md-tab-text-color;
+}
+
+.ios .core-tabs-bar > a {
+    // @extend .tabs-ios .tab-button;
+    max-width: $tabs-ios-tab-max-width;
+    min-height: $tabs-ios-tab-min-height;
+
+    font-size: $tabs-ios-tab-font-size;
+    font-weight: $tabs-ios-tab-font-weight;
+    color: $tabs-ios-tab-text-color;
+}
+
+.wp .core-tabs-bar > a {
+    //@extend .tabs-wp .tab-button;
+    @include border-radius(0);
+
+    min-height: $tabs-wp-tab-min-height;
+
+    border-bottom: $tabs-wp-tab-border;
+    font-size: $tabs-wp-tab-font-size;
+    font-weight: $tabs-wp-tab-font-weight;
+    color: $tabs-wp-tab-color;
+    box-shadow: none;
+}
+
+core-tabs {
     .core-tabs-content-container {
         height: 100%;
 
@@ -47,7 +78,7 @@ core-tabs {
         }
     }
 
-    core-tab {
+    core-tab, .core-tab {
         display: none;
         height: 100%;
         position: relative;
@@ -71,22 +102,18 @@ core-tabs {
     overflow: hidden !important;
 }
 
-.ios core-tabs {
-    .core-tabs-bar {
-        -webkit-box-pack: center;
-        -webkit-justify-content: center;
-        -ms-flex-pack: center;
-        justify-content: center;
-        > a {
-            font-size: 1.6rem;
-        }
+.ios .core-tabs-bar {
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    > a {
+        font-size: 1.6rem;
     }
 }
 
-.md core-tabs {
-    .core-tabs-bar::after {
-        @extend .header-md::after;
-    }
+.md .core-tabs-bar::after {
+    @extend .header-md::after;
 }
 
 .ios, .md, .wp {

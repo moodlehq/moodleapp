@@ -49,25 +49,22 @@ export class AddonModDataFieldMultimenuHandler implements AddonModDataFieldHandl
         const fieldName = 'f_' + field.id,
             reqName = 'f_' + field.id + '_allreq';
 
-        if (inputData[fieldName].length > 0) {
-            const options = inputData[fieldName].split('###'),
-                values = [];
+        if (inputData[fieldName] && inputData[fieldName].length > 0) {
+            const values = [];
 
-            if (options.length > 0) {
+            values.push({
+                name: fieldName,
+                value: inputData[fieldName]
+            });
+
+            if (inputData[reqName]) {
                 values.push({
-                    name: fieldName,
-                    value: options
+                    name: reqName,
+                    value: true
                 });
-
-                if (inputData[reqName]['1']) {
-                    values.push({
-                        name: reqName,
-                        value: true
-                    });
-                }
-
-                return values;
             }
+
+            return values;
         }
 
         return false;

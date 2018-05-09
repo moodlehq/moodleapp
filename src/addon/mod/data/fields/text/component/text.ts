@@ -11,10 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { Component, OnInit, ElementRef } from '@angular/core';
-import { FormBuilder, FormControl } from '@angular/forms';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
 
 /**
@@ -26,12 +24,10 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
 })
 export class AddonModDataFieldTextComponent extends AddonModDataFieldPluginComponent implements OnInit {
 
-    control: FormControl;
     val: number;
 
-    constructor(protected fb: FormBuilder, protected domUtils: CoreDomUtilsProvider, protected textUtils: CoreTextUtilsProvider,
-            element: ElementRef) {
-        super();
+    constructor(protected fb: FormBuilder) {
+        super(fb);
     }
 
     /**
@@ -50,5 +46,7 @@ export class AddonModDataFieldTextComponent extends AddonModDataFieldPluginCompo
         if (this.mode == 'edit' && this.value) {
             this.val = this.value.content;
         }
+
+        this.addControl('f_' + this.field.id, this.val);
     }
 }

@@ -49,7 +49,7 @@ export class AddonModDataFieldDateHandler implements AddonModDataFieldHandler {
         const fieldName = 'f_' + field.id,
             enabledName = 'f_' + field.id + '_z';
 
-        if (inputData[enabledName]['1']) {
+        if (inputData[enabledName] && typeof inputData[fieldName] == 'string') {
             const values = [],
                 date = inputData[fieldName].split('-'),
                 year = date[0],

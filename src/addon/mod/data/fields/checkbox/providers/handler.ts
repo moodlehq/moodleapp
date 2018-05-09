@@ -49,20 +49,22 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
         const fieldName = 'f_' + field.id,
             reqName = 'f_' + field.id + '_allreq';
 
-        const checkboxes = [],
+        const options = field.param1.split('\n'),
+            checkboxes = [],
             values = [];
-        inputData[fieldName].forEach((value, option) => {
-            if (value) {
+        options.forEach((option) => {
+            if (inputData[fieldName + '_' + option]) {
                 checkboxes.push(option);
             }
         });
+
         if (checkboxes.length > 0) {
             values.push({
                 name: fieldName,
                 value: checkboxes
             });
 
-            if (inputData[reqName]['1']) {
+            if (inputData[reqName]) {
                 values.push({
                     name: reqName,
                     value: true
@@ -85,9 +87,10 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
     getFieldEditData(field: any, inputData: any, originalFieldData: any): any {
         const fieldName = 'f_' + field.id;
 
-        const checkboxes = [];
-        inputData[fieldName].forEach((value, option) => {
-            if (value) {
+        const options = field.param1.split('\n'),
+            checkboxes = [];
+        options.forEach((option) => {
+            if (inputData[fieldName + '_' + option]) {
                 checkboxes.push(option);
             }
         });

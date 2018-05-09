@@ -11,10 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { Component, OnInit, ElementRef } from '@angular/core';
-import { FormBuilder, FormControl } from '@angular/forms';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
 
 /**
@@ -26,13 +24,10 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
 })
 export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginComponent implements OnInit {
 
-    control: FormControl;
-    options: number;
-    values = {};
+    options = [];
 
-    constructor(protected fb: FormBuilder, protected domUtils: CoreDomUtilsProvider, protected textUtils: CoreTextUtilsProvider,
-            element: ElementRef) {
-        super();
+    constructor(protected fb: FormBuilder) {
+        super(fb);
     }
 
     /**
@@ -45,21 +40,28 @@ export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginC
 
     protected render(): void {
         if (this.mode == 'show') {
-            this.value.content = this.value.content.split('##').join('<br>');
+            this.value.content = this.value && this.value.content && this.value.content.split('##').join('<br>');
 
             return;
         }
 
-        this.options = this.field.param1.split('\n');
+        this.options = this.field.param1.split('\n').map((option) => {
+            return { key: option, value: option };
+        });
 
-        if (this.mode == 'edit' && this.value) {
-            this.values = {};
-
+        if (this.mode == 'edit' && this.value && this.value.content) {
             this.value.content.split('##').forEach((value) => {
-                this.values[value] = true;
+                const x = this.options.findIndex((option) => value == option.key);
+                if (x >= 0) {
+                    this.options[x].selected = true;
+                }
             });
-
-            //this.control = this.fb.control(text);
         }
+
+        if (this.mode == 'search') {
+            this.addControl('f_' + this.field.id + '_allreq');
+        }
+
+        this.addControl('f_' + this.field.id);
     }
 }

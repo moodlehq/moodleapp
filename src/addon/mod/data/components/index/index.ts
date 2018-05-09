@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Optional, Injector } from '@angular/core';
-import { Content, ModalController } from 'ionic-angular';
+import { Content, ModalController, NavController } from 'ionic-angular';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreGroupsProvider, CoreGroupInfo } from '@providers/groups';
@@ -42,7 +42,6 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     data: any = {};
     fields: any;
     selectedGroup: number;
-    advancedSearch: any;
     timeAvailableFrom: number | boolean;
     timeAvailableFromReadable: string | boolean;
     timeAvailableTo: number | boolean;
@@ -79,7 +78,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             private dataOffline: AddonModDataOfflineProvider, @Optional() @Optional() content: Content,
             private dataSync: AddonModDataSyncProvider, private timeUtils: CoreTimeUtilsProvider,
             private groupsProvider: CoreGroupsProvider, private commentsProvider: CoreCommentsProvider,
-            private modalCtrl: ModalController, private utils: CoreUtilsProvider) {
+            private modalCtrl: ModalController, private utils: CoreUtilsProvider, protected navCtrl: NavController) {
         super(injector);
 
         // Refresh entries on change.
@@ -222,7 +221,6 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                     this.fields[field.id] = field;
                 });
                 this.fieldsArray = this.utils.objectToArray(this.fields);
-                this.advancedSearch = this.dataHelper.displayAdvancedSearchFields(this.data.asearchtemplate, this.fieldsArray);
 
                 return this.fetchEntriesData();
             });
@@ -349,9 +347,16 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      * Display the chat users modal.
      */
     showSearch(): void {
-        const modal = this.modalCtrl.create('AddonModDataSearchPage');
+        const modal = this.modalCtrl.create('AddonModDataSearchPage', {
+            search: this.search,
+            fields: this.fields,
+            data: this.data});
         modal.onDidDismiss((data) => {
-            // @TODO.
+            // Add data to search object.
+            if (data) {
+                this.search = data;
+                this.searchEntries(0);
+            }
         });
         modal.present();
     }
@@ -365,14 +370,6 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     searchEntries(page: number): Promise<any> {
         this.loaded = false;
         this.search.page = page;
-
-        if (this.search.searchingAdvanced) {
-            this.search.advanced = this.dataHelper.getSearchDataFromForm(document.forms['addon-mod_data-advanced-search-form'],
-                this.fieldsArray);
-            this.search.searching = this.search.advanced.length > 0;
-        } else {
-            this.search.searching = this.search.text.length > 0;
-        }
 
         return this.fetchEntriesData().catch((message) => {
             this.domUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);
@@ -403,6 +400,37 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
             return Promise.reject(null);
         });
+    }
+
+    /**
+     * Opens add entries form.
+     */
+    gotoAddEntries(): void {
+        const stateParams = {
+            moduleId: this.module.id,
+            module: this.module,
+            courseId: this.courseId,
+            group: this.selectedGroup
+        };
+
+        this.navCtrl.push('AddonModDataEditPage', stateParams);
+    }
+
+    /**
+     * Goto the selected entry.
+     *
+     * @param {number} entryId Entry ID.
+     */
+    gotoEntry(entryId: number): void {
+        const stateParams = {
+            module: this.module,
+            moduleid: this.module.id,
+            courseid: this.courseId,
+            entryid: entryId,
+            group: this.selectedGroup
+        };
+
+        this.navCtrl.push('AddonModDataEntryPage', stateParams);
     }
 
     /**

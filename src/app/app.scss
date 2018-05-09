@@ -171,6 +171,10 @@ ion-avatar ion-img, ion-avatar img {
   font-style: italic;
 }
 
+ion-datetime {
+  position: relative;
+}
+
 /** Format Text */
 core-format-text[maxHeight], *[core-format-text][maxHeight],
 core-format-text[ng-reflect-max-height], *[core-format-text][ng-reflect-max-height] {

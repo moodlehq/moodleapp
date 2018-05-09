@@ -1,7 +1,12 @@
-<span *ngIf="mode == 'edit'" [core-mark-required]="field.required"></span>
-<core-input-errors *ngIf="error && mode == 'edit'" [errorMessages]="error"></core-input-errors>
-<input *ngIf="mode == 'search'" type="text" [placeholder]="field.name" [name]="'f_'+field.id">
- <core-attachments *ngIf="mode == 'edit'" [files]="files" [maxSize]="maxSizeBytes" maxSubmissions="1" [component]="component" [componentId]="componentId" [allowOffline]="true"></core-attachments>
+<span *ngIf="mode == 'edit'" [formGroup]="form">
+    <span [core-mark-required]="field.required"></span>
+    <core-input-errors *ngIf="error" [errorMessages]="error"></core-input-errors>
+    <core-attachments [files]="files" [maxSize]="maxSizeBytes" maxSubmissions="1" [component]="component" [componentId]="componentId" [allowOffline]="true"></core-attachments>
+</span>
+
+<span *ngIf="mode == 'search'" [formGroup]="form">
+    <ion-input type="text" [formControlName]="'f_'+field.id" [placeholder]="field.name"></ion-input>
+</span>
 
 <ng-container *ngIf="mode == 'show'">
     <div *ngFor="let file of files" no-lines>

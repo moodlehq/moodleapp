@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import { Component, Input, OnInit, Injector, ViewChild } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { AddonModDataProvider } from '../../providers/data';
 import { AddonModDataFieldsDelegate } from '../../providers/fields-delegate';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
@@ -32,6 +33,8 @@ export class AddonModDataFieldPluginComponent implements OnInit {
     @Input() database?: any; // Database object.
     @Input() error?: string; // Error when editing.
     @Input() viewAction: string; // Action to perform.
+    @Input() form?: FormGroup; // Form where to add the form control. Just required for edit and search modes.
+    @Input() search?: any; // The search value of all fields.
 
     fieldComponent: any; // Component to render the plugin.
     data: any; // Data to pass to the component.
@@ -63,12 +66,14 @@ export class AddonModDataFieldPluginComponent implements OnInit {
                     value: this.value,
                     database: this.database,
                     error: this.error,
-                    viewAction: this.viewAction
+                    viewAction: this.viewAction,
+                    form: this.form,
+                    search: this.search
                 };
 
-            } else {
-                this.fieldLoaded = true;
             }
+        }).finally(() => {
+            this.fieldLoaded = true;
         });
     }
 }

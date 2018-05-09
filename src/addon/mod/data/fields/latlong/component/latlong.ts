@@ -11,11 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { Component, OnInit, ElementRef } from '@angular/core';
-import { FormBuilder, FormControl } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { Platform } from 'ionic-angular';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
 
 /**
@@ -27,14 +25,11 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
 })
 export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginComponent implements OnInit {
 
-    control: FormControl;
-    values = {};
     north: number;
     east: number;
 
-    constructor(protected fb: FormBuilder, protected domUtils: CoreDomUtilsProvider, protected textUtils: CoreTextUtilsProvider,
-            element: ElementRef, private platform: Platform) {
-        super();
+    constructor(protected fb: FormBuilder, private platform: Platform) {
+        super(fb);
     }
 
     /**
@@ -85,6 +80,13 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
         if (this.value) {
             this.north = (this.value && parseFloat(this.value.content)) || null;
             this.east = (this.value && parseFloat(this.value.content1)) || null;
+        }
+
+        if (this.mode == 'edit') {
+            this.addControl('f_' + this.field.id + '_0', this.north);
+            this.addControl('f_' + this.field.id + '_1', this.east);
+        } else if (this.mode == 'search') {
+            this.addControl('f_' + this.field.id);
         }
     }
 }

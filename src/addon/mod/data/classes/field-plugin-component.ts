@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import { Input } from '@angular/core';
+import { FormGroup, FormBuilder } from '@angular/forms';
 
 /**
  * Base class for component to render a field.
@@ -22,5 +23,29 @@ export class AddonModDataFieldPluginComponent {
     @Input() value?: any; // The value of the field.
     @Input() database?: any; // Database object.
     @Input() error?: string; // Error when editing.
-    @Input() viewAction: string; // Action to perform.
+    @Input() viewAction?: string; // Action to perform.
+    @Input() form?: FormGroup; // Form where to add the form control. Just required for edit and search modes.
+    @Input() search?: any; // The search value of all fields.
+
+    constructor(protected fb: FormBuilder) { }
+
+    /**
+     * Add the form control for the search mode.
+     *
+     * @param {string} fieldName Control field name.
+     * @param {any}    value     Initial set value.
+     */
+    protected addControl(fieldName: string, value?: any): void {
+        if (!this.form) {
+            return;
+        }
+
+        if (this.mode == 'search') {
+            this.form.addControl(fieldName, this.fb.control(this.search[fieldName] || null));
+        }
+
+        if (this.mode == 'edit') {
+            this.form.addControl(fieldName, this.fb.control(value || null));
+        }
+    }
 }
