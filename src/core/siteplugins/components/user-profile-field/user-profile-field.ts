@@ -49,7 +49,7 @@ export class CoreSitePluginsUserProfileFieldComponent extends CoreSitePluginsCom
         };
 
         if (this.field) {
-            this.getHandlerData(this.field.type || this.field.datatype);
+            this.getHandlerData('profilefield_' + (this.field.type || this.field.datatype));
         }
     }
 }

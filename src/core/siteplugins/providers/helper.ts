@@ -436,7 +436,7 @@ export class CoreSitePluginsHelperProvider {
                     break;
 
                 case 'CoreCourseModuleDelegate':
-                    promise = Promise.resolve(this.registerModuleHandler(plugin, handlerName, handlerSchema, result));
+                    promise = Promise.resolve(this.registerModuleHandler(plugin, handlerName, handlerSchema));
                     break;
 
                 case 'CoreUserDelegate':
@@ -448,11 +448,11 @@ export class CoreSitePluginsHelperProvider {
                     break;
 
                 case 'CoreCourseFormatDelegate':
-                    promise = Promise.resolve(this.registerCourseFormatHandler(plugin, handlerName, handlerSchema, result));
+                    promise = Promise.resolve(this.registerCourseFormatHandler(plugin, handlerName, handlerSchema));
                     break;
 
                 case 'CoreUserProfileFieldDelegate':
-                    promise = Promise.resolve(this.registerUserProfileFieldHandler(plugin, handlerName, handlerSchema, result));
+                    promise = Promise.resolve(this.registerUserProfileFieldHandler(plugin, handlerName, handlerSchema));
                     break;
 
                 case 'CoreSettingsDelegate':
@@ -460,11 +460,11 @@ export class CoreSitePluginsHelperProvider {
                     break;
 
                 case 'CoreQuestionDelegate':
-                    promise = Promise.resolve(this.registerQuestionHandler(plugin, handlerName, handlerSchema, result));
+                    promise = Promise.resolve(this.registerQuestionHandler(plugin, handlerName, handlerSchema));
                     break;
 
                 case 'CoreQuestionBehaviourDelegate':
-                    promise = Promise.resolve(this.registerQuestionBehaviourHandler(plugin, handlerName, handlerSchema, result));
+                    promise = Promise.resolve(this.registerQuestionBehaviourHandler(plugin, handlerName, handlerSchema));
                     break;
 
                 case 'AddonMessageOutputDelegate':
@@ -472,15 +472,15 @@ export class CoreSitePluginsHelperProvider {
                     break;
 
                 case 'AddonModQuizAccessRuleDelegate':
-                    promise = Promise.resolve(this.registerQuizAccessRuleHandler(plugin, handlerName, handlerSchema, result));
+                    promise = Promise.resolve(this.registerQuizAccessRuleHandler(plugin, handlerName, handlerSchema));
                     break;
 
                 case 'AddonModAssignFeedbackDelegate':
-                    promise = Promise.resolve(this.registerAssignFeedbackHandler(plugin, handlerName, handlerSchema, result));
+                    promise = Promise.resolve(this.registerAssignFeedbackHandler(plugin, handlerName, handlerSchema));
                     break;
 
                 case 'AddonModAssignSubmissionDelegate':
-                    promise = Promise.resolve(this.registerAssignSubmissionHandler(plugin, handlerName, handlerSchema, result));
+                    promise = Promise.resolve(this.registerAssignSubmissionHandler(plugin, handlerName, handlerSchema));
                     break;
 
                 default:
@@ -505,16 +505,18 @@ export class CoreSitePluginsHelperProvider {
     }
 
     /**
-     * Given a handler in a plugin, register it in the assign feedback delegate.
+     * Register a handler that relies in a "componentInit" function in a certain delegate.
+     * These type of handlers will return a generic template and its JS in the main method, so it will be called
+     * before registering the handler.
      *
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
      * @param {any} handlerSchema Data about the handler.
-     * @param {any} initResult Result of the init WS call.
      * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
      */
-    protected registerAssignFeedbackHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any)
-            : string | Promise<string> {
+    protected registerComponentInitHandler(plugin: any, handlerName: string, handlerSchema: any, delegate: any,
+            createHandlerFn: (uniqueName: string, result: any) => any): string | Promise<string> {
+
         if (!handlerSchema.method) {
             // Required data not provided, stop.
             this.logger.warn('Ignore site plugin because it doesn\'t provide method', plugin, handlerSchema);
@@ -522,16 +524,14 @@ export class CoreSitePluginsHelperProvider {
             return;
         }
 
-        this.logger.debug('Register site plugin in assign feedback delegate:', plugin, handlerSchema, initResult);
+        this.logger.debug('Register site plugin', plugin, handlerSchema);
 
-        // Execute the main method and its JS. The template returned will be used in the feedback component.
+        // Execute the main method and its JS. The template returned will be used in the right component.
         return this.executeMethodAndJS(plugin, handlerSchema.method).then((result) => {
 
             // Create and register the handler.
             const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
-                type = plugin.component.replace('assignfeedback_', ''),
-                prefix = this.getPrefixForStrings(plugin.addon),
-                feedbackHandler = new CoreSitePluginsAssignFeedbackHandler(this.translate, uniqueName, type, prefix);
+                handler = createHandlerFn(uniqueName, result);
 
             // Store in handlerSchema some data required by the component.
             handlerSchema.methodTemplates = result.templates;
@@ -539,19 +539,39 @@ export class CoreSitePluginsHelperProvider {
 
             if (result && result.jsResult) {
                 // Override default handler functions with the result of the method JS.
-                for (const property in feedbackHandler) {
-                    if (property != 'constructor' && typeof feedbackHandler[property] == 'function' &&
+                for (const property in handler) {
+                    if (property != 'constructor' && typeof handler[property] == 'function' &&
                             typeof result.jsResult[property] == 'function') {
-                        feedbackHandler[property] = result.jsResult[property].bind(feedbackHandler);
+                        handler[property] = result.jsResult[property].bind(handler);
                     }
                 }
             }
 
-            this.assignFeedbackDelegate.registerHandler(feedbackHandler);
+            delegate.registerHandler(handler);
 
             return plugin.component;
         }).catch((err) => {
-            this.logger.error('Error executing main method for assign feedback', handlerSchema.method, err);
+            this.logger.error('Error executing main method', plugin.component, handlerSchema.method, err);
+        });
+    }
+
+    /**
+     * Given a handler in a plugin, register it in the assign feedback delegate.
+     *
+     * @param {any} plugin Data of the plugin.
+     * @param {string} handlerName Name of the handler in the plugin.
+     * @param {any} handlerSchema Data about the handler.
+     * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
+     */
+    protected registerAssignFeedbackHandler(plugin: any, handlerName: string, handlerSchema: any): string | Promise<string> {
+
+        return this.registerComponentInitHandler(plugin, handlerName, handlerSchema, this.assignFeedbackDelegate,
+                    (uniqueName: string, result: any) => {
+
+            const type = plugin.component.replace('assignfeedback_', ''),
+                prefix = this.getPrefixForStrings(plugin.addon);
+
+            return new CoreSitePluginsAssignFeedbackHandler(this.translate, uniqueName, type, prefix);
         });
     }
 
@@ -561,48 +581,17 @@ export class CoreSitePluginsHelperProvider {
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
      * @param {any} handlerSchema Data about the handler.
-     * @param {any} initResult Result of the init WS call.
      * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
      */
-    protected registerAssignSubmissionHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any)
-            : string | Promise<string> {
-        if (!handlerSchema.method) {
-            // Required data not provided, stop.
-            this.logger.warn('Ignore site plugin because it doesn\'t provide method', plugin, handlerSchema);
+    protected registerAssignSubmissionHandler(plugin: any, handlerName: string, handlerSchema: any): string | Promise<string> {
 
-            return;
-        }
+        return this.registerComponentInitHandler(plugin, handlerName, handlerSchema, this.assignSubmissionDelegate,
+                    (uniqueName: string, result: any) => {
 
-        this.logger.debug('Register site plugin in assign submission delegate:', plugin, handlerSchema, initResult);
+            const type = plugin.component.replace('assignsubmission_', ''),
+                prefix = this.getPrefixForStrings(plugin.addon);
 
-        // Execute the main method and its JS. The template returned will be used in the submission component.
-        return this.executeMethodAndJS(plugin, handlerSchema.method).then((result) => {
-
-            // Create and register the handler.
-            const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
-                type = plugin.component.replace('assignsubmission_', ''),
-                prefix = this.getPrefixForStrings(plugin.addon),
-                submissionHandler = new CoreSitePluginsAssignSubmissionHandler(this.translate, uniqueName, type, prefix);
-
-            // Store in handlerSchema some data required by the component.
-            handlerSchema.methodTemplates = result.templates;
-            handlerSchema.methodJSResult = result.jsResult;
-
-            if (result && result.jsResult) {
-                // Override default handler functions with the result of the method JS.
-                for (const property in submissionHandler) {
-                    if (property != 'constructor' && typeof submissionHandler[property] == 'function' &&
-                            typeof result.jsResult[property] == 'function') {
-                        submissionHandler[property] = result.jsResult[property].bind(submissionHandler);
-                    }
-                }
-            }
-
-            this.assignSubmissionDelegate.registerHandler(submissionHandler);
-
-            return plugin.component;
-        }).catch((err) => {
-            this.logger.error('Error executing main method for assign submission', handlerSchema.method, err);
+            return new CoreSitePluginsAssignSubmissionHandler(this.translate, uniqueName, type, prefix);
         });
     }
 
@@ -612,11 +601,10 @@ export class CoreSitePluginsHelperProvider {
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
      * @param {any} handlerSchema Data about the handler.
-     * @param {any} initResult Result of the init WS call.
      * @return {string} A string to identify the handler.
      */
-    protected registerCourseFormatHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any): string {
-        this.logger.debug('Register site plugin in course format delegate:', plugin, handlerSchema, initResult);
+    protected registerCourseFormatHandler(plugin: any, handlerName: string, handlerSchema: any): string {
+        this.logger.debug('Register site plugin in course format delegate:', plugin, handlerSchema);
 
         // Create and register the handler.
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
@@ -720,10 +708,9 @@ export class CoreSitePluginsHelperProvider {
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
      * @param {any} handlerSchema Data about the handler.
-     * @param {any} initResult Result of the init WS call.
      * @return {string} A string to identify the handler.
      */
-    protected registerModuleHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any): string {
+    protected registerModuleHandler(plugin: any, handlerName: string, handlerSchema: any): string {
         if (!handlerSchema.displaydata) {
             // Required data not provided, stop.
             this.logger.warn('Ignore site plugin because it doesn\'t provide displaydata', plugin, handlerSchema);
@@ -731,7 +718,7 @@ export class CoreSitePluginsHelperProvider {
             return;
         }
 
-        this.logger.debug('Register site plugin in module delegate:', plugin, handlerSchema, initResult);
+        this.logger.debug('Register site plugin in module delegate:', plugin, handlerSchema);
 
         // Create and register the handler.
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
@@ -754,46 +741,14 @@ export class CoreSitePluginsHelperProvider {
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
      * @param {any} handlerSchema Data about the handler.
-     * @param {any} initResult Result of the init WS call.
      * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
      */
-    protected registerQuestionHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any)
-            : string | Promise<string> {
-        if (!handlerSchema.method) {
-            // Required data not provided, stop.
-            this.logger.warn('Ignore site plugin because it doesn\'t provide method', plugin, handlerSchema);
+    protected registerQuestionHandler(plugin: any, handlerName: string, handlerSchema: any): string | Promise<string> {
 
-            return;
-        }
+        return this.registerComponentInitHandler(plugin, handlerName, handlerSchema, this.questionDelegate,
+                    (uniqueName: string, result: any) => {
 
-        this.logger.debug('Register site plugin in question delegate:', plugin, handlerSchema, initResult);
-
-        // Execute the main method and its JS. The template returned will be used in the question component.
-        return this.executeMethodAndJS(plugin, handlerSchema.method).then((result) => {
-            // Create and register the handler.
-            const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
-                questionType = plugin.component,
-                questionHandler = new CoreSitePluginsQuestionHandler(uniqueName, questionType);
-
-            // Store in handlerSchema some data required by the component.
-            handlerSchema.methodTemplates = result.templates;
-            handlerSchema.methodJSResult = result.jsResult;
-
-            if (result && result.jsResult) {
-                // Override default handler functions with the result of the method JS.
-                for (const property in questionHandler) {
-                    if (property != 'constructor' && typeof questionHandler[property] == 'function' &&
-                            typeof result.jsResult[property] == 'function') {
-                        questionHandler[property] = result.jsResult[property].bind(questionHandler);
-                    }
-                }
-            }
-
-            this.questionDelegate.registerHandler(questionHandler);
-
-            return questionType;
-        }).catch((err) => {
-            this.logger.error('Error executing main method for question', handlerSchema.method, err);
+            return new CoreSitePluginsQuestionHandler(uniqueName, plugin.component);
         });
     }
 
@@ -803,48 +758,16 @@ export class CoreSitePluginsHelperProvider {
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
      * @param {any} handlerSchema Data about the handler.
-     * @param {any} initResult Result of the init WS call.
      * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
      */
-    protected registerQuestionBehaviourHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any)
-            : string | Promise<string> {
-        if (!handlerSchema.method) {
-            // Required data not provided, stop.
-            this.logger.warn('Ignore site plugin because it doesn\'t provide method', plugin, handlerSchema);
+    protected registerQuestionBehaviourHandler(plugin: any, handlerName: string, handlerSchema: any): string | Promise<string> {
 
-            return;
-        }
+        return this.registerComponentInitHandler(plugin, handlerName, handlerSchema, this.questionBehaviourDelegate,
+                    (uniqueName: string, result: any) => {
 
-        this.logger.debug('Register site plugin in question behaviour delegate:', plugin, handlerSchema, initResult);
+            const type = plugin.component.replace('qbehaviour_', '');
 
-        // Execute the main method and its JS. The template returned will be used in the question component.
-        return this.executeMethodAndJS(plugin, handlerSchema.method).then((result) => {
-
-            // Create and register the handler.
-            const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
-                type = plugin.component.replace('qbehaviour_', ''),
-                behaviourHandler = new CoreSitePluginsQuestionBehaviourHandler(this.questionProvider, uniqueName, type,
-                        result.templates.length);
-
-            // Store in handlerSchema some data required by the component.
-            handlerSchema.methodTemplates = result.templates;
-            handlerSchema.methodJSResult = result.jsResult;
-
-            if (result && result.jsResult) {
-                // Override default handler functions with the result of the method JS.
-                for (const property in behaviourHandler) {
-                    if (property != 'constructor' && typeof behaviourHandler[property] == 'function' &&
-                            typeof result.jsResult[property] == 'function') {
-                        behaviourHandler[property] = result.jsResult[property].bind(behaviourHandler);
-                    }
-                }
-            }
-
-            this.questionBehaviourDelegate.registerHandler(behaviourHandler);
-
-            return plugin.component;
-        }).catch((err) => {
-            this.logger.error('Error executing main method for question behaviour', handlerSchema.method, err);
+            return new CoreSitePluginsQuestionBehaviourHandler(this.questionProvider, uniqueName, type, result.templates.length);
         });
     }
 
@@ -854,46 +777,14 @@ export class CoreSitePluginsHelperProvider {
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
      * @param {any} handlerSchema Data about the handler.
-     * @param {any} initResult Result of the init WS call.
      * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
      */
-    protected registerQuizAccessRuleHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any)
-            : string | Promise<string> {
-        if (!handlerSchema.method) {
-            // Required data not provided, stop.
-            this.logger.warn('Ignore site plugin because it doesn\'t provide method', plugin, handlerSchema);
+    protected registerQuizAccessRuleHandler(plugin: any, handlerName: string, handlerSchema: any): string | Promise<string> {
 
-            return;
-        }
+        return this.registerComponentInitHandler(plugin, handlerName, handlerSchema, this.accessRulesDelegate,
+                    (uniqueName: string, result: any) => {
 
-        this.logger.debug('Register site plugin in quiz access rule delegate:', plugin, handlerSchema, initResult);
-
-        // Execute the main method and its JS. The template returned will be used in the access rule component.
-        return this.executeMethodAndJS(plugin, handlerSchema.method).then((result) => {
-            // Create and register the handler.
-            const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
-                ruleName = plugin.component,
-                ruleHandler = new CoreSitePluginsQuizAccessRuleHandler(uniqueName, ruleName, result.templates.length);
-
-            // Store in handlerSchema some data required by the component.
-            handlerSchema.methodTemplates = result.templates;
-            handlerSchema.methodJSResult = result.jsResult;
-
-            if (result && result.jsResult) {
-                // Override default handler functions with the result of the method JS.
-                for (const property in ruleHandler) {
-                    if (property != 'constructor' && typeof ruleHandler[property] == 'function' &&
-                            typeof result.jsResult[property] == 'function') {
-                        ruleHandler[property] = result.jsResult[property].bind(ruleHandler);
-                    }
-                }
-            }
-
-            this.accessRulesDelegate.registerHandler(ruleHandler);
-
-            return ruleName;
-        }).catch((err) => {
-            this.logger.error('Error executing main method for quiz access rule', handlerSchema.method, err);
+            return new CoreSitePluginsQuizAccessRuleHandler(uniqueName, plugin.component, result.templates.length);
         });
     }
 
@@ -961,46 +852,16 @@ export class CoreSitePluginsHelperProvider {
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
      * @param {any} handlerSchema Data about the handler.
-     * @param {any} initResult Result of the init WS call.
      * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
      */
-    protected registerUserProfileFieldHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any)
-            : string | Promise<string> {
-        if (!handlerSchema.method) {
-            // Required data not provided, stop.
-            this.logger.warn('Ignore site plugin because it doesn\'t provide method', plugin, handlerSchema);
+    protected registerUserProfileFieldHandler(plugin: any, handlerName: string, handlerSchema: any): string | Promise<string> {
 
-            return;
-        }
+        return this.registerComponentInitHandler(plugin, handlerName, handlerSchema, this.profileFieldDelegate,
+                    (uniqueName: string, result: any) => {
 
-        this.logger.debug('Register site plugin in user profile field delegate:', plugin, handlerSchema, initResult);
+            const fieldType = plugin.component.replace('profilefield_', '');
 
-        // Execute the main method and its JS. The template returned will be used in the profile field component.
-        return this.executeMethodAndJS(plugin, handlerSchema.method).then((result) => {
-            // Create and register the handler.
-            const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
-                fieldType = plugin.component.replace('profilefield_', ''),
-                fieldHandler = new CoreSitePluginsUserProfileFieldHandler(uniqueName, fieldType);
-
-            // Store in handlerSchema some data required by the component.
-            handlerSchema.methodTemplates = result.templates;
-            handlerSchema.methodJSResult = result.jsResult;
-
-            if (result && result.jsResult) {
-                // Override default handler functions with the result of the method JS.
-                for (const property in fieldHandler) {
-                    if (property != 'constructor' && typeof fieldHandler[property] == 'function' &&
-                            typeof result.jsResult[property] == 'function') {
-                        fieldHandler[property] = result.jsResult[property].bind(fieldHandler);
-                    }
-                }
-            }
-
-            this.profileFieldDelegate.registerHandler(fieldHandler);
-
-            return fieldType;
-        }).catch((err) => {
-            this.logger.error('Error executing main method for user profile field', handlerSchema.method, err);
+            return new CoreSitePluginsUserProfileFieldHandler(uniqueName, fieldType);
         });
     }
 }
