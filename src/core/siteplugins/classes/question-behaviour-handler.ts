@@ -1,4 +1,3 @@
-
 // (C) Copyright 2015 Martin Dougiamas
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,20 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Injector } from '@angular/core';
-import { CoreQuestionBehaviourHandler } from '@core/question/providers/behaviour-delegate';
-import { CoreQuestionHelperProvider } from '@core/question/providers/helper';
+import { Injector } from '@angular/core';
+import { CoreQuestionBehaviourDefaultHandler } from '@core/question/providers/default-behaviour-handler';
+import { CoreSitePluginsQuestionBehaviourComponent } from '../components/question-behaviour/question-behaviour';
+import { CoreQuestionProvider } from '@core/question/providers/question';
 
 /**
- * Handler to support immediate feedback question behaviour.
+ * Handler to display a question behaviour site plugin.
  */
-@Injectable()
-export class AddonQbehaviourImmediateFeedbackHandler implements CoreQuestionBehaviourHandler {
-    name = 'AddonQbehaviourImmediateFeedback';
-    type = 'immediatefeedback';
+export class CoreSitePluginsQuestionBehaviourHandler extends CoreQuestionBehaviourDefaultHandler {
 
-    constructor(private questionHelper: CoreQuestionHelperProvider) {
-        // Nothing to do.
+    constructor(questionProvider: CoreQuestionProvider, public name: string, public type: string, public hasTemplate: boolean) {
+        super(questionProvider);
     }
 
     /**
@@ -40,18 +37,8 @@ export class AddonQbehaviourImmediateFeedbackHandler implements CoreQuestionBeha
      *                                (e.g. certainty options). Don't return anything if no extra data is required.
      */
     handleQuestion(injector: Injector, question: any): any[] | Promise<any[]> {
-        // Just extract the button, it doesn't need any specific component.
-        this.questionHelper.extractQbehaviourButtons(question);
-
-        return;
-    }
-
-    /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
-     */
-    isEnabled(): boolean | Promise<boolean> {
-        return true;
+        if (this.hasTemplate) {
+            return [CoreSitePluginsQuestionBehaviourComponent];
+        }
     }
 }

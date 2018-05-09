@@ -17,14 +17,14 @@ import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { CoreSitePluginsCompileInitComponent } from '../../classes/compile-init-component';
 
 /**
- * Component that displays a question created using a site plugin.
+ * Component that displays a question behaviour created using a site plugin.
  */
 @Component({
-    selector: 'core-site-plugins-question',
-    templateUrl: 'question.html',
+    selector: 'core-site-plugins-question-behaviour',
+    templateUrl: 'question-behaviour.html',
 })
-export class CoreSitePluginsQuestionComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
-    @Input() question: any; // The question to render.
+export class CoreSitePluginsQuestionBehaviourComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
+    @Input() question: any; // The question where the behaviour will be rendered.
     @Input() component: string; // The component the question belongs to.
     @Input() componentId: number; // ID of the component the question belongs to.
     @Input() attemptId: number; // Attempt ID.
@@ -52,7 +52,7 @@ export class CoreSitePluginsQuestionComponent extends CoreSitePluginsCompileInit
         };
 
         if (this.question) {
-            this.getHandlerData('qtype_' + this.question.type);
+            this.getHandlerData('qbehaviour_' + this.question.preferredBehaviour);
         }
     }
 }

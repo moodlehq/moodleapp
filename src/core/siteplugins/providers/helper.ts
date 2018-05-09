@@ -25,6 +25,7 @@ import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from './siteplugins';
 import { CoreCompileProvider } from '@core/compile/providers/compile';
+import { CoreQuestionProvider } from '@core/question/providers/question';
 
 // Delegates
 import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
@@ -36,6 +37,7 @@ import { CoreUserDelegate } from '@core/user/providers/user-delegate';
 import { CoreUserProfileFieldDelegate } from '@core/user/providers/user-profile-field-delegate';
 import { CoreSettingsDelegate } from '@core/settings/providers/delegate';
 import { CoreQuestionDelegate } from '@core/question/providers/delegate';
+import { CoreQuestionBehaviourDelegate } from '@core/question/providers/behaviour-delegate';
 import { AddonMessageOutputDelegate } from '@addon/messageoutput/providers/delegate';
 
 // Handler classes.
@@ -48,6 +50,7 @@ import { CoreSitePluginsUserProfileHandler } from '../classes/user-handler';
 import { CoreSitePluginsUserProfileFieldHandler } from '../classes/user-profile-field-handler';
 import { CoreSitePluginsSettingsHandler } from '../classes/settings-handler';
 import { CoreSitePluginsQuestionHandler } from '../classes/question-handler';
+import { CoreSitePluginsQuestionBehaviourHandler } from '../classes/question-behaviour-handler';
 import { CoreSitePluginsMessageOutputHandler } from '../classes/message-output-handler';
 
 /**
@@ -72,6 +75,7 @@ export class CoreSitePluginsHelperProvider {
             private courseFormatDelegate: CoreCourseFormatDelegate, private profileFieldDelegate: CoreUserProfileFieldDelegate,
             private textUtils: CoreTextUtilsProvider, private filepoolProvider: CoreFilepoolProvider,
             private settingsDelegate: CoreSettingsDelegate, private questionDelegate: CoreQuestionDelegate,
+            private questionBehaviourDelegate: CoreQuestionBehaviourDelegate, private questionProvider: CoreQuestionProvider,
             private messageOutputDelegate: AddonMessageOutputDelegate) {
 
         this.logger = logger.getInstance('CoreSitePluginsHelperProvider');
@@ -450,6 +454,10 @@ export class CoreSitePluginsHelperProvider {
                     promise = Promise.resolve(this.registerQuestionHandler(plugin, handlerName, handlerSchema, result));
                     break;
 
+                case 'CoreQuestionBehaviourDelegate':
+                    promise = Promise.resolve(this.registerQuestionBehaviourHandler(plugin, handlerName, handlerSchema, result));
+                    break;
+
                 case 'AddonMessageOutputDelegate':
                     promise = Promise.resolve(this.registerMessageOutputHandler(plugin, handlerName, handlerSchema, result));
                     break;
@@ -661,6 +669,57 @@ export class CoreSitePluginsHelperProvider {
             this.questionDelegate.registerHandler(questionHandler);
 
             return questionType;
+        }).catch((err) => {
+            this.logger.error('Error executing main method for question', handlerSchema.method, err);
+        });
+    }
+
+    /**
+     * Given a handler in an plugin, register it in the question behaviour delegate.
+     *
+     * @param {any} plugin Data of the plugin.
+     * @param {string} handlerName Name of the handler in the plugin.
+     * @param {any} handlerSchema Data about the handler.
+     * @param {any} initResult Result of the init WS call.
+     * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
+     */
+    protected registerQuestionBehaviourHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any)
+            : string | Promise<string> {
+        if (!handlerSchema.method) {
+            // Required data not provided, stop.
+            this.logger.warn('Ignore site plugin because it doesn\'t provide method', plugin, handlerSchema);
+
+            return;
+        }
+
+        this.logger.debug('Register site plugin in question behaviour delegate:', plugin, handlerSchema, initResult);
+
+        // Execute the main method and its JS. The template returned will be used in the question component.
+        return this.executeMethodAndJS(plugin, handlerSchema.method).then((result) => {
+
+            // Create and register the handler.
+            const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
+                type = plugin.component.replace('qbehaviour_', ''),
+                behaviourHandler = new CoreSitePluginsQuestionBehaviourHandler(this.questionProvider, uniqueName, type,
+                        result.templates.length);
+
+            // Store in handlerSchema some data required by the component.
+            handlerSchema.methodTemplates = result.templates;
+            handlerSchema.methodJSResult = result.jsResult;
+
+            if (result && result.jsResult) {
+                // Override default handler functions with the result of the method JS.
+                for (const property in behaviourHandler) {
+                    if (property != 'constructor' && typeof behaviourHandler[property] == 'function' &&
+                            typeof result.jsResult[property] == 'function') {
+                        behaviourHandler[property] = result.jsResult[property].bind(behaviourHandler);
+                    }
+                }
+            }
+
+            this.questionBehaviourDelegate.registerHandler(behaviourHandler);
+
+            return plugin.component;
         }).catch((err) => {
             this.logger.error('Error executing main method for question', handlerSchema.method, err);
         });

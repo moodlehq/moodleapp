@@ -14,11 +14,10 @@
 
 import {
     Component, Input, OnInit, OnChanges, OnDestroy, ViewContainerRef, ViewChild, ComponentRef, SimpleChange, ChangeDetectorRef,
-    ElementRef, Optional
+    ElementRef, Optional, Output, EventEmitter
 } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreCompileProvider } from '../../providers/compile';
-import { BehaviorSubject } from 'rxjs';
 
 /**
  * This component has a behaviour similar to $compile for AngularJS. Given an HTML code, it will compile it so all its
@@ -43,18 +42,17 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
     @Input() text: string; // The HTML text to display.
     @Input() javascript: string; // The Javascript to execute in the component.
     @Input() jsData: any; // Data to pass to the fake component.
+    @Output() created: EventEmitter<any> = new EventEmitter(); // Will emit an event when the component is instantiated.
 
     // Get the container where to put the content.
     @ViewChild('dynamicComponent', { read: ViewContainerRef }) container: ViewContainerRef;
 
     protected componentRef: ComponentRef<any>;
     protected element;
-    componentObservable: BehaviorSubject<any>; // An observable to notify observers when the component is instantiated.
 
     constructor(protected compileProvider: CoreCompileProvider, protected cdr: ChangeDetectorRef, element: ElementRef,
             @Optional() protected navCtrl: NavController) {
         this.element = element.nativeElement;
-        this.componentObservable = new BehaviorSubject<any>(null);
     }
 
     /**
@@ -70,7 +68,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
                 if (factory) {
                     // Create the component.
                     this.componentRef = this.container.createComponent(factory);
-                    this.componentObservable.next(this.componentRef.instance);
+                    this.created.emit(this.componentRef.instance);
                 }
             });
         }

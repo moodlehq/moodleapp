@@ -24,6 +24,7 @@ import { CoreSitePluginsCourseOptionComponent } from './course-option/course-opt
 import { CoreSitePluginsCourseFormatComponent } from './course-format/course-format';
 import { CoreSitePluginsUserProfileFieldComponent } from './user-profile-field/user-profile-field';
 import { CoreSitePluginsQuestionComponent } from './question/question';
+import { CoreSitePluginsQuestionBehaviourComponent } from './question-behaviour/question-behaviour';
 
 @NgModule({
     declarations: [
@@ -32,7 +33,8 @@ import { CoreSitePluginsQuestionComponent } from './question/question';
         CoreSitePluginsCourseOptionComponent,
         CoreSitePluginsCourseFormatComponent,
         CoreSitePluginsUserProfileFieldComponent,
-        CoreSitePluginsQuestionComponent
+        CoreSitePluginsQuestionComponent,
+        CoreSitePluginsQuestionBehaviourComponent
     ],
     imports: [
         CommonModule,
@@ -49,14 +51,16 @@ import { CoreSitePluginsQuestionComponent } from './question/question';
         CoreSitePluginsCourseOptionComponent,
         CoreSitePluginsCourseFormatComponent,
         CoreSitePluginsUserProfileFieldComponent,
-        CoreSitePluginsQuestionComponent
+        CoreSitePluginsQuestionComponent,
+        CoreSitePluginsQuestionBehaviourComponent
     ],
     entryComponents: [
         CoreSitePluginsModuleIndexComponent,
         CoreSitePluginsCourseOptionComponent,
         CoreSitePluginsCourseFormatComponent,
         CoreSitePluginsUserProfileFieldComponent,
-        CoreSitePluginsQuestionComponent
+        CoreSitePluginsQuestionComponent,
+        CoreSitePluginsQuestionBehaviourComponent
     ]
 })
 export class CoreSitePluginsComponentsModule {}
