@@ -14,7 +14,7 @@
 
 import { Injector } from '@angular/core';
 import { CoreQuestionBehaviourDefaultHandler } from '@core/question/providers/default-behaviour-handler';
-import { CoreSitePluginsQuestionBehaviourComponent } from '../components/question-behaviour/question-behaviour';
+import { CoreSitePluginsQuestionBehaviourComponent } from '../../components/question-behaviour/question-behaviour';
 import { CoreQuestionProvider } from '@core/question/providers/question';
 
 /**

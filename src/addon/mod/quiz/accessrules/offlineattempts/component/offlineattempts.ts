@@ -24,6 +24,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 })
 export class AddonModQuizAccessOfflineAttemptsComponent implements OnInit {
 
+    @Input() rule: string; // The name of the rule.
     @Input() quiz: any; // The quiz the rule belongs to.
     @Input() attempt: any; // The attempt being started/continued.
     @Input() prefetch: boolean; // Whether the user is prefetching the quiz.

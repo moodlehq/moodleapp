@@ -15,7 +15,7 @@
 import { Injector } from '@angular/core';
 import { CoreUserProfileFieldHandler, CoreUserProfileFieldHandlerData } from '@core/user/providers/user-profile-field-delegate';
 import { CoreSitePluginsBaseHandler } from './base-handler';
-import { CoreSitePluginsUserProfileFieldComponent } from '../components/user-profile-field/user-profile-field';
+import { CoreSitePluginsUserProfileFieldComponent } from '../../components/user-profile-field/user-profile-field';
 
 /**
  * Handler to display a site plugin in the user profile.

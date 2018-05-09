@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injector } from '@angular/core';
-import { CoreSitePluginsProvider } from '../providers/siteplugins';
+import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
 
 /**

@@ -39,19 +39,21 @@ import { CoreSettingsDelegate } from '@core/settings/providers/delegate';
 import { CoreQuestionDelegate } from '@core/question/providers/delegate';
 import { CoreQuestionBehaviourDelegate } from '@core/question/providers/behaviour-delegate';
 import { AddonMessageOutputDelegate } from '@addon/messageoutput/providers/delegate';
+import { AddonModQuizAccessRuleDelegate } from '@addon/mod/quiz/providers/access-rules-delegate';
 
 // Handler classes.
-import { CoreSitePluginsCourseFormatHandler } from '../classes/course-format-handler';
-import { CoreSitePluginsCourseOptionHandler } from '../classes/course-option-handler';
-import { CoreSitePluginsModuleHandler } from '../classes/module-handler';
-import { CoreSitePluginsModulePrefetchHandler } from '../classes/module-prefetch-handler';
-import { CoreSitePluginsMainMenuHandler } from '../classes/main-menu-handler';
-import { CoreSitePluginsUserProfileHandler } from '../classes/user-handler';
-import { CoreSitePluginsUserProfileFieldHandler } from '../classes/user-profile-field-handler';
-import { CoreSitePluginsSettingsHandler } from '../classes/settings-handler';
-import { CoreSitePluginsQuestionHandler } from '../classes/question-handler';
-import { CoreSitePluginsQuestionBehaviourHandler } from '../classes/question-behaviour-handler';
-import { CoreSitePluginsMessageOutputHandler } from '../classes/message-output-handler';
+import { CoreSitePluginsCourseFormatHandler } from '../classes/handlers/course-format-handler';
+import { CoreSitePluginsCourseOptionHandler } from '../classes/handlers/course-option-handler';
+import { CoreSitePluginsModuleHandler } from '../classes/handlers/module-handler';
+import { CoreSitePluginsModulePrefetchHandler } from '../classes/handlers/module-prefetch-handler';
+import { CoreSitePluginsMainMenuHandler } from '../classes/handlers/main-menu-handler';
+import { CoreSitePluginsUserProfileHandler } from '../classes/handlers/user-handler';
+import { CoreSitePluginsUserProfileFieldHandler } from '../classes/handlers/user-profile-field-handler';
+import { CoreSitePluginsSettingsHandler } from '../classes/handlers/settings-handler';
+import { CoreSitePluginsQuestionHandler } from '../classes/handlers/question-handler';
+import { CoreSitePluginsQuestionBehaviourHandler } from '../classes/handlers/question-behaviour-handler';
+import { CoreSitePluginsMessageOutputHandler } from '../classes/handlers/message-output-handler';
+import { CoreSitePluginsQuizAccessRuleHandler } from '../classes/handlers/quiz-access-rule-handler';
 
 /**
  * Helper service to provide functionalities regarding site plugins. It basically has the features to load and register site
@@ -76,7 +78,8 @@ export class CoreSitePluginsHelperProvider {
             private textUtils: CoreTextUtilsProvider, private filepoolProvider: CoreFilepoolProvider,
             private settingsDelegate: CoreSettingsDelegate, private questionDelegate: CoreQuestionDelegate,
             private questionBehaviourDelegate: CoreQuestionBehaviourDelegate, private questionProvider: CoreQuestionProvider,
-            private messageOutputDelegate: AddonMessageOutputDelegate) {
+            private messageOutputDelegate: AddonMessageOutputDelegate,
+            private accessRulesDelegate: AddonModQuizAccessRuleDelegate) {
 
         this.logger = logger.getInstance('CoreSitePluginsHelperProvider');
 
@@ -462,6 +465,10 @@ export class CoreSitePluginsHelperProvider {
                     promise = Promise.resolve(this.registerMessageOutputHandler(plugin, handlerName, handlerSchema, result));
                     break;
 
+                case 'AddonModQuizAccessRuleDelegate':
+                    promise = Promise.resolve(this.registerQuizAccessRuleHandler(plugin, handlerName, handlerSchema, result));
+                    break;
+
                 default:
                     // Nothing to do.
                     promise = Promise.resolve();
@@ -504,7 +511,7 @@ export class CoreSitePluginsHelperProvider {
     }
 
     /**
-     * Given a handler in an plugin, register it in the course options delegate.
+     * Given a handler in a plugin, register it in the course options delegate.
      *
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
@@ -533,7 +540,7 @@ export class CoreSitePluginsHelperProvider {
     }
 
     /**
-     * Given a handler in an plugin, register it in the main menu delegate.
+     * Given a handler in a plugin, register it in the main menu delegate.
      *
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
@@ -562,7 +569,7 @@ export class CoreSitePluginsHelperProvider {
     }
 
     /**
-     * Given a handler in an plugin, register it in the message output delegate.
+     * Given a handler in a plugin, register it in the message output delegate.
      *
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
@@ -592,7 +599,7 @@ export class CoreSitePluginsHelperProvider {
     }
 
     /**
-     * Given a handler in an plugin, register it in the module delegate.
+     * Given a handler in a plugin, register it in the module delegate.
      *
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
@@ -626,7 +633,7 @@ export class CoreSitePluginsHelperProvider {
     }
 
     /**
-     * Given a handler in an plugin, register it in the question delegate.
+     * Given a handler in a plugin, register it in the question delegate.
      *
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
@@ -675,7 +682,7 @@ export class CoreSitePluginsHelperProvider {
     }
 
     /**
-     * Given a handler in an plugin, register it in the question behaviour delegate.
+     * Given a handler in a plugin, register it in the question behaviour delegate.
      *
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
@@ -721,12 +728,61 @@ export class CoreSitePluginsHelperProvider {
 
             return plugin.component;
         }).catch((err) => {
-            this.logger.error('Error executing main method for question', handlerSchema.method, err);
+            this.logger.error('Error executing main method for question behaviour', handlerSchema.method, err);
         });
     }
 
     /**
-     * Given a handler in an plugin, register it in the settings delegate.
+     * Given a handler in a plugin, register it in the quiz access rule delegate.
+     *
+     * @param {any} plugin Data of the plugin.
+     * @param {string} handlerName Name of the handler in the plugin.
+     * @param {any} handlerSchema Data about the handler.
+     * @param {any} initResult Result of the init WS call.
+     * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
+     */
+    protected registerQuizAccessRuleHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any)
+            : string | Promise<string> {
+        if (!handlerSchema.method) {
+            // Required data not provided, stop.
+            this.logger.warn('Ignore site plugin because it doesn\'t provide method', plugin, handlerSchema);
+
+            return;
+        }
+
+        this.logger.debug('Register site plugin in quiz access rule delegate:', plugin, handlerSchema, initResult);
+
+        // Execute the main method and its JS. The template returned will be used in the access rule component.
+        return this.executeMethodAndJS(plugin, handlerSchema.method).then((result) => {
+            // Create and register the handler.
+            const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
+                ruleName = plugin.component,
+                ruleHandler = new CoreSitePluginsQuizAccessRuleHandler(uniqueName, ruleName, result.templates.length);
+
+            // Store in handlerSchema some data required by the component.
+            handlerSchema.methodTemplates = result.templates;
+            handlerSchema.methodJSResult = result.jsResult;
+
+            if (result && result.jsResult) {
+                // Override default handler functions with the result of the method JS.
+                for (const property in ruleHandler) {
+                    if (property != 'constructor' && typeof ruleHandler[property] == 'function' &&
+                            typeof result.jsResult[property] == 'function') {
+                        ruleHandler[property] = result.jsResult[property].bind(ruleHandler);
+                    }
+                }
+            }
+
+            this.accessRulesDelegate.registerHandler(ruleHandler);
+
+            return ruleName;
+        }).catch((err) => {
+            this.logger.error('Error executing main method for quiz access rule', handlerSchema.method, err);
+        });
+    }
+
+    /**
+     * Given a handler in a plugin, register it in the settings delegate.
      *
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
@@ -755,7 +811,7 @@ export class CoreSitePluginsHelperProvider {
     }
 
     /**
-     * Given a handler in an plugin, register it in the user profile delegate.
+     * Given a handler in a plugin, register it in the user profile delegate.
      *
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
@@ -784,7 +840,7 @@ export class CoreSitePluginsHelperProvider {
     }
 
     /**
-     * Given a handler in an plugin, register it in the user profile field delegate.
+     * Given a handler in a plugin, register it in the user profile field delegate.
      *
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.

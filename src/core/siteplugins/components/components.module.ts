@@ -25,6 +25,7 @@ import { CoreSitePluginsCourseFormatComponent } from './course-format/course-for
 import { CoreSitePluginsUserProfileFieldComponent } from './user-profile-field/user-profile-field';
 import { CoreSitePluginsQuestionComponent } from './question/question';
 import { CoreSitePluginsQuestionBehaviourComponent } from './question-behaviour/question-behaviour';
+import { CoreSitePluginsQuizAccessRuleComponent } from './quiz-access-rule/quiz-access-rule';
 
 @NgModule({
     declarations: [
@@ -34,7 +35,8 @@ import { CoreSitePluginsQuestionBehaviourComponent } from './question-behaviour/
         CoreSitePluginsCourseFormatComponent,
         CoreSitePluginsUserProfileFieldComponent,
         CoreSitePluginsQuestionComponent,
-        CoreSitePluginsQuestionBehaviourComponent
+        CoreSitePluginsQuestionBehaviourComponent,
+        CoreSitePluginsQuizAccessRuleComponent
     ],
     imports: [
         CommonModule,
@@ -52,7 +54,8 @@ import { CoreSitePluginsQuestionBehaviourComponent } from './question-behaviour/
         CoreSitePluginsCourseFormatComponent,
         CoreSitePluginsUserProfileFieldComponent,
         CoreSitePluginsQuestionComponent,
-        CoreSitePluginsQuestionBehaviourComponent
+        CoreSitePluginsQuestionBehaviourComponent,
+        CoreSitePluginsQuizAccessRuleComponent
     ],
     entryComponents: [
         CoreSitePluginsModuleIndexComponent,
@@ -60,7 +63,8 @@ import { CoreSitePluginsQuestionBehaviourComponent } from './question-behaviour/
         CoreSitePluginsCourseFormatComponent,
         CoreSitePluginsUserProfileFieldComponent,
         CoreSitePluginsQuestionComponent,
-        CoreSitePluginsQuestionBehaviourComponent
+        CoreSitePluginsQuestionBehaviourComponent,
+        CoreSitePluginsQuizAccessRuleComponent
     ]
 })
 export class CoreSitePluginsComponentsModule {}

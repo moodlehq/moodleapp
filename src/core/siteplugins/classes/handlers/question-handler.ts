@@ -14,7 +14,7 @@
 
 import { Injector } from '@angular/core';
 import { CoreQuestionDefaultHandler } from '@core/question/providers/default-question-handler';
-import { CoreSitePluginsQuestionComponent } from '../components/question/question';
+import { CoreSitePluginsQuestionComponent } from '../../components/question/question';
 
 /**
  * Handler to display a question site plugin.

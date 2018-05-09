@@ -13,17 +13,18 @@
 // limitations under the License.
 
 import { Component, OnInit, Input } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { CoreSitePluginsProvider } from '../../providers/siteplugins';
+import { CoreSitePluginsCompileInitComponent } from '../../classes/compile-init-component';
+import { FormGroup } from '@angular/forms';
 
 /**
- * Component to render the preflight for password.
+ * Component that displays a quiz access rule created using a site plugin.
  */
 @Component({
-    selector: 'addon-mod-quiz-acess-password',
-    templateUrl: 'password.html'
+    selector: 'core-site-plugins-quiz-access-rule',
+    templateUrl: 'quiz-access-rule.html',
 })
-export class AddonModQuizAccessPasswordComponent implements OnInit {
-
+export class CoreSitePluginsQuizAccessRuleComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
     @Input() rule: string; // The name of the rule.
     @Input() quiz: any; // The quiz the rule belongs to.
     @Input() attempt: any; // The attempt being started/continued.
@@ -31,13 +32,26 @@ export class AddonModQuizAccessPasswordComponent implements OnInit {
     @Input() siteId: string; // Site ID.
     @Input() form: FormGroup; // Form where to add the form control.
 
-    constructor(private fb: FormBuilder) { }
+    constructor(sitePluginsProvider: CoreSitePluginsProvider) {
+        super(sitePluginsProvider);
+    }
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
-        // Add the control for the password.
-        this.form.addControl('quizpassword', this.fb.control(''));
+        // Pass the input and output data to the component.
+        this.jsData = {
+            rule: this.rule,
+            quiz: this.quiz,
+            attempt: this.attempt,
+            prefetch: this.prefetch,
+            siteId: this.siteId,
+            form: this.form
+        };
+
+        if (this.rule) {
+            this.getHandlerData(this.rule);
+        }
     }
 }

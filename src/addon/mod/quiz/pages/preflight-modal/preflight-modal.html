@@ -12,8 +12,8 @@
     <core-loading [hideUntil]="loaded">
         <form ion-list [formGroup]="preflightForm" (ngSubmit)="sendData()">
             <!-- Access rules. -->
-            <ng-container *ngFor="let componentClass of accessRulesComponent; let last = last">
-                <core-dynamic-component [component]="componentClass" [data]="data">
+            <ng-container *ngFor="let data of accessRulesData; let last = last">
+                <core-dynamic-component [component]="data.component" [data]="data.data">
                     <p padding>Couldn't find the directive to render this access rule.</p>
                 </core-dynamic-component>
                 <ion-item-divider color="light" *ngIf="!last"></ion-item-divider>
