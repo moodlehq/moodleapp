@@ -23,6 +23,4 @@ export class AddonModDataFieldPluginComponent {
     @Input() database?: any; // Database object.
     @Input() error?: string; // Error when editing.
     @Input() viewAction: string; // Action to perform.
-
-    constructor() { }
 }

@@ -18,6 +18,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { AddonModDataOfflineProvider } from './offline';
+import { CoreAppProvider } from '@providers/app';
 
 /**
  * Service that provides some features for databases.
@@ -32,7 +33,8 @@ export class AddonModDataProvider {
     protected logger;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
-            private filepoolProvider: CoreFilepoolProvider, private dataOffline: AddonModDataOfflineProvider) {
+            private filepoolProvider: CoreFilepoolProvider, private dataOffline: AddonModDataOfflineProvider,
+            private appProvider: CoreAppProvider) {
         this.logger = logger.getInstance('AddonModDataProvider');
     }
 
@@ -61,6 +63,51 @@ export class AddonModDataProvider {
     }
 
     /**
+     * Approves or unapproves an entry.
+     *
+     * @param   {number}    dataId      Database ID.
+     * @param   {number}    entryId     Entry ID.
+     * @param   {boolean}   approve     Whether to approve (true) or unapprove the entry.
+     * @param   {number}    courseId    Course ID.
+     * @param   {string}    [siteId]    Site ID. If not defined, current site.
+     * @return  {Promise<any>}          Promise resolved when the action is done.
+     */
+    approveEntry(dataId: number, entryId: number, approve: boolean, courseId: number, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        // Convenience function to store a data to be synchronized later.
+        const storeOffline = (): Promise<any> => {
+            const action = approve ? 'approve' : 'disapprove';
+
+            return this.dataOffline.saveEntry(dataId, entryId, action, courseId, null, null, null, siteId);
+        };
+
+        // Get if the opposite action is not synced.
+        const oppositeAction = approve ? 'disapprove' : 'approve';
+
+        return this.dataOffline.getEntry(dataId, entryId, oppositeAction, siteId).then(() => {
+            // Found. Just delete the action.
+            return this.dataOffline.deleteEntry(dataId, entryId, oppositeAction, siteId);
+        }).catch(() => {
+
+            if (!this.appProvider.isOnline()) {
+                // App is offline, store the action.
+                return storeOffline();
+            }
+
+            return this.approveEntryOnline(entryId, approve, siteId).catch((error) => {
+                if (this.utils.isWebServiceError(error)) {
+                    // The WebService has thrown an error, this means that responses cannot be submitted.
+                    return Promise.reject(error);
+                }
+
+                // Couldn't connect to server, store in offline.
+                return storeOffline();
+            });
+        });
+    }
+
+    /**
      * Approves or unapproves an entry. It does not cache calls. It will fail if offline or cannot connect.
      *
      * @param   {number}    entryId  Entry ID.
@@ -76,6 +123,62 @@ export class AddonModDataProvider {
                 };
 
             return site.write('mod_data_approve_entry', params);
+        });
+    }
+
+    /**
+     * Deletes an entry.
+     *
+     * @param   {number}    dataId     Database ID.
+     * @param   {number}    entryId    Entry ID.
+     * @param   {number}    courseId   Course ID.
+     * @param   {string}    [siteId]   Site ID. If not defined, current site.
+     * @return  {Promise<any>}         Promise resolved when the action is done.
+     */
+    deleteEntry(dataId: number, entryId: number, courseId: number, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        // Convenience function to store a data to be synchronized later.
+        const storeOffline = (): Promise<any> => {
+            return this.dataOffline.saveEntry(dataId, entryId, 'delete', courseId, null, null, null, siteId);
+        };
+
+        let justAdded = false;
+
+        // Check if the opposite action is not synced and just delete it.
+        return this.dataOffline.getEntryActions(dataId, entryId, siteId).then((entries) => {
+            if (entries && entries.length) {
+                // Found. Delete other actions first.
+                const proms = entries.map((entry) => {
+                    if (entry.action == 'add') {
+                        justAdded = true;
+                    }
+
+                    return this.dataOffline.deleteEntry(dataId, entryId, entry.action, siteId);
+                });
+
+                return Promise.all(proms);
+            }
+        }).then(() => {
+            if (justAdded) {
+                // The field was added offline, delete and stop.
+                return;
+            }
+
+            if (!this.appProvider.isOnline()) {
+                // App is offline, store the action.
+                return storeOffline();
+            }
+
+            return this.deleteEntryOnline(entryId, siteId).catch((error) => {
+                if (this.utils.isWebServiceError(error)) {
+                    // The WebService has thrown an error, this means that responses cannot be submitted.
+                    return Promise.reject(error);
+                }
+
+                // Couldn't connect to server, store in offline.
+                return storeOffline();
+            });
         });
     }
 
@@ -491,6 +594,20 @@ export class AddonModDataProvider {
     invalidateDatabaseWSData(databaseId: number, siteId: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKeyStartingWith(this.getDatabaseDataPrefixCacheKey(databaseId));
+        });
+    }
+
+    /**
+     * Invalidates database entry data.
+     *
+     * @param  {number}  dataId     Data ID for caching purposes.
+     * @param  {number}  entryId    Entry ID.
+     * @param  {string}  [siteId]   Site ID. If not defined, current site.
+     * @return {Promise<any>}            Promise resolved when the data is invalidated.
+     */
+    invalidateEntryData(dataId: number, entryId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getEntryCacheKey(dataId, entryId));
         });
     }
 

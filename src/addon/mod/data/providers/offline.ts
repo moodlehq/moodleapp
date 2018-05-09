@@ -27,10 +27,10 @@ export class AddonModDataOfflineProvider {
     protected logger;
 
     // Variables for database.
-    protected SURVEY_TABLE = 'addon_mod_data_entry';
+    protected DATA_ENTRY_TABLE = 'addon_mod_data_entry';
     protected tablesSchema = [
         {
-            name: this.SURVEY_TABLE,
+            name: this.DATA_ENTRY_TABLE,
             columns: [
                 {
                     name: 'dataid',
@@ -102,7 +102,7 @@ export class AddonModDataOfflineProvider {
      */
     deleteEntry(dataId: number, entryId: number, action: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().deleteRecords(this.SURVEY_TABLE, {dataid: dataId, entryid: entryId, action: action});
+            return site.getDb().deleteRecords(this.DATA_ENTRY_TABLE, {dataid: dataId, entryid: entryId, action: action});
         });
     }
 
@@ -114,7 +114,7 @@ export class AddonModDataOfflineProvider {
      */
     getAllEntries(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getAllRecords(this.SURVEY_TABLE);
+            return site.getDb().getAllRecords(this.DATA_ENTRY_TABLE);
         });
     }
 
@@ -127,7 +127,7 @@ export class AddonModDataOfflineProvider {
      */
     getDatabaseEntries(dataId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.SURVEY_TABLE, {dataid: dataId});
+            return site.getDb().getRecords(this.DATA_ENTRY_TABLE, {dataid: dataId});
         });
     }
 
@@ -142,7 +142,7 @@ export class AddonModDataOfflineProvider {
      */
     getEntry(dataId: number, entryId: number, action: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecord(this.SURVEY_TABLE, {dataid: dataId, entryid: entryId, action: action});
+            return site.getDb().getRecord(this.DATA_ENTRY_TABLE, {dataid: dataId, entryid: entryId, action: action});
         });
     }
 
@@ -156,7 +156,7 @@ export class AddonModDataOfflineProvider {
      */
     getEntryActions(dataId: number, entryId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.SURVEY_TABLE, {dataid: dataId, entryid: entryId});
+            return site.getDb().getRecords(this.DATA_ENTRY_TABLE, {dataid: dataId, entryid: entryId});
         });
     }
 
@@ -207,4 +207,38 @@ export class AddonModDataOfflineProvider {
             return this.textUtils.concatenatePaths(folderPath, entryId + '_' + fieldId);
         });
     }
+
+    /**
+     * Save an entry data to be sent later.
+     *
+     * @param  {number} dataId          Database ID.
+     * @param  {number} entryId         Database entry Id. If action is add entryId should be 0 and -timemodified will be used.
+     * @param  {string} action          Action to be done to the entry: [add, edit, delete, approve, disapprove]
+     * @param  {number} courseId        Course ID of the database.
+     * @param  {number} [groupId]       Group ID. Only provided when adding.
+     * @param  {any[]}  [fields]        Array of field data of the entry if needed.
+     * @param  {number} [timemodified]  The time the entry was modified. If not defined, current time.
+     * @param  {string} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise<any>}           Promise resolved if stored, rejected if failure.
+     */
+    saveEntry(dataId: number, entryId: number, action: string, courseId: number, groupId?: number, fields?: any[],
+            timemodified?: number, siteId?: string): Promise<any> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            timemodified = timemodified || new Date().getTime();
+            entryId = typeof entryId == 'undefined' || entryId === null ? -timemodified : entryId;
+            const entry = {
+                    dataid: dataId,
+                    courseid: courseId,
+                    groupid: groupId,
+                    action: action,
+                    entryid: entryId,
+                    fields: fields,
+                    timemodified: timemodified
+                };
+
+            return site.getDb().insertRecord(this.DATA_ENTRY_TABLE, entry);
+        });
+    }
+
 }

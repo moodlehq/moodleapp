@@ -21,6 +21,10 @@ import { AddonModDataComponentsModule } from './components/components.module';
 import { AddonModDataModuleHandler } from './providers/module-handler';
 import { AddonModDataProvider } from './providers/data';
 import { AddonModDataLinkHandler } from './providers/link-handler';
+import { AddonModDataApproveLinkHandler } from './providers/approve-link-handler';
+import { AddonModDataDeleteLinkHandler } from './providers/delete-link-handler';
+import { AddonModDataShowLinkHandler } from './providers/show-link-handler';
+import { AddonModDataEditLinkHandler } from './providers/edit-link-handler';
 import { AddonModDataHelperProvider } from './providers/helper';
 import { AddonModDataPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModDataSyncProvider } from './providers/sync';
@@ -43,6 +47,10 @@ import { AddonModDataFieldModule } from './fields/field.module';
         AddonModDataPrefetchHandler,
         AddonModDataHelperProvider,
         AddonModDataLinkHandler,
+        AddonModDataApproveLinkHandler,
+        AddonModDataDeleteLinkHandler,
+        AddonModDataShowLinkHandler,
+        AddonModDataEditLinkHandler,
         AddonModDataSyncCronHandler,
         AddonModDataSyncProvider,
         AddonModDataOfflineProvider,
@@ -54,10 +62,16 @@ export class AddonModDataModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModDataModuleHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModDataPrefetchHandler,
             contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModDataLinkHandler,
-            cronDelegate: CoreCronDelegate, syncHandler: AddonModDataSyncCronHandler) {
+            cronDelegate: CoreCronDelegate, syncHandler: AddonModDataSyncCronHandler,
+            approveLinkHandler: AddonModDataApproveLinkHandler, deleteLinkHandler: AddonModDataDeleteLinkHandler,
+            showLinkHandler: AddonModDataShowLinkHandler, editLinkHandler: AddonModDataEditLinkHandler) {
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         contentLinksDelegate.registerHandler(linkHandler);
+        contentLinksDelegate.registerHandler(approveLinkHandler);
+        contentLinksDelegate.registerHandler(deleteLinkHandler);
+        contentLinksDelegate.registerHandler(showLinkHandler);
+        contentLinksDelegate.registerHandler(editLinkHandler);
         cronDelegate.register(syncHandler);
     }
 }
