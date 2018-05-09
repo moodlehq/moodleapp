@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AddonModAssignSubmissionHandler } from './submission-delegate';
 
@@ -24,7 +24,7 @@ export class AddonModAssignDefaultSubmissionHandler implements AddonModAssignSub
     name = 'AddonModAssignDefaultSubmissionHandler';
     type = 'default';
 
-    constructor(private translate: TranslateService) { }
+    constructor(protected translate: TranslateService) { }
 
     /**
      * Whether the plugin can be edited in offline for existing submissions. In general, this should return false if the
@@ -38,6 +38,60 @@ export class AddonModAssignDefaultSubmissionHandler implements AddonModAssignSub
      */
     canEditOffline(assign: any, submission: any, plugin: any): boolean | Promise<boolean> {
         return false;
+    }
+
+    /**
+     * Should clear temporary data for a cancelled submission.
+     *
+     * @param {any} assign The assignment.
+     * @param {any} submission The submission.
+     * @param {any} plugin The plugin object.
+     * @param {any} inputData Data entered by the user for the submission.
+     */
+    clearTmpData(assign: any, submission: any, plugin: any, inputData: any): void {
+        // Nothing to do.
+    }
+
+    /**
+     * This function will be called when the user wants to create a new submission based on the previous one.
+     * It should add to pluginData the data to send to server based in the data in plugin (previous attempt).
+     *
+     * @param {any} assign The assignment.
+     * @param {any} plugin The plugin object.
+     * @param {any} pluginData Object where to store the data to send.
+     * @param {number} [userId] User ID. If not defined, site's current user.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {void|Promise<any>} If the function is async, it should return a Promise resolved when done.
+     */
+    copySubmissionData(assign: any, plugin: any, pluginData: any, userId?: number, siteId?: string): void | Promise<any> {
+        // Nothing to do.
+    }
+
+    /**
+     * Delete any stored data for the plugin and submission.
+     *
+     * @param {any} assign The assignment.
+     * @param {any} submission The submission.
+     * @param {any} plugin The plugin object.
+     * @param {any} offlineData Offline data stored.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {void|Promise<any>} If the function is async, it should return a Promise resolved when done.
+     */
+    deleteOfflineData(assign: any, submission: any, plugin: any, offlineData: any, siteId?: string): void | Promise<any> {
+        // Nothing to do.
+    }
+
+    /**
+     * Return the Component to use to display the plugin data, either in read or in edit mode.
+     * It's recommended to return the class of the component, but you can also return an instance of the component.
+     *
+     * @param {Injector} injector Injector.
+     * @param {any} plugin The plugin object.
+     * @param {boolean} [edit] Whether the user is editing.
+     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
+     */
+    getComponent(injector: Injector, plugin: any, edit?: boolean): any | Promise<any> {
+        // Nothing to do.
     }
 
     /**
@@ -126,5 +180,54 @@ export class AddonModAssignDefaultSubmissionHandler implements AddonModAssignSub
      */
     isEnabledForEdit(): boolean | Promise<boolean> {
         return false;
+    }
+
+    /**
+     * Prefetch any required data for the plugin.
+     * This should NOT prefetch files. Files to be prefetched should be returned by the getPluginFiles function.
+     *
+     * @param {any} assign The assignment.
+     * @param {any} submission The submission.
+     * @param {any} plugin The plugin object.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetch(assign: any, submission: any, plugin: any, siteId?: string): Promise<any> {
+        return Promise.resolve();
+    }
+
+    /**
+     * Prepare and add to pluginData the data to send to the server based on the input data.
+     *
+     * @param {any} assign The assignment.
+     * @param {any} submission The submission.
+     * @param {any} plugin The plugin object.
+     * @param {any} inputData Data entered by the user for the submission.
+     * @param {any} pluginData Object where to store the data to send.
+     * @param {boolean} [offline] Whether the user is editing in offline.
+     * @param {number} [userId] User ID. If not defined, site's current user.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {void|Promise<any>} If the function is async, it should return a Promise resolved when done.
+     */
+    prepareSubmissionData?(assign: any, submission: any, plugin: any, inputData: any, pluginData: any, offline?: boolean,
+            userId?: number, siteId?: string): void | Promise<any> {
+        // Nothing to do.
+    }
+
+    /**
+     * Prepare and add to pluginData the data to send to the server based on the offline data stored.
+     * This will be used when performing a synchronization.
+     *
+     * @param {any} assign The assignment.
+     * @param {any} submission The submission.
+     * @param {any} plugin The plugin object.
+     * @param {any} offlineData Offline data stored.
+     * @param {any} pluginData Object where to store the data to send.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {void|Promise<any>} If the function is async, it should return a Promise resolved when done.
+     */
+    prepareSyncData?(assign: any, submission: any, plugin: any, offlineData: any, pluginData: any, siteId?: string)
+            : void | Promise<any> {
+        // Nothing to do.
     }
 }

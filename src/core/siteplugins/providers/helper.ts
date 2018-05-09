@@ -14,6 +14,7 @@
 
 import { Injectable, Injector } from '@angular/core';
 import { Http } from '@angular/http';
+import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLangProvider } from '@providers/lang';
@@ -40,6 +41,8 @@ import { CoreQuestionDelegate } from '@core/question/providers/delegate';
 import { CoreQuestionBehaviourDelegate } from '@core/question/providers/behaviour-delegate';
 import { AddonMessageOutputDelegate } from '@addon/messageoutput/providers/delegate';
 import { AddonModQuizAccessRuleDelegate } from '@addon/mod/quiz/providers/access-rules-delegate';
+import { AddonModAssignFeedbackDelegate } from '@addon/mod/assign/providers/feedback-delegate';
+import { AddonModAssignSubmissionDelegate } from '@addon/mod/assign/providers/submission-delegate';
 
 // Handler classes.
 import { CoreSitePluginsCourseFormatHandler } from '../classes/handlers/course-format-handler';
@@ -54,6 +57,8 @@ import { CoreSitePluginsQuestionHandler } from '../classes/handlers/question-han
 import { CoreSitePluginsQuestionBehaviourHandler } from '../classes/handlers/question-behaviour-handler';
 import { CoreSitePluginsMessageOutputHandler } from '../classes/handlers/message-output-handler';
 import { CoreSitePluginsQuizAccessRuleHandler } from '../classes/handlers/quiz-access-rule-handler';
+import { CoreSitePluginsAssignFeedbackHandler } from '../classes/handlers/assign-feedback-handler';
+import { CoreSitePluginsAssignSubmissionHandler } from '../classes/handlers/assign-submission-handler';
 
 /**
  * Helper service to provide functionalities regarding site plugins. It basically has the features to load and register site
@@ -78,8 +83,9 @@ export class CoreSitePluginsHelperProvider {
             private textUtils: CoreTextUtilsProvider, private filepoolProvider: CoreFilepoolProvider,
             private settingsDelegate: CoreSettingsDelegate, private questionDelegate: CoreQuestionDelegate,
             private questionBehaviourDelegate: CoreQuestionBehaviourDelegate, private questionProvider: CoreQuestionProvider,
-            private messageOutputDelegate: AddonMessageOutputDelegate,
-            private accessRulesDelegate: AddonModQuizAccessRuleDelegate) {
+            private messageOutputDelegate: AddonMessageOutputDelegate, private accessRulesDelegate: AddonModQuizAccessRuleDelegate,
+            private assignSubmissionDelegate: AddonModAssignSubmissionDelegate, private translate: TranslateService,
+            private assignFeedbackDelegate: AddonModAssignFeedbackDelegate) {
 
         this.logger = logger.getInstance('CoreSitePluginsHelperProvider');
 
@@ -469,6 +475,14 @@ export class CoreSitePluginsHelperProvider {
                     promise = Promise.resolve(this.registerQuizAccessRuleHandler(plugin, handlerName, handlerSchema, result));
                     break;
 
+                case 'AddonModAssignFeedbackDelegate':
+                    promise = Promise.resolve(this.registerAssignFeedbackHandler(plugin, handlerName, handlerSchema, result));
+                    break;
+
+                case 'AddonModAssignSubmissionDelegate':
+                    promise = Promise.resolve(this.registerAssignSubmissionHandler(plugin, handlerName, handlerSchema, result));
+                    break;
+
                 default:
                     // Nothing to do.
                     promise = Promise.resolve();
@@ -487,6 +501,108 @@ export class CoreSitePluginsHelperProvider {
             });
         }).catch((err) => {
             this.logger.error('Error executing init method', handlerSchema.init, err);
+        });
+    }
+
+    /**
+     * Given a handler in a plugin, register it in the assign feedback delegate.
+     *
+     * @param {any} plugin Data of the plugin.
+     * @param {string} handlerName Name of the handler in the plugin.
+     * @param {any} handlerSchema Data about the handler.
+     * @param {any} initResult Result of the init WS call.
+     * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
+     */
+    protected registerAssignFeedbackHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any)
+            : string | Promise<string> {
+        if (!handlerSchema.method) {
+            // Required data not provided, stop.
+            this.logger.warn('Ignore site plugin because it doesn\'t provide method', plugin, handlerSchema);
+
+            return;
+        }
+
+        this.logger.debug('Register site plugin in assign feedback delegate:', plugin, handlerSchema, initResult);
+
+        // Execute the main method and its JS. The template returned will be used in the feedback component.
+        return this.executeMethodAndJS(plugin, handlerSchema.method).then((result) => {
+
+            // Create and register the handler.
+            const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
+                type = plugin.component.replace('assignfeedback_', ''),
+                prefix = this.getPrefixForStrings(plugin.addon),
+                feedbackHandler = new CoreSitePluginsAssignFeedbackHandler(this.translate, uniqueName, type, prefix);
+
+            // Store in handlerSchema some data required by the component.
+            handlerSchema.methodTemplates = result.templates;
+            handlerSchema.methodJSResult = result.jsResult;
+
+            if (result && result.jsResult) {
+                // Override default handler functions with the result of the method JS.
+                for (const property in feedbackHandler) {
+                    if (property != 'constructor' && typeof feedbackHandler[property] == 'function' &&
+                            typeof result.jsResult[property] == 'function') {
+                        feedbackHandler[property] = result.jsResult[property].bind(feedbackHandler);
+                    }
+                }
+            }
+
+            this.assignFeedbackDelegate.registerHandler(feedbackHandler);
+
+            return plugin.component;
+        }).catch((err) => {
+            this.logger.error('Error executing main method for assign feedback', handlerSchema.method, err);
+        });
+    }
+
+    /**
+     * Given a handler in a plugin, register it in the assign submission delegate.
+     *
+     * @param {any} plugin Data of the plugin.
+     * @param {string} handlerName Name of the handler in the plugin.
+     * @param {any} handlerSchema Data about the handler.
+     * @param {any} initResult Result of the init WS call.
+     * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
+     */
+    protected registerAssignSubmissionHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any)
+            : string | Promise<string> {
+        if (!handlerSchema.method) {
+            // Required data not provided, stop.
+            this.logger.warn('Ignore site plugin because it doesn\'t provide method', plugin, handlerSchema);
+
+            return;
+        }
+
+        this.logger.debug('Register site plugin in assign submission delegate:', plugin, handlerSchema, initResult);
+
+        // Execute the main method and its JS. The template returned will be used in the submission component.
+        return this.executeMethodAndJS(plugin, handlerSchema.method).then((result) => {
+
+            // Create and register the handler.
+            const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
+                type = plugin.component.replace('assignsubmission_', ''),
+                prefix = this.getPrefixForStrings(plugin.addon),
+                submissionHandler = new CoreSitePluginsAssignSubmissionHandler(this.translate, uniqueName, type, prefix);
+
+            // Store in handlerSchema some data required by the component.
+            handlerSchema.methodTemplates = result.templates;
+            handlerSchema.methodJSResult = result.jsResult;
+
+            if (result && result.jsResult) {
+                // Override default handler functions with the result of the method JS.
+                for (const property in submissionHandler) {
+                    if (property != 'constructor' && typeof submissionHandler[property] == 'function' &&
+                            typeof result.jsResult[property] == 'function') {
+                        submissionHandler[property] = result.jsResult[property].bind(submissionHandler);
+                    }
+                }
+            }
+
+            this.assignSubmissionDelegate.registerHandler(submissionHandler);
+
+            return plugin.component;
+        }).catch((err) => {
+            this.logger.error('Error executing main method for assign submission', handlerSchema.method, err);
         });
     }
 

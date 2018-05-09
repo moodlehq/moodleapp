@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AddonModAssignFeedbackHandler } from './feedback-delegate';
 
@@ -24,7 +24,43 @@ export class AddonModAssignDefaultFeedbackHandler implements AddonModAssignFeedb
     name = 'AddonModAssignDefaultFeedbackHandler';
     type = 'default';
 
-    constructor(private translate: TranslateService) { }
+    constructor(protected translate: TranslateService) { }
+
+    /**
+     * Discard the draft data of the feedback plugin.
+     *
+     * @param {number} assignId The assignment ID.
+     * @param {number} userId User ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {void|Promise<any>} If the function is async, it should return a Promise resolved when done.
+     */
+    discardDraft(assignId: number, userId: number, siteId?: string): void | Promise<any> {
+        // Nothing to do.
+    }
+
+    /**
+     * Return the Component to use to display the plugin data.
+     * It's recommended to return the class of the component, but you can also return an instance of the component.
+     *
+     * @param {Injector} injector Injector.
+     * @param {any} plugin The plugin object.
+     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
+     */
+    getComponent(injector: Injector, plugin: any): any | Promise<any> {
+        // Nothing to do.
+    }
+
+    /**
+     * Return the draft saved data of the feedback plugin.
+     *
+     * @param {number} assignId The assignment ID.
+     * @param {number} userId User ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {any|Promise<any>} Data (or promise resolved with the data).
+     */
+    getDraft(assignId: number, userId: number, siteId?: string): any | Promise<any> {
+        // Nothing to do.
+    }
 
     /**
      * Get files used by this plugin.
@@ -94,5 +130,47 @@ export class AddonModAssignDefaultFeedbackHandler implements AddonModAssignFeedb
      */
     isEnabled(): boolean | Promise<boolean> {
         return true;
+    }
+
+    /**
+     * Prefetch any required data for the plugin.
+     * This should NOT prefetch files. Files to be prefetched should be returned by the getPluginFiles function.
+     *
+     * @param {any} assign The assignment.
+     * @param {any} submission The submission.
+     * @param {any} plugin The plugin object.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetch(assign: any, submission: any, plugin: any, siteId?: string): Promise<any> {
+        return Promise.resolve();
+    }
+
+    /**
+     * Prepare and add to pluginData the data to send to the server based on the draft data saved.
+     *
+     * @param {number} assignId The assignment ID.
+     * @param {number} userId User ID.
+     * @param {any} plugin The plugin object.
+     * @param {any} pluginData Object where to store the data to send.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {void|Promise<any>} If the function is async, it should return a Promise resolved when done.
+     */
+    prepareFeedbackData(assignId: number, userId: number, plugin: any, pluginData: any, siteId?: string): void | Promise<any> {
+        // Nothing to do.
+    }
+
+    /**
+     * Save draft data of the feedback plugin.
+     *
+     * @param {number} assignId The assignment ID.
+     * @param {number} userId User ID.
+     * @param {any} plugin The plugin object.
+     * @param {any} data The data to save.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {void|Promise<any>} If the function is async, it should return a Promise resolved when done.
+     */
+    saveDraft(assignId: number, userId: number, plugin: any, data: any, siteId?: string): void | Promise<any> {
+        // Nothing to do.
     }
 }

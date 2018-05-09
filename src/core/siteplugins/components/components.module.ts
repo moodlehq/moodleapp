@@ -26,6 +26,8 @@ import { CoreSitePluginsUserProfileFieldComponent } from './user-profile-field/u
 import { CoreSitePluginsQuestionComponent } from './question/question';
 import { CoreSitePluginsQuestionBehaviourComponent } from './question-behaviour/question-behaviour';
 import { CoreSitePluginsQuizAccessRuleComponent } from './quiz-access-rule/quiz-access-rule';
+import { CoreSitePluginsAssignFeedbackComponent } from './assign-feedback/assign-feedback';
+import { CoreSitePluginsAssignSubmissionComponent } from './assign-submission/assign-submission';
 
 @NgModule({
     declarations: [
@@ -36,7 +38,9 @@ import { CoreSitePluginsQuizAccessRuleComponent } from './quiz-access-rule/quiz-
         CoreSitePluginsUserProfileFieldComponent,
         CoreSitePluginsQuestionComponent,
         CoreSitePluginsQuestionBehaviourComponent,
-        CoreSitePluginsQuizAccessRuleComponent
+        CoreSitePluginsQuizAccessRuleComponent,
+        CoreSitePluginsAssignFeedbackComponent,
+        CoreSitePluginsAssignSubmissionComponent
     ],
     imports: [
         CommonModule,
@@ -55,7 +59,9 @@ import { CoreSitePluginsQuizAccessRuleComponent } from './quiz-access-rule/quiz-
         CoreSitePluginsUserProfileFieldComponent,
         CoreSitePluginsQuestionComponent,
         CoreSitePluginsQuestionBehaviourComponent,
-        CoreSitePluginsQuizAccessRuleComponent
+        CoreSitePluginsQuizAccessRuleComponent,
+        CoreSitePluginsAssignFeedbackComponent,
+        CoreSitePluginsAssignSubmissionComponent
     ],
     entryComponents: [
         CoreSitePluginsModuleIndexComponent,
@@ -64,7 +70,9 @@ import { CoreSitePluginsQuizAccessRuleComponent } from './quiz-access-rule/quiz-
         CoreSitePluginsUserProfileFieldComponent,
         CoreSitePluginsQuestionComponent,
         CoreSitePluginsQuestionBehaviourComponent,
-        CoreSitePluginsQuizAccessRuleComponent
+        CoreSitePluginsQuizAccessRuleComponent,
+        CoreSitePluginsAssignFeedbackComponent,
+        CoreSitePluginsAssignSubmissionComponent
     ]
 })
 export class CoreSitePluginsComponentsModule {}
