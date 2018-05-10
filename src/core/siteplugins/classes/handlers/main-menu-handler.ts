@@ -25,7 +25,8 @@ export class CoreSitePluginsMainMenuHandler extends CoreSitePluginsBaseHandler i
             protected initResult: any) {
         super(name);
 
-        this.priority = handlerSchema.priority;
+        // Set 699 as max priority so site plugins are always shown in the More tab (700 is Notifications tab).
+        this.priority = Math.min(handlerSchema.priority, 699);
     }
 
     /**
