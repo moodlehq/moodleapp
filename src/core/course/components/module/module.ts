@@ -39,22 +39,13 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     @Input('downloadEnabled') set enabled(value: boolean) {
         this.downloadEnabled = value;
 
-        if (this.module.handlerData.showDownloadButton && this.downloadEnabled && !this.statusObserver) {
+        if (this.module.handlerData.showDownloadButton && this.downloadEnabled && !this.statusCalculated) {
             // First time that the download is enabled. Initialize the data.
+            this.statusCalculated = true;
             this.spinner = true; // Show spinner while calculating the status.
-
-            this.prefetchHandler = this.prefetchDelegate.getPrefetchHandlerFor(this.module);
 
             // Get current status to decide which icon should be shown.
             this.prefetchDelegate.getModuleStatus(this.module, this.courseId).then(this.showStatus.bind(this));
-
-            // Listen for changes on this module status.
-            this.statusObserver = this.eventsProvider.on(CoreEventsProvider.PACKAGE_STATUS_CHANGED, (data) => {
-                if (data.componentId === this.module.id && this.prefetchHandler &&
-                        data.component === this.prefetchHandler.component) {
-                    this.showStatus(data.status);
-                }
-            }, this.sitesProvider.getCurrentSiteId());
         }
     }
     @Output() completionChanged?: EventEmitter<void>; // Will emit an event when the module completion changes.
@@ -66,6 +57,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
     protected prefetchHandler: CoreCourseModulePrefetchHandler;
     protected statusObserver;
+    protected statusCalculated = false;
     protected isDestroyed = false;
 
     constructor(@Optional() protected navCtrl: NavController, protected prefetchDelegate: CoreCourseModulePrefetchDelegate,
@@ -81,6 +73,25 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         // Handler data must be defined. If it isn't, set it to prevent errors.
         if (this.module && !this.module.handlerData) {
             this.module.handlerData = {};
+        }
+
+        if (this.module.handlerData.showDownloadButton) {
+            // Listen for changes on this module status, even if download isn't enabled.
+            this.prefetchHandler = this.prefetchDelegate.getPrefetchHandlerFor(this.module);
+
+            this.statusObserver = this.eventsProvider.on(CoreEventsProvider.PACKAGE_STATUS_CHANGED, (data) => {
+                if (data.componentId === this.module.id && this.prefetchHandler &&
+                        data.component === this.prefetchHandler.component) {
+
+                    if (this.downloadEnabled) {
+                        // Download is enabled, show the status.
+                        this.showStatus(data.status);
+                    } else if (this.module.handlerData.updateStatus) {
+                        // Download isn't enabled but the handler defines a updateStatus function, call it anyway.
+                        this.module.handlerData.updateStatus(data.status);
+                    }
+                }
+            }, this.sitesProvider.getCurrentSiteId());
         }
     }
 
