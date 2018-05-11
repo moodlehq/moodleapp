@@ -17,6 +17,7 @@ import { Platform } from 'ionic-angular';
 import { InAppBrowser, InAppBrowserObject } from '@ionic-native/in-app-browser';
 import { Clipboard } from '@ionic-native/clipboard';
 import { FileOpener } from '@ionic-native/file-opener';
+import { WebIntent } from '@ionic-native/web-intent';
 import { CoreAppProvider } from '../app';
 import { CoreDomUtilsProvider } from './dom';
 import { CoreMimetypeUtilsProvider } from './mimetype';
@@ -62,7 +63,7 @@ export class CoreUtilsProvider {
     constructor(private iab: InAppBrowser, private appProvider: CoreAppProvider, private clipboard: Clipboard,
             private domUtils: CoreDomUtilsProvider, logger: CoreLoggerProvider, private translate: TranslateService,
             private platform: Platform, private langProvider: CoreLangProvider, private eventsProvider: CoreEventsProvider,
-            private fileOpener: FileOpener, private mimetypeUtils: CoreMimetypeUtilsProvider) {
+            private fileOpener: FileOpener, private mimetypeUtils: CoreMimetypeUtilsProvider, private webIntent: WebIntent) {
         this.logger = logger.getInstance('CoreUtilsProvider');
     }
 
@@ -680,10 +681,6 @@ export class CoreUtilsProvider {
     /**
      * Open a file using platform specific method.
      *
-     * node-webkit: Using the default application configured.
-     * Android: Using the WebIntent plugin.
-     * iOs: Using handleDocumentWithURL.
-     *
      * @param {string} path The local path of the file to be open.
      * @return {Promise<any>} Promise resolved when done.
      */
@@ -778,19 +775,39 @@ export class CoreUtilsProvider {
      * Open an online file using platform specific method.
      * Specially useful for audio and video since they can be streamed.
      *
-     * node-webkit: Using the default application configured.
-     * Android: Using the WebIntent plugin.
-     * iOS: Using the window.open method (InAppBrowser)
-     *      We don't use iOS quickview framework because it doesn't support streaming.
-     *
      * @param {string} url The URL of the file.
      * @return {Promise<void>} Promise resolved when opened.
      */
     openOnlineFile(url: string): Promise<void> {
-        return new Promise<void>((resolve, reject): void => {
-            // @todo
-            reject('TODO');
-        });
+        if (this.platform.is('android')) {
+            // In Android we need the mimetype to open it.
+            return this.mimetypeUtils.getMimeTypeFromUrl(url).catch(() => {
+                // Error getting mimetype, return undefined.
+            }).then((mimetype) => {
+                if (!mimetype) {
+                    // Couldn't retrieve mimetype. Return error.
+                    return Promise.reject(this.translate.instant('core.erroropenfilenoextension'));
+                }
+
+                const options = {
+                    action: this.webIntent.ACTION_VIEW,
+                    url: url,
+                    type: mimetype
+                };
+
+                return this.webIntent.startActivity(options).catch((error) => {
+                    this.logger.error('Error opening online file ' + url + ' with mimetype ' + mimetype);
+                    this.logger.error('Error: ', JSON.stringify(error));
+
+                    return Promise.reject(this.translate.instant('core.erroropenfilenoapp'));
+                });
+            });
+        }
+
+        // In the rest of platforms we need to open them in InAppBrowser.
+        window.open(url, '_blank');
+
+        return Promise.resolve();
     }
 
     /**

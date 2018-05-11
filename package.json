@@ -57,6 +57,7 @@
     "@ionic-native/splash-screen": "4.3.0",
     "@ionic-native/sqlite": "^4.3.2",
     "@ionic-native/status-bar": "4.3.0",
+    "@ionic-native/web-intent": "^4.7.0",
     "@ionic-native/zip": "^4.3.3",
     "@ngx-translate/core": "^8.0.0",
     "@ngx-translate/http-loader": "^2.0.0",

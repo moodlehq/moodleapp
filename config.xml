@@ -117,4 +117,5 @@
     <plugin name="cordova-plugin-local-notifications-mm" />
     <plugin name="cordova-sqlite-storage" spec="2.0.4" />
     <plugin name="cordova-plugin-file-opener2" spec="~2.0.19" />
+    <plugin name="com-darryncampbell-cordova-plugin-intent" spec="~1.0.2" />
 </widget>

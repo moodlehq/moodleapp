@@ -33,6 +33,7 @@ import { Push } from '@ionic-native/push';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SQLite } from '@ionic-native/sqlite';
+import { WebIntent } from '@ionic-native/web-intent';
 import { Zip } from '@ionic-native/zip';
 
 // Services that Mock Ionic Native in browser an desktop.
@@ -190,6 +191,7 @@ export const IONIC_NATIVE_PROVIDERS = [
         SplashScreen,
         StatusBar,
         SQLite,
+        WebIntent,
         {
             provide: Zip,
             deps: [CoreAppProvider, File, CoreTextUtilsProvider],
