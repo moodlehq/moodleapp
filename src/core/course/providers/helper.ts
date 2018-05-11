@@ -245,20 +245,22 @@ export class CoreCourseHelperProvider {
      * This function will set the icon to "spinner" when starting and it will also set it back to the initial icon if the
      * user cancels. All the other updates of the icon should be made when CoreEventsProvider.COURSE_STATUS_CHANGED is received.
      *
-     * @param {any} iconData An object where to store the course icon. It will be stored with the name "prefetchCourseIcon".
+     * @param {any} data An object where to store the course icon and title: "prefetchCourseIcon" and "title".
      * @param {any} course Course to prefetch.
      * @param {any[]} [sections] List of course sections.
      * @param {CoreCourseOptionsHandlerToDisplay[]} courseHandlers List of course handlers.
      * @return {Promise<boolean>} Promise resolved when the download finishes, rejected if an error occurs or the user cancels.
      */
-    confirmAndPrefetchCourse(iconData: any, course: any, sections?: any[], courseHandlers?: CoreCourseOptionsHandlerToDisplay[])
+    confirmAndPrefetchCourse(data: any, course: any, sections?: any[], courseHandlers?: CoreCourseOptionsHandlerToDisplay[])
             : Promise<boolean> {
 
-        const initialIcon = iconData.prefetchCourseIcon,
+        const initialIcon = data.prefetchCourseIcon,
+            initialTitle = data.title,
             siteId = this.sitesProvider.getCurrentSiteId();
         let promise;
 
-        iconData.prefetchCourseIcon = 'spinner';
+        data.prefetchCourseIcon = 'spinner';
+        data.title = 'core.downloading';
 
         // Get the sections first if needed.
         if (sections) {
@@ -286,7 +288,8 @@ export class CoreCourseHelperProvider {
                 });
             }, (error): any => {
                 // User cancelled or there was an error calculating the size.
-                iconData.prefetchCourseIcon = initialIcon;
+                data.prefetchCourseIcon = initialIcon;
+                data.title = initialTitle;
 
                 return Promise.reject(error);
             });
@@ -729,32 +732,41 @@ export class CoreCourseHelperProvider {
     }
 
     /**
-     * Get a course status icon.
+     * Get a course status icon and the langkey to use as a title.
      *
      * @param {number} courseId Course ID.
      * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<string>} Promise resolved with the icon name.
+     * @return {Promise<{icon: string, title: string}>} Promise resolved with the icon name and the title key.
      */
-    getCourseStatusIcon(courseId: number, siteId?: string): Promise<string> {
+    getCourseStatusIconAndTitle(courseId: number, siteId?: string): Promise<{icon: string, title: string}> {
         return this.courseProvider.getCourseStatus(courseId, siteId).then((status) => {
-            return this.getCourseStatusIconFromStatus(status);
+            return this.getCourseStatusIconAndTitleFromStatus(status);
         });
     }
 
     /**
-     * Get a course status icon from status.
+     * Get a course status icon and the langkey to use as a title from status.
      *
      * @param {string} status Course status.
-     * @return {string} Icon name.
+     * @return {{icon: string, title: string}} Title and icon name.
      */
-    getCourseStatusIconFromStatus(status: string): string {
+    getCourseStatusIconAndTitleFromStatus(status: string): {icon: string, title: string} {
         if (status == CoreConstants.DOWNLOADED) {
             // Always show refresh icon, we cannot knew if there's anything new in course options.
-            return 'refresh';
+            return {
+                icon: 'refresh',
+                title: 'core.course.refreshcourse'
+            };
         } else if (status == CoreConstants.DOWNLOADING) {
-            return 'spinner';
+            return {
+                icon: 'spinner',
+                title: 'core.downloading'
+            };
         } else {
-            return 'cloud-download';
+            return {
+                icon: 'cloud-download',
+                title: 'core.course.downloadcourse'
+            };
         }
     }
 

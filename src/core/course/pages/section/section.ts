@@ -49,7 +49,8 @@ export class CoreCourseSectionPage implements OnDestroy {
     downloadEnabled: boolean;
     downloadEnabledIcon = 'square-outline'; // Disabled by default.
     prefetchCourseData = {
-        prefetchCourseIcon: 'spinner'
+        prefetchCourseIcon: 'spinner',
+        title: 'core.course.downloadcourse'
     };
     moduleId: number;
     displayEnableDownload: boolean;
@@ -83,7 +84,7 @@ export class CoreCourseSectionPage implements OnDestroy {
         // Listen for changes in course status.
         this.courseStatusObserver = eventsProvider.on(CoreEventsProvider.COURSE_STATUS_CHANGED, (data) => {
             if (data.courseId == this.course.id) {
-                this.prefetchCourseData.prefetchCourseIcon = this.courseHelper.getCourseStatusIconFromStatus(data.status);
+                this.updateCourseStatus(data.status);
             }
         }, sitesProvider.getCurrentSiteId());
     }
@@ -116,7 +117,7 @@ export class CoreCourseSectionPage implements OnDestroy {
                     } else {
                         // No download, this probably means that the app was closed while downloading. Set previous status.
                         this.courseProvider.setCoursePreviousStatus(this.course.id).then((status) => {
-                            this.prefetchCourseData.prefetchCourseIcon = this.courseHelper.getCourseStatusIconFromStatus(status);
+                            this.updateCourseStatus(status);
                         });
                     }
                 }
@@ -273,8 +274,9 @@ export class CoreCourseSectionPage implements OnDestroy {
      * @return {Promise<void>} Promise resolved when done.
      */
     protected determineCoursePrefetchIcon(): Promise<void> {
-        return this.courseHelper.getCourseStatusIcon(this.course.id).then((icon) => {
-            this.prefetchCourseData.prefetchCourseIcon = icon;
+        return this.courseHelper.getCourseStatusIconAndTitle(this.course.id).then((data) => {
+            this.prefetchCourseData.prefetchCourseIcon = data.icon;
+            this.prefetchCourseData.title = data.title;
         });
     }
 
@@ -303,6 +305,18 @@ export class CoreCourseSectionPage implements OnDestroy {
     toggleDownload(): void {
         this.downloadEnabled = !this.downloadEnabled;
         this.downloadEnabledIcon = this.downloadEnabled ? 'checkbox-outline' : 'square-outline';
+    }
+
+    /**
+     * Update the course status icon and title.
+     *
+     * @param {string} status Status to show.
+     */
+    protected updateCourseStatus(status: string): void {
+        const statusData = this.courseHelper.getCourseStatusIconAndTitleFromStatus(status);
+
+        this.prefetchCourseData.prefetchCourseIcon = statusData.icon;
+        this.prefetchCourseData.title = statusData.title;
     }
 
     /**
