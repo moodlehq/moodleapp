@@ -45,6 +45,7 @@
     "@ionic-native/core": "4.3.0",
     "@ionic-native/device": "^4.5.3",
     "@ionic-native/file": "^4.3.3",
+    "@ionic-native/file-opener": "^4.7.0",
     "@ionic-native/file-transfer": "^4.3.3",
     "@ionic-native/globalization": "^4.3.2",
     "@ionic-native/in-app-browser": "^4.3.3",

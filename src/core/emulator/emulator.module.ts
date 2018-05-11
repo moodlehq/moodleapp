@@ -21,6 +21,7 @@ import { Camera } from '@ionic-native/camera';
 import { Clipboard } from '@ionic-native/clipboard';
 import { Device } from '@ionic-native/device';
 import { File } from '@ionic-native/file';
+import { FileOpener } from '@ionic-native/file-opener';
 import { FileTransfer } from '@ionic-native/file-transfer';
 import { Globalization } from '@ionic-native/globalization';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
@@ -39,6 +40,7 @@ import { BadgeMock } from './providers/badge';
 import { CameraMock } from './providers/camera';
 import { ClipboardMock } from './providers/clipboard';
 import { FileMock } from './providers/file';
+import { FileOpenerMock } from './providers/file-opener';
 import { FileTransferMock } from './providers/file-transfer';
 import { GlobalizationMock } from './providers/globalization';
 import { InAppBrowserMock } from './providers/inappbrowser';
@@ -121,6 +123,13 @@ export const IONIC_NATIVE_PROVIDERS = [
             useFactory: (appProvider: CoreAppProvider, textUtils: CoreTextUtilsProvider): File => {
                 // Use platform instead of CoreAppProvider to prevent circular dependencies.
                 return appProvider.isMobile() ? new File() : new FileMock(appProvider, textUtils);
+            }
+        },
+        {
+            provide: FileOpener,
+            deps: [CoreAppProvider],
+            useFactory: (appProvider: CoreAppProvider): FileOpener => {
+                return appProvider.isMobile() ? new FileOpener() : new FileOpenerMock(appProvider);
             }
         },
         {

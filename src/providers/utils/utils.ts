@@ -16,8 +16,10 @@ import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { InAppBrowser, InAppBrowserObject } from '@ionic-native/in-app-browser';
 import { Clipboard } from '@ionic-native/clipboard';
+import { FileOpener } from '@ionic-native/file-opener';
 import { CoreAppProvider } from '../app';
 import { CoreDomUtilsProvider } from './dom';
+import { CoreMimetypeUtilsProvider } from './mimetype';
 import { CoreEventsProvider } from '../events';
 import { CoreLoggerProvider } from '../logger';
 import { TranslateService } from '@ngx-translate/core';
@@ -59,7 +61,8 @@ export class CoreUtilsProvider {
 
     constructor(private iab: InAppBrowser, private appProvider: CoreAppProvider, private clipboard: Clipboard,
             private domUtils: CoreDomUtilsProvider, logger: CoreLoggerProvider, private translate: TranslateService,
-            private platform: Platform, private langProvider: CoreLangProvider, private eventsProvider: CoreEventsProvider) {
+            private platform: Platform, private langProvider: CoreLangProvider, private eventsProvider: CoreEventsProvider,
+            private fileOpener: FileOpener, private mimetypeUtils: CoreMimetypeUtilsProvider) {
         this.logger = logger.getInstance('CoreUtilsProvider');
     }
 
@@ -685,25 +688,28 @@ export class CoreUtilsProvider {
      * @return {Promise<any>} Promise resolved when done.
      */
     openFile(path: string): Promise<any> {
-        return new Promise((resolve, reject): void => {
-            if (this.appProvider.isDesktop()) {
-                // It's a desktop app, send an event so the file is opened.
-                // Opening the file from here (renderer process) doesn't focus the opened app, that's why an event is needed.
-                // Use sendSync so we can receive the result.
-                if (require('electron').ipcRenderer.sendSync('openItem', path)) {
-                    resolve();
-                } else {
-                    reject(this.translate.instant('core.erroropenfilenoapp'));
-                }
-            } else if ((<any> window).plugins) {
-                // @todo
-                reject('TODO');
+        const extension = this.mimetypeUtils.getFileExtension(path),
+            mimetype = this.mimetypeUtils.getMimeType(extension);
+
+        // Path needs to be decoded, the file won't be opened if the path has %20 instead of spaces and so.
+        try {
+            path = decodeURIComponent(path);
+        } catch (ex) {
+            // Error, use the original path.
+        }
+
+        return this.fileOpener.open(path, mimetype).catch((error) => {
+            this.logger.error('Error opening file ' + path + ' with mimetype ' + mimetype);
+            this.logger.error('Error: ', JSON.stringify(error));
+
+            if (!extension || extension.indexOf('/') > -1 || extension.indexOf('\\') > -1) {
+                // Extension not found.
+                error = this.translate.instant('core.erroropenfilenoextension');
             } else {
-                // Changing _blank for _system may work in cordova 2.4 and onwards.
-                this.logger.log('Opening external file using window.open()');
-                window.open(path, '_blank');
-                resolve();
+                error = this.translate.instant('core.erroropenfilenoapp');
             }
+
+            return Promise.reject(error);
         });
     }
 

@@ -115,7 +115,6 @@
     <plugin name="ionic-plugin-keyboard" spec="2.2.1" />
     <plugin name="cordova-plugin-zip" spec="3.1.0" />
     <plugin name="cordova-plugin-local-notifications-mm" />
-    <plugin name="net.tunts.webintent" spec="https://github.com/Tunts/WebIntent.git" />
-    <plugin name="ch.ti8m.documenthandler" spec="https://github.com/ti8m/DocumentHandler.git" />
     <plugin name="cordova-sqlite-storage" spec="2.0.4" />
+    <plugin name="cordova-plugin-file-opener2" spec="~2.0.19" />
 </widget>
