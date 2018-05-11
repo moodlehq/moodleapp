@@ -68,7 +68,7 @@ export class CoreExternalContentDirective implements AfterViewInit {
 
         } else if (tagName === 'AUDIO' || tagName === 'VIDEO' || tagName === 'SOURCE' || tagName === 'TRACK') {
             targetAttr = 'src';
-            sourceAttr = 'targetSrc';
+            sourceAttr = 'target-src';
 
             if (tagName === 'VIDEO') {
                 const poster = (<HTMLVideoElement> this.element).poster;

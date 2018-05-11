@@ -309,17 +309,11 @@ export class CoreFormatTextDirective implements OnChanges {
 
             audios.forEach((audio) => {
                 this.treatMedia(audio);
-                if (this.platform.is('ios')) {
-                    // Set data-tap-disabled="true" to make slider work in iOS.
-                    audio.setAttribute('data-tap-disabled', true);
-                }
             });
 
             videos.forEach((video) => {
                 this.treatVideoFilters(video);
                 this.treatMedia(video);
-                // Set data-tap-disabled="true" to make controls work in Android (see MOBILE-1452).
-                video.setAttribute('data-tap-disabled', true);
             });
 
             iframes.forEach((iframe) => {
