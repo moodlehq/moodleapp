@@ -17,7 +17,7 @@
                     </core-context-menu>
                 </core-navbar-buttons>
                 <ion-content>
-                    <ion-refresher [enabled]="dataLoaded" (ionRefresh)="doRefresh($event)">
+                    <ion-refresher [enabled]="dataLoaded && displayRefresher" (ionRefresh)="doRefresh($event)">
                         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
                     </ion-refresher>
 

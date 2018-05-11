@@ -85,25 +85,6 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     }
 
     /**
-     * Refresh the data.
-     *
-     * @param {any}       [refresher] Refresher.
-     * @param {Function}  [done] Function to call when done.
-     * @param {boolean}   [showErrors=false] If show errors to the user of hide them.
-     * @return {Promise<any>} Promise resolved when done.
-     */
-    doRefresh(refresher?: any, done?: () => void, showErrors: boolean = false): Promise<any> {
-        if (this.loaded) {
-            return this.refreshContent(true, showErrors).finally(() => {
-                refresher && refresher.complete();
-                done && done();
-            });
-        }
-
-        return Promise.resolve();
-    }
-
-    /**
      * Compares sync event data with current data to check if refresh content is needed.
      *
      * @param {any} syncEventData Data received on sync observer.
