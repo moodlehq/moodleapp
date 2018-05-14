@@ -21,6 +21,7 @@ import { Camera } from '@ionic-native/camera';
 import { Clipboard } from '@ionic-native/clipboard';
 import { Device } from '@ionic-native/device';
 import { File } from '@ionic-native/file';
+import { FileOpener } from '@ionic-native/file-opener';
 import { FileTransfer } from '@ionic-native/file-transfer';
 import { Globalization } from '@ionic-native/globalization';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
@@ -32,6 +33,7 @@ import { Push } from '@ionic-native/push';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SQLite } from '@ionic-native/sqlite';
+import { WebIntent } from '@ionic-native/web-intent';
 import { Zip } from '@ionic-native/zip';
 
 // Services that Mock Ionic Native in browser an desktop.
@@ -39,6 +41,7 @@ import { BadgeMock } from './providers/badge';
 import { CameraMock } from './providers/camera';
 import { ClipboardMock } from './providers/clipboard';
 import { FileMock } from './providers/file';
+import { FileOpenerMock } from './providers/file-opener';
 import { FileTransferMock } from './providers/file-transfer';
 import { GlobalizationMock } from './providers/globalization';
 import { InAppBrowserMock } from './providers/inappbrowser';
@@ -124,6 +127,13 @@ export const IONIC_NATIVE_PROVIDERS = [
             }
         },
         {
+            provide: FileOpener,
+            deps: [CoreAppProvider],
+            useFactory: (appProvider: CoreAppProvider): FileOpener => {
+                return appProvider.isMobile() ? new FileOpener() : new FileOpenerMock(appProvider);
+            }
+        },
+        {
             provide: FileTransfer,
             deps: [CoreAppProvider, CoreFileProvider],
             useFactory: (appProvider: CoreAppProvider, fileProvider: CoreFileProvider): FileTransfer => {
@@ -181,6 +191,7 @@ export const IONIC_NATIVE_PROVIDERS = [
         SplashScreen,
         StatusBar,
         SQLite,
+        WebIntent,
         {
             provide: Zip,
             deps: [CoreAppProvider, File, CoreTextUtilsProvider],

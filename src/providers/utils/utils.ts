@@ -16,8 +16,11 @@ import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { InAppBrowser, InAppBrowserObject } from '@ionic-native/in-app-browser';
 import { Clipboard } from '@ionic-native/clipboard';
+import { FileOpener } from '@ionic-native/file-opener';
+import { WebIntent } from '@ionic-native/web-intent';
 import { CoreAppProvider } from '../app';
 import { CoreDomUtilsProvider } from './dom';
+import { CoreMimetypeUtilsProvider } from './mimetype';
 import { CoreEventsProvider } from '../events';
 import { CoreLoggerProvider } from '../logger';
 import { TranslateService } from '@ngx-translate/core';
@@ -59,7 +62,8 @@ export class CoreUtilsProvider {
 
     constructor(private iab: InAppBrowser, private appProvider: CoreAppProvider, private clipboard: Clipboard,
             private domUtils: CoreDomUtilsProvider, logger: CoreLoggerProvider, private translate: TranslateService,
-            private platform: Platform, private langProvider: CoreLangProvider, private eventsProvider: CoreEventsProvider) {
+            private platform: Platform, private langProvider: CoreLangProvider, private eventsProvider: CoreEventsProvider,
+            private fileOpener: FileOpener, private mimetypeUtils: CoreMimetypeUtilsProvider, private webIntent: WebIntent) {
         this.logger = logger.getInstance('CoreUtilsProvider');
     }
 
@@ -677,33 +681,32 @@ export class CoreUtilsProvider {
     /**
      * Open a file using platform specific method.
      *
-     * node-webkit: Using the default application configured.
-     * Android: Using the WebIntent plugin.
-     * iOs: Using handleDocumentWithURL.
-     *
      * @param {string} path The local path of the file to be open.
      * @return {Promise<any>} Promise resolved when done.
      */
     openFile(path: string): Promise<any> {
-        return new Promise((resolve, reject): void => {
-            if (this.appProvider.isDesktop()) {
-                // It's a desktop app, send an event so the file is opened.
-                // Opening the file from here (renderer process) doesn't focus the opened app, that's why an event is needed.
-                // Use sendSync so we can receive the result.
-                if (require('electron').ipcRenderer.sendSync('openItem', path)) {
-                    resolve();
-                } else {
-                    reject(this.translate.instant('core.erroropenfilenoapp'));
-                }
-            } else if ((<any> window).plugins) {
-                // @todo
-                reject('TODO');
+        const extension = this.mimetypeUtils.getFileExtension(path),
+            mimetype = this.mimetypeUtils.getMimeType(extension);
+
+        // Path needs to be decoded, the file won't be opened if the path has %20 instead of spaces and so.
+        try {
+            path = decodeURIComponent(path);
+        } catch (ex) {
+            // Error, use the original path.
+        }
+
+        return this.fileOpener.open(path, mimetype).catch((error) => {
+            this.logger.error('Error opening file ' + path + ' with mimetype ' + mimetype);
+            this.logger.error('Error: ', JSON.stringify(error));
+
+            if (!extension || extension.indexOf('/') > -1 || extension.indexOf('\\') > -1) {
+                // Extension not found.
+                error = this.translate.instant('core.erroropenfilenoextension');
             } else {
-                // Changing _blank for _system may work in cordova 2.4 and onwards.
-                this.logger.log('Opening external file using window.open()');
-                window.open(path, '_blank');
-                resolve();
+                error = this.translate.instant('core.erroropenfilenoapp');
             }
+
+            return Promise.reject(error);
         });
     }
 
@@ -772,19 +775,39 @@ export class CoreUtilsProvider {
      * Open an online file using platform specific method.
      * Specially useful for audio and video since they can be streamed.
      *
-     * node-webkit: Using the default application configured.
-     * Android: Using the WebIntent plugin.
-     * iOS: Using the window.open method (InAppBrowser)
-     *      We don't use iOS quickview framework because it doesn't support streaming.
-     *
      * @param {string} url The URL of the file.
      * @return {Promise<void>} Promise resolved when opened.
      */
     openOnlineFile(url: string): Promise<void> {
-        return new Promise<void>((resolve, reject): void => {
-            // @todo
-            reject('TODO');
-        });
+        if (this.platform.is('android')) {
+            // In Android we need the mimetype to open it.
+            return this.mimetypeUtils.getMimeTypeFromUrl(url).catch(() => {
+                // Error getting mimetype, return undefined.
+            }).then((mimetype) => {
+                if (!mimetype) {
+                    // Couldn't retrieve mimetype. Return error.
+                    return Promise.reject(this.translate.instant('core.erroropenfilenoextension'));
+                }
+
+                const options = {
+                    action: this.webIntent.ACTION_VIEW,
+                    url: url,
+                    type: mimetype
+                };
+
+                return this.webIntent.startActivity(options).catch((error) => {
+                    this.logger.error('Error opening online file ' + url + ' with mimetype ' + mimetype);
+                    this.logger.error('Error: ', JSON.stringify(error));
+
+                    return Promise.reject(this.translate.instant('core.erroropenfilenoapp'));
+                });
+            });
+        }
+
+        // In the rest of platforms we need to open them in InAppBrowser.
+        window.open(url, '_blank');
+
+        return Promise.resolve();
     }
 
     /**

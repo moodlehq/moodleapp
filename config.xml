@@ -25,10 +25,12 @@
     <preference name="BackupWebStorage" value="none" />
     <preference name="ScrollEnabled" value="false" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
+    <preference name="AllowInlineMediaPlayback" value="true" />
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
     <preference name="iosPersistentFileLocation" value="Compatibility" />
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="3000" />
+    <preference name="SplashMaintainAspectRatio" value="true" />
     <feature name="StatusBar">
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
@@ -115,7 +117,7 @@
     <plugin name="ionic-plugin-keyboard" spec="2.2.1" />
     <plugin name="cordova-plugin-zip" spec="3.1.0" />
     <plugin name="cordova-plugin-local-notifications-mm" />
-    <plugin name="net.tunts.webintent" spec="https://github.com/Tunts/WebIntent.git" />
-    <plugin name="ch.ti8m.documenthandler" spec="https://github.com/ti8m/DocumentHandler.git" />
     <plugin name="cordova-sqlite-storage" spec="2.0.4" />
+    <plugin name="cordova-plugin-file-opener2" spec="~2.0.19" />
+    <plugin name="com-darryncampbell-cordova-plugin-intent" spec="~1.0.2" />
 </widget>

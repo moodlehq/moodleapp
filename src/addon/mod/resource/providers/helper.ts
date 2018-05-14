@@ -47,10 +47,11 @@ export class AddonModResourceHelperProvider {
      * Get the HTML to display an embedded resource.
      *
      * @param {any} module The module object.
-     * @return {Promise<any>}      Promise resolved with the iframe src.
+     * @param {number} courseId The course ID.
+     * @return {Promise<any>} Promise resolved with the HTML.
      */
-    getEmbeddedHtml(module: any): Promise<any> {
-        return this.courseHelper.downloadModuleWithMainFileIfNeeded(module, module.course, AddonModResourceProvider.COMPONENT,
+    getEmbeddedHtml(module: any, courseId: number): Promise<any> {
+        return this.courseHelper.downloadModuleWithMainFileIfNeeded(module, courseId, AddonModResourceProvider.COMPONENT,
                 module.id, module.contents).then((result) => {
             const file = module.contents[0],
                 ext = this.mimetypeUtils.getFileExtension(file.filename),
