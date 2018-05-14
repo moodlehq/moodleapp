@@ -38,7 +38,8 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
 
     isDownloading: boolean;
     prefetchCourseData = {
-        prefetchCourseIcon: 'spinner'
+        prefetchCourseIcon: 'spinner',
+        title: 'core.course.downloadcourse'
     };
 
     protected isDestroyed = false;
@@ -50,7 +51,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
         // Listen for status change in course.
         this.courseStatusObserver = eventsProvider.on(CoreEventsProvider.COURSE_STATUS_CHANGED, (data) => {
             if (data.courseId == this.course.id) {
-                this.prefetchCourseData.prefetchCourseIcon = this.courseHelper.getCourseStatusIconFromStatus(data.status);
+                this.updateCourseStatus(data.status);
             }
         }, sitesProvider.getCurrentSiteId());
     }
@@ -60,10 +61,11 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         // Determine course prefetch icon.
-        this.courseHelper.getCourseStatusIcon(this.course.id).then((icon) => {
-            this.prefetchCourseData.prefetchCourseIcon = icon;
+        this.courseHelper.getCourseStatusIconAndTitle(this.course.id).then((data) => {
+            this.prefetchCourseData.prefetchCourseIcon = data.icon;
+            this.prefetchCourseData.title = data.title;
 
-            if (icon == 'spinner') {
+            if (data.icon == 'spinner') {
                 // Course is being downloaded. Get the download promise.
                 const promise = this.courseHelper.getCourseDownloadPromise(this.course.id);
                 if (promise) {
@@ -104,6 +106,18 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
                 this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
             }
         });
+    }
+
+    /**
+     * Update the course status icon and title.
+     *
+     * @param {string} status Status to show.
+     */
+    protected updateCourseStatus(status: string): void {
+        const statusData = this.courseHelper.getCourseStatusIconAndTitleFromStatus(status);
+
+        this.prefetchCourseData.prefetchCourseIcon = statusData.icon;
+        this.prefetchCourseData.title = statusData.title;
     }
 
     /**

@@ -41,7 +41,7 @@
             <ion-item *ngIf="!isEnrolled && !selfEnrolInstances.length && !paypalEnabled">
                 <p>{{ 'core.courses.notenrollable' | translate }}</p>
             </ion-item>
-            <a ion-item *ngIf="canAccessCourse" (click)="prefetchCourse()" detail-none>
+            <a ion-item *ngIf="canAccessCourse" (click)="prefetchCourse()" detail-none [attr.aria-label]="prefetchCourseData.title | translate">
                 <ion-icon *ngIf="prefetchCourseData.prefetchCourseIcon != 'spinner'" [name]="prefetchCourseData.prefetchCourseIcon" item-start></ion-icon>
                 <ion-spinner *ngIf="prefetchCourseData.prefetchCourseIcon == 'spinner'" item-start></ion-spinner>
                 <h2>{{ 'core.course.downloadcourse' | translate }}</h2>

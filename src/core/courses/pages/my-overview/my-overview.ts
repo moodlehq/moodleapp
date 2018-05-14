@@ -394,7 +394,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
             }
 
             this.courseHelper.determineCoursesStatus(this.courses[filter]).then((status) => {
-                let icon = this.courseHelper.getCourseStatusIconFromStatus(status);
+                let icon = this.courseHelper.getCourseStatusIconAndTitleFromStatus(status).icon;
                 if (icon == 'spinner') {
                     // It seems all courses are being downloaded, show a download button instead.
                     icon = 'cloud-download';
