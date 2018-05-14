@@ -65,11 +65,11 @@ export class CoreSyncProvider {
      * Block a component and ID so it cannot be synchronized.
      *
      * @param {string} component Component name.
-     * @param {number} id Unique ID per component.
+     * @param {string | number} id Unique ID per component.
      * @param {string} [operation] Operation name. If not defined, a default text is used.
      * @param {string} [siteId] Site ID. If not defined, current site.
      */
-    blockOperation(component: string, id: number, operation?: string, siteId?: string): void {
+    blockOperation(component: string, id: string | number, operation?: string, siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const uniqueId = this.getUniqueSyncBlockId(component, id);
@@ -104,10 +104,10 @@ export class CoreSyncProvider {
      * Clear all blocks for a certain component.
      *
      * @param {string} component Component name.
-     * @param {number} id Unique ID per component.
+     * @param {string | number} id Unique ID per component.
      * @param {string} [siteId] Site ID. If not defined, current site.
      */
-    clearBlocks(component: string, id: number, siteId?: string): void {
+    clearBlocks(component: string, id: string | number, siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const uniqueId = this.getUniqueSyncBlockId(component, id);
@@ -150,10 +150,10 @@ export class CoreSyncProvider {
      * Convenience function to create unique identifiers for a component and id.
      *
      * @param {string} component Component name.
-     * @param {number} id Unique ID per component.
+     * @param {string | number} id Unique ID per component.
      * @return {string} Unique sync id.
      */
-    protected getUniqueSyncBlockId(component: string, id: number): string {
+    protected getUniqueSyncBlockId(component: string, id: string | number): string {
         return component + '#' + id;
     }
 
@@ -162,11 +162,11 @@ export class CoreSyncProvider {
      * One block can have different operations. Here we check how many operations are being blocking the object.
      *
      * @param {string} component Component name.
-     * @param {number} id Unique ID per component.
+     * @param {string | number} id Unique ID per component.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {boolean} Whether it's blocked.
      */
-    isBlocked(component: string, id: number, siteId?: string): boolean {
+    isBlocked(component: string, id: string | number, siteId?: string): boolean {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         if (!this.blockedItems[siteId]) {
@@ -185,11 +185,11 @@ export class CoreSyncProvider {
      * Unblock an operation on a component and ID.
      *
      * @param {string} component Component name.
-     * @param {number} id Unique ID per component.
+     * @param {string | number} id Unique ID per component.
      * @param {string} [operation] Operation name. If not defined, a default text is used.
      * @param {string} [siteId] Site ID. If not defined, current site.
      */
-    unblockOperation(component: string, id: number, operation?: string, siteId?: string): void {
+    unblockOperation(component: string, id: string | number, operation?: string, siteId?: string): void {
         operation = operation || '-';
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
