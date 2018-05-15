@@ -82,7 +82,7 @@ export interface AddonMessageOutputHandlerData {
 
      constructor(protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
              protected eventsProvider: CoreEventsProvider) {
-         super('CoreSettingsDelegate', loggerProvider, sitesProvider, eventsProvider);
+         super('AddonMessageOutputDelegate', loggerProvider, sitesProvider, eventsProvider);
      }
 
     /**

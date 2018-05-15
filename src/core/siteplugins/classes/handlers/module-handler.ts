@@ -16,7 +16,7 @@ import { Injector } from '@angular/core';
 import { NavController, NavOptions } from 'ionic-angular';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
 import { CoreSitePluginsBaseHandler } from './base-handler';
-import { CoreSitePluginsModuleIndexComponent } from '../components/module-index/module-index';
+import { CoreSitePluginsModuleIndexComponent } from '../../components/module-index/module-index';
 
 /**
  * Handler to support a module using a site plugin.

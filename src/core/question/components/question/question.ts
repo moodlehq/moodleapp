@@ -123,11 +123,15 @@ export class CoreQuestionComponent implements OnInit {
 
                 promise.then(() => {
                     // Handle behaviour.
-                    this.behaviourDelegate.handleQuestion(this.question.preferredBehaviour, this.question).then((comps) => {
+                    this.behaviourDelegate.handleQuestion(this.injector, this.question.preferredBehaviour, this.question)
+                            .then((comps) => {
                         this.behaviourComponents = comps;
+                    }).finally(() => {
+                        this.question.html = this.domUtils.removeElementFromHtml(this.question.html, '.im-controls');
+                        this.loaded = true;
                     });
+
                     this.questionHelper.extractQbehaviourRedoButton(this.question);
-                    this.question.html = this.domUtils.removeElementFromHtml(this.question.html, '.im-controls');
 
                     // Extract the validation error of the question.
                     this.question.validationError = this.questionHelper.getValidationErrorFromHtml(this.question.html);
@@ -138,8 +142,6 @@ export class CoreQuestionComponent implements OnInit {
                     // Try to extract the feedback and comment for the question.
                     this.questionHelper.extractQuestionFeedback(this.question);
                     this.questionHelper.extractQuestionComment(this.question);
-
-                    this.loaded = true;
                 });
             }
         }).catch(() => {

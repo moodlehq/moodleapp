@@ -184,9 +184,9 @@ export class CoreCronDelegate {
                     return this.setHandlerLastExecutionTime(name, Date.now()).then(() => {
                         this.scheduleNextExecution(name);
                     });
-                }, () => {
+                }, (error) => {
                     // Handler call failed. Retry soon.
-                    this.logger.debug(`Execution of handler '${name}' failed.`);
+                    this.logger.error(`Execution of handler '${name}' failed.`, error);
                     this.scheduleNextExecution(name, CoreCronDelegate.MIN_INTERVAL);
 
                     return Promise.reject(null);
@@ -440,7 +440,9 @@ export class CoreCronDelegate {
 
             this.handlers[name].timeout = setTimeout(() => {
                 delete this.handlers[name].timeout;
-                this.checkAndExecuteHandler(name);
+                this.checkAndExecuteHandler(name).catch(() => {
+                    // Ignore errors.
+                });
             }, nextExecution);
         });
     }

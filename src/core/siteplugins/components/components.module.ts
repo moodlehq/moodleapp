@@ -23,6 +23,11 @@ import { CoreSitePluginsModuleIndexComponent } from './module-index/module-index
 import { CoreSitePluginsCourseOptionComponent } from './course-option/course-option';
 import { CoreSitePluginsCourseFormatComponent } from './course-format/course-format';
 import { CoreSitePluginsUserProfileFieldComponent } from './user-profile-field/user-profile-field';
+import { CoreSitePluginsQuestionComponent } from './question/question';
+import { CoreSitePluginsQuestionBehaviourComponent } from './question-behaviour/question-behaviour';
+import { CoreSitePluginsQuizAccessRuleComponent } from './quiz-access-rule/quiz-access-rule';
+import { CoreSitePluginsAssignFeedbackComponent } from './assign-feedback/assign-feedback';
+import { CoreSitePluginsAssignSubmissionComponent } from './assign-submission/assign-submission';
 
 @NgModule({
     declarations: [
@@ -30,7 +35,12 @@ import { CoreSitePluginsUserProfileFieldComponent } from './user-profile-field/u
         CoreSitePluginsModuleIndexComponent,
         CoreSitePluginsCourseOptionComponent,
         CoreSitePluginsCourseFormatComponent,
-        CoreSitePluginsUserProfileFieldComponent
+        CoreSitePluginsUserProfileFieldComponent,
+        CoreSitePluginsQuestionComponent,
+        CoreSitePluginsQuestionBehaviourComponent,
+        CoreSitePluginsQuizAccessRuleComponent,
+        CoreSitePluginsAssignFeedbackComponent,
+        CoreSitePluginsAssignSubmissionComponent
     ],
     imports: [
         CommonModule,
@@ -46,13 +56,23 @@ import { CoreSitePluginsUserProfileFieldComponent } from './user-profile-field/u
         CoreSitePluginsModuleIndexComponent,
         CoreSitePluginsCourseOptionComponent,
         CoreSitePluginsCourseFormatComponent,
-        CoreSitePluginsUserProfileFieldComponent
+        CoreSitePluginsUserProfileFieldComponent,
+        CoreSitePluginsQuestionComponent,
+        CoreSitePluginsQuestionBehaviourComponent,
+        CoreSitePluginsQuizAccessRuleComponent,
+        CoreSitePluginsAssignFeedbackComponent,
+        CoreSitePluginsAssignSubmissionComponent
     ],
     entryComponents: [
         CoreSitePluginsModuleIndexComponent,
         CoreSitePluginsCourseOptionComponent,
         CoreSitePluginsCourseFormatComponent,
-        CoreSitePluginsUserProfileFieldComponent
+        CoreSitePluginsUserProfileFieldComponent,
+        CoreSitePluginsQuestionComponent,
+        CoreSitePluginsQuestionBehaviourComponent,
+        CoreSitePluginsQuizAccessRuleComponent,
+        CoreSitePluginsAssignFeedbackComponent,
+        CoreSitePluginsAssignSubmissionComponent
     ]
 })
 export class CoreSitePluginsComponentsModule {}

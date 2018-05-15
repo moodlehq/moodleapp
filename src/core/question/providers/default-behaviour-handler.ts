@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { CoreQuestionBehaviourHandler } from './behaviour-delegate';
 import { CoreQuestionProvider, CoreQuestionState } from '@core/question/providers/question';
 
@@ -46,11 +46,12 @@ export class CoreQuestionBehaviourDefaultHandler implements CoreQuestionBehaviou
      * If the behaviour requires a submit button, it should add it to question.behaviourButtons.
      * If the behaviour requires to show some extra data, it should return the components to render it.
      *
+     * @param {Injector} injector Injector.
      * @param {any} question The question.
      * @return {any[]|Promise<any[]>} Components (or promise resolved with components) to render some extra data in the question
      *                                (e.g. certainty options). Don't return anything if no extra data is required.
      */
-    handleQuestion(question: any): any[] | Promise<any[]> {
+    handleQuestion(injector: Injector, question: any): any[] | Promise<any[]> {
         // Nothing to do.
         return;
     }

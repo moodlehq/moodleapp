@@ -15,7 +15,7 @@
 import { Injector } from '@angular/core';
 import { CoreCourseFormatHandler } from '@core/course/providers/format-delegate';
 import { CoreSitePluginsBaseHandler } from './base-handler';
-import { CoreSitePluginsCourseFormatComponent } from '../components/course-format/course-format';
+import { CoreSitePluginsCourseFormatComponent } from '../../components/course-format/course-format';
 
 /**
  * Handler to support a course format using a site plugin.

@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import { Injector } from '@angular/core';
-import { CoreSitePluginsProvider } from '../providers/siteplugins';
+import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { CoreCourseOptionsHandler, CoreCourseOptionsHandlerData } from '@core/course/providers/options-delegate';
 import { CoreSitePluginsBaseHandler } from './base-handler';
-import { CoreSitePluginsCourseOptionComponent } from '../components/course-option/course-option';
+import { CoreSitePluginsCourseOptionComponent } from '../../components/course-option/course-option';
 
 /**
  * Handler to display a site plugin in course options.

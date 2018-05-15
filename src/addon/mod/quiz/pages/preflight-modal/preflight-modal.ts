@@ -34,8 +34,7 @@ export class AddonModQuizPreflightModalPage implements OnInit {
 
     preflightForm: FormGroup;
     title: string;
-    accessRulesComponent: any[] = [];
-    data: any;
+    accessRulesData: {component: any, data: any}[] = []; // Components and data for each access rule.
     loaded: boolean;
 
     protected quiz: any;
@@ -43,7 +42,6 @@ export class AddonModQuizPreflightModalPage implements OnInit {
     protected prefetch: boolean;
     protected siteId: string;
     protected rules: string[];
-    protected renderedRules: string[] = [];
 
     constructor(params: NavParams, fb: FormBuilder, translate: TranslateService, sitesProvider: CoreSitesProvider,
             protected viewCtrl: ViewController, protected accessRuleDelegate: AddonModQuizAccessRuleDelegate,
@@ -58,15 +56,6 @@ export class AddonModQuizPreflightModalPage implements OnInit {
 
         // Create an empty form group. The controls will be added by the access rules components.
         this.preflightForm = fb.group({});
-
-        // Create the data to pass to the access rules components.
-        this.data = {
-            quiz: this.quiz,
-            attempt: this.attempt,
-            prefetch: this.prefetch,
-            form: this.preflightForm,
-            siteId: this.siteId
-        };
     }
 
     /**
@@ -83,8 +72,17 @@ export class AddonModQuizPreflightModalPage implements OnInit {
                 if (required) {
                     return this.accessRuleDelegate.getPreflightComponent(rule, this.injector).then((component) => {
                         if (component) {
-                            this.renderedRules.push(rule);
-                            this.accessRulesComponent.push(component);
+                            this.accessRulesData.push({
+                                component: component,
+                                data: {
+                                    rule: rule,
+                                    quiz: this.quiz,
+                                    attempt: this.attempt,
+                                    prefetch: this.prefetch,
+                                    form: this.preflightForm,
+                                    siteId: this.siteId
+                                }
+                            });
                         }
                     });
                 }

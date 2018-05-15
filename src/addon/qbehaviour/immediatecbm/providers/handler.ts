@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { CoreQuestionBehaviourHandler } from '@core/question/providers/behaviour-delegate';
 import { CoreQuestionHelperProvider } from '@core/question/providers/helper';
 import { AddonQbehaviourDeferredCBMComponent } from '@addon/qbehaviour/deferredcbm/component/deferredcbm';
@@ -35,11 +35,12 @@ export class AddonQbehaviourImmediateCBMHandler implements CoreQuestionBehaviour
      * If the behaviour requires a submit button, it should add it to question.behaviourButtons.
      * If the behaviour requires to show some extra data, it should return the components to render it.
      *
+     * @param {Injector} injector Injector.
      * @param {any} question The question.
      * @return {any[]|Promise<any[]>} Components (or promise resolved with components) to render some extra data in the question
      *                                (e.g. certainty options). Don't return anything if no extra data is required.
      */
-    handleQuestion(question: any): any[] | Promise<any[]> {
+    handleQuestion(injector: Injector, question: any): any[] | Promise<any[]> {
         // Just extract the button, it doesn't need any specific component.
         this.questionHelper.extractQbehaviourButtons(question);
         if (this.questionHelper.extractQbehaviourCBM(question)) {

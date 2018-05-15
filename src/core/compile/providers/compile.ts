@@ -75,6 +75,12 @@ import { CoreCourseFormatSingleActivityComponent } from '@core/course/formats/si
 import { CoreSitePluginsModuleIndexComponent } from '@core/siteplugins/components/module-index/module-index';
 import { CoreSitePluginsCourseOptionComponent } from '@core/siteplugins/components/course-option/course-option';
 import { CoreSitePluginsCourseFormatComponent } from '@core/siteplugins/components/course-format/course-format';
+import { CoreSitePluginsQuestionComponent } from '@core/siteplugins/components/question/question';
+import { CoreSitePluginsQuestionBehaviourComponent } from '@core/siteplugins/components/question-behaviour/question-behaviour';
+import { CoreSitePluginsUserProfileFieldComponent } from '@core/siteplugins/components/user-profile-field/user-profile-field';
+import { CoreSitePluginsQuizAccessRuleComponent } from '@core/siteplugins/components/quiz-access-rule/quiz-access-rule';
+import { CoreSitePluginsAssignFeedbackComponent } from '@core/siteplugins/components/assign-feedback/assign-feedback';
+import { CoreSitePluginsAssignSubmissionComponent } from '@core/siteplugins/components/assign-submission/assign-submission';
 
 /**
  * Service to provide functionalities regarding compiling dynamic HTML and Javascript.
@@ -203,6 +209,12 @@ export class CoreCompileProvider {
         instance['CoreSitePluginsModuleIndexComponent'] = CoreSitePluginsModuleIndexComponent;
         instance['CoreSitePluginsCourseOptionComponent'] = CoreSitePluginsCourseOptionComponent;
         instance['CoreSitePluginsCourseFormatComponent'] = CoreSitePluginsCourseFormatComponent;
+        instance['CoreSitePluginsQuestionComponent'] = CoreSitePluginsQuestionComponent;
+        instance['CoreSitePluginsQuestionBehaviourComponent'] = CoreSitePluginsQuestionBehaviourComponent;
+        instance['CoreSitePluginsUserProfileFieldComponent'] = CoreSitePluginsUserProfileFieldComponent;
+        instance['CoreSitePluginsQuizAccessRuleComponent'] = CoreSitePluginsQuizAccessRuleComponent;
+        instance['CoreSitePluginsAssignFeedbackComponent'] = CoreSitePluginsAssignFeedbackComponent;
+        instance['CoreSitePluginsAssignSubmissionComponent'] = CoreSitePluginsAssignSubmissionComponent;
     }
 
     /**
