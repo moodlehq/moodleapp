@@ -17,7 +17,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
-import { CoreCourseModuleMainComponent } from '@core/course/providers/module-delegate';
+import { CoreCourseModuleMainComponent, CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
+import { CoreCourseSectionPage } from '@core/course/pages/section/section.ts';
 
 /**
  * Template class to easily create CoreCourseModuleMainComponent of resources (or activities without syncing).
@@ -50,12 +51,16 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     protected courseHelper: CoreCourseHelperProvider;
     protected translate: TranslateService;
     protected domUtils: CoreDomUtilsProvider;
+    protected moduleDelegate: CoreCourseModuleDelegate;
+    protected courseSectionPage: CoreCourseSectionPage;
 
     constructor(injector: Injector) {
         this.textUtils = injector.get(CoreTextUtilsProvider);
         this.courseHelper = injector.get(CoreCourseHelperProvider);
         this.translate = injector.get(TranslateService);
         this.domUtils = injector.get(CoreDomUtilsProvider);
+        this.moduleDelegate = injector.get(CoreCourseModuleDelegate);
+        this.courseSectionPage = injector.get(CoreCourseSectionPage, null);
         this.dataRetrieved = new EventEmitter();
     }
 
@@ -73,15 +78,27 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     /**
      * Refresh the data.
      *
-     * @param {any} [refresher] Refresher.
-     * @param {Function} [done] Function to call when done.
+     * @param {any}       [refresher] Refresher.
+     * @param {Function}  [done] Function to call when done.
+     * @param {boolean}   [showErrors=false] If show errors to the user of hide them.
      * @return {Promise<any>} Promise resolved when done.
      */
-    doRefresh(refresher?: any, done?: () => void): Promise<any> {
+    doRefresh(refresher?: any, done?: () => void, showErrors: boolean = false): Promise<any> {
         if (this.loaded) {
-            return this.refreshContent().finally(() => {
-                refresher && refresher.complete();
-                done && done();
+            /* If it's a single activity course and the refresher is displayed within the component,
+               call doRefresh on the section page to refresh the course data. */
+            let promise;
+            if (this.courseSectionPage && !this.moduleDelegate.displayRefresherInSingleActivity(this.module.modname)) {
+                promise = this.courseSectionPage.doRefresh();
+            } else {
+                promise = Promise.resolve();
+            }
+
+            return promise.finally(() => {
+                return this.refreshContent(true, showErrors).finally(() => {
+                    refresher && refresher.complete();
+                    done && done();
+                });
             });
         }
 
@@ -91,9 +108,11 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     /**
      * Perform the refresh content function.
      *
+     * @param  {boolean}      [sync=false]       If the refresh needs syncing.
+     * @param  {boolean}      [showErrors=false] Wether to show errors to the user or hide them.
      * @return {Promise<any>} Resolved when done.
      */
-    protected refreshContent(): Promise<any> {
+     protected refreshContent(sync: boolean = false, showErrors: boolean = false): Promise<any> {
         this.refreshIcon = 'spinner';
 
         return this.invalidateContent().catch(() => {

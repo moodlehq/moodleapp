@@ -53,6 +53,14 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
      */
     getMainComponent(injector: Injector, course: any, module: any): any | Promise<any>;
+
+    /**
+     * Whether to display the course refresher in single activity course format. If it returns false, a refresher must be
+     * included in the template that calls the doRefresh method of the component. Defaults to true.
+     *
+     * @return {boolean} Whether the refresher should be displayed.
+     */
+    displayRefresherInSingleActivity?(): boolean;
 }
 
 /**
@@ -246,5 +254,16 @@ export class CoreCourseModuleDelegate extends CoreDelegate {
         }
 
         return false;
+    }
+
+    /**
+     * Whether to display the course refresher in single activity course format. If it returns false, a refresher must be
+     * included in the template that calls the doRefresh method of the component. Defaults to true.
+     *
+     * @param {any} modname The name of the module type.
+     * @return {boolean} Whether the refresher should be displayed.
+     */
+    displayRefresherInSingleActivity(modname: string): boolean {
+        return this.executeFunctionOnEnabled(modname, 'displayRefresherInSingleActivity');
     }
 }

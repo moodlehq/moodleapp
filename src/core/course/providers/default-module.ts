@@ -89,4 +89,14 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
         // We can't inject CoreCourseUnsupportedModuleComponent here due to circular dependencies.
         // Don't return anything, by default it will use CoreCourseUnsupportedModuleComponent.
     }
+
+    /**
+     * Whether to display the course refresher in single activity course format. If it returns false, a refresher must be
+     * included in the template that calls the doRefresh method of the component. Defaults to true.
+     *
+     * @return {boolean} Whether the refresher should be displayed.
+     */
+    displayRefresherInSingleActivity(): boolean {
+        return true;
+    }
 }

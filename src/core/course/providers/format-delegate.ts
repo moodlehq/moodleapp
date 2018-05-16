@@ -66,6 +66,16 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
     displaySectionSelector?(course: any): boolean;
 
     /**
+     * Whether the course refresher should be displayed. If it returns false, a refresher must be included in the course format,
+     * and the doRefresh method of CoreCourseSectionPage must be called on refresh. Defaults to true.
+     *
+     * @param {any} course The course to check.
+     * @param {any[]} sections List of course sections.
+     * @type {boolean} Whether the refresher should be displayed.
+     */
+    displayRefresher?(course: any, sections: any[]): boolean;
+
+    /**
      * Given a list of sections, get the "current" section that should be displayed first. Defaults to first section.
      *
      * @param {any} course The course to get the title.
@@ -181,6 +191,18 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
      */
     displayEnableDownload(course: any): boolean {
         return this.executeFunctionOnEnabled(course.format, 'displayEnableDownload', [course]);
+    }
+
+    /**
+     * Whether the course refresher should be displayed. If it returns false, a refresher must be included in the course format,
+     * and the doRefresh method of CoreCourseSectionPage must be called on refresh. Defaults to true.
+     *
+     * @param {any} course The course to check.
+     * @param {any[]} sections List of course sections.
+     * @return {boolean} Whether the refresher should be displayed.
+     */
+    displayRefresher(course: any, sections: any[]): boolean {
+        return this.executeFunctionOnEnabled(course.format, 'displayRefresher', [course, sections]);
     }
 
     /**

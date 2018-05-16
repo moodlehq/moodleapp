@@ -1,0 +1,61 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title *ngIf="discussion"><core-format-text [text]="discussion.subject"></core-format-text></ion-title>
+        <ion-buttons end>
+            <!-- The context menu will be added in here. -->
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<core-navbar-buttons end>
+    <core-context-menu>
+        <core-context-menu-item [priority]="650" *ngIf="discussionLoaded && !postHasOffline && isOnline" [content]="'addon.mod_forum.refreshposts' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item [priority]="550" *ngIf="discussionLoaded && !isSplitViewOn && postHasOffline && isOnline" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item [hidden]="sort == 'flat-oldest'" [priority]="500" [content]="'addon.mod_forum.modeflatoldestfirst' | translate" (action)="changeSort('flat-oldest')" iconAction="arrow-round-down"></core-context-menu-item>
+        <core-context-menu-item [hidden]="sort == 'flat-newest'" [priority]="450" [content]="'addon.mod_forum.modeflatnewestfirst' | translate" (action)="changeSort('flat-newest')" iconAction="arrow-round-up"></core-context-menu-item>
+        <core-context-menu-item [hidden]="sort == 'nested'" [priority]="400" [content]="'addon.mod_forum.modenested' | translate" (action)="changeSort('nested')" iconAction="swap"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+<ion-content>
+    <ion-refresher [enabled]="discussionLoaded" (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <core-loading [hideUntil]="discussionLoaded">
+        <!-- Discussion replies found to be synchronized -->
+        <ion-card class="core-warning-card" *ngIf="postHasOffline">
+            <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: discussionStr} }}
+        </ion-card>
+
+        <ion-card class="core-warning-card" *ngIf="locked">
+            <ion-icon name="warning"></ion-icon> {{ 'addon.mod_forum.discussionlocked' | translate }}
+        </ion-card>
+
+        <ion-card *ngIf="discussion" margin-bottom>
+            <addon-mod-forum-post [post]="discussion" [courseId]="courseId" [discussionId]="discussionId" [component]="component" [componentId]="componentId" [replyData]="replyData" [originalData]="originalData" [defaultSubject]="defaultSubject" [forum]="forum" [trackPosts]="trackPosts" (onPostChange)="postListChanged()"></addon-mod-forum-post>
+        </ion-card>
+
+        <ion-card *ngIf="sort != 'nested'">
+            <ng-container *ngFor="let post of posts; first as first">
+                <ion-item-divider color="light" *ngIf="!first"></ion-item-divider>
+                <addon-mod-forum-post [post]="post" [courseId]="courseId" [discussionId]="discussionId" [component]="component" [componentId]="componentId" [replyData]="replyData" [originalData]="originalData" [defaultSubject]="defaultSubject" [forum]="forum" [trackPosts]="trackPosts" (onPostChange)="postListChanged()"></addon-mod-forum-post>
+            </ng-container>
+        </ion-card>
+
+        <ng-container *ngIf="sort == 'nested'">
+            <ng-container *ngFor="let post of posts">
+                <ng-container *ngTemplateOutlet="nestedPosts; context: {post: post}"></ng-container>
+            </ng-container>
+        </ng-container>
+
+        <ng-template #nestedPosts let-post="post">
+            <ion-card>
+                <addon-mod-forum-post [post]="post" [courseId]="courseId" [discussionId]="discussionId" [component]="component" [componentId]="componentId" [replyData]="replyData" [originalData]="originalData" [defaultSubject]="defaultSubject" [forum]="forum" [trackPosts]="trackPosts" (onPostChange)="postListChanged()"></addon-mod-forum-post>
+            </ion-card>
+            <div padding-left *ngIf="post.children.length && post.children[0].subject">
+                <ng-container *ngFor="let child of post.children">
+                    <ng-container *ngTemplateOutlet="nestedPosts; context: {post: child}"></ng-container>
+                </ng-container>
+            </div>
+        </ng-template>
+    </core-loading>
+</ion-content>

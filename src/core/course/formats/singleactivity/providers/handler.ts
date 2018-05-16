@@ -14,6 +14,7 @@
 
 import { Injectable, Injector } from '@angular/core';
 import { CoreCourseFormatHandler } from '../../../providers/format-delegate';
+import { CoreCourseModuleDelegate } from '../../../providers/module-delegate';
 import { CoreCourseFormatSingleActivityComponent } from '../components/singleactivity';
 
 /**
@@ -24,7 +25,7 @@ export class CoreCourseFormatSingleActivityHandler implements CoreCourseFormatHa
     name = 'CoreCourseFormatSingleActivity';
     format = 'singleactivity';
 
-    constructor() {
+    constructor(private moduleDelegate: CoreCourseModuleDelegate) {
         // Nothing to do.
     }
 
@@ -81,6 +82,22 @@ export class CoreCourseFormatSingleActivityHandler implements CoreCourseFormatHa
      */
     displaySectionSelector(course: any): boolean {
         return false;
+    }
+
+    /**
+     * Whether the course refresher should be displayed. If it returns false, a refresher must be included in the course format,
+     * and the doRefresh method of CoreCourseSectionPage must be called on refresh. Defaults to true.
+     *
+     * @param {any} course The course to check.
+     * @param {any[]} sections List of course sections.
+     * @return {boolean} Whether the refresher should be displayed.
+     */
+    displayRefresher(course: any, sections: any[]): boolean {
+        if (sections && sections[0] && sections[0].modules && sections[0].modules[0]) {
+            return this.moduleDelegate.displayRefresherInSingleActivity(sections[0].modules[0].modname);
+        } else {
+            return true;
+        }
     }
 
     /**

@@ -54,6 +54,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     };
     moduleId: number;
     displayEnableDownload: boolean;
+    displayRefresher: boolean;
 
     protected module: any;
     protected completionObserver;
@@ -188,6 +189,9 @@ export class CoreCourseSectionPage implements OnDestroy {
 
                     // Get the title again now that we have sections.
                     this.title = this.courseFormatDelegate.getCourseTitle(this.course, this.sections);
+
+                    // Get whether to show the refresher now that we have sections.
+                    this.displayRefresher = this.courseFormatDelegate.displayRefresher(this.course, this.sections);
                 });
             }));
 
@@ -212,13 +216,23 @@ export class CoreCourseSectionPage implements OnDestroy {
     /**
      * Refresh the data.
      *
-     * @param {any} refresher Refresher.
+     * @param  {any} [refresher] Refresher.
+     * @return {Promise<any>} Promise resolved when done.
      */
-    doRefresh(refresher: any): void {
-        this.invalidateData().finally(() => {
-            this.loadData(true).finally(() => {
-                this.formatComponent.doRefresh(refresher).finally(() => {
-                    refresher.complete();
+    doRefresh(refresher?: any): Promise<any> {
+        return this.invalidateData().finally(() => {
+            return this.loadData(true).finally(() => {
+                /* Do not call doRefresh on the format component if the refresher is defined in the format component
+                   to prevent an inifinite loop. */
+                 let promise;
+                 if (this.displayRefresher) {
+                     promise = this.formatComponent.doRefresh(refresher);
+                 } else {
+                     promise = Promise.resolve();
+                 }
+
+                return promise.finally(() => {
+                    refresher && refresher.complete();
                 });
             });
         });
