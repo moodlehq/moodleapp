@@ -15,7 +15,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
-import { IonicApp, IonicModule, Platform } from 'ionic-angular';
+import { IonicApp, IonicModule, Platform, Content, ScrollEvent } from 'ionic-angular';
+import { assert } from 'ionic-angular/util/util';
 import { HttpModule } from '@angular/http';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
@@ -244,5 +245,170 @@ export class AppModule {
 
         // Execute the init processes.
         initDelegate.executeInitProcesses();
+
+        // Decorate ion-content.
+        this.decorateIonContent();
+    }
+
+    /**
+     * Decorate ion-content to make our ion-tabs work.
+     * https://github.com/ionic-team/ionic/issues/14483
+     */
+    protected decorateIonContent(): void {
+
+        const parsePxUnit = (val: string): number => {
+            return (val.indexOf('px') > 0) ? parseInt(val, 10) : 0;
+        };
+
+        // We need to convert the prototype to any because _readDimensions is private.
+        // tslint:disable: typedef
+        (<any> Content.prototype)._readDimensions = function() {
+            const cachePaddingTop = this._pTop;
+            const cachePaddingRight = this._pRight;
+            const cachePaddingBottom = this._pBottom;
+            const cachePaddingLeft = this._pLeft;
+            const cacheHeaderHeight = this._hdrHeight;
+            const cacheFooterHeight = this._ftrHeight;
+            const cacheTabsPlacement = this._tabsPlacement;
+            let tabsTop = 0;
+            let scrollEvent: ScrollEvent;
+            this._pTop = 0;
+            this._pRight = 0;
+            this._pBottom = 0;
+            this._pLeft = 0;
+            this._hdrHeight = 0;
+            this._ftrHeight = 0;
+            this._tabsPlacement = null;
+            this._tTop = 0;
+            this._fTop = 0;
+            this._fBottom = 0;
+
+            // In certain cases this._scroll is undefined, if that is the case then we should just return.
+            if (!this._scroll) {
+                return;
+            }
+
+            scrollEvent = this._scroll.ev;
+
+            let ele: HTMLElement = this.getNativeElement();
+            if (!ele) {
+                assert(false, 'ele should be valid');
+
+                return;
+            }
+
+            let computedStyle: any;
+            let tagName: string;
+            const parentEle: HTMLElement = ele.parentElement;
+            const children = parentEle.children;
+            for (let i = children.length - 1; i >= 0; i--) {
+                ele = <HTMLElement> children[i];
+                tagName = ele.tagName;
+                if (tagName === 'ION-CONTENT') {
+                    scrollEvent.contentElement = ele;
+
+                    if (this._fullscreen) {
+                    // ******** DOM READ ****************
+                        computedStyle = getComputedStyle(ele);
+                        this._pTop = parsePxUnit(computedStyle.paddingTop);
+                        this._pBottom = parsePxUnit(computedStyle.paddingBottom);
+                        this._pRight = parsePxUnit(computedStyle.paddingRight);
+                        this._pLeft = parsePxUnit(computedStyle.paddingLeft);
+                    }
+
+                } else if (tagName === 'ION-HEADER') {
+                    scrollEvent.headerElement = ele;
+
+                    // ******** DOM READ ****************
+                    this._hdrHeight = ele.clientHeight;
+
+                } else if (tagName === 'ION-FOOTER') {
+                    scrollEvent.footerElement = ele;
+
+                    // ******** DOM READ ****************
+                    this._ftrHeight = ele.clientHeight;
+                    this._footerEle = ele;
+                }
+            }
+
+            ele = parentEle;
+            let tabbarEle: HTMLElement;
+
+            while (ele && ele.tagName !== 'ION-MODAL' && !ele.classList.contains('tab-subpage')) {
+
+                if (ele.tagName.indexOf('ION-TABS') != -1) {
+                    tabbarEle = <HTMLElement> ele.firstElementChild;
+                    // ******** DOM READ ****************
+                    this._tabbarHeight = tabbarEle.clientHeight;
+
+                    if (this._tabsPlacement === null) {
+                        // This is the first tabbar found, remember its position.
+                        this._tabsPlacement = ele.getAttribute('tabsplacement');
+                    }
+                }
+
+                ele = ele.parentElement;
+            }
+
+            // Tabs top
+            if (this._tabs && this._tabsPlacement === 'top') {
+                this._tTop = this._hdrHeight;
+                tabsTop = this._tabs._top;
+            }
+
+            // Toolbar height
+            this._cTop = this._hdrHeight;
+            this._cBottom = this._ftrHeight;
+
+            // Tabs height
+            if (this._tabsPlacement === 'top') {
+                this._cTop += this._tabbarHeight;
+
+            } else if (this._tabsPlacement === 'bottom') {
+                this._cBottom += this._tabbarHeight;
+            }
+
+            // Refresher uses a border which should be hidden unless pulled
+            if (this._hasRefresher) {
+                this._cTop -= 1;
+            }
+
+            // Fixed content shouldn't include content padding
+            this._fTop = this._cTop;
+            this._fBottom = this._cBottom;
+
+            // Handle fullscreen viewport (padding vs margin)
+            if (this._fullscreen) {
+                this._cTop += this._pTop;
+                this._cBottom += this._pBottom;
+            }
+
+            // ******** DOM READ ****************
+            const contentDimensions = this.getContentDimensions();
+            scrollEvent.scrollHeight = contentDimensions.scrollHeight;
+            scrollEvent.scrollWidth = contentDimensions.scrollWidth;
+            scrollEvent.contentHeight = contentDimensions.contentHeight;
+            scrollEvent.contentWidth = contentDimensions.contentWidth;
+            scrollEvent.contentTop = contentDimensions.contentTop;
+            scrollEvent.contentBottom = contentDimensions.contentBottom;
+
+            this._dirty = (
+                cachePaddingTop !== this._pTop ||
+                cachePaddingBottom !== this._pBottom ||
+                cachePaddingLeft !== this._pLeft ||
+                cachePaddingRight !== this._pRight ||
+                cacheHeaderHeight !== this._hdrHeight ||
+                cacheFooterHeight !== this._ftrHeight ||
+                cacheTabsPlacement !== this._tabsPlacement ||
+                tabsTop !== this._tTop ||
+                this._cTop !== this.contentTop ||
+                this._cBottom !== this.contentBottom
+            );
+
+            this._scroll.init(this.getScrollElement(), this._cTop, this._cBottom);
+
+            // Initial imgs refresh.
+            this.imgsUpdate();
+        };
     }
 }
