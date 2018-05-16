@@ -45,6 +45,8 @@ import { CoreRecaptchaComponent } from './recaptcha/recaptcha';
 import { CoreRecaptchaModalComponent } from './recaptcha/recaptchamodal';
 import { CoreNavigationBarComponent } from './navigation-bar/navigation-bar';
 import { CoreAttachmentsComponent } from './attachments/attachments';
+import { CoreIonTabsComponent } from './ion-tabs/ion-tabs';
+import { CoreIonTabComponent } from './ion-tabs/ion-tab';
 
 @NgModule({
     declarations: [
@@ -75,7 +77,9 @@ import { CoreAttachmentsComponent } from './attachments/attachments';
         CoreRecaptchaComponent,
         CoreRecaptchaModalComponent,
         CoreNavigationBarComponent,
-        CoreAttachmentsComponent
+        CoreAttachmentsComponent,
+        CoreIonTabsComponent,
+        CoreIonTabComponent
     ],
     entryComponents: [
         CoreContextMenuPopoverComponent,
@@ -113,7 +117,9 @@ import { CoreAttachmentsComponent } from './attachments/attachments';
         CoreTimerComponent,
         CoreRecaptchaComponent,
         CoreNavigationBarComponent,
-        CoreAttachmentsComponent
+        CoreAttachmentsComponent,
+        CoreIonTabsComponent,
+        CoreIonTabComponent
     ]
 })
 export class CoreComponentsModule {}

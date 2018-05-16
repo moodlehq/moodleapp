@@ -99,6 +99,12 @@ export interface CoreMainMenuHandlerToDisplay extends CoreMainMenuHandlerData {
      * @type {string}
      */
     name?: string;
+
+    /**
+     * Priority of the handler.
+     * @type {number}
+     */
+    priority?: number;
 }
 
 /**
@@ -168,7 +174,9 @@ export class CoreMainMenuDelegate extends CoreDelegate {
 
         // Return only the display data.
         const displayData = handlersData.map((item) => {
+            // Move the name and the priority to the display data.
             item.data.name = item.name;
+            item.data.priority = item.priority;
 
             return item.data;
         });

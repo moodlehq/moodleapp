@@ -1,0 +1,93 @@
+core-ion-tabs {
+    .tabbar {
+        z-index: 101; // For some reason, the regular z-index isn't enough with our tabs, use a higher one.
+
+        .core-ion-tabs-loading {
+            width: 100%;
+            display: table;
+
+            .core-ion-tabs-loading-spinner {
+                display: table-cell;
+                text-align: center;
+                vertical-align: middle;
+
+                .spinner circle, .spinner line {
+                    stroke: $white;
+                }
+            }
+        }
+
+    }
+}
+
+.ios core-ion-tabs .core-ion-tabs-loading {
+    min-height: $tabs-ios-tab-min-height;
+}
+
+.md core-ion-tabs .core-ion-tabs-loading {
+    min-height: $tabs-md-tab-min-height;
+}
+
+.wp core-ion-tabs .core-ion-tabs-loading {
+    min-height: $tabs-wp-tab-min-height;
+}
+
+// Copy some styles from ion-tabs and ion-tab.
+core-ion-tabs, core-ion-tab {
+    @include position(0, null, null, 0);
+
+    position: absolute;
+    z-index: $z-index-page-container;
+    display: block;
+
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    contain: strict;
+}
+
+core-ion-tab {
+    display: none;
+}
+
+core-ion-tab.show-tab {
+    display: block;
+}
+
+@mixin core-ion-tabs-statusbar-padding($toolbar-height, $toolbar-padding, $content-padding, $cordova-statusbar-padding, $modal-max-width, $style-title: false) {
+
+    core-ion-tab > .ion-page,
+    core-ion-tab > .ion-page > ion-header,
+    core-ion-tabs > .ion-page.tab-subpage > ion-header {
+        @include toolbar-statusbar-padding($toolbar-height, $toolbar-padding, $content-padding, $cordova-statusbar-padding);
+
+        // If we should style the title elements in the toolbar
+        @if ($style-title) {
+            @include toolbar-title-statusbar-padding($toolbar-height, $toolbar-padding, $content-padding, $cordova-statusbar-padding);
+        }
+    }
+
+    @media only screen and (max-width: $modal-max-width) {
+        .modal-wrapper > .ion-page > ion-header {
+            @include toolbar-statusbar-padding($toolbar-height, $toolbar-padding, $content-padding, $cordova-statusbar-padding);
+
+            // If we should style the title elements in the toolbar
+            @if ($style-title) {
+                @include toolbar-title-statusbar-padding($toolbar-height, $toolbar-padding, $content-padding, $cordova-statusbar-padding);
+            }
+        }
+    }
+
+}
+
+.ios {
+    @include core-ion-tabs-statusbar-padding($toolbar-ios-height, $toolbar-ios-padding, $content-ios-padding, $cordova-ios-statusbar-padding, $cordova-ios-statusbar-padding-modal-max-width, true);
+}
+
+.md {
+   @include core-ion-tabs-statusbar-padding($toolbar-md-height, $toolbar-md-padding, $content-md-padding, $cordova-md-statusbar-padding, $cordova-md-statusbar-padding-modal-max-width);
+}
+
+.wp {
+    @include core-ion-tabs-statusbar-padding($toolbar-wp-height, $toolbar-wp-padding, $content-wp-padding, $cordova-wp-statusbar-padding, $cordova-wp-statusbar-padding-modal-max-width);
+}

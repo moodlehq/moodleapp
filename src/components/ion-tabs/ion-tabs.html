@@ -1,0 +1,13 @@
+<div class="tabbar" role="tablist" #tabbar>
+    <a [hidden]="_loaded === false" *ngFor="let t of _tabs" [tab]="t" class="tab-button" role="tab" href="#" (ionSelect)="select(t)"></a>
+    <div class="tab-highlight"></div>
+    <div *ngIf="_loaded === false" class="core-ion-tabs-loading">
+        <span class="core-ion-tabs-loading-spinner">
+            <ion-spinner></ion-spinner>
+        </span>
+    </div>
+</div>
+<div #originalTabs>
+    <ng-content></ng-content>
+</div>
+<div #portal tab-portal></div>

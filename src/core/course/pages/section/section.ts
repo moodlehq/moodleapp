@@ -347,13 +347,13 @@ export class CoreCourseSectionPage implements OnDestroy {
      * User entered the page.
      */
     ionViewDidEnter(): void {
-        this.formatComponent.ionViewDidEnter();
+        this.formatComponent && this.formatComponent.ionViewDidEnter();
     }
 
     /**
      * User left the page.
      */
     ionViewDidLeave(): void {
-        this.formatComponent.ionViewDidLeave();
+        this.formatComponent && this.formatComponent.ionViewDidLeave();
     }
 }
