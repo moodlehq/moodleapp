@@ -219,6 +219,59 @@ export class AddonModDataProvider {
     }
 
     /**
+     * Performs the whole fetch of the entries in the database.
+     *
+     * @param  {number}    dataId          Data ID.
+     * @param  {number}    [groupId]       Group ID.
+     * @param  {string}    [sort]          Sort the records by this field id. See AddonModDataProvider#getEntries for more info.
+     * @param  {string}    [order]         The direction of the sorting.  See AddonModDataProvider#getEntries for more info.
+     * @param  {number}    [perPage]       Records per page to fetch. It has to match with the prefetch.
+     *                                     Default on AddonModDataProvider.PER_PAGE.
+     * @param  {boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @param  {boolean}   [ignoreCache]   True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {string}    [siteId]        Site ID. If not defined, current site.
+     * @return {Promise<any>}              Promise resolved when done.
+     */
+    fetchAllEntries(dataId: number, groupId: number = 0, sort: string = '0', order: string = 'DESC',
+            perPage: number = AddonModDataProvider.PER_PAGE, forceCache: boolean = false, ignoreCache: boolean = false,
+            siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        return this.fetchEntriesRecursive(dataId, groupId, sort, order, perPage, forceCache, ignoreCache, [], 0, siteId);
+    }
+
+    /**
+     * Recursive call on fetch all entries.
+     *
+     * @param  {number}    dataId          Data ID.
+     * @param  {number}    groupId         Group ID.
+     * @param  {string}    sort            Sort the records by this field id. See AddonModDataProvider#getEntries for more info.
+     * @param  {string}    order           The direction of the sorting.  See AddonModDataProvider#getEntries for more info.
+     * @param  {number}    perPage         Records per page to fetch. It has to match with the prefetch.
+     * @param  {boolean}   forceCache      True to always get the value from cache, false otherwise. Default false.
+     * @param  {boolean}   ignoreCache     True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {any}       entries         Entries already fetch (just to concatenate them).
+     * @param  {number}    page            Page of records to return.
+     * @param  {string}    siteId          Site ID.
+     * @return {Promise<any>}              Promise resolved when done.
+     */
+    protected fetchEntriesRecursive(dataId: number, groupId: number, sort: string, order: string, perPage: number,
+            forceCache: boolean, ignoreCache: boolean, entries: any, page: number, siteId: string): Promise<any> {
+        return this.getEntries(dataId, groupId, sort, order, page, perPage, forceCache, ignoreCache, siteId)
+                .then((result) => {
+            entries = entries.concat(result.entries);
+
+            const canLoadMore = perPage > 0 && ((page + 1) * perPage) < result.totalcount;
+            if (canLoadMore) {
+                return this.fetchEntriesRecursive(dataId, groupId, sort, order, perPage, forceCache, ignoreCache, entries, page + 1,
+                    siteId);
+            }
+
+            return entries;
+        });
+    }
+
+    /**
      * Get cache key for data data WS calls.
      *
      * @param {number} courseId Course ID.

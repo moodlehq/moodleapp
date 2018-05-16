@@ -75,11 +75,11 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     protected fieldsArray: any;
 
     constructor(injector: Injector, private dataProvider: AddonModDataProvider, private dataHelper: AddonModDataHelperProvider,
-            private dataOffline: AddonModDataOfflineProvider, @Optional() @Optional() content: Content,
+            private dataOffline: AddonModDataOfflineProvider, @Optional() content: Content,
             private dataSync: AddonModDataSyncProvider, private timeUtils: CoreTimeUtilsProvider,
             private groupsProvider: CoreGroupsProvider, private commentsProvider: CoreCommentsProvider,
             private modalCtrl: ModalController, private utils: CoreUtilsProvider, protected navCtrl: NavController) {
-        super(injector);
+        super(injector, content);
 
         // Refresh entries on change.
         this.entryChangedObserver = this.eventsProvider.on(AddonModDataProvider.ENTRY_CHANGED, (eventData) => {
@@ -424,9 +424,9 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     gotoEntry(entryId: number): void {
         const stateParams = {
             module: this.module,
-            moduleid: this.module.id,
-            courseid: this.courseId,
-            entryid: entryId,
+            moduleId: this.module.id,
+            courseId: this.courseId,
+            entryId: entryId,
             group: this.selectedGroup
         };
 

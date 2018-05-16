@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { TranslateService } from '@ngx-translate/core';
 import { AddonModDataFieldsDelegate } from './fields-delegate';
 import { AddonModDataOfflineProvider } from './offline';
@@ -27,7 +26,7 @@ import { AddonModDataProvider } from './data';
 @Injectable()
 export class AddonModDataHelperProvider {
 
-    constructor(private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
+    constructor(private sitesProvider: CoreSitesProvider, protected dataProvider: AddonModDataProvider,
         private translate: TranslateService, private fieldsDelegate: AddonModDataFieldsDelegate,
         private dataOffline: AddonModDataOfflineProvider, private fileUploaderProvider: CoreFileUploaderProvider) { }
 
@@ -173,6 +172,130 @@ export class AddonModDataHelperProvider {
             delcheck: false,
             export: false
         };
+    }
+
+    /**
+     * Fetch all entries and return it's Id
+     *
+     * @param  {number}    dataId          Data ID.
+     * @param  {number}    groupId         Group ID.
+     * @param  {boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @param  {boolean}   [ignoreCache]   True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {string}    [siteId]        Site ID. Current if not defined.
+     * @return {Promise<any>}              Resolved with an array of entry ID.
+     */
+    getAllEntriesIds(dataId: number, groupId: number, forceCache: boolean = false, ignoreCache: boolean = false, siteId?: string):
+            Promise<any> {
+        return this.dataProvider.fetchAllEntries(dataId, groupId, undefined, undefined, undefined, forceCache, ignoreCache, siteId)
+                .then((entries) => {
+            return entries.map((entry) => {
+                return entry.id;
+            });
+        });
+    }
+
+    /**
+     * Get an online or offline entry.
+     *
+     * @param  {any} data             Database.
+     * @param  {number} entryId       Entry ID.
+     * @param  {any} [offlineActions] Offline data with the actions done. Required for offline entries.
+     * @param  {string} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise<any>}         Promise resolved with the entry.
+     */
+    getEntry(data: any, entryId: number, offlineActions?: any, siteId?: string): Promise<any> {
+        if (entryId > 0) {
+            // It's an online entry, get it from WS.
+            return this.dataProvider.getEntry(data.id, entryId, siteId);
+        }
+
+        // It's an offline entry, search it in the offline actions.
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const offlineEntry = offlineActions.find((offlineAction) => {
+                return offlineAction.action == 'add';
+            });
+
+            if (offlineEntry) {
+                const siteInfo = site.getInfo();
+
+                return {entry: {
+                        id: offlineEntry.entryid,
+                        canmanageentry: true,
+                        approved: !data.approval || data.manageapproved,
+                        dataid: offlineEntry.dataid,
+                        groupid: offlineEntry.groupid,
+                        timecreated: -offlineEntry.entryid,
+                        timemodified: -offlineEntry.entryid,
+                        userid: siteInfo.userid,
+                        fullname: siteInfo.fullname,
+                        contents: {}
+                    }
+                };
+            }
+        });
+    }
+
+    /**
+     * Get page info related to an entry.
+     *
+     * @param  {number}    dataId          Data ID.
+     * @param  {number}    entryId         Entry ID.
+     * @param  {number}    groupId         Group ID.
+     * @param  {boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @param  {boolean}   [ignoreCache]   True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {string}    [siteId]        Site ID. Current if not defined.
+     * @return {Promise<any>}              Containing page number, if has next and have following page.
+     */
+    getPageInfoByEntry(dataId: number, entryId: number, groupId: number, forceCache: boolean = false,
+            ignoreCache: boolean = false, siteId?: string): Promise<any> {
+        return this.getAllEntriesIds(dataId, groupId, forceCache, ignoreCache, siteId).then((entries) => {
+            const index = entries.findIndex((entry) => {
+                return entry == entryId;
+            });
+
+            if (index >= 0) {
+                return {
+                    previousId: entries[index - 1] || false,
+                    nextId: entries[index + 1] || false,
+                    entryId: entryId,
+                    page: index + 1, // Parsed to natural language.
+                    numEntries: entries.length
+                };
+            }
+
+            return false;
+        });
+    }
+
+    /**
+     * Get page info related to an entry by page number.
+     *
+     * @param  {number}    dataId          Data ID.
+     * @param  {number}    page            Page number.
+     * @param  {number}    groupId         Group ID.
+     * @param  {boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @param  {boolean}   [ignoreCache]   True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {string}    [siteId]        Site ID. Current if not defined.
+     * @return {Promise<any>}              Containing page number, if has next and have following page.
+     */
+    getPageInfoByPage(dataId: number, page: number, groupId: number, forceCache: boolean = false,
+            ignoreCache: boolean = false, siteId?: string): Promise<any> {
+        return this.getAllEntriesIds(dataId, groupId, forceCache, ignoreCache, siteId).then((entries) => {
+            const index = page - 1,
+                entryId = entries[index];
+
+            if (entryId) {
+                return {
+                    previousId: entries[index - 1] || null,
+                    nextId: entries[index + 1] || null,
+                    entryId: entryId,
+                    page: page, // Parsed to natural language.
+                    numEntries: entries.length
+                };
+            }
+
+            return false;
+        });
     }
 
     /**
