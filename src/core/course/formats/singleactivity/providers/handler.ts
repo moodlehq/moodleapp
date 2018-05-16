@@ -93,7 +93,7 @@ export class CoreCourseFormatSingleActivityHandler implements CoreCourseFormatHa
      * @return {boolean} Whether the refresher should be displayed.
      */
     displayRefresher(course: any, sections: any[]): boolean {
-        if (sections && sections[0] && sections[0].modules) {
+        if (sections && sections[0] && sections[0].modules && sections[0].modules[0]) {
             return this.moduleDelegate.displayRefresherInSingleActivity(sections[0].modules[0].modname);
         } else {
             return true;

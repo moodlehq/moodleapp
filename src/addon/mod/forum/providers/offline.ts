@@ -163,7 +163,7 @@ export class AddonModForumOfflineProvider {
             };
 
             return site.getDb().getRecord(this.DISCUSSIONS_TABLE, conditions).then((record) => {
-                record.options = JSON.parse(record.options);
+                record.options = this.textUtils.parseJSON(record.options);
 
                 return record;
             });
@@ -178,7 +178,7 @@ export class AddonModForumOfflineProvider {
      */
     getAllNewDiscussions(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.DISCUSSIONS_TABLE).then(this.parseRecordOptions);
+            return site.getDb().getRecords(this.DISCUSSIONS_TABLE).then(this.parseRecordOptions.bind(this));
         });
     }
 
@@ -214,7 +214,7 @@ export class AddonModForumOfflineProvider {
                 userid: userId || site.getUserId(),
             };
 
-            return site.getDb().getRecords(this.DISCUSSIONS_TABLE, conditions).then(this.parseRecordOptions);
+            return site.getDb().getRecords(this.DISCUSSIONS_TABLE, conditions).then(this.parseRecordOptions.bind(this));
         });
     }
 
@@ -279,7 +279,7 @@ export class AddonModForumOfflineProvider {
      */
     getAllReplies(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.REPLIES_TABLE).then(this.parseRecordOptions);
+            return site.getDb().getRecords(this.REPLIES_TABLE).then(this.parseRecordOptions.bind(this));
         });
     }
 
@@ -315,7 +315,7 @@ export class AddonModForumOfflineProvider {
                 userid: userId || site.getUserId(),
             };
 
-            return site.getDb().getRecords(this.REPLIES_TABLE, conditions).then(this.parseRecordOptions);
+            return site.getDb().getRecords(this.REPLIES_TABLE, conditions).then(this.parseRecordOptions.bind(this));
         });
     }
 
@@ -351,7 +351,7 @@ export class AddonModForumOfflineProvider {
                 userid: userId || site.getUserId(),
             };
 
-            return site.getDb().getRecords(this.REPLIES_TABLE, conditions).then(this.parseRecordOptions);
+            return site.getDb().getRecords(this.REPLIES_TABLE, conditions).then(this.parseRecordOptions.bind(this));
         });
     }
 
@@ -446,7 +446,7 @@ export class AddonModForumOfflineProvider {
      */
     protected parseRecordOptions(records: any[]): any[] {
         records.forEach((record) => {
-            record.options = JSON.parse(record.options);
+            record.options = this.textUtils.parseJSON(record.options);
         });
 
         return records;

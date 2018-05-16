@@ -40,16 +40,16 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
     descriptionNote: string;
     forum: any;
-    trackPosts = false;
-    usesGroups = false;
     canLoadMore = false;
     discussions = [];
     offlineDiscussions = [];
-    count = 0;
     selectedDiscussion = 0; // Disucssion ID or negative timecreated if it's an offline discussion.
+    addDiscussionText = this.translate.instant('addon.mod_forum.addanewdiscussion');
 
     protected syncEventName = AddonModForumSyncProvider.AUTO_SYNCED;
     protected page = 0;
+    protected trackPosts = false;
+    protected usesGroups = false;
     protected syncManualObserver: any; // It will observe the sync manual event.
     protected replyObserver: any;
     protected newDiscObserver: any;
@@ -133,6 +133,18 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
             this.dataRetrieved.emit(forum);
 
+            switch (forum.type) {
+                case 'news':
+                case 'blog':
+                    this.addDiscussionText = this.translate.instant('addon.mod_forum.addanewtopic');
+                    break;
+                case 'qanda':
+                    this.addDiscussionText = this.translate.instant('addon.mod_forum.addanewquestion');
+                    break;
+                default:
+                    this.addDiscussionText = this.translate.instant('addon.mod_forum.addanewdiscussion');
+            }
+
             if (sync) {
                 // Try to synchronize the forum.
                 return this.syncActivity(showErrors).then((updated) => {
@@ -141,6 +153,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                         this.eventsProvider.trigger(AddonModForumSyncProvider.MANUAL_SYNCED, {
                             forumId: forum.id,
                             userId: this.sitesProvider.getCurrentSiteUserId(),
+                            source: 'index',
                         }, this.sitesProvider.getCurrentSiteId());
                     }
                 });
@@ -164,8 +177,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             this.domUtils.showErrorModalDefault(message, 'addon.mod_forum.errorgetforum', true);
 
             this.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
-
-            return Promise.reject(null);
         });
     }
 
@@ -282,11 +293,19 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                     return Promise.all(offlinePromises);
                 });
             });
-        }).catch((message) => {
-            this.domUtils.showErrorModal(message);
-            this.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
+        });
+    }
 
-            return Promise.reject(null);
+    /**
+     * Convenience function to load more forum discussions.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected fetchMoreDiscussions(): Promise<any> {
+        return this.fetchDiscussions(false).catch((message) => {
+            this.domUtils.showErrorModalDefault(message, 'addon.mod_forum.errorgetforum', true);
+
+            this.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
         });
     }
 
@@ -357,7 +376,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * @return {boolean} True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: any): boolean {
-        return this.forum && syncEventData.forumId == this.forum.id &&
+        return this.forum && syncEventData.source != 'index' && syncEventData.forumId == this.forum.id &&
             syncEventData.userId == this.sitesProvider.getCurrentSiteUserId();
     }
 

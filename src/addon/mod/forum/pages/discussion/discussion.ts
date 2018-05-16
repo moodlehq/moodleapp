@@ -42,8 +42,6 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     @ViewChild(Content) content: Content;
 
     courseId: number;
-    cmId: number;
-    forumId: number;
     discussionId: number;
     forum: any;
     discussion: any;
@@ -71,6 +69,8 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     refreshIcon = 'spinner';
     syncIcon = 'spinner';
 
+    protected cmId: number;
+    protected forumId: number;
     protected onlineObserver: any;
     protected syncObserver: any;
     protected syncManualObserver: any;
@@ -126,7 +126,8 @@ export class AddonModForumDiscussionPage implements OnDestroy {
 
         // Refresh data if this forum discussion is synchronized from discussions list.
         this.syncManualObserver = this.eventsProvider.on(AddonModForumSyncProvider.MANUAL_SYNCED, (data) => {
-            if (data.forumId == this.forumId && data.userId == this.sitesProvider.getCurrentSiteUserId()) {
+            if (data.source != 'discussion' && data.forumId == this.forumId &&
+                    data.userId == this.sitesProvider.getCurrentSiteUserId()) {
                 // Refresh the data.
                 this.discussionLoaded = false;
                 this.refreshPosts();
@@ -310,7 +311,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                 this.eventsProvider.trigger(AddonModForumSyncProvider.MANUAL_SYNCED, {
                     forumId: this.forumId,
                     userId: this.sitesProvider.getCurrentSiteUserId(),
-                    warnings: result.warnings
+                    source: 'discussion'
                 }, this.sitesProvider.getCurrentSiteId());
             }
 

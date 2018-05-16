@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
-import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
 import { CoreGroupsProvider } from '@providers/groups';
 import { CoreUserProvider } from '@core/user/providers/user';
@@ -32,7 +31,6 @@ export class AddonModForumPrefetchHandler extends CoreCourseModulePrefetchHandle
     constructor(injector: Injector,
             private groupsProvider: CoreGroupsProvider,
             private userProvider: CoreUserProvider,
-            private prefetchDelegate: CoreCourseModulePrefetchDelegate,
             private forumProvider: AddonModForumProvider) {
         super(injector);
     }
@@ -131,28 +129,6 @@ export class AddonModForumPrefetchHandler extends CoreCourseModulePrefetchHandle
      */
     invalidateContent(moduleId: number, courseId: number): Promise<any> {
         return this.forumProvider.invalidateContent(moduleId, courseId);
-    }
-
-    /**
-     * Invalidate WS calls needed to determine module status.
-     *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when invalidated.
-     */
-    invalidateModule(module: any, courseId: number): Promise<any> {
-        if (this.prefetchDelegate.canCheckUpdates()) {
-            // If can check updates only get forum by course is needed.
-            return this.forumProvider.invalidateForumData(courseId);
-        }
-
-        // Get the forum since we need its ID.
-        return this.forumProvider.getForum(courseId, module.id).then((forum) => {
-            return Promise.all([
-                this.forumProvider.invalidateForumData(courseId),
-                this.forumProvider.invalidateDiscussionsList(forum.id),
-            ]);
-        });
     }
 
     /**

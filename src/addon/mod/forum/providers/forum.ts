@@ -190,14 +190,15 @@ export class AddonModForumProvider {
     /**
      * Check if a user can post to a certain group.
      *
-     * @param  {number} forumId Forum ID.
-     * @param  {number} groupId Group ID.
-     * @return {Promise<any>}   Promise resolved with an object with the following properties:
-     *                           - status (boolean)
-     *                           - canpindiscussions (boolean)
-     *                           - cancreateattachment (boolean)
+     * @param  {number} forumId  Forum ID.
+     * @param  {number} groupId  Group ID.
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}    Promise resolved with an object with the following properties:
+     *                            - status (boolean)
+     *                            - canpindiscussions (boolean)
+     *                            - cancreateattachment (boolean)
      */
-    canAddDiscussion(forumId: number, groupId: number): Promise<any> {
+    canAddDiscussion(forumId: number, groupId: number, siteId?: string): Promise<any> {
         const params = {
             forumid: forumId,
             groupid: groupId
@@ -206,21 +207,23 @@ export class AddonModForumProvider {
             cacheKey: this.getCanAddDiscussionCacheKey(forumId, groupId)
         };
 
-        return this.sitesProvider.getCurrentSite().read('mod_forum_can_add_discussion', params, preSets).then((result) => {
-            if (result) {
-                if (typeof result.canpindiscussions == 'undefined') {
-                    // WS doesn't support it yet, default it to false to prevent students from seing the option.
-                    result.canpindiscussions = false;
-                }
-                if (typeof result.cancreateattachment == 'undefined') {
-                    // WS doesn't support it yet, default it to true since usually the users will be able to create them.
-                    result.cancreateattachment = true;
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.read('mod_forum_can_add_discussion', params, preSets).then((result) => {
+                if (result) {
+                    if (typeof result.canpindiscussions == 'undefined') {
+                        // WS doesn't support it yet, default it to false to prevent students from seing the option.
+                        result.canpindiscussions = false;
+                    }
+                    if (typeof result.cancreateattachment == 'undefined') {
+                        // WS doesn't support it yet, default it to true since usually the users will be able to create them.
+                        result.cancreateattachment = true;
+                    }
+
+                    return result;
                 }
 
-                return result;
-            }
-
-            return Promise.reject(null);
+                return Promise.reject(null);
+            });
         });
     }
 
@@ -361,26 +364,28 @@ export class AddonModForumProvider {
     /**
      * Get forum discussion posts.
      *
-     * @param  {number} discussionid Discussion ID.
+     * @param  {number} discussionId Discussion ID.
+     * @param  {string} [siteId]     Site ID. If not defined, current site.
      * @return {Promise<any[]>}      Promise resolved with forum posts.
      */
-    getDiscussionPosts(discussionid: number): Promise<any> {
-        const site = this.sitesProvider.getCurrentSite();
+    getDiscussionPosts(discussionId: number, siteId?: string): Promise<any> {
         const params = {
-            discussionid: discussionid
+            discussionid: discussionId
         };
         const preSets = {
-            cacheKey: this.getDiscussionPostsCacheKey(discussionid)
+            cacheKey: this.getDiscussionPostsCacheKey(discussionId)
         };
 
-        return site.read('mod_forum_get_forum_discussion_posts', params, preSets).then((response) => {
-            if (response) {
-                this.storeUserData(response.posts);
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.read('mod_forum_get_forum_discussion_posts', params, preSets).then((response) => {
+                if (response) {
+                    this.storeUserData(response.posts);
 
-                return response.posts;
-            } else {
-                return Promise.reject(null);
-            }
+                    return response.posts;
+                } else {
+                    return Promise.reject(null);
+                }
+            });
         });
     }
 

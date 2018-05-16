@@ -87,7 +87,13 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Set data to new post, clearing tmp files and updating original data.
+     * Set data to new post, clearing temporary files and updating original data.
+     *
+     * @param {number} [replyingTo] Id of post beeing replied.
+     * @param {boolean} [isEditing] True it's an offline reply beeing edited, false otherwise.
+     * @param {string} [subject] Subject of the reply.
+     * @param {string} [message] Message of the reply.
+     * @param {any[]} [files] Reply attachments.
      */
     protected setReplyData(replyingTo?: number, isEditing?: boolean, subject?: string, message?: string, files?: any[]): void {
         // Delete the local files from the tmp folder if any.
