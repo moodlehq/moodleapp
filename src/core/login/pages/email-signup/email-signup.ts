@@ -21,7 +21,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreWSProvider } from '@providers/ws';
 import { CoreLoginHelperProvider } from '../../providers/helper';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { CoreUserProfileFieldDelegate } from '@core/user/providers/user-profile-field-delegate';
 
 /**
@@ -34,6 +34,7 @@ import { CoreUserProfileFieldDelegate } from '@core/user/providers/user-profile-
 })
 export class CoreLoginEmailSignupPage {
     @ViewChild(Content) content: Content;
+
     signupForm: FormGroup;
     siteUrl: string;
     siteConfig: any;
@@ -47,6 +48,14 @@ export class CoreLoginEmailSignupPage {
     captcha = {
         recaptcharesponse: ''
     };
+
+    // Data for age verification.
+    ageVerificationForm: FormGroup;
+    countryControl: FormControl;
+    isMinor = false; // Whether the user is minor age.
+    ageDigitalConsentVerification: boolean; // Whether the age verification is enabled.
+    supportName: string;
+    supportEmail: string;
 
     // Validation errors.
     usernameErrors: any;
@@ -62,6 +71,13 @@ export class CoreLoginEmailSignupPage {
             private textUtils: CoreTextUtilsProvider, private userProfileFieldDelegate: CoreUserProfileFieldDelegate) {
 
         this.siteUrl = navParams.get('siteUrl');
+
+        // Create the ageVerificationForm.
+        this.ageVerificationForm = this.fb.group({
+            age: ['', Validators.required]
+        });
+        this.countryControl = this.fb.control('', Validators.required);
+        this.ageVerificationForm.addControl('country', this.countryControl);
 
         // Create the signupForm with the basic controls. More controls will be added later.
         this.signupForm = this.fb.group({
@@ -115,7 +131,20 @@ export class CoreLoginEmailSignupPage {
             this.siteConfig = config;
 
             if (this.treatSiteConfig(config)) {
-                return this.getSignupSettings();
+                // Check content verification.
+                if (typeof this.ageDigitalConsentVerification == 'undefined') {
+                    return this.wsProvider.callAjax('core_auth_is_age_digital_consent_verification_enabled', {},
+                            {siteUrl: this.siteUrl }).then((result) => {
+
+                        this.ageDigitalConsentVerification = result.status;
+                    }).catch((e) => {
+                        // Capture exceptions, fail silently.
+                    }).then(() => {
+                        return this.getSignupSettings();
+                    });
+                } else {
+                    return this.getSignupSettings();
+                }
             }
         }).then(() => {
             this.completeFormGroup();
@@ -134,6 +163,10 @@ export class CoreLoginEmailSignupPage {
 
             if (this.settings.recaptchapublickey) {
                 this.captcha.recaptcharesponse = ''; // Reset captcha.
+            }
+
+            if (!this.countryControl.value) {
+                this.countryControl.setValue(settings.country || '');
             }
 
             this.namefieldsErrors = {};
@@ -160,6 +193,10 @@ export class CoreLoginEmailSignupPage {
         if (siteConfig && siteConfig.registerauth == 'email' && !this.loginHelper.isEmailSignupDisabled(siteConfig)) {
             this.siteName = siteConfig.sitename;
             this.authInstructions = siteConfig.authinstructions;
+            this.ageDigitalConsentVerification = siteConfig.agedigitalconsentverification;
+            this.supportName = siteConfig.supportname;
+            this.supportEmail = siteConfig.supportemail;
+            this.countryControl.setValue(siteConfig.country || '');
 
             return true;
         } else {
@@ -229,7 +266,7 @@ export class CoreLoginEmailSignupPage {
                             if (result.warnings && result.warnings.length) {
                                 let error = result.warnings[0].message;
                                 if (error == 'incorrect-captcha-sol') {
-                                    error = this.translate.instant('mm.login.recaptchaincorrect');
+                                    error = this.translate.instant('core.login.recaptchaincorrect');
                                 }
 
                                 this.domUtils.showErrorModal(error);
@@ -251,5 +288,43 @@ export class CoreLoginEmailSignupPage {
      */
     protected showAuthInstructions(): void {
         this.textUtils.expandText(this.translate.instant('core.login.instructions'), this.authInstructions);
+    }
+
+    /**
+     * Show contact information on site (we have to display again the age verification form).
+     */
+    showContactOnSite(): void {
+        this.utils.openInBrowser(this.siteUrl + '/login/verify_age_location.php');
+    }
+
+    /**
+     * Verify Age.
+     */
+    verifyAge(): void {
+        if (!this.ageVerificationForm.valid) {
+            this.domUtils.showErrorModal('core.errorinvalidform', true);
+
+            return;
+        }
+
+        const modal = this.domUtils.showModalLoading('core.sending', true),
+            params = this.ageVerificationForm.value;
+
+        params.age = parseInt(params.age, 10); // Use just the integer part.
+
+        this.wsProvider.callAjax('core_auth_is_minor', params, {siteUrl: this.siteUrl}).then((result) => {
+            if (!result.status) {
+                // Not a minor, go ahead!
+                this.ageDigitalConsentVerification = false;
+            } else {
+                // Is a minor!!
+                this.isMinor = true;
+            }
+        }).catch(() => {
+            // Something wrong, redirect to the site.
+            this.domUtils.showErrorModal('There was an error verifying your age, please try again using the browser.');
+        }).finally(() => {
+            modal.dismiss();
+        });
     }
 }
