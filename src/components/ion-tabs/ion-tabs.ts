@@ -44,6 +44,8 @@ export class CoreIonTabsComponent extends Tabs {
         }
     }
 
+    @Input() selectedDisabled: boolean; // Whether the initial tab selected can be a disabled tab.
+
     @ViewChild('originalTabs') originalTabsRef: ElementRef;
 
     _loaded: boolean; // Whether tabs have been loaded.
@@ -135,7 +137,16 @@ export class CoreIonTabsComponent extends Tabs {
         if (!this.initialized && (this._loaded || typeof this._loaded == 'undefined')) {
             this.initialized = true;
 
-            return super.initTabs();
+            return super.initTabs().then(() => {
+                // Tabs initialized. Force select the tab if it's not enabled.
+                if (this.selectedDisabled && typeof this.selectedIndex != 'undefined') {
+                    const tab = this.getByIndex(this.selectedIndex);
+
+                    if (tab && (!tab.enabled || !tab.show)) {
+                        this.select(tab);
+                    }
+                }
+            });
         } else {
             // Tabs not loaded yet. Set the tab bar position so the tab bar is shown, it'll have a spinner.
             this.setTabbarPosition(-1, 0);

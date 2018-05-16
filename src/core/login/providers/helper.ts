@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { Location } from '@angular/common';
 import { Platform } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
@@ -81,7 +82,8 @@ export class CoreLoginHelperProvider {
             private wsProvider: CoreWSProvider, private translate: TranslateService, private textUtils: CoreTextUtilsProvider,
             private eventsProvider: CoreEventsProvider, private appProvider: CoreAppProvider, private utils: CoreUtilsProvider,
             private urlUtils: CoreUrlUtilsProvider, private configProvider: CoreConfigProvider, private platform: Platform,
-            private initDelegate: CoreInitDelegate, private sitePluginsProvider: CoreSitePluginsProvider) {
+            private initDelegate: CoreInitDelegate, private sitePluginsProvider: CoreSitePluginsProvider,
+            private location: Location) {
         this.logger = logger.getInstance('CoreLoginHelper');
     }
 
@@ -408,6 +410,10 @@ export class CoreLoginHelperProvider {
      * @return {Promise<any>} Promise resolved when done.
      */
     goToSiteInitialPage(): Promise<any> {
+        // Due to DeepLinker, we need to remove the path from the URL before going to main menu.
+        // IonTabs checks the URL to determine which path to load for deep linking, so we clear the URL.
+        this.location.replaceState('');
+
         return this.appProvider.getRootNavController().setRoot('CoreMainMenuPage');
     }
 
@@ -597,6 +603,10 @@ export class CoreLoginHelperProvider {
      * @param {any} params Params to pass to the page.
      */
     protected loadPageInMainMenu(page: string, params: any): void {
+        // Due to DeepLinker, we need to remove the path from the URL before going to main menu.
+        // IonTabs checks the URL to determine which path to load for deep linking, so we clear the URL.
+        this.location.replaceState('');
+
         this.appProvider.getRootNavController().setRoot('CoreMainMenuPage', { redirectPage: page, redirectParams: params });
     }
 
