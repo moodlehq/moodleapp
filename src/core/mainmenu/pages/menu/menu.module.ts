@@ -15,6 +15,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { CoreComponentsModule } from '@components/components.module';
 import { CoreMainMenuPage } from './menu';
 
 @NgModule({
@@ -22,6 +23,7 @@ import { CoreMainMenuPage } from './menu';
         CoreMainMenuPage,
     ],
     imports: [
+        CoreComponentsModule,
         IonicPageModule.forChild(CoreMainMenuPage),
         TranslateModule.forChild()
     ],

@@ -661,3 +661,8 @@ canvas[core-chart] {
     height: 100% !important;
   }
 }
+
+// For some reason, in iOS the pages don't inherit the background-color from ion-app, set it explicitly.
+.ion-page {
+  background-color: $background-color;
+}

@@ -28,7 +28,7 @@ page-core-login-init {
             margin-bottom: 30px;
         }
 
-        .spinner circle {
+        .spinner circle, .spinner line {
             stroke: $core-init-screen-spinner-color;
         }
     }
