@@ -135,7 +135,12 @@ export class AddonModLtiProvider {
         const params: any = {
             toolid: id
         };
+
+        // Try to avoid using cache since the "nonce" parameter is set to a timestamp.
         const preSets = {
+            getFromCache: false,
+            saveToCache: true,
+            emergencyCache: true,
             cacheKey: this.getLtiLaunchDataCacheKey(id)
         };
 
@@ -192,7 +197,7 @@ export class AddonModLtiProvider {
 
         // Generate launcher and open it.
         return this.generateLauncher(url, params).then((url) => {
-            this.utils.openInApp(url).show();
+            this.utils.openInApp(url);
         });
     }
 
@@ -203,14 +208,10 @@ export class AddonModLtiProvider {
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
     logView(id: string): Promise<any> {
-        if (id) {
-            const params: any = {
-                ltiid: id
-            };
+        const params: any = {
+            ltiid: id
+        };
 
-            return this.sitesProvider.getCurrentSite().write('mod_lti_view_lti', params);
-        }
-
-        return Promise.reject(null);
+        return this.sitesProvider.getCurrentSite().write('mod_lti_view_lti', params);
     }
 }

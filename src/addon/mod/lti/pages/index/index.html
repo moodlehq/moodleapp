@@ -8,5 +8,9 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
+    <ion-refresher [enabled]="ltiComponent.loaded" (ionRefresh)="ltiComponent.doRefresh($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
     <addon-mod-lti-index [module]="module" [courseId]="courseId" (dataRetrieved)="updateData($event)"></addon-mod-lti-index>
 </ion-content>

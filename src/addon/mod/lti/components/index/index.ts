@@ -14,7 +14,6 @@
 
 import { Component, Optional, Injector } from '@angular/core';
 import { Content } from 'ionic-angular';
-import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
 import { AddonModLtiProvider } from '../../providers/lti';
 
@@ -30,14 +29,12 @@ export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityCompo
     moduleName = 'lti';
 
     lti: any; // The LTI object.
-    isValidUrl: boolean;
 
     protected fetchContentDefaultError = 'addon.mod_lti.errorgetlti';
 
     constructor(injector: Injector,
             @Optional() protected content: Content,
-            private ltiProvider: AddonModLtiProvider,
-            private urlUtils: CoreUrlUtilsProvider) {
+            private ltiProvider: AddonModLtiProvider) {
         super(injector, content);
     }
 
@@ -47,7 +44,7 @@ export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityCompo
     ngOnInit(): void {
         super.ngOnInit();
 
-        this.loadContent(false, true);
+        this.loadContent();
     }
 
     /**
@@ -68,13 +65,8 @@ export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityCompo
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
         return this.ltiProvider.getLti(this.courseId, this.module.id).then((ltiData) => {
             this.lti = ltiData;
-
-            return this.ltiProvider.getLtiLaunchData(ltiData.id).then((launchData) => {
-                this.lti.launchdata = launchData;
-                this.description = this.lti.intro || this.description;
-                this.isValidUrl = this.urlUtils.isHttpURL(launchData.endpoint);
-                this.dataRetrieved.emit(this.lti);
-            });
+            this.description = this.lti.intro || this.description;
+            this.dataRetrieved.emit(this.lti);
         }).then(() => {
             // All data obtained, now fill the context menu.
             this.fillContextMenu(refresh);
@@ -101,18 +93,18 @@ export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityCompo
      * Launch the LTI.
      */
     launch(): void {
-        // "View" LTI.
-        this.ltiProvider.logView(this.lti.id).then(() => {
-            this.checkCompletion();
-        }).catch((error) => {
-            // Ignore errors.
-        });
+        this.ltiProvider.getLtiLaunchData(this.lti.id).then((launchData) => {
+            // "View" LTI.
+            this.ltiProvider.logView(this.lti.id).then(() => {
+                this.checkCompletion();
+            }).catch((error) => {
+                // Ignore errors.
+            });
 
-        // Launch LTI.
-        this.ltiProvider.launch(this.lti.launchdata.endpoint, this.lti.launchdata.parameters).catch((message) => {
-            if (message) {
-                this.domUtils.showErrorModal(message);
-            }
+            // Launch LTI.
+            return this.ltiProvider.launch(launchData.endpoint, launchData.parameters);
+        }).catch((message) => {
+            this.domUtils.showErrorModalDefault(message, 'core.error', true);
         });
     }
 }
