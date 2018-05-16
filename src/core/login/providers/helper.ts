@@ -876,7 +876,15 @@ export class CoreLoginHelperProvider {
             } else {
                 const info = currentSite.getInfo();
                 if (typeof info != 'undefined' && typeof info.username != 'undefined') {
-                    this.appProvider.getRootNavController().setRoot('CoreLoginReconnectPage', {
+                    const rootNavCtrl = this.appProvider.getRootNavController(),
+                        activePage = rootNavCtrl.getActive();
+
+                    // If current page is already reconnect, stop.
+                    if (activePage && activePage.component && activePage.component.name == 'CoreLoginReconnectPage') {
+                        return;
+                    }
+
+                    rootNavCtrl.setRoot('CoreLoginReconnectPage', {
                         infoSiteUrl: info.siteurl,
                         siteUrl: result.siteUrl,
                         siteId: siteId,
@@ -924,7 +932,15 @@ export class CoreLoginHelperProvider {
             return;
         }
 
-        this.appProvider.getRootNavController().setRoot('CoreLoginSitePolicyPage', { siteId: siteId });
+        const rootNavCtrl = this.appProvider.getRootNavController(),
+            activePage = rootNavCtrl.getActive();
+
+        // If current page is already site policy, stop.
+        if (activePage && activePage.component && activePage.component.name == 'CoreLoginSitePolicyPage') {
+            return;
+        }
+
+        rootNavCtrl.setRoot('CoreLoginSitePolicyPage', { siteId: siteId });
     }
 
     /**
