@@ -13,7 +13,7 @@
             <a ion-item text-wrap (click)="openCourse()" [title]="course.fullname" [attr.detail-none]="!canAccessCourse">
                 <ion-icon name="ionic" item-start></ion-icon>
                 <h2><core-format-text [text]="course.fullname"></core-format-text></h2>
-                <p *ngIf="course.categoryname">{{course.categoryname}}</p>
+                <p *ngIf="course.categoryname"><core-format-text [text]="course.categoryname"></core-format-text></p>
                 <p *ngIf="course.startdate">{{course.startdate * 1000 | coreFormatDate:"dfdaymonthyear"}} <span *ngIf="course.enddate"> - {{course.enddate * 1000 | coreFormatDate:"dfdaymonthyear"}}</span></p>
             </a>
 
