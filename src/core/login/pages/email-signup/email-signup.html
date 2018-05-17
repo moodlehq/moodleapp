@@ -10,17 +10,49 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <ion-refresher [enabled]="settingsLoaded" (ionRefresh)="refreshSettings($event)">
+    <ion-refresher [enabled]="settingsLoaded && !isMinor" (ionRefresh)="refreshSettings($event)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <core-loading [hideUntil]="settingsLoaded">
-        <form ion-list *ngIf="settingsLoaded && settings" [formGroup]="signupForm" (ngSubmit)="create()" class="list list-inset">
+    <core-loading [hideUntil]="settingsLoaded" *ngIf="!isMinor">
+
+        <!-- Age verification. -->
+        <form ion-list *ngIf="settingsLoaded && settings && ageDigitalConsentVerification" [formGroup]="ageVerificationForm" (ngSubmit)="verifyAge()">
+            <ion-item-divider color="light" text-wrap>
+                <p class="item-heading">{{ 'core.agelocationverification' | translate }}</p>
+            </ion-item-divider>
+
+            <ion-item text-wrap>
+                <ion-label stacked core-mark-required="true">{{ 'core.whatisyourage' | translate }}</ion-label>
+                <ion-input type="number" name="age" placeholder="0" formControlName="age" autocapitalize="none" autocorrect="off"></ion-input>
+            </ion-item>
+
+            <ion-item text-wrap>
+                <ion-label stacked core-mark-required="true">{{ 'core.wheredoyoulive' | translate }}</ion-label>
+                <ion-select name="country" formControlName="country" interface="popover">
+                    <ion-option value="">{{ 'core.login.selectacountry' | translate }}</ion-option>
+                    <ion-option *ngFor="let key of countriesKeys" [value]="key">{{countries[key]}}</ion-option>
+                </ion-select>
+            </ion-item>
+
+            <!-- Submit button. -->
+            <ion-item padding>
+                <button ion-button block type="submit" [disabled]="!ageVerificationForm.valid">{{ 'core.proceed' | translate }}</button>
+            </ion-item>
+
+            <ion-item text-wrap>
+                <p class="item-heading">{{ 'core.whyisthisrequired' | translate }}</p>
+                <p>{{ 'core.explanationdigitalminor' | translate }}</p>
+            </ion-item>
+        </form>
+
+        <!-- Signup form. -->
+        <form ion-list *ngIf="settingsLoaded && settings && !ageDigitalConsentVerification" [formGroup]="signupForm" (ngSubmit)="create()">
             <ion-item text-wrap text-center>
                 <!-- If no sitename show big siteurl. -->
                 <p *ngIf="!siteName" padding class="item-heading">{{siteUrl}}</p>
                 <!-- If sitename, show big sitename and small siteurl. -->
-                <p *ngIf="siteName" padding class="item-heading">{{siteName}}</p>
+                <p *ngIf="siteName" padding class="item-heading"><core-format-text [text]="siteName"></core-format-text></p>
                 <p *ngIf="siteName">{{siteUrl}}</p>
             </ion-item>
 
@@ -108,4 +140,21 @@
             </ion-item>
         </form>
     </core-loading>
+
+    <ion-list *ngIf="isMinor">
+        <ion-item-divider color="light" text-wrap>
+            <p *ngIf="siteName" class="item-heading padding"><core-format-text [text]="siteName"></core-format-text></p>
+        </ion-item-divider>
+        <ion-item text-wrap>
+            <p class="item-heading">{{ 'core.considereddigitalminor' | translate }}</p>
+            <p>{{ 'core.digitalminor_desc' | translate }}</p>
+            <p *ngIf="supportName">{{ supportName }}</p>
+            <p *ngIf="supportEmail">{{ supportEmail }}</p>
+            <div padding *ngIf="!supportName && !supportEmail">
+                <button ion-button block (click)="showContactOnSite()">
+                    {{ 'core.openinbrowser' | translate }}
+                </button>
+            </div>
+        </ion-item>
+    </ion-list>
 </ion-content>
