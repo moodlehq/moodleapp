@@ -82,6 +82,7 @@ import { AddonModBookModule } from '@addon/mod/book/book.module';
 import { AddonModChatModule } from '@addon/mod/chat/chat.module';
 import { AddonModChoiceModule } from '@addon/mod/choice/choice.module';
 import { AddonModLabelModule } from '@addon/mod/label/label.module';
+import { AddonModLtiModule } from '@addon/mod/lti/lti.module';
 import { AddonModResourceModule } from '@addon/mod/resource/resource.module';
 import { AddonModFeedbackModule } from '@addon/mod/feedback/feedback.module';
 import { AddonModFolderModule } from '@addon/mod/folder/folder.module';
@@ -187,6 +188,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonModFeedbackModule,
         AddonModFolderModule,
         AddonModForumModule,
+        AddonModLtiModule,
         AddonModPageModule,
         AddonModQuizModule,
         AddonModScormModule,

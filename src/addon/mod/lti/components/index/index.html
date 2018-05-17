@@ -1,0 +1,21 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons end>
+    <core-context-menu>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl" [iconAction]="'open'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()" [iconAction]="'arrow-forward'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && isOnline" [priority]="700" [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<!-- Content. -->
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+
+    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+
+    <div padding-horizontal>
+        <button ion-button block icon-left (click)="launch()">
+            <ion-icon name="link"></ion-icon>
+            {{ 'addon.mod_lti.launchactivity' | translate }}
+        </button>
+    </div>
+</core-loading>
