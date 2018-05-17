@@ -14,6 +14,9 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
+import { CoreSiteHomeProvider } from '../../providers/sitehome';
 
 /**
  * Component that displays site home news.
@@ -27,7 +30,8 @@ export class CoreSiteHomeNewsComponent implements OnInit {
     show: boolean;
     siteHomeId: number;
 
-    constructor(private sitesProvider: CoreSitesProvider) {
+    constructor(private sitesProvider: CoreSitesProvider, private courseProvider: CoreCourseProvider,
+            private moduleDelegate: CoreCourseModuleDelegate, private siteHomeProvider: CoreSiteHomeProvider) {
         this.siteHomeId = sitesProvider.getCurrentSite().getSiteHomeId();
     }
 
@@ -36,11 +40,23 @@ export class CoreSiteHomeNewsComponent implements OnInit {
      */
     ngOnInit(): void {
         // Get number of news items to show.
-        const newsItems = this.sitesProvider.getCurrentSite().getStoredConfig('newsitems') || 0;
+        const currentSite = this.sitesProvider.getCurrentSite(),
+            newsItems = currentSite.getStoredConfig('newsitems') || 0;
         if (!newsItems) {
             return;
         }
 
-        // @todo: Implement it once forum is supported.
+        const siteHomeId = currentSite.getSiteHomeId();
+
+        // Get the news forum.
+        this.siteHomeProvider.getNewsForum(siteHomeId).then((forum) => {
+            return this.courseProvider.getModuleBasicInfo(forum.cmid).then((module) => {
+                this.show = true;
+                this.module = module;
+                module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, siteHomeId, module.section);
+            });
+        }).catch(() => {
+            // Ignore errors.
+        });
     }
 }

@@ -18,6 +18,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
+import { CoreSiteHomeProvider } from '../../providers/sitehome';
 
 /**
  * Component that displays site home index.
@@ -38,7 +39,7 @@ export class CoreSiteHomeIndexComponent implements OnInit {
 
     constructor(private domUtils: CoreDomUtilsProvider, private sitesProvider: CoreSitesProvider,
             private courseProvider: CoreCourseProvider, private courseHelper: CoreCourseHelperProvider,
-            private prefetchDelegate: CoreCourseModulePrefetchDelegate) {
+            private prefetchDelegate: CoreCourseModulePrefetchDelegate, private siteHomeProvider: CoreSiteHomeProvider) {
         this.siteHomeId = sitesProvider.getCurrentSite().getSiteHomeId();
     }
 
@@ -87,6 +88,7 @@ export class CoreSiteHomeIndexComponent implements OnInit {
      * @return {Promise<any>} Promise resolved when done.
      */
     protected loadContent(): Promise<any> {
+        let hasNewsItem = false;
         this.hasContent = false;
 
         const config = this.sitesProvider.getCurrentSite().getStoredConfig() || { numsections: 1 };
@@ -114,6 +116,10 @@ export class CoreSiteHomeIndexComponent implements OnInit {
                     return;
                 }
 
+                if (item == 'news') {
+                    hasNewsItem = true;
+                }
+
                 this.hasContent = true;
                 this.items.push(item);
             });
@@ -137,6 +143,23 @@ export class CoreSiteHomeIndexComponent implements OnInit {
 
             // Add log in Moodle.
             this.courseProvider.logView(this.siteHomeId);
+
+            if (hasNewsItem && this.block && this.block.modules) {
+                // Remove forum activity (news one only) to prevent duplicates.
+                this.siteHomeProvider.getNewsForum(this.siteHomeId).then((forum) => {
+                    // Search the module that belongs to site news.
+                    for (let i = 0; i < this.block.modules.length; i++) {
+                        const module = this.block.modules[i];
+
+                        if (module.modname == 'forum' && module.instance == forum.id) {
+                            this.block.modules.splice(i, 1);
+                            break;
+                        }
+                    }
+                }).catch(() => {
+                    // Ignore errors.
+                });
+            }
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.course.couldnotloadsectioncontent', true);
         });
