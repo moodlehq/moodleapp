@@ -24,6 +24,6 @@ export class AddonModDataLinkHandler extends CoreContentLinksModuleIndexHandler 
     name = 'AddonModDataLinkHandler';
 
     constructor(courseHelper: CoreCourseHelperProvider) {
-        super(courseHelper, AddonModDataLinkHandler.name, 'data');
+        super(courseHelper, 'AddonModData', 'data');
     }
 }

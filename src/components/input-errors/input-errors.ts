@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChange } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -42,9 +42,10 @@ import { TranslateService } from '@ngx-translate/core';
     selector: 'core-input-errors',
     templateUrl: 'input-errors.html'
 })
-export class CoreInputErrorsComponent implements OnInit {
-    @Input('control') formControl: FormControl;
+export class CoreInputErrorsComponent implements OnInit, OnChanges {
+    @Input('control') formControl?: FormControl;
     @Input() errorMessages?: any;
+    @Input() errorText?: string; // Set other non automatic errors.
     errorKeys: any[];
 
     constructor(private translate: TranslateService) { }
@@ -53,9 +54,11 @@ export class CoreInputErrorsComponent implements OnInit {
      * Component is being initialized.
      */
     ngOnInit(): void {
-        this.initErrorMessages();
+        if (this.formControl) {
+            this.initErrorMessages();
 
-        this.errorKeys = Object.keys(this.errorMessages);
+            this.errorKeys = Object.keys(this.errorMessages);
+        }
     }
 
     /**
@@ -73,6 +76,15 @@ export class CoreInputErrorsComponent implements OnInit {
         this.errorMessages.url = this.errorMessages.url || this.translate.instant('core.login.invalidurl');
 
         // @todo: Check how to handle min/max errors once we have a test case to use. Also, review previous errors.
+    }
+
+    /**
+     * Component being changed.
+     */
+    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
+        if (changes.errorText) {
+            this.errorText = changes.errorText.currentValue;
+        }
     }
 
 }

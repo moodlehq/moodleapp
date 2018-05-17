@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { Component, Input, OnInit, Injector, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Injector, ViewChild, OnChanges, SimpleChange } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { AddonModDataProvider } from '../../providers/data';
 import { AddonModDataFieldsDelegate } from '../../providers/fields-delegate';
@@ -24,7 +24,7 @@ import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-comp
     selector: 'addon-mod-data-field-plugin',
     templateUrl: 'field-plugin.html',
 })
-export class AddonModDataFieldPluginComponent implements OnInit {
+export class AddonModDataFieldPluginComponent implements OnInit, OnChanges {
     @ViewChild(CoreDynamicComponent) dynamicComponent: CoreDynamicComponent;
 
     @Input() mode: string; // The render mode.
@@ -70,10 +70,23 @@ export class AddonModDataFieldPluginComponent implements OnInit {
                     form: this.form,
                     search: this.search
                 };
-
             }
         }).finally(() => {
             this.fieldLoaded = true;
         });
+    }
+
+    /**
+     * Component being changed.
+     */
+    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
+        if (this.fieldLoaded && this.data) {
+            if (this.mode == 'edit' && changes.error) {
+                this.data.error = changes.error.currentValue;
+            }
+            if ((this.mode == 'show' || this.mode == 'list') && changes.value) {
+                this.data.value = changes.value.currentValue;
+            }
+        }
     }
 }

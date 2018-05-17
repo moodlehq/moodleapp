@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
 
@@ -22,7 +22,7 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
     selector: 'addon-mod-data-field-radiobutton',
     templateUrl: 'radiobutton.html'
 })
-export class AddonModDataFieldRadiobuttonComponent extends AddonModDataFieldPluginComponent implements OnInit {
+export class AddonModDataFieldRadiobuttonComponent extends AddonModDataFieldPluginComponent {
 
     options = [];
 
@@ -31,15 +31,10 @@ export class AddonModDataFieldRadiobuttonComponent extends AddonModDataFieldPlug
     }
 
     /**
-     * Component being initialized.
+     * Initialize field.
      */
-    ngOnInit(): void {
-        this.mode = this.mode == 'list' ? 'show' : this.mode;
-        this.render();
-    }
-
-    protected render(): void {
-        if (this.mode == 'show') {
+    protected init(): void {
+        if (this.isShowOrListMode()) {
             return;
         }
 

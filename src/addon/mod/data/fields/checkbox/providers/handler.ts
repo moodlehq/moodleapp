@@ -49,19 +49,12 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
         const fieldName = 'f_' + field.id,
             reqName = 'f_' + field.id + '_allreq';
 
-        const options = field.param1.split('\n'),
-            checkboxes = [],
-            values = [];
-        options.forEach((option) => {
-            if (inputData[fieldName + '_' + option]) {
-                checkboxes.push(option);
-            }
-        });
+        const values = [];
 
-        if (checkboxes.length > 0) {
+        if (inputData[fieldName] && inputData[fieldName].length > 0) {
             values.push({
                 name: fieldName,
-                value: checkboxes
+                value: inputData[fieldName]
             });
 
             if (inputData[reqName]) {
@@ -87,17 +80,10 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
     getFieldEditData(field: any, inputData: any, originalFieldData: any): any {
         const fieldName = 'f_' + field.id;
 
-        const options = field.param1.split('\n'),
-            checkboxes = [];
-        options.forEach((option) => {
-            if (inputData[fieldName + '_' + option]) {
-                checkboxes.push(option);
-            }
-        });
-        if (checkboxes.length > 0) {
+        if (inputData[fieldName] && inputData[fieldName].length > 0) {
             return [{
                 fieldid: field.id,
-                value: checkboxes
+                value: inputData[fieldName]
             }];
         }
 
@@ -113,18 +99,11 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
      * @return {Promise<boolean> | boolean} If the field has changes.
      */
     hasFieldDataChanged(field: any, inputData: any, originalFieldData: any): Promise<boolean> | boolean {
-        const fieldName = 'f_' + field.id,
-            checkboxes = [];
-
-        inputData[fieldName].forEach((value, option) => {
-            if (value) {
-                checkboxes.push(option);
-            }
-        });
+        const fieldName = 'f_' + field.id;
 
         originalFieldData = (originalFieldData && originalFieldData.content) || '';
 
-        return checkboxes.join('##') != originalFieldData;
+        return inputData[fieldName].join('##') != originalFieldData;
     }
 
     /**

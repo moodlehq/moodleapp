@@ -188,9 +188,98 @@ export class AddonModDataHelperProvider {
             Promise<any> {
         return this.dataProvider.fetchAllEntries(dataId, groupId, undefined, undefined, undefined, forceCache, ignoreCache, siteId)
                 .then((entries) => {
-            return entries.map((entry) => {
-                return entry.id;
-            });
+            return entries.map((entry) => entry.id);
+        });
+    }
+
+    /**
+     * Retrieve the entered data in the edit form.
+     * We don't use ng-model because it doesn't detect changes done by JavaScript.
+     *
+     * @param  {any}     inputData    Array with the entered form values.
+     * @param  {Array}   fields       Fields that defines every content in the entry.
+     * @param  {number}  [dataId]     Database Id. If set, files will be uploaded and itemId set.
+     * @param  {number}  entryId      Entry Id.
+     * @param  {any}  entryContents   Original entry contents indexed by field id.
+     * @param  {boolean} offline      True to prepare the data for an offline uploading, false otherwise.
+     * @param  {string}  [siteId]     Site ID. If not defined, current site.
+     * @return {Promise<any>}         That contains object with the answers.
+     */
+    getEditDataFromForm(inputData: any, fields: any, dataId: number, entryId: number, entryContents: any, offline: boolean = false,
+            siteId?: string): Promise<any> {
+        if (!inputData) {
+            return Promise.resolve({});
+        }
+
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        // Filter and translate fields to each field plugin.
+        const edit = [],
+            promises = [];
+        fields.forEach((field) => {
+            promises.push(Promise.resolve(this.fieldsDelegate.getFieldEditData(field, inputData, entryContents[field.id]))
+                    .then((fieldData) => {
+                if (fieldData) {
+                    const proms = [];
+
+                    fieldData.forEach((data) => {
+                        let dataProm;
+
+                        // Upload Files if asked.
+                        if (dataId && data.files) {
+                            dataProm = this.uploadOrStoreFiles(dataId, 0, entryId, data.fieldid, data.files, offline, siteId)
+                                    .then((filesResult) => {
+                                delete data.files;
+                                data.value = filesResult;
+                            });
+                        } else {
+                            dataProm = Promise.resolve();
+                        }
+
+                        proms.push(dataProm.then(() => {
+                            if (data.value) {
+                                data.value = JSON.stringify(data.value);
+                            }
+                            if (typeof data.subfield == 'undefined') {
+                                data.subfield = '';
+                            }
+
+                            // WS wants values in Json format.
+                            edit.push(data);
+                        }));
+                    });
+
+                    return Promise.all(proms);
+                }
+            }));
+        });
+
+        return Promise.all(promises).then(() => {
+            return edit;
+        });
+    }
+
+    /**
+     * Retrieve the temp files to be updated.
+     *
+     * @param  {any}     inputData    Array with the entered form values.
+     * @param  {Array}   fields       Fields that defines every content in the entry.
+     * @param  {number}  [dataId]     Database Id. If set, fils will be uploaded and itemId set.
+     * @param  {any}   entryContents  Original entry contents indexed by field id.
+     * @return {Promise<any>}         That contains object with the files.
+     */
+    getEditTmpFiles(inputData: any, fields: any, dataId: number, entryContents: any): Promise<any> {
+        if (!inputData) {
+            return Promise.resolve([]);
+        }
+
+        // Filter and translate fields to each field plugin.
+        const promises = fields.map((field) => {
+            return Promise.resolve(this.fieldsDelegate.getFieldEditFiles(field, inputData, entryContents[field.id]));
+        });
+
+        return Promise.all(promises).then((fieldsFiles) => {
+            return fieldsFiles.reduce((files: any[], fieldFiles: any) => files.concat(fieldFiles), []);
         });
     }
 
@@ -211,9 +300,7 @@ export class AddonModDataHelperProvider {
 
         // It's an offline entry, search it in the offline actions.
         return this.sitesProvider.getSite(siteId).then((site) => {
-            const offlineEntry = offlineActions.find((offlineAction) => {
-                return offlineAction.action == 'add';
-            });
+            const offlineEntry = offlineActions.find((offlineAction) => offlineAction.action == 'add');
 
             if (offlineEntry) {
                 const siteInfo = site.getInfo();
@@ -249,9 +336,7 @@ export class AddonModDataHelperProvider {
     getPageInfoByEntry(dataId: number, entryId: number, groupId: number, forceCache: boolean = false,
             ignoreCache: boolean = false, siteId?: string): Promise<any> {
         return this.getAllEntriesIds(dataId, groupId, forceCache, ignoreCache, siteId).then((entries) => {
-            const index = entries.findIndex((entry) => {
-                return entry == entryId;
-            });
+            const index = entries.findIndex((entry) => entry == entryId);
 
             if (index >= 0) {
                 return {
@@ -313,6 +398,30 @@ export class AddonModDataHelperProvider {
                 // Ignore not found files.
                 return [];
             });
+        });
+    }
+
+    /**
+     * Check if data has been changed by the user.
+     *
+     * @param  {any}    inputData     Array with the entered form values.
+     * @param  {any}  fields          Fields that defines every content in the entry.
+     * @param  {number} [dataId]      Database Id. If set, fils will be uploaded and itemId set.
+     * @param  {any}    entryContents Original entry contents indexed by field id.
+     * @return {Promise<boolean>}     True if changed, false if not.
+     */
+    hasEditDataChanged(inputData: any, fields: any, dataId: number, entryContents: any): Promise<boolean> {
+        const promises = fields.map((field) => {
+            return this.fieldsDelegate.hasFieldDataChanged(field, inputData, entryContents[field.id]);
+        });
+
+        // Will reject on first change detected.
+        return Promise.all(promises).then(() => {
+            // No changes.
+            return false;
+        }).catch(() => {
+            // Has changes.
+            return true;
         });
     }
 

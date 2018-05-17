@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
 import { CoreFileSessionProvider } from '@providers/file-session';
@@ -24,7 +24,7 @@ import { AddonModDataProvider } from '../../../providers/data';
     selector: 'addon-mod-data-field-file',
     templateUrl: 'file.html'
 })
-export class AddonModDataFieldFileComponent extends AddonModDataFieldPluginComponent implements OnInit {
+export class AddonModDataFieldFileComponent extends AddonModDataFieldPluginComponent {
 
     files = [];
     component: string;
@@ -33,14 +33,6 @@ export class AddonModDataFieldFileComponent extends AddonModDataFieldPluginCompo
 
     constructor(protected fb: FormBuilder, private fileSessionprovider: CoreFileSessionProvider) {
         super(fb);
-    }
-
-    /**
-     * Component being initialized.
-     */
-    ngOnInit(): void {
-        this.mode = this.mode == 'list' ? 'show' : this.mode;
-        this.render();
     }
 
     /**
@@ -60,20 +52,32 @@ export class AddonModDataFieldFileComponent extends AddonModDataFieldPluginCompo
         return files;
     }
 
-    protected render(): void {
-        if (this.mode == 'show' || this.mode == 'edit') {
+    /**
+     * Initialize field.
+     */
+    protected init(): void {
+        if (this.mode != 'search') {
             this.component = AddonModDataProvider.COMPONENT;
             this.componentId = this.database.coursemodule;
 
-            this.files = this.getFiles(this.value);
+            this.updateValue(this.value);
 
-            if (this.mode != 'show') {
-                // Edit mode, the list shouldn't change so there is no need to watch it.
+            if (this.mode == 'edit') {
                 this.maxSizeBytes = parseInt(this.field.param3, 10);
                 this.fileSessionprovider.setFiles(this.component, this.database.id + '_' + this.field.id, this.files);
             }
+        } else {
+            this.addControl('f_' + this.field.id);
         }
+    }
 
-        this.addControl('f_' + this.field.id);
+    /**
+     * Update value being shown.
+     *
+     * @param {any} value New value to be set.
+     */
+    protected updateValue(value: any): void {
+        this.value = value;
+        this.files = this.getFiles(value);
     }
 }

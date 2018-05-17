@@ -51,7 +51,7 @@ export class AddonModDataFieldDateHandler implements AddonModDataFieldHandler {
 
         if (inputData[enabledName] && typeof inputData[fieldName] == 'string') {
             const values = [],
-                date = inputData[fieldName].split('-'),
+                date = inputData[fieldName].substr(0, 10).split('-'),
                 year = date[0],
                 month = date[1],
                 day = date[2];
@@ -88,9 +88,9 @@ export class AddonModDataFieldDateHandler implements AddonModDataFieldHandler {
     getFieldEditData(field: any, inputData: any, originalFieldData: any): any {
         const fieldName = 'f_' + field.id;
 
-       if (inputData[fieldName]) {
+        if (typeof inputData[fieldName] == 'string') {
             const values = [],
-                date = inputData[fieldName].split('-'),
+                date = inputData[fieldName].substr(0, 10).split('-'),
                 year = date[0],
                 month = date[1],
                 day = date[2];
@@ -126,7 +126,7 @@ export class AddonModDataFieldDateHandler implements AddonModDataFieldHandler {
      */
     hasFieldDataChanged(field: any, inputData: any, originalFieldData: any): Promise<boolean> | boolean {
         const fieldName = 'f_' + field.id,
-            input = inputData[fieldName] || '';
+            input = inputData[fieldName] && inputData[fieldName].substr(0, 10) || '';
 
         originalFieldData = (originalFieldData && originalFieldData.content &&
                 new Date(originalFieldData.content * 1000).toISOString().substr(0, 10)) || '';

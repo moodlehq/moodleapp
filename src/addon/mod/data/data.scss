@@ -24,3 +24,78 @@
     @extend .col;
   }
 }
+
+page-addon-mod-data-search,
+page-addon-mod-data-edit {
+    table {
+        width: 100%;
+    }
+    td {
+        vertical-align: top;
+    }
+
+    .item.item-input.item-block .item-inner ion-input,
+    .item.item-input.item-input-has-focus .item-inner ion-input,
+    .item.item-input.input-has-focus .item-inner ion-input {
+      border: 0 !important;
+      box-shadow: none;
+    }
+
+    .addon-data-lantlong {
+      display: flex;
+    }
+
+    form, .addon-data-advanced-search {
+        background-color: $list-background-color;
+
+        .core-mark-required {
+          float: right;
+
+          + ion-input,
+          + ion-select {
+            padding-right: 20px;
+          }
+        }
+
+        @if ($text-input-md-show-focus-highlight) {
+            .input-md input:focus {
+                @include md-input-highlight($text-input-md-highlight-color);
+            }
+        }
+
+        .input-md input {
+            @include padding-horizontal(null, ($item-md-padding-end / 2));
+            border-bottom: 1px solid $list-md-border-color;
+            &:focus {
+                @include md-input-highlight($text-input-md-highlight-color);
+            }
+        }
+
+        .input-ios input {
+            @include padding-horizontal(null, $item-ios-padding-end / 2);
+            @include safe-area-padding-horizontal(null, $item-ios-padding-end / 2);
+            border-bottom: $hairlines-width solid $list-ios-border-color;
+            &:focus {
+                @include ios-input-highlight($text-input-ios-highlight-color);
+            }
+        }
+
+        .input-wp input {
+            @include padding-horizontal(null, ($item-wp-padding-end / 2));
+            border-bottom: 1px solid $list-wp-border-color;
+            &:focus {
+                border-color: $text-input-wp-highlight-color;
+            }
+        }
+
+        ion-select {
+            width: 100%;
+            left: 0;
+            max-width: none;
+        }
+
+        .core-item-has-rich-text-editor {
+            margin-right: 1px;
+        }
+    }
+}

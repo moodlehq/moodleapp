@@ -1,15 +1,10 @@
 <span *ngIf="mode == 'edit'" [formGroup]="form">
-    <span [core-mark-required]="field.required"></span>
+    <span [core-mark-required]="field.required" class="core-mark-required"></span>
+    <core-attachments [files]="files" [maxSize]="maxSizeBytes" maxSubmissions="1" [component]="component" [componentId]="componentId" [allowOffline]="true" acceptedTypes="image"></core-attachments>
+    <core-input-errors *ngIf="error" [errorText]="error"></core-input-errors>
 
-    <core-input-errors *ngIf="error" [errorMessages]="error"></core-input-errors>
-
-    <core-attachments [files]="files" [maxSize]="maxSizeBytes" maxSubmissions="1" [component]="component" [componentId]="componentId" [allowOffline]="true"></core-attachments>
-
-    <ion-item>
-        <ion-label>{{ 'addon.mod_data.alttext' | translate }}</ion-label>
-        <ion-input type="text" [formControlName]="'f_'+field.id+'_alttext'" [(ngModel)]="alttext" [placeholder]=" 'addon.mod_data.alttext' | translate" ></ion-input>
-        <span class="placeholder-icon" item-right>°N</span>
-    </ion-item>
+    <ion-label stacked>{{ 'addon.mod_data.alttext' | translate }}</ion-label>
+    <ion-input type="text" [formControlName]="'f_'+field.id+'_alttext'" [placeholder]=" 'addon.mod_data.alttext' | translate" ></ion-input>
 </span>
 
 <span *ngIf="mode == 'search'" [formGroup]="form">

@@ -81,13 +81,10 @@ export class AddonModDataFieldMultimenuHandler implements AddonModDataFieldHandl
         const fieldName = 'f_' + field.id;
 
         if (inputData[fieldName] && inputData[fieldName].length > 0) {
-            const options = inputData[fieldName].split('###');
-            if (options.length > 0) {
-                return [{
-                    fieldid: field.id,
-                    value: options
-                }];
-            }
+            return [{
+                fieldid: field.id,
+                value: inputData[fieldName]
+            }];
         }
 
         return false;
@@ -102,11 +99,11 @@ export class AddonModDataFieldMultimenuHandler implements AddonModDataFieldHandl
      * @return {Promise<boolean> | boolean} If the field has changes.
      */
     hasFieldDataChanged(field: any, inputData: any, originalFieldData: any): Promise<boolean> | boolean {
-        const fieldName = 'f_' + field.id,
-            input = inputData[fieldName] || '';
+        const fieldName = 'f_' + field.id;
+
         originalFieldData = (originalFieldData && originalFieldData.content) || '';
 
-        return input != originalFieldData;
+        return inputData[fieldName].join('##') != originalFieldData;
     }
 
     /**

@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
@@ -23,11 +23,8 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
     selector: 'addon-mod-data-field-date',
     templateUrl: 'date.html'
 })
-export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginComponent implements OnInit {
+export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginComponent {
 
-    values = {};
-    enable: boolean;
-    val: any;
     format: string;
 
     constructor(protected fb: FormBuilder, protected timeUtils: CoreTimeUtilsProvider) {
@@ -35,35 +32,27 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginCompo
     }
 
     /**
-     * Component being initialized.
+     * Initialize field.
      */
-    ngOnInit(): void {
-        this.mode = this.mode == 'list' ? 'show' : this.mode;
-        this.render();
-    }
-
-    protected render(): void {
-        if (this.mode == 'show') {
+    protected init(): void {
+        if (this.isShowOrListMode()) {
             return;
         }
 
-        if (!this.value) {
-            this.value = {
-                content: Math.floor(Date.now() / 1000)
-            };
-        }
-
-        this.val = new Date(this.value.content * 1000);
-
+        let val;
         this.format = this.timeUtils.getLocalizedDateFormat('LL');
 
         if (this.mode == 'search') {
             this.addControl('f_' + this.field.id + '_z');
-            this.search['f_' + this.field.id] = this.search['f_' + this.field.id + '_y'] ? new Date(
-                this.search['f_' + this.field.id + '_y'] + '-' + this.search['f_' + this.field.id + '_m'] + '-' +
-                this.search['f_' + this.field.id + '_d']) : this.val;
+            val = this.search['f_' + this.field.id + '_y'] ? new Date(this.search['f_' + this.field.id + '_y'] + '-' +
+                this.search['f_' + this.field.id + '_m'] + '-' + this.search['f_' + this.field.id + '_d']) : new Date();
+
+            this.search['f_' + this.field.id] = val.toISOString();
+        } else {
+            val = this.value && this.value.content ? new Date(parseInt(this.value.content, 10) * 1000) : new Date();
+            val = val.toISOString();
         }
 
-        this.addControl('f_' + this.field.id, this.val);
+        this.addControl('f_' + this.field.id, val);
     }
 }

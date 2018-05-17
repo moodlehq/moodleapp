@@ -13,12 +13,13 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreAppProvider } from '@providers/app';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { AddonModDataOfflineProvider } from './offline';
-import { CoreAppProvider } from '@providers/app';
+import { AddonModDataFieldsDelegate } from './fields-delegate';
 
 /**
  * Service that provides some features for databases.
@@ -34,8 +35,56 @@ export class AddonModDataProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
             private filepoolProvider: CoreFilepoolProvider, private dataOffline: AddonModDataOfflineProvider,
-            private appProvider: CoreAppProvider) {
+            private appProvider: CoreAppProvider, private fieldsDelegate: AddonModDataFieldsDelegate) {
         this.logger = logger.getInstance('AddonModDataProvider');
+    }
+
+    /**
+     * Adds a new entry to a database.
+     *
+     * @param   {number}  dataId          Data instance ID.
+     * @param   {number}  entryId         EntryId or provisional entry ID when offline.
+     * @param   {number}  courseId        Course ID.
+     * @param   {any}     contents        The fields data to be created.
+     * @param   {number}  [groupId]       Group id, 0 means that the function will determine the user group.
+     * @param   {any}     fields          The fields that define the contents.
+     * @param   {string}  [siteId]        Site ID. If not defined, current site.
+     * @param   {boolean} [forceOffline]  Force editing entry in offline.
+     * @return  {Promise<any>}            Promise resolved when the action is done.
+     */
+    addEntry(dataId: number, entryId: number, courseId: number, contents: any, groupId: number = 0, fields: any, siteId?: string,
+            forceOffline: boolean = false): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        // Convenience function to store a data to be synchronized later.
+        const storeOffline = (): Promise<any> => {
+            return this.dataOffline.saveEntry(dataId, entryId, 'add', courseId, groupId, contents, undefined, siteId)
+                    .then((entry) => {
+                return {
+                    // Return provissional entry Id.
+                    newentryid: entry[1]
+                };
+            });
+        };
+
+        if (!this.appProvider.isOnline() || forceOffline) {
+            const notifications = this.checkFields(fields, contents);
+            if (notifications) {
+                return Promise.resolve({
+                    fieldnotifications: notifications
+                });
+            }
+        }
+
+        return this.addEntryOnline(dataId, contents, groupId, siteId).catch((error) => {
+            if (this.utils.isWebServiceError(error)) {
+                // The WebService has thrown an error, this means that responses cannot be submitted.
+                return Promise.reject(error);
+            }
+
+            // Couldn't connect to server, store in offline.
+            return storeOffline();
+        });
     }
 
     /**
@@ -79,7 +128,7 @@ export class AddonModDataProvider {
         const storeOffline = (): Promise<any> => {
             const action = approve ? 'approve' : 'disapprove';
 
-            return this.dataOffline.saveEntry(dataId, entryId, action, courseId, null, null, null, siteId);
+            return this.dataOffline.saveEntry(dataId, entryId, action, courseId, undefined, undefined, undefined, siteId);
         };
 
         // Get if the opposite action is not synced.
@@ -127,6 +176,38 @@ export class AddonModDataProvider {
     }
 
     /**
+     * Convenience function to check fields requeriments here named "notifications".
+     *
+     * @param   {any}    fields    The fields that define the contents.
+     * @param   {any}    contents  The contents data of the fields.
+     * @return  {any}            Array of notifications if any or false.
+     */
+    protected checkFields(fields: any, contents: any): any {
+        const notifications = [],
+            contentsIndexed = {};
+
+        contents.forEach((content) => {
+            if (typeof contentsIndexed[content.fieldid] == 'undefined') {
+                contentsIndexed[content.fieldid] = [];
+            }
+            contentsIndexed[content.fieldid].push(content);
+        });
+
+        // App is offline, check required fields.
+        fields.forEach((field) => {
+            const notification = this.fieldsDelegate.getFieldsNotifications(field, contentsIndexed[field.id]);
+            if (notification) {
+                notifications.push({
+                    fieldname: field.name,
+                    notification: notification
+                });
+            }
+        });
+
+        return notifications.length ? notifications : false;
+    }
+
+    /**
      * Deletes an entry.
      *
      * @param   {number}    dataId     Database ID.
@@ -140,7 +221,7 @@ export class AddonModDataProvider {
 
         // Convenience function to store a data to be synchronized later.
         const storeOffline = (): Promise<any> => {
-            return this.dataOffline.saveEntry(dataId, entryId, 'delete', courseId, null, null, null, siteId);
+            return this.dataOffline.saveEntry(dataId, entryId, 'delete', courseId, undefined, undefined, undefined, siteId);
         };
 
         let justAdded = false;
@@ -196,6 +277,89 @@ export class AddonModDataProvider {
                 };
 
             return site.write('mod_data_delete_entry', params);
+        });
+    }
+
+    /**
+     * Updates an existing entry.
+     *
+     * @param   {number}  dataId          Database ID.
+     * @param   {number}  entryId         Entry ID.
+     * @param   {number}  courseId        Course ID.
+     * @param   {any}     contents        The contents data to be updated.
+     * @param   {any}     fields          The fields that define the contents.
+     * @param   {string}  [siteId]        Site ID. If not defined, current site.
+     * @param   {boolean} forceOffline    Force editing entry in offline.
+     * @return  {Promise<any>}            Promise resolved when the action is done.
+     */
+    editEntry(dataId: number, entryId: number, courseId: number, contents: any, fields: any, siteId?: string,
+            forceOffline: boolean = false): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        // Convenience function to store a data to be synchronized later.
+        const storeOffline = (): Promise<any> => {
+            return this.dataOffline.saveEntry(dataId, entryId, 'edit', courseId, undefined, contents, undefined, siteId)
+                    .then(() => {
+                return {
+                    updated: true
+                };
+            });
+        };
+
+        let justAdded = false,
+            groupId;
+
+        if (!this.appProvider.isOnline() || forceOffline) {
+            const notifications = this.checkFields(fields, contents);
+            if (notifications) {
+                return Promise.resolve({
+                    fieldnotifications: notifications
+                });
+            }
+        }
+
+        // Get other not not synced actions.
+        return this.dataOffline.getEntryActions(dataId, entryId, siteId).then((entries) => {
+            if (entries && entries.length) {
+                // Found. Delete add and edit actions first.
+                const proms = [];
+                entries.forEach((entry) => {
+                    if (entry.action == 'add') {
+                        justAdded = true;
+                        groupId = entry.groupid;
+                        proms.push(this.dataOffline.deleteEntry(dataId, entryId, entry.action, siteId));
+                    } else if (entry.action == 'edit') {
+                        proms.push(this.dataOffline.deleteEntry(dataId, entryId, entry.action, siteId));
+                    }
+                });
+
+                return Promise.all(proms);
+            }
+        }).then(() => {
+            if (justAdded) {
+                // The field was added offline, add again and stop.
+                return this.addEntry(dataId, entryId, courseId, contents, groupId, fields, siteId, forceOffline)
+                        .then((result) => {
+                    result.updated = true;
+
+                    return result;
+                });
+            }
+
+            if (!this.appProvider.isOnline() || forceOffline) {
+                // App is offline, store the action.
+                return storeOffline();
+            }
+
+            return this.editEntryOnline(entryId, contents, siteId).catch((error) => {
+                if (this.utils.isWebServiceError(error)) {
+                    // The WebService has thrown an error, this means that responses cannot be submitted.
+                    return Promise.reject(error);
+                }
+
+                // Couldn't connect to server, store in offline.
+                return storeOffline();
+            });
         });
     }
 

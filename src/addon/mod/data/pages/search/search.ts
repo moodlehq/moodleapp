@@ -52,8 +52,8 @@ export class AddonModDataSearchPage {
 
         this.searchForm = fb.group({
             text: [this.search.text],
-            sortBy: [this.search.sortBy],
-            sortDirection: [this.search.sortDirection],
+            sortBy: [this.search.sortBy || 0],
+            sortDirection: [this.search.sortDirection || 'DESC'],
             firstname: [this.search.advanced['firstname'] || ''],
             lastname: [this.search.advanced['lastname'] || '']
         });

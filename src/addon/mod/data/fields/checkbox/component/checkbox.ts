@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
 
@@ -22,7 +22,7 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
     selector: 'addon-mod-data-field-checkbox',
     templateUrl: 'checkbox.html'
 })
-export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginComponent implements OnInit {
+export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginComponent {
 
     options = [];
 
@@ -31,16 +31,11 @@ export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginC
     }
 
     /**
-     * Component being initialized.
+     * Initialize field.
      */
-    ngOnInit(): void {
-        this.mode = this.mode == 'list' ? 'show' : this.mode;
-        this.render();
-    }
-
-    protected render(): void {
-        if (this.mode == 'show') {
-            this.value.content = this.value && this.value.content && this.value.content.split('##').join('<br>');
+    protected init(): void {
+        if (this.isShowOrListMode()) {
+            this.updateValue(this.value);
 
             return;
         }
@@ -49,11 +44,12 @@ export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginC
             return { key: option, value: option };
         });
 
+        const values = [];
         if (this.mode == 'edit' && this.value && this.value.content) {
             this.value.content.split('##').forEach((value) => {
                 const x = this.options.findIndex((option) => value == option.key);
                 if (x >= 0) {
-                    this.options[x].selected = true;
+                    values.push(value);
                 }
             });
         }
@@ -62,6 +58,16 @@ export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginC
             this.addControl('f_' + this.field.id + '_allreq');
         }
 
-        this.addControl('f_' + this.field.id);
+        this.addControl('f_' + this.field.id, values);
+    }
+
+    /**
+     * Update value being shown.
+     *
+     * @param {any} value New value to be set.
+     */
+    protected updateValue(value: any): void {
+        this.value = value;
+        this.value.content = value && value.content && value.content.split('##').join('<br>');
     }
 }

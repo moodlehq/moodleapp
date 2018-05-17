@@ -47,7 +47,6 @@ export class AddonModDataFieldMenuHandler implements AddonModDataFieldHandler {
      */
     getFieldSearchData(field: any, inputData: any): any {
         const fieldName = 'f_' + field.id;
-
         if (inputData[fieldName]) {
             return [{
                 name: fieldName,

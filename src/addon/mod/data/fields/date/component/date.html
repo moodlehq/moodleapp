@@ -1,7 +1,7 @@
-<span *ngIf="mode != 'show'" [formGroup]="form">
-    <span *ngIf="mode == 'edit'" [core-mark-required]="field.required"></span>
+<span *ngIf="!isShowOrListMode()" [formGroup]="form">
+    <span *ngIf="mode == 'edit'" [core-mark-required]="field.required" class="core-mark-required"></span>
     <ion-datetime [formControlName]="'f_'+field.id" [placeholder]="'core.date' | translate" [disabled]="mode == 'search' && !search['f_'+field.id+'_z']" [displayFormat]="format"></ion-datetime>
-    <core-input-errors *ngIf="error && mode == 'edit'" [control]="form.controls['f_'+field.id]" [errorMessages]="errors"></core-input-errors>
+    <core-input-errors *ngIf="error && mode == 'edit'" [control]="form.controls['f_'+field.id]" [errorText]="error"></core-input-errors>
 
     <ion-item *ngIf="mode == 'search'">
         <ion-label>{{ 'addon.mod_data.usedate' | translate }}</ion-label>
@@ -10,5 +10,5 @@
     </ion-item>
 </span>
 
-<core-format-text *ngIf="mode == 'show' && value && value.content"  [text]="value.content * 1000 | coreFormatDate:'dfdaymonthyear'"></core-format-text>
+<core-format-text *ngIf="isShowOrListMode() && value && value.content" [text]="value.content * 1000 | coreFormatDate:'LL'"></core-format-text>
 

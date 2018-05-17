@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Platform } from 'ionic-angular';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
@@ -23,7 +23,7 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
     selector: 'addon-mod-data-field-latlong',
     templateUrl: 'latlong.html'
 })
-export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginComponent implements OnInit {
+export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginComponent {
 
     north: number;
     east: number;
@@ -69,17 +69,11 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
     }
 
     /**
-     * Component being initialized.
+     * Initialize field.
      */
-    ngOnInit(): void {
-        this.mode = this.mode == 'list' ? 'show' : this.mode;
-        this.render();
-    }
-
-    protected render(): void {
+    protected init(): void {
         if (this.value) {
-            this.north = (this.value && parseFloat(this.value.content)) || null;
-            this.east = (this.value && parseFloat(this.value.content1)) || null;
+            this.updateValue(this.value);
         }
 
         if (this.mode == 'edit') {
@@ -88,5 +82,16 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
         } else if (this.mode == 'search') {
             this.addControl('f_' + this.field.id);
         }
+    }
+
+    /**
+     * Update value being shown.
+     *
+     * @param {any} value New value to be set.
+     */
+    protected updateValue(value: any): void {
+        this.value = value;
+        this.north = (value && parseFloat(value.content)) || null;
+        this.east = (value && parseFloat(value.content1)) || null;
     }
 }

@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
 
@@ -22,31 +22,25 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
     selector: 'addon-mod-data-field-url',
     templateUrl: 'url.html'
 })
-export class AddonModDataFieldUrlComponent extends AddonModDataFieldPluginComponent implements OnInit {
-
-    val: number;
+export class AddonModDataFieldUrlComponent extends AddonModDataFieldPluginComponent {
 
     constructor(protected fb: FormBuilder) {
         super(fb);
     }
 
     /**
-     * Component being initialized.
+     * Initialize field.
      */
-    ngOnInit(): void {
-        this.mode = this.mode == 'list' ? 'show' : this.mode;
-        this.render();
-    }
-
-    protected render(): void {
-        if (this.mode == 'show') {
+    protected init(): void {
+        if (this.isShowOrListMode()) {
             return;
         }
 
+        let value;
         if (this.mode == 'edit' && this.value) {
-            this.val = this.value.content;
+            value = this.value.content;
         }
 
-        this.addControl('f_' + this.field.id, this.val);
+        this.addControl('f_' + this.field.id, value);
     }
 }

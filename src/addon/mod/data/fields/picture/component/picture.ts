@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
 import { CoreFileSessionProvider } from '@providers/file-session';
@@ -24,7 +24,7 @@ import { AddonModDataProvider } from '../../../providers/data';
     selector: 'addon-mod-data-field-picture',
     templateUrl: 'picture.html'
 })
-export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginComponent implements OnInit {
+export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginComponent {
 
     files = [];
     component: string;
@@ -35,19 +35,11 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginCo
     entryId: number;
     imageUrl: string;
     title: string;
-    alttext: string;
     width: string;
     height: string;
 
     constructor(protected fb: FormBuilder, private fileSessionprovider: CoreFileSessionProvider) {
         super(fb);
-    }
-
-    /**
-     * Component being initialized.
-     */
-    ngOnInit(): void {
-        this.render();
     }
 
     /**
@@ -78,49 +70,67 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginCo
         return files.find((file) => file.filename == filenameSeek) || false;
     }
 
-    protected render(): void {
+    /**
+     * Initialize field.
+     */
+    protected init(): void {
         if (this.mode != 'search') {
             this.component = AddonModDataProvider.COMPONENT;
             this.componentId = this.database.coursemodule;
 
-            // Edit mode, the list shouldn't change so there is no need to watch it.
-            const files = this.value && this.value.files || [];
-
-            // Get image or thumb.
-            if (files.length > 0) {
-                const filenameSeek = this.mode == 'list' ? 'thumb_' + this.value.content : this.value.content;
-                this.image = this.findFile(files, filenameSeek);
-
-                if (!this.image && this.mode == 'list') {
-                    this.image = this.findFile(files, this.value.content);
-                }
-
-                this.files = [this.image];
-            } else {
-                this.image = false;
-                this.files = [];
-            }
+            this.updateValue(this.value);
 
             if (this.mode == 'edit') {
                 this.maxSizeBytes = parseInt(this.field.param3, 10);
                 this.fileSessionprovider.setFiles(this.component, this.database.id + '_' + this.field.id, this.files);
-                this.alttext = (this.value && this.value.content1) || '';
-            } else {
-                this.entryId = (this.value && this.value.recordid) || null;
-                this.title = (this.value && this.value.content1) || '';
-                this.imageUrl = null;
-                if (this.image) {
-                    if (this.image.offline) {
-                        this.imageUrl = (this.image && this.image.toURL()) || null;
-                    } else {
-                        this.imageUrl = (this.image && this.image.fileurl) || null;
-                    }
-                }
-                this.width  = this.field.param1 || '';
-                this.height = this.field.param2 || '';
+
+                const alttext = (this.value && this.value.content1) || '';
+                this.addControl('f_' + this.field.id + '_alttext', alttext);
             }
+        } else {
+            this.addControl('f_' + this.field.id);
+        }
+    }
+
+    /**
+     * Update value being shown.
+     *
+     * @param {any} value New value to be set.
+     */
+    protected updateValue(value: any): void {
+        this.value = value;
+
+        // Edit mode, the list shouldn't change so there is no need to watch it.
+        const files = value && value.files || [];
+
+        // Get image or thumb.
+        if (files.length > 0) {
+            const filenameSeek = this.mode == 'list' ? 'thumb_' + value.content : value.content;
+            this.image = this.findFile(files, filenameSeek);
+
+            if (!this.image && this.mode == 'list') {
+                this.image = this.findFile(files, value.content);
+            }
+
+            this.files = [this.image];
+        } else {
+            this.image = false;
+            this.files = [];
         }
 
-        this.addControl('f_' + this.field.id);
+        if (this.mode != 'edit') {
+            this.entryId = (value && value.recordid) || null;
+            this.title = (value && value.content1) || '';
+            this.imageUrl = null;
+            if (this.image) {
+                if (this.image.offline) {
+                    this.imageUrl = (this.image && this.image.toURL()) || null;
+                } else {
+                    this.imageUrl = (this.image && this.image.fileurl) || null;
+                }
+            }
+            this.width  = this.field.param1 || '';
+            this.height = this.field.param2 || '';
+        }
     }
 }

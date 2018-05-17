@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnDestroy } from '@angular/core';
 import { Content, IonicPage, NavParams, NavController } from 'ionic-angular';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -35,7 +35,7 @@ import { AddonModDataComponentsModule } from '../../components/components.module
     selector: 'page-addon-mod-data-entry',
     templateUrl: 'entry.html',
 })
-export class AddonModDataEntryPage {
+export class AddonModDataEntryPage implements OnDestroy {
     @ViewChild(Content) content: Content;
 
     protected module: any;
@@ -107,7 +107,7 @@ export class AddonModDataEntryPage {
 
         // Refresh entry on change.
         this.entryChangedObserver = this.eventsProvider.on(AddonModDataProvider.ENTRY_CHANGED, (data) => {
-            if (data.entryId == this.entryId && data.id == data.dataId) {
+            if (data.entryId == this.entryId && this.data.id == data.dataId) {
                 if (data.deleted) {
                     // If deleted, go back.
                     this.navCtrl.pop();

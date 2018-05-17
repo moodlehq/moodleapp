@@ -11,13 +11,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { Input } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { Input, OnInit, OnChanges, SimpleChange } from '@angular/core';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 /**
  * Base class for component to render a field.
  */
-export class AddonModDataFieldPluginComponent {
+export class AddonModDataFieldPluginComponent implements OnInit, OnChanges {
     @Input() mode: string; // The render mode.
     @Input() field: any; // The field to render.
     @Input() value?: any; // The value of the field.
@@ -45,7 +45,46 @@ export class AddonModDataFieldPluginComponent {
         }
 
         if (this.mode == 'edit') {
-            this.form.addControl(fieldName, this.fb.control(value || null));
+            this.form.addControl(fieldName, this.fb.control(value, this.field.required ? Validators.required : null));
         }
+    }
+
+    /**
+     * Component being initialized.
+     */
+    ngOnInit(): void {
+        this.init();
+    }
+
+    /**
+     * Initialize field.
+     */
+    protected init(): void {
+        return;
+    }
+
+    /**
+     * Return if is shown or list mode.
+     *
+     * @return {boolean} True if mode is show or list.
+     */
+    isShowOrListMode(): boolean {
+        return this.mode == 'list' || this.mode == 'show';
+    }
+
+    /**
+     * Component being changed.
+     */
+    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
+        if (this.isShowOrListMode() && changes.value) {
+            this.updateValue(changes.value.currentValue);
+        }
+    }
+
+    /**
+     * Update value being shown.
+     */
+    protected updateValue(value: any): void {
+        this.value = value;
     }
 }

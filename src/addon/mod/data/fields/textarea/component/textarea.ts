@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { AddonModDataProvider } from '../../../providers/data';
@@ -24,7 +24,7 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
     selector: 'addon-mod-data-field-textarea',
     templateUrl: 'textarea.html'
 })
-export class AddonModDataFieldTextareaComponent extends AddonModDataFieldPluginComponent implements OnInit {
+export class AddonModDataFieldTextareaComponent extends AddonModDataFieldPluginComponent {
 
     component: string;
     componentId: number;
@@ -33,6 +33,12 @@ export class AddonModDataFieldTextareaComponent extends AddonModDataFieldPluginC
         super(fb);
     }
 
+    /**
+     * Format value to be shown. Replacing plugin file Urls.
+     *
+     * @param  {any}    value Value to replace.
+     * @return {string}       Replaced string to be rendered.
+     */
     format(value: any): string {
         const files = (value && value.files) || [];
 
@@ -40,27 +46,23 @@ export class AddonModDataFieldTextareaComponent extends AddonModDataFieldPluginC
     }
 
     /**
-     * Component being initialized.
+     * Initialize field.
      */
-    ngOnInit(): void {
-        this.mode = this.mode == 'list' ? 'show' : this.mode;
-        this.render();
-    }
-
-    protected render(): void {
-        if (this.mode == 'show') {
+    protected init(): void {
+        if (this.isShowOrListMode()) {
             this.component = AddonModDataProvider.COMPONENT;
             this.componentId = this.database.coursemodule;
 
             return;
         }
 
+        let text;
         // Check if rich text editor is enabled.
         if (this.mode == 'edit') {
-            const files = (this.value && this.value.files) || [],
-                text = this.value ? this.textUtils.replacePluginfileUrls(this.value.content, files) : '';
+            const files = (this.value && this.value.files) || [];
+            text = this.value ? this.textUtils.replacePluginfileUrls(this.value.content, files) : '';
         }
 
-        this.addControl('f_' + this.field.id, '');
+        this.addControl('f_' + this.field.id, text);
     }
 }
