@@ -53,12 +53,9 @@ export class CoreLangProvider {
      * @param {string} [prefix] A prefix to add to all keys.
      */
     addSitePluginsStrings(lang: string, strings: any, prefix?: string): void {
-        // Initialize structures if they don't exist.
+        // Initialize structure if it doesn't exist.
         if (!this.sitePluginsStrings[lang]) {
             this.sitePluginsStrings[lang] = {};
-        }
-        if (!this.translate.translations[lang]) {
-            this.translate.translations[lang] = {};
         }
 
         for (const key in strings) {
@@ -75,19 +72,8 @@ export class CoreLangProvider {
             // Make sure we didn't add to many brackets in some case.
             value = value.replace(/{{{([^ ]+)}}}/gm, '{{$1}}');
 
-            if (!this.sitePluginsStrings[lang][prefixedKey]) {
-                // It's a new site plugin string. Store the original value.
-                this.sitePluginsStrings[lang][prefixedKey] = {
-                    original: this.translate.translations[lang][prefixedKey],
-                    value: value
-                };
-            } else {
-                // Site plugin string already defined. Store the new value.
-                this.sitePluginsStrings[lang][prefixedKey].value = value;
-            }
-
-            // Store the string in the translations table.
-            this.translate.translations[lang][prefixedKey] = value;
+            // Load the string.
+            this.loadString(this.sitePluginsStrings, lang, prefixedKey, value);
         }
     }
 
@@ -100,13 +86,38 @@ export class CoreLangProvider {
     changeCurrentLanguage(language: string): Promise<any> {
         const promises = [];
 
-        promises.push(this.translate.use(language));
+        // Change the language, resolving the promise when we receive the first value.
+        promises.push(new Promise((resolve, reject): void => {
+            const subscription = this.translate.use(language).subscribe((data) => {
+                resolve(data);
+
+                // Data received, unsubscribe. Use a timeout because we can receive a value immediately.
+                setTimeout(() => {
+                    subscription.unsubscribe();
+                });
+            }, (error) => {
+                reject(error);
+
+                // Error received, unsubscribe. Use a timeout because we can receive a value immediately.
+                setTimeout(() => {
+                    subscription.unsubscribe();
+                });
+            });
+        }));
+
+        // Change the config.
         promises.push(this.configProvider.set('current_language', language));
 
         moment.locale(language);
         this.currentLanguage = language;
 
-        return Promise.all(promises);
+        return Promise.all(promises).finally(() => {
+            // Load the custom and site plugins strings for the language.
+            if (this.loadLangStrings(this.customStrings, language) || this.loadLangStrings(this.sitePluginsStrings, language)) {
+                // Some lang strings have changed, emit an event to update the pipes.
+                this.translate.onLangChange.emit({lang: language, translations: this.translate.translations[language]});
+            }
+        });
     }
 
     /**
@@ -227,15 +238,75 @@ export class CoreLangProvider {
                 this.customStrings[lang] = {};
             }
 
-            // Store the original value of the custom string.
-            this.customStrings[lang][values[0]] = {
-                original: this.translate.translations[lang][values[0]],
-                value: values[1]
+            // Convert old keys format to new one.
+            const key = values[0].replace(/^mm\.core/, 'core').replace(/^mm\./, 'core.').replace(/^mma\./, 'addon.')
+                    .replace(/^core\.sidemenu/, 'core.mainmenu').replace(/^addon\.grades/, 'core.grades')
+                    .replace(/^addon\.participants/, 'core.user');
+
+            this.loadString(this.customStrings, lang, key, values[1]);
+        });
+
+        this.customStringsRaw = strings;
+    }
+
+    /**
+     * Load custom strings for a certain language that weren't loaded because the language wasn't active.
+     *
+     * @param {any} langObject The object with the strings to load.
+     * @param {string} lang Language to load.
+     * @return {boolean} Whether the translation table was modified.
+     */
+    loadLangStrings(langObject: any, lang: string): boolean {
+        let langApplied = false;
+
+        if (langObject[lang]) {
+            for (const key in langObject[lang]) {
+                const entry = langObject[lang][key];
+
+                if (!entry.applied) {
+                    // Store the original value of the string.
+                    entry.original = this.translate.translations[lang][key];
+
+                    // Store the string in the translations table.
+                    this.translate.translations[lang][key] = entry.value;
+
+                    entry.applied = true;
+                    langApplied = true;
+                }
+            }
+        }
+
+        return langApplied;
+    }
+
+    /**
+     * Load a string in a certain lang object and in the translate table if the lang is loaded.
+     *
+     * @param {any} langObject The object where to store the lang.
+     * @param {string} lang Language code.
+     * @param {string} key String key.
+     * @param {string} value String value.
+     */
+    loadString(langObject: any, lang: string, key: string, value: string): void {
+        if (this.translate.translations[lang]) {
+            // The language is loaded.
+            // Store the original value of the string.
+            langObject[lang][key] = {
+                original: this.translate.translations[lang][key],
+                value: value,
+                applied: true
             };
 
             // Store the string in the translations table.
-            this.translate.translations[lang][values[0]] = values[1];
-        });
+            this.translate.translations[lang][key] = value;
+        } else {
+            // The language isn't loaded.
+            // Save it in our object but not in the translations table, it will be loaded when the lang is loaded.
+            langObject[lang][key] = {
+                value: value,
+                applied: false
+            };
+        }
     }
 
     /**
@@ -246,6 +317,11 @@ export class CoreLangProvider {
     protected unloadStrings(strings: any): void {
         // Iterate over all languages and strings.
         for (const lang in strings) {
+            if (!this.translate.translations[lang]) {
+                // Language isn't loaded, nothing to unload.
+                continue;
+            }
+
             const langStrings = strings[lang];
             for (const key in langStrings) {
                 const entry = langStrings[key];

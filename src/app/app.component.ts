@@ -18,7 +18,9 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
+import { CoreLangProvider } from '@providers/lang';
 import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 
 @Component({
@@ -33,7 +35,7 @@ export class MoodleMobileApp implements OnInit {
 
     constructor(private platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, logger: CoreLoggerProvider,
         private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider,
-        private appProvider: CoreAppProvider) {
+        private appProvider: CoreAppProvider, private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider) {
         this.logger = logger.getInstance('AppComponent');
 
         platform.ready().then(() => {
@@ -49,9 +51,12 @@ export class MoodleMobileApp implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
-        // Go to sites page when user is logged out.
         this.eventsProvider.on(CoreEventsProvider.LOGOUT, () => {
+            // Go to sites page when user is logged out.
             this.appProvider.getRootNavController().setRoot('CoreLoginSitesPage');
+
+            // Unload lang custom strings.
+            this.langProvider.clearCustomStrings();
         });
 
         // Listen for session expired events.
@@ -110,6 +115,26 @@ export class MoodleMobileApp implements OnInit {
         // Listen for app launched URLs. If we receive one, check if it's a SSO authentication.
         this.eventsProvider.on(CoreEventsProvider.APP_LAUNCHED_URL, (url) => {
             this.loginHelper.appLaunchedByURL(url);
+        });
+
+        // Load custom lang strings. This cannot be done inside the lang provider because it causes circular dependencies.
+        const loadCustomStrings = (): void => {
+            const currentSite = this.sitesProvider.getCurrentSite(),
+                customStrings = currentSite && currentSite.getStoredConfig('tool_mobile_customlangstrings');
+
+            if (typeof customStrings != 'undefined') {
+                this.langProvider.loadCustomStrings(customStrings);
+            }
+        };
+
+        this.eventsProvider.on(CoreEventsProvider.LOGIN, () => {
+            loadCustomStrings();
+        });
+
+        this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, (siteId) => {
+            if (siteId == this.sitesProvider.getCurrentSiteId()) {
+                loadCustomStrings();
+            }
         });
     }
 }
