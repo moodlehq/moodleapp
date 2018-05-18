@@ -20,6 +20,7 @@ import { CoreFileProvider } from '@providers/file';
 import { CoreInitDelegate } from '@providers/init';
 import { CoreLangProvider } from '@providers/lang';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreConfigConstants } from '../../../../configconstants';
 
 /**
@@ -52,13 +53,18 @@ export class CoreSettingsAboutPage {
     localNotifAvailable: string;
 
     constructor(platform: Platform, device: Device, appProvider: CoreAppProvider, fileProvider: CoreFileProvider,
-            initDelegate: CoreInitDelegate, langProvider: CoreLangProvider,
+            initDelegate: CoreInitDelegate, langProvider: CoreLangProvider, sitesProvider: CoreSitesProvider,
             localNotificationsProvider: CoreLocalNotificationsProvider) {
+
+        const currentSite = sitesProvider.getCurrentSite();
 
         this.appName = appProvider.isDesktop() ? CoreConfigConstants.desktopappname : CoreConfigConstants.appname;
         this.versionName = CoreConfigConstants.versionname;
         this.versionCode = CoreConfigConstants.versioncode;
-        this.privacyPolicy = CoreConfigConstants.privacypolicy;
+
+        // Calculate the privacy policy to use.
+        this.privacyPolicy = currentSite.getStoredConfig('tool_mobile_apppolicy') || currentSite.getStoredConfig('sitepolicy') ||
+                CoreConfigConstants.privacypolicy;
 
         this.navigator = window.navigator;
         if (window.location && window.location.href) {
