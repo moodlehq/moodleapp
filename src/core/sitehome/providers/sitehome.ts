@@ -17,6 +17,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSite } from '@classes/site';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { AddonModForumProvider } from '@addon/mod/forum/providers/forum';
 
 /**
  * Service that provides some features regarding site home.
@@ -25,8 +26,27 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 export class CoreSiteHomeProvider {
     protected logger;
 
-    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private courseProvider: CoreCourseProvider) {
+    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private courseProvider: CoreCourseProvider,
+            private forumProvider: AddonModForumProvider) {
         this.logger = logger.getInstance('CoreSiteHomeProvider');
+    }
+
+    /**
+     * Get the news forum for the Site Home.
+     *
+     * @param {number} siteHomeId Site Home ID.
+     * @return {Promise<any>} Promise resolved with the forum if found, rejected otherwise.
+     */
+    getNewsForum(siteHomeId: number): Promise<any> {
+        return this.forumProvider.getCourseForums(siteHomeId).then((forums) => {
+            for (let i = 0; i < forums.length; i++) {
+                if (forums[i].type == 'news') {
+                    return forums[i];
+                }
+            }
+
+            return Promise.reject(null);
+        });
     }
 
     /**
