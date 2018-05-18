@@ -32,6 +32,12 @@
         <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: moduleName} }}
     </ion-card>
 
+    <!-- Inform what will happen with the choices. -->
+    <div *ngIf="canEdit && publishInfo && options && options.length" class="core-info-card" icon-start>
+        <ion-icon name="information"></ion-icon>
+        {{ publishInfo | translate }}
+    </div>
+
     <!-- Choice options -->
     <ion-card *ngIf="options && options.length">
         <ng-container *ngIf="choice.allowmultiple">

@@ -42,6 +42,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     data = [];
     labels = [];
     results = [];
+    publishInfo: string; // Message explaining the user what will happen with his choices.
 
     protected userId: number;
     protected syncEventName = AddonModChoiceSyncProvider.AUTO_SYNCED;
@@ -238,6 +239,36 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
                 this.canEdit = isOpen && (this.choice.allowupdate || !hasAnswered);
                 this.canDelete = isOpen && this.choice.allowupdate && hasAnswered;
                 this.options = options;
+
+                if (this.canEdit) {
+
+                    // Calculate the publish info message.
+                    switch (this.choice.showresults) {
+                        case AddonModChoiceProvider.RESULTS_NOT:
+                            this.publishInfo = 'addon.mod_choice.publishinfonever';
+                            break;
+
+                        case AddonModChoiceProvider.RESULTS_AFTER_ANSWER:
+                            if (this.choice.publish == AddonModChoiceProvider.PUBLISH_ANONYMOUS) {
+                                this.publishInfo = 'addon.mod_choice.publishinfoanonafter';
+                            } else {
+                                this.publishInfo = 'addon.mod_choice.publishinfofullafter';
+                            }
+                            break;
+
+                        case AddonModChoiceProvider.RESULTS_AFTER_CLOSE:
+                            if (this.choice.publish == AddonModChoiceProvider.PUBLISH_ANONYMOUS) {
+                                this.publishInfo = 'addon.mod_choice.publishinfoanonclose';
+                            } else {
+                                this.publishInfo = 'addon.mod_choice.publishinfofullclose';
+                            }
+                            break;
+
+                        default:
+                            // No need to inform the user since it's obvious that the results are being published.
+                            this.publishInfo = '';
+                    }
+                }
             });
         });
     }

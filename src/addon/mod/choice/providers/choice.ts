@@ -31,6 +31,9 @@ export class AddonModChoiceProvider {
     static RESULTS_AFTER_CLOSE = 2;
     static RESULTS_ALWAYS = 3;
 
+    static PUBLISH_ANONYMOUS = false;
+    static PUBLISH_NAMES = true;
+
     protected ROOT_CACHE_KEY = 'mmaModChoice:';
 
     constructor(private sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider,
