@@ -17,6 +17,7 @@ import { NavController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
@@ -41,25 +42,56 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
         prefetchCourseIcon: 'spinner',
         title: 'core.course.downloadcourse'
     };
+    downloadCourseEnabled: boolean;
 
     protected isDestroyed = false;
     protected courseStatusObserver;
+    protected siteUpdatedObserver;
 
     constructor(@Optional() private navCtrl: NavController, private courseHelper: CoreCourseHelperProvider,
             private courseFormatDelegate: CoreCourseFormatDelegate, private domUtils: CoreDomUtilsProvider,
-            private courseProvider: CoreCourseProvider, eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider) {
-        // Listen for status change in course.
-        this.courseStatusObserver = eventsProvider.on(CoreEventsProvider.COURSE_STATUS_CHANGED, (data) => {
-            if (data.courseId == this.course.id) {
-                this.updateCourseStatus(data.status);
-            }
-        }, sitesProvider.getCurrentSiteId());
-    }
+            private courseProvider: CoreCourseProvider, private eventsProvider: CoreEventsProvider,
+            private sitesProvider: CoreSitesProvider, private coursesProvider: CoreCoursesProvider) { }
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
+        this.downloadCourseEnabled = !this.coursesProvider.isDownloadCourseDisabledInSite();
+
+        if (this.downloadCourseEnabled) {
+            this.initPrefetchCourse();
+        }
+
+        // Refresh the enabled flag if site is updated.
+        this.siteUpdatedObserver = this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, () => {
+            const wasEnabled = this.downloadCourseEnabled;
+
+            this.downloadCourseEnabled = !this.coursesProvider.isDownloadCourseDisabledInSite();
+
+            if (!wasEnabled && this.downloadCourseEnabled) {
+                // Download course is enabled now, initialize it.
+                this.initPrefetchCourse();
+            }
+        }, this.sitesProvider.getCurrentSiteId());
+    }
+
+    /**
+     * Initialize prefetch course.
+     */
+    initPrefetchCourse(): void {
+        if (typeof this.courseStatusObserver != 'undefined') {
+            // Already initialized.
+            return;
+        }
+
+        // Listen for status change in course.
+        this.courseStatusObserver = this.eventsProvider.on(CoreEventsProvider.COURSE_STATUS_CHANGED, (data) => {
+            if (data.courseId == this.course.id) {
+                this.updateCourseStatus(data.status);
+            }
+        }, this.sitesProvider.getCurrentSiteId());
+
         // Determine course prefetch icon.
         this.courseHelper.getCourseStatusIconAndTitle(this.course.id).then((data) => {
             this.prefetchCourseData.prefetchCourseIcon = data.icon;
@@ -81,6 +113,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
                 }
             }
         });
+
     }
 
     /**
@@ -126,8 +159,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.isDestroyed = true;
 
-        if (this.courseStatusObserver) {
-            this.courseStatusObserver.off();
-        }
+        this.siteUpdatedObserver && this.siteUpdatedObserver.off();
+        this.courseStatusObserver && this.courseStatusObserver.off();
     }
 }

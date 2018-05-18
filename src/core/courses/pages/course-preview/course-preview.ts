@@ -45,6 +45,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
         prefetchCourseIcon: 'spinner',
         title: 'core.course.downloadcourse'
     };
+    downloadCourseEnabled: boolean;
 
     protected guestWSAvailable: boolean;
     protected isGuestEnabled = false;
@@ -67,16 +68,20 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
             private translate: TranslateService, private eventsProvider: CoreEventsProvider,
             private courseOptionsDelegate: CoreCourseOptionsDelegate, private courseHelper: CoreCourseHelperProvider,
             private courseProvider: CoreCourseProvider) {
+
         this.course = navParams.get('course');
         this.isMobile = appProvider.isMobile();
         this.isDesktop = appProvider.isDesktop();
+        this.downloadCourseEnabled = !this.coursesProvider.isDownloadCourseDisabledInSite();
 
-        // Listen for status change in course.
-        this.courseStatusObserver = eventsProvider.on(CoreEventsProvider.COURSE_STATUS_CHANGED, (data) => {
-            if (data.courseId == this.course.id) {
-                this.updateCourseStatus(data.status);
-            }
-        }, sitesProvider.getCurrentSiteId());
+        if (this.downloadCourseEnabled) {
+            // Listen for status change in course.
+            this.courseStatusObserver = this.eventsProvider.on(CoreEventsProvider.COURSE_STATUS_CHANGED, (data) => {
+                if (data.courseId == this.course.id) {
+                    this.updateCourseStatus(data.status);
+                }
+            }, this.sitesProvider.getCurrentSiteId());
+        }
     }
 
     /**
@@ -101,6 +106,11 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
         });
 
         this.getCourse().finally(() => {
+            if (!this.downloadCourseEnabled) {
+                // Cannot download the whole course, stop.
+                return;
+            }
+
             // Determine course prefetch icon.
             this.courseHelper.getCourseStatusIconAndTitle(this.course.id).then((data) => {
                 this.prefetchCourseData.prefetchCourseIcon = data.icon;

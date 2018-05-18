@@ -14,6 +14,7 @@
 
 import { Component, OnDestroy } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
+import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCoursesProvider } from '../../providers/courses';
@@ -64,20 +65,38 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
         past: {},
         future: {}
     };
+    downloadAllCoursesEnabled: boolean;
 
     protected prefetchIconsInitialized = false;
     protected isDestroyed;
+    protected updateSiteObserver;
 
     constructor(private navCtrl: NavController, private coursesProvider: CoreCoursesProvider,
             private domUtils: CoreDomUtilsProvider, private myOverviewProvider: CoreCoursesMyOverviewProvider,
             private courseHelper: CoreCourseHelperProvider, private sitesProvider: CoreSitesProvider,
-            private siteHomeProvider: CoreSiteHomeProvider, private courseOptionsDelegate: CoreCourseOptionsDelegate) { }
+            private siteHomeProvider: CoreSiteHomeProvider, private courseOptionsDelegate: CoreCourseOptionsDelegate,
+            private eventsProvider: CoreEventsProvider) {
+    }
 
     /**
      * View loaded.
      */
     ionViewDidLoad(): void {
         this.searchEnabled = !this.coursesProvider.isSearchCoursesDisabledInSite();
+        this.downloadAllCoursesEnabled = !this.coursesProvider.isDownloadCoursesDisabledInSite();
+
+        // Refresh the enabled flags if site is updated.
+        this.updateSiteObserver = this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, () => {
+            const wasEnabled = this.downloadAllCoursesEnabled;
+
+            this.searchEnabled = !this.coursesProvider.isSearchCoursesDisabledInSite();
+            this.downloadAllCoursesEnabled = !this.coursesProvider.isDownloadCoursesDisabledInSite();
+
+            if (!wasEnabled && this.downloadAllCoursesEnabled && this.courses.loaded) {
+                // Download all courses is enabled now, initialize it.
+                this.initPrefetchCoursesIcons();
+            }
+        });
 
         // Decide which tab to load first.
         this.siteHomeProvider.isAvailable().then((enabled) => {
@@ -378,7 +397,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
      * Initialize the prefetch icon for selected courses.
      */
     protected initPrefetchCoursesIcons(): void {
-        if (this.prefetchIconsInitialized) {
+        if (this.prefetchIconsInitialized || !this.downloadAllCoursesEnabled) {
             // Already initialized.
             return;
         }
@@ -410,5 +429,6 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;
+        this.updateSiteObserver && this.updateSiteObserver.off();
     }
 }

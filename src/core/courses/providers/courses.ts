@@ -121,6 +121,54 @@ export class CoreCoursesProvider {
     }
 
     /**
+     * Check if download a whole course is disabled in a certain site.
+     *
+     * @param {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<boolean>} Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    isDownloadCourseDisabled(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.isDownloadCoursesDisabledInSite(site);
+        });
+    }
+
+    /**
+     * Check if download a whole course is disabled in a certain site.
+     *
+     * @param {CoreSite} [site] Site. If not defined, use current site.
+     * @return {boolean} Whether it's disabled.
+     */
+    isDownloadCourseDisabledInSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.isFeatureDisabled('NoDelegate_CoreCourseDownload');
+    }
+
+    /**
+     * Check if download all courses is disabled in a certain site.
+     *
+     * @param {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<boolean>} Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    isDownloadCoursesDisabled(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.isDownloadCoursesDisabledInSite(site);
+        });
+    }
+
+    /**
+     * Check if download all courses is disabled in a certain site.
+     *
+     * @param {CoreSite} [site] Site. If not defined, use current site.
+     * @return {boolean} Whether it's disabled.
+     */
+    isDownloadCoursesDisabledInSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.isFeatureDisabled('NoDelegate_CoreCoursesDownload');
+    }
+
+    /**
      * Check if My Courses is disabled in a certain site.
      *
      * @param {string} [siteId] Site Id. If not defined, use current site.
