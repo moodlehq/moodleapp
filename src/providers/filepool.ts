@@ -2734,7 +2734,7 @@ export class CoreFilepoolProvider {
             return Promise.resolve();
         }
 
-        return this.mimeUtils.getMimeTypeFromUrl(url).then((mimetype) => {
+        return this.utils.getMimeTypeFromUrl(url).then((mimetype) => {
             // If the file is streaming (audio or video) we reject.
             if (mimetype.indexOf('video') != -1 || mimetype.indexOf('audio') != -1) {
                 return Promise.reject(null);

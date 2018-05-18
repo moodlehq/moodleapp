@@ -22,7 +22,6 @@ import { CoreFileProvider } from './file';
 import { CoreLoggerProvider } from './logger';
 import { CoreMimetypeUtilsProvider } from './utils/mimetype';
 import { CoreTextUtilsProvider } from './utils/text';
-import { CoreUtilsProvider } from './utils/utils';
 import { CoreConstants } from '@core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
 import { CoreInterceptor } from '@classes/interceptor';
@@ -131,7 +130,7 @@ export class CoreWSProvider {
     protected retryTimeout = 0;
 
     constructor(private http: HttpClient, private translate: TranslateService, private appProvider: CoreAppProvider,
-            private textUtils: CoreTextUtilsProvider, logger: CoreLoggerProvider, private utils: CoreUtilsProvider,
+            private textUtils: CoreTextUtilsProvider, logger: CoreLoggerProvider,
             private fileProvider: CoreFileProvider, private fileTransfer: FileTransfer, private commonHttp: Http,
             private mimeUtils: CoreMimetypeUtilsProvider) {
         this.logger = logger.getInstance('CoreWSProvider');
@@ -148,13 +147,18 @@ export class CoreWSProvider {
      *                        if it fails.
      */
     protected addToRetryQueue(method: string, siteUrl: string, ajaxData: any, preSets: CoreWSPreSets): Promise<any> {
-        const call = {
+        const call: any = {
             method: method,
             siteUrl: siteUrl,
             ajaxData: ajaxData,
             preSets: preSets,
-            deferred: this.utils.promiseDefer(),
+            deferred: {}
         };
+
+        call.deferred.promise = new Promise((resolve, reject): void => {
+            call.deferred.resolve = resolve;
+            call.deferred.reject = reject;
+        });
 
         this.retryCalls.push(call);
 
@@ -174,9 +178,9 @@ export class CoreWSProvider {
         let siteUrl;
 
         if (!preSets) {
-            return Promise.reject(this.utils.createFakeWSError('core.unexpectederror', true));
+            return Promise.reject(this.createFakeWSError('core.unexpectederror', true));
         } else if (!this.appProvider.isOnline()) {
-            return Promise.reject(this.utils.createFakeWSError('core.networkerrormsg', true));
+            return Promise.reject(this.createFakeWSError('core.networkerrormsg', true));
         }
 
         preSets.typeExpected = preSets.typeExpected || 'object';
@@ -184,8 +188,7 @@ export class CoreWSProvider {
             preSets.responseExpected = true;
         }
 
-        data = data || {};
-        data = this.utils.clone(data); // Clone the data so the changes don't affect the original data.
+        data = Object.assign({}, data); // Create a new object so the changes don't affect the original data.
         data.wsfunction = method;
         data.wstoken = preSets.wsToken;
         siteUrl = preSets.siteUrl + '/webservice/rest/server.php?moodlewsrestformat=json';
@@ -318,6 +321,23 @@ export class CoreWSProvider {
         }
 
         return result;
+    }
+
+    /**
+     * Create a "fake" WS error for local errors.
+     *
+     * @param {string} message The message to include in the error.
+     * @param {boolean} [needsTranslate] If the message needs to be translated.
+     * @return {CoreWSError} Fake WS error.
+     */
+    createFakeWSError(message: string, needsTranslate?: boolean): CoreWSError {
+        if (needsTranslate) {
+            message = this.translate.instant(message);
+        }
+
+        return {
+            message: message
+        };
     }
 
     /**
@@ -522,7 +542,7 @@ export class CoreWSProvider {
             }
 
             if (!data) {
-                return Promise.reject(this.utils.createFakeWSError('core.serverconnection', true));
+                return Promise.reject(this.createFakeWSError('core.serverconnection', true));
             } else if (typeof data != preSets.typeExpected) {
                 // If responseType is text an string will be returned, parse before returning.
                 if (typeof data == 'string') {
@@ -531,7 +551,7 @@ export class CoreWSProvider {
                         if (isNaN(data)) {
                             this.logger.warn(`Response expected type "${preSets.typeExpected}" cannot be parsed to number`);
 
-                            return Promise.reject(this.utils.createFakeWSError('core.errorinvalidresponse', true));
+                            return Promise.reject(this.createFakeWSError('core.errorinvalidresponse', true));
                         }
                     } else if (preSets.typeExpected == 'boolean') {
                         if (data === 'true') {
@@ -541,17 +561,17 @@ export class CoreWSProvider {
                         } else {
                             this.logger.warn(`Response expected type "${preSets.typeExpected}" is not true or false`);
 
-                            return Promise.reject(this.utils.createFakeWSError('core.errorinvalidresponse', true));
+                            return Promise.reject(this.createFakeWSError('core.errorinvalidresponse', true));
                         }
                     } else {
                         this.logger.warn('Response of type "' + typeof data + `" received, expecting "${preSets.typeExpected}"`);
 
-                        return Promise.reject(this.utils.createFakeWSError('core.errorinvalidresponse', true));
+                        return Promise.reject(this.createFakeWSError('core.errorinvalidresponse', true));
                     }
                 } else {
                     this.logger.warn('Response of type "' + typeof data + `" received, expecting "${preSets.typeExpected}"`);
 
-                    return Promise.reject(this.utils.createFakeWSError('core.errorinvalidresponse', true));
+                    return Promise.reject(this.createFakeWSError('core.errorinvalidresponse', true));
                 }
             }
 
@@ -565,7 +585,7 @@ export class CoreWSProvider {
             }
 
             if (typeof data.debuginfo != 'undefined') {
-                return Promise.reject(this.utils.createFakeWSError('Error. ' + data.message));
+                return Promise.reject(this.createFakeWSError('Error. ' + data.message));
             }
 
             return data;
@@ -593,7 +613,7 @@ export class CoreWSProvider {
                 return retryPromise;
             }
 
-            return Promise.reject(this.utils.createFakeWSError('core.serverconnection', true));
+            return Promise.reject(this.createFakeWSError('core.serverconnection', true));
         });
 
         promise = this.setPromiseHttp(promise, 'post', preSets.siteUrl, ajaxData);
