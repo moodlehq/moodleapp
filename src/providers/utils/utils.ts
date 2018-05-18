@@ -25,7 +25,7 @@ import { CoreEventsProvider } from '../events';
 import { CoreLoggerProvider } from '../logger';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
-import { CoreWSError } from '../ws';
+import { CoreWSProvider, CoreWSError } from '../ws';
 
 /**
  * Deferred promise. It's similar to the result of $q.defer() in AngularJS.
@@ -63,7 +63,8 @@ export class CoreUtilsProvider {
     constructor(private iab: InAppBrowser, private appProvider: CoreAppProvider, private clipboard: Clipboard,
             private domUtils: CoreDomUtilsProvider, logger: CoreLoggerProvider, private translate: TranslateService,
             private platform: Platform, private langProvider: CoreLangProvider, private eventsProvider: CoreEventsProvider,
-            private fileOpener: FileOpener, private mimetypeUtils: CoreMimetypeUtilsProvider, private webIntent: WebIntent) {
+            private fileOpener: FileOpener, private mimetypeUtils: CoreMimetypeUtilsProvider, private webIntent: WebIntent,
+            private wsProvider: CoreWSProvider) {
         this.logger = logger.getInstance('CoreUtilsProvider');
     }
 
@@ -253,6 +254,17 @@ export class CoreUtilsProvider {
         }).catch(() => {
             // Ignore errors.
         });
+    }
+
+    /**
+     * Create a "fake" WS error for local errors.
+     *
+     * @param {string} message The message to include in the error.
+     * @param {boolean} [needsTranslate] If the message needs to be translated.
+     * @return {CoreWSError} Fake WS error.
+     */
+    createFakeWSError(message: string, needsTranslate?: boolean): CoreWSError {
+        return this.wsProvider.createFakeWSError(message, needsTranslate);
     }
 
     /**
@@ -537,6 +549,29 @@ export class CoreUtilsProvider {
     }
 
     /**
+     * Get the mimetype of a file given its URL. It'll try to guess it using the URL, if that fails then it'll
+     * perform a HEAD request to get it. It's done in this order because pluginfile.php can return wrong mimetypes.
+     * This function is in here instead of MimetypeUtils to prevent circular dependencies.
+     *
+     * @param {string} url The URL of the file.
+     * @return {Promise<string>} Promise resolved with the mimetype.
+     */
+    getMimeTypeFromUrl(url: string): Promise<string> {
+        // First check if it can be guessed from the URL.
+        const extension = this.mimetypeUtils.guessExtensionFromUrl(url),
+            mimetype = this.mimetypeUtils.getMimeType(extension);
+
+        if (mimetype) {
+            return Promise.resolve(mimetype);
+        }
+
+        // Can't be guessed, get the remote mimetype.
+        return this.wsProvider.getRemoteFileMimeType(url).then((mimetype) => {
+            return mimetype || '';
+        });
+    }
+
+    /**
      * Given a list of files, check if there are repeated names.
      *
      * @param {any[]} files List of files.
@@ -604,23 +639,6 @@ export class CoreUtilsProvider {
      */
     isTrueOrOne(value: any): boolean {
         return typeof value != 'undefined' && (value === true || value === 'true' || parseInt(value, 10) === 1);
-    }
-
-    /**
-     * Create a "fake" WS error for local errors.
-     *
-     * @param {string} message The message to include in the error.
-     * @param {boolean} [needsTranslate] If the message needs to be translated.
-     * @return {CoreWSError} Fake WS error.
-     */
-    createFakeWSError(message: string, needsTranslate?: boolean): CoreWSError {
-        if (needsTranslate) {
-            message = this.translate.instant(message);
-        }
-
-        return {
-            message: message
-        };
     }
 
     /**
@@ -781,7 +799,7 @@ export class CoreUtilsProvider {
     openOnlineFile(url: string): Promise<void> {
         if (this.platform.is('android')) {
             // In Android we need the mimetype to open it.
-            return this.mimetypeUtils.getMimeTypeFromUrl(url).catch(() => {
+            return this.getMimeTypeFromUrl(url).catch(() => {
                 // Error getting mimetype, return undefined.
             }).then((mimetype) => {
                 if (!mimetype) {

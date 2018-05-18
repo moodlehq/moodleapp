@@ -28,7 +28,6 @@ export class CoreMimetypeUtilsProvider {
     protected mimeToExt = {}; // Object to map mimetypes -> extensions.
     protected groupsMimeInfo = {}; // Object to hold extensions and mimetypes that belong to a certain "group" (audio, video, ...).
     protected extensionRegex = /^[a-z0-9]+$/;
-    protected wsProvider: any = {}; // @todo
 
     constructor(http: HttpClient, logger: CoreLoggerProvider, private translate: TranslateService,
             private textUtils: CoreTextUtilsProvider) {
@@ -197,28 +196,6 @@ export class CoreMimetypeUtilsProvider {
      */
     getFolderIcon(): string {
         return 'assets/img/files/folder-64.png';
-    }
-
-    /**
-     * Get the mimetype of a file given its URL. It'll try to guess it using the URL, if that fails then it'll
-     * perform a HEAD request to get it. It's done in this order because pluginfile.php can return wrong mimetypes.
-     *
-     * @param {string} url The URL of the file.
-     * @return {Promise<string>} Promise resolved with the mimetype.
-     */
-    getMimeTypeFromUrl(url: string): Promise<string> {
-        // First check if it can be guessed from the URL.
-        const extension = this.guessExtensionFromUrl(url),
-            mimetype = this.getMimeType(extension);
-
-        if (mimetype) {
-            return Promise.resolve(mimetype);
-        }
-
-        // Can't be guessed, get the remote mimetype.
-        return this.wsProvider.getRemoteFileMimeType(url).then((mimetype) => {
-            return mimetype || '';
-        });
     }
 
     /**

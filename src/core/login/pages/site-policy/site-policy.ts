@@ -17,6 +17,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreLoginHelperProvider } from '../../providers/helper';
 import { CoreSite } from '@classes/site';
 
@@ -36,7 +37,7 @@ export class CoreLoginSitePolicyPage {
     protected currentSite: CoreSite;
 
     constructor(private navCtrl: NavController, navParams: NavParams, private loginHelper: CoreLoginHelperProvider,
-            private domUtils: CoreDomUtilsProvider, private sitesProvider: CoreSitesProvider,
+            private domUtils: CoreDomUtilsProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
             private mimeUtils: CoreMimetypeUtilsProvider) {
         this.siteId = navParams.get('siteId');
     }
@@ -77,7 +78,7 @@ export class CoreLoginSitePolicyPage {
             this.sitePolicy = sitePolicy;
 
             // Try to get the mime type.
-            return this.mimeUtils.getMimeTypeFromUrl(sitePolicy).then((mimeType) => {
+            return this.utils.getMimeTypeFromUrl(sitePolicy).then((mimeType) => {
                 const extension = this.mimeUtils.getExtension(mimeType, sitePolicy);
                 this.showInline = extension == 'html' || extension == 'htm';
             }).catch(() => {
