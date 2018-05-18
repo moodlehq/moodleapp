@@ -436,18 +436,40 @@ export class CoreFormatTextDirective implements OnChanges {
 
         if (iframe.src && canTreatVimeo) {
             // Check if it's a Vimeo video. If it is, use the wsplayer script instead to make restricted videos work.
-            const matches = iframe.src.match(/https?:\/\/player\.vimeo\.com\/video\/([^\/]*)/);
+            const matches = iframe.src.match(/https?:\/\/player\.vimeo\.com\/video\/([0-9]+)/);
             if (matches && matches[1]) {
-                let newUrl = this.textUtils.concatenatePaths(site.getURL(), '/media/player/vimeo/wsplayer.php?video=') +
+                const newUrl = this.textUtils.concatenatePaths(site.getURL(), '/media/player/vimeo/wsplayer.php?video=') +
                     matches[1] + '&token=' + site.getToken();
+
+                // Width and height are mandatory, we need to calculate them.
+                let width, height;
+
                 if (iframe.width) {
-                    newUrl = newUrl + '&width=' + iframe.width;
-                }
-                if (iframe.height) {
-                    newUrl = newUrl + '&height=' + iframe.height;
+                    width = iframe.width;
+                } else {
+                    width = this.getElementWidth(iframe);
+                    if (!width) {
+                        width = window.innerWidth;
+                    }
                 }
 
-                iframe.src = newUrl;
+                if (iframe.height) {
+                    height = iframe.height;
+                } else {
+                    height = this.getElementHeight(iframe);
+                    if (!height) {
+                        height = width;
+                    }
+                }
+
+                // Always include the width and height in the URL.
+                iframe.src = newUrl + '&width=' + width + '&height=' + height;
+                if (!iframe.width) {
+                    iframe.width = width;
+                }
+                if (!iframe.height) {
+                    iframe.height = height;
+                }
             }
         }
     }
