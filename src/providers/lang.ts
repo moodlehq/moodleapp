@@ -67,6 +67,8 @@ export class CoreLangProvider {
                 continue;
             }
 
+            // Replace the way to access subproperties.
+            value = value.replace(/\$a->/gm, '$a.');
             // Add another curly bracket to string params ({$a} -> {{$a}}).
             value = value.replace(/{([^ ]+)}/gm, '{{$1}}');
             // Make sure we didn't add to many brackets in some case.
