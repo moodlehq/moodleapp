@@ -607,7 +607,14 @@ export class CoreCourseHelperProvider {
 
                     if (status === CoreConstants.DOWNLOADED) {
                         // Get the local file URL.
-                        return this.filepoolProvider.getInternalUrlByUrl(siteId, fileUrl);
+                        return this.filepoolProvider.getInternalUrlByUrl(siteId, fileUrl).catch((error) => {
+                            // File not found, mark the module as not downloaded and reject.
+                            return this.filepoolProvider.storePackageStatus(siteId, CoreConstants.NOT_DOWNLOADED, component,
+                                    componentId).then(() => {
+
+                                return Promise.reject(error);
+                            });
+                        });
                     } else if (status === CoreConstants.DOWNLOADING && !this.appProvider.isDesktop()) {
                         // Return the online URL.
                         return fixedUrl;

@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLangProvider } from '../lang';
+import { CoreTextUtilsProvider } from './text';
 
 /*
  * "Utils" service with helper functions for URLs.
@@ -21,7 +22,7 @@ import { CoreLangProvider } from '../lang';
 @Injectable()
 export class CoreUrlUtilsProvider {
 
-    constructor(private langProvider: CoreLangProvider) { }
+    constructor(private langProvider: CoreLangProvider, private textUtils: CoreTextUtilsProvider) { }
 
     /**
      * Add or remove 'www' from a URL. The url needs to have http or https protocol.
@@ -69,12 +70,15 @@ export class CoreUrlUtilsProvider {
      *
      * @param {string} url The url to be fixed.
      * @param {string} token Token to use.
+     * @param {string} siteUrl The URL of the site the URL belongs to.
      * @return {string} Fixed URL.
      */
-    fixPluginfileURL(url: string, token: string): string {
+    fixPluginfileURL(url: string, token: string, siteUrl: string): string {
         if (!url || !token) {
             return '';
         }
+
+        url = url.replace(/&amp;/g, '&');
 
         // First check if we need to fix this url or is already fixed.
         if (url.indexOf('token=') != -1) {
@@ -86,8 +90,8 @@ export class CoreUrlUtilsProvider {
             return url;
         }
 
-        // In which way the server is serving the files? Are we using slash parameters?
-        if (url.indexOf('?file=') != -1 || url.indexOf('?forcedownload=') != -1 || url.indexOf('?rev=') != -1) {
+        // Check if the URL already has params.
+        if (url.match(/\?[^=]+=/)) {
             url += '&';
         } else {
             url += '?';
@@ -96,7 +100,7 @@ export class CoreUrlUtilsProvider {
         url += 'token=' + token + '&offline=1';
 
         // Some webservices returns directly the correct download url, others not.
-        if (url.indexOf('/webservice/pluginfile') == -1) {
+        if (url.indexOf(this.textUtils.concatenatePaths(siteUrl, 'pluginfile.php')) === 0) {
             url = url.replace('/pluginfile', '/webservice/pluginfile');
         }
 

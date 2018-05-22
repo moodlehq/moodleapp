@@ -931,7 +931,7 @@ export class CoreSite {
      * @return {string} Fixed URL.
      */
     fixPluginfileURL(url: string): string {
-        return this.urlUtils.fixPluginfileURL(url, this.token);
+        return this.urlUtils.fixPluginfileURL(url, this.token, this.siteUrl);
     }
 
     /**
