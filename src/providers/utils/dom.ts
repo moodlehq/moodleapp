@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, SimpleChange } from '@angular/core';
 import {
     LoadingController, Loading, ToastController, Toast, AlertController, Alert, Platform, Content,
     ModalController
@@ -146,6 +146,32 @@ export class CoreDomUtilsProvider {
      */
     createCanceledError(): any {
         return {coreCanceled: true};
+    }
+
+    /**
+     * Given a list of changes for a component input detected by a KeyValueDiffers, create an object similar to the one
+     * passed to the ngOnChanges functions.
+     *
+     * @param {any} changes Changes detected by KeyValueDiffer.
+     * @return {{[name: string]: SimpleChange}} Changes in a format like ngOnChanges.
+     */
+    createChangesFromKeyValueDiff(changes: any): { [name: string]: SimpleChange } {
+        const newChanges: { [name: string]: SimpleChange } = {};
+
+        // Added items are considered first change.
+        changes.forEachAddedItem((item) => {
+            newChanges[item.key] = new SimpleChange(item.previousValue, item.currentValue, true);
+        });
+
+        // Changed or removed items aren't first change.
+        changes.forEachChangedItem((item) => {
+            newChanges[item.key] = new SimpleChange(item.previousValue, item.currentValue, false);
+        });
+        changes.forEachRemovedItem((item) => {
+            newChanges[item.key] = new SimpleChange(item.previousValue, item.currentValue, true);
+        });
+
+        return newChanges;
     }
 
     /**
