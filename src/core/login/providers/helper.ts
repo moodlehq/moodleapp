@@ -950,12 +950,10 @@ export class CoreLoginHelperProvider {
      * @param {any} error Error object containing errorcode and error message.
      */
     treatUserTokenError(siteUrl: string, error: any): void {
-        if (typeof error == 'string') {
-            this.domUtils.showErrorModal(error);
-        } else if (error.errorcode == 'forcepasswordchangenotice') {
-            this.openChangePassword(siteUrl, error.error);
+        if (error.errorcode == 'forcepasswordchangenotice') {
+            this.openChangePassword(siteUrl, error.error || error.message || error.body || error.content);
         } else {
-            this.domUtils.showErrorModal(error.error);
+            this.domUtils.showErrorModal(error);
         }
     }
 
