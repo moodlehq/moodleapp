@@ -13,8 +13,11 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { AddonModWikiProvider } from './providers/wiki';
 import { AddonModWikiOfflineProvider } from './providers/wiki-offline';
+import { AddonModWikiSyncProvider } from './providers/wiki-sync';
+import { AddonModWikiPrefetchHandler } from './providers/prefetch-handler';
 
 @NgModule({
     declarations: [
@@ -23,7 +26,14 @@ import { AddonModWikiOfflineProvider } from './providers/wiki-offline';
     ],
     providers: [
         AddonModWikiProvider,
-        AddonModWikiOfflineProvider
+        AddonModWikiOfflineProvider,
+        AddonModWikiSyncProvider,
+        AddonModWikiPrefetchHandler
     ]
 })
-export class AddonModWikiModule { }
+export class AddonModWikiModule {
+    constructor(prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModWikiPrefetchHandler) {
+
+        prefetchDelegate.registerHandler(prefetchHandler);
+    }
+}
