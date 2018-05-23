@@ -154,6 +154,11 @@ export class AddonModQuizPrefetchHandler extends CoreCourseModulePrefetchHandler
      * @return {boolean|Promise<boolean>} Whether the module can be downloaded. The promise should never be rejected.
      */
     isDownloadable(module: any, courseId: number): boolean | Promise<boolean> {
+        if (this.sitesProvider.getCurrentSite().isOfflineDisabled()) {
+            // Don't allow downloading the quiz if offline is disabled to prevent wasting a lot of data when opening it.
+            return false;
+        }
+
         const siteId = this.sitesProvider.getCurrentSiteId();
 
         return this.quizProvider.getQuiz(courseId, module.id, false, siteId).then((quiz) => {
