@@ -13,11 +13,15 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CoreCronDelegate } from '@providers/cron';
+import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { AddonModWikiProvider } from './providers/wiki';
 import { AddonModWikiOfflineProvider } from './providers/wiki-offline';
 import { AddonModWikiSyncProvider } from './providers/wiki-sync';
+import { AddonModWikiModuleHandler } from './providers/module-handler';
 import { AddonModWikiPrefetchHandler } from './providers/prefetch-handler';
+import { AddonModWikiSyncCronHandler } from './providers/sync-cron-handler';
 
 @NgModule({
     declarations: [
@@ -28,12 +32,18 @@ import { AddonModWikiPrefetchHandler } from './providers/prefetch-handler';
         AddonModWikiProvider,
         AddonModWikiOfflineProvider,
         AddonModWikiSyncProvider,
-        AddonModWikiPrefetchHandler
+        AddonModWikiModuleHandler,
+        AddonModWikiPrefetchHandler,
+        AddonModWikiSyncCronHandler
     ]
 })
 export class AddonModWikiModule {
-    constructor(prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModWikiPrefetchHandler) {
+    constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModWikiModuleHandler,
+            prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModWikiPrefetchHandler,
+            cronDelegate: CoreCronDelegate, syncHandler: AddonModWikiSyncCronHandler, ) {
 
+        moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
+        cronDelegate.register(syncHandler);
     }
 }
