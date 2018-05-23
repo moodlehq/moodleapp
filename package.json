@@ -21,6 +21,7 @@
     }
   ],
   "scripts": {
+    "setup": "npm install && cordova prepare && gulp",
     "clean": "ionic-app-scripts clean",
     "build": "ionic-app-scripts build",
     "lint": "ionic-app-scripts lint",
@@ -50,7 +51,7 @@
     "@ionic-native/globalization": "^4.3.2",
     "@ionic-native/in-app-browser": "^4.3.3",
     "@ionic-native/keyboard": "^4.3.2",
-    "@ionic-native/local-notifications": "^4.4.0",
+    "@ionic-native/local-notifications": "4.5.2",
     "@ionic-native/media-capture": "^4.5.2",
     "@ionic-native/network": "^4.3.2",
     "@ionic-native/push": "^4.5.3",
