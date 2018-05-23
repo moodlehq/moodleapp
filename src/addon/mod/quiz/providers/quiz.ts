@@ -1492,7 +1492,8 @@ export class AddonModQuizProvider {
      * @return {boolean} Whether offline is enabled.
      */
     isQuizOffline(quiz: any): boolean {
-        return !!quiz.allowofflineattempts;
+        // Don't allow downloading the quiz if offline is disabled to prevent wasting a lot of data when opening it.
+        return !!quiz.allowofflineattempts && !this.sitesProvider.getCurrentSite().isOfflineDisabled();
     }
 
     /**

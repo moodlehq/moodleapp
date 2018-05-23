@@ -71,7 +71,7 @@
                                 <ion-option value="past">{{ 'core.courses.past' | translate }}</ion-option>
                             </ion-select>
                             <!-- Download all courses. -->
-                            <div *ngIf="courses[courses.selected] && courses[courses.selected].length > 1" class="core-button-spinner" float-end>
+                            <div *ngIf="downloadAllCoursesEnabled && courses[courses.selected] && courses[courses.selected].length > 1" class="core-button-spinner" float-end>
                                 <button *ngIf="prefetchCoursesData[courses.selected].icon && prefetchCoursesData[courses.selected].icon != 'spinner'" ion-button icon-only clear color="dark" (click)="prefetchCourses()">
                                     <ion-icon [name]="prefetchCoursesData[courses.selected].icon"></ion-icon>
                                 </button>

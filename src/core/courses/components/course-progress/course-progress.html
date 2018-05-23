@@ -2,7 +2,7 @@
     <ion-item tappable text-wrap detail-none (click)="openCourse(course)" [title]="course.fullname" class="core-course-link">
         <h2><core-format-text [text]="course.fullname"></core-format-text></h2>
 
-        <div class="core-button-spinner">
+        <div class="core-button-spinner" *ngIf="downloadCourseEnabled">
             <!-- Download course. -->
             <button *ngIf="prefetchCourseData.prefetchCourseIcon != 'spinner'" ion-button icon-only clear color="dark" (click)="prefetchCourse($event)" [attr.aria-label]="prefetchCourseData.title | translate">
                 <ion-icon [name]="prefetchCourseData.prefetchCourseIcon"></ion-icon>

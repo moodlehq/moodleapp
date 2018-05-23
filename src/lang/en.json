@@ -77,6 +77,7 @@
     "errorinvalidform": "The form contains invalid data. Please make sure to fill all required fields and that the data is valid.",
     "errorinvalidresponse": "Invalid response received. Please contact your Moodle site administrator if the error persists.",
     "errorloadingcontent": "Error loading content.",
+    "errorofflinedisabled": "Offline browsing is disabled on your site. You need to be connected to the internet to use the app.",
     "erroropenfilenoapp": "Error opening the file: no app found to open this kind of file.",
     "erroropenfilenoextension": "Error opening the file: the file doesn't have extension.",
     "erroropenpopup": "This activity is trying to open a popup. This is not supported in this app.",

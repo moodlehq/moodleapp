@@ -52,6 +52,7 @@ export class CoreCourseSectionPage implements OnDestroy {
         prefetchCourseIcon: 'spinner',
         title: 'core.course.downloadcourse'
     };
+    downloadCourseEnabled: boolean;
     moduleId: number;
     displayEnableDownload: boolean;
     displayRefresher: boolean;
@@ -75,6 +76,7 @@ export class CoreCourseSectionPage implements OnDestroy {
         // Get the title to display. We dont't have sections yet.
         this.title = courseFormatDelegate.getCourseTitle(this.course);
         this.displayEnableDownload = courseFormatDelegate.displayEnableDownload(this.course);
+        this.downloadCourseEnabled = !this.coursesProvider.isDownloadCourseDisabledInSite();
 
         this.completionObserver = eventsProvider.on(CoreEventsProvider.COMPLETION_MODULE_VIEWED, (data) => {
             if (data && data.courseId == this.course.id) {
@@ -82,12 +84,14 @@ export class CoreCourseSectionPage implements OnDestroy {
             }
         });
 
-        // Listen for changes in course status.
-        this.courseStatusObserver = eventsProvider.on(CoreEventsProvider.COURSE_STATUS_CHANGED, (data) => {
-            if (data.courseId == this.course.id) {
-                this.updateCourseStatus(data.status);
-            }
-        }, sitesProvider.getCurrentSiteId());
+        if (this.downloadCourseEnabled) {
+            // Listen for changes in course status.
+            this.courseStatusObserver = eventsProvider.on(CoreEventsProvider.COURSE_STATUS_CHANGED, (data) => {
+                if (data.courseId == this.course.id) {
+                    this.updateCourseStatus(data.status);
+                }
+            }, sitesProvider.getCurrentSiteId());
+        }
     }
 
     /**
@@ -102,6 +106,11 @@ export class CoreCourseSectionPage implements OnDestroy {
 
         this.loadData().finally(() => {
             this.dataLoaded = true;
+
+            if (!this.downloadCourseEnabled) {
+                // Cannot download the whole course, stop.
+                return;
+            }
 
             // Determine the course prefetch status.
             this.determineCoursePrefetchIcon().then(() => {

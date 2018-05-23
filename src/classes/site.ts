@@ -203,6 +203,7 @@ export class CoreSite {
     protected db: SQLiteDB;
     protected cleanUnicode = false;
     protected lastAutoLogin = 0;
+    protected offlineDisabled = false;
 
     /**
      * Create a site.
@@ -234,6 +235,7 @@ export class CoreSite {
         this.wsProvider = injector.get(CoreWSProvider);
 
         this.logger = logger.getInstance('CoreWSProvider');
+        this.calculateOfflineDisabled();
 
         if (this.id) {
             this.initDB();
@@ -376,6 +378,7 @@ export class CoreSite {
     setConfig(config: any): void {
         config.tool_mobile_disabledfeatures = this.textUtils.treatDisabledFeatures(config.tool_mobile_disabledfeatures);
         this.config = config;
+        this.calculateOfflineDisabled();
     }
 
     /**
@@ -530,6 +533,10 @@ export class CoreSite {
         const initialToken = this.token;
         data = data || {};
 
+        if (!this.appProvider.isOnline() && this.offlineDisabled) {
+            return Promise.reject(this.wsProvider.createFakeWSError('core.errorofflinedisabled', true));
+        }
+
         // Check if the method is available, use a prefixed version if possible.
         // We ignore this check when we do not have the site info, as the list of functions is not loaded yet.
         if (this.getInfo() && !this.wsAvailable(method, false)) {
@@ -558,6 +565,13 @@ export class CoreSite {
         } else {
             // No need to clean data in this call.
             wsPreSets.cleanUnicode = false;
+        }
+
+        if (this.offlineDisabled) {
+            // Offline is disabled, don't use cache.
+            preSets.getFromCache = false;
+            preSets.saveToCache = false;
+            preSets.emergencyCache = false;
         }
 
         // Enable text filtering by default.
@@ -1349,6 +1363,22 @@ export class CoreSite {
         const regEx = new RegExp('(,|^)' + this.textUtils.escapeForRegex(name) + '(,|$)', 'g');
 
         return !!disabledFeatures.match(regEx);
+    }
+
+    /**
+     * Calculate if offline is disabled in the site.
+     */
+    calculateOfflineDisabled(): void {
+        this.offlineDisabled = this.isFeatureDisabled('NoDelegate_CoreOffline');
+    }
+
+    /**
+     * Get whether offline is disabled in the site.
+     *
+     * @return {boolean} Whether it's disabled.
+     */
+    isOfflineDisabled(): boolean {
+        return this.offlineDisabled;
     }
 
     /**

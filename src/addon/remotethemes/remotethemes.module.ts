@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { AddonRemoteThemesProvider } from './providers/remotethemes';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreInitDelegate } from '@providers/init';
+import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 
 @NgModule({
@@ -29,7 +30,9 @@ import { CoreSitesProvider } from '@providers/sites';
 })
 export class AddonRemoteThemesModule {
     constructor(initDelegate: CoreInitDelegate, remoteThemesProvider: AddonRemoteThemesProvider, eventsProvider: CoreEventsProvider,
-            sitesProvider: CoreSitesProvider) {
+            sitesProvider: CoreSitesProvider, loggerProvider: CoreLoggerProvider) {
+
+        const logger = loggerProvider.getInstance('AddonRemoteThemesModule');
 
         // Preload the current site styles.
         initDelegate.registerProcess({
@@ -53,7 +56,9 @@ export class AddonRemoteThemesModule {
         eventsProvider.on(CoreEventsProvider.SITE_ADDED, (data) => {
             addingSite = data.siteId;
 
-            remoteThemesProvider.addSite(data.siteId).finally(() => {
+            remoteThemesProvider.addSite(data.siteId).catch((error) => {
+                logger.error('Error adding site', error);
+            }).then(() => {
                 if (addingSite == data.siteId) {
                     addingSite = false;
                 }
@@ -68,7 +73,9 @@ export class AddonRemoteThemesModule {
         // Update styles when current site is updated.
         eventsProvider.on(CoreEventsProvider.SITE_UPDATED, (data) => {
             if (data.siteId === sitesProvider.getCurrentSiteId()) {
-                remoteThemesProvider.load(data.siteId);
+                remoteThemesProvider.load(data.siteId).catch((error) => {
+                    logger.error('Error loading site after site update', error);
+                });
             }
         });
 
