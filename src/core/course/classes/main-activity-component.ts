@@ -128,6 +128,25 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     }
 
     /**
+     * Show loading and perform the load content function.
+     *
+     * @param  {boolean}      [sync=false]       If the fetch needs syncing.
+     * @param  {boolean}      [showErrors=false] Wether to show errors to the user or hide them.
+     * @return {Promise<any>} Resolved when done.
+     */
+    protected showLoadingAndFetch(sync: boolean = false, showErrors: boolean = false): Promise<any> {
+        this.refreshIcon = 'spinner';
+        this.syncIcon = 'spinner';
+        this.loaded = false;
+        this.content && this.content.scrollToTop();
+
+        return this.loadContent(false, sync, showErrors).finally(() => {
+            this.refreshIcon = 'refresh';
+            this.syncIcon = 'sync';
+        });
+    }
+
+    /**
      * Show loading and perform the refresh content function.
      *
      * @param  {boolean}      [sync=false]       If the refresh needs syncing.

@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { CoreCronDelegate } from '@providers/cron';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
+import { AddonModWikiComponentsModule } from './components/components.module';
 import { AddonModWikiProvider } from './providers/wiki';
 import { AddonModWikiOfflineProvider } from './providers/wiki-offline';
 import { AddonModWikiSyncProvider } from './providers/wiki-sync';
@@ -27,6 +28,7 @@ import { AddonModWikiSyncCronHandler } from './providers/sync-cron-handler';
     declarations: [
     ],
     imports: [
+        AddonModWikiComponentsModule
     ],
     providers: [
         AddonModWikiProvider,

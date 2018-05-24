@@ -60,6 +60,7 @@ export interface AddonModWikiSubwikiListData {
 @Injectable()
 export class AddonModWikiProvider {
     static COMPONENT = 'mmaModWiki';
+    static PAGE_CREATED_EVENT = 'addon_mod_wiki_page_created';
 
     protected ROOT_CACHE_KEY = 'mmaModWiki:';
     protected logger;

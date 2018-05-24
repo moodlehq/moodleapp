@@ -95,6 +95,7 @@ export interface AddonModWikiSyncWikiResult {
 export class AddonModWikiSyncProvider extends CoreSyncBaseProvider {
 
     static AUTO_SYNCED = 'addon_mod_wiki_autom_synced';
+    static MANUAL_SYNCED = 'addon_mod_wiki_manual_synced';
     static SYNC_TIME = 300000;
 
     protected componentTranslate: string;
