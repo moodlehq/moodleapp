@@ -87,6 +87,7 @@ import { AddonModResourceModule } from '@addon/mod/resource/resource.module';
 import { AddonModFeedbackModule } from '@addon/mod/feedback/feedback.module';
 import { AddonModFolderModule } from '@addon/mod/folder/folder.module';
 import { AddonModForumModule } from '@addon/mod/forum/forum.module';
+import { AddonModGlossaryModule } from '@addon/mod/glossary/glossary.module';
 import { AddonModPageModule } from '@addon/mod/page/page.module';
 import { AddonModQuizModule } from '@addon/mod/quiz/quiz.module';
 import { AddonModScormModule } from '@addon/mod/scorm/scorm.module';
@@ -188,6 +189,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonModFeedbackModule,
         AddonModFolderModule,
         AddonModForumModule,
+        AddonModGlossaryModule,
         AddonModLtiModule,
         AddonModPageModule,
         AddonModQuizModule,
