@@ -15,15 +15,21 @@
 import { NgModule } from '@angular/core';
 import { AddonModGlossaryProvider } from './providers/glossary';
 import { AddonModGlossaryOfflineProvider } from './providers/offline';
+import { AddonModGlossaryHelperProvider } from './providers/helper';
+import { AddonModGlossarySyncProvider } from './providers/sync';
+import { AddonModGlossaryComponentsModule } from './components/components.module';
 
 @NgModule({
     declarations: [
     ],
     imports: [
+        AddonModGlossaryComponentsModule,
     ],
     providers: [
         AddonModGlossaryProvider,
         AddonModGlossaryOfflineProvider,
+        AddonModGlossaryHelperProvider,
+        AddonModGlossarySyncProvider,
     ]
 })
 export class AddonModGlossaryModule {
