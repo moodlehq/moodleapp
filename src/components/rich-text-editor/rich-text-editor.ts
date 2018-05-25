@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterContentInit, OnDestroy } from '@angular/core';
 import { TextInput } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { FormControl } from '@angular/forms';
 import { Keyboard } from '@ionic-native/keyboard';
+import { Subscription } from 'rxjs';
 
 /**
  * Directive to display a rich text editor if enabled.
@@ -36,7 +37,7 @@ import { Keyboard } from '@ionic-native/keyboard';
     selector: 'core-rich-text-editor',
     templateUrl: 'rich-text-editor.html'
 })
-export class CoreRichTextEditorComponent {
+export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy {
     // Based on: https://github.com/judgewest2000/Ionic3RichText/
     // @todo: Resize, images, anchor button, fullscreen...
 
@@ -52,6 +53,8 @@ export class CoreRichTextEditorComponent {
     rteEnabled = false;
     uniqueId = `rte{Math.floor(Math.random() * 1000000)}`;
     editorElement: HTMLDivElement;
+
+    protected valueChangeSubscription: Subscription;
 
     constructor(private domUtils: CoreDomUtilsProvider, private keyboard: Keyboard) {
         this.contentChanged = new EventEmitter<string>();
@@ -69,12 +72,16 @@ export class CoreRichTextEditorComponent {
         this.editorElement = this.editor.nativeElement as HTMLDivElement;
         this.editorElement.innerHTML = this.control.value;
         this.textarea.value = this.control.value;
-        this.control.setValue(this.control.value);
 
         this.editorElement.onchange = this.onChange.bind(this);
         this.editorElement.onkeyup = this.onChange.bind(this);
         this.editorElement.onpaste = this.onChange.bind(this);
         this.editorElement.oninput = this.onChange.bind(this);
+
+        // Listen for changes on the control to update the editor (if it is updated from outside of this component).
+        this.valueChangeSubscription = this.control.valueChanges.subscribe((param) => {
+            this.editorElement.innerHTML = param;
+        });
 
         // Setup button actions.
         const buttons = (this.decorate.nativeElement as HTMLDivElement).getElementsByTagName('button');
@@ -109,14 +116,16 @@ export class CoreRichTextEditorComponent {
             if (this.isNullOrWhiteSpace(this.editorElement.innerText)) {
                 this.clearText();
             } else {
-                this.control.setValue(this.editorElement.innerHTML);
+                // Don't emit event so our valueChanges doesn't get notified by this change.
+                this.control.setValue(this.editorElement.innerHTML, {emitEvent: false});
                 this.textarea.value = this.editorElement.innerHTML;
             }
         } else {
             if (this.isNullOrWhiteSpace(this.textarea.value)) {
                 this.clearText();
             } else {
-                this.control.setValue(this.textarea.value);
+                // Don't emit event so our valueChanges doesn't get notified by this change.
+                this.control.setValue(this.textarea.value, {emitEvent: false});
             }
         }
 
@@ -183,7 +192,8 @@ export class CoreRichTextEditorComponent {
     clearText(): void {
         this.editorElement.innerHTML = '<p></p>';
         this.textarea.value = '';
-        this.control.setValue(null);
+        // Don't emit event so our valueChanges doesn't get notified by this change.
+        this.control.setValue(null, {emitEvent: false});
     }
 
     /**
@@ -198,5 +208,12 @@ export class CoreRichTextEditorComponent {
         $event.preventDefault();
         $event.stopPropagation();
         document.execCommand(command, false, parameters);
+    }
+
+    /**
+     * Component being destroyed.
+     */
+    ngOnDestroy(): void {
+        this.valueChangeSubscription && this.valueChangeSubscription.unsubscribe();
     }
 }

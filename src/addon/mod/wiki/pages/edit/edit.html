@@ -1,0 +1,27 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+
+        <ion-buttons end>
+            <button ion-button clear (click)="save()" [attr.aria-label]="'core.save' | translate">
+                {{ 'core.save' | translate }}
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <form ion-list [formGroup]="pageForm">
+            <ion-item text-wrap *ngIf="canEditTitle" class="item-title">
+                <ion-input name="title" type="text" [placeholder]="'addon.mod_wiki.newpagetitle' | translate" [formControlName]="'title'"></ion-input>
+            </ion-item>
+
+            <ion-item>
+                <!-- @todo: [component]="component" [componentId]="componentId" -->
+                <core-rich-text-editor item-content [control]="contentControl" [placeholder]="'core.content' | translate" name="wiki_page_content"></core-rich-text-editor>
+            </ion-item>
+
+            <ion-badge color="danger" *ngIf="wrongVersionLock" item-end>{{ 'addon.mod_wiki.wrongversionlock' | translate }}</ion-badge> <!-- @todo: Check this. -->
+        </form>
+    </core-loading>
+</ion-content>

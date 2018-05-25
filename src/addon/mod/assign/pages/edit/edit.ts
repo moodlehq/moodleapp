@@ -329,7 +329,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
      * Component being destroyed.
      */
     ngOnDestroy(): void {
-        this.isDestroyed = false;
+        this.isDestroyed = true;
 
         // Unblock the assignment.
         if (this.assign) {
