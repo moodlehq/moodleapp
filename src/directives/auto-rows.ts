@@ -22,17 +22,14 @@ import { Directive, ElementRef, HostListener, Output, EventEmitter } from '@angu
  * <textarea class="core-textarea" [(ngModel)]="message" rows="1" core-auto-rows></textarea>
  */
 @Directive({
-    selector: 'textarea[core-auto-rows]'
+    selector: 'textarea[core-auto-rows], ion-textarea[core-auto-rows]'
 })
 export class CoreAutoRowsDirective {
-    protected element: HTMLTextAreaElement;
     protected height = 0;
 
     @Output() onResize: EventEmitter<void>; // Emit when resizing the textarea.
 
-    constructor(element: ElementRef) {
-        this.element = element.nativeElement || element;
-        this.height = this.element.scrollHeight;
+    constructor(private element: ElementRef) {
         this.onResize = new EventEmitter();
     }
 
@@ -48,9 +45,9 @@ export class CoreAutoRowsDirective {
     }
 
     /**
-     * Resize after init.
+     * Resize after content.
      */
-    ngAfterViewInit(): void {
+    ngAfterViewContent(): void {
         this.resize();
     }
 
@@ -59,13 +56,19 @@ export class CoreAutoRowsDirective {
      * @param {any} $event Event fired.
      */
     protected resize($event?: any): void {
+        let nativeElement = this.element.nativeElement;
+        if (nativeElement.tagName == 'ION-TEXTAREA') {
+            // The first child of ion-textarea is the actual textarea element.
+            nativeElement = nativeElement.firstElementChild;
+        }
+
         // Set height to 1px to force scroll height to calculate correctly.
-        this.element.style.height = '1px';
-        this.element.style.height = this.element.scrollHeight + 'px';
+        nativeElement.style.height = '1px';
+        nativeElement.style.height = nativeElement.scrollHeight + 'px';
 
         // Emit event when resizing.
-        if (this.height != this.element.scrollHeight) {
-            this.height = this.element.scrollHeight;
+        if (this.height != nativeElement.scrollHeight) {
+            this.height = nativeElement.scrollHeight;
             this.onResize.emit();
         }
     }
