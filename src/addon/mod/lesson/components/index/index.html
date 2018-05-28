@@ -21,7 +21,7 @@
 
                 <!-- Prevent access messages. Only show the first one. -->
                 <div class="core-info-card" icon-start *ngIf="lesson && preventMessages && preventMessages.length">
-                    <ion-icon name="information"></ion-icon>
+                    <ion-icon name="information-circle"></ion-icon>
                     <core-format-text [component]="component" [componentId]="componentId" [text]="preventMessages[0].message"></core-format-text>
                 </div>
 

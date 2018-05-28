@@ -13,7 +13,7 @@
     <core-loading [hideUntil]="loaded">
         <!-- Info messages. Only show the first one. -->
         <div class="core-info-card" icon-start *ngIf="lesson && messages && messages.length">
-            <ion-icon name="information"></ion-icon>
+            <ion-icon name="information-circle"></ion-icon>
             <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="messages[0].message"></core-format-text>
         </div>
 
@@ -56,9 +56,7 @@
                         <!-- Essay. -->
                         <ng-container *ngSwitchCase="'essay'">
                             <ion-item *ngIf="question.textarea">
-                                <core-rich-text-editor item-content placeholder="{{ 'addon.mod_lesson.youranswer' | translate }}" [control]="question.control"></core-rich-text-editor>
-                                <!-- @todo: Attributes that were passed to RTE in Ionic 1 but now they aren't supported yet:
-                                    [component]="component" [componentId]="lesson.coursemodule"  -->
+                                <core-rich-text-editor item-content placeholder="{{ 'addon.mod_lesson.youranswer' | translate }}" [control]="question.control" [component]="component" [componentId]="lesson.coursemodule"></core-rich-text-editor>
                             </ion-item>
                             <ion-item text-wrap *ngIf="!question.textarea && question.useranswer">
                                 <p class="item-heading">{{ 'addon.mod_lesson.youranswer' | translate }}</p>
@@ -116,21 +114,19 @@
 
             <!-- Page buttons and progress. -->
             <ion-list *ngIf="!eolData && !processData">
-                <ion-item text-wrap *ngIf="pageButtons && pageButtons.length">
-                    <ion-grid>
-                        <ion-row>
-                            <ion-col *ngFor="let button of pageButtons">
-                                <a ion-button block color="light" text-wrap [id]="button.id" (click)="buttonClicked(button.data)">{{ button.content }}</a>
-                            </ion-col>
-                        </ion-row>
-                    </ion-grid>
-                </ion-item>
+                <ion-grid text-wrap *ngIf="pageButtons && pageButtons.length" class="addon-mod_lesson-pagebuttons">
+                    <ion-row align-items-center>
+                        <ion-col *ngFor="let button of pageButtons" col-12 col-md-6 col-lg-3 col-xl>
+                            <a ion-button block outline text-wrap [id]="button.id" (click)="buttonClicked(button.data)">{{ button.content }}</a>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
                 <ion-item text-wrap *ngIf="lesson && lesson.progressbar && !canManage && pageData">
                     <p>{{ 'addon.mod_lesson.progresscompleted' | translate:{$a: pageData.progress} }}</p>
                     <core-progress-bar [progress]="pageData.progress"></core-progress-bar>
                 </ion-item>
                 <div class="core-info-card" icon-start *ngIf="lesson && lesson.progressbar && canManage">
-                    <ion-icon name="information"></ion-icon>
+                    <ion-icon name="information-circle"></ion-icon>
                     {{ 'addon.mod_lesson.progressbarteacherwarning2' | translate }}
                 </div>
             </ion-list>
