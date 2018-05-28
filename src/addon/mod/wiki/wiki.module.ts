@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { CoreCronDelegate } from '@providers/cron';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
+import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { AddonModWikiComponentsModule } from './components/components.module';
 import { AddonModWikiProvider } from './providers/wiki';
 import { AddonModWikiOfflineProvider } from './providers/wiki-offline';
@@ -23,6 +24,10 @@ import { AddonModWikiSyncProvider } from './providers/wiki-sync';
 import { AddonModWikiModuleHandler } from './providers/module-handler';
 import { AddonModWikiPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModWikiSyncCronHandler } from './providers/sync-cron-handler';
+import { AddonModWikiIndexLinkHandler } from './providers/index-link-handler';
+import { AddonModWikiPageOrMapLinkHandler } from './providers/page-or-map-link-handler';
+import { AddonModWikiCreateLinkHandler } from './providers/create-link-handler';
+import { AddonModWikiEditLinkHandler } from './providers/edit-link-handler';
 
 @NgModule({
     declarations: [
@@ -36,16 +41,26 @@ import { AddonModWikiSyncCronHandler } from './providers/sync-cron-handler';
         AddonModWikiSyncProvider,
         AddonModWikiModuleHandler,
         AddonModWikiPrefetchHandler,
-        AddonModWikiSyncCronHandler
+        AddonModWikiSyncCronHandler,
+        AddonModWikiIndexLinkHandler,
+        AddonModWikiPageOrMapLinkHandler,
+        AddonModWikiCreateLinkHandler,
+        AddonModWikiEditLinkHandler
     ]
 })
 export class AddonModWikiModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModWikiModuleHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModWikiPrefetchHandler,
-            cronDelegate: CoreCronDelegate, syncHandler: AddonModWikiSyncCronHandler, ) {
+            cronDelegate: CoreCronDelegate, syncHandler: AddonModWikiSyncCronHandler, linksDelegate: CoreContentLinksDelegate,
+            indexHandler: AddonModWikiIndexLinkHandler, pageOrMapHandler: AddonModWikiPageOrMapLinkHandler,
+            createHandler: AddonModWikiCreateLinkHandler, editHandler: AddonModWikiEditLinkHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         cronDelegate.register(syncHandler);
+        linksDelegate.registerHandler(indexHandler);
+        linksDelegate.registerHandler(pageOrMapHandler);
+        linksDelegate.registerHandler(createHandler);
+        linksDelegate.registerHandler(editHandler);
     }
 }
