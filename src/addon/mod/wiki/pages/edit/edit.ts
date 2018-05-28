@@ -25,7 +25,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { AddonModWikiProvider } from '../../providers/wiki';
 import { AddonModWikiOfflineProvider } from '../../providers/wiki-offline';
-import { AddonModWikiSyncProvider } from '../../providers/wiki-sync';
+import { AddonModWikiSyncProvider, AddonModWikiSyncSubwikiResult } from '../../providers/wiki-sync';
 
 /**
  * Page that allows adding or editing a wiki page.
@@ -182,14 +182,31 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
                 }
             });
         } else {
+            const pageTitle = this.pageForm.controls.title.value;
+
             // New page. Wait for sync to be over (if any).
             promise = this.wikiSync.waitForSync(this.blockId);
 
-            if (this.contentControl.value) {
-                // Check if there's already some offline data for this page.
-                promise = promise.then(() => {
-                    return this.wikiOffline.getNewPage(this.pageForm.controls.title.value, this.subwikiId, this.wikiId,
-                            this.userId, this.groupId);
+            if (pageTitle) {
+                // Title is set, it could be editing an offline page or creating a new page using an edit link.
+                promise = promise.then((result: AddonModWikiSyncSubwikiResult) => {
+
+                    // First of all, verify if this page was created in the current sync.
+                    if (result) {
+                        const page = result.created.find((page) => {
+                                return page.title == pageTitle;
+                            });
+
+                        if (page && page.pageId > 0) {
+                            // Page was created, now it exists in the site.
+                            this.pageId = page.pageId;
+
+                            return this.fetchWikiPageData();
+                        }
+                    }
+
+                    // Check if there's already some offline data for this page.
+                    return this.wikiOffline.getNewPage(pageTitle, this.subwikiId, this.wikiId, this.userId, this.groupId);
                 }).then((page) => {
                     // Load offline content.
                     this.contentControl.setValue(page.cachedcontent);
