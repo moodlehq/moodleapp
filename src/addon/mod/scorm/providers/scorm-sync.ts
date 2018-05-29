@@ -379,13 +379,13 @@ export class AddonModScormSyncProvider extends CoreSyncBaseProvider {
                 // We need to add the synced data to the snapshot.
                 return this.scormOfflineProvider.getScormStoredData(scormId, attempt, false, true, siteId).then((synced) => {
                     synced.forEach((entry) => {
-                        if (!data[entry.scoId]) {
-                            data[entry.scoId] = {
-                                scoid: entry.scoId,
+                        if (!data[entry.scoid]) {
+                            data[entry.scoid] = {
+                                scoid: entry.scoid,
                                 userdata: {}
                             };
                         }
-                        data[entry.scoId].userdata[entry.element] = entry.value;
+                        data[entry.scoid].userdata[entry.element] = entry.value;
                     });
 
                     return this.scormOfflineProvider.setAttemptSnapshot(scormId, attempt, data, siteId);
@@ -461,12 +461,12 @@ export class AddonModScormSyncProvider extends CoreSyncBaseProvider {
 
             // Get the IDs of all the SCORMs that have something to be synced.
             attempts.forEach((attempt) => {
-                if (ids.indexOf(attempt.scormId) == -1) {
-                    ids.push(attempt.scormId);
+                if (ids.indexOf(attempt.scormid) == -1) {
+                    ids.push(attempt.scormid);
 
                     scorms.push({
-                        id: attempt.scormId,
-                        courseId: attempt.courseId
+                        id: attempt.scormid,
+                        courseId: attempt.courseid
                     });
                 }
             });
@@ -517,11 +517,11 @@ export class AddonModScormSyncProvider extends CoreSyncBaseProvider {
             // Get data to send (only elements with dots like cmi.core.exit, in Mobile we store more data to make offline work).
             entries.forEach((entry) => {
                 if (entry.element.indexOf('.') > -1) {
-                    if (!scos[entry.scoId]) {
-                        scos[entry.scoId] = [];
+                    if (!scos[entry.scoid]) {
+                        scos[entry.scoid] = [];
                     }
 
-                    scos[entry.scoId].push({
+                    scos[entry.scoid].push({
                         element: entry.element,
                         value: entry.value
                     });

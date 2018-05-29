@@ -128,13 +128,13 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
                 return this.assignOfflineProvider.getSubmissionGrade(this.assign.id, this.userId).catch(() => {
                     // No offline data found.
                 }).then((offlineData) => {
-                    if (offlineData && offlineData.pluginData && offlineData.pluginData.assignfeedbackcomments_editor) {
+                    if (offlineData && offlineData.plugindata && offlineData.plugindata.assignfeedbackcomments_editor) {
                         // Save offline as draft.
                         this.isSent = false;
                         this.feedbackDelegate.saveFeedbackDraft(this.assign.id, this.userId, this.plugin,
-                                offlineData.pluginData.assignfeedbackcomments_editor);
+                                offlineData.plugindata.assignfeedbackcomments_editor);
 
-                        return offlineData.pluginData.assignfeedbackcomments_editor.text;
+                        return offlineData.plugindata.assignfeedbackcomments_editor.text;
                     }
 
                     // No offline data found, return online text.

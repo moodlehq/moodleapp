@@ -237,9 +237,9 @@ export class AddonModAssignSubmissionFileHandler implements AddonModAssignSubmis
         return this.assignOfflineProvider.getSubmission(assign.id, submission.userid).catch(() => {
             // No offline data found.
         }).then((offlineData) => {
-            if (offlineData && offlineData.pluginData && offlineData.pluginData.files_filemanager) {
+            if (offlineData && offlineData.plugindata && offlineData.plugindata.files_filemanager) {
                 // Has offline data, return the number of files.
-                return offlineData.pluginData.files_filemanager.offline + offlineData.pluginData.files_filemanager.online.length;
+                return offlineData.plugindata.files_filemanager.offline + offlineData.plugindata.files_filemanager.online.length;
             }
 
             // No offline data, return the number of online files.
@@ -333,7 +333,7 @@ export class AddonModAssignSubmissionFileHandler implements AddonModAssignSubmis
     prepareSyncData(assign: any, submission: any, plugin: any, offlineData: any, pluginData: any, siteId?: string)
             : void | Promise<any> {
 
-        const filesData = offlineData && offlineData.pluginData && offlineData.pluginData.files_filemanager;
+        const filesData = offlineData && offlineData.plugindata && offlineData.plugindata.files_filemanager;
         if (filesData) {
             // Has some data to sync.
             let files = filesData.online || [],

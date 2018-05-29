@@ -128,8 +128,8 @@ export class AddonModAssignFeedbackCommentsHandler implements AddonModAssignFeed
         return this.assignOfflineProvider.getSubmissionGrade(assign.id, userId).catch(() => {
             // No offline data found.
         }).then((data) => {
-            if (data && data.pluginData && data.pluginData.assignfeedbackcomments_editor) {
-                return data.pluginData.assignfeedbackcomments_editor.text;
+            if (data && data.plugindata && data.plugindata.assignfeedbackcomments_editor) {
+                return data.plugindata.assignfeedbackcomments_editor.text;
             }
 
             // No offline data found, get text from plugin.

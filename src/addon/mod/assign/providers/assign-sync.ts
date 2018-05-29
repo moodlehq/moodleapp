@@ -213,7 +213,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
                 return Promise.reject(null);
             }
 
-            courseId = submissions.length > 0 ? submissions[0].courseId : grades[0].courseId;
+            courseId = submissions.length > 0 ? submissions[0].courseid : grades[0].courseid;
 
             return this.assignProvider.getAssignmentById(courseId, assignId, siteId).then((assignData) => {
                 assign = assignData;
@@ -264,7 +264,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
      * @return {Promise<any>} Promise resolved if success, rejected otherwise.
      */
     protected syncSubmission(assign: any, offlineData: any, warnings: string[], siteId?: string): Promise<any> {
-        const userId = offlineData.userId,
+        const userId = offlineData.userid,
             pluginData = {};
         let discardError,
             submission;
@@ -274,7 +274,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
 
             submission = this.assignProvider.getSubmissionObjectFromAttempt(assign, status.lastattempt);
 
-            if (submission.timemodified != offlineData.onlineTimemodified) {
+            if (submission.timemodified != offlineData.onlinetimemodified) {
                 // The submission was modified in Moodle, discard the submission.
                 discardError = this.translate.instant('addon.mod_assign.warningsubmissionmodified');
 
@@ -300,7 +300,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
                 return promise.then(() => {
                     if (assign.submissiondrafts && offlineData.submitted) {
                         // The user submitted the assign manually. Submit it for grading.
-                        return this.assignProvider.submitForGradingOnline(assign.id, offlineData.submissionStatement, siteId);
+                        return this.assignProvider.submitForGradingOnline(assign.id, offlineData.submissionstatement, siteId);
                     }
                 }).then(() => {
                     // Submission data sent, update cached data. No need to block the user for this.
@@ -355,7 +355,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
     protected syncSubmissionGrade(assign: any, offlineData: any, warnings: string[], courseId: number, siteId?: string)
             : Promise<any> {
 
-        const userId = offlineData.userId;
+        const userId = offlineData.userid;
         let discardError;
 
         return this.assignProvider.getSubmissionStatus(assign.id, userId, false, true, true, siteId).then((status) => {
@@ -394,9 +394,9 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
                 });
             }).then(() => {
                 // Now submit the grade.
-                return this.assignProvider.submitGradingFormOnline(assign.id, userId, offlineData.grade, offlineData.attemptNumber,
-                        offlineData.addAttempt, offlineData.workflowState, offlineData.applyToAll, offlineData.outcomes,
-                        offlineData.pluginData, siteId).then(() => {
+                return this.assignProvider.submitGradingFormOnline(assign.id, userId, offlineData.grade, offlineData.attemptnumber,
+                        offlineData.addattempt, offlineData.workflowstate, offlineData.applytoall, offlineData.outcomes,
+                        offlineData.plugindata, siteId).then(() => {
 
                     // Grades sent, update cached data. No need to block the user for this.
                     this.assignProvider.getSubmissionStatus(assign.id, userId, false, true, true, siteId);
