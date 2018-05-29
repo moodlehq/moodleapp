@@ -125,7 +125,7 @@ export class FileTransferObjectMock extends FileTransferObject {
             };
 
             xhr.onerror = (err): void => {
-                reject(new FileTransferError(-1, source, target, xhr.status, xhr.statusText));
+                reject(new FileTransferErrorMock(-1, source, target, xhr.status, xhr.statusText, null));
             };
 
             xhr.onload = (): void => {
@@ -306,7 +306,7 @@ export class FileTransferObjectMock extends FileTransferObject {
                 this.reject = reject;
 
                 xhr.onerror = (): void => {
-                    reject(new FileTransferError(-1, fileUrl, url, xhr.status, xhr.statusText));
+                    reject(new FileTransferErrorMock(-1, fileUrl, url, xhr.status, xhr.statusText, null));
                 };
 
                 xhr.onload = (): void => {
