@@ -12,9 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterContentInit, OnDestroy } from '@angular/core';
-import { TextInput } from 'ionic-angular';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterContentInit, OnDestroy, Optional }
+    from '@angular/core';
+import { TextInput, Content } from 'ionic-angular';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { FormControl } from '@angular/forms';
 import { Keyboard } from '@ionic-native/keyboard';
 import { Subscription } from 'rxjs';
@@ -39,25 +43,32 @@ import { Subscription } from 'rxjs';
 })
 export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy {
     // Based on: https://github.com/judgewest2000/Ionic3RichText/
-    // @todo: Resize, images, anchor button, fullscreen...
+    // @todo: Anchor button, fullscreen...
 
     @Input() placeholder = ''; // Placeholder to set in textarea.
     @Input() control: FormControl; // Form control.
     @Input() name = 'core-rich-text-editor'; // Name to set to the textarea.
+    @Input() component?: string; // The component to link the files to.
+    @Input() componentId?: number; // An ID to use in conjunction with the component.
     @Output() contentChanged: EventEmitter<string>;
 
     @ViewChild('editor') editor: ElementRef; // WYSIWYG editor.
     @ViewChild('textarea') textarea: TextInput; // Textarea editor.
     @ViewChild('decorate') decorate: ElementRef; // Buttons.
 
-    rteEnabled = false;
-    uniqueId = `rte{Math.floor(Math.random() * 1000000)}`;
-    editorElement: HTMLDivElement;
+    protected element: HTMLDivElement;
+    protected editorElement: HTMLDivElement;
+    protected resizeFunction;
 
     protected valueChangeSubscription: Subscription;
 
-    constructor(private domUtils: CoreDomUtilsProvider, private keyboard: Keyboard) {
+    rteEnabled = false;
+
+    constructor(private domUtils: CoreDomUtilsProvider, private keyboard: Keyboard, private urlUtils: CoreUrlUtilsProvider,
+            private sitesProvider: CoreSitesProvider, private filepoolProvider: CoreFilepoolProvider,
+            @Optional() private content: Content, elementRef: ElementRef) {
         this.contentChanged = new EventEmitter<string>();
+        this.element = elementRef.nativeElement as HTMLDivElement;
     }
 
     /**
@@ -104,6 +115,58 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
                 }
             }
         }
+
+        this.treatExternalContent();
+
+        this.resizeFunction = this.maximizeEditorSize.bind(this);
+        window.addEventListener('resize', this.resizeFunction);
+        setTimeout(this.resizeFunction, 1000);
+    }
+
+    /**
+     * Resize editor to maximize the space occupied.
+     */
+    protected maximizeEditorSize(): void {
+        this.content.resize();
+        const contentVisibleHeight = this.content.contentHeight;
+
+        // Editor is ready, adjust Height if needed.
+        if (contentVisibleHeight > 0) {
+            const height = this.getSurroundingHeight(this.element);
+            if (contentVisibleHeight > height) {
+                this.element.style.height = this.domUtils.formatPixelsSize(contentVisibleHeight - height);
+            } else {
+                this.element.style.height = '';
+            }
+        }
+    }
+
+    /**
+     * Get the height of the surrounding elements from the current to the top element.
+     *
+     * @param  {any} element Directive DOM element to get surroundings elements from.
+     * @return {number}      Surrounding height in px.
+     */
+    protected getSurroundingHeight(element: any): number {
+        let height = 0;
+
+        while (element.parentNode && element.parentNode.tagName != 'ION-CONTENT') {
+            const parent = element.parentNode;
+            if (element.tagName && element.tagName != 'CORE-LOADING') {
+                parent.childNodes.forEach((child) => {
+                    if (child.tagName && child != element) {
+                        height += this.domUtils.getElementHeight(child, false, true, true);
+                    }
+                });
+            }
+            element = parent;
+        }
+
+        const cs = getComputedStyle(element);
+        height += this.domUtils.getComputedStyleMeasure(cs, 'paddingTop') +
+            this.domUtils.getComputedStyleMeasure(cs, 'paddingBottom');
+
+        return height;
     }
 
     /**
@@ -172,6 +235,30 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     }
 
     /**
+     * Treat elements that can contain external content.
+     * We only search for images because the editor should receive unfiltered text, so the multimedia filter won't be applied.
+     * Treating videos and audios in here is complex, so if a user manually adds one he won't be able to play it in the editor.
+     */
+    protected treatExternalContent(): void {
+        const elements = Array.from(this.editorElement.querySelectorAll('img')),
+            siteId = this.sitesProvider.getCurrentSiteId(),
+            canDownloadFiles = this.sitesProvider.getCurrentSite().canDownloadFiles();
+        elements.forEach((el) => {
+            const url = el.src;
+
+            if (!url || !this.urlUtils.isDownloadableUrl(url) || (!canDownloadFiles && this.urlUtils.isPluginFileUrl(url))) {
+                // Nothing to treat.
+                return;
+            }
+
+            // Check if it's downloaded.
+            return this.filepoolProvider.getSrcByUrl(siteId, url, this.component, this.componentId).then((finalUrl) => {
+                el.setAttribute('src', finalUrl);
+            });
+        });
+    }
+
+    /**
      * Check if text is empty.
      * @param {string} value text
      */
@@ -215,5 +302,6 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
      */
     ngOnDestroy(): void {
         this.valueChangeSubscription && this.valueChangeSubscription.unsubscribe();
+        window.removeEventListener('resize', this.resizeFunction);
     }
 }

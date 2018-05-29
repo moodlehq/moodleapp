@@ -19,6 +19,5 @@
 
 <!-- Edit -->
 <ion-item text-wrap *ngIf="edit && loaded">
-    <!-- @todo: [component]="component" [componentId]="assign.cmid" -->
-    <core-rich-text-editor item-content [control]="control" [placeholder]="plugin.name" name="assignfeedbackcomments_editor"></core-rich-text-editor>
+    <core-rich-text-editor item-content [control]="control" [placeholder]="plugin.name" name="assignfeedbackcomments_editor" [component]="component" [componentId]="assign.cmid"></core-rich-text-editor>
 </ion-item>

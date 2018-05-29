@@ -15,7 +15,6 @@
         <p>{{ 'core.numwords' | translate: {'$a': words + ' / ' + configs.wordlimit} }}</p>
     </ion-item>
     <ion-item text-wrap>
-        <!-- @todo: [component]="component" [componentId]="assign.cmid" -->
-        <core-rich-text-editor item-content [control]="control" [placeholder]="plugin.name" name="onlinetext_editor_text" (contentChanged)="onChange($event)"></core-rich-text-editor>
+        <core-rich-text-editor item-content [control]="control" [placeholder]="plugin.name" name="onlinetext_editor_text" (contentChanged)="onChange($event)" [component]="component" [componentId]="assign.cmid"></core-rich-text-editor>
     </ion-item>
 </div>

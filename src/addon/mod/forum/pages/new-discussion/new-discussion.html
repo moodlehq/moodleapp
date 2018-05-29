@@ -19,9 +19,7 @@
             </ion-item>
             <ion-item>
                 <ion-label stacked>{{ 'addon.mod_forum.message' | translate }}</ion-label>
-                <core-rich-text-editor item-content [control]="messageControl" (contentChanged)="onMessageChange($event)" [placeholder]="'addon.mod_forum.message' | translate" name="addon_mod_forum_new_discussion"></core-rich-text-editor>
-                <!-- @todo: Attributes that were passed to RTE in Ionic 1 but now they aren't supported yet:
-                    [component]="component" [componentId]="forum.cmid" -->
+                <core-rich-text-editor item-content [control]="messageControl" (contentChanged)="onMessageChange($event)" [placeholder]="'addon.mod_forum.message' | translate" name="addon_mod_forum_new_discussion" [component]="component" [componentId]="forum.cmid"></core-rich-text-editor>
             </ion-item>
             <ion-item *ngIf="showGroups">
                 <ion-label id="addon-mod-forum-groupslabel">{{ 'addon.mod_forum.group' | translate }}</ion-label>
