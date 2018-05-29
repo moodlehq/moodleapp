@@ -60,7 +60,7 @@ export class CoreCourseDownloadModuleMainFileDirective implements OnInit {
 
             if (this.module) {
                 // We already have the module.
-                promise = Promise.resolve(module);
+                promise = Promise.resolve(this.module);
             } else {
                 // Try to get the module from cache.
                 this.moduleId = typeof this.moduleId == 'string' ? parseInt(this.moduleId, 10) : this.moduleId;
