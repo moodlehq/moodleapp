@@ -229,7 +229,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
                 this.fetchArguments = [this.glossary.id, 'ALL', 'LASTNAME', 'ASC'];
                 this.getDivider = (entry: any): string => entry.userfullname;
                 this.showDivider = (entry: any, previous?: any): boolean => {
-                    return previous === 'undefined' || entry.userid != previous.userid;
+                    return  typeof previous === 'undefined' || entry.userid != previous.userid;
                 };
                 break;
             case 'cat_all':

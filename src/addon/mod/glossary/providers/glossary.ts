@@ -609,7 +609,7 @@ export class AddonModGlossaryProvider {
 
     /**
      * Invalidate the prefetched content for a given glossary, except files.
-     * To invalidate files, use $mmaModGlossary#invalidateFiles.
+     * To invalidate files, use AddonModGlossaryProvider#invalidateFiles.
      *
      * @param  {any}     glossary          The glossary object.
      * @param  {boolean} [onlyEntriesList] If true, entries won't be invalidated.
@@ -705,7 +705,8 @@ export class AddonModGlossaryProvider {
      * @param  {string}  definition        Glossary entry concept definition.
      * @param  {number}  courseId          Course ID of the glossary.
      * @param  {any}     [options]         Array of options for the entry.
-     * @param  {any}     [attach]          Attachments ID if sending online, result of $mmFileUploader#storeFilesToUpload otherwise.
+     * @param  {any}     [attach]          Attachments ID if sending online, result of CoreFileUploaderProvider#storeFilesToUpload
+     *                                     otherwise.
      * @param  {number}  [timeCreated]     The time the entry was created. If not defined, current time.
      * @param  {string}  [siteId]          Site ID. If not defined, current site.
      * @param  {any}     [discardEntry]    The entry provided will be discarded if found.

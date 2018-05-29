@@ -49,7 +49,7 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
             textUtils: CoreTextUtilsProvider,
             private uploaderProvider: CoreFileUploaderProvider,
             private utils: CoreUtilsProvider,
-            private glossaruProvider: AddonModGlossaryProvider,
+            private glossaryProvider: AddonModGlossaryProvider,
             private glossaryHelper: AddonModGlossaryHelperProvider,
             private glossaryOffline: AddonModGlossaryOfflineProvider) {
 
@@ -181,7 +181,7 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
                 // First of all upload the attachments (if any).
                 promise = this.uploadAttachments(glossaryId, data, siteId).then((itemId) => {
                     // Now try to add the entry.
-                    return this.glossaruProvider.addEntryOnline(
+                    return this.glossaryProvider.addEntryOnline(
                             glossaryId, data.concept, data.definition, data.options, itemId, siteId);
                 });
 
@@ -213,8 +213,8 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
         }).then(() => {
             if (result.updated && courseId) {
                 // Data has been sent to server. Now invalidate the WS calls.
-                return this.glossaruProvider.getGlossaryById(courseId, glossaryId).then((glossary) => {
-                    return this.glossaruProvider.invalidateGlossaryEntries(glossary, true);
+                return this.glossaryProvider.getGlossaryById(courseId, glossaryId).then((glossary) => {
+                    return this.glossaryProvider.invalidateGlossaryEntries(glossary, true);
                 }).catch(() => {
                     // Ignore errors.
                 });

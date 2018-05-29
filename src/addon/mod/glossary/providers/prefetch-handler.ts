@@ -16,7 +16,6 @@ import { Injectable, Injector } from '@angular/core';
 import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModGlossaryProvider } from './glossary';
-import { CoreConstants } from '@core/constants';
 
 /**
  * Handler to prefetch forums.
@@ -32,25 +31,6 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseModulePrefetchHan
             private userProvider: CoreUserProvider,
             private glossaryProvider: AddonModGlossaryProvider) {
         super(injector);
-    }
-
-    /**
-     * Return the status to show based on current status. E.g. a module might want to show outdated instead of downloaded.
-     * If not implemented, the original status will be returned.
-     *
-     * @param {any} module Module.
-     * @param {string} status The current status.
-     * @param {boolean} canCheck Whether the site allows checking for updates.
-     * @return {string} Status to display.
-     */
-    determineStatus(module: any, status: string, canCheck: boolean): string {
-        if (!canCheck && status === CoreConstants.DOWNLOADED) {
-            /* Glossary are always marked as outdated if updates cannot be checked because we can't tell if there's something
-               new without having to call all the WebServices. */
-            return CoreConstants.OUTDATED;
-        } else {
-            return status;
-        }
     }
 
     /**

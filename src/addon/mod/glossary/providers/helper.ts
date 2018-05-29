@@ -39,7 +39,7 @@ export class AddonModGlossaryHelperProvider {
      */
     deleteStoredFiles(glossaryId: number, entryName: string, timeCreated: number, siteId?: string): Promise<any> {
         return this.glossaryOffline.getEntryFolder(glossaryId, entryName, timeCreated, siteId).then((folderPath) => {
-            this.fileProvider.removeDir(folderPath).catch(() => {
+            return this.fileProvider.removeDir(folderPath).catch(() => {
                 // Ignore any errors, CoreFileProvider.removeDir fails if folder doesn't exists.
             });
         });
