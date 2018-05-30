@@ -813,7 +813,9 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         });
 
         popover.onDidDismiss((subwiki) => {
-            this.goToSubwiki(subwiki.id, subwiki.userid, subwiki.groupid, subwiki.canedit);
+            if (subwiki) {
+                this.goToSubwiki(subwiki.id, subwiki.userid, subwiki.groupid, subwiki.canedit);
+            }
         });
 
         popover.present({
