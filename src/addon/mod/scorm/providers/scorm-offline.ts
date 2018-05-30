@@ -358,7 +358,7 @@ export class AddonModScormOfflineProvider {
         }).then((entry) => {
             entry.snapshot = this.textUtils.parseJSON(entry.snapshot);
 
-            return entry;;
+            return entry;
         });
     }
 

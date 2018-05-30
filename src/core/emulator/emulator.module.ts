@@ -159,10 +159,11 @@ export const IONIC_NATIVE_PROVIDERS = [
         Keyboard,
         {
             provide: LocalNotifications,
-            deps: [CoreAppProvider, CoreUtilsProvider],
-            useFactory: (appProvider: CoreAppProvider, utils: CoreUtilsProvider): LocalNotifications => {
+            deps: [CoreAppProvider, CoreUtilsProvider, CoreTextUtilsProvider],
+            useFactory: (appProvider: CoreAppProvider, utils: CoreUtilsProvider, txtUtils: CoreTextUtilsProvider)
+                    : LocalNotifications => {
                 // Use platform instead of CoreAppProvider to prevent circular dependencies.
-                return appProvider.isMobile() ? new LocalNotifications() : new LocalNotificationsMock(appProvider, utils);
+                return appProvider.isMobile() ? new LocalNotifications() : new LocalNotificationsMock(appProvider, utils, txtUtils);
             }
         },
         {
