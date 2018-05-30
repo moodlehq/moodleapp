@@ -56,7 +56,7 @@ export class CoreSettingsGeneralPage {
         this.rteSupported = this.domUtils.isRichTextEditorSupported();
         if (this.rteSupported) {
             this.configProvider.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true).then((richTextEditorEnabled) => {
-                this.richTextEditor = richTextEditorEnabled;
+                this.richTextEditor = !!richTextEditorEnabled;
             });
         }
 
@@ -81,7 +81,7 @@ export class CoreSettingsGeneralPage {
      * Called when the rich text editor is enabled or disabled.
      */
     richTextEditorChanged(): void {
-        this.configProvider.set(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, this.richTextEditor);
+        this.configProvider.set(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, this.richTextEditor ? 1 : 0);
     }
 
     /**

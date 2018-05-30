@@ -548,7 +548,9 @@ export class CoreDomUtilsProvider {
      */
     isRichTextEditorEnabled(): Promise<boolean> {
         if (this.isRichTextEditorSupported()) {
-            return this.configProvider.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true);
+            return this.configProvider.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true).then((enabled) => {
+                return !!enabled;
+            });
         }
 
         return Promise.resolve(false);
