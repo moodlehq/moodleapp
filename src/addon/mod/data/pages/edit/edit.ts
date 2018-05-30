@@ -154,6 +154,7 @@ export class AddonModDataEditPage {
 
             return this.dataProvider.getFields(this.data.id);
         }).then((fieldsData) => {
+            this.fieldsArray = fieldsData;
             this.fields = this.utils.arrayToObject(fieldsData, 'id');
 
             return this.dataHelper.getEntry(this.data, this.entryId, this.offlineActions);
