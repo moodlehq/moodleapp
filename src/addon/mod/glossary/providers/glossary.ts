@@ -812,7 +812,7 @@ export class AddonModGlossaryProvider {
                     return response.entryid;
                 }
 
-                return this.utils.createFakeWSError('');
+                return Promise.reject(this.utils.createFakeWSError(''));
             });
         });
     }

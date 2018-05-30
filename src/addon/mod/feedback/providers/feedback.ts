@@ -1189,7 +1189,7 @@ export class AddonModFeedbackProvider {
                 };
 
             return site.write('mod_feedback_process_page', params).catch((error) => {
-                return this.utils.createFakeWSError(error);
+                return Promise.reject(this.utils.createFakeWSError(error));
             }).then((response) => {
                 // Invalidate and update current values because they will change.
                 return this.invalidateCurrentValuesData(feedbackId, site.getId()).then(() => {

@@ -1033,7 +1033,7 @@ export class AddonMessagesProvider {
         return this.sendMessagesOnline(messages, siteId).then((response) => {
             if (response && response[0] && response[0].msgid === -1) {
                 // There was an error, and it should be translated already.
-                return this.utils.createFakeWSError(response[0].errormessage);
+                return Promise.reject(this.utils.createFakeWSError(response[0].errormessage));
             }
 
             return this.invalidateDiscussionCache(toUserId, siteId).catch(() => {
