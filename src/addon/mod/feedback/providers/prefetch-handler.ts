@@ -124,9 +124,9 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseModulePrefetchHan
     /**
      * Get the list of downloadable files.
      *
-     * @param  {any} module    Module to get the files.
+     * @param  {any} module       Module to get the files.
      * @param  {number} courseId  Course ID the module belongs to.
-     * @param  {string} [siteId]  Site ID. If not defined, current site.
+     * @param  {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
      * @return {Promise<any>}     Promise resolved with the list of files.
      */
     getFiles(module: any, courseId: number, single?: boolean): Promise<any[]> {

@@ -14,10 +14,11 @@
 
 import {
     Component, Input, OnInit, OnChanges, OnDestroy, ViewContainerRef, ViewChild, ComponentRef, SimpleChange, ChangeDetectorRef,
-    ElementRef, Optional, Output, EventEmitter
+    ElementRef, Optional, Output, EventEmitter, DoCheck, KeyValueDiffers
 } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreCompileProvider } from '../../providers/compile';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 
 /**
  * This component has a behaviour similar to $compile for AngularJS. Given an HTML code, it will compile it so all its
@@ -38,21 +39,42 @@ import { CoreCompileProvider } from '../../providers/compile';
     selector: 'core-compile-html',
     template: '<ng-container #dynamicComponent></ng-container>'
 })
-export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
+export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     @Input() text: string; // The HTML text to display.
     @Input() javascript: string; // The Javascript to execute in the component.
     @Input() jsData: any; // Data to pass to the fake component.
+    @Input() extraImports: any[] = []; // Extra import modules.
+    @Input() extraProviders: any[] = []; // Extra providers.
     @Output() created: EventEmitter<any> = new EventEmitter(); // Will emit an event when the component is instantiated.
 
     // Get the container where to put the content.
     @ViewChild('dynamicComponent', { read: ViewContainerRef }) container: ViewContainerRef;
 
     protected componentRef: ComponentRef<any>;
+    protected componentInstance: any;
     protected element;
+    protected differ: any; // To detect changes in the jsData input.
 
     constructor(protected compileProvider: CoreCompileProvider, protected cdr: ChangeDetectorRef, element: ElementRef,
-            @Optional() protected navCtrl: NavController) {
+            @Optional() protected navCtrl: NavController, differs: KeyValueDiffers, protected domUtils: CoreDomUtilsProvider) {
         this.element = element.nativeElement;
+        this.differ = differs.find([]).create();
+    }
+
+    /**
+     * Detect and act upon changes that Angular can’t or won’t detect on its own (objects and arrays).
+     */
+    ngDoCheck(): void {
+        if (this.componentInstance) {
+            // Check if there's any change in the jsData object.
+            const changes = this.differ.diff(this.jsData);
+            if (changes) {
+                this.setInputData();
+                if (this.componentInstance.ngOnChanges) {
+                    this.componentInstance.ngOnChanges(this.domUtils.createChangesFromKeyValueDiff(changes));
+                }
+            }
+        }
     }
 
     /**
@@ -61,7 +83,8 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if ((changes.text || changes.javascript) && this.text) {
             // Create a new component and a new module.
-            this.compileProvider.createAndCompileComponent(this.text, this.getComponentClass()).then((factory) => {
+            this.compileProvider.createAndCompileComponent(this.text, this.getComponentClass(), this.extraImports)
+                    .then((factory) => {
                 // Destroy previous components.
                 this.componentRef && this.componentRef.destroy();
 
@@ -93,9 +116,12 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
         // Create the component, using the text as the template.
         return class CoreCompileHtmlFakeComponent implements OnInit {
             constructor() {
+                // Store this instance so it can be accessed by the outer component.
+                compileInstance.componentInstance = this;
+
                 // If there is some javascript to run, prepare the instance.
                 if (compileInstance.javascript) {
-                    compileInstance.compileProvider.injectLibraries(this);
+                    compileInstance.compileProvider.injectLibraries(this, compileInstance.extraProviders);
                 }
 
                 // Always add these elements, they could be needed on component init (componentObservable).
@@ -104,9 +130,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
                 this['componentContainer'] = compileInstance.element;
 
                 // Add the data passed to the component.
-                for (const name in compileInstance.jsData) {
-                    this[name] = compileInstance.jsData[name];
-                }
+                compileInstance.setInputData();
             }
 
             ngOnInit(): void {
@@ -116,5 +140,16 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
                 }
             }
         };
+    }
+
+    /**
+     * Set the JS data as input data of the component instance.
+     */
+    protected setInputData(): void {
+        if (this.componentInstance) {
+            for (const name in this.jsData) {
+                this.componentInstance[name] = this.jsData[name];
+            }
+        }
     }
 }

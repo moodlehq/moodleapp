@@ -1,0 +1,10 @@
+<span *ngIf="!isShowOrListMode()" [formGroup]="form">
+    <span *ngIf="mode == 'edit'" [core-mark-required]="field.required" class="core-mark-required"></span>
+    <ion-select [formControlName]="'f_'+field.id" [placeholder]="'addon.mod_data.menuchoose' | translate" [selectOptions]="{title: field.name}" interface="popover">
+        <ion-option value="">{{ 'addon.mod_data.menuchoose' | translate }}</ion-option>
+        <ion-option *ngFor="let option of options" [value]="option">{{option}}</ion-option>
+    </ion-select>
+    <core-input-errors *ngIf="error && mode == 'edit'" [control]="form.controls['f_'+field.id]" [errorText]="error"></core-input-errors>
+</span>
+
+<core-format-text *ngIf="isShowOrListMode() && value && value.content" [text]="value.content"></core-format-text>

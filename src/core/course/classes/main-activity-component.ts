@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injector } from '@angular/core';
+import { Injector, Input } from '@angular/core';
 import { Content } from 'ionic-angular';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseProvider } from '@core/course/providers/course';
@@ -26,6 +26,8 @@ import { CoreCourseModuleMainResourceComponent } from './main-resource-component
  * Template class to easily create CoreCourseModuleMainComponent of activities.
  */
 export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainResourceComponent {
+    @Input() group?: number; // Group ID the component belongs to.
+
     moduleName: string; // Raw module name to be translated. It will be translated on init.
 
     // Data for context menu.

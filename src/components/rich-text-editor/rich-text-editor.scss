@@ -38,6 +38,28 @@ core-rich-text-editor {
             color: $gray-light;
             font-weight: bold;
         }
+
+        ul {
+            list-style-type: disc;
+        }
+        ol {
+            list-style-type: decimal;
+        }
+        ul, ol {
+            -webkit-padding-start: 15px;
+            list-style-position: inside;
+
+            ul {
+                list-style-type: circle;
+            }
+            ol {
+                list-style-type: lower-latin;
+            }
+            ul, ol {
+                list-style-position: inside;
+                margin-left: 15px;
+            }
+        }
     }
 
     .core-textarea textarea {

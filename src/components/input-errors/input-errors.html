@@ -1,5 +1,8 @@
-<div class="core-input-error-container" *ngIf="formControl.dirty && !formControl.valid" role="alert">
-    <ng-container *ngFor="let error of errorKeys">
-        <div *ngIf="formControl.hasError(error)" class="core-input-error">{{errorMessages[error]}}</div>
+<div class="core-input-error-container" role="alert" *ngIf="(formControl && formControl.dirty && !formControl.valid) || errorText">
+    <ng-container *ngIf="formControl && formControl.dirty && !formControl.valid">
+        <ng-container *ngFor="let error of errorKeys">
+            <div *ngIf="formControl.hasError(error)" class="core-input-error">{{errorMessages[error]}}</div>
+        </ng-container>
     </ng-container>
+    <div *ngIf="errorText" class="core-input-error">{{ errorText }}</div>
 </div>

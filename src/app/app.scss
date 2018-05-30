@@ -171,6 +171,10 @@ ion-avatar ion-img, ion-avatar img {
   font-style: italic;
 }
 
+ion-datetime {
+  position: relative;
+}
+
 /** Format Text */
 core-format-text[maxHeight], *[core-format-text][maxHeight],
 core-format-text[ng-reflect-max-height], *[core-format-text][ng-reflect-max-height] {
@@ -296,14 +300,25 @@ core-format-text, *[core-format-text] {
   }
 
   // Fix lists styles in core-format-text.
-  ul, ol {
-    -webkit-padding-start: 40px;
-  }
   ul {
-    list-style: disc;
+    list-style-type: disc;
   }
   ol {
-    list-style: decimal;
+    list-style-type: decimal;
+  }
+  ul, ol {
+    -webkit-padding-start: 15px;
+    list-style-position: inside;
+    ul {
+      list-style-type: circle;
+    }
+    ol {
+      list-style-type: lower-latin;
+    }
+    ul, ol {
+      list-style-position: inside;
+      margin-left: 15px;
+    }
   }
 
   .badge {

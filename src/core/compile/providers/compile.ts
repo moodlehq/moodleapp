@@ -112,17 +112,20 @@ export class CoreCompileProvider {
      *
      * @param {string} template The template of the component.
      * @param {any} componentClass The JS class of the component.
+     * @param {any[]} [extraImports] Extra imported modules if needed and not imported by this class.
      * @return {Promise<ComponentFactory<any>>} Promise resolved with the factory to instantiate the component.
      */
-    createAndCompileComponent(template: string, componentClass: any): Promise<ComponentFactory<any>> {
+    createAndCompileComponent(template: string, componentClass: any, extraImports: any[] = []): Promise<ComponentFactory<any>> {
         // Create the component using the template and the class.
         const component = Component({
             template: template
         })
         (componentClass);
 
+        const imports = this.IMPORTS.concat(extraImports);
+
         // Now create the module containing the component.
-        const module = NgModule({imports: this.IMPORTS, declarations: [component]})(class {});
+        const module = NgModule({imports: imports, declarations: [component]})(class {});
 
         // Compile the module and the component.
         return this.compiler.compileModuleAndAllComponentsAsync(module).then((factories) => {
@@ -166,13 +169,14 @@ export class CoreCompileProvider {
      * Inject all the core libraries in a certain object.
      *
      * @param {any} instance The instance where to inject the libraries.
+     * @param {any[]} [extraProviders] Extra imported providers if needed and not imported by this class.
      */
-    injectLibraries(instance: any): void {
+    injectLibraries(instance: any, extraProviders: any[] = []): void {
         const providers = (<any[]> CORE_PROVIDERS).concat(CORE_CONTENTLINKS_PROVIDERS).concat(CORE_COURSE_PROVIDERS)
                 .concat(CORE_COURSES_PROVIDERS).concat(CORE_FILEUPLOADER_PROVIDERS).concat(CORE_GRADES_PROVIDERS)
                 .concat(CORE_LOGIN_PROVIDERS).concat(CORE_MAINMENU_PROVIDERS).concat(CORE_SHAREDFILES_PROVIDERS)
                 .concat(CORE_SITEHOME_PROVIDERS).concat([CoreSitePluginsProvider]).concat(CORE_USER_PROVIDERS)
-                .concat(CORE_QUESTION_PROVIDERS).concat(IONIC_NATIVE_PROVIDERS).concat(this.OTHER_PROVIDERS);
+                .concat(CORE_QUESTION_PROVIDERS).concat(IONIC_NATIVE_PROVIDERS).concat(this.OTHER_PROVIDERS).concat(extraProviders);
 
         // We cannot inject anything to this constructor. Use the Injector to inject all the providers into the instance.
         for (const i in providers) {

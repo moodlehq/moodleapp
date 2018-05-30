@@ -18,6 +18,7 @@ import {
 } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreLoggerProvider } from '@providers/logger';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 
 /**
  * Component to create another component dynamically.
@@ -68,7 +69,9 @@ export class CoreDynamicComponent implements OnInit, OnChanges, DoCheck {
     protected differ: any; // To detect changes in the data input.
 
     constructor(logger: CoreLoggerProvider, protected factoryResolver: ComponentFactoryResolver, differs: KeyValueDiffers,
-            @Optional() protected navCtrl: NavController, protected cdr: ChangeDetectorRef, protected element: ElementRef) {
+            @Optional() protected navCtrl: NavController, protected cdr: ChangeDetectorRef, protected element: ElementRef,
+            protected domUtils: CoreDomUtilsProvider) {
+
         this.logger = logger.getInstance('CoreDynamicComponent');
         this.differ = differs.find([]).create();
     }
@@ -99,7 +102,7 @@ export class CoreDynamicComponent implements OnInit, OnChanges, DoCheck {
             if (changes) {
                 this.setInputData();
                 if (this.instance.ngOnChanges) {
-                    this.instance.ngOnChanges(this.createChangesForComponent(changes));
+                    this.instance.ngOnChanges(this.domUtils.createChangesFromKeyValueDiff(changes));
                 }
             }
         }
@@ -169,30 +172,5 @@ export class CoreDynamicComponent implements OnInit, OnChanges, DoCheck {
         for (const name in this.data) {
             this.instance[name] = this.data[name];
         }
-    }
-
-    /**
-     * Given the changes on the data input, create the changes object for the component.
-     *
-     * @param {any} changes Changes in the data input (detected by KeyValueDiffer).
-     * @return {{[name: string]: SimpleChange}} List of changes for the component.
-     */
-    protected createChangesForComponent(changes: any): { [name: string]: SimpleChange } {
-        const newChanges: { [name: string]: SimpleChange } = {};
-
-        // Added items are considered first change.
-        changes.forEachAddedItem((item) => {
-            newChanges[item.key] = new SimpleChange(item.previousValue, item.currentValue, true);
-        });
-
-        // Changed or removed items aren't first change.
-        changes.forEachChangedItem((item) => {
-            newChanges[item.key] = new SimpleChange(item.previousValue, item.currentValue, false);
-        });
-        changes.forEachRemovedItem((item) => {
-            newChanges[item.key] = new SimpleChange(item.previousValue, item.currentValue, true);
-        });
-
-        return newChanges;
     }
 }

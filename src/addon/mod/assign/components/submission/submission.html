@@ -153,7 +153,7 @@
                 <!-- Numeric grade. -->
                 <ion-item text-wrap *ngIf="grade.method == 'simple' && !grade.scale">
                     <ion-label stacked>{{ 'addon.mod_assign.gradeoutof' | translate: {$a: gradeInfo.grade} }}</ion-label>
-                    <ion-input type="number" [(ngModel)]="grade.grade" min="0" [max]="gradeInfo.grade" [lang]="grade.lang" core-input-errors></ion-input>
+                    <ion-input type="number" [(ngModel)]="grade.grade" min="0" [max]="gradeInfo.grade" [lang]="grade.lang"></ion-input>
                 </ion-item>
 
                 <!-- Grade using a scale. -->

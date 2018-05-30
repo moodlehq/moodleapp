@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@core/contentlinks/classes/module-index-handler';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
-import { AddonModFeedbackProvider } from './feedback';
 
 /**
  * Handler to treat links to feedback.
@@ -25,6 +24,6 @@ export class AddonModFeedbackLinkHandler extends CoreContentLinksModuleIndexHand
     name = 'AddonModFeedbackLinkHandler';
 
     constructor(courseHelper: CoreCourseHelperProvider) {
-        super(courseHelper, AddonModFeedbackProvider.COMPONENT, 'feedback');
+        super(courseHelper, 'AddonModFeedback', 'feedback');
     }
 }
