@@ -22,6 +22,12 @@ import { CoreCoursesProvider } from '@core/courses/providers/courses';
  */
 @Injectable()
 export class CoreGradesProvider {
+
+    static TYPE_NONE = 0; // Moodle's GRADE_TYPE_NONE.
+    static TYPE_VALUE = 1; // Moodle's GRADE_TYPE_VALUE.
+    static TYPE_SCALE = 2; // Moodle's GRADE_TYPE_SCALE.
+    static TYPE_TEXT = 3; // Moodle's GRADE_TYPE_TEXT.
+
     protected ROOT_CACHE_KEY = 'mmGrades:';
 
     protected logger;

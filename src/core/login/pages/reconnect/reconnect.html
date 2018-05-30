@@ -33,7 +33,7 @@
             <form [formGroup]="credForm" (ngSubmit)="login()">
                 <ion-item>
                     <core-show-password item-content [name]="'password'">
-                        <ion-input class="core-ioninput-password" name="password" type="password" placeholder="{{ 'core.login.password' | translate }}" formControlName="password" core-show-password core-auto-focus></ion-input>
+                        <ion-input class="core-ioninput-password" name="password" type="password" placeholder="{{ 'core.login.password' | translate }}" formControlName="password" core-auto-focus></ion-input>
                     </core-show-password>
                 </ion-item>
                 <ion-grid>

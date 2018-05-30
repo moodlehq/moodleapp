@@ -1,0 +1,36 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{ pageInstance.lesson.name }}</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content class="addon-mod_lesson-menu-modal">
+    <nav>
+        <ion-list>
+            <!-- Media file. -->
+            <ng-container *ngIf="pageInstance.mediaFile">
+                <ion-item-divider color="light"><h2>{{ 'addon.mod_lesson.linkedmedia' | translate }}</h2></ion-item-divider>
+                <core-file [file]="pageInstance.mediaFile" [component]="pageInstance.component" [componentId]="pageInstance.lesson.coursemodule"></core-file>
+            </ng-container>
+
+            <!-- Lesson menu. -->
+            <ng-container *ngIf="pageInstance.displayMenu">
+                <ion-item-divider color="light"><h2>{{ 'addon.mod_lesson.lessonmenu' | translate }}</h2></ion-item-divider>
+                <ion-item text-center *ngIf="pageInstance.loadingMenu">
+                    <ion-spinner></ion-spinner>
+                </ion-item>
+                <div *ngIf="!pageInstance.loadingMenu">
+                    <ng-container *ngFor="let page of pageInstance.lessonPages">
+                        <a ion-item text-wrap *ngIf="page.display && page.displayinmenublock" (click)="loadPage(page.id)" [ngClass]='{"addon-mod_lesson-selected core-white-push-arrow": !pageInstance.eolData && pageInstance.currentPage == page.id}'>
+                            <p><core-format-text [text]="page.title"></core-format-text></p>
+                        </a>
+                    </ng-container>
+                </div>
+            </ng-container>
+        </ion-list>
+    </nav>
+</ion-content>

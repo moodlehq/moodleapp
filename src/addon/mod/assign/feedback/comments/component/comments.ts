@@ -20,7 +20,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { AddonModAssignProvider } from '../../../providers/assign';
 import { AddonModAssignOfflineProvider } from '../../../providers/assign-offline';
 import { AddonModAssignFeedbackDelegate } from '../../../providers/feedback-delegate';
-import { AddonModAssignFeedbackPluginComponent } from '../../../classes/feedback-plugin-component';
+import { AddonModAssignFeedbackPluginComponentBase } from '../../../classes/feedback-plugin-component';
 import { AddonModAssignFeedbackCommentsHandler } from '../providers/handler';
 
 /**
@@ -30,7 +30,7 @@ import { AddonModAssignFeedbackCommentsHandler } from '../providers/handler';
     selector: 'addon-mod-assign-feedback-comments',
     templateUrl: 'comments.html'
 })
-export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedbackPluginComponent implements OnInit {
+export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedbackPluginComponentBase implements OnInit {
 
     control: FormControl;
     component = AddonModAssignProvider.COMPONENT;

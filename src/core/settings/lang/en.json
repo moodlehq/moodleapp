@@ -17,6 +17,7 @@
     "disableall": "Disable notifications",
     "disabled": "Disabled",
     "displayformat": "Display format",
+    "enabledownloadsection": "Enable download sections",
     "enablerichtexteditor": "Enable text editor",
     "enablerichtexteditordescription": "If enabled, a text editor will be available when entering content.",
     "enablesyncwifi": "Allow sync only when on Wi-Fi",

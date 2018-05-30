@@ -131,6 +131,10 @@ export class CoreTextUtilsProvider {
      * @return {string} Clean text.
      */
     cleanTags(text: string, singleLine?: boolean): string {
+        if (typeof text == 'number') {
+            return text;
+        }
+
         if (!text) {
             return '';
         }
