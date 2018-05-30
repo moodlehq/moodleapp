@@ -1,0 +1,42 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title *ngIf="entry"><core-format-text [text]="entry.concept"></core-format-text></ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="loaded" (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <core-loading [hideUntil]="loaded">
+        <ng-container *ngIf="entry">
+            <ion-item text-wrap *ngIf="showAuthor">
+                <ion-avatar item-start (click)="openUserProfile(post.userid)">
+                    <img [src]="entry.userpictureurl" onError="this.src='assets/img/user-avatar.png'" core-external-content [alt]="'core.pictureof' | translate:{$a: entry.userfullname}" role="presentation">
+                </ion-avatar>
+                <h2><core-format-text [text]="entry.concept"></core-format-text></h2>
+                <ion-note item-end *ngIf="showDate">{{ entry.timemodified | coreDateDayOrTime }}</ion-note>
+                <p><core-format-text [text]="entry.userfullname"></core-format-text></p>
+            </ion-item>
+            <ion-item text-wrap *ngIf="!showAuthor">
+                <h2><core-format-text [text]="entry.concept"></core-format-text></h2>
+                <ion-note item-end *ngIf="showDate">{{ entry.timemodified | coreDateDayOrTime }}</ion-note>
+            </ion-item>
+            <ion-item text-wrap>
+                <core-format-text [component]="component" [componentId]="componentId" [text]="entry.definition"></core-format-text>
+            </ion-item>
+            <ng-container *ngIf="entry.attachment">
+                <core-file *ngFor="let file of entry.attachments" [file]="file" [component]="component" [componentId]="componentId"></core-file>
+            </ng-container>
+            <ion-item text-wrap *ngIf="entry.approved != 1">
+                <p><em>{{ 'addon.mod_glossary.entrypendingapproval' | translate }}</em></p>
+            </ion-item>
+        </ng-container>
+
+        <ion-card *ngIf="!entry">
+            <ion-item class="core-error-card">
+                {{ 'addon.mod_glossary.errorloadingentry' | translate }}
+            </ion-item>
+        </ion-card>
+    </core-loading>
+</ion-content>
