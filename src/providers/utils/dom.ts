@@ -365,13 +365,16 @@ export class CoreDomUtilsProvider {
             let surround = 0;
 
             if (usePadding) {
-                surround += parseInt(computedStyle['padding' + priorSide], 10) + parseInt(computedStyle['padding' + afterSide], 10);
+                surround += this.getComputedStyleMeasure(computedStyle, 'padding' + priorSide) +
+                    this.getComputedStyleMeasure(computedStyle, 'padding' + afterSide);
             }
             if (useMargin) {
-                surround += parseInt(computedStyle['margin' + priorSide], 10) + parseInt(computedStyle['margin' + afterSide], 10);
+                surround += this.getComputedStyleMeasure(computedStyle, 'margin' + priorSide) +
+                    this.getComputedStyleMeasure(computedStyle, 'margin' + afterSide);
             }
             if (useBorder) {
-                surround += parseInt(computedStyle['border' + priorSide], 10) + parseInt(computedStyle['border' + afterSide], 10);
+                surround += this.getComputedStyleMeasure(computedStyle, 'border' + priorSide + 'Width') +
+                    this.getComputedStyleMeasure(computedStyle, 'border' + afterSide + 'Width');
             }
             if (innerMeasure) {
                 measure = measure > surround ? measure - surround : 0;
@@ -381,7 +384,17 @@ export class CoreDomUtilsProvider {
         }
 
         return measure;
+    }
 
+    /**
+     * Returns the computed style measure or 0 if not found or NaN.
+     *
+     * @param  {any}    style   Style from getComputedStyle.
+     * @param  {string} measure Measure to get.
+     * @return {number}         Result of the measure.
+     */
+    getComputedStyleMeasure(style: any, measure: string): number {
+        return parseInt(style[measure], 10) || 0;
     }
 
     /**

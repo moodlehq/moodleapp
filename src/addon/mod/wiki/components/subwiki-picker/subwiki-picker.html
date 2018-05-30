@@ -1,0 +1,11 @@
+<ion-list>
+    <ng-container *ngFor="let group of subwikis">
+        <ion-item-divider *ngIf="group.label" color="light">
+            {{ group.label }}
+        </ion-item-divider>
+        <a ion-item text-wrap *ngFor="let subwiki of group.subwikis;" (click)="openSubwiki(subwiki)" [attr.disabled]="!subwiki.canedit && subwiki.id <= 0 ? true : null" [ngClass]="{'addon-mod_wiki-subwiki-selected': isSubwikiSelected(subwiki)}" detail-none>
+            {{ subwiki.name }}
+            <ion-icon *ngIf="isSubwikiSelected(subwiki)" name="checkmark" item-end></ion-icon>
+        </a>
+    </ng-container>
+</ion-list>

@@ -1,0 +1,16 @@
+addon-mod-wiki-subwiki-picker {
+
+    .item-divider, .item-divider .label {
+        font-weight: bold;
+    }
+
+    .item.addon-mod_wiki-subwiki-selected {
+        background-color: $gray-light;
+        color: $core-color;
+
+        .icon {
+            color: $core-color;
+            font-size: 24px;
+        }
+    }
+}

@@ -3,26 +3,30 @@
     </div>
 
     <!-- https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand -->
-    <div #decorate class="formatOptions">
-        <button data-command="bold"><strong>B</strong></button>
-        <button data-command="italic"><i>I</i></button>
-        <button data-command="underline"><u>U</u></button>
-        <button data-command="formatBlock|<p>">Normal</button>
-        <button data-command="formatBlock|<h1>">H1</button>
-        <button data-command="formatBlock|<h2>">H2</button>
-        <button data-command="formatBlock|<h3>">H3</button>
-        <button data-command="formatBlock|<pre>">Pre</button>
-        <button data-command="insertOrderedList">OL</button>
-        <button data-command="insertUnorderedList">UL</button>
-        <button data-command="removeFormat">Tx</button>
-        <button (click)="toggleEditor($event)">Toggle Editor</button>
+    <div #decorate class="core-rte-toolbar">
+        <div class="core-rte-buttons">
+            <button data-command="bold"><strong>B</strong></button>
+            <button data-command="italic"><i>I</i></button>
+            <button data-command="underline"><u>U</u></button>
+            <button data-command="formatBlock|<p>">Normal</button>
+            <button data-command="formatBlock|<h1>">H1</button>
+            <button data-command="formatBlock|<h2>">H2</button>
+            <button data-command="formatBlock|<h3>">H3</button>
+            <button data-command="formatBlock|<pre>">&lt;pre&gt;</button>
+            <button data-command="insertOrderedList"><ion-icon name="list" md="ios-list"></ion-icon></button>
+            <button data-command="insertUnorderedList">1,2,3</button>
+            <button data-command="removeFormat"><ion-icon name="brush"></ion-icon></button>
+            <button (click)="toggleEditor($event)"><ion-icon name="eye-off"></ion-icon> {{ 'core.viewcode' | translate }}</button>
+        </div>
     </div>
 </div>
 
 <div [hidden]="rteEnabled">
     <ion-textarea #textarea class="core-textarea" [placeholder]="placeholder" [attr.name]="name" ngControl="control" (ionChange)="onChange($event)"></ion-textarea>
-    <div class="formatOptions">
-        <button tappable (click)="toggleEditor($event)">Toggle Editor</button>
+    <div class="core-rte-toolbar">
+        <div #decorate class="core-rte-buttons">
+            <button tappable (click)="toggleEditor($event)"><ion-icon name="eye"></ion-icon> {{ 'core.vieweditor' | translate }}</button>
+        </div>
     </div>
 </div>
 

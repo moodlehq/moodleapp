@@ -228,6 +228,8 @@
     "usernotfullysetup": "User not fully set-up",
     "users": "Users",
     "view": "View",
+    "viewcode": "View code",
+    "vieweditor": "View editor",
     "viewprofile": "View profile",
     "warningofflinedatadeleted": "Offline data of {{component}} '{{name}}' has been deleted. {{error}}",
     "whatisyourage": "What is your age?",

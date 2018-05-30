@@ -1,0 +1,51 @@
+$addon-mod-wiki-toc-level-padding:    12px !default;
+$addon-mod-wiki-newentry-link-color:  $red !default;
+$addon-mod-wiki-toc-title-color:      $gray-darker !default;
+$addon-mod-wiki-toc-border-color:     $gray-dark !default;
+$addon-mod-wiki-toc-background-color: $gray-light !default;
+
+addon-mod-wiki-index {
+    background-color: $white;
+
+    .core-tabs-content-container,
+    .addon-mod_wiki-page-content {
+        background-color: $white;
+    }
+
+    .wiki-toc {
+        border: 1px solid $addon-mod-wiki-toc-border-color;
+        background: $addon-mod-wiki-toc-background-color;
+        margin: 16px;
+        padding: 8px;
+    }
+
+    .wiki-toc-title {
+        color: $addon-mod-wiki-toc-title-color;
+        font-size: 1.1em;
+        font-variant: small-caps;
+        text-align: center;
+    }
+
+    .wiki-toc-section {
+        padding: 0;
+        margin: 2px 8px;
+    }
+
+    .wiki-toc-section-2 {
+        padding-left: $addon-mod-wiki-toc-level-padding;
+    }
+
+    .wiki-toc-section-3 {
+        padding-left: $addon-mod-wiki-toc-level-padding * 2;
+    }
+
+    .wiki_newentry {
+        color: $addon-mod-wiki-newentry-link-color;
+        font-style: italic;
+    }
+
+    /* Hide edit section links */
+    .addon-mod_wiki-noedit a.wiki_edit_section {
+        display: none;
+    }
+}

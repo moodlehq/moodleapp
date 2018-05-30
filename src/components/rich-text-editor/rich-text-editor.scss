@@ -10,7 +10,6 @@ core-rich-text-editor {
         display: flex;
         flex-direction: column;
     }
-
     .core-rte-editor, .core-textarea {
         padding: 2px;
         margin: 2px;
@@ -51,21 +50,33 @@ core-rich-text-editor {
         overflow-y: auto;
     }
 
-    div.formatOptions {
-        background: $gray-dark;
-        margin: 5px 1px 15px 1px;
+    div.core-rte-toolbar {
+        background: $gray-darker;
+        margin: 0px 1px 15px 1px;
         text-align: center;
         flex-grow: 0;
         width: 100%;
         z-index: 1;
-        button {
-            background: $gray-dark;
-            color: $white;
-            font-size: 1.1em;
-            height: 35px;
-            min-width: 30px;
-            padding-left: 1px;
-            padding-right: 1px;
+
+        .core-rte-buttons {
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-evenly;
+
+            button {
+                background: $gray-darker;
+                color: $white;
+                font-size: 1.1em;
+                height: 35px;
+                min-width: 30px;
+                padding-left: 3px;
+                padding-right: 3px;
+                border-right: 1px solid $gray-dark;
+                border-bottom: 1px solid $gray-dark;
+                flex-grow: 1;
+            }
         }
     }
 
