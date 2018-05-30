@@ -418,7 +418,7 @@ export class AddonModWorkshopOfflineProvider {
     getAllAssessments(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.getDb().getRecords(this.ASSESSMENTS_TABLE).then((records) => {
-                records.forEach(this.parseAssessnentRecord.bind(this));
+                records.forEach(this.parseAssessmentRecord.bind(this));
 
                 return records;
             });
@@ -439,7 +439,7 @@ export class AddonModWorkshopOfflineProvider {
             };
 
             return site.getDb().getRecords(this.ASSESSMENTS_TABLE, conditions).then((records) => {
-                records.forEach(this.parseAssessnentRecord.bind(this));
+                records.forEach(this.parseAssessmentRecord.bind(this));
 
                 return records;
             });
@@ -462,7 +462,7 @@ export class AddonModWorkshopOfflineProvider {
             };
 
             return site.getDb().getRecord(this.ASSESSMENTS_TABLE, conditions).then((record) => {
-                this.parseAssessnentRecord(record);
+                this.parseAssessmentRecord(record);
 
                 return record;
             });
@@ -498,7 +498,7 @@ export class AddonModWorkshopOfflineProvider {
      *
      * @param {any} record Assessnent record, modified in place.
      */
-    protected parseAssessnentRecord(record: any): void {
+    protected parseAssessmentRecord(record: any): void {
         record.inputdata = this.textUtils.parseJSON(record.inputdata);
     }
 

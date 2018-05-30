@@ -96,6 +96,7 @@ import { AddonModQuizModule } from '@addon/mod/quiz/quiz.module';
 import { AddonModScormModule } from '@addon/mod/scorm/scorm.module';
 import { AddonModUrlModule } from '@addon/mod/url/url.module';
 import { AddonModSurveyModule } from '@addon/mod/survey/survey.module';
+import { AddonModWorkshopModule } from '@addon/mod/workshop/workshop.module';
 import { AddonModImscpModule } from '@addon/mod/imscp/imscp.module';
 import { AddonModWikiModule } from '@addon/mod/wiki/wiki.module';
 import { AddonMessageOutputModule } from '@addon/messageoutput/messageoutput.module';
@@ -202,6 +203,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonModScormModule,
         AddonModUrlModule,
         AddonModSurveyModule,
+        AddonModWorkshopModule,
         AddonModImscpModule,
         AddonModWikiModule,
         AddonMessageOutputModule,

@@ -24,7 +24,7 @@ import { AddonModWorkshopOfflineProvider } from './offline';
  */
 @Injectable()
 export class AddonModWorkshopProvider {
-    static COMPONENT = 'mmaWorkshopUrl';
+    static COMPONENT = 'mmaModWorkshop';
     static PER_PAGE = 10;
     static PHASE_SETUP = 10;
     static PHASE_SUBMISSION = 20;
@@ -34,6 +34,9 @@ export class AddonModWorkshopProvider {
     static EXAMPLES_VOLUNTARY: 0;
     static EXAMPLES_BEFORE_SUBMISSION: 1;
     static EXAMPLES_BEFORE_ASSESSMENT: 2;
+
+    static SUBMISSION_CHANGED = 'addon_mod_workshop_submission_changed';
+    static ASSESSMENT_SAVED = 'addon_mod_workshop_assessment_saved';
 
     protected ROOT_CACHE_KEY = 'mmaModWorkshop:';
 
@@ -346,12 +349,7 @@ export class AddonModWorkshopProvider {
 
             return site.read('mod_workshop_get_user_plan', params, preSets).then((response) => {
                 if (response && response.userplan && response.userplan.phases) {
-                    const phases = {};
-                    response.userplan.phases.forEach((phase) => {
-                        phases[phase.code] = phase;
-                    });
-
-                    return phases;
+                    return this.utils.arrayToObject(response.userplan.phases, 'code');
                 }
 
                 return Promise.reject(null);
@@ -1295,7 +1293,7 @@ export class AddonModWorkshopProvider {
 
     /**
      * Invalidate the prefetched content except files.
-     * To invalidate files, use $mmaModWorkshop#invalidateFiles.
+     * To invalidate files, use AddonModWorkshopProvider#invalidateFiles.
      *
      * @param  {number} moduleId The module ID.
      * @param  {number} courseId Course ID.

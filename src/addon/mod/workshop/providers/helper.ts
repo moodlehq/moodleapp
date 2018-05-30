@@ -268,7 +268,7 @@ export class AddonModWorkshopHelperProvider {
     }
 
     /**
-     * Get a list of stored attachment files for a submission. See $mmaModWorkshopHelper#storeFiles.
+     * Get a list of stored attachment files for a submission. See AddonModWorkshopHelperProvider#storeFiles.
      *
      * @param  {number}  workshopId   Workshop ID.
      * @param  {number}  submissionId If not editing, it will refer to timecreated.
@@ -286,7 +286,7 @@ export class AddonModWorkshopHelperProvider {
     }
 
     /**
-     * Get a list of stored attachment files for a submission and online files also. See $mmaModWorkshopHelper#storeFiles.
+     * Get a list of stored attachment files for a submission and online files also. See AddonModWorkshopHelperProvider#storeFiles.
      *
      * @param  {any}     filesObject  Files object combining offline and online information.
      * @param  {number}  workshopId   Workshop ID.
@@ -355,7 +355,7 @@ export class AddonModWorkshopHelperProvider {
     }
 
     /**
-     * Get a list of stored attachment files for an assessment. See $mmaModWorkshopHelper#storeFiles.
+     * Get a list of stored attachment files for an assessment. See AddonModWorkshopHelperProvider#storeFiles.
      *
      * @param  {number} workshopId   Workshop ID.
      * @param  {number} assessmentId Assessment ID.
@@ -372,7 +372,7 @@ export class AddonModWorkshopHelperProvider {
     }
 
     /**
-     * Get a list of stored attachment files for an assessment and online files also. See $mmaModWorkshopHelper#storeFiles.
+     * Get a list of stored attachment files for an assessment and online files also. See AddonModWorkshopHelperProvider#storeFiles.
      *
      * @param  {object} filesObject  Files object combining offline and online information.
      * @param  {number} workshopId   Workshop ID.

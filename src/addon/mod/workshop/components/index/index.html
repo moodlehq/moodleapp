@@ -1,0 +1,176 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons end>
+    <core-context-menu>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl" [iconAction]="'open'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()" [iconAction]="'arrow-forward'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && hasOffline && isOnline"  [priority]="600" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch()" [iconAction]="prefetchStatusIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="400" [content]="size" [iconDescription]="'cube'" (action)="removeFiles()" [iconAction]="'trash'"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<!-- Content. -->
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+    <core-course-module-description *ngIf="description && selectedPhase == workshopPhases.PHASE_SETUP" [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+
+    <ion-card *ngIf="phases">
+        <ion-item (click)="selectPhase()">
+            <h2 stacked text-wrap>{{ phases[selectedPhase].title }}</h2>
+            <p text-wrap *ngIf="phases[selectedPhase].code == workshop.phase">{{ 'addon.mod_workshop.userplancurrentphase' | translate }}</p>
+            <ion-icon item-end name="arrow-dropdown"></ion-icon>
+        </ion-item>
+        <a ion-item text-wrap *ngIf="phases[selectedPhase].switchUrl" [href]="phases[selectedPhase].switchUrl" detail-none>
+            <ion-icon item-start name="swap"></ion-icon>
+            {{ 'addon.mod_workshop.switchphase' + selectedPhase | translate }}
+            <ion-icon item-end name="open"></ion-icon>
+        </a>
+    </ion-card>
+
+    <ion-card *ngIf="phases && phases[selectedPhase] && phases[selectedPhase].tasks.length">
+        <ion-item text-wrap *ngFor="let task of phases[selectedPhase].tasks" [ngClass]="{'item-dimmed': selectedPhase != workshop.phase}" (click)="runTask(task)" detail-none>
+            <ion-icon item-start name="radio-button-off" *ngIf="task.completed == null"></ion-icon>
+            <ion-icon item-start name="close-circle" color="danger" *ngIf="task.completed == ''"></ion-icon>
+            <ion-icon item-start name="information-circle" color="info" *ngIf="task.completed == 'info'"></ion-icon>
+            <ion-icon item-start name="checkmark-circle" color="success" *ngIf="task.completed == '1'"></ion-icon>
+
+            <h2>{{task.title}}</h2>
+            <p *ngIf="task.details"><core-format-text [text]="task.details"></core-format-text></p>
+            <ion-icon item-end *ngIf="task.link && !task.support" name="open"></ion-icon>
+        </ion-item>
+    </ion-card>
+
+    <!-- Has something offline. -->
+    <div class="core-warning-card" icon-start *ngIf="hasOffline">
+        <ion-icon name="warning"></ion-icon>
+        {{ 'core.hasdatatosync' | translate: {$a: moduleName} }}
+    </div>
+
+    <div *ngIf="access && workshop && workshop.phase >= selectedPhase">
+        <!-- SUBMISSION PHASE -->
+        <ng-container *ngIf="selectedPhase == workshopPhases.PHASE_SUBMISSION">
+            <ion-card *ngIf="workshop.instructauthors">
+                <ion-item text-wrap>
+                    <h2>{{ 'addon.mod_workshop.areainstructauthors' | translate }}</h2>
+                    <core-format-text fullOnClick="true" [component]="component" [componentId]="workshop.cmid" [text]="workshop.instructauthors"></core-format-text>
+                </ion-item>
+            </ion-card>
+
+            <ion-card *ngIf="canSubmit">
+                <ion-item text-wrap *ngIf="!submission">
+                    <h2>{{ 'addon.mod_workshop.yoursubmission' | translate }}</h2>
+                    <p>{{ 'addon.mod_workshop.noyoursubmission' | translate }}</p>
+                </ion-item>
+
+                <!-- <addon-mod-workshop-submission *ngIf="submission" [submission]="submission" [courseId]="workshop.course" [module]="module" [workshop]="workshop" [access]="access"></addon-mod-workshop-submission> -->
+            </ion-card>
+
+            <!-- Show only on current phase -->
+            <ng-container *ngIf="workshop.phase == selectedPhase">
+                <ion-item text-wrap *ngIf="canSubmit && ((access.creatingsubmissionallowed && !submission) || (access.modifyingsubmissionallowed && submission))">
+                    <button ion-button icon-start block *ngIf="access.creatingsubmissionallowed && !submission" (click)="runTaskByCode('submit')">
+                        <ion-icon name="add"></ion-icon>
+                        {{ 'addon.mod_workshop.createsubmission' | translate }}
+                    </button>
+                    <button ion-button icon-start block *ngIf="access.modifyingsubmissionallowed && submission" (click)="runTaskByCode('submit')">
+                        <ion-icon name="create"></ion-icon>
+                        {{ 'addon.mod_workshop.editsubmission' | translate }}
+                    </button>
+                </ion-item>
+            </ng-container>
+        </ng-container>
+
+        <!-- ASSESSMENT PHASE -->
+        <ng-container *ngIf="selectedPhase == workshopPhases.PHASE_ASSESSMENT">
+            <ion-card *ngIf="workshop.instructreviewers">
+                <ion-item text-wrap>
+                    <h2>{{ 'addon.mod_workshop.areainstructreviewers' | translate }}</h2>
+                    <core-format-text fullOnClick="true" [component]="component" [componentId]="workshop.cmid" [text]="workshop.instructreviewers"></core-format-text>
+                </ion-item>
+            </ion-card>
+
+            <ion-card *ngIf="canAssess && assessments.length">
+                <ion-item text-wrap>
+                    <h2>{{ 'addon.mod_workshop.assignedassessments' | translate }}</h2>
+                </ion-item>
+                <!-- <addon-mod-workshop-submission *ngFor="let assessment of assessments" [submission]="assessment.submission" [assessment]="assessment" [courseId]="workshop.course" [module]="module" [workshop]="workshop" [access]="access" summary="true"></addon-mod-workshop-submission> -->
+            </ion-card >
+        </ng-container>
+
+        <ion-card *ngIf="!access.canviewallsubmissions && selectedPhase == workshop.phase && (canSubmit || canAssess) && selectedPhase == workshopPhases.PHASE_EVALUATION">
+            <ion-item text-wrap *ngIf="submission" (click)="switchPhase(workshopPhases.PHASE_SUBMISSION)" detail-push>
+                <h2>{{ 'addon.mod_workshop.yoursubmission' | translate }}</h2>
+            </ion-item>
+            <ion-item text-wrap *ngIf="canAssess" (click)="switchPhase(workshopPhases.PHASE_ASSESSMENT)" detail-push>
+                <h2>{{ 'addon.mod_workshop.assignedassessments' | translate }}</h2>
+            </ion-item>
+        </ion-card>
+
+        <!-- CLOSED PHASE -->
+        <ng-container *ngIf="selectedPhase == workshopPhases.PHASE_CLOSED">
+            <ion-card *ngIf="workshop.conclusion">
+                <ion-item text-wrap>
+                    <h2>{{ 'addon.mod_workshop.conclusion' | translate }}</h2>
+                    <core-format-text fullOnClick="true" [component]="component" [componentId]="workshop.cmid" [text]="workshop.conclusion"></core-format-text>
+                </ion-item>
+            </ion-card>
+
+            <ion-card *ngIf="userGrades">
+                <ion-item-divider color="light" text-wrap>
+                    <h2>{{ 'addon.mod_workshop.yourgrades' | translate }}</h2>
+                </ion-item-divider>
+                <ion-item text-wrap *ngIf="userGrades.submissionlongstrgrade" (click)="switchPhase(workshopPhases.PHASE_SUBMISSION)" detail-push>
+                    <h2>{{ 'addon.mod_workshop.submissiongrade' | translate }}</h2>
+                    <core-format-text [text]="userGrades.submissionlongstrgrade"></core-format-text>
+                </ion-item>
+                <ion-item text-wrap *ngIf="userGrades.assessmentlongstrgrade" (click)="switchPhase(workshopPhases.PHASE_ASSESSMENT)" detail-push>
+                    <h2>{{ 'addon.mod_workshop.gradinggrade' | translate }}</h2>
+                    <core-format-text [text]="userGrades.assessmentlongstrgrade"></core-format-text>
+                </ion-item>
+            </ion-card>
+
+            <ion-card *ngIf="publishedSubmissions.length">
+                <ion-item text-wrap>
+                    <h2>{{ 'addon.mod_workshop.publishedsubmissions' | translate }}</h2>
+                </ion-item>
+                <!-- <addon-mod-workshop-submission *ngFor="let submission of publishedSubmissions" [submission]="submission" [courseId]="workshop.course" [module]="module" [workshop]="workshop" [access]="access" summary="true"></addon-mod-workshop-submission> -->
+            </ion-card>
+        </ng-container>
+
+        <!-- MULTIPLE PHASES SUBMISSION OR GREATER only teachers -->
+        <ion-card *ngIf="workshop.phase == selectedPhase && access.canviewallsubmissions && selectedPhase >= workshopPhases.PHASE_SUBMISSION && grades.length">
+            <ion-item text-wrap *ngIf="selectedPhase == workshopPhases.PHASE_SUBMISSION">
+                <h2>{{ 'addon.mod_workshop.submissionsreport' | translate }}</h2>
+            </ion-item>
+            <ion-item text-wrap *ngIf="selectedPhase > workshopPhases.PHASE_SUBMISSION">
+                <h2>{{ 'addon.mod_workshop.gradesreport' | translate }}</h2>
+            </ion-item>
+            <ion-item text-wrap *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
+                <ion-label id="addon-workshop-groupslabel" *ngIf="groupInfo.separateGroups">{{ 'core.groupsseparate' | translate }}</ion-label>
+                <ion-label id="addon-workshop-groupslabel" *ngIf="groupInfo.visibleGroups">{{ 'core.groupsvisible' | translate }}</ion-label>
+                <ion-select [(ngModel)]="selectedGroup" (ionChange)="setGroup(selectedGroup)" aria-labelledby="addon-workshop-groupslabel">
+                    <ion-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">{{groupOpt.name}}</ion-option>
+                </ion-select>
+            </ion-item>
+
+            <!--  <addon-mod-workshop-submission *ngFor="submission of grades" [submission]="submission" [courseId]="workshop.course" [module]="module" [workshop]="workshop" [access]="access" summary="true"></addon-mod-workshop-submission>-->
+
+            <ion-grid ngIf="page > 0 || hasNextPage">
+                <ion-row align-items-center>
+                    <ion-col *ngIf="page > 0">
+                        <button ion-button block outline icon-start (click)="gotoSubmissionsPage(page - 1)">>
+                            <ion-icon name="arrow-back"></ion-icon>
+                            {{ 'core.previous' | translate }}
+                        </button>
+                    </ion-col>
+                    <ion-col *ngIf="hasNextPage">
+                        <button ion-button block icon-end click)="gotoSubmissionsPage(page + 1)">
+                            {{ 'core.next' | translate }}
+                            <ion-icon name="arrow-forward"></ion-icon>
+                        </button>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-card>
+    </div>
+</core-loading>
