@@ -17,6 +17,7 @@ import { IonicPage, NavParams, ViewController } from 'ionic-angular';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { AddonModDataComponentsModule } from '../../components/components.module';
 import { AddonModDataFieldsDelegate } from '../../providers/fields-delegate';
 
@@ -39,14 +40,15 @@ export class AddonModDataSearchPage {
     fieldsArray: any;
 
     constructor(params: NavParams, private viewCtrl: ViewController, fb: FormBuilder, protected utils: CoreUtilsProvider,
-            protected domUtils: CoreDomUtilsProvider, protected fieldsDelegate: AddonModDataFieldsDelegate) {
+            protected domUtils: CoreDomUtilsProvider, protected fieldsDelegate: AddonModDataFieldsDelegate,
+            protected textUtils: CoreTextUtilsProvider) {
         this.search = params.get('search');
         this.fields = params.get('fields');
         this.data = params.get('data');
 
         const advanced = {};
         this.search.advanced.forEach((field) => {
-            advanced[field.name] = field.value ? JSON.parse(field.value) : '';
+            advanced[field.name] = field.value ? this.textUtils.parseJSON(field.value) : '';
         });
         this.search.advanced = advanced;
 

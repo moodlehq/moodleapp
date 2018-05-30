@@ -251,7 +251,7 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
                 if (action.fields) {
                     action.fields.forEach((field) => {
                         // Upload Files if asked.
-                        const value = JSON.parse(field.value);
+                        const value = this.textUtils.parseJSON(field.value);
                         if (value.online || value.offline) {
                             let files = value.online || [];
                             const fileProm = value.offline ? this.dataHelper.getStoredFiles(action.dataid, entryId, field.fieldid) :

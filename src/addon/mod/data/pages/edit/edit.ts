@@ -154,12 +154,7 @@ export class AddonModDataEditPage {
 
             return this.dataProvider.getFields(this.data.id);
         }).then((fieldsData) => {
-            this.fields = {};
-            fieldsData.forEach((field) => {
-                this.fields[field.id] = field;
-            });
-
-            this.fieldsArray = fieldsData;
+            this.fields = this.utils.arrayToObject(fieldsData, 'id');
 
             return this.dataHelper.getEntry(this.data, this.entryId, this.offlineActions);
         }).then((entry) => {
@@ -167,11 +162,7 @@ export class AddonModDataEditPage {
                 entry = entry.entry;
 
                 // Index contents by fieldid.
-                const contents = {};
-                entry.contents.forEach((field) => {
-                    contents[field.fieldid] = field;
-                });
-                entry.contents = contents;
+                entry.contents = this.utils.arrayToObject(entry.contents, 'fieldid');
             } else {
                 entry = {
                     contents: {}
@@ -185,8 +176,6 @@ export class AddonModDataEditPage {
             this.editFormRender = this.displayEditFields();
         }).catch((message) => {
             this.domUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);
-
-            return Promise.reject(null);
         }).finally(() => {
             this.loaded = true;
         });

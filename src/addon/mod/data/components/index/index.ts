@@ -99,6 +99,10 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         this.selectedGroup = this.group || 0;
 
         this.loadContent(false, true).then(() => {
+            if (!this.data) {
+                return;
+            }
+
             this.dataProvider.logView(this.data.id).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
             });
@@ -216,10 +220,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                 }
                 this.search.advanced = [];
 
-                this.fields = {};
-                fields.forEach((field) => {
-                    this.fields[field.id] = field;
-                });
+                this.fields = this.utils.arrayToObject(fields, 'id');
                 this.fieldsArray = this.utils.objectToArray(this.fields);
 
                 return this.fetchEntriesData();
@@ -295,11 +296,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
                 entries.entries.forEach((entry) => {
                     // Index contents by fieldid.
-                    const contents = {};
-                    entry.contents.forEach((field) => {
-                        contents[field.fieldid] = field;
-                    });
-                    entry.contents = contents;
+                    entry.contents = this.utils.arrayToObject(entry.contents, 'fieldid');
 
                     if (typeof this.offlineActions[entry.id] != 'undefined') {
                         promises.push(this.dataHelper.applyOfflineActions(entry, this.offlineActions[entry.id], this.fieldsArray));
@@ -391,7 +388,12 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         this.searchEntries(0);
     }
 
-    // Set group to see the database.
+    /**
+     * Set group to see the database.
+     *
+     * @param  {number}       groupId Group ID.
+     * @return {Promise<any>}         Resolved when new group is selected or rejected if not.
+     */
     setGroup(groupId: number): Promise<any> {
         this.selectedGroup = groupId;
 
@@ -406,14 +408,13 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      * Opens add entries form.
      */
     gotoAddEntries(): void {
-        const stateParams = {
-            moduleId: this.module.id,
+        const params = {
             module: this.module,
             courseId: this.courseId,
             group: this.selectedGroup
         };
 
-        this.navCtrl.push('AddonModDataEditPage', stateParams);
+        this.navCtrl.push('AddonModDataEditPage', params);
     }
 
     /**
@@ -422,15 +423,14 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      * @param {number} entryId Entry ID.
      */
     gotoEntry(entryId: number): void {
-        const stateParams = {
+        const params = {
             module: this.module,
-            moduleId: this.module.id,
             courseId: this.courseId,
             entryId: entryId,
             group: this.selectedGroup
         };
 
-        this.navCtrl.push('AddonModDataEntryPage', stateParams);
+        this.navCtrl.push('AddonModDataEntryPage', params);
     }
 
     /**

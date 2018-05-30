@@ -126,6 +126,8 @@ export class AddonModDataEntryPage implements OnDestroy {
      * @return {Promise<any>}         Resolved when done.
      */
     protected fetchEntryData(refresh?: boolean): Promise<any> {
+        let fieldsArray;
+
         return this.dataProvider.getDatabase(this.courseId, this.module.id).then((data) => {
             this.title = data.name || this.title;
             this.data = data;
@@ -155,10 +157,7 @@ export class AddonModDataEntryPage implements OnDestroy {
             this.hasOffline = !!actions.length;
 
             return this.dataProvider.getFields(this.data.id).then((fieldsData) => {
-                this.fields = {};
-                fieldsData.forEach((field) => {
-                    this.fields[field.id] = field;
-                });
+                this.fields = this.utils.arrayToObject(fieldsData, 'id');
 
                 return this.dataHelper.getEntry(this.data, this.entryId, this.offlineActions);
             });
@@ -167,20 +166,15 @@ export class AddonModDataEntryPage implements OnDestroy {
             this.cssTemplate = this.dataHelper.prefixCSS(this.data.csstemplate, '.' + this.cssClass);
 
             // Index contents by fieldid.
-            const contents = {};
-            entry.contents.forEach((field) => {
-                contents[field.fieldid] = field;
-            });
-            entry.contents = contents;
+            entry.contents = this.utils.arrayToObject(entry.contents, 'fieldid');
 
-            const fieldsArray = this.utils.objectToArray(this.fields);
+            fieldsArray = this.utils.objectToArray(this.fields);
 
             return this.dataHelper.applyOfflineActions(entry, this.offlineActions, fieldsArray);
         }).then((entryData) => {
             this.entry = entryData;
 
-            const actions = this.dataHelper.getActions(this.data, this.access, this.entry),
-                fieldsArray = this.utils.objectToArray(this.fields);
+            const actions = this.dataHelper.getActions(this.data, this.access, this.entry);
 
             this.entryRendered = this.dataHelper.displayShowFields(this.data.singletemplate, fieldsArray,
                     this.entry, 'show', actions);
@@ -207,8 +201,6 @@ export class AddonModDataEntryPage implements OnDestroy {
             }
 
             this.domUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);
-
-            return Promise.reject(null);
         }).finally(() => {
             this.content && this.content.scrollToTop();
             this.entryLoaded = true;

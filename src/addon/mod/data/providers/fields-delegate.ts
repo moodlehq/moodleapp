@@ -186,10 +186,6 @@ export class AddonModDataFieldsDelegate extends CoreDelegate {
      * @return {Promise<void>}           Promise rejected if has changed, resolved if no changes.
      */
     hasFieldDataChanged(field: any, inputData: any, originalFieldData: any): Promise<void> {
-        if (!this.hasFunction(field.type, 'hasFieldDataChanged')) {
-            return Promise.resolve();
-        }
-
         return Promise.resolve(this.executeFunctionOnEnabled(field.type, 'hasFieldDataChanged',
                 [field, inputData, originalFieldData])).then((result) => {
             return result ? Promise.reject(null) : Promise.resolve();
@@ -216,7 +212,7 @@ export class AddonModDataFieldsDelegate extends CoreDelegate {
      * @return {any}                     Data overriden
      */
     overrideData(field: any, originalContent: any, offlineContent: any, offlineFiles?: any): any {
-        if (!offlineContent || !this.hasFunction(field.type, 'overrideData')) {
+        if (!offlineContent) {
             return originalContent;
         }
 

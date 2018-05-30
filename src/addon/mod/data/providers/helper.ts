@@ -13,9 +13,10 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSitesProvider } from '@providers/sites';
-import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { AddonModDataFieldsDelegate } from './fields-delegate';
 import { AddonModDataOfflineProvider } from './offline';
 import { AddonModDataProvider } from './data';
@@ -28,7 +29,8 @@ export class AddonModDataHelperProvider {
 
     constructor(private sitesProvider: CoreSitesProvider, protected dataProvider: AddonModDataProvider,
         private translate: TranslateService, private fieldsDelegate: AddonModDataFieldsDelegate,
-        private dataOffline: AddonModDataOfflineProvider, private fileUploaderProvider: CoreFileUploaderProvider) { }
+        private dataOffline: AddonModDataOfflineProvider, private fileUploaderProvider: CoreFileUploaderProvider,
+        private textUtils: CoreTextUtilsProvider) { }
 
     /**
      * Returns the record with the offline actions applied.
@@ -62,9 +64,10 @@ export class AddonModDataHelperProvider {
                         }
 
                         if (offlineContent.subfield) {
-                            offlineContents[offlineContent.fieldid][offlineContent.subfield] = JSON.parse(offlineContent.value);
+                            offlineContents[offlineContent.fieldid][offlineContent.subfield] =
+                                this.textUtils.parseJSON(offlineContent.value);
                         } else {
-                            offlineContents[offlineContent.fieldid][''] = JSON.parse(offlineContent.value);
+                            offlineContents[offlineContent.fieldid][''] = this.textUtils.parseJSON(offlineContent.value);
                         }
                     });
 

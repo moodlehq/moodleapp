@@ -55,23 +55,22 @@ export class AddonModDataShowLinkHandler extends CoreContentLinksHandlerBase {
                     page = parseInt(params.page, 10) || false;
 
                 this.courseProvider.getModuleBasicInfoByInstance(dataId, 'data', siteId).then((module) => {
-                    const stateParams = {
-                        moduleId: module.id,
+                    const pageParams = {
                         module: module,
                         courseId: module.course
                     };
 
                     if (group) {
-                        stateParams['group'] = group;
+                        pageParams['group'] = group;
                     }
 
                     if (params.mode && params.mode == 'single') {
-                        stateParams['page'] = page || 1;
+                        pageParams['page'] = page || 1;
                     } else if (rId) {
-                        stateParams['entryId'] = rId;
+                        pageParams['entryId'] = rId;
                     }
 
-                    return this.linkHelper.goInSite(navCtrl, 'AddonModDataEntryPage', stateParams, siteId);
+                    return this.linkHelper.goInSite(navCtrl, 'AddonModDataEntryPage', pageParams, siteId);
                 }).finally(() => {
                     // Just in case. In fact we need to dismiss the modal before showing a toast or error message.
                     modal.dismiss();

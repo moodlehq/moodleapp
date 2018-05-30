@@ -53,17 +53,16 @@ export class AddonModDataEditLinkHandler extends CoreContentLinksHandlerBase {
                     rId = parseInt(params.rid, 10) || false;
 
                 this.courseProvider.getModuleBasicInfoByInstance(dataId, 'data', siteId).then((module) => {
-                    const stateParams = {
-                        moduleId: module.id,
+                    const pageParams = {
                         module: module,
                         courseId: module.course
                     };
 
                     if (rId) {
-                        stateParams['entryId'] = rId;
+                        pageParams['entryId'] = rId;
                     }
 
-                    return this.linkHelper.goInSite(navCtrl, 'AddonModDataEditPage', stateParams, siteId);
+                    return this.linkHelper.goInSite(navCtrl, 'AddonModDataEditPage', pageParams, siteId);
                 }).finally(() => {
                     // Just in case. In fact we need to dismiss the modal before showing a toast or error message.
                     modal.dismiss();

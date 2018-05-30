@@ -75,7 +75,6 @@ export class AddonModDataDeleteLinkHandler extends CoreContentLinksHandlerBase {
 
                     // Delete entry.
                     return this.dataProvider.deleteEntry(dataId, entryId, courseId, siteId).catch((message) => {
-                        modal.dismiss();
                         this.domUtils.showErrorModalDefault(message, 'addon.mod_data.errordeleting', true);
 
                         return Promise.reject(null);
@@ -90,10 +89,8 @@ export class AddonModDataDeleteLinkHandler extends CoreContentLinksHandlerBase {
                     this.eventsProvider.trigger(AddonModDataProvider.ENTRY_CHANGED, {dataId: dataId, entryId: entryId,
                         deleted: true}, siteId);
 
-                    modal.dismiss();
                     this.domUtils.showToast('addon.mod_data.recorddeleted', true, 3000);
                 }).finally(() => {
-                    // Just in case. In fact we need to dismiss the modal before showing a toast or error message.
                     modal.dismiss();
                 });
             }

@@ -724,7 +724,7 @@ export class AddonModDataProvider {
 
     /**
      * Invalidate the prefetched content.
-     * To invalidate files, use AddonDataProvider#invalidateFiles.
+     * To invalidate files, use AddonModDataProvider#invalidateFiles.
      *
      * @param  {number} moduleId The module ID.
      * @param  {number} courseId Course ID of the module.

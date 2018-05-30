@@ -76,7 +76,6 @@ export class AddonModDataApproveLinkHandler extends CoreContentLinksHandlerBase 
 
                     // Approve/disapprove entry.
                     return this.dataProvider.approveEntry(dataId, entryId, approve, courseId, siteId).catch((message) => {
-                        modal.dismiss();
                         this.domUtils.showErrorModalDefault(message, 'addon.mod_data.errorapproving', true);
 
                         return Promise.reject(null);
@@ -90,11 +89,9 @@ export class AddonModDataApproveLinkHandler extends CoreContentLinksHandlerBase 
                 }).then(() => {
                     this.eventsProvider.trigger(AddonModDataProvider.ENTRY_CHANGED, {dataId: dataId, entryId: entryId}, siteId);
 
-                    modal.dismiss();
                     this.domUtils.showToast(approve ? 'addon.mod_data.recordapproved' : 'addon.mod_data.recorddisapproved', true,
                         3000);
                 }).finally(() => {
-                    // Just in case. In fact we need to dismiss the modal before showing a toast or error message.
                     modal.dismiss();
                 });
             }

@@ -238,7 +238,11 @@ export class AddonModDataPrefetchHandler extends CoreCourseModulePrefetchHandler
      * @return {Promise<any>} Promise resolved when invalidated.
      */
     invalidateModule(module: any, courseId: number): Promise<any> {
-        return this.dataProvider.invalidateDatabaseData(courseId);
+        const promises = [];
+        promises.push(this.dataProvider.invalidateDatabaseData(courseId));
+        promises.push(this.dataProvider.invalidateDatabaseAccessInformationData(module.instance));
+
+        return Promise.all(promises);
     }
 
     /**
