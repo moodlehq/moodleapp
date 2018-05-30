@@ -31,7 +31,7 @@ export class CoreSharedFilesProvider {
     static SHARED_FILES_FOLDER = 'sharedfiles';
 
     // Variables for the database.
-    protected SHARED_FILES_TABLE = 'wscache';
+    protected SHARED_FILES_TABLE = 'shared_files';
     protected tableSchema = {
         name: this.SHARED_FILES_TABLE,
         columns: [

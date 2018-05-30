@@ -13,13 +13,49 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreAppProvider } from './app';
 import { CoreConfigProvider } from './config';
 import { CoreFilepoolProvider } from './filepool';
 import { CoreInitHandler, CoreInitDelegate } from './init';
 import { CoreLocalNotificationsProvider } from './local-notifications';
 import { CoreLoggerProvider } from './logger';
 import { CoreSitesProvider } from './sites';
+import { CoreUtilsProvider } from './utils/utils';
 import { CoreConfigConstants } from '../configconstants';
+import { SQLiteDB } from '@classes/sqlitedb';
+
+/**
+ * Data to migrate a store of Ionic 1 app to the SQLite DB.
+ */
+export interface CoreUpdateManagerMigrateTable {
+    /**
+     * Current name of the store/table.
+     * @type {string}
+     */
+    name: string;
+
+    /**
+     * New name of the table. If not defined, "name" will be used.
+     * @type {string}
+     */
+    newName?: string;
+
+    /**
+     * An object to rename and convert some fields of the table/store.
+     * @type {object}
+     */
+    fields?: {
+        name: string, // Field name in the old app.
+        newName?: string, // New field name. If not provided, keep the same name.
+        type?: string, // Type of the field if it needs to be treated: 'any', 'object', 'date', 'boolean'.
+        delete?: boolean // Whether the field must be deleted because it isn't needed in the new schema.
+    }[];
+
+    /**
+     * If set, all the fields that aren't in this array will be deleted. The names in this list should be the new names.
+     */
+    filterFields?: string[];
+}
 
 /**
  * Factory to handle app updates. This factory shouldn't be used outside of core.
@@ -36,8 +72,113 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
     protected VERSION_APPLIED = 'version_applied';
     protected logger;
 
+    /**
+     * Tables to migrate from app DB ('MoodleMobile'). Include all the core ones to decrease the dependencies.
+     *
+     * @type {CoreUpdateManagerMigrateTable[]}
+     */
+    protected appDBTables: CoreUpdateManagerMigrateTable[] = [
+        {
+            name: 'config',
+            newName: 'core_config',
+            fields: [
+                {
+                    name: 'value',
+                    type: 'any'
+                }
+            ]
+        },
+        {
+            name: 'cron'
+        },
+        {
+            name: 'current_site',
+            fields: [
+                {
+                    name: 'siteid',
+                    newName: 'siteId'
+                }
+            ]
+        },
+        {
+            name: 'desktop_local_notifications',
+            fields: [
+                {
+                    name: 'at',
+                    type: 'date'
+                },
+                {
+                    name: 'data',
+                    type: 'object'
+                },
+                {
+                    name: 'triggered',
+                    type: 'boolean'
+                }
+            ],
+            filterFields: ['id', 'title', 'text', 'at', 'data', 'triggered']
+        },
+        {
+            name: 'files_queue',
+            newName: 'filepool_files_queue',
+            fields: [
+                {
+                    name: 'isexternalfile',
+                    type: 'boolean'
+                },
+                {
+                    name: 'links',
+                    type: 'object'
+                },
+                {
+                    name: 'sortorder',
+                    delete: true
+                }
+            ]
+        },
+        {
+            name: 'notification_components'
+        },
+        {
+            name: 'notification_sites'
+        },
+        {
+            name: 'notifications_triggered'
+        },
+        {
+            name: 'shared_files'
+        },
+        {
+            name: 'sites',
+            fields: [
+                {
+                    name: 'siteurl',
+                    newName: 'siteUrl'
+                },
+                {
+                    name: 'infos',
+                    newName: 'info',
+                    type: 'object'
+                },
+                {
+                    name: 'privatetoken',
+                    newName: 'privateToken'
+                },
+                {
+                    name: 'config',
+                    type: 'object'
+                },
+                {
+                    name: 'loggedout',
+                    newName: 'loggedOut'
+                }
+            ]
+        },
+    ];
+
     constructor(logger: CoreLoggerProvider, private configProvider: CoreConfigProvider, private sitesProvider: CoreSitesProvider,
-            private filepoolProvider: CoreFilepoolProvider, private notifProvider: CoreLocalNotificationsProvider) {
+            private filepoolProvider: CoreFilepoolProvider, private notifProvider: CoreLocalNotificationsProvider,
+            private utils: CoreUtilsProvider, private appProvider: CoreAppProvider) {
         this.logger = logger.getInstance('CoreUpdateManagerProvider');
     }
 
@@ -51,19 +192,28 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
         const promises = [],
             versionCode = CoreConfigConstants.versioncode;
 
-        return this.configProvider.get(this.VERSION_APPLIED, 0).then((versionApplied: number) => {
-            // @todo: Migrate all data from ydn-db to SQLite if there is no versionApplied.
+        return this.configProvider.get(this.VERSION_APPLIED, 0).then((versionApplied) => {
+            if (!versionApplied) {
+                // No version applied, either the app was just installed or it's being updated from Ionic 1.
+                return this.migrateAllDBs().then(() => {
+                    // DBs migrated, get the version applied again.
+                    return this.configProvider.get(this.VERSION_APPLIED, 0);
+                });
+            } else {
+                return versionApplied;
+            }
+        }).then((versionApplied: number) => {
 
-            if (versionCode >= 2013 && versionApplied < 2013) {
+            if (versionCode >= 2013 && versionApplied < 2013 && versionApplied > 0) {
                 promises.push(this.migrateFileExtensions());
             }
 
-            if (versionCode >= 2017 && versionApplied < 2017) {
+            if (versionCode >= 2017 && versionApplied < 2017 && versionApplied > 0) {
                 promises.push(this.setCalendarDefaultNotifTime());
                 promises.push(this.setSitesConfig());
             }
 
-            if (versionCode >= 2018 && versionApplied < 2018) {
+            if (versionCode >= 2018 && versionApplied < 2018 && versionApplied > 0) {
                 promises.push(this.adaptForumOfflineStores());
             }
 
@@ -73,6 +223,119 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
                 this.logger.error(`Error applying update from ${versionApplied} to ${versionCode}`, error);
             });
         });
+    }
+
+    /**
+     * Register a table to be migrated to the new schema.
+     *
+     * @param {CoreUpdateManagerMigrateTable} table The table to migrate.
+     */
+    registerAppTableMigration(table: CoreUpdateManagerMigrateTable): void {
+        this.appDBTables.push(table);
+    }
+
+    /**
+     * Migrate all DBs and tables from the old format to SQLite.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected migrateAllDBs(): Promise<any> {
+        if (!(<any> window).ydn) {
+            // The ydn-db library is not loaded, stop.
+            return Promise.resolve();
+        }
+
+        // First migrate the app DB.
+        return this.migrateAppDB().then(() => {
+            // @todo: Migrate site DBs.
+        });
+    }
+
+    /**
+     * Migrate the app DB.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected migrateAppDB(): Promise<any> {
+        const oldDb = new (<any> window).ydn.db.Storage('MoodleMobile'),
+            newDb = this.appProvider.getDB();
+
+        return this.migrateDB(oldDb, newDb, this.appDBTables);
+    }
+
+    /**
+     * Migrate all the tables of a certain DB to the SQLite DB.
+     *
+     * @param {any} oldDb The old DB (created using ydn-db).
+     * @param {SQLiteDB} newDb The new DB.
+     * @param {CoreUpdateManagerMigrateTable[]} tables The tables to migrate.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected migrateDB(oldDb: any, newDb: SQLiteDB, tables: CoreUpdateManagerMigrateTable[]): Promise<any> {
+        if (!oldDb || !newDb) {
+            // Some of the DBs doesn't exist, stop.
+            return Promise.resolve();
+        }
+
+        const promises = [];
+
+        tables.forEach((table) => {
+
+            // Get current values.
+            promises.push(Promise.resolve(oldDb.values(table.name, undefined, 99999999)).then((entries) => {
+                const fields = table.fields || [],
+                    filterFields = table.filterFields || [];
+
+                // Treat the entries.
+                for (let i = 0; i < entries.length; i++) {
+                    const entry = entries[i];
+
+                    // Convert and rename the fields to match the new schema.
+                    fields.forEach((field) => {
+                        const value = entry[field.name];
+
+                        // Convert the field to the right format.
+                        if (field.type == 'object' || (field.type == 'any' && typeof value == 'object')) {
+                            entry[field.name] = JSON.stringify(value);
+                        } else if (field.type == 'date' && value) {
+                            entry[field.name] = value.getTime();
+                        } else if (field.type == 'boolean' || (field.type == 'any' && typeof value == 'boolean')) {
+                            entry[field.name] = value ? 1 : 0;
+                        }
+
+                        if (field.newName) {
+                            // Rename the field.
+                            entry[field.newName] = entry[field.name];
+                            delete entry[field.name];
+                        }
+
+                        if (field.delete) {
+                            // Delete the field.
+                            delete entry[field.name];
+                        }
+                    });
+
+                    // Remove invalid and unneeded properties.
+                    for (const name in entry) {
+                        if (name.indexOf('$') === 0) {
+                            // Property not valid, remove.
+                            delete entry[name];
+
+                        } else if (filterFields.length && filterFields.indexOf(name) == -1) {
+                            // The property isn't present in filterFields, remove it.
+                            delete entry[name];
+                        }
+                    }
+                }
+
+                // Now store the entries in the new DB.
+                return newDb.insertRecords(table.newName || table.name, entries);
+            }).catch((error) => {
+                this.logger.error('Error migrating table ' + table.name + ' to ' + (table.newName || table.name) + ': ', error);
+            }));
+        });
+
+        return this.utils.allPromises(promises);
     }
 
     /**

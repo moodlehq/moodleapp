@@ -33,17 +33,16 @@ import { CoreConfigConstants } from '../../../configconstants';
  */
 @Injectable()
 export class AddonPushNotificationsProvider {
-
     protected logger;
     protected pushID: string;
     protected appDB: any;
     static COMPONENT = 'AddonPushNotificationsProvider';
 
     // Variables for database.
-    protected BADGE_TABLE = 'addon_pushnotifications_badge';
+    static BADGE_TABLE = 'addon_pushnotifications_badge';
     protected tablesSchema = [
         {
-            name: this.BADGE_TABLE,
+            name: AddonPushNotificationsProvider.BADGE_TABLE,
             columns: [
                 {
                     name: 'siteid',
@@ -79,7 +78,7 @@ export class AddonPushNotificationsProvider {
      * @return {Promise<any>}  Resolved when done.
      */
     cleanSiteCounters(siteId: string): Promise<any> {
-        return this.appDB.deleteRecords(this.BADGE_TABLE, {siteid: siteId} ).finally(() => {
+        return this.appDB.deleteRecords(AddonPushNotificationsProvider.BADGE_TABLE, {siteid: siteId} ).finally(() => {
             this.updateAppCounter();
         });
     }
@@ -383,7 +382,7 @@ export class AddonPushNotificationsProvider {
      * @return {Promise<any>}         Promise resolved with the stored badge counter for the addon or site or 0 if none.
      */
     protected getAddonBadge(siteId?: string, addon: string = 'site'): Promise<any> {
-        return this.appDB.getRecord(this.BADGE_TABLE, {siteid: siteId, addon: addon}).then((entry) => {
+        return this.appDB.getRecord(AddonPushNotificationsProvider.BADGE_TABLE, {siteid: siteId, addon: addon}).then((entry) => {
              return (entry && entry.number) || 0;
         }).catch(() => {
             return 0;
@@ -407,7 +406,7 @@ export class AddonPushNotificationsProvider {
             number: value
         };
 
-        return this.appDB.insertRecord(this.BADGE_TABLE, entry).then(() => {
+        return this.appDB.insertRecord(AddonPushNotificationsProvider.BADGE_TABLE, entry).then(() => {
             return value;
         });
     }
