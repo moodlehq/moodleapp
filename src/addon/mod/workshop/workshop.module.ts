@@ -13,8 +13,10 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CoreCronDelegate } from '@providers/cron';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { AddonModWorkshopComponentsModule } from './components/components.module';
 import { AddonModWorkshopModuleHandler } from './providers/module-handler';
 import { AddonModWorkshopProvider } from './providers/workshop';
@@ -23,6 +25,8 @@ import { AddonModWorkshopOfflineProvider } from './providers/offline';
 import { AddonModWorkshopSyncProvider } from './providers/sync';
 import { AddonModWorkshopHelperProvider } from './providers/helper';
 import { AddonWorkshopAssessmentStrategyDelegate } from './providers/assessment-strategy-delegate';
+import { AddonModWorkshopPrefetchHandler } from './providers/prefetch-handler';
+import { AddonModWorkshopSyncCronHandler } from './providers/sync-cron-handler';
 
 @NgModule({
     declarations: [
@@ -37,13 +41,19 @@ import { AddonWorkshopAssessmentStrategyDelegate } from './providers/assessment-
         AddonModWorkshopOfflineProvider,
         AddonModWorkshopSyncProvider,
         AddonModWorkshopHelperProvider,
-        AddonWorkshopAssessmentStrategyDelegate
+        AddonWorkshopAssessmentStrategyDelegate,
+        AddonModWorkshopPrefetchHandler,
+        AddonModWorkshopSyncCronHandler
     ]
 })
 export class AddonModWorkshopModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModWorkshopModuleHandler,
-            contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModWorkshopLinkHandler) {
+            contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModWorkshopLinkHandler,
+            prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModWorkshopPrefetchHandler,
+            cronDelegate: CoreCronDelegate, syncHandler: AddonModWorkshopSyncCronHandler) {
         moduleDelegate.registerHandler(moduleHandler);
         contentLinksDelegate.registerHandler(linkHandler);
+        prefetchDelegate.registerHandler(prefetchHandler);
+        cronDelegate.register(syncHandler);
     }
 }
