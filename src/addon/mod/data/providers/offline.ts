@@ -27,10 +27,10 @@ export class AddonModDataOfflineProvider {
     protected logger;
 
     // Variables for database.
-    protected DATA_ENTRY_TABLE = 'addon_mod_data_entry';
+    static DATA_ENTRY_TABLE = 'addon_mod_data_entry';
     protected tablesSchema = [
         {
-            name: this.DATA_ENTRY_TABLE,
+            name: AddonModDataOfflineProvider.DATA_ENTRY_TABLE,
             columns: [
                 {
                     name: 'dataid',
@@ -102,7 +102,8 @@ export class AddonModDataOfflineProvider {
      */
     deleteEntry(dataId: number, entryId: number, action: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().deleteRecords(this.DATA_ENTRY_TABLE, {dataid: dataId, entryid: entryId, action: action});
+            return site.getDb().deleteRecords(AddonModDataOfflineProvider.DATA_ENTRY_TABLE, {dataid: dataId, entryid: entryId,
+                    action: action});
         });
     }
 
@@ -114,7 +115,9 @@ export class AddonModDataOfflineProvider {
      */
     getAllEntries(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getAllRecords(this.DATA_ENTRY_TABLE);
+            return site.getDb().getAllRecords(AddonModDataOfflineProvider.DATA_ENTRY_TABLE);
+        }).then((entries) => {
+            return entries.map(this.parseRecord.bind(this));
         });
     }
 
@@ -127,7 +130,9 @@ export class AddonModDataOfflineProvider {
      */
     getDatabaseEntries(dataId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.DATA_ENTRY_TABLE, {dataid: dataId});
+            return site.getDb().getRecords(AddonModDataOfflineProvider.DATA_ENTRY_TABLE, {dataid: dataId});
+        }).then((entries) => {
+            return entries.map(this.parseRecord.bind(this));
         });
     }
 
@@ -142,7 +147,10 @@ export class AddonModDataOfflineProvider {
      */
     getEntry(dataId: number, entryId: number, action: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecord(this.DATA_ENTRY_TABLE, {dataid: dataId, entryid: entryId, action: action});
+            return site.getDb().getRecord(AddonModDataOfflineProvider.DATA_ENTRY_TABLE, {dataid: dataId, entryid: entryId,
+                    action: action});
+        }).then((entry) => {
+            return this.parseRecord(entry);
         });
     }
 
@@ -156,7 +164,9 @@ export class AddonModDataOfflineProvider {
      */
     getEntryActions(dataId: number, entryId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.DATA_ENTRY_TABLE, {dataid: dataId, entryid: entryId});
+            return site.getDb().getRecords(AddonModDataOfflineProvider.DATA_ENTRY_TABLE, {dataid: dataId, entryid: entryId});
+        }).then((entries) => {
+            return entries.map(this.parseRecord.bind(this));
         });
     }
 
@@ -209,6 +219,18 @@ export class AddonModDataOfflineProvider {
     }
 
     /**
+     * Parse "fields" of an offline record.
+     *
+     * @param  {any} record Record object
+     * @return {any}        Record object with columns parsed.
+     */
+    protected parseRecord(record: any): any {
+        record.fields = this.textUtils.parseJSON(record.fields);
+
+        return record;
+    }
+
+    /**
      * Save an entry data to be sent later.
      *
      * @param  {number} dataId          Database ID.
@@ -233,11 +255,11 @@ export class AddonModDataOfflineProvider {
                     groupid: groupId,
                     action: action,
                     entryid: entryId,
-                    fields: fields,
+                    fields: JSON.stringify(fields || []),
                     timemodified: timemodified
                 };
 
-            return site.getDb().insertRecord(this.DATA_ENTRY_TABLE, entry);
+            return site.getDb().insertRecord(AddonModDataOfflineProvider.DATA_ENTRY_TABLE, entry);
         });
     }
 

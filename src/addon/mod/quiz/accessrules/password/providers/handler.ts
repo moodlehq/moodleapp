@@ -23,13 +23,10 @@ import { AddonModQuizAccessPasswordComponent } from '../component/password';
  */
 @Injectable()
 export class AddonModQuizAccessPasswordHandler implements AddonModQuizAccessRuleHandler {
-    name = 'AddonModQuizAccessPassword';
-    ruleName = 'quizaccess_password';
-
     // Variables for database.
-    protected PASSWORD_TABLE = 'mod_quiz_access_password';
+    static PASSWORD_TABLE = 'addon_mod_quiz_access_password';
     protected tableSchema = {
-        name: this.PASSWORD_TABLE,
+        name: AddonModQuizAccessPasswordHandler.PASSWORD_TABLE,
         columns: [
             {
                 name: 'id',
@@ -46,6 +43,9 @@ export class AddonModQuizAccessPasswordHandler implements AddonModQuizAccessRule
             }
         ]
     };
+
+    name = 'AddonModQuizAccessPassword';
+    ruleName = 'quizaccess_password';
 
     constructor(private sitesProvider: CoreSitesProvider) {
         this.sitesProvider.createTableFromSchema(this.tableSchema);
@@ -82,7 +82,7 @@ export class AddonModQuizAccessPasswordHandler implements AddonModQuizAccessRule
     protected getPasswordEntry(quizId: number, siteId?: string): Promise<any> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecord(this.PASSWORD_TABLE, {id: quizId});
+            return site.getDb().getRecord(AddonModQuizAccessPasswordHandler.PASSWORD_TABLE, {id: quizId});
         });
     }
 
@@ -174,7 +174,7 @@ export class AddonModQuizAccessPasswordHandler implements AddonModQuizAccessRule
     protected removePassword(quizId: number, siteId?: string): Promise<any> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().deleteRecords(this.PASSWORD_TABLE, {id: quizId});
+            return site.getDb().deleteRecords(AddonModQuizAccessPasswordHandler.PASSWORD_TABLE, {id: quizId});
         });
     }
 
@@ -195,7 +195,7 @@ export class AddonModQuizAccessPasswordHandler implements AddonModQuizAccessRule
                 timemodified: Date.now()
             };
 
-            return site.getDb().insertRecord(this.PASSWORD_TABLE, entry);
+            return site.getDb().insertRecord(AddonModQuizAccessPasswordHandler.PASSWORD_TABLE, entry);
         });
     }
 }

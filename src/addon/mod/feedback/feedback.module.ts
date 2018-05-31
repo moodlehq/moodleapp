@@ -31,6 +31,7 @@ import { AddonModFeedbackPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModFeedbackSyncProvider } from './providers/sync';
 import { AddonModFeedbackSyncCronHandler } from './providers/sync-cron-handler';
 import { AddonModFeedbackOfflineProvider } from './providers/offline';
+import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 @NgModule({
     declarations: [
@@ -59,7 +60,7 @@ export class AddonModFeedbackModule {
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModFeedbackPrefetchHandler,
             contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModFeedbackLinkHandler,
             cronDelegate: CoreCronDelegate, syncHandler: AddonModFeedbackSyncCronHandler,
-            analysisLinkHandler: AddonModFeedbackAnalysisLinkHandler,
+            analysisLinkHandler: AddonModFeedbackAnalysisLinkHandler, updateManager: CoreUpdateManagerProvider,
             showEntriesLinkHandler: AddonModFeedbackShowEntriesLinkHandler,
             showNonRespondentsLinkHandler: AddonModFeedbackShowNonRespondentsLinkHandler,
             completeLinkHandler: AddonModFeedbackCompleteLinkHandler,
@@ -73,5 +74,17 @@ export class AddonModFeedbackModule {
         contentLinksDelegate.registerHandler(completeLinkHandler);
         contentLinksDelegate.registerHandler(printLinkHandler);
         cronDelegate.register(syncHandler);
+
+        // Allow migrating the tables from the old app to the new schema.
+        updateManager.registerSiteTableMigration({
+            name: 'mma_mod_feedback_responses',
+            newName: AddonModFeedbackOfflineProvider.FEEDBACK_TABLE,
+            fields: [
+                {
+                    name: 'responses',
+                    type: 'object'
+                }
+            ]
+        });
     }
 }

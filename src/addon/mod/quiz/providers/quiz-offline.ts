@@ -32,10 +32,10 @@ export class AddonModQuizOfflineProvider {
     protected logger;
 
     // Variables for database.
-    protected ATTEMPTS_TABLE = 'addon_mod_quiz_attempts';
+    static ATTEMPTS_TABLE = 'addon_mod_quiz_attempts';
     protected tablesSchema = [
         {
-            name: this.ATTEMPTS_TABLE,
+            name: AddonModQuizOfflineProvider.ATTEMPTS_TABLE,
             columns: [
                 {
                     name: 'id', // Attempt ID.
@@ -141,7 +141,7 @@ export class AddonModQuizOfflineProvider {
      */
     getAllAttempts(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.getAllRecords(this.ATTEMPTS_TABLE);
+            return db.getAllRecords(AddonModQuizOfflineProvider.ATTEMPTS_TABLE);
         });
     }
 
@@ -165,7 +165,7 @@ export class AddonModQuizOfflineProvider {
      */
     getAttemptById(attemptId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.getRecord(this.ATTEMPTS_TABLE, {id: attemptId});
+            return db.getRecord(AddonModQuizOfflineProvider.ATTEMPTS_TABLE, {id: attemptId});
         });
     }
 
@@ -181,7 +181,7 @@ export class AddonModQuizOfflineProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
-            return site.getDb().getRecords(this.ATTEMPTS_TABLE, {quizid: quizId, userid: userId});
+            return site.getDb().getRecords(AddonModQuizOfflineProvider.ATTEMPTS_TABLE, {quizid: quizId, userid: userId});
         });
     }
 
@@ -251,7 +251,7 @@ export class AddonModQuizOfflineProvider {
             entry.timemodified = now;
             entry.finished = finish ? 1 : 0;
 
-            return db.insertRecord(this.ATTEMPTS_TABLE, entry);
+            return db.insertRecord(AddonModQuizOfflineProvider.ATTEMPTS_TABLE, entry);
         }).then(() => {
             // Attempt has been saved, now we need to save the answers.
             return this.saveAnswers(quiz, attempt, questions, data, now, siteId);
@@ -276,7 +276,7 @@ export class AddonModQuizOfflineProvider {
 
         // Remove the attempt.
         promises.push(this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.deleteRecords(this.ATTEMPTS_TABLE, {id: attemptId});
+            return db.deleteRecords(AddonModQuizOfflineProvider.ATTEMPTS_TABLE, {id: attemptId});
         }));
 
         return Promise.all(promises);
@@ -379,7 +379,7 @@ export class AddonModQuizOfflineProvider {
      */
     setAttemptCurrentPage(attemptId: number, page: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.updateRecords(this.ATTEMPTS_TABLE, {currentpage: page}, {id: attemptId});
+            return db.updateRecords(AddonModQuizOfflineProvider.ATTEMPTS_TABLE, {currentpage: page}, {id: attemptId});
         });
     }
 }

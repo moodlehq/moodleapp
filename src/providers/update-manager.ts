@@ -371,12 +371,43 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
     }
 
     /**
-     * Register a table to be migrated to the new schema.
+     * Register several app tables to be migrated to the new schema.
+     *
+     * @param {CoreUpdateManagerMigrateTable[]} tables The tables to migrate.
+     */
+    registerAppTablesMigration(tables: CoreUpdateManagerMigrateTable[]): void {
+        tables.forEach((table) => {
+            this.registerAppTableMigration(table);
+        });
+    }
+
+    /**
+     * Register an app table to be migrated to the new schema.
      *
      * @param {CoreUpdateManagerMigrateTable} table The table to migrate.
      */
     registerAppTableMigration(table: CoreUpdateManagerMigrateTable): void {
         this.appDBTables.push(table);
+    }
+
+    /**
+     * Register several site tables to be migrated to the new schema.
+     *
+     * @param {CoreUpdateManagerMigrateTable[]} tables The tables to migrate.
+     */
+    registerSiteTablesMigration(tables: CoreUpdateManagerMigrateTable[]): void {
+        tables.forEach((table) => {
+            this.registerSiteTableMigration(table);
+        });
+    }
+
+    /**
+     * Register a site table to be migrated to the new schema.
+     *
+     * @param {CoreUpdateManagerMigrateTable} table The table to migrate.
+     */
+    registerSiteTableMigration(table: CoreUpdateManagerMigrateTable): void {
+        this.siteDBTables.push(table);
     }
 
     /**

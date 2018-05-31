@@ -25,10 +25,10 @@ export class AddonModWikiOfflineProvider {
     protected logger;
 
     // Variables for database.
-    protected NEW_PAGES_TABLE = 'addon_mod_wiki_new_pages_store';
+    static NEW_PAGES_TABLE = 'addon_mod_wiki_new_pages_store';
     protected tablesSchema = [
         {
-            name: this.NEW_PAGES_TABLE,
+            name: AddonModWikiOfflineProvider.NEW_PAGES_TABLE,
             columns: [
                 {
                     name: 'wikiid',
@@ -117,7 +117,7 @@ export class AddonModWikiOfflineProvider {
             userId = this.convertToPositiveNumber(userId);
             groupId = this.convertToPositiveNumber(groupId);
 
-            return site.getDb().deleteRecords(this.NEW_PAGES_TABLE, {
+            return site.getDb().deleteRecords(AddonModWikiOfflineProvider.NEW_PAGES_TABLE, {
                 subwikiid: subwikiId,
                 wikiid: wikiId,
                 userid: userId,
@@ -135,7 +135,7 @@ export class AddonModWikiOfflineProvider {
      */
     getAllNewPages(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getAllRecords(this.NEW_PAGES_TABLE);
+            return site.getDb().getAllRecords(AddonModWikiOfflineProvider.NEW_PAGES_TABLE);
         });
     }
 
@@ -160,7 +160,7 @@ export class AddonModWikiOfflineProvider {
             userId = this.convertToPositiveNumber(userId);
             groupId = this.convertToPositiveNumber(groupId);
 
-            return site.getDb().getRecord(this.NEW_PAGES_TABLE, {
+            return site.getDb().getRecord(AddonModWikiOfflineProvider.NEW_PAGES_TABLE, {
                 subwikiid: subwikiId,
                 wikiid: wikiId,
                 userid: userId,
@@ -188,7 +188,7 @@ export class AddonModWikiOfflineProvider {
             userId = this.convertToPositiveNumber(userId);
             groupId = this.convertToPositiveNumber(groupId);
 
-            return site.getDb().getRecords(this.NEW_PAGES_TABLE, {
+            return site.getDb().getRecords(AddonModWikiOfflineProvider.NEW_PAGES_TABLE, {
                 subwikiid: subwikiId,
                 wikiid: wikiId,
                 userid: userId,
@@ -247,10 +247,10 @@ export class AddonModWikiOfflineProvider {
                     contentformat: 'html',
                     timecreated: now,
                     timemodified: now,
-                    caneditpage: true
+                    caneditpage: 1
                 };
 
-            return site.getDb().insertRecord(this.NEW_PAGES_TABLE, entry);
+            return site.getDb().insertRecord(AddonModWikiOfflineProvider.NEW_PAGES_TABLE, entry);
         });
     }
 

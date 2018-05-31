@@ -28,6 +28,7 @@ import { AddonModWikiIndexLinkHandler } from './providers/index-link-handler';
 import { AddonModWikiPageOrMapLinkHandler } from './providers/page-or-map-link-handler';
 import { AddonModWikiCreateLinkHandler } from './providers/create-link-handler';
 import { AddonModWikiEditLinkHandler } from './providers/edit-link-handler';
+import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 @NgModule({
     declarations: [
@@ -53,7 +54,8 @@ export class AddonModWikiModule {
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModWikiPrefetchHandler,
             cronDelegate: CoreCronDelegate, syncHandler: AddonModWikiSyncCronHandler, linksDelegate: CoreContentLinksDelegate,
             indexHandler: AddonModWikiIndexLinkHandler, pageOrMapHandler: AddonModWikiPageOrMapLinkHandler,
-            createHandler: AddonModWikiCreateLinkHandler, editHandler: AddonModWikiEditLinkHandler) {
+            createHandler: AddonModWikiCreateLinkHandler, editHandler: AddonModWikiEditLinkHandler,
+            updateManager: CoreUpdateManagerProvider) {
 
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
@@ -62,5 +64,21 @@ export class AddonModWikiModule {
         linksDelegate.registerHandler(pageOrMapHandler);
         linksDelegate.registerHandler(createHandler);
         linksDelegate.registerHandler(editHandler);
+
+        // Allow migrating the tables from the old app to the new schema.
+        updateManager.registerSiteTableMigration({
+            name: 'mma_mod_wiki_new_pages_store',
+            newName: AddonModWikiOfflineProvider.NEW_PAGES_TABLE,
+            fields: [
+                {
+                    name: 'subwikiWikiUserGroup',
+                    delete: true
+                },
+                {
+                    name: 'caneditpage',
+                    type: 'boolean'
+                }
+            ]
+        });
     }
 }

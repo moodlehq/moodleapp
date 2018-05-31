@@ -364,7 +364,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         this.navCtrl.push('AddonModLessonPlayerPage', {
             courseId: this.courseId,
             lessonId: this.lesson.id,
-            pageId: this.retakeToReview.pageId,
+            pageId: this.retakeToReview.pageid,
             password: this.password,
             review: true,
             retake: this.retakeToReview.retake

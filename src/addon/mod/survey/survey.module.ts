@@ -26,6 +26,7 @@ import { AddonModSurveyPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModSurveySyncProvider } from './providers/sync';
 import { AddonModSurveySyncCronHandler } from './providers/sync-cron-handler';
 import { AddonModSurveyOfflineProvider } from './providers/offline';
+import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 @NgModule({
     declarations: [
@@ -48,10 +49,23 @@ export class AddonModSurveyModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModSurveyModuleHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModSurveyPrefetchHandler,
             contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModSurveyLinkHandler,
-            cronDelegate: CoreCronDelegate, syncHandler: AddonModSurveySyncCronHandler) {
+            cronDelegate: CoreCronDelegate, syncHandler: AddonModSurveySyncCronHandler, updateManager: CoreUpdateManagerProvider) {
+
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         contentLinksDelegate.registerHandler(linkHandler);
         cronDelegate.register(syncHandler);
+
+        // Allow migrating the tables from the old app to the new schema.
+        updateManager.registerSiteTableMigration({
+            name: 'mma_mod_survey_answers',
+            newName: AddonModSurveyOfflineProvider.SURVEY_TABLE,
+            fields: [
+                {
+                    name: 'answers',
+                    type: 'object'
+                }
+            ]
+        });
     }
 }

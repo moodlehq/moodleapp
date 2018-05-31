@@ -20,6 +20,7 @@ import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
 import { CoreInitDelegate } from '@providers/init';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
+import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 @NgModule({
     declarations: [
@@ -35,7 +36,7 @@ import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 export class AddonCalendarModule {
     constructor(mainMenuDelegate: CoreMainMenuDelegate, calendarHandler: AddonCalendarMainMenuHandler,
             initDelegate: CoreInitDelegate, calendarProvider: AddonCalendarProvider, loginHelper: CoreLoginHelperProvider,
-            localNotificationsProvider: CoreLocalNotificationsProvider) {
+            localNotificationsProvider: CoreLocalNotificationsProvider, updateManager: CoreUpdateManagerProvider) {
         mainMenuDelegate.registerHandler(calendarHandler);
 
         initDelegate.ready().then(() => {
@@ -55,6 +56,16 @@ export class AddonCalendarModule {
                     });
                 });
             }
+        });
+
+        // Allow migrating the table from the old app to the new schema.
+        // In the old app some calculated properties were stored when it shouldn't. Filter only the fields we want.
+        updateManager.registerSiteTableMigration({
+            name: 'calendar_events',
+            newName: AddonCalendarProvider.EVENTS_TABLE,
+            filterFields: ['id', 'name', 'description', 'format', 'eventtype', 'courseid', 'timestart', 'timeduration',
+                    'categoryid', 'groupid', 'userid', 'instance', 'modulename', 'timemodified', 'repeatid', 'visible', 'uuid',
+                    'sequence', 'subscriptionid', 'notificationtime']
         });
     }
 }

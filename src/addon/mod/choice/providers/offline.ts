@@ -22,10 +22,10 @@ import { CoreSitesProvider } from '@providers/sites';
 export class AddonModChoiceOfflineProvider {
 
     // Variables for database.
-    protected CHOICE_TABLE = 'addon_mod_choice_responses';
+    static CHOICE_TABLE = 'addon_mod_choice_responses';
     protected tablesSchema = [
         {
-            name: this.CHOICE_TABLE,
+            name: AddonModChoiceOfflineProvider.CHOICE_TABLE,
             columns: [
                 {
                     name: 'choiceid',
@@ -76,7 +76,7 @@ export class AddonModChoiceOfflineProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
-            return site.getDb().deleteRecords(this.CHOICE_TABLE, {choiceid: choiceId, userid: userId});
+            return site.getDb().deleteRecords(AddonModChoiceOfflineProvider.CHOICE_TABLE, {choiceid: choiceId, userid: userId});
         });
     }
 
@@ -88,7 +88,7 @@ export class AddonModChoiceOfflineProvider {
      */
     getResponses(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.CHOICE_TABLE).then((records) => {
+            return site.getDb().getRecords(AddonModChoiceOfflineProvider.CHOICE_TABLE).then((records) => {
                 records.forEach((record) => {
                     record.responses = JSON.parse(record.responses);
                 });
@@ -127,7 +127,8 @@ export class AddonModChoiceOfflineProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
-            return site.getDb().getRecord(this.CHOICE_TABLE, {choiceid: choiceId, userid: userId}).then((record) => {
+            return site.getDb().getRecord(AddonModChoiceOfflineProvider.CHOICE_TABLE, {choiceid: choiceId, userid: userId})
+                    .then((record) => {
                 record.responses = JSON.parse(record.responses);
 
                 return record;
@@ -160,7 +161,7 @@ export class AddonModChoiceOfflineProvider {
                 timecreated: new Date().getTime()
             };
 
-            return site.getDb().insertRecord(this.CHOICE_TABLE, entry);
+            return site.getDb().insertRecord(AddonModChoiceOfflineProvider.CHOICE_TABLE, entry);
         });
     }
 }

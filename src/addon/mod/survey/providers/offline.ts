@@ -26,10 +26,10 @@ export class AddonModSurveyOfflineProvider {
     protected logger;
 
     // Variables for database.
-    protected SURVEY_TABLE = 'addon_mod_survey_answers';
+    static SURVEY_TABLE = 'addon_mod_survey_answers';
     protected tablesSchema = [
         {
-            name: this.SURVEY_TABLE,
+            name: AddonModSurveyOfflineProvider.SURVEY_TABLE,
             columns: [
                 {
                     name: 'surveyid',
@@ -77,7 +77,7 @@ export class AddonModSurveyOfflineProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
-            return site.getDb().deleteRecords(this.SURVEY_TABLE, {surveyid: surveyId, userid: userId});
+            return site.getDb().deleteRecords(AddonModSurveyOfflineProvider.SURVEY_TABLE, {surveyid: surveyId, userid: userId});
         });
     }
 
@@ -89,7 +89,7 @@ export class AddonModSurveyOfflineProvider {
      */
     getAllData(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getAllRecords(this.SURVEY_TABLE).then((entries) => {
+            return site.getDb().getAllRecords(AddonModSurveyOfflineProvider.SURVEY_TABLE).then((entries) => {
                 return entries.map((entry) => {
                     entry.answers = this.textUtils.parseJSON(entry.answers);
                 });
@@ -125,11 +125,11 @@ export class AddonModSurveyOfflineProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
-            return site.getDb().getRecord(this.SURVEY_TABLE, {surveyid: surveyId, userid: userId}).then((entry) => {
-                entry.answers = this.textUtils.parseJSON(entry.answers);
+            return site.getDb().getRecord(AddonModSurveyOfflineProvider.SURVEY_TABLE, {surveyid: surveyId, userid: userId});
+        }).then((entry) => {
+            entry.answers = this.textUtils.parseJSON(entry.answers);
 
-                return entry;
-            });
+            return entry;
         });
     }
 
@@ -171,7 +171,7 @@ export class AddonModSurveyOfflineProvider {
                 timecreated: new Date().getTime()
             };
 
-            return site.getDb().insertRecord(this.SURVEY_TABLE, entry);
+            return site.getDb().insertRecord(AddonModSurveyOfflineProvider.SURVEY_TABLE, entry);
         });
     }
 }

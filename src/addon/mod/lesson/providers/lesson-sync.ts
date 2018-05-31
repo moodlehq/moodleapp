@@ -58,12 +58,12 @@ export class AddonModLessonSyncProvider extends CoreSyncBaseProvider {
     protected componentTranslate: string;
 
     // Variables for database.
-    protected RETAKES_FINISHED_TABLE = 'addon_mod_lesson_retakes_finished_sync';
+    static RETAKES_FINISHED_TABLE = 'addon_mod_lesson_retakes_finished_sync';
     protected tablesSchema = {
-        name: this.RETAKES_FINISHED_TABLE,
+        name: AddonModLessonSyncProvider.RETAKES_FINISHED_TABLE,
         columns: [
             {
-                name: 'lessonId',
+                name: 'lessonid',
                 type: 'INTEGER',
                 primaryKey: true
             },
@@ -72,7 +72,7 @@ export class AddonModLessonSyncProvider extends CoreSyncBaseProvider {
                 type: 'INTEGER'
             },
             {
-                name: 'pageId',
+                name: 'pageid',
                 type: 'INTEGER'
             },
             {
@@ -105,7 +105,7 @@ export class AddonModLessonSyncProvider extends CoreSyncBaseProvider {
      */
     deleteRetakeFinishedInSync(lessonId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().deleteRecords(this.RETAKES_FINISHED_TABLE, {lessonId});
+            return site.getDb().deleteRecords(AddonModLessonSyncProvider.RETAKES_FINISHED_TABLE, {lessonid: lessonId});
         }).catch(() => {
             // Ignore errors, maybe there is none.
         });
@@ -120,7 +120,7 @@ export class AddonModLessonSyncProvider extends CoreSyncBaseProvider {
      */
     getRetakeFinishedInSync(lessonId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecord(this.RETAKES_FINISHED_TABLE, {lessonId});
+            return site.getDb().getRecord(AddonModLessonSyncProvider.RETAKES_FINISHED_TABLE, {lessonid: lessonId});
         }).catch(() => {
             // Ignore errors, return undefined.
         });
@@ -164,10 +164,10 @@ export class AddonModLessonSyncProvider extends CoreSyncBaseProvider {
      */
     setRetakeFinishedInSync(lessonId: number, retake: number, pageId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().insertRecord(this.RETAKES_FINISHED_TABLE, {
-                lessonId: lessonId,
+            return site.getDb().insertRecord(AddonModLessonSyncProvider.RETAKES_FINISHED_TABLE, {
+                lessonid: lessonId,
                 retake: Number(retake),
-                pageId: Number(pageId),
+                pageid: Number(pageId),
                 timefinished: this.timeUtils.timestamp()
             });
         });

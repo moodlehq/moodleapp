@@ -28,11 +28,11 @@ export class AddonModAssignOfflineProvider {
     protected logger;
 
     // Variables for database.
-    protected SUBMISSIONS_TABLE = 'addon_mod_assign_submissions';
-    protected SUBMISSIONS_GRADES_TABLE = 'addon_mod_assign_submissions_grading';
+    static SUBMISSIONS_TABLE = 'addon_mod_assign_submissions';
+    static SUBMISSIONS_GRADES_TABLE = 'addon_mod_assign_submissions_grading';
     protected tablesSchema = [
         {
-            name: this.SUBMISSIONS_TABLE,
+            name: AddonModAssignOfflineProvider.SUBMISSIONS_TABLE,
             columns: [
                 {
                     name: 'assignid',
@@ -74,7 +74,7 @@ export class AddonModAssignOfflineProvider {
             primaryKeys: ['assignid', 'userid']
         },
         {
-            name: this.SUBMISSIONS_GRADES_TABLE,
+            name: AddonModAssignOfflineProvider.SUBMISSIONS_GRADES_TABLE,
             columns: [
                 {
                     name: 'assignid',
@@ -143,7 +143,8 @@ export class AddonModAssignOfflineProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
-            return site.getDb().deleteRecords(this.SUBMISSIONS_TABLE, {assignid: assignId, userid: userId});
+            return site.getDb().deleteRecords(AddonModAssignOfflineProvider.SUBMISSIONS_TABLE,
+                    {assignid: assignId, userid: userId});
         });
     }
 
@@ -159,7 +160,8 @@ export class AddonModAssignOfflineProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
-            return site.getDb().deleteRecords(this.SUBMISSIONS_GRADES_TABLE, {assignid: assignId, userid: userId});
+            return site.getDb().deleteRecords(AddonModAssignOfflineProvider.SUBMISSIONS_GRADES_TABLE,
+                    {assignid: assignId, userid: userId});
         });
     }
 
@@ -201,7 +203,7 @@ export class AddonModAssignOfflineProvider {
      */
     protected getAllSubmissions(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.getAllRecords(this.SUBMISSIONS_TABLE);
+            return db.getAllRecords(AddonModAssignOfflineProvider.SUBMISSIONS_TABLE);
         }).then((submissions) => {
 
             // Parse the plugin data.
@@ -221,7 +223,7 @@ export class AddonModAssignOfflineProvider {
      */
     protected getAllSubmissionsGrade(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.getAllRecords(this.SUBMISSIONS_GRADES_TABLE);
+            return db.getAllRecords(AddonModAssignOfflineProvider.SUBMISSIONS_GRADES_TABLE);
         }).then((submissions) => {
 
             // Parse the plugin data and outcomes.
@@ -243,7 +245,7 @@ export class AddonModAssignOfflineProvider {
      */
     getAssignSubmissions(assignId: number, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.getRecords(this.SUBMISSIONS_TABLE, {assignid: assignId});
+            return db.getRecords(AddonModAssignOfflineProvider.SUBMISSIONS_TABLE, {assignid: assignId});
         }).then((submissions) => {
 
             // Parse the plugin data.
@@ -264,7 +266,7 @@ export class AddonModAssignOfflineProvider {
      */
     getAssignSubmissionsGrade(assignId: number, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.getRecords(this.SUBMISSIONS_GRADES_TABLE, {assignid: assignId});
+            return db.getRecords(AddonModAssignOfflineProvider.SUBMISSIONS_GRADES_TABLE, {assignid: assignId});
         }).then((submissions) => {
 
             // Parse the plugin data and outcomes.
@@ -289,7 +291,7 @@ export class AddonModAssignOfflineProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
-            return site.getDb().getRecord(this.SUBMISSIONS_TABLE, {assignid: assignId, userid: userId});
+            return site.getDb().getRecord(AddonModAssignOfflineProvider.SUBMISSIONS_TABLE, {assignid: assignId, userid: userId});
         }).then((submission) => {
 
             // Parse the plugin data.
@@ -331,7 +333,8 @@ export class AddonModAssignOfflineProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
-            return site.getDb().getRecord(this.SUBMISSIONS_GRADES_TABLE, {assignid: assignId, userid: userId});
+            return site.getDb().getRecord(AddonModAssignOfflineProvider.SUBMISSIONS_GRADES_TABLE,
+                    {assignid: assignId, userid: userId});
         }).then((submission) => {
 
             // Parse the plugin data and outcomes.
@@ -423,7 +426,7 @@ export class AddonModAssignOfflineProvider {
                 submission.submissionstatement = acceptStatement ? 1 : 0;
                 submission.plugindata = submission.plugindata ? JSON.stringify(submission.plugindata) : '{}';
 
-                return site.getDb().insertRecord(this.SUBMISSIONS_TABLE, submission);
+                return site.getDb().insertRecord(AddonModAssignOfflineProvider.SUBMISSIONS_TABLE, submission);
             });
         });
     }
@@ -458,7 +461,7 @@ export class AddonModAssignOfflineProvider {
                     onlinetimemodified: timemodified
                 };
 
-            return site.getDb().insertRecord(this.SUBMISSIONS_TABLE, entry);
+            return site.getDb().insertRecord(AddonModAssignOfflineProvider.SUBMISSIONS_TABLE, entry);
         });
     }
 
@@ -497,7 +500,7 @@ export class AddonModAssignOfflineProvider {
                     timemodified: now
                 };
 
-            return site.getDb().insertRecord(this.SUBMISSIONS_GRADES_TABLE, entry);
+            return site.getDb().insertRecord(AddonModAssignOfflineProvider.SUBMISSIONS_GRADES_TABLE, entry);
         });
     }
 }

@@ -36,10 +36,10 @@ export class AddonCalendarProvider {
     protected DEFAULT_NOTIFICATION_TIME = 60;
 
     // Variables for database.
-    protected EVENTS_TABLE = 'calendar_events';
+    static EVENTS_TABLE = 'addon_calendar_events';
     protected tablesSchema = [
         {
-            name: this.EVENTS_TABLE,
+            name: AddonCalendarProvider.EVENTS_TABLE,
             columns: [
                 {
                     name: 'id',
@@ -58,6 +58,10 @@ export class AddonCalendarProvider {
                 {
                     name: 'description',
                     type: 'TEXT'
+                },
+                {
+                    name: 'format',
+                    type: 'INTEGER'
                 },
                 {
                     name: 'eventtype',
@@ -84,6 +88,10 @@ export class AddonCalendarProvider {
                     type: 'INTEGER'
                 },
                 {
+                    name: 'userid',
+                    type: 'INTEGER'
+                },
+                {
                     name: 'instance',
                     type: 'INTEGER'
                 },
@@ -97,6 +105,22 @@ export class AddonCalendarProvider {
                 },
                 {
                     name: 'repeatid',
+                    type: 'INTEGER'
+                },
+                {
+                    name: 'visible',
+                    type: 'INTEGER'
+                },
+                {
+                    name: 'uuid',
+                    type: 'TEXT'
+                },
+                {
+                    name: 'sequence',
+                    type: 'INTEGER'
+                },
+                {
+                    name: 'subscriptionid',
                     type: 'INTEGER'
                 }
             ]
@@ -181,7 +205,7 @@ export class AddonCalendarProvider {
      */
     getEventFromLocalDb(id: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecord(this.EVENTS_TABLE, { id: id });
+            return site.getDb().getRecord(AddonCalendarProvider.EVENTS_TABLE, { id: id });
         });
     }
 
@@ -286,7 +310,7 @@ export class AddonCalendarProvider {
      * @return {string} Prefix Cache key.
      */
     protected getEventsListPrefixCacheKey(): string {
-        return this.ROOT_CACHE_KEY + 'eventslist:';
+        return this.ROOT_CACHE_KEY + 'events:';
     }
 
     /**
@@ -501,20 +525,26 @@ export class AddonCalendarProvider {
                         id: event.id,
                         name: event.name,
                         description: event.description,
+                        format: event.format,
                         eventtype: event.eventtype,
                         courseid: event.courseid,
                         timestart: event.timestart,
                         timeduration: event.timeduration,
                         categoryid: event.categoryid,
                         groupid: event.groupid,
+                        userid: event.userid,
                         instance: event.instance,
                         modulename: event.modulename,
                         timemodified: event.timemodified,
                         repeatid: event.repeatid,
+                        visible: event.visible,
+                        uuid: event.uuid,
+                        sequence: event.sequence,
+                        subscriptionid: event.subscriptionid,
                         notificationtime: e.notificationtime || -1
                     };
 
-                    return db.insertRecord(this.EVENTS_TABLE, eventRecord);
+                    return db.insertRecord(AddonCalendarProvider.EVENTS_TABLE, eventRecord);
                 }));
             });
 
@@ -539,7 +569,7 @@ export class AddonCalendarProvider {
 
             event.notificationtime = time;
 
-            return site.getDb().insertRecord(this.EVENTS_TABLE, event).then(() => {
+            return site.getDb().insertRecord(AddonCalendarProvider.EVENTS_TABLE, event).then(() => {
                 return this.scheduleEventNotification(event, time);
             });
         });
