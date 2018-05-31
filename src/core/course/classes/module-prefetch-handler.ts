@@ -457,7 +457,12 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
             // Package marked as downloading, call the download function.
             // Send all the params except downloadFn. This includes all params passed after siteId.
             return downloadFn.apply(downloadFn, [module, courseId, single, siteId].concat(args));
-        }).then((extra: string) => {
+        }).then((extra: any) => {
+            // Only accept string types.
+            if (typeof extra != 'string') {
+                extra = '';
+            }
+
             // Prefetch finished, mark as downloaded.
             return this.setDownloaded(module.id, siteId, extra);
         }).catch((error) => {

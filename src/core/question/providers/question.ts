@@ -132,10 +132,6 @@ export class CoreQuestionProvider {
                     type: 'INTEGER'
                 },
                 {
-                    name: 'state',
-                    type: 'TEXT'
-                },
-                {
                     name: 'value',
                     type: 'TEXT'
                 },

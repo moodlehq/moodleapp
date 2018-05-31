@@ -176,6 +176,151 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
         },
     ];
 
+    /**
+     * Tables to migrate from each site DB. Include all the core ones to decrease the dependencies.
+     *
+     * @type {CoreUpdateManagerMigrateTable[]}
+     */
+    protected siteDBTables: CoreUpdateManagerMigrateTable[] = [
+        {
+            name: 'check_updates_times',
+            fields: [
+                {
+                    name: 'courseid',
+                    newName: 'courseId'
+                }
+            ]
+        },
+        {
+            name: 'course_status',
+            fields: [
+                {
+                    name: 'previous',
+                    newName: 'previousStatus'
+                },
+                {
+                    name: 'downloadtime',
+                    newName: 'downloadTime'
+                },
+                {
+                    name: 'previousdownloadtime',
+                    newName: 'previousDownloadTime'
+                }
+            ]
+        },
+        {
+            name: 'filepool',
+            newName: 'filepool_files',
+            fields: [
+                {
+                    name: 'stale',
+                    type: 'boolean'
+                },
+                {
+                    name: 'downloaded',
+                    newName: 'downloadTime'
+                },
+                {
+                    name: 'isexternalfile',
+                    type: 'boolean'
+                }
+            ]
+        },
+        {
+            name: 'files_links',
+            newName: 'filepool_files_links',
+            fields: [
+                {
+                    name: 'componentAndId',
+                    delete: true
+                }
+            ]
+        },
+        {
+            name: 'filepool_packages',
+            fields: [
+                {
+                    name: 'downloadtime',
+                    newName: 'downloadTime'
+                },
+                {
+                    name: 'previousdownloadtime',
+                    newName: 'previousDownloadTime'
+                },
+                {
+                    name: 'revision', // Move the value of 'revision' to 'extra' so SCORMs keep working.
+                    newName: 'extra'
+                },
+                {
+                    name: 'timemodified',
+                    delete: true
+                }
+            ]
+        },
+        {
+            name: 'mm_emulator_last_received_notification',
+            newName: 'core_emulator_last_received_notification',
+            filterFields: ['component', 'id', 'timecreated']
+        },
+        {
+            name: 'questions',
+            fields: [
+                {
+                    name: 'componentId',
+                    newName: 'componentid'
+                },
+                {
+                    name: 'componentAndAttempt',
+                    delete: true
+                },
+                {
+                    name: 'componentAndComponentId',
+                    delete: true
+                }
+            ]
+        },
+        {
+            name: 'question_answers',
+            fields: [
+                {
+                    name: 'componentId',
+                    newName: 'componentid'
+                },
+                {
+                    name: 'componentAndAttempt',
+                    delete: true
+                },
+                {
+                    name: 'componentAndComponentId',
+                    delete: true
+                },
+                {
+                    name: 'componentAndAttemptAndQuestion',
+                    delete: true
+                }
+            ]
+        },
+        {
+            name: 'sync'
+        },
+        {
+            name: 'users'
+        },
+        {
+            name: 'wscache',
+            fields: [
+                {
+                    name: 'data',
+                    type: 'object'
+                },
+                {
+                    name: 'expirationtime',
+                    newName: 'expirationTime'
+                }
+            ]
+        }
+    ];
+
     constructor(logger: CoreLoggerProvider, private configProvider: CoreConfigProvider, private sitesProvider: CoreSitesProvider,
             private filepoolProvider: CoreFilepoolProvider, private notifProvider: CoreLocalNotificationsProvider,
             private utils: CoreUtilsProvider, private appProvider: CoreAppProvider) {
@@ -247,7 +392,16 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
 
         // First migrate the app DB.
         return this.migrateAppDB().then(() => {
-            // @todo: Migrate site DBs.
+            // Now migrate all site DBs.
+            return this.sitesProvider.getSitesIds();
+        }).then((ids) => {
+            const promises = [];
+
+            ids.forEach((id) => {
+                promises.push(this.migrateSiteDB(id));
+            });
+
+            return this.utils.allPromises(promises);
         });
     }
 
@@ -261,6 +415,21 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
             newDb = this.appProvider.getDB();
 
         return this.migrateDB(oldDb, newDb, this.appDBTables);
+    }
+
+    /**
+     * Migrate the DB of a certain site.
+     *
+     * @param {string} siteId The site ID.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected migrateSiteDB(siteId: string): Promise<any> {
+        // Get the site DB.
+        return this.sitesProvider.getSiteDb(siteId).then((newDb) => {
+            const oldDb = new (<any> window).ydn.db.Storage('Site-' + siteId);
+
+            return this.migrateDB(oldDb, newDb, this.siteDBTables);
+        });
     }
 
     /**
