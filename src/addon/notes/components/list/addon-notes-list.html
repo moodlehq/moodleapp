@@ -32,7 +32,7 @@
                     </ion-avatar>
                     <h2>{{note.userfullname}}</h2>
                     <p *ngIf="!note.offline" item-end>{{note.lastmodified | coreDateDayOrTime}}</p>
-                    <p *ngIf="note.offline" item-end><ion-icon name="clock"></ion-icon> {{ 'core.notsent' | translate }}</p>
+                    <p *ngIf="note.offline" item-end><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</p>
                 </ion-item>
                 <ion-item text-wrap>
                     <core-format-text [clean]="true" [text]="note.content"></core-format-text>
