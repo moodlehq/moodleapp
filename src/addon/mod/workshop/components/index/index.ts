@@ -117,7 +117,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
      * @param {any} data Data received by the event.
      */
     protected eventReceived(data: any): void {
-        if ((this.workshop && this.workshop.id === data.workshopid) || data.cmid === module.id) {
+        if ((this.workshop && this.workshop.id === data.workshopId) || data.cmId === this.module.id) {
             this.content && this.content.scrollToTop();
 
             this.loaded = false;
@@ -297,7 +297,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
             if (task.code == 'submit' && this.canSubmit && ((this.access.creatingsubmissionallowed && !this.submission) ||
                     (this.access.modifyingsubmissionallowed && this.submission))) {
                 const params = {
-                    module: module,
+                    module: this.module,
                     access: this.access,
                     courseId: this.courseId,
                     submission: this.submission

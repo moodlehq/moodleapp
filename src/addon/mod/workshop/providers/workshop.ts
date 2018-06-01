@@ -215,10 +215,9 @@ export class AddonModWorkshopProvider {
 
             return site.read('mod_workshop_get_workshops_by_courses', params, preSets).then((response) => {
                 if (response && response.workshops) {
-                    for (const x in response.workshops) {
-                        if (response.workshops[x][key] == value) {
-                            return response.workshops[x];
-                        }
+                    const workshopFound = response.workshops.find((workshop) => workshop[key] == value);
+                    if (workshopFound) {
+                        return workshopFound;
                     }
                 }
 

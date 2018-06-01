@@ -482,8 +482,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
                                 pageId: this.pageId,
                                 subwikiId: this.subwikiId,
                                 pageTitle: title,
-                                siteId: this.sitesProvider.getCurrentSiteId()
-                            });
+                            }, this.sitesProvider.getCurrentSiteId());
                         });
                     } else {
                         // Page stored in offline. Go to see the offline page.
