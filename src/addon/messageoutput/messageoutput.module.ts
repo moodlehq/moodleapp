@@ -15,13 +15,16 @@
 import { NgModule } from '@angular/core';
 import { AddonMessageOutputDelegate } from './providers/delegate';
 
+// List of providers (without handlers).
+export const ADDON_MESSAGEOUTPUT_PROVIDERS: any[] = [
+    AddonMessageOutputDelegate
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
     ],
-    providers: [
-        AddonMessageOutputDelegate
-    ]
+    providers: ADDON_MESSAGEOUTPUT_PROVIDERS
 })
 export class AddonMessageOutputModule {}

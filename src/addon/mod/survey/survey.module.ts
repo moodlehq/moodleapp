@@ -27,22 +27,26 @@ import { AddonModSurveySyncProvider } from './providers/sync';
 import { AddonModSurveySyncCronHandler } from './providers/sync-cron-handler';
 import { AddonModSurveyOfflineProvider } from './providers/offline';
 
+// List of providers (without handlers).
+export const ADDON_MOD_SURVEY_PROVIDERS: any[] = [
+    AddonModSurveyProvider,
+    AddonModSurveyHelperProvider,
+    AddonModSurveySyncProvider,
+    AddonModSurveyOfflineProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
         AddonModSurveyComponentsModule
     ],
-    providers: [
-        AddonModSurveyProvider,
+    providers: ADDON_MOD_SURVEY_PROVIDERS.concat([
         AddonModSurveyModuleHandler,
         AddonModSurveyPrefetchHandler,
-        AddonModSurveyHelperProvider,
         AddonModSurveyLinkHandler,
-        AddonModSurveySyncCronHandler,
-        AddonModSurveySyncProvider,
-        AddonModSurveyOfflineProvider
-    ]
+        AddonModSurveySyncCronHandler
+    ])
 })
 export class AddonModSurveyModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModSurveyModuleHandler,

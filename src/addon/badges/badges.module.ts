@@ -20,17 +20,21 @@ import { AddonBadgesBadgeLinkHandler } from './providers/badge-link-handler';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreUserDelegate } from '@core/user/providers/user-delegate';
 
+// List of providers (without handlers).
+export const ADDON_BADGES_PROVIDERS: any[] = [
+    AddonBadgesProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
     ],
-    providers: [
-        AddonBadgesProvider,
+    providers: ADDON_BADGES_PROVIDERS.concat([
         AddonBadgesUserHandler,
         AddonBadgesMyBadgesLinkHandler,
         AddonBadgesBadgeLinkHandler
-    ]
+    ])
 })
 export class AddonBadgesModule {
     constructor(userDelegate: CoreUserDelegate, userHandler: AddonBadgesUserHandler,

@@ -22,18 +22,22 @@ import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 
+// List of providers (without handlers).
+export const ADDON_MOD_BOOK_PROVIDERS: any[] = [
+    AddonModBookProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
         AddonModBookComponentsModule
     ],
-    providers: [
-        AddonModBookProvider,
+    providers: ADDON_MOD_BOOK_PROVIDERS.concat([
         AddonModBookModuleHandler,
         AddonModBookLinkHandler,
         AddonModBookPrefetchHandler
-    ]
+    ])
 })
 export class AddonModBookModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModBookModuleHandler,

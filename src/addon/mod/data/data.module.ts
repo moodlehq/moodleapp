@@ -34,6 +34,15 @@ import { AddonModDataFieldsDelegate } from './providers/fields-delegate';
 import { AddonModDataDefaultFieldHandler } from './providers/default-field-handler';
 import { AddonModDataFieldModule } from './fields/field.module';
 
+// List of providers (without handlers).
+export const ADDON_MOD_DATA_PROVIDERS: any[] = [
+    AddonModDataProvider,
+    AddonModDataHelperProvider,
+    AddonModDataSyncProvider,
+    AddonModDataOfflineProvider,
+    AddonModDataFieldsDelegate
+];
+
 @NgModule({
     declarations: [
     ],
@@ -41,22 +50,17 @@ import { AddonModDataFieldModule } from './fields/field.module';
         AddonModDataComponentsModule,
         AddonModDataFieldModule
     ],
-    providers: [
-        AddonModDataProvider,
+    providers: ADDON_MOD_DATA_PROVIDERS.concat([
         AddonModDataModuleHandler,
         AddonModDataPrefetchHandler,
-        AddonModDataHelperProvider,
         AddonModDataLinkHandler,
         AddonModDataApproveLinkHandler,
         AddonModDataDeleteLinkHandler,
         AddonModDataShowLinkHandler,
         AddonModDataEditLinkHandler,
         AddonModDataSyncCronHandler,
-        AddonModDataSyncProvider,
-        AddonModDataOfflineProvider,
-        AddonModDataFieldsDelegate,
         AddonModDataDefaultFieldHandler
-    ]
+    ])
 })
 export class AddonModDataModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModDataModuleHandler,

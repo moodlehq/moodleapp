@@ -19,14 +19,17 @@ import { CoreInitDelegate } from '@providers/init';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 
+// List of providers (without handlers).
+export const ADDON_REMOTETHEMES_PROVIDERS: any[] = [
+    AddonRemoteThemesProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
     ],
-    providers: [
-        AddonRemoteThemesProvider
-    ]
+    providers: ADDON_REMOTETHEMES_PROVIDERS
 })
 export class AddonRemoteThemesModule {
     constructor(initDelegate: CoreInitDelegate, remoteThemesProvider: AddonRemoteThemesProvider, eventsProvider: CoreEventsProvider,

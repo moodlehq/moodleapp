@@ -25,20 +25,24 @@ import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
+// List of providers (without handlers).
+export const ADDON_MOD_PAGE_PROVIDERS: any[] = [
+    AddonModPageProvider,
+    AddonModPageHelperProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
         AddonModPageComponentsModule
     ],
-    providers: [
-        AddonModPageProvider,
+    providers: ADDON_MOD_PAGE_PROVIDERS.concat([
         AddonModPageModuleHandler,
-        AddonModPageHelperProvider,
         AddonModPagePrefetchHandler,
         AddonModPageLinkHandler,
         AddonModPagePluginFileHandler
-    ]
+    ])
 })
 export class AddonModPageModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModPageModuleHandler,

@@ -28,23 +28,27 @@ import { AddonModForumIndexLinkHandler } from './providers/index-link-handler';
 import { AddonModForumDiscussionLinkHandler } from './providers/discussion-link-handler';
 import { AddonModForumComponentsModule } from './components/components.module';
 
+// List of providers (without handlers).
+export const ADDON_MOD_FORUM_PROVIDERS: any[] = [
+    AddonModForumProvider,
+    AddonModForumOfflineProvider,
+    AddonModForumHelperProvider,
+    AddonModForumSyncProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
         AddonModForumComponentsModule,
     ],
-    providers: [
-        AddonModForumProvider,
-        AddonModForumOfflineProvider,
-        AddonModForumHelperProvider,
-        AddonModForumSyncProvider,
+    providers: ADDON_MOD_FORUM_PROVIDERS.concat([
         AddonModForumModuleHandler,
         AddonModForumPrefetchHandler,
         AddonModForumSyncCronHandler,
         AddonModForumIndexLinkHandler,
-        AddonModForumDiscussionLinkHandler,
-    ]
+        AddonModForumDiscussionLinkHandler
+    ])
 })
 export class AddonModForumModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModForumModuleHandler,

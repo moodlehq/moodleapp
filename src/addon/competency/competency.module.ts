@@ -23,19 +23,23 @@ import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delega
 import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
 import { CoreUserDelegate } from '@core/user/providers/user-delegate';
 
+// List of providers (without handlers).
+export const ADDON_COMPETENCY_PROVIDERS: any[] = [
+    AddonCompetencyProvider,
+    AddonCompetencyHelperProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
         AddonCompetencyComponentsModule
     ],
-    providers: [
-        AddonCompetencyProvider,
-        AddonCompetencyHelperProvider,
+    providers: ADDON_COMPETENCY_PROVIDERS.concat([
         AddonCompetencyCourseOptionHandler,
         AddonCompetencyMainMenuHandler,
         AddonCompetencyUserHandler
-    ]
+    ])
 })
 export class AddonCompetencyModule {
     constructor(mainMenuDelegate: CoreMainMenuDelegate, mainMenuHandler: AddonCompetencyMainMenuHandler,

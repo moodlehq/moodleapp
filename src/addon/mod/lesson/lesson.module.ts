@@ -29,24 +29,28 @@ import { AddonModLessonIndexLinkHandler } from './providers/index-link-handler';
 import { AddonModLessonGradeLinkHandler } from './providers/grade-link-handler';
 import { AddonModLessonReportLinkHandler } from './providers/report-link-handler';
 
+// List of providers (without handlers).
+export const ADDON_MOD_LESSON_PROVIDERS: any[] = [
+    AddonModLessonProvider,
+    AddonModLessonOfflineProvider,
+    AddonModLessonSyncProvider,
+    AddonModLessonHelperProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
         AddonModLessonComponentsModule
     ],
-    providers: [
-        AddonModLessonProvider,
-        AddonModLessonOfflineProvider,
-        AddonModLessonSyncProvider,
-        AddonModLessonHelperProvider,
+    providers: ADDON_MOD_LESSON_PROVIDERS.concat([
         AddonModLessonModuleHandler,
         AddonModLessonPrefetchHandler,
         AddonModLessonSyncCronHandler,
         AddonModLessonIndexLinkHandler,
         AddonModLessonGradeLinkHandler,
         AddonModLessonReportLinkHandler
-    ]
+    ])
 })
 export class AddonModLessonModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModLessonModuleHandler,
