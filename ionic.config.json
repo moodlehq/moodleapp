@@ -1,6 +1,6 @@
 {
-  "name": "moodlemobile",
-  "app_id": "com.moodle.moodlemobile",
+  "name": "icmda",
+  "app_id": "net.icmda.training",
   "type": "ionic-angular",
   "integrations": {
     "cordova": {},
