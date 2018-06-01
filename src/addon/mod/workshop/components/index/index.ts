@@ -303,10 +303,6 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
                     submission: this.submission
                 };
 
-                if (this.submission.id) {
-                    params['submissionId'] = this.submission.id;
-                }
-
                 this.navCtrl.push('AddonModWorkshopEditSubmissionPage', params);
             }
         } else if (task.link) {

@@ -42,7 +42,6 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
     access: any;
     submission: any;
 
-    title: string;
     loaded = false;
     component = AddonModWorkshopProvider.COMPONENT;
     componentId: number;
@@ -56,6 +55,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
     protected forceLeave = false;
     protected siteId: string;
     protected workshop: any;
+    protected isDestroyed = false;
 
     constructor(navParams: NavParams, sitesProvider: CoreSitesProvider, protected fileUploaderProvider: CoreFileUploaderProvider,
             protected workshopProvider: AddonModWorkshopProvider, protected workshopOffline: AddonModWorkshopOfflineProvider,
@@ -68,7 +68,6 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
         this.access = navParams.get('access');
         this.submission = navParams.get('submission') || {};
 
-        this.title = this.module.name;
         this.workshopId = this.module.instance;
         this.componentId = this.module.id;
         this.userId = sitesProvider.getCurrentSiteUserId();
@@ -83,6 +82,11 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
      * Component being initialized.
      */
     ngOnInit(): void {
+        if (!this.isDestroyed) {
+            // Block the workshop.
+            this.syncProvider.blockOperation(this.component, this.workshopId);
+        }
+
         this.fetchSubmissionData();
     }
 
@@ -182,7 +186,6 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
                 });
             });
         }).then(() => {
-            // Create the form group and its controls.
             this.editForm.controls['title'].setValue(this.submission.title);
             this.editForm.controls['content'].setValue(this.submission.content);
 
@@ -390,6 +393,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
      * Component being destroyed.
      */
     ngOnDestroy(): void {
+        this.isDestroyed = true;
         this.syncProvider.unblockOperation(this.component, this.workshopId);
     }
 }

@@ -123,7 +123,6 @@ export class AddonModWorkshopSubmissionComponent implements OnInit {
                 profile: this.profile,
                 submission: this.submission,
                 assessment: this.assessment,
-                submissionId: this.submission.id
             };
 
             this.navCtrl.push('AddonModWorkshopSubmissionPage', params);

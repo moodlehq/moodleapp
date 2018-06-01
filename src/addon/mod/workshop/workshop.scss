@@ -1,0 +1,13 @@
+addon-mod-workshop-submission,
+addon-mod-workshop-assessment, // TODO, change names
+addon-mod-workshop-assessment {
+
+  p.addon-overriden-grade {
+    color: color($colors, success);
+  }
+
+  p.addon-has-overriden-grade {
+    color: color($colors, danger);
+    text-decoration: line-through;
+  }
+}
