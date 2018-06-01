@@ -20,10 +20,16 @@ import { CoreLoggerProvider } from './logger';
  */
 export interface CorePluginFileHandler {
     /**
-     * A name to identify the handler. It should match the "component" of pluginfile URLs.
+     * A name to identify the handler.
      * @type {string}
      */
     name: string;
+
+    /**
+     * The "component" of the handler. It should match the "component" of pluginfile URLs.
+     * @type {string}
+     */
+    component: string;
 
     /**
      * Return the RegExp to match the revision on pluginfile URLs.
@@ -57,12 +63,12 @@ export class CorePluginFileDelegate {
     /**
      * Get the handler for a certain pluginfile url.
      *
-     * @param {string} pluginType Type of the plugin.
+     * @param {string} component Component of the plugin.
      * @return {CorePluginFileHandler} Handler. Undefined if no handler found for the plugin.
      */
-    protected getPluginHandler(pluginType: string): CorePluginFileHandler {
-        if (typeof this.handlers[pluginType] != 'undefined') {
-            return this.handlers[pluginType];
+    protected getPluginHandler(component: string): CorePluginFileHandler {
+        if (typeof this.handlers[component] != 'undefined') {
+            return this.handlers[component];
         }
     }
 
@@ -88,14 +94,14 @@ export class CorePluginFileDelegate {
      * @return {boolean} True if registered successfully, false otherwise.
      */
     registerHandler(handler: CorePluginFileHandler): boolean {
-        if (typeof this.handlers[handler.name] !== 'undefined') {
-            this.logger.log(`Addon '${handler.name}' already registered`);
+        if (typeof this.handlers[handler.component] !== 'undefined') {
+            this.logger.log(`Handler '${handler.component}' already registered`);
 
             return false;
         }
 
-        this.logger.log(`Registered addon '${handler.name}'`);
-        this.handlers[handler.name] = handler;
+        this.logger.log(`Registered handler '${handler.component}'`);
+        this.handlers[handler.component] = handler;
 
         return true;
     }
