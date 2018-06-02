@@ -18,7 +18,7 @@
     <preference name="fullscreen" value="false" />
     <preference name="webviewbounce" value="false" />
     <preference name="AppendUserAgent" value="MoodleMobile" />
-    <preference name="android-minSdkVersion" value="19" />
+    <preference name="android-minSdkVersion" value="23" />
     <preference name="android-targetSdkVersion" value="19" />
     <preference name="UIWebViewBounce" value="false" />
     <preference name="DisallowOverscroll" value="true" />
@@ -53,6 +53,7 @@
         <icon density="xxxhdpi" src="resources/android/icon/drawable-xxxhdpi-icon.png" />
     </platform>
     <platform name="ios">
+        <preference name="SplashScreenBackgroundColor" value="white" />
         <icon height="57" src="resources/ios/icon/icon.png" width="57" />
         <icon height="114" src="resources/ios/icon/icon@2x.png" width="114" />
         <icon height="40" src="resources/ios/icon/icon-40.png" width="40" />
@@ -120,4 +121,5 @@
     <plugin name="net.tunts.webintent" spec="../WebIntent" />
     <preference name="SplashShowOnlyFirstTime" value="false" />
     <engine name="ios" spec="4.5.4" />
+    <engine name="android" spec="6.3.0" />
 </widget>

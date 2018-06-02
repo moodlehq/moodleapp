@@ -66,7 +66,7 @@
     "@types/node": "^8.0.47",
     "@types/promise.prototype.finally": "^2.0.2",
     "ch.ti8m.documenthandler": "file:../DocumentHandler",
-    "cordova-android": "7.0.0",
+    "cordova-android": "6.3.0",
     "cordova-clipboard": "^1.1.0",
     "cordova-ios": "4.5.4",
     "cordova-plugin-app-event": "^1.2.1",
@@ -116,7 +116,8 @@
   },
   "cordova": {
     "platforms": [
-      "ios"
+      "ios",
+      "android"
     ],
     "plugins": {
       "cordova-plugin-file": {},

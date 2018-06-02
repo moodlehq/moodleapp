@@ -46,7 +46,7 @@ $yellow:          #fbad1a; // Accent (never text).
 $yellow-light:    mix($yellow, white, 20%);
 $yellow-dark:     mix($yellow, black, 40%);
 
-$core-color:          $orange;
+$core-color:          $blue-dark;
 $core-color-light:    lighten($core-color, 10%);
 $core-color-dark:     darken($core-color, 10%);
 
@@ -57,7 +57,7 @@ $core-color-dark:     darken($core-color, 10%);
 // To view all the possible Ionic variables, see:
 // http://ionicframework.com/docs/theming/overriding-ionic-variables/
 
-$toolbar-background: $orange;
+$toolbar-background: $blue-dark;
 $content-padding: 10px;
 
 
@@ -115,8 +115,8 @@ $item-icon-accessory-color:       #ccc !default;
 $item-icon-accessory-font-size:   16px !default;
 
 // Init screen.
-$core-color-init-screen:          #ff5c00;
-$core-color-init-screen-alt:      #ff7600;
+$core-color-init-screen:          $blue-light;
+$core-color-init-screen-alt:      $gray-light;
 $core-init-screen-spinner-color:  $white;
 $core-init-screen-logo-width:     60%;
 $core-init-screen-logo-max-width: 300px;

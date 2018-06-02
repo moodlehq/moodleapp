@@ -10,7 +10,7 @@
     "wsservice" : "moodle_mobile_app",
     "wsextservice" : "local_mobile",
     "demo_sites": {"student": {"url": "https://school.demo.moodle.net", "username": "student", "password": "moodle"}, "teacher": {"url": "https://school.demo.moodle.net", "username": "teacher", "password": "moodle"}},
-    "gcmpn": "694767596569",
+    "gcmpn": "821240456619",
     "customurlscheme": "moodlemobile",
     "siteurl": "http://training.icmda.net",
     "multisitesdisplay": "",
