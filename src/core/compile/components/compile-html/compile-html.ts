@@ -119,10 +119,12 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
                 // Store this instance so it can be accessed by the outer component.
                 compileInstance.componentInstance = this;
 
-                // If there is some javascript to run, prepare the instance.
-                if (compileInstance.javascript) {
-                    compileInstance.compileProvider.injectLibraries(this, compileInstance.extraProviders);
-                }
+                // Create 2 empty properties that can be used by the template to store data.
+                this['dataObject'] = {};
+                this['dataArray'] = [];
+
+                // Inject the libraries.
+                compileInstance.compileProvider.injectLibraries(this, compileInstance.extraProviders);
 
                 // Always add these elements, they could be needed on component init (componentObservable).
                 this['ChangeDetectorRef'] = compileInstance.cdr;
