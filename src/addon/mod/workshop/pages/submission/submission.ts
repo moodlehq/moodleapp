@@ -19,10 +19,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
-import { CoreFileSessionProvider } from '@providers/file-session';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
@@ -79,10 +77,9 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
     protected syncObserver: any;
     protected isDestroyed = false;
 
-    constructor(navParams: NavParams, sitesProvider: CoreSitesProvider, protected fileUploaderProvider: CoreFileUploaderProvider,
-            protected workshopProvider: AddonModWorkshopProvider, protected workshopOffline: AddonModWorkshopOfflineProvider,
+    constructor(navParams: NavParams, sitesProvider: CoreSitesProvider, protected workshopProvider: AddonModWorkshopProvider,
+            protected workshopOffline: AddonModWorkshopOfflineProvider, protected syncProvider: CoreSyncProvider,
             protected workshopHelper: AddonModWorkshopHelperProvider, protected navCtrl: NavController,
-            protected fileSessionprovider: CoreFileSessionProvider, protected syncProvider: CoreSyncProvider,
             protected textUtils: CoreTextUtilsProvider, protected domUtils: CoreDomUtilsProvider, protected fb: FormBuilder,
             protected translate: TranslateService, protected eventsProvider: CoreEventsProvider,
             protected courseProvider: CoreCourseProvider, @Optional() protected content: Content,
