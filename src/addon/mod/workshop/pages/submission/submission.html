@@ -48,21 +48,23 @@
             <ion-item text-wrap>
                 <h2>{{ 'addon.mod_workshop.yourassessment' | translate }}</h2>
             </ion-item>
-            <!--<addon-mod-workshop-assessment [submission]="submission" [assessment]="ownAssessment" [courseId]="courseId" summary="true" [access]="access" [module]="module" [workshop]="workshop"></addon-mod-workshop-assessment>-->
+            <addon-mod-workshop-assessment [submission]="submission" [assessment]="ownAssessment" [courseId]="courseId" summary="true" [access]="access" [module]="module" [workshop]="workshop"></addon-mod-workshop-assessment>
         </ion-list>
 
         <ion-list *ngIf="submissionInfo && submissionInfo.reviewedby && submissionInfo.reviewedby.length && !assessment">
             <ion-item text-wrap>
                 <h2>{{ 'addon.mod_workshop.receivedgrades' | translate }}</h2>
             </ion-item>
-            <!--<addon-mod-workshop-assessment *ngFor="let reviewer of submissionInfo.reviewedby" *ngIf="!reviewer.ownAssessment" [submission]="submission" [assessment]="reviewer" [courseId]="courseId" summary="true" [access]="access" [workshop]="workshop"></addon-mod-workshop-assessment>-->
+            <ng-container *ngFor="let reviewer of submissionInfo.reviewedby">
+                <addon-mod-workshop-assessment *ngIf="!reviewer.ownAssessment" [submission]="submission" [assessment]="reviewer" [courseId]="courseId" summary="true" [access]="access" [workshop]="workshop"></addon-mod-workshop-assessment>
+            </ng-container>
         </ion-list>
 
         <ion-list *ngIf="submissionInfo && submissionInfo.reviewerof && submissionInfo.reviewerof.length && !assessment">
             <ion-item text-wrap>
                 <h2>{{ 'addon.mod_workshop.givengrades' | translate }}</h2>
             </ion-item>
-            <!--<addon-mod-workshop-assessment *ngFor="let reviewer of submissionInfo.reviewerof" [assessment]="reviewer" [courseId]="courseId" summary="true" [workshop]="workshop" [access]="access"></addon-mod-workshop-assessment>-->
+            <addon-mod-workshop-assessment *ngFor="let reviewer of submissionInfo.reviewerof" [assessment]="reviewer" [courseId]="courseId" summary="true" [workshop]="workshop" [access]="access"></addon-mod-workshop-assessment>
         </ion-list>
 
         <form ion-list [formGroup]="feedbackForm" *ngIf="canAddFeedback">

@@ -22,11 +22,13 @@ import { CorePipesModule } from '@pipes/pipes.module';
 import { CoreCourseComponentsModule } from '@core/course/components/components.module';
 import { AddonModWorkshopIndexComponent } from './index/index';
 import { AddonModWorkshopSubmissionComponent } from './submission/submission';
+import { AddonModWorkshopAssessmentComponent } from './assessment/assessment';
 
 @NgModule({
     declarations: [
         AddonModWorkshopIndexComponent,
-        AddonModWorkshopSubmissionComponent
+        AddonModWorkshopSubmissionComponent,
+        AddonModWorkshopAssessmentComponent
     ],
     imports: [
         CommonModule,
@@ -41,7 +43,8 @@ import { AddonModWorkshopSubmissionComponent } from './submission/submission';
     ],
     exports: [
         AddonModWorkshopIndexComponent,
-        AddonModWorkshopSubmissionComponent
+        AddonModWorkshopSubmissionComponent,
+        AddonModWorkshopAssessmentComponent
     ],
     entryComponents: [
         AddonModWorkshopIndexComponent

@@ -36,7 +36,7 @@ import { AddonModWorkshopSyncProvider } from '../../providers/sync';
  */
 @IonicPage({ segment: 'addon-mod-workshop-submission' })
 @Component({
-    selector: 'page-addon-mod-workshop-submission',
+    selector: 'page-addon-mod-workshop-submission-page',
     templateUrl: 'submission.html',
 })
 export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
