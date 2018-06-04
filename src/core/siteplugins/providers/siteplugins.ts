@@ -20,6 +20,7 @@ import { CoreLangProvider } from '@providers/lang';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreConfigConstants } from '../../../configconstants';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
@@ -68,7 +69,8 @@ export class CoreSitePluginsProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
             private langProvider: CoreLangProvider, private appProvider: CoreAppProvider, private platform: Platform,
-            private filepoolProvider: CoreFilepoolProvider, private coursesProvider: CoreCoursesProvider) {
+            private filepoolProvider: CoreFilepoolProvider, private coursesProvider: CoreCoursesProvider,
+            private textUtils: CoreTextUtilsProvider) {
         this.logger = logger.getInstance('CoreUserProvider');
     }
 
@@ -218,6 +220,15 @@ export class CoreSitePluginsProvider {
             }).then((result) => {
                 if (result.otherdata) {
                     result.otherdata = this.utils.objectToKeyValueMap(result.otherdata, 'name', 'value');
+
+                    // Try to parse all properties that could be JSON encoded strings.
+                    for (const name in result.otherdata) {
+                        const value = result.otherdata[name];
+
+                        if (typeof value == 'string' && (value[0] == '{' || value[0] == '[')) {
+                            result.otherdata[name] = this.textUtils.parseJSON(value);
+                        }
+                    }
                 } else {
                     result.otherdata = {};
                 }
