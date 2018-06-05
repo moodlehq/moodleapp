@@ -252,7 +252,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Calculate the status of sections.
      *
-     * @param {boolean} refresh [description]
+     * @param {boolean} refresh If refresh or not.
      */
     protected calculateSectionsStatus(refresh?: boolean): void {
         this.courseHelper.calculateSectionsStatus(this.sections, this.course.id, refresh).catch(() => {

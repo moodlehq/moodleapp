@@ -17,6 +17,7 @@ import { IonicPage, NavController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCoursesProvider } from '../../providers/courses';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
@@ -43,11 +44,12 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
     protected myCoursesObserver;
     protected siteUpdatedObserver;
     protected isDestroyed = false;
+    protected courseIds = '';
 
     constructor(private navCtrl: NavController, private coursesProvider: CoreCoursesProvider,
             private domUtils: CoreDomUtilsProvider, private eventsProvider: CoreEventsProvider,
             private sitesProvider: CoreSitesProvider, private courseHelper: CoreCourseHelperProvider,
-            private courseOptionsDelegate: CoreCourseOptionsDelegate) { }
+            private courseOptionsDelegate: CoreCourseOptionsDelegate, private utils: CoreUtilsProvider) { }
 
     /**
      * View loaded.
@@ -85,16 +87,33 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
      */
     protected fetchCourses(): Promise<any> {
         return this.coursesProvider.getUserCourses().then((courses) => {
-
-            const courseIds = courses.map((course) => {
+            const promises = [],
+                courseIds = courses.map((course) => {
                 return course.id;
             });
 
-            return this.coursesProvider.getCoursesAdminAndNavOptions(courseIds).then((options) => {
+            this.courseIds = courseIds.join(',');
+
+            // Load course image of all the courses.
+            promises.push(this.coursesProvider.getCoursesByField('ids', this.courseIds).then((coursesInfo) => {
+                coursesInfo = this.utils.arrayToObject(coursesInfo, 'id');
+                courses.forEach((course) => {
+                    if (coursesInfo[course.id] && coursesInfo[course.id].overviewfiles && coursesInfo[course.id].overviewfiles[0]) {
+                        course.imageThumb = coursesInfo[course.id].overviewfiles[0].fileurl;
+                    } else {
+                        course.imageThumb = false;
+                    }
+                });
+            }));
+
+            promises.push(this.coursesProvider.getCoursesAdminAndNavOptions(courseIds).then((options) => {
                 courses.forEach((course) => {
                     course.navOptions = options.navOptions[course.id];
                     course.admOptions = options.admOptions[course.id];
                 });
+            }));
+
+            return Promise.all(promises).then(() => {
                 this.courses = courses;
                 this.filteredCourses = this.courses;
                 this.filter = '';
@@ -116,6 +135,7 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
 
         promises.push(this.coursesProvider.invalidateUserCourses());
         promises.push(this.courseOptionsDelegate.clearAndInvalidateCoursesOptions());
+        promises.push(this.coursesProvider.invalidateCoursesByField('ids', this.courseIds));
 
         Promise.all(promises).finally(() => {
 
