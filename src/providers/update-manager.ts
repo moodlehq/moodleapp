@@ -22,6 +22,7 @@ import { CoreLoggerProvider } from './logger';
 import { CoreSitesProvider } from './sites';
 import { CoreUtilsProvider } from './utils/utils';
 import { CoreConfigConstants } from '../configconstants';
+import { AddonCalendarProvider } from '@addon/calendar/providers/calendar';
 import { SQLiteDB } from '@classes/sqlitedb';
 
 /**
@@ -323,7 +324,8 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
 
     constructor(logger: CoreLoggerProvider, private configProvider: CoreConfigProvider, private sitesProvider: CoreSitesProvider,
             private filepoolProvider: CoreFilepoolProvider, private notifProvider: CoreLocalNotificationsProvider,
-            private utils: CoreUtilsProvider, private appProvider: CoreAppProvider) {
+            private utils: CoreUtilsProvider, private appProvider: CoreAppProvider,
+            private calendarProvider: AddonCalendarProvider) {
         this.logger = logger.getInstance('CoreUpdateManagerProvider');
     }
 
@@ -358,9 +360,8 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
                 promises.push(this.setSitesConfig());
             }
 
-            if (versionCode >= 2018 && versionApplied < 2018 && versionApplied > 0) {
-                promises.push(this.adaptForumOfflineStores());
-            }
+            // In version 2018 we adapted the forum offline stores to match a new schema.
+            // However, due to the migration of data to SQLite we can no longer do that.
 
             return Promise.all(promises).then(() => {
                 return this.configProvider.set(this.VERSION_APPLIED, versionCode);
@@ -567,8 +568,27 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
             return Promise.resolve();
         }
 
-        // @todo: Implement it once Calendar addon is implemented.
-        return Promise.resolve();
+        return this.sitesProvider.getSitesIds().then((siteIds) => {
+
+            const promises = [];
+            siteIds.forEach((siteId) => {
+                // Get stored events.
+                promises.push(this.calendarProvider.getAllEventsFromLocalDb(siteId).then((events) => {
+                    const eventPromises = [];
+
+                    events.forEach((event) => {
+                        if (event.notificationtime == AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME) {
+                            event.notificationtime = -1;
+                            eventPromises.push(this.calendarProvider.storeEventInLocalDb(event, siteId));
+                        }
+                    });
+
+                    return Promise.all(eventPromises);
+                }));
+            });
+
+            return Promise.all(promises);
+        });
     }
 
     /**
@@ -625,16 +645,5 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
                 // Ignore errors.
             });
         });
-    }
-
-    /**
-     * The data stored for offline discussions and posts changed its format. Adapt the entries already stored.
-     * Since it can be slow, we'll only block migrating the db of current site, the rest will be in background.
-     *
-     * @return {Promise<any>} Promise resolved when the db is migrated.
-     */
-    protected adaptForumOfflineStores(): Promise<any> {
-        // @todo: Implement it once Forum addon is implemented.
-        return Promise.resolve();
     }
 }
