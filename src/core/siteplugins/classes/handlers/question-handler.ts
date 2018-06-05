@@ -13,13 +13,13 @@
 // limitations under the License.
 
 import { Injector } from '@angular/core';
-import { CoreQuestionDefaultHandler } from '@core/question/providers/default-question-handler';
+import { CoreQuestionBaseHandler } from '@core/question/classes/base-question-handler';
 import { CoreSitePluginsQuestionComponent } from '../../components/question/question';
 
 /**
  * Handler to display a question site plugin.
  */
-export class CoreSitePluginsQuestionHandler extends CoreQuestionDefaultHandler {
+export class CoreSitePluginsQuestionHandler extends CoreQuestionBaseHandler {
 
     constructor(public name: string, public type: string) {
         super();

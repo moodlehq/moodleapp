@@ -13,14 +13,14 @@
 // limitations under the License.
 
 import { Injector } from '@angular/core';
-import { CoreQuestionBehaviourDefaultHandler } from '@core/question/providers/default-behaviour-handler';
+import { CoreQuestionBehaviourBaseHandler } from '@core/question/classes/base-behaviour-handler';
 import { CoreSitePluginsQuestionBehaviourComponent } from '../../components/question-behaviour/question-behaviour';
 import { CoreQuestionProvider } from '@core/question/providers/question';
 
 /**
  * Handler to display a question behaviour site plugin.
  */
-export class CoreSitePluginsQuestionBehaviourHandler extends CoreQuestionBehaviourDefaultHandler {
+export class CoreSitePluginsQuestionBehaviourHandler extends CoreQuestionBehaviourBaseHandler {
 
     constructor(questionProvider: CoreQuestionProvider, public name: string, public type: string, public hasTemplate: boolean) {
         super(questionProvider);

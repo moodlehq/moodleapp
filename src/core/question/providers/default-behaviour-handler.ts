@@ -12,56 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Injector } from '@angular/core';
-import { CoreQuestionBehaviourHandler } from './behaviour-delegate';
-import { CoreQuestionProvider, CoreQuestionState } from '@core/question/providers/question';
+import { Injectable } from '@angular/core';
+import { CoreQuestionBehaviourBaseHandler } from '../classes/base-behaviour-handler';
+import { CoreQuestionProvider } from '@core/question/providers/question';
 
 /**
  * Default handler used when the question behaviour doesn't have a specific implementation.
  */
 @Injectable()
-export class CoreQuestionBehaviourDefaultHandler implements CoreQuestionBehaviourHandler {
+export class CoreQuestionBehaviourDefaultHandler extends CoreQuestionBehaviourBaseHandler {
     name = 'CoreQuestionBehaviourDefault';
     type = 'default';
 
-    constructor(private questionProvider: CoreQuestionProvider) { }
-
-    /**
-     * Determine a question new state based on its answer(s).
-     *
-     * @param {string} component Component the question belongs to.
-     * @param {number} attemptId Attempt ID the question belongs to.
-     * @param {any} question The question.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {CoreQuestionState|Promise<CoreQuestionState>} New state (or promise resolved with state).
-     */
-    determineNewState(component: string, attemptId: number, question: any, siteId?: string)
-            : CoreQuestionState | Promise<CoreQuestionState> {
-        // Return the current state.
-        return this.questionProvider.getState(question.state);
-    }
-
-    /**
-     * Handle a question behaviour.
-     * If the behaviour requires a submit button, it should add it to question.behaviourButtons.
-     * If the behaviour requires to show some extra data, it should return the components to render it.
-     *
-     * @param {Injector} injector Injector.
-     * @param {any} question The question.
-     * @return {any[]|Promise<any[]>} Components (or promise resolved with components) to render some extra data in the question
-     *                                (e.g. certainty options). Don't return anything if no extra data is required.
-     */
-    handleQuestion(injector: Injector, question: any): any[] | Promise<any[]> {
-        // Nothing to do.
-        return;
-    }
-
-    /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
-     */
-    isEnabled(): boolean | Promise<boolean> {
-        return true;
+    constructor(protected questionProvider: CoreQuestionProvider) {
+        super(questionProvider);
     }
 }

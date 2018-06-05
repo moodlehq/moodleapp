@@ -14,13 +14,13 @@
 
 import { Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { AddonModAssignDefaultSubmissionHandler } from '@addon/mod/assign/providers/default-submission-handler';
+import { AddonModAssignBaseSubmissionHandler } from '@addon/mod/assign/classes/base-submission-handler';
 import { CoreSitePluginsAssignSubmissionComponent } from '../../components/assign-submission/assign-submission';
 
 /**
  * Handler to display an assign submission site plugin.
  */
-export class CoreSitePluginsAssignSubmissionHandler extends AddonModAssignDefaultSubmissionHandler {
+export class CoreSitePluginsAssignSubmissionHandler extends AddonModAssignBaseSubmissionHandler {
 
     constructor(translate: TranslateService, public name: string, public type: string, protected prefix: string) {
         super(translate);

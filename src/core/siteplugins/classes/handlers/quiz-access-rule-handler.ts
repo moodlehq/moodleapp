@@ -13,17 +13,14 @@
 // limitations under the License.
 
 import { Injector } from '@angular/core';
-import { CoreQuestionDefaultHandler } from '@core/question/providers/default-question-handler';
 import { CoreSitePluginsQuizAccessRuleComponent } from '../../components/quiz-access-rule/quiz-access-rule';
 
 /**
  * Handler to display a quiz access rule site plugin.
  */
-export class CoreSitePluginsQuizAccessRuleHandler extends CoreQuestionDefaultHandler {
+export class CoreSitePluginsQuizAccessRuleHandler {
 
-    constructor(public name: string, public ruleName: string, public hasTemplate: boolean) {
-        super();
-    }
+    constructor(public name: string, public ruleName: string, public hasTemplate: boolean) { }
 
     /**
      * Whether the rule requires a preflight check when prefetch/start/continue an attempt.
