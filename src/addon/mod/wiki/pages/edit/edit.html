@@ -20,7 +20,9 @@
                 <core-rich-text-editor item-content [control]="contentControl" [placeholder]="'core.content' | translate" name="wiki_page_content" [component]="component" [componentId]="componentId"></core-rich-text-editor>
             </ion-item>
 
-            <ion-badge color="danger" *ngIf="wrongVersionLock" item-end>{{ 'addon.mod_wiki.wrongversionlock' | translate }}</ion-badge> <!-- @todo: Check this. -->
+            <ion-item *ngIf="wrongVersionLock" text-center class="addon-mod_wiki-wrongversionlock" >
+                <ion-badge color="danger" padding>{{ 'addon.mod_wiki.wrongversionlock' | translate }}</ion-badge>
+            </ion-item>
         </form>
     </core-loading>
 </ion-content>
