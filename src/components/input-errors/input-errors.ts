@@ -75,7 +75,9 @@ export class CoreInputErrorsComponent implements OnInit, OnChanges {
         this.errorMessages.time = this.errorMessages.time || this.translate.instant('core.login.invalidtime');
         this.errorMessages.url = this.errorMessages.url || this.translate.instant('core.login.invalidurl');
 
-        // @todo: Check how to handle min/max errors once we have a test case to use. Also, review previous errors.
+        // Set empty values by default, the default error messages will be built in the template when needed.
+        this.errorMessages.max = this.errorMessages.max || '';
+        this.errorMessages.min = this.errorMessages.min || '';
     }
 
     /**

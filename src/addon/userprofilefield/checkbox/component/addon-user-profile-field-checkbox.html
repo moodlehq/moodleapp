@@ -10,8 +10,10 @@
 </ion-item>
 <!-- Edit. -->
 <ion-item *ngIf="edit && field && field.shortname" [formGroup]="form">
-    <ion-label [core-mark-required]="field.required">{{ field.name }}</ion-label>
+    <ion-label>
+        <span [core-mark-required]="field.required">{{ field.name }}</span>
+        <core-input-errors [control]="form.controls[field.modelName]"></core-input-errors>
+    </ion-label>
     <ion-checkbox item-end [formControlName]="field.modelName">
     </ion-checkbox>
-    <core-input-errors [control]="form.controls[field.modelName]" [errorMessages]="errors"></core-input-errors>
 </ion-item>

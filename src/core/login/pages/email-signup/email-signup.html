@@ -128,9 +128,11 @@
                     <p><a [href]="settings.sitepolicy" core-link capture="false">{{ 'core.login.policyagreementclick' | translate }}</a></p>
                 </ion-item>
                 <ion-item text-wrap>
-                    <ion-label core-mark-required="true">{{ 'core.login.policyaccept' | translate }}</ion-label>
+                    <ion-label>
+                        <span [core-mark-required]="true">{{ 'core.login.policyaccept' | translate }}</span>
+                        <core-input-errors [control]="signupForm.controls.policyagreed" [errorMessages]="policyErrors"></core-input-errors>
+                    </ion-label>
                     <ion-checkbox item-end name="policyagreed" formControlName="policyagreed"></ion-checkbox>
-                    <core-input-errors [control]="signupForm.controls.policyagreed" [errorMessages]="policyErrors"></core-input-errors>
                 </ion-item>
             </ng-container>
 

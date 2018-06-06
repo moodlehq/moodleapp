@@ -181,6 +181,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
             } else {
                 // Don't emit event so our valueChanges doesn't get notified by this change.
                 this.control.setValue(this.editorElement.innerHTML, {emitEvent: false});
+                this.control.markAsDirty();
                 this.textarea.value = this.editorElement.innerHTML;
             }
         } else {
@@ -189,6 +190,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
             } else {
                 // Don't emit event so our valueChanges doesn't get notified by this change.
                 this.control.setValue(this.textarea.value, {emitEvent: false});
+                this.control.markAsDirty();
             }
         }
 
@@ -240,6 +242,11 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
      * Treating videos and audios in here is complex, so if a user manually adds one he won't be able to play it in the editor.
      */
     protected treatExternalContent(): void {
+        if (!this.sitesProvider.isLoggedIn()) {
+            // Only treat external content if the user is logged in.
+            return;
+        }
+
         const elements = Array.from(this.editorElement.querySelectorAll('img')),
             siteId = this.sitesProvider.getCurrentSiteId(),
             canDownloadFiles = this.sitesProvider.getCurrentSite().canDownloadFiles();
