@@ -7,7 +7,9 @@
     "email": "mobile@moodle.com"
   },
   "config": {
-    "ionic_webpack": "./config/webpack.config.js"
+    "ionic_webpack": "./config/webpack.config.js",
+    "ionic_copy": "./config/copy.config.js",
+    "ionic_sass": "./config/sass.config.js"
   },
   "repository": {
     "type": "git",
@@ -71,6 +73,7 @@
     "chart.js": "^2.7.2",
     "electron-builder-squirrel-windows": "^19.3.0",
     "electron-windows-notifications": "^1.1.13",
+    "font-awesome": "4.7.0",
     "ionic-angular": "^3.9.2",
     "ionicons": "3.0.0",
     "jszip": "^3.1.4",
