@@ -372,7 +372,7 @@ export class CoreWSProvider {
                     const ext = this.mimeUtils.getFileExtension(path);
 
                     // Google Drive extensions will be considered invalid since Moodle usually converts them.
-                    if (!ext || ext == 'gdoc' || ext == 'gsheet' || ext == 'gslides' || ext == 'gdraw') {
+                    if (!ext || ext == 'gdoc' || ext == 'gsheet' || ext == 'gslides' || ext == 'gdraw' || ext == 'php') {
                         // Not valid, get the file's mimetype.
                         promise = this.getRemoteFileMimeType(url).then((mime) => {
                             if (mime) {
