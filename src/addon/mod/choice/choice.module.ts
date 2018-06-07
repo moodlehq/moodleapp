@@ -26,21 +26,25 @@ import { AddonModChoiceSyncProvider } from './providers/sync';
 import { AddonModChoiceSyncCronHandler } from './providers/sync-cron-handler';
 import { AddonModChoiceOfflineProvider } from './providers/offline';
 
+// List of providers (without handlers).
+export const ADDON_MOD_CHOICE_PROVIDERS: any[] = [
+    AddonModChoiceProvider,
+    AddonModChoiceSyncProvider,
+    AddonModChoiceOfflineProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
         AddonModChoiceComponentsModule
     ],
-    providers: [
-        AddonModChoiceProvider,
+    providers: ADDON_MOD_CHOICE_PROVIDERS.concat([
         AddonModChoiceModuleHandler,
         AddonModChoicePrefetchHandler,
         AddonModChoiceLinkHandler,
-        AddonModChoiceSyncCronHandler,
-        AddonModChoiceSyncProvider,
-        AddonModChoiceOfflineProvider
-    ]
+        AddonModChoiceSyncCronHandler
+    ])
 })
 export class AddonModChoiceModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModChoiceModuleHandler,

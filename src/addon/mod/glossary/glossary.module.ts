@@ -28,23 +28,27 @@ import { AddonModGlossaryIndexLinkHandler } from './providers/index-link-handler
 import { AddonModGlossaryEntryLinkHandler } from './providers/entry-link-handler';
 import { AddonModGlossaryComponentsModule } from './components/components.module';
 
+// List of providers (without handlers).
+export const ADDON_MOD_GLOSSARY_PROVIDERS: any[] = [
+    AddonModGlossaryProvider,
+    AddonModGlossaryOfflineProvider,
+    AddonModGlossaryHelperProvider,
+    AddonModGlossarySyncProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
         AddonModGlossaryComponentsModule,
     ],
-    providers: [
-        AddonModGlossaryProvider,
-        AddonModGlossaryOfflineProvider,
-        AddonModGlossaryHelperProvider,
-        AddonModGlossarySyncProvider,
+    providers: ADDON_MOD_GLOSSARY_PROVIDERS.concat([
         AddonModGlossaryModuleHandler,
         AddonModGlossaryPrefetchHandler,
         AddonModGlossarySyncCronHandler,
         AddonModGlossaryIndexLinkHandler,
         AddonModGlossaryEntryLinkHandler,
-    ]
+    ])
 })
 export class AddonModGlossaryModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModGlossaryModuleHandler,

@@ -20,17 +20,21 @@ import { AddonModLtiLinkHandler } from './providers/link-handler';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 
+// List of providers (without handlers).
+export const ADDON_MOD_LTI_PROVIDERS: any[] = [
+    AddonModLtiProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
         AddonModLtiComponentsModule
     ],
-    providers: [
-        AddonModLtiProvider,
+    providers: ADDON_MOD_LTI_PROVIDERS.concat([
         AddonModLtiModuleHandler,
-        AddonModLtiLinkHandler,
-    ]
+        AddonModLtiLinkHandler
+    ])
 })
 export class AddonModLtiModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModLtiModuleHandler,

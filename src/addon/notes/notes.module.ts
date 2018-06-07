@@ -24,20 +24,24 @@ import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delega
 import { CoreCronDelegate } from '@providers/cron';
 import { CoreUserDelegate } from '@core/user/providers/user-delegate';
 
+// List of providers (without handlers).
+export const ADDON_NOTES_PROVIDERS: any[] = [
+    AddonNotesProvider,
+    AddonNotesOfflineProvider,
+    AddonNotesSyncProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
         AddonNotesComponentsModule
     ],
-    providers: [
-        AddonNotesProvider,
-        AddonNotesOfflineProvider,
-        AddonNotesSyncProvider,
+    providers: ADDON_NOTES_PROVIDERS.concat([
         AddonNotesCourseOptionHandler,
         AddonNotesSyncCronHandler,
         AddonNotesUserHandler
-    ]
+    ])
 })
 export class AddonNotesModule {
     constructor(courseOptionsDelegate: CoreCourseOptionsDelegate, courseOptionHandler: AddonNotesCourseOptionHandler,

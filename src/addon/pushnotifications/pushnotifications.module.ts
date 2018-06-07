@@ -20,15 +20,18 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 
+// List of providers (without handlers).
+export const ADDON_PUSHNOTIFICATIONS_PROVIDERS: any[] = [
+    AddonPushNotificationsProvider,
+    AddonPushNotificationsDelegate
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
     ],
-    providers: [
-        AddonPushNotificationsProvider,
-        AddonPushNotificationsDelegate
-    ]
+    providers: ADDON_PUSHNOTIFICATIONS_PROVIDERS
 })
 export class AddonPushNotificationsModule {
     constructor(platform: Platform, pushNotificationsProvider: AddonPushNotificationsProvider, eventsProvider: CoreEventsProvider,

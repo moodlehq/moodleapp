@@ -57,7 +57,7 @@ import { CoreContentLinksModuleGradeHandler } from '@core/contentlinks/classes/m
 import { CoreContentLinksModuleIndexHandler } from '@core/contentlinks/classes/module-index-handler';
 import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
 
-// Import all modules that define components, directives and pipes.
+// Import all core modules that define components, directives and pipes.
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
@@ -82,6 +82,42 @@ import { CoreSitePluginsQuizAccessRuleComponent } from '@core/siteplugins/compon
 import { CoreSitePluginsAssignFeedbackComponent } from '@core/siteplugins/components/assign-feedback/assign-feedback';
 import { CoreSitePluginsAssignSubmissionComponent } from '@core/siteplugins/components/assign-submission/assign-submission';
 
+// Import addon providers. Do not import database module because it causes circular dependencies. @todo workshop
+import { ADDON_BADGES_PROVIDERS } from '@addon/badges/badges.module';
+import { ADDON_CALENDAR_PROVIDERS } from '@addon/calendar/calendar.module';
+import { ADDON_COMPETENCY_PROVIDERS } from '@addon/competency/competency.module';
+import { ADDON_FILES_PROVIDERS } from '@addon/files/files.module';
+import { ADDON_MESSAGEOUTPUT_PROVIDERS } from '@addon/messageoutput/messageoutput.module';
+import { ADDON_MESSAGES_PROVIDERS } from '@addon/messages/messages.module';
+import { ADDON_MOD_ASSIGN_PROVIDERS } from '@addon/mod/assign/assign.module';
+import { ADDON_MOD_BOOK_PROVIDERS } from '@addon/mod/book/book.module';
+import { ADDON_MOD_CHAT_PROVIDERS } from '@addon/mod/chat/chat.module';
+import { ADDON_MOD_CHOICE_PROVIDERS } from '@addon/mod/choice/choice.module';
+import { ADDON_MOD_FEEDBACK_PROVIDERS } from '@addon/mod/feedback/feedback.module';
+import { ADDON_MOD_FOLDER_PROVIDERS } from '@addon/mod/folder/folder.module';
+import { ADDON_MOD_FORUM_PROVIDERS } from '@addon/mod/forum/forum.module';
+import { ADDON_MOD_GLOSSARY_PROVIDERS } from '@addon/mod/glossary/glossary.module';
+import { ADDON_MOD_IMSCP_PROVIDERS } from '@addon/mod/imscp/imscp.module';
+import { ADDON_MOD_LESSON_PROVIDERS } from '@addon/mod/lesson/lesson.module';
+import { ADDON_MOD_LTI_PROVIDERS } from '@addon/mod/lti/lti.module';
+import { ADDON_MOD_PAGE_PROVIDERS } from '@addon/mod/page/page.module';
+import { ADDON_MOD_QUIZ_PROVIDERS } from '@addon/mod/quiz/quiz.module';
+import { ADDON_MOD_RESOURCE_PROVIDERS } from '@addon/mod/resource/resource.module';
+import { ADDON_MOD_SCORM_PROVIDERS } from '@addon/mod/scorm/scorm.module';
+import { ADDON_MOD_SURVEY_PROVIDERS } from '@addon/mod/survey/survey.module';
+import { ADDON_MOD_URL_PROVIDERS } from '@addon/mod/url/url.module';
+import { ADDON_MOD_WIKI_PROVIDERS } from '@addon/mod/wiki/wiki.module';
+import { ADDON_NOTES_PROVIDERS } from '@addon/notes/notes.module';
+import { ADDON_NOTIFICATIONS_PROVIDERS } from '@addon/notifications/notifications.module';
+import { ADDON_PUSHNOTIFICATIONS_PROVIDERS } from '@addon/pushnotifications/pushnotifications.module';
+import { ADDON_REMOTETHEMES_PROVIDERS } from '@addon/remotethemes/remotethemes.module';
+
+// Import some addon modules that define components, directives and pipes. Only import the important ones.
+import { AddonMessagesComponentsModule } from '@addon/messages/components/components.module';
+import { AddonModAssignComponentsModule } from '@addon/mod/assign/components/components.module';
+import { AddonModForumComponentsModule } from '@addon/mod/forum/components/components.module';
+import { AddonNotificationsComponentsModule } from '@addon/notifications/components/components.module';
+
 /**
  * Service to provide functionalities regarding compiling dynamic HTML and Javascript.
  */
@@ -100,7 +136,9 @@ export class CoreCompileProvider {
     protected IMPORTS = [
         IonicModule, TranslateModule.forChild(), CoreComponentsModule, CoreDirectivesModule, CorePipesModule,
         CoreCourseComponentsModule, CoreCoursesComponentsModule, CoreSiteHomeComponentsModule, CoreUserComponentsModule,
-        CoreCourseDirectivesModule, CoreSitePluginsDirectivesModule, CoreQuestionComponentsModule
+        CoreCourseDirectivesModule, CoreSitePluginsDirectivesModule, CoreQuestionComponentsModule, AddonMessagesComponentsModule,
+        AddonModAssignComponentsModule, AddonModForumComponentsModule,
+        AddonNotificationsComponentsModule
     ];
 
     constructor(protected injector: Injector, logger: CoreLoggerProvider, protected compiler: Compiler) {
@@ -176,7 +214,17 @@ export class CoreCompileProvider {
                 .concat(CORE_COURSES_PROVIDERS).concat(CORE_FILEUPLOADER_PROVIDERS).concat(CORE_GRADES_PROVIDERS)
                 .concat(CORE_LOGIN_PROVIDERS).concat(CORE_MAINMENU_PROVIDERS).concat(CORE_SHAREDFILES_PROVIDERS)
                 .concat(CORE_SITEHOME_PROVIDERS).concat([CoreSitePluginsProvider]).concat(CORE_USER_PROVIDERS)
-                .concat(CORE_QUESTION_PROVIDERS).concat(IONIC_NATIVE_PROVIDERS).concat(this.OTHER_PROVIDERS).concat(extraProviders);
+                .concat(CORE_QUESTION_PROVIDERS).concat(IONIC_NATIVE_PROVIDERS).concat(this.OTHER_PROVIDERS).concat(extraProviders)
+                .concat(ADDON_BADGES_PROVIDERS).concat(ADDON_CALENDAR_PROVIDERS).concat(ADDON_COMPETENCY_PROVIDERS)
+                .concat(ADDON_FILES_PROVIDERS).concat(ADDON_MESSAGEOUTPUT_PROVIDERS).concat(ADDON_MESSAGES_PROVIDERS)
+                .concat(ADDON_MOD_ASSIGN_PROVIDERS).concat(ADDON_MOD_BOOK_PROVIDERS).concat(ADDON_MOD_CHAT_PROVIDERS)
+                .concat(ADDON_MOD_CHOICE_PROVIDERS).concat(ADDON_MOD_FEEDBACK_PROVIDERS).concat(ADDON_MOD_FOLDER_PROVIDERS)
+                .concat(ADDON_MOD_FORUM_PROVIDERS).concat(ADDON_MOD_GLOSSARY_PROVIDERS).concat(ADDON_MOD_IMSCP_PROVIDERS)
+                .concat(ADDON_MOD_LESSON_PROVIDERS).concat(ADDON_MOD_LTI_PROVIDERS).concat(ADDON_MOD_PAGE_PROVIDERS)
+                .concat(ADDON_MOD_QUIZ_PROVIDERS).concat(ADDON_MOD_RESOURCE_PROVIDERS).concat(ADDON_MOD_SCORM_PROVIDERS)
+                .concat(ADDON_MOD_SURVEY_PROVIDERS).concat(ADDON_MOD_URL_PROVIDERS).concat(ADDON_MOD_WIKI_PROVIDERS)
+                .concat(ADDON_NOTES_PROVIDERS).concat(ADDON_NOTIFICATIONS_PROVIDERS)
+                .concat(ADDON_PUSHNOTIFICATIONS_PROVIDERS).concat(ADDON_REMOTETHEMES_PROVIDERS);
 
         // We cannot inject anything to this constructor. Use the Injector to inject all the providers into the instance.
         for (const i in providers) {

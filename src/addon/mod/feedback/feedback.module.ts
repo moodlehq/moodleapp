@@ -32,27 +32,31 @@ import { AddonModFeedbackSyncProvider } from './providers/sync';
 import { AddonModFeedbackSyncCronHandler } from './providers/sync-cron-handler';
 import { AddonModFeedbackOfflineProvider } from './providers/offline';
 
+// List of providers (without handlers).
+export const ADDON_MOD_FEEDBACK_PROVIDERS: any[] = [
+    AddonModFeedbackProvider,
+    AddonModFeedbackHelperProvider,
+    AddonModFeedbackSyncProvider,
+    AddonModFeedbackOfflineProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
         AddonModFeedbackComponentsModule
     ],
-    providers: [
-        AddonModFeedbackProvider,
+    providers: ADDON_MOD_FEEDBACK_PROVIDERS.concat([
         AddonModFeedbackModuleHandler,
         AddonModFeedbackPrefetchHandler,
-        AddonModFeedbackHelperProvider,
         AddonModFeedbackLinkHandler,
         AddonModFeedbackAnalysisLinkHandler,
         AddonModFeedbackShowEntriesLinkHandler,
         AddonModFeedbackShowNonRespondentsLinkHandler,
         AddonModFeedbackCompleteLinkHandler,
         AddonModFeedbackPrintLinkHandler,
-        AddonModFeedbackSyncCronHandler,
-        AddonModFeedbackSyncProvider,
-        AddonModFeedbackOfflineProvider
-    ]
+        AddonModFeedbackSyncCronHandler
+    ])
 })
 export class AddonModFeedbackModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModFeedbackModuleHandler,

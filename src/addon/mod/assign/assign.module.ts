@@ -30,6 +30,16 @@ import { AddonModAssignSyncCronHandler } from './providers/sync-cron-handler';
 import { AddonModAssignSubmissionModule } from './submission/submission.module';
 import { AddonModAssignFeedbackModule } from './feedback/feedback.module';
 
+// List of providers (without handlers).
+export const ADDON_MOD_ASSIGN_PROVIDERS: any[] = [
+    AddonModAssignProvider,
+    AddonModAssignOfflineProvider,
+    AddonModAssignSyncProvider,
+    AddonModAssignHelperProvider,
+    AddonModAssignFeedbackDelegate,
+    AddonModAssignSubmissionDelegate
+];
+
 @NgModule({
     declarations: [
     ],
@@ -37,19 +47,13 @@ import { AddonModAssignFeedbackModule } from './feedback/feedback.module';
         AddonModAssignSubmissionModule,
         AddonModAssignFeedbackModule
     ],
-    providers: [
-        AddonModAssignProvider,
-        AddonModAssignOfflineProvider,
-        AddonModAssignSyncProvider,
-        AddonModAssignHelperProvider,
-        AddonModAssignFeedbackDelegate,
-        AddonModAssignSubmissionDelegate,
+    providers: ADDON_MOD_ASSIGN_PROVIDERS.concat([
         AddonModAssignDefaultFeedbackHandler,
         AddonModAssignDefaultSubmissionHandler,
         AddonModAssignModuleHandler,
         AddonModAssignPrefetchHandler,
         AddonModAssignSyncCronHandler
-    ]
+    ])
 })
 export class AddonModAssignModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModAssignModuleHandler,

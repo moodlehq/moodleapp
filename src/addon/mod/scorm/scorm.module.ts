@@ -28,23 +28,27 @@ import { AddonModScormGradeLinkHandler } from './providers/grade-link-handler';
 import { AddonModScormSyncProvider } from './providers/scorm-sync';
 import { AddonModScormComponentsModule } from './components/components.module';
 
+// List of providers (without handlers).
+export const ADDON_MOD_SCORM_PROVIDERS: any[] = [
+    AddonModScormProvider,
+    AddonModScormOfflineProvider,
+    AddonModScormHelperProvider,
+    AddonModScormSyncProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
         AddonModScormComponentsModule
     ],
-    providers: [
-        AddonModScormProvider,
-        AddonModScormOfflineProvider,
-        AddonModScormHelperProvider,
-        AddonModScormSyncProvider,
+    providers: ADDON_MOD_SCORM_PROVIDERS.concat([
         AddonModScormModuleHandler,
         AddonModScormPrefetchHandler,
         AddonModScormSyncCronHandler,
         AddonModScormIndexLinkHandler,
         AddonModScormGradeLinkHandler
-    ]
+    ])
 })
 export class AddonModScormModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModScormModuleHandler,

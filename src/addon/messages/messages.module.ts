@@ -37,15 +37,19 @@ import { AddonMessagesSettingsHandler } from './providers/settings-handler';
 import { AddonPushNotificationsDelegate } from '@addon/pushnotifications/providers/delegate';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 
+// List of providers (without handlers).
+export const ADDON_MESSAGES_PROVIDERS: any[] = [
+    AddonMessagesProvider,
+    AddonMessagesOfflineProvider,
+    AddonMessagesSyncProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
     ],
-    providers: [
-        AddonMessagesProvider,
-        AddonMessagesOfflineProvider,
-        AddonMessagesSyncProvider,
+    providers: ADDON_MESSAGES_PROVIDERS.concat([
         AddonMessagesMainMenuHandler,
         AddonMessagesSendMessageUserHandler,
         AddonMessagesAddContactUserHandler,
@@ -54,7 +58,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
         AddonMessagesIndexLinkHandler,
         AddonMessagesSyncCronHandler,
         AddonMessagesSettingsHandler
-    ]
+    ])
 })
 export class AddonMessagesModule {
     constructor(mainMenuDelegate: CoreMainMenuDelegate, mainmenuHandler: AddonMessagesMainMenuHandler,

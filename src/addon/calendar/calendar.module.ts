@@ -21,16 +21,20 @@ import { CoreInitDelegate } from '@providers/init';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 
+// List of providers (without handlers).
+export const ADDON_CALENDAR_PROVIDERS: any[] = [
+    AddonCalendarProvider,
+    AddonCalendarHelperProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
     ],
-    providers: [
-        AddonCalendarProvider,
-        AddonCalendarHelperProvider,
+    providers: ADDON_CALENDAR_PROVIDERS.concat([
         AddonCalendarMainMenuHandler
-    ]
+    ])
 })
 export class AddonCalendarModule {
     constructor(mainMenuDelegate: CoreMainMenuDelegate, calendarHandler: AddonCalendarMainMenuHandler,

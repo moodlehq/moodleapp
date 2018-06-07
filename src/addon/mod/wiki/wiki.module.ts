@@ -29,16 +29,20 @@ import { AddonModWikiPageOrMapLinkHandler } from './providers/page-or-map-link-h
 import { AddonModWikiCreateLinkHandler } from './providers/create-link-handler';
 import { AddonModWikiEditLinkHandler } from './providers/edit-link-handler';
 
+// List of providers (without handlers).
+export const ADDON_MOD_WIKI_PROVIDERS: any[] = [
+    AddonModWikiProvider,
+    AddonModWikiOfflineProvider,
+    AddonModWikiSyncProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
         AddonModWikiComponentsModule
     ],
-    providers: [
-        AddonModWikiProvider,
-        AddonModWikiOfflineProvider,
-        AddonModWikiSyncProvider,
+    providers: ADDON_MOD_WIKI_PROVIDERS.concat([
         AddonModWikiModuleHandler,
         AddonModWikiPrefetchHandler,
         AddonModWikiSyncCronHandler,
@@ -46,7 +50,7 @@ import { AddonModWikiEditLinkHandler } from './providers/edit-link-handler';
         AddonModWikiPageOrMapLinkHandler,
         AddonModWikiCreateLinkHandler,
         AddonModWikiEditLinkHandler
-    ]
+    ])
 })
 export class AddonModWikiModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModWikiModuleHandler,

@@ -41,6 +41,15 @@ import { AddonModQuizAccessSafeBrowserModule } from './accessrules/safebrowser/s
 import { AddonModQuizAccessSecureWindowModule } from './accessrules/securewindow/securewindow.module';
 import { AddonModQuizAccessTimeLimitModule } from './accessrules/timelimit/timelimit.module';
 
+// List of providers (without handlers).
+export const ADDON_MOD_QUIZ_PROVIDERS: any[] = [
+    AddonModQuizAccessRuleDelegate,
+    AddonModQuizProvider,
+    AddonModQuizOfflineProvider,
+    AddonModQuizHelperProvider,
+    AddonModQuizSyncProvider
+];
+
 @NgModule({
     declarations: [
     ],
@@ -56,19 +65,14 @@ import { AddonModQuizAccessTimeLimitModule } from './accessrules/timelimit/timel
         AddonModQuizAccessSecureWindowModule,
         AddonModQuizAccessTimeLimitModule
     ],
-    providers: [
-        AddonModQuizAccessRuleDelegate,
-        AddonModQuizProvider,
-        AddonModQuizOfflineProvider,
-        AddonModQuizHelperProvider,
-        AddonModQuizSyncProvider,
+    providers: ADDON_MOD_QUIZ_PROVIDERS.concat([
         AddonModQuizModuleHandler,
         AddonModQuizPrefetchHandler,
         AddonModQuizSyncCronHandler,
         AddonModQuizIndexLinkHandler,
         AddonModQuizGradeLinkHandler,
         AddonModQuizReviewLinkHandler
-    ]
+    ])
 })
 export class AddonModQuizModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModQuizModuleHandler,
