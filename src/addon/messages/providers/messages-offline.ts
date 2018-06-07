@@ -26,10 +26,10 @@ export class AddonMessagesOfflineProvider {
     protected logger;
 
     // Variables for database.
-    protected MESSAGES_TABLE = 'addon_messages_offline_messages';
+    static MESSAGES_TABLE = 'addon_messages_offline_messages';
     protected tablesSchema = [
         {
-            name: this.MESSAGES_TABLE,
+            name: AddonMessagesOfflineProvider.MESSAGES_TABLE,
             columns: [
                 {
                     name: 'touserid',
@@ -72,7 +72,7 @@ export class AddonMessagesOfflineProvider {
      */
     deleteMessage(toUserId: number, message: string, timeCreated: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().deleteRecords(this.MESSAGES_TABLE, {
+            return site.getDb().deleteRecords(AddonMessagesOfflineProvider.MESSAGES_TABLE, {
                     touserid: toUserId,
                     smallmessage: message,
                     timecreated: timeCreated
@@ -88,7 +88,7 @@ export class AddonMessagesOfflineProvider {
      */
     getAllDeviceOfflineMessages(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.MESSAGES_TABLE, {deviceoffline: 1});
+            return site.getDb().getRecords(AddonMessagesOfflineProvider.MESSAGES_TABLE, {deviceoffline: 1});
         });
     }
 
@@ -101,7 +101,7 @@ export class AddonMessagesOfflineProvider {
      */
     getMessages(toUserId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.MESSAGES_TABLE, {touserid: toUserId});
+            return site.getDb().getRecords(AddonMessagesOfflineProvider.MESSAGES_TABLE, {touserid: toUserId});
         });
     }
 
@@ -113,7 +113,7 @@ export class AddonMessagesOfflineProvider {
      */
     getAllMessages(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getAllRecords(this.MESSAGES_TABLE);
+            return site.getDb().getAllRecords(AddonMessagesOfflineProvider.MESSAGES_TABLE);
         });
     }
 
@@ -148,7 +148,7 @@ export class AddonMessagesOfflineProvider {
                 deviceoffline: this.appProvider.isOnline() ? 0 : 1
             };
 
-            return site.getDb().insertRecord(this.MESSAGES_TABLE, entry).then(() => {
+            return site.getDb().insertRecord(AddonMessagesOfflineProvider.MESSAGES_TABLE, entry).then(() => {
                 return entry;
             });
         });
@@ -169,7 +169,7 @@ export class AddonMessagesOfflineProvider {
                 data = { deviceoffline: value ? 1 : 0 };
 
             messages.forEach((message) => {
-                promises.push(db.insertRecord(this.MESSAGES_TABLE, data));
+                promises.push(db.insertRecord(AddonMessagesOfflineProvider.MESSAGES_TABLE, data));
             });
 
             return Promise.all(promises);

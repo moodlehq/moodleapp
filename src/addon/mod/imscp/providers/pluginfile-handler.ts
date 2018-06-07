@@ -21,6 +21,7 @@ import { CorePluginFileHandler } from '@providers/plugin-file-delegate';
 @Injectable()
 export class AddonModImscpPluginFileHandler implements CorePluginFileHandler {
     name = 'AddonModImscpPluginFileHandler';
+    component = 'mod_imscp';
 
     /**
      * Return the RegExp to match the revision on pluginfile URLs.

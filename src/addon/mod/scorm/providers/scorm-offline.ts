@@ -32,14 +32,14 @@ export class AddonModScormOfflineProvider {
     protected logger;
 
     // Variables for database.
-    protected ATTEMPTS_TABLE = 'addon_mod_scorm_offline_attempts';
-    protected TRACKS_TABLE = 'addon_mod_scorm_offline_scos_tracks';
+    static ATTEMPTS_TABLE = 'addon_mod_scorm_offline_attempts';
+    static TRACKS_TABLE = 'addon_mod_scorm_offline_scos_tracks';
     protected tablesSchema = [
         {
-            name: this.ATTEMPTS_TABLE,
+            name: AddonModScormOfflineProvider.ATTEMPTS_TABLE,
             columns: [
                 {
-                    name: 'scormId',
+                    name: 'scormid',
                     type: 'INTEGER',
                     notNull: true
                 },
@@ -49,12 +49,12 @@ export class AddonModScormOfflineProvider {
                     notNull: true
                 },
                 {
-                    name: 'userId',
+                    name: 'userid',
                     type: 'INTEGER',
                     notNull: true
                 },
                 {
-                    name: 'courseId',
+                    name: 'courseid',
                     type: 'INTEGER'
                 },
                 {
@@ -70,13 +70,13 @@ export class AddonModScormOfflineProvider {
                     type: 'TEXT'
                 },
             ],
-            primaryKeys: ['scormId', 'userId', 'attempt']
+            primaryKeys: ['scormid', 'userid', 'attempt']
         },
         {
-            name: this.TRACKS_TABLE,
+            name: AddonModScormOfflineProvider.TRACKS_TABLE,
             columns: [
                 {
-                    name: 'scormId',
+                    name: 'scormid',
                     type: 'INTEGER',
                     notNull: true
                 },
@@ -86,12 +86,12 @@ export class AddonModScormOfflineProvider {
                     notNull: true
                 },
                 {
-                    name: 'userId',
+                    name: 'userid',
                     type: 'INTEGER',
                     notNull: true
                 },
                 {
-                    name: 'scoId',
+                    name: 'scoid',
                     type: 'INTEGER',
                     notNull: true
                 },
@@ -113,7 +113,7 @@ export class AddonModScormOfflineProvider {
                     type: 'INTEGER'
                 },
             ],
-            primaryKeys: ['scormId', 'userId', 'attempt', 'scoId', 'element']
+            primaryKeys: ['scormid', 'userid', 'attempt', 'scoid', 'element']
         }
     ];
 
@@ -145,7 +145,9 @@ export class AddonModScormOfflineProvider {
             this.logger.debug('Change attempt number from ' + attempt + ' to ' + newAttempt + ' in SCORM ' + scormId);
 
             // Update the attempt number.
-            const db = site.getDb();
+            const db = site.getDb(),
+                currentAttemptConditions = {scormid: scormId, userid: userId, attempt: attempt},
+                newAttemptConditions = {scormid: scormId, userid: userId, attempt: newAttempt};
             let newData: any = {
                     attempt: newAttempt,
                     timemodified: this.timeUtils.timestamp()
@@ -154,7 +156,7 @@ export class AddonModScormOfflineProvider {
             // Block the SCORM so it can't be synced.
             this.syncProvider.blockOperation(AddonModScormProvider.COMPONENT, scormId, 'changeAttemptNumber', site.id);
 
-            return db.updateRecords(this.ATTEMPTS_TABLE, newData, {scormId, userId, attempt}).then(() => {
+            return db.updateRecords(AddonModScormOfflineProvider.ATTEMPTS_TABLE, newData, currentAttemptConditions).then(() => {
 
                 // Now update the attempt number of all the tracks and mark them as not synced.
                 newData = {
@@ -162,9 +164,11 @@ export class AddonModScormOfflineProvider {
                     synced: 0
                 };
 
-                return db.updateRecords(this.TRACKS_TABLE, newData, {scormId, userId, attempt}).catch((error) => {
+                return db.updateRecords(AddonModScormOfflineProvider.TRACKS_TABLE, newData, currentAttemptConditions)
+                        .catch((error) => {
                     // Failed to update the tracks, restore the old attempt number.
-                    return db.updateRecords(this.ATTEMPTS_TABLE, { attempt }, {scormId, userId, attempt: newAttempt}).then(() => {
+                    return db.updateRecords(AddonModScormOfflineProvider.ATTEMPTS_TABLE, { attempt: attempt },
+                            newAttemptConditions).then(() => {
                         return Promise.reject(error);
                     });
                 });
@@ -199,10 +203,10 @@ export class AddonModScormOfflineProvider {
             // Create attempt in DB.
             const db = site.getDb(),
                 entry: any = {
-                    scormId: scorm.id,
-                    userId: userId,
+                    scormid: scorm.id,
+                    userid: userId,
                     attempt: attempt,
-                    courseId: scorm.course,
+                    courseid: scorm.course,
                     timecreated: this.timeUtils.timestamp(),
                     timemodified: this.timeUtils.timestamp(),
                     snapshot: null
@@ -214,7 +218,7 @@ export class AddonModScormOfflineProvider {
                 entry.snapshot = JSON.stringify(this.removeDefaultData(snapshot));
             }
 
-            return db.insertRecord(this.ATTEMPTS_TABLE, entry).then(() => {
+            return db.insertRecord(AddonModScormOfflineProvider.ATTEMPTS_TABLE, entry).then(() => {
                 // Store all the data in userData.
                 const promises = [];
 
@@ -256,10 +260,12 @@ export class AddonModScormOfflineProvider {
                 db = site.getDb();
 
             // Delete the attempt.
-            promises.push(db.deleteRecords(this.ATTEMPTS_TABLE, {scormId, userId, attempt}));
+            promises.push(db.deleteRecords(AddonModScormOfflineProvider.ATTEMPTS_TABLE, {scormid: scormId, userid: userId,
+                    attempt: attempt}));
 
             // Delete all the tracks.
-            promises.push(db.deleteRecords(this.TRACKS_TABLE, {scormId, userId, attempt}));
+            promises.push(db.deleteRecords(AddonModScormOfflineProvider.TRACKS_TABLE, {scormid: scormId, userid: userId,
+                    attempt: attempt}));
 
             return Promise.all(promises);
         });
@@ -329,7 +335,7 @@ export class AddonModScormOfflineProvider {
      */
     getAllAttempts(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.getAllRecords(this.ATTEMPTS_TABLE);
+            return db.getAllRecords(AddonModScormOfflineProvider.ATTEMPTS_TABLE);
         }).then((attempts) => {
             attempts.forEach((attempt) => {
                 attempt.snapshot = this.textUtils.parseJSON(attempt.snapshot);
@@ -352,11 +358,12 @@ export class AddonModScormOfflineProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
-            return site.getDb().getRecord(this.ATTEMPTS_TABLE, {scormId, userId, attempt}).then((entry) => {
-                entry.snapshot = this.textUtils.parseJSON(entry.snapshot);
+            return site.getDb().getRecord(AddonModScormOfflineProvider.ATTEMPTS_TABLE, {scormid: scormId, userid: userId,
+                    attempt: attempt});
+        }).then((entry) => {
+            entry.snapshot = this.textUtils.parseJSON(entry.snapshot);
 
-                return entry;
-            });
+            return entry;
         });
     }
 
@@ -389,7 +396,7 @@ export class AddonModScormOfflineProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
-            return site.getDb().getRecords(this.ATTEMPTS_TABLE, {scormId, userId});
+            return site.getDb().getRecords(AddonModScormOfflineProvider.ATTEMPTS_TABLE, {scormid: scormId, userid: userId});
         }).then((attempts) => {
             attempts.forEach((attempt) => {
                 attempt.snapshot = this.textUtils.parseJSON(attempt.snapshot);
@@ -454,8 +461,8 @@ export class AddonModScormOfflineProvider {
             userId = userId || site.getUserId();
 
             const conditions: any = {
-                scormId: scormId,
-                userId: userId,
+                scormid: scormId,
+                userid: userId,
                 attempt: attempt
             };
 
@@ -465,7 +472,7 @@ export class AddonModScormOfflineProvider {
                 conditions.synced = 1;
             }
 
-            return site.getDb().getRecords(this.TRACKS_TABLE, conditions);
+            return site.getDb().getRecords(AddonModScormOfflineProvider.TRACKS_TABLE, conditions);
         }).then((tracks) => {
             tracks.forEach((track) => {
                 track.value = this.textUtils.parseJSON(track.value);
@@ -513,7 +520,7 @@ export class AddonModScormOfflineProvider {
 
                 // Gather user data retrieved from DB, grouping it by scoid.
                 entries.forEach((entry) => {
-                    const scoId = entry.scoId;
+                    const scoId = entry.scoid;
 
                     if (!response[scoId]) {
                         // Initialize SCO.
@@ -690,9 +697,9 @@ export class AddonModScormOfflineProvider {
             value: any, synchronous?: boolean): boolean | Promise<any> {
 
         const entry = {
-            userId: userId,
-            scormId: scormId,
-            scoId: scoId,
+            userid: userId,
+            scormid: scormId,
+            scoid: scoId,
             attempt: attempt,
             element: element,
             value: typeof value == 'undefined' ? null : JSON.stringify(value),
@@ -702,11 +709,11 @@ export class AddonModScormOfflineProvider {
 
         if (synchronous) {
             // The insert operation is always asynchronous, always return true.
-            db.insertRecord(this.TRACKS_TABLE, entry);
+            db.insertRecord(AddonModScormOfflineProvider.TRACKS_TABLE, entry);
 
             return true;
         } else {
-            return db.insertRecord(this.TRACKS_TABLE, entry);
+            return db.insertRecord(AddonModScormOfflineProvider.TRACKS_TABLE, entry);
         }
     }
 
@@ -788,11 +795,11 @@ export class AddonModScormOfflineProvider {
 
             this.logger.debug('Mark SCO ' + scoId + ' as synced for attempt ' + attempt + ' in SCORM ' + scormId);
 
-            return site.getDb().updateRecords(this.TRACKS_TABLE, {synced: 1}, {
-                scormId: scormId,
-                userId: userId,
+            return site.getDb().updateRecords(AddonModScormOfflineProvider.TRACKS_TABLE, {synced: 1}, {
+                scormid: scormId,
+                userid: userId,
                 attempt: attempt,
-                scoId: scoId,
+                scoid: scoId,
                 synced: 0
             });
         });
@@ -914,7 +921,8 @@ export class AddonModScormOfflineProvider {
                 snapshot: JSON.stringify(this.removeDefaultData(userData))
             };
 
-            return site.getDb().updateRecords(this.ATTEMPTS_TABLE, newData, { scormId, userId, attempt });
+            return site.getDb().updateRecords(AddonModScormOfflineProvider.ATTEMPTS_TABLE, newData, { scormid: scormId,
+                    userid: userId, attempt: attempt });
         });
     }
 }

@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { LocalNotifications, ILocalNotification } from '@ionic-native/local-notifications';
 import { CoreAppProvider } from '@providers/app';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreConstants } from '@core/constants';
@@ -50,6 +51,22 @@ export class LocalNotificationsMock extends LocalNotifications {
                 primaryKey: true
             },
             {
+                name: 'title',
+                type: 'TEXT'
+            },
+            {
+                name: 'text',
+                type: 'TEXT'
+            },
+            {
+                name: 'at',
+                type: 'INTEGER'
+            },
+            {
+                name: 'data',
+                type: 'TEXT'
+            },
+            {
                 name: 'triggered',
                 type: 'INTEGER'
             }
@@ -71,7 +88,7 @@ export class LocalNotificationsMock extends LocalNotifications {
         at: undefined
     };
 
-    constructor(private appProvider: CoreAppProvider, private utils: CoreUtilsProvider) {
+    constructor(private appProvider: CoreAppProvider, private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider) {
         super();
 
         this.appDB = appProvider.getDB();
@@ -281,7 +298,15 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @return {Promise<any>} Promise resolved with the notifications.
      */
     protected getAllNotifications(): Promise<any> {
-        return this.appDB.getAllRecords(this.DESKTOP_NOTIFS_TABLE);
+        return this.appDB.getAllRecords(this.DESKTOP_NOTIFS_TABLE).then((notifications) => {
+            notifications.forEach((notification) => {
+                notification.at = new Date(notification.at);
+                notification.data = this.textUtils.parseJSON(notification.data);
+                notification.triggered = !!notification.triggered;
+            });
+
+            return notifications;
+        });
     }
 
     /**
@@ -663,15 +688,22 @@ export class LocalNotificationsMock extends LocalNotifications {
     /**
      * Store a notification in local DB.
      *
-     * @param {any} notification Notification to store.
+     * @param {ILocalNotification} notification Notification to store.
      * @param {boolean} triggered Whether the notification has been triggered.
      * @return {Promise<any>} Promise resolved when stored.
      */
-    protected storeNotification(notification: any, triggered: boolean): Promise<any> {
-        notification = Object.assign({}, notification); // Clone the object.
-        notification.triggered = !!triggered;
+    protected storeNotification(notification: ILocalNotification, triggered: boolean): Promise<any> {
+        // Only store some of the properties.
+        const entry = {
+            id : notification.id,
+            title: notification.title,
+            text: notification.text,
+            at: notification.at ? notification.at.getTime() : 0,
+            data: notification.data ? JSON.stringify(notification.data) : '{}',
+            triggered: triggered ? 1 : 0
+        };
 
-        return this.appDB.insertRecord(this.DESKTOP_NOTIFS_TABLE, notification);
+        return this.appDB.insertRecord(this.DESKTOP_NOTIFS_TABLE, entry);
     }
 
     /**

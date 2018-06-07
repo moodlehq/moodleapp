@@ -27,6 +27,7 @@ import { AddonModGlossarySyncCronHandler } from './providers/sync-cron-handler';
 import { AddonModGlossaryIndexLinkHandler } from './providers/index-link-handler';
 import { AddonModGlossaryEntryLinkHandler } from './providers/entry-link-handler';
 import { AddonModGlossaryComponentsModule } from './components/components.module';
+import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 // List of providers (without handlers).
 export const ADDON_MOD_GLOSSARY_PROVIDERS: any[] = [
@@ -54,11 +55,37 @@ export class AddonModGlossaryModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModGlossaryModuleHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModGlossaryPrefetchHandler,
             cronDelegate: CoreCronDelegate, syncHandler: AddonModGlossarySyncCronHandler, linksDelegate: CoreContentLinksDelegate,
-            indexHandler: AddonModGlossaryIndexLinkHandler, discussionHandler: AddonModGlossaryEntryLinkHandler) {
+            indexHandler: AddonModGlossaryIndexLinkHandler, discussionHandler: AddonModGlossaryEntryLinkHandler,
+            updateManager: CoreUpdateManagerProvider) {
+
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         cronDelegate.register(syncHandler);
         linksDelegate.registerHandler(indexHandler);
         linksDelegate.registerHandler(discussionHandler);
+
+        // Allow migrating the tables from the old app to the new schema.
+        updateManager.registerSiteTableMigration({
+            name: 'mma_mod_glossary_add_entry',
+            newName: AddonModGlossaryOfflineProvider.ENTRIES_TABLE,
+            fields: [
+                {
+                    name: 'glossaryAndConcept',
+                    delete: true
+                },
+                {
+                    name: 'glossaryAndUser',
+                    delete: true
+                },
+                {
+                    name: 'options',
+                    type: 'object'
+                },
+                {
+                    name: 'attachments',
+                    type: 'object'
+                }
+            ]
+        });
     }
 }

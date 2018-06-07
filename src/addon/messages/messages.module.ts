@@ -36,6 +36,7 @@ import { CoreSettingsDelegate } from '@core/settings/providers/delegate';
 import { AddonMessagesSettingsHandler } from './providers/settings-handler';
 import { AddonPushNotificationsDelegate } from '@addon/pushnotifications/providers/delegate';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 // List of providers (without handlers).
 export const ADDON_MESSAGES_PROVIDERS: any[] = [
@@ -67,7 +68,7 @@ export class AddonMessagesModule {
             userDelegate: CoreUserDelegate, cronDelegate: CoreCronDelegate, syncHandler: AddonMessagesSyncCronHandler,
             network: Network, messagesSync: AddonMessagesSyncProvider, appProvider: CoreAppProvider,
             localNotifications: CoreLocalNotificationsProvider, messagesProvider: AddonMessagesProvider,
-            sitesProvider: CoreSitesProvider, linkHelper: CoreContentLinksHelperProvider,
+            sitesProvider: CoreSitesProvider, linkHelper: CoreContentLinksHelperProvider, updateManager: CoreUpdateManagerProvider,
             settingsHandler: AddonMessagesSettingsHandler, settingsDelegate: CoreSettingsDelegate,
             pushNotificationsDelegate: AddonPushNotificationsDelegate, utils: CoreUtilsProvider,
             addContactHandler: AddonMessagesAddContactUserHandler, blockContactHandler: AddonMessagesBlockContactUserHandler) {
@@ -114,6 +115,18 @@ export class AddonMessagesModule {
 
                 return true;
             }
+        });
+
+        // Allow migrating the table from the old app to the new schema.
+        updateManager.registerSiteTableMigration({
+            name: 'mma_messages_offline_messages',
+            newName: AddonMessagesOfflineProvider.MESSAGES_TABLE,
+            fields: [
+                {
+                    name: 'textformat',
+                    delete: true
+                }
+            ]
         });
     }
 }

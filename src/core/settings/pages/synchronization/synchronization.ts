@@ -68,7 +68,7 @@ export class CoreSettingsSynchronizationPage implements OnDestroy {
         });
 
         this.configProvider.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, true).then((syncOnlyOnWifi) => {
-            this.syncOnlyOnWifi = syncOnlyOnWifi;
+            this.syncOnlyOnWifi = !!syncOnlyOnWifi;
         });
     }
 
@@ -76,7 +76,7 @@ export class CoreSettingsSynchronizationPage implements OnDestroy {
      * Called when sync only on wifi setting is enabled or disabled.
      */
     syncOnlyOnWifiChanged(): void {
-        this.configProvider.set(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, this.syncOnlyOnWifi);
+        this.configProvider.set(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, this.syncOnlyOnWifi ? 1 : 0);
     }
 
     /**

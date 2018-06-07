@@ -33,6 +33,7 @@ import { AddonModDataOfflineProvider } from './providers/offline';
 import { AddonModDataFieldsDelegate } from './providers/fields-delegate';
 import { AddonModDataDefaultFieldHandler } from './providers/default-field-handler';
 import { AddonModDataFieldModule } from './fields/field.module';
+import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 // List of providers (without handlers).
 export const ADDON_MOD_DATA_PROVIDERS: any[] = [
@@ -66,7 +67,7 @@ export class AddonModDataModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModDataModuleHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModDataPrefetchHandler,
             contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModDataLinkHandler,
-            cronDelegate: CoreCronDelegate, syncHandler: AddonModDataSyncCronHandler,
+            cronDelegate: CoreCronDelegate, syncHandler: AddonModDataSyncCronHandler, updateManager: CoreUpdateManagerProvider,
             approveLinkHandler: AddonModDataApproveLinkHandler, deleteLinkHandler: AddonModDataDeleteLinkHandler,
             showLinkHandler: AddonModDataShowLinkHandler, editLinkHandler: AddonModDataEditLinkHandler) {
         moduleDelegate.registerHandler(moduleHandler);
@@ -77,5 +78,21 @@ export class AddonModDataModule {
         contentLinksDelegate.registerHandler(showLinkHandler);
         contentLinksDelegate.registerHandler(editLinkHandler);
         cronDelegate.register(syncHandler);
+
+        // Allow migrating the tables from the old app to the new schema.
+        updateManager.registerSiteTableMigration({
+            name: 'mma_mod_data_entry',
+            newName: AddonModDataOfflineProvider.DATA_ENTRY_TABLE,
+            fields: [
+                {
+                    name: 'fields',
+                    type: 'object'
+                },
+                {
+                    name: 'dataAndEntry',
+                    delete: true
+                }
+            ]
+        });
     }
 }

@@ -58,7 +58,7 @@ export class AddonNotificationsSettingsPage implements OnDestroy {
         this.canChangeSound = localNotificationsProvider.isAvailable() && !appProvider.isDesktop();
         if (this.canChangeSound) {
             configProvider.get(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true).then((enabled) => {
-                this.notificationSound = enabled;
+                this.notificationSound = !!enabled;
             });
         }
     }
@@ -245,7 +245,7 @@ export class AddonNotificationsSettingsPage implements OnDestroy {
      * @param {enabled} enabled True to enable the notification sound, false to disable it.
      */
     changeNotificationSound(enabled: boolean): void {
-        this.configProvider.set(CoreConstants.SETTINGS_NOTIFICATION_SOUND, enabled).finally(() => {
+        this.configProvider.set(CoreConstants.SETTINGS_NOTIFICATION_SOUND, enabled ? 1 : 0).finally(() => {
             const siteId = this.sitesProvider.getCurrentSiteId();
             this.eventsProvider.trigger(CoreEventsProvider.NOTIFICATION_SOUND_CHANGED, {enabled}, siteId);
             this.localNotificationsProvider.rescheduleAll();

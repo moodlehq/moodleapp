@@ -20,6 +20,7 @@ import { CoreComponentsModule } from '@components/components.module';
 import { AddonModQuizAccessPasswordHandler } from './providers/handler';
 import { AddonModQuizAccessPasswordComponent } from './component/password';
 import { AddonModQuizAccessRuleDelegate } from '../../providers/access-rules-delegate';
+import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 @NgModule({
     declarations: [
@@ -42,7 +43,14 @@ import { AddonModQuizAccessRuleDelegate } from '../../providers/access-rules-del
     ]
 })
 export class AddonModQuizAccessPasswordModule {
-    constructor(accessRuleDelegate: AddonModQuizAccessRuleDelegate, handler: AddonModQuizAccessPasswordHandler) {
+    constructor(accessRuleDelegate: AddonModQuizAccessRuleDelegate, handler: AddonModQuizAccessPasswordHandler,
+            updateManager: CoreUpdateManagerProvider) {
         accessRuleDelegate.registerHandler(handler);
+
+        // Allow migrating the tables from the old app to the new schema.
+        updateManager.registerSiteTableMigration({
+            name: 'mod_quiz_access_password',
+            newName: AddonModQuizAccessPasswordHandler.PASSWORD_TABLE
+        });
     }
 }

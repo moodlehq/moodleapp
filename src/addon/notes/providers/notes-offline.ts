@@ -25,10 +25,10 @@ export class AddonNotesOfflineProvider {
     protected logger;
 
     // Variables for database.
-    protected NOTES_TABLE = 'addon_notes_offline_notes';
+    static NOTES_TABLE = 'addon_notes_offline_notes';
     protected tablesSchema = [
         {
-            name: this.NOTES_TABLE,
+            name: AddonNotesOfflineProvider.NOTES_TABLE,
             columns: [
                 {
                     name: 'userid',
@@ -79,7 +79,7 @@ export class AddonNotesOfflineProvider {
      */
     deleteNote(userId: number, content: string, timecreated: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().deleteRecords(this.NOTES_TABLE, {
+            return site.getDb().deleteRecords(AddonNotesOfflineProvider.NOTES_TABLE, {
                 userid: userId,
                 content: content,
                 created: timecreated
@@ -95,7 +95,7 @@ export class AddonNotesOfflineProvider {
      */
     getAllNotes(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.NOTES_TABLE);
+            return site.getDb().getRecords(AddonNotesOfflineProvider.NOTES_TABLE);
         });
     }
 
@@ -110,7 +110,7 @@ export class AddonNotesOfflineProvider {
      */
     getNote(userId: number, content: string, timecreated: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecord(this.NOTES_TABLE, {
+            return site.getDb().getRecord(AddonNotesOfflineProvider.NOTES_TABLE, {
                 userid: userId,
                 content: content,
                 created: timecreated
@@ -127,7 +127,7 @@ export class AddonNotesOfflineProvider {
      */
     getNotesForCourse(courseId: number, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.NOTES_TABLE, {courseid: courseId});
+            return site.getDb().getRecords(AddonNotesOfflineProvider.NOTES_TABLE, {courseid: courseId});
         });
     }
 
@@ -140,7 +140,7 @@ export class AddonNotesOfflineProvider {
      */
     getNotesForUser(userId: number, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.NOTES_TABLE, {userid: userId});
+            return site.getDb().getRecords(AddonNotesOfflineProvider.NOTES_TABLE, {userid: userId});
         });
     }
 
@@ -153,7 +153,7 @@ export class AddonNotesOfflineProvider {
      */
     getNotesWithPublishState(state: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.NOTES_TABLE, {publishstate: state});
+            return site.getDb().getRecords(AddonNotesOfflineProvider.NOTES_TABLE, {publishstate: state});
         });
     }
 
@@ -219,7 +219,7 @@ export class AddonNotesOfflineProvider {
                 lastmodified: now
             };
 
-            return site.getDb().insertRecord(this.NOTES_TABLE, data).then(() => {
+            return site.getDb().insertRecord(AddonNotesOfflineProvider.NOTES_TABLE, data).then(() => {
                 return data;
             });
         });

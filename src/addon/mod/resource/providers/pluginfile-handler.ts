@@ -21,6 +21,7 @@ import { CorePluginFileHandler } from '@providers/plugin-file-delegate';
 @Injectable()
 export class AddonModResourcePluginFileHandler implements CorePluginFileHandler {
     name = 'AddonModResourcePluginFileHandler';
+    component = 'mod_resource';
 
     /**
      * Return the RegExp to match the revision on pluginfile URLs.

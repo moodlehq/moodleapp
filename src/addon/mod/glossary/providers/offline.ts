@@ -25,11 +25,11 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 export class AddonModGlossaryOfflineProvider {
 
     // Variables for database.
-    protected ENTRIES_TABLE = 'addon_mod_glossary_entrues';
+    static ENTRIES_TABLE = 'addon_mod_glossary_entrues';
 
     protected tablesSchema = [
         {
-            name: this.ENTRIES_TABLE,
+            name: AddonModGlossaryOfflineProvider.ENTRIES_TABLE,
             columns: [
                 {
                     name: 'glossaryid',
@@ -96,7 +96,7 @@ export class AddonModGlossaryOfflineProvider {
                 timecreated: timeCreated,
             };
 
-            return site.getDb().deleteRecords(this.ENTRIES_TABLE, conditions);
+            return site.getDb().deleteRecords(AddonModGlossaryOfflineProvider.ENTRIES_TABLE, conditions);
         });
     }
 
@@ -108,7 +108,7 @@ export class AddonModGlossaryOfflineProvider {
      */
     getAllNewEntries(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.ENTRIES_TABLE).then((records: any[]) => {
+            return site.getDb().getRecords(AddonModGlossaryOfflineProvider.ENTRIES_TABLE).then((records: any[]) => {
                 return records.map(this.parseRecord.bind(this));
             });
         });
@@ -131,7 +131,8 @@ export class AddonModGlossaryOfflineProvider {
                 timecreated: timeCreated,
             };
 
-            return site.getDb().getRecord(this.ENTRIES_TABLE, conditions).then(this.parseRecord.bind(this));
+            return site.getDb().getRecord(AddonModGlossaryOfflineProvider.ENTRIES_TABLE, conditions)
+                    .then(this.parseRecord.bind(this));
         });
     }
 
@@ -150,7 +151,7 @@ export class AddonModGlossaryOfflineProvider {
                 userId: userId || site.getUserId(),
             };
 
-            return site.getDb().getRecords(this.ENTRIES_TABLE, conditions).then((records: any[]) => {
+            return site.getDb().getRecords(AddonModGlossaryOfflineProvider.ENTRIES_TABLE, conditions).then((records: any[]) => {
                 return records.map(this.parseRecord.bind(this));
             });
         });
@@ -172,7 +173,7 @@ export class AddonModGlossaryOfflineProvider {
                 concept: concept,
             };
 
-            return site.getDb().getRecords(this.ENTRIES_TABLE, conditions).then((entries) => {
+            return site.getDb().getRecords(AddonModGlossaryOfflineProvider.ENTRIES_TABLE, conditions).then((entries) => {
                 if (!entries.length) {
                     return false;
                 }
@@ -229,7 +230,7 @@ export class AddonModGlossaryOfflineProvider {
             }
 
             return discardPromise.then(() => {
-                return site.getDb().insertRecord(this.ENTRIES_TABLE, entry).then(() => false);
+                return site.getDb().insertRecord(AddonModGlossaryOfflineProvider.ENTRIES_TABLE, entry).then(() => false);
             });
         });
     }

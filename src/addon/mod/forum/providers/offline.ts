@@ -24,12 +24,12 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 export class AddonModForumOfflineProvider {
 
     // Variables for database.
-    protected DISCUSSIONS_TABLE = 'addon_mod_forum_discussions';
-    protected REPLIES_TABLE = 'addon_mod_forum_replies';
+    static DISCUSSIONS_TABLE = 'addon_mod_forum_discussions';
+    static REPLIES_TABLE = 'addon_mod_forum_replies';
 
     protected tablesSchema = [
         {
-            name: this.DISCUSSIONS_TABLE,
+            name: AddonModForumOfflineProvider.DISCUSSIONS_TABLE,
             columns: [
                 {
                     name: 'forumid',
@@ -71,7 +71,7 @@ export class AddonModForumOfflineProvider {
             primaryKeys: ['forumid', 'userid', 'timecreated']
         },
         {
-            name: this.REPLIES_TABLE,
+            name: AddonModForumOfflineProvider.REPLIES_TABLE,
             columns: [
                 {
                     name: 'postid',
@@ -141,7 +141,7 @@ export class AddonModForumOfflineProvider {
                 timecreated: timeCreated,
             };
 
-            return site.getDb().deleteRecords(this.DISCUSSIONS_TABLE, conditions);
+            return site.getDb().deleteRecords(AddonModForumOfflineProvider.DISCUSSIONS_TABLE, conditions);
         });
     }
 
@@ -162,7 +162,7 @@ export class AddonModForumOfflineProvider {
                 timecreated: timeCreated,
             };
 
-            return site.getDb().getRecord(this.DISCUSSIONS_TABLE, conditions).then((record) => {
+            return site.getDb().getRecord(AddonModForumOfflineProvider.DISCUSSIONS_TABLE, conditions).then((record) => {
                 record.options = this.textUtils.parseJSON(record.options);
 
                 return record;
@@ -178,7 +178,7 @@ export class AddonModForumOfflineProvider {
      */
     getAllNewDiscussions(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.DISCUSSIONS_TABLE).then(this.parseRecordOptions.bind(this));
+            return site.getDb().getRecords(AddonModForumOfflineProvider.DISCUSSIONS_TABLE).then(this.parseRecordOptions.bind(this));
         });
     }
 
@@ -214,7 +214,8 @@ export class AddonModForumOfflineProvider {
                 userid: userId || site.getUserId(),
             };
 
-            return site.getDb().getRecords(this.DISCUSSIONS_TABLE, conditions).then(this.parseRecordOptions.bind(this));
+            return site.getDb().getRecords(AddonModForumOfflineProvider.DISCUSSIONS_TABLE, conditions)
+                    .then(this.parseRecordOptions.bind(this));
         });
     }
 
@@ -248,7 +249,7 @@ export class AddonModForumOfflineProvider {
                 timecreated: timeCreated || new Date().getTime()
             };
 
-            return site.getDb().insertRecord(this.DISCUSSIONS_TABLE, data);
+            return site.getDb().insertRecord(AddonModForumOfflineProvider.DISCUSSIONS_TABLE, data);
         });
     }
 
@@ -267,7 +268,7 @@ export class AddonModForumOfflineProvider {
                 userid: userId || site.getUserId(),
             };
 
-            return site.getDb().deleteRecords(this.REPLIES_TABLE, conditions);
+            return site.getDb().deleteRecords(AddonModForumOfflineProvider.REPLIES_TABLE, conditions);
         });
     }
 
@@ -279,7 +280,7 @@ export class AddonModForumOfflineProvider {
      */
     getAllReplies(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.REPLIES_TABLE).then(this.parseRecordOptions.bind(this));
+            return site.getDb().getRecords(AddonModForumOfflineProvider.REPLIES_TABLE).then(this.parseRecordOptions.bind(this));
         });
     }
 
@@ -315,7 +316,8 @@ export class AddonModForumOfflineProvider {
                 userid: userId || site.getUserId(),
             };
 
-            return site.getDb().getRecords(this.REPLIES_TABLE, conditions).then(this.parseRecordOptions.bind(this));
+            return site.getDb().getRecords(AddonModForumOfflineProvider.REPLIES_TABLE, conditions)
+                    .then(this.parseRecordOptions.bind(this));
         });
     }
 
@@ -351,7 +353,8 @@ export class AddonModForumOfflineProvider {
                 userid: userId || site.getUserId(),
             };
 
-            return site.getDb().getRecords(this.REPLIES_TABLE, conditions).then(this.parseRecordOptions.bind(this));
+            return site.getDb().getRecords(AddonModForumOfflineProvider.REPLIES_TABLE, conditions)
+                    .then(this.parseRecordOptions.bind(this));
         });
     }
 
@@ -386,7 +389,7 @@ export class AddonModForumOfflineProvider {
                 timecreated: new Date().getTime()
             };
 
-            return site.getDb().insertRecord(this.REPLIES_TABLE, data);
+            return site.getDb().insertRecord(AddonModForumOfflineProvider.REPLIES_TABLE, data);
         });
     }
 

@@ -28,30 +28,30 @@ export class AddonModAssignOfflineProvider {
     protected logger;
 
     // Variables for database.
-    protected SUBMISSIONS_TABLE = 'addon_mod_assign_submissions';
-    protected SUBMISSIONS_GRADES_TABLE = 'addon_mod_assign_submissions_grading';
+    static SUBMISSIONS_TABLE = 'addon_mod_assign_submissions';
+    static SUBMISSIONS_GRADES_TABLE = 'addon_mod_assign_submissions_grading';
     protected tablesSchema = [
         {
-            name: this.SUBMISSIONS_TABLE,
+            name: AddonModAssignOfflineProvider.SUBMISSIONS_TABLE,
             columns: [
                 {
-                    name: 'assignId',
+                    name: 'assignid',
                     type: 'INTEGER'
                 },
                 {
-                    name: 'courseId',
+                    name: 'courseid',
                     type: 'INTEGER'
                 },
                 {
-                    name: 'userId',
+                    name: 'userid',
                     type: 'INTEGER'
                 },
                 {
-                    name: 'pluginData',
+                    name: 'plugindata',
                     type: 'TEXT'
                 },
                 {
-                    name: 'onlineTimemodified',
+                    name: 'onlinetimemodified',
                     type: 'INTEGER'
                 },
                 {
@@ -67,25 +67,25 @@ export class AddonModAssignOfflineProvider {
                     type: 'INTEGER'
                 },
                 {
-                    name: 'submissionStatement',
+                    name: 'submissionstatement',
                     type: 'INTEGER'
                 }
             ],
-            primaryKeys: ['assignId', 'userId']
+            primaryKeys: ['assignid', 'userid']
         },
         {
-            name: this.SUBMISSIONS_GRADES_TABLE,
+            name: AddonModAssignOfflineProvider.SUBMISSIONS_GRADES_TABLE,
             columns: [
                 {
-                    name: 'assignId',
+                    name: 'assignid',
                     type: 'INTEGER'
                 },
                 {
-                    name: 'courseId',
+                    name: 'courseid',
                     type: 'INTEGER'
                 },
                 {
-                    name: 'userId',
+                    name: 'userid',
                     type: 'INTEGER'
                 },
                 {
@@ -93,19 +93,19 @@ export class AddonModAssignOfflineProvider {
                     type: 'REAL'
                 },
                 {
-                    name: 'attemptNumber',
+                    name: 'attemptnumber',
                     type: 'INTEGER'
                 },
                 {
-                    name: 'addAttempt',
+                    name: 'addattempt',
                     type: 'INTEGER'
                 },
                 {
-                    name: 'workflowState',
+                    name: 'workflowstate',
                     type: 'TEXT'
                 },
                 {
-                    name: 'applyToAll',
+                    name: 'applytoall',
                     type: 'INTEGER'
                 },
                 {
@@ -113,7 +113,7 @@ export class AddonModAssignOfflineProvider {
                     type: 'TEXT'
                 },
                 {
-                    name: 'pluginData',
+                    name: 'plugindata',
                     type: 'TEXT'
                 },
                 {
@@ -121,7 +121,7 @@ export class AddonModAssignOfflineProvider {
                     type: 'INTEGER'
                 }
             ],
-            primaryKeys: ['assignId', 'userId']
+            primaryKeys: ['assignid', 'userid']
         }
     ];
 
@@ -143,7 +143,8 @@ export class AddonModAssignOfflineProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
-            return site.getDb().deleteRecords(this.SUBMISSIONS_TABLE, {assignId, userId});
+            return site.getDb().deleteRecords(AddonModAssignOfflineProvider.SUBMISSIONS_TABLE,
+                    {assignid: assignId, userid: userId});
         });
     }
 
@@ -159,7 +160,8 @@ export class AddonModAssignOfflineProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
-            return site.getDb().deleteRecords(this.SUBMISSIONS_GRADES_TABLE, {assignId, userId});
+            return site.getDb().deleteRecords(AddonModAssignOfflineProvider.SUBMISSIONS_GRADES_TABLE,
+                    {assignid: assignId, userid: userId});
         });
     }
 
@@ -181,7 +183,7 @@ export class AddonModAssignOfflineProvider {
 
             // Get assign id.
             results = results.map((object) => {
-                return object.assignId;
+                return object.assignid;
             });
 
             // Get unique values.
@@ -201,12 +203,12 @@ export class AddonModAssignOfflineProvider {
      */
     protected getAllSubmissions(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.getAllRecords(this.SUBMISSIONS_TABLE);
+            return db.getAllRecords(AddonModAssignOfflineProvider.SUBMISSIONS_TABLE);
         }).then((submissions) => {
 
             // Parse the plugin data.
             submissions.forEach((submission) => {
-                submission.pluginData = this.textUtils.parseJSON(submission.pluginData, {});
+                submission.plugindata = this.textUtils.parseJSON(submission.plugindata, {});
             });
 
             return submissions;
@@ -221,13 +223,13 @@ export class AddonModAssignOfflineProvider {
      */
     protected getAllSubmissionsGrade(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.getAllRecords(this.SUBMISSIONS_GRADES_TABLE);
+            return db.getAllRecords(AddonModAssignOfflineProvider.SUBMISSIONS_GRADES_TABLE);
         }).then((submissions) => {
 
             // Parse the plugin data and outcomes.
             submissions.forEach((submission) => {
                 submission.outcomes = this.textUtils.parseJSON(submission.outcomes, {});
-                submission.pluginData = this.textUtils.parseJSON(submission.pluginData, {});
+                submission.plugindata = this.textUtils.parseJSON(submission.plugindata, {});
             });
 
             return submissions;
@@ -243,12 +245,12 @@ export class AddonModAssignOfflineProvider {
      */
     getAssignSubmissions(assignId: number, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.getRecords(this.SUBMISSIONS_TABLE, {assignId});
+            return db.getRecords(AddonModAssignOfflineProvider.SUBMISSIONS_TABLE, {assignid: assignId});
         }).then((submissions) => {
 
             // Parse the plugin data.
             submissions.forEach((submission) => {
-                submission.pluginData = this.textUtils.parseJSON(submission.pluginData, {});
+                submission.plugindata = this.textUtils.parseJSON(submission.plugindata, {});
             });
 
             return submissions;
@@ -264,13 +266,13 @@ export class AddonModAssignOfflineProvider {
      */
     getAssignSubmissionsGrade(assignId: number, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.getRecords(this.SUBMISSIONS_GRADES_TABLE, {assignId});
+            return db.getRecords(AddonModAssignOfflineProvider.SUBMISSIONS_GRADES_TABLE, {assignid: assignId});
         }).then((submissions) => {
 
             // Parse the plugin data and outcomes.
             submissions.forEach((submission) => {
                 submission.outcomes = this.textUtils.parseJSON(submission.outcomes, {});
-                submission.pluginData = this.textUtils.parseJSON(submission.pluginData, {});
+                submission.plugindata = this.textUtils.parseJSON(submission.plugindata, {});
             });
 
             return submissions;
@@ -289,11 +291,11 @@ export class AddonModAssignOfflineProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
-            return site.getDb().getRecord(this.SUBMISSIONS_TABLE, {assignId, userId});
+            return site.getDb().getRecord(AddonModAssignOfflineProvider.SUBMISSIONS_TABLE, {assignid: assignId, userid: userId});
         }).then((submission) => {
 
             // Parse the plugin data.
-            submission.pluginData = this.textUtils.parseJSON(submission.pluginData, {});
+            submission.plugindata = this.textUtils.parseJSON(submission.plugindata, {});
 
             return submission;
         });
@@ -331,12 +333,13 @@ export class AddonModAssignOfflineProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
-            return site.getDb().getRecord(this.SUBMISSIONS_GRADES_TABLE, {assignId, userId});
+            return site.getDb().getRecord(AddonModAssignOfflineProvider.SUBMISSIONS_GRADES_TABLE,
+                    {assignid: assignId, userid: userId});
         }).then((submission) => {
 
             // Parse the plugin data and outcomes.
             submission.outcomes = this.textUtils.parseJSON(submission.outcomes, {});
-            submission.pluginData = this.textUtils.parseJSON(submission.pluginData, {});
+            submission.plugindata = this.textUtils.parseJSON(submission.plugindata, {});
 
             return submission;
         });
@@ -410,20 +413,20 @@ export class AddonModAssignOfflineProvider {
                 const now = this.timeUtils.timestamp();
 
                 return {
-                    assignId: assignId,
-                    courseId: courseId,
-                    userId: userId,
-                    onlineTimemodified: timemodified,
+                    assignid: assignId,
+                    courseid: courseId,
+                    userid: userId,
+                    onlinetimemodified: timemodified,
                     timecreated: now,
                     timemodified: now
                 };
             }).then((submission) => {
                 // Mark the submission.
                 submission.submitted = submitted ? 1 : 0;
-                submission.submissionStatement = acceptStatement ? 1 : 0;
-                submission.pluginData = submission.pluginData ? JSON.stringify(submission.pluginData) : '{}';
+                submission.submissionstatement = acceptStatement ? 1 : 0;
+                submission.plugindata = submission.plugindata ? JSON.stringify(submission.plugindata) : '{}';
 
-                return site.getDb().insertRecord(this.SUBMISSIONS_TABLE, submission);
+                return site.getDb().insertRecord(AddonModAssignOfflineProvider.SUBMISSIONS_TABLE, submission);
             });
         });
     }
@@ -448,17 +451,17 @@ export class AddonModAssignOfflineProvider {
 
             const now = this.timeUtils.timestamp(),
                 entry = {
-                    assignId: assignId,
-                    courseId: courseId,
-                    pluginData: pluginData ? JSON.stringify(pluginData) : '{}',
-                    userId: userId,
+                    assignid: assignId,
+                    courseid: courseId,
+                    plugindata: pluginData ? JSON.stringify(pluginData) : '{}',
+                    userid: userId,
                     submitted: submitted ? 1 : 0,
                     timecreated: now,
                     timemodified: now,
-                    onlineTimemodified: timemodified
+                    onlinetimemodified: timemodified
                 };
 
-            return site.getDb().insertRecord(this.SUBMISSIONS_TABLE, entry);
+            return site.getDb().insertRecord(AddonModAssignOfflineProvider.SUBMISSIONS_TABLE, entry);
         });
     }
 
@@ -484,20 +487,20 @@ export class AddonModAssignOfflineProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const now = this.timeUtils.timestamp(),
                 entry = {
-                    assignId: assignId,
-                    userId: userId,
-                    courseId: courseId,
+                    assignid: assignId,
+                    userid: userId,
+                    courseid: courseId,
                     grade: grade,
-                    attemptNumber: attemptNumber,
-                    addAttempt: addAttempt ? 1 : 0,
-                    workflowState: workflowState,
-                    applyToAll: applyToAll ? 1 : 0,
+                    attemptnumber: attemptNumber,
+                    addattempt: addAttempt ? 1 : 0,
+                    workflowstate: workflowState,
+                    applytoall: applyToAll ? 1 : 0,
                     outcomes: outcomes ? JSON.stringify(outcomes) : '{}',
-                    pluginData: pluginData ? JSON.stringify(pluginData) : '{}',
+                    plugindata: pluginData ? JSON.stringify(pluginData) : '{}',
                     timemodified: now
                 };
 
-            return site.getDb().insertRecord(this.SUBMISSIONS_GRADES_TABLE, entry);
+            return site.getDb().insertRecord(AddonModAssignOfflineProvider.SUBMISSIONS_GRADES_TABLE, entry);
         });
     }
 }

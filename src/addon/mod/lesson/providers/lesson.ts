@@ -148,12 +148,12 @@ export class AddonModLessonProvider {
     static LESSON_PAGE_ENDOFCLUSTER = 31;
 
     // Variables for database.
-    protected PASSWORD_TABLE = 'addon_mod_lesson_password';
+    static PASSWORD_TABLE = 'addon_mod_lesson_password';
     protected tablesSchema = {
-        name: this.PASSWORD_TABLE,
+        name: AddonModLessonProvider.PASSWORD_TABLE,
         columns: [
             {
-                name: 'lessonId',
+                name: 'lessonid',
                 type: 'INTEGER',
                 primaryKey: true
             },
@@ -2072,7 +2072,7 @@ export class AddonModLessonProvider {
      */
     getStoredPassword(lessonId: number, siteId?: string): Promise<string> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecord(this.PASSWORD_TABLE, {lessonId}).then((entry) => {
+            return site.getDb().getRecord(AddonModLessonProvider.PASSWORD_TABLE, {lessonid: lessonId}).then((entry) => {
                 return entry.password;
             });
         });
@@ -3169,7 +3169,7 @@ export class AddonModLessonProvider {
      */
     removeStoredPassword(lessonId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().deleteRecords(this.PASSWORD_TABLE, {lessonId});
+            return site.getDb().deleteRecords(AddonModLessonProvider.PASSWORD_TABLE, {lessonid: lessonId});
         });
     }
 
@@ -3184,12 +3184,12 @@ export class AddonModLessonProvider {
     storePassword(lessonId: number, password: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const entry = {
-                lessonId: lessonId,
+                lessonid: lessonId,
                 password: password,
                 timemodified: Date.now()
             };
 
-            return site.getDb().insertRecord(this.PASSWORD_TABLE, entry);
+            return site.getDb().insertRecord(AddonModLessonProvider.PASSWORD_TABLE, entry);
         });
     }
 

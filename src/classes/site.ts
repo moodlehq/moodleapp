@@ -578,6 +578,8 @@ export class CoreSite {
         data.moodlewssettingfilter = preSets.filter === false ? false : true;
         data.moodlewssettingfileurl = preSets.rewriteurls === false ? false : true;
 
+        const originalData = data;
+
         // Convert the values to string before starting the cache process.
         try {
             data = this.wsProvider.convertValuesToString(data, wsPreSets.cleanUnicode);
@@ -586,7 +588,7 @@ export class CoreSite {
             return Promise.reject(this.utils.createFakeWSError('core.unicodenotsupportedcleanerror', true));
         }
 
-        return this.getFromCache(method, data, preSets).catch(() => {
+        return this.getFromCache(method, data, preSets, false, originalData).catch(() => {
             // Do not pass those options to the core WS factory.
             return this.wsProvider.call(method, data, wsPreSets).then((response) => {
                 if (preSets.saveToCache) {
@@ -666,7 +668,7 @@ export class CoreSite {
                 preSets.omitExpires = true;
                 preSets.getFromCache = true;
 
-                return this.getFromCache(method, data, preSets, true).catch(() => {
+                return this.getFromCache(method, data, preSets, true, originalData).catch(() => {
                     return Promise.reject(error);
                 });
             });
@@ -712,15 +714,28 @@ export class CoreSite {
     }
 
     /**
+     * Get the cache ID used in Ionic 1 version of the app.
+     *
+     * @param {string} method The WebService method.
+     * @param {any} data Arguments to pass to the method.
+     * @return {string} Cache ID.
+     */
+    protected getCacheOldId(method: string, data: any): string {
+        return <string> Md5.hashAsciiStr(method + ':' +  JSON.stringify(data));
+    }
+
+    /**
      * Get a WS response from cache.
      *
      * @param {string} method The WebService method to be called.
      * @param {any} data Arguments to pass to the method.
      * @param {CoreSiteWSPreSets} preSets Extra options.
-     * @param {boolean} emergency Whether it's an "emergency" cache call (WS call failed).
+     * @param {boolean} [emergency] Whether it's an "emergency" cache call (WS call failed).
+     * @param {any} [originalData] Arguments to pass to the method before being converted to strings.
      * @return {Promise<any>} Promise resolved with the WS response.
      */
-    protected getFromCache(method: string, data: any, preSets: CoreSiteWSPreSets, emergency?: boolean): Promise<any> {
+    protected getFromCache(method: string, data: any, preSets: CoreSiteWSPreSets, emergency?: boolean, originalData?: any)
+            : Promise<any> {
         if (!this.db || !preSets.getFromCache) {
             return Promise.reject(null);
         }
@@ -746,7 +761,17 @@ export class CoreSite {
                 return entries[0];
             });
         } else {
-            promise = this.db.getRecord(this.WS_CACHE_TABLE, { id: id });
+            promise = this.db.getRecord(this.WS_CACHE_TABLE, { id: id }).catch(() => {
+                // Entry not found, try to get it using the old ID.
+                const oldId = this.getCacheOldId(method, originalData || {});
+
+                return this.db.getRecord(this.WS_CACHE_TABLE, { id: oldId }).then((entry) => {
+                    // Update the entry ID to use the new one.
+                    this.db.updateRecords(this.WS_CACHE_TABLE, {id: id}, {id: oldId});
+
+                    return entry;
+                });
+            });
         }
 
         return promise.then((entry) => {

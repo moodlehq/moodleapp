@@ -27,10 +27,10 @@ export class AddonModFeedbackOfflineProvider {
     protected logger;
 
     // Variables for database.
-    protected FEEDBACK_TABLE = 'addon_mod_feedback_answers';
+    static FEEDBACK_TABLE = 'addon_mod_feedback_answers';
     protected tablesSchema = [
         {
-            name: this.FEEDBACK_TABLE,
+            name: AddonModFeedbackOfflineProvider.FEEDBACK_TABLE,
             columns: [
                 {
                     name: 'feedbackid',
@@ -73,7 +73,7 @@ export class AddonModFeedbackOfflineProvider {
      */
     deleteFeedbackPageResponses(feedbackId: number, page: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().deleteRecords(this.FEEDBACK_TABLE, {feedbackid: feedbackId, page: page});
+            return site.getDb().deleteRecords(AddonModFeedbackOfflineProvider.FEEDBACK_TABLE, {feedbackid: feedbackId, page: page});
         });
     }
 
@@ -85,7 +85,7 @@ export class AddonModFeedbackOfflineProvider {
      */
     getAllFeedbackResponses(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getAllRecords(this.FEEDBACK_TABLE).then((entries) => {
+            return site.getDb().getAllRecords(AddonModFeedbackOfflineProvider.FEEDBACK_TABLE).then((entries) => {
                 return entries.map((entry) => {
                     entry.responses = this.textUtils.parseJSON(entry.responses);
                 });
@@ -102,10 +102,10 @@ export class AddonModFeedbackOfflineProvider {
      */
     getFeedbackResponses(feedbackId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.FEEDBACK_TABLE, {feedbackid: feedbackId}).then((entries) => {
-                return entries.map((entry) => {
-                    entry.responses = this.textUtils.parseJSON(entry.responses);
-                });
+            return site.getDb().getRecords(AddonModFeedbackOfflineProvider.FEEDBACK_TABLE, {feedbackid: feedbackId});
+        }).then((entries) => {
+            return entries.map((entry) => {
+                entry.responses = this.textUtils.parseJSON(entry.responses);
             });
         });
     }
@@ -120,11 +120,11 @@ export class AddonModFeedbackOfflineProvider {
      */
     getFeedbackPageResponses(feedbackId: number, page: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecord(this.FEEDBACK_TABLE, {feedbackid: feedbackId, page: page}).then((entry) => {
-                entry.responses = this.textUtils.parseJSON(entry.responses);
+            return site.getDb().getRecord(AddonModFeedbackOfflineProvider.FEEDBACK_TABLE, {feedbackid: feedbackId, page: page});
+        }).then((entry) => {
+            entry.responses = this.textUtils.parseJSON(entry.responses);
 
-                return entry;
-            });
+            return entry;
         });
     }
 
@@ -161,7 +161,7 @@ export class AddonModFeedbackOfflineProvider {
                     timemodified: this.timeUtils.timestamp()
                 };
 
-            return site.getDb().insertRecord(this.FEEDBACK_TABLE, entry);
+            return site.getDb().insertRecord(AddonModFeedbackOfflineProvider.FEEDBACK_TABLE, entry);
         });
     }
 }

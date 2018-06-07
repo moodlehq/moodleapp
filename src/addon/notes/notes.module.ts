@@ -23,6 +23,7 @@ import { AddonNotesComponentsModule } from './components/components.module';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
 import { CoreCronDelegate } from '@providers/cron';
 import { CoreUserDelegate } from '@core/user/providers/user-delegate';
+import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 // List of providers (without handlers).
 export const ADDON_NOTES_PROVIDERS: any[] = [
@@ -46,10 +47,17 @@ export const ADDON_NOTES_PROVIDERS: any[] = [
 export class AddonNotesModule {
     constructor(courseOptionsDelegate: CoreCourseOptionsDelegate, courseOptionHandler: AddonNotesCourseOptionHandler,
             userDelegate: CoreUserDelegate, userHandler: AddonNotesUserHandler,
-            cronDelegate: CoreCronDelegate, syncHandler: AddonNotesSyncCronHandler) {
+            cronDelegate: CoreCronDelegate, syncHandler: AddonNotesSyncCronHandler, updateManager: CoreUpdateManagerProvider) {
+
         // Register handlers.
         courseOptionsDelegate.registerHandler(courseOptionHandler);
         userDelegate.registerHandler(userHandler);
         cronDelegate.register(syncHandler);
+
+        // Allow migrating the tables from the old app to the new schema.
+        updateManager.registerSiteTableMigration({
+            name: 'mma_notes_offline_notes',
+            newName: AddonNotesOfflineProvider.NOTES_TABLE
+        });
     }
 }

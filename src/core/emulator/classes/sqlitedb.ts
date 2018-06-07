@@ -132,7 +132,10 @@ export class SQLiteDBMock extends SQLiteDB {
 
                         tx.executeSql(query, params, (tx, results) => {
                             resolve(results);
-                        }, reject);
+                        }, (tx, error) => {
+                            console.error(query, params, error);
+                            reject(error);
+                        });
                     }));
                 });
 

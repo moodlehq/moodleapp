@@ -21,6 +21,7 @@ import { CorePluginFileHandler } from '@providers/plugin-file-delegate';
 @Injectable()
 export class AddonModScormPluginFileHandler implements CorePluginFileHandler {
     name = 'AddonModScormPluginFileHandler';
+    component = 'mod_scorm';
 
     /**
      * Return the RegExp to match the revision on pluginfile URLs.
@@ -32,7 +33,7 @@ export class AddonModScormPluginFileHandler implements CorePluginFileHandler {
         // Check filearea.
         if (args[2] == 'content') {
             // Component + Filearea + Revision
-            return new RegExp('/mod_resource/content/([0-9]+)/');
+            return new RegExp('/mod_scorm/content/([0-9]+)/');
         }
     }
 
