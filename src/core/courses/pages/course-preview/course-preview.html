@@ -10,6 +10,9 @@
     <core-loading [hideUntil]="dataLoaded">
 
         <ion-list *ngIf="course">
+            <div *ngIf="course.imageThumb" (click)="openCourse()" class="core-course-thumb">
+                <img [src]="course.imageThumb" core-external-content alt=""/>
+            </div>
             <a ion-item text-wrap (click)="openCourse()" [title]="course.fullname" [attr.detail-none]="!canAccessCourse">
                 <ion-icon name="ionic" item-start></ion-icon>
                 <h2><core-format-text [text]="course.fullname"></core-format-text></h2>

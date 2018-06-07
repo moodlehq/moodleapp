@@ -1,4 +1,7 @@
 <ion-card>
+    <div (click)="openCourse(course)" class="core-course-thumb core-course-color-{{course.id % 10}}">
+        <img *ngIf="course.imageThumb" [src]="course.imageThumb" core-external-content alt=""/>
+    </div>
     <ion-item tappable text-wrap detail-none (click)="openCourse(course)" [title]="course.fullname" class="core-course-link">
         <h2><core-format-text [text]="course.fullname"></core-format-text></h2>
 

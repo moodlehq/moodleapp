@@ -4,3 +4,22 @@ ion-badge.core-course-download-section-progress {
     margin-top: 12px;
     margin-right: 12px;
 }
+
+core-course-format {
+    .core-course-thumb {
+        height: 150px;
+        width: 100%;
+        overflow: hidden;
+        cursor: pointer;
+        pointer-events: auto;
+        position: relative;
+
+        img {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            width: 100%;
+        }
+    }
+}
