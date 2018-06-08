@@ -6,7 +6,11 @@
     width: 100%;
     background: $core-top-tabs-background;
 
-    > a {
+    .row {
+        width: 100%;
+    }
+
+    a.tab-slide {
         @extend .tab-button;
 
         background: $core-top-tabs-background;
@@ -20,9 +24,25 @@
             border-bottom: 2px solid $core-top-tabs-color-active !important;
         }
     }
+
+    ion-col {
+        text-align: center;
+        font-size: 1.6rem;
+        line-height: 1.6rem;
+
+        &.col-with-arrow {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            ion-icon {
+                color: #ccc;
+            }
+        }
+    }
 }
 
-.md .core-tabs-bar > a {
+.md .core-tabs-bar a.tab-slide {
     // @extend .tabs-md .tab-button;
     min-height: $tabs-md-tab-min-height;
 
@@ -30,7 +50,7 @@
     color: $tabs-md-tab-text-color;
 }
 
-.ios .core-tabs-bar > a {
+.ios .core-tabs-bar a.tab-slide {
     // @extend .tabs-ios .tab-button;
     max-width: $tabs-ios-tab-max-width;
     min-height: $tabs-ios-tab-min-height;
@@ -40,7 +60,7 @@
     color: $tabs-ios-tab-text-color;
 }
 
-.wp .core-tabs-bar > a {
+.wp .core-tabs-bar a.tab-slide {
     //@extend .tabs-wp .tab-button;
     @include border-radius(0);
 

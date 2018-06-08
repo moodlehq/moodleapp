@@ -17,7 +17,7 @@ import {
     SimpleChange
 } from '@angular/core';
 import { CoreTabComponent } from './tab';
-import { Content } from 'ionic-angular';
+import { Content, Slides } from 'ionic-angular';
 
 /**
  * This component displays some tabs that usually share data between them.
@@ -48,9 +48,16 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
     @Output() ionChange: EventEmitter<CoreTabComponent> = new EventEmitter<CoreTabComponent>(); // Emitted when the tab changes.
     @ViewChild('originalTabs') originalTabsRef: ElementRef;
     @ViewChild('topTabs') topTabs: ElementRef;
+    @ViewChild(Slides) slides: Slides;
 
     tabs: CoreTabComponent[] = []; // List of tabs.
     selected: number; // Selected tab number.
+    showPrevButton: boolean;
+    showNextButton: boolean;
+    maxSlides = 3;
+    slidesShown = this.maxSlides;
+    numTabsShown = 0;
+
     protected originalTabsContainer: HTMLElement; // The container of the original tabs. It will include each tab's content.
     protected initialized = false;
     protected afterViewInitTriggered = false;
@@ -77,10 +84,16 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
      */
     ngAfterViewInit(): void {
         this.afterViewInitTriggered = true;
+
         if (!this.initialized && this.hideUntil) {
             // Tabs should be shown, initialize them.
             this.initializeTabs();
         }
+
+        window.addEventListener('resize', () =>  {
+            this.calculateMaxSlides();
+            this.updateSlides();
+        });
     }
 
     /**
@@ -107,6 +120,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
         if (this.getIndex(tab) == -1) {
             this.tabs.push(tab);
             this.sortTabs();
+            this.updateSlides();
 
             if (this.initialized && this.tabs.length > 1 && this.tabBarHeight == 0) {
                 // Calculate the tabBarHeight again now that there is more than 1 tab and the bar will be seen.
@@ -190,7 +204,70 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
             }
         }
 
+        // Check which arrows should be shown
+        this.calculateMaxSlides();
+        this.updateSlides();
+
         this.initialized = true;
+    }
+
+    /**
+     * Method executed when the slides are changed.
+     */
+    slideChanged(): void {
+        const currentIndex = this.slides.getActiveIndex();
+        if (this.slidesShown >= this.numTabsShown) {
+            this.showPrevButton = false;
+            this.showNextButton = false;
+        } else if (typeof currentIndex !== 'undefined') {
+            this.showPrevButton = currentIndex > 0;
+            this.showNextButton = currentIndex < this.numTabsShown - this.slidesShown;
+        } else {
+            this.showPrevButton = false;
+            this.showNextButton = this.numTabsShown > this.slidesShown;
+        }
+    }
+
+    /**
+     * Update slides.
+     */
+    protected updateSlides(): void {
+        this.numTabsShown = this.tabs.reduce((prev: number, current: any) => {
+            return current.show ? prev + 1 : prev;
+        }, 0);
+
+        this.slidesShown = Math.min(this.maxSlides, this.numTabsShown);
+        this.slides.update();
+        this.slides.resize();
+
+        this.slideChanged();
+    }
+
+    protected calculateMaxSlides(): void {
+        if (this.slides && this.slides.renderedWidth) {
+            this.maxSlides = Math.floor(this.slides.renderedWidth / 120);
+
+            return;
+        }
+        this.maxSlides = 3;
+    }
+
+    /**
+     * Method that shows the next slide.
+     */
+    slideNext(): void {
+        if (this.showNextButton) {
+            this.slides.slideNext();
+        }
+    }
+
+    /**
+     * Method that shows the previous slide.
+     */
+    slidePrev(): void {
+        if (this.showPrevButton) {
+            this.slides.slidePrev();
+        }
     }
 
     /**
@@ -221,6 +298,8 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
     removeTab(tab: CoreTabComponent): void {
         const index = this.getIndex(tab);
         this.tabs.splice(index, 1);
+
+        this.updateSlides();
     }
 
     /**
@@ -250,6 +329,10 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
         if (currentTab) {
             // Unselect previous selected tab.
             currentTab.unselectTab();
+        }
+
+        if (this.selected) {
+            this.slides.slideTo(index);
         }
 
         this.selected = index;
