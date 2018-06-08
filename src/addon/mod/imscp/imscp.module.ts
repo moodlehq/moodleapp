@@ -35,12 +35,13 @@ export const ADDON_MOD_IMSCP_PROVIDERS: any[] = [
     imports: [
         AddonModImscpComponentsModule
     ],
-    providers: ADDON_MOD_IMSCP_PROVIDERS.concat([
+    providers: [
+        AddonModImscpProvider,
         AddonModImscpModuleHandler,
         AddonModImscpPrefetchHandler,
         AddonModImscpLinkHandler,
         AddonModImscpPluginFileHandler
-    ])
+    ]
 })
 export class AddonModImscpModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModImscpModuleHandler,

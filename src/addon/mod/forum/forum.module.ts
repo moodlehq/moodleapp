@@ -43,13 +43,17 @@ export const ADDON_MOD_FORUM_PROVIDERS: any[] = [
     imports: [
         AddonModForumComponentsModule,
     ],
-    providers: ADDON_MOD_FORUM_PROVIDERS.concat([
+    providers: [
+        AddonModForumProvider,
+        AddonModForumOfflineProvider,
+        AddonModForumHelperProvider,
+        AddonModForumSyncProvider,
         AddonModForumModuleHandler,
         AddonModForumPrefetchHandler,
         AddonModForumSyncCronHandler,
         AddonModForumIndexLinkHandler,
         AddonModForumDiscussionLinkHandler
-    ])
+    ]
 })
 export class AddonModForumModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModForumModuleHandler,

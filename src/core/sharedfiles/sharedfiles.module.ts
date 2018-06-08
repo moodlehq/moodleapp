@@ -30,9 +30,11 @@ export const CORE_SHAREDFILES_PROVIDERS: any[] = [
     ],
     imports: [
     ],
-    providers: CORE_SHAREDFILES_PROVIDERS.concat([
+    providers: [
+        CoreSharedFilesProvider,
+        CoreSharedFilesHelperProvider,
         CoreSharedFilesUploadHandler
-    ])
+    ]
 })
 export class CoreSharedFilesModule {
     constructor(platform: Platform, delegate: CoreFileUploaderDelegate, handler: CoreSharedFilesUploadHandler,

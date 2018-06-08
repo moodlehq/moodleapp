@@ -50,7 +50,10 @@ export const ADDON_MESSAGES_PROVIDERS: any[] = [
     ],
     imports: [
     ],
-    providers: ADDON_MESSAGES_PROVIDERS.concat([
+    providers: [
+        AddonMessagesProvider,
+        AddonMessagesOfflineProvider,
+        AddonMessagesSyncProvider,
         AddonMessagesMainMenuHandler,
         AddonMessagesSendMessageUserHandler,
         AddonMessagesAddContactUserHandler,
@@ -59,7 +62,7 @@ export const ADDON_MESSAGES_PROVIDERS: any[] = [
         AddonMessagesIndexLinkHandler,
         AddonMessagesSyncCronHandler,
         AddonMessagesSettingsHandler
-    ])
+    ]
 })
 export class AddonMessagesModule {
     constructor(mainMenuDelegate: CoreMainMenuDelegate, mainmenuHandler: AddonMessagesMainMenuHandler,

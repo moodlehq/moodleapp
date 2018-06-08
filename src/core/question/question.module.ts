@@ -32,10 +32,14 @@ export const CORE_QUESTION_PROVIDERS: any[] = [
     declarations: [],
     imports: [
     ],
-    providers: CORE_QUESTION_PROVIDERS.concat([
+    providers: [
+        CoreQuestionProvider,
+        CoreQuestionDelegate,
+        CoreQuestionBehaviourDelegate,
+        CoreQuestionHelperProvider,
         CoreQuestionDefaultHandler,
         CoreQuestionBehaviourDefaultHandler
-    ]),
+    ],
     exports: []
 })
 export class CoreQuestionModule {}

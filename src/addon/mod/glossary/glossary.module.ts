@@ -43,13 +43,17 @@ export const ADDON_MOD_GLOSSARY_PROVIDERS: any[] = [
     imports: [
         AddonModGlossaryComponentsModule,
     ],
-    providers: ADDON_MOD_GLOSSARY_PROVIDERS.concat([
+    providers: [
+        AddonModGlossaryProvider,
+        AddonModGlossaryOfflineProvider,
+        AddonModGlossaryHelperProvider,
+        AddonModGlossarySyncProvider,
         AddonModGlossaryModuleHandler,
         AddonModGlossaryPrefetchHandler,
         AddonModGlossarySyncCronHandler,
         AddonModGlossaryIndexLinkHandler,
         AddonModGlossaryEntryLinkHandler,
-    ])
+    ]
 })
 export class AddonModGlossaryModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModGlossaryModuleHandler,

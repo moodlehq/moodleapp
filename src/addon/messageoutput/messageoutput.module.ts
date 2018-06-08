@@ -25,6 +25,8 @@ export const ADDON_MESSAGEOUTPUT_PROVIDERS: any[] = [
     ],
     imports: [
     ],
-    providers: ADDON_MESSAGEOUTPUT_PROVIDERS
+    providers: [
+        AddonMessageOutputDelegate
+    ]
 })
 export class AddonMessageOutputModule {}

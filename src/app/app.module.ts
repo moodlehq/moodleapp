@@ -217,13 +217,39 @@ export const CORE_PROVIDERS: any[] = [
     entryComponents: [
         MoodleMobileApp
     ],
-    providers: CORE_PROVIDERS.concat([
+    providers: [
+        CoreLoggerProvider,
+        CoreDbProvider,
+        CoreAppProvider,
+        CoreConfigProvider,
+        CoreLangProvider,
+        CoreTextUtilsProvider,
+        CoreDomUtilsProvider,
+        CoreTimeUtilsProvider,
+        CoreUrlUtilsProvider,
+        CoreUtilsProvider,
+        CoreMimetypeUtilsProvider,
+        CoreInitDelegate,
+        CoreFileProvider,
+        CoreWSProvider,
+        CoreEventsProvider,
+        CoreSitesFactoryProvider,
+        CoreSitesProvider,
+        CoreLocalNotificationsProvider,
+        CoreGroupsProvider,
+        CoreCronDelegate,
+        CoreFileSessionProvider,
+        CoreFilepoolProvider,
+        CoreUpdateManagerProvider,
+        CorePluginFileDelegate,
+        CoreSyncProvider,
+        CoreFileHelperProvider,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: CoreInterceptor,
             multi: true,
         }
-    ])
+    ]
 })
 export class AppModule {
     constructor(platform: Platform, initDelegate: CoreInitDelegate, updateManager: CoreUpdateManagerProvider,

@@ -32,7 +32,10 @@ export const ADDON_PUSHNOTIFICATIONS_PROVIDERS: any[] = [
     ],
     imports: [
     ],
-    providers: ADDON_PUSHNOTIFICATIONS_PROVIDERS
+    providers: [
+        AddonPushNotificationsProvider,
+        AddonPushNotificationsDelegate
+    ]
 })
 export class AddonPushNotificationsModule {
     constructor(platform: Platform, pushNotificationsProvider: AddonPushNotificationsProvider, eventsProvider: CoreEventsProvider,

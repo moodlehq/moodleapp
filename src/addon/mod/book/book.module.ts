@@ -33,11 +33,12 @@ export const ADDON_MOD_BOOK_PROVIDERS: any[] = [
     imports: [
         AddonModBookComponentsModule
     ],
-    providers: ADDON_MOD_BOOK_PROVIDERS.concat([
+    providers: [
+        AddonModBookProvider,
         AddonModBookModuleHandler,
         AddonModBookLinkHandler,
         AddonModBookPrefetchHandler
-    ])
+    ]
 })
 export class AddonModBookModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModBookModuleHandler,

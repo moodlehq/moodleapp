@@ -37,12 +37,14 @@ export const ADDON_MOD_PAGE_PROVIDERS: any[] = [
     imports: [
         AddonModPageComponentsModule
     ],
-    providers: ADDON_MOD_PAGE_PROVIDERS.concat([
+    providers: [
+        AddonModPageProvider,
+        AddonModPageHelperProvider,
         AddonModPageModuleHandler,
         AddonModPagePrefetchHandler,
         AddonModPageLinkHandler,
         AddonModPagePluginFileHandler
-    ])
+    ]
 })
 export class AddonModPageModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModPageModuleHandler,

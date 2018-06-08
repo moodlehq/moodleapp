@@ -29,9 +29,11 @@ export const ADDON_FILES_PROVIDERS: any[] = [
     ],
     imports: [
     ],
-    providers: ADDON_FILES_PROVIDERS.concat([
+    providers: [
+        AddonFilesProvider,
+        AddonFilesHelperProvider,
         AddonFilesMainMenuHandler
-    ])
+    ]
 })
 export class AddonFilesModule {
     constructor(mainMenuDelegate: CoreMainMenuDelegate, filesHandler: AddonFilesMainMenuHandler) {

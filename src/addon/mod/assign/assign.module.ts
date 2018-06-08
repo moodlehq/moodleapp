@@ -48,13 +48,19 @@ export const ADDON_MOD_ASSIGN_PROVIDERS: any[] = [
         AddonModAssignSubmissionModule,
         AddonModAssignFeedbackModule
     ],
-    providers: ADDON_MOD_ASSIGN_PROVIDERS.concat([
+    providers: [
+        AddonModAssignProvider,
+        AddonModAssignOfflineProvider,
+        AddonModAssignSyncProvider,
+        AddonModAssignHelperProvider,
+        AddonModAssignFeedbackDelegate,
+        AddonModAssignSubmissionDelegate,
         AddonModAssignDefaultFeedbackHandler,
         AddonModAssignDefaultSubmissionHandler,
         AddonModAssignModuleHandler,
         AddonModAssignPrefetchHandler,
         AddonModAssignSyncCronHandler
-    ])
+    ]
 })
 export class AddonModAssignModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModAssignModuleHandler,

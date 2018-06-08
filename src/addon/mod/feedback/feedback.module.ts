@@ -47,7 +47,11 @@ export const ADDON_MOD_FEEDBACK_PROVIDERS: any[] = [
     imports: [
         AddonModFeedbackComponentsModule
     ],
-    providers: ADDON_MOD_FEEDBACK_PROVIDERS.concat([
+    providers: [
+        AddonModFeedbackProvider,
+        AddonModFeedbackHelperProvider,
+        AddonModFeedbackSyncProvider,
+        AddonModFeedbackOfflineProvider,
         AddonModFeedbackModuleHandler,
         AddonModFeedbackPrefetchHandler,
         AddonModFeedbackLinkHandler,
@@ -57,7 +61,7 @@ export const ADDON_MOD_FEEDBACK_PROVIDERS: any[] = [
         AddonModFeedbackCompleteLinkHandler,
         AddonModFeedbackPrintLinkHandler,
         AddonModFeedbackSyncCronHandler
-    ])
+    ]
 })
 export class AddonModFeedbackModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModFeedbackModuleHandler,

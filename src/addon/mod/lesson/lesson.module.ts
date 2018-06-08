@@ -44,14 +44,18 @@ export const ADDON_MOD_LESSON_PROVIDERS: any[] = [
     imports: [
         AddonModLessonComponentsModule
     ],
-    providers: ADDON_MOD_LESSON_PROVIDERS.concat([
+    providers: [
+        AddonModLessonProvider,
+        AddonModLessonOfflineProvider,
+        AddonModLessonSyncProvider,
+        AddonModLessonHelperProvider,
         AddonModLessonModuleHandler,
         AddonModLessonPrefetchHandler,
         AddonModLessonSyncCronHandler,
         AddonModLessonIndexLinkHandler,
         AddonModLessonGradeLinkHandler,
         AddonModLessonReportLinkHandler
-    ])
+    ]
 })
 export class AddonModLessonModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModLessonModuleHandler,

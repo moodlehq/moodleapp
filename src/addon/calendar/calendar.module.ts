@@ -33,9 +33,11 @@ export const ADDON_CALENDAR_PROVIDERS: any[] = [
     ],
     imports: [
     ],
-    providers: ADDON_CALENDAR_PROVIDERS.concat([
+    providers: [
+        AddonCalendarProvider,
+        AddonCalendarHelperProvider,
         AddonCalendarMainMenuHandler
-    ])
+    ]
 })
 export class AddonCalendarModule {
     constructor(mainMenuDelegate: CoreMainMenuDelegate, calendarHandler: AddonCalendarMainMenuHandler,

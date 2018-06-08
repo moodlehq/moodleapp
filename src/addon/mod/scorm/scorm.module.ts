@@ -43,13 +43,17 @@ export const ADDON_MOD_SCORM_PROVIDERS: any[] = [
     imports: [
         AddonModScormComponentsModule
     ],
-    providers: ADDON_MOD_SCORM_PROVIDERS.concat([
+    providers: [
+        AddonModScormProvider,
+        AddonModScormOfflineProvider,
+        AddonModScormHelperProvider,
+        AddonModScormSyncProvider,
         AddonModScormModuleHandler,
         AddonModScormPrefetchHandler,
         AddonModScormSyncCronHandler,
         AddonModScormIndexLinkHandler,
         AddonModScormGradeLinkHandler
-    ])
+    ]
 })
 export class AddonModScormModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModScormModuleHandler,
