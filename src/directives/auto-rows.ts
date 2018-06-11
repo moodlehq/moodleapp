@@ -47,8 +47,11 @@ export class CoreAutoRowsDirective {
     /**
      * Resize after content.
      */
-    ngAfterViewContent(): void {
-        this.resize();
+    ngAfterViewInit(): void {
+        // Wait for rendering of child views.
+        setTimeout(() => {
+            this.resize();
+        }, 300);
     }
 
     /**
