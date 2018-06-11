@@ -677,6 +677,16 @@ canvas[core-chart] {
   }
 }
 
+.has-fab .scroll-content{
+  padding-bottom: 56px;
+}
+
+.scroll-content ion-fab {
+  position: fixed;
+  margin-bottom: 56px;
+}
+
+
 // For some reason, in iOS the pages don't inherit the background-color from ion-app, set it explicitly.
 .ion-page {
   background-color: $background-color;

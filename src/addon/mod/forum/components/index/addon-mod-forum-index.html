@@ -12,7 +12,7 @@
 
 <!-- Content. -->
 <core-split-view>
-    <ion-content>
+    <ion-content [class.has-fab]="forum && forum.cancreatediscussions">
         <ion-refresher [enabled]="loaded" (ionRefresh)="doRefresh($event)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
@@ -25,11 +25,6 @@
             </ion-card>
 
             <ng-container *ngIf="forum && discussions.length > 0">
-                <div padding-horizontal margin-vertical *ngIf="forum.cancreatediscussions">
-                    <button ion-button block (click)="openNewDiscussion()">
-                        {{addDiscussionText}}
-                    </button>
-                </div>
                 <ion-card *ngFor="let discussion of offlineDiscussions" (click)="openNewDiscussion(discussion.timecreated)" [class.addon-forum-discussion-selected]="discussion.timecreated == -selectedDiscussion">
                     <ion-item text-wrap>
                         <ion-avatar item-start core-user-link [userId]="discussion.userid" [courseId]="courseId">
@@ -97,5 +92,11 @@
                 <ion-infinite-scroll-content></ion-infinite-scroll-content>
             </ion-infinite-scroll>
         </core-loading>
+
+        <ion-fab bottom right *ngIf="forum && forum.cancreatediscussions">
+            <button ion-fab (click)="openNewDiscussion()" [attr.aria-label]="addDiscussionText">
+                <ion-icon name="add"></ion-icon>
+            </button>
+        </ion-fab>
     </ion-content>
 </core-split-view>

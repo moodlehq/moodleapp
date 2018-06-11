@@ -3,7 +3,7 @@
         <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
     </ion-navbar>
 </ion-header>
-<ion-content>
+<ion-content [class.has-fab]="showUpload && root != 'site' && !path">
     <ion-refresher [enabled]="filesLoaded && (showPrivateFiles || showSiteFiles)" (ionRefresh)="refreshData($event)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
