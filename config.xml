@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.moodle.moodlemobile" version="3.4.2">
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="ba.enigmna.pscnmobile" version="3.4.2">
   <name>Moodle Mobile</name>
   <description>
-        Moodle Mobile official app
+        PSCN Mobile App
     </description>
-  <author href="http://moodle.com" email="mobile@moodle.com">
+  <author href="http://www.enigma.ba" email="info@enigma.ba">
         Moodle Mobile team
     </author>
   <content src="index.html"/>
