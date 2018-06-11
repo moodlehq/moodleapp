@@ -42,6 +42,7 @@
     "submissiongrade": "Grade for submission",
     "submissiongradeof": "Grade for submission (of {{$a}})",
     "submissionrequiredcontent": "You need to enter some text or add a file.",
+    "submissionrequiredtitle": "You need to enter a title.",
     "submissionsreport": "Workshop submissions report",
     "submissiontitle": "Title",
     "switchphase10": "Switch to the setup phase",

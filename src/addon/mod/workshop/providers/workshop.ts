@@ -36,7 +36,6 @@ export class AddonModWorkshopProvider {
     static EXAMPLES_BEFORE_ASSESSMENT: 2;
 
     static SUBMISSION_CHANGED = 'addon_mod_workshop_submission_changed';
-    static ASSESSMENT_SAVE = 'addon_mod_workshop_assessment_save';
     static ASSESSMENT_SAVED = 'addon_mod_workshop_assessment_saved';
     static ASSESSMENT_INVALIDATED = 'addon_mod_workshop_assessment_invalidated';
 

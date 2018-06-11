@@ -67,6 +67,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     protected obsSubmissionChanged: any;
     protected obsAssessmentSaved: any;
     protected appResumeSubscription: any;
+    protected syncObserver: any;
 
     constructor(injector: Injector, private workshopProvider: AddonModWorkshopProvider, @Optional() content: Content,
             private workshopOffline: AddonModWorkshopOfflineProvider, private groupsProvider: CoreGroupsProvider,
@@ -92,6 +93,12 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
             this.loaded = false;
             this.refreshContent(true, false);
         });
+
+        // Refresh workshop on sync.
+        this.syncObserver = this.eventsProvider.on(AddonModWorkshopSyncProvider.AUTO_SYNCED, (data) => {
+            // Update just when all database is synced.
+            this.eventReceived(data);
+        }, this.siteId);
     }
 
     /**
@@ -300,7 +307,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
                     module: this.module,
                     access: this.access,
                     courseId: this.courseId,
-                    submission: this.submission
+                    submissionId: this.submission && this.submission.id
                 };
 
                 this.navCtrl.push('AddonModWorkshopEditSubmissionPage', params);

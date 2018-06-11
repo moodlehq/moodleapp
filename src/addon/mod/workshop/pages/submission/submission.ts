@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Optional } from '@angular/core';
+import { Component, OnInit, OnDestroy, Optional, ViewChild } from '@angular/core';
 import { Content, IonicPage, NavParams, NavController } from 'ionic-angular';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -24,6 +24,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
+import { AddonModWorkshopAssessmentStrategyComponent } from '../../components/assessment-strategy/assessment-strategy';
 import { AddonModWorkshopProvider } from '../../providers/workshop';
 import { AddonModWorkshopHelperProvider } from '../../providers/helper';
 import { AddonModWorkshopOfflineProvider } from '../../providers/offline';
@@ -38,6 +39,8 @@ import { AddonModWorkshopSyncProvider } from '../../providers/sync';
     templateUrl: 'submission.html',
 })
 export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
+
+    @ViewChild(AddonModWorkshopAssessmentStrategyComponent) assessmentStrategy: AddonModWorkshopAssessmentStrategyComponent;
 
     module: any;
     workshop: any;
@@ -69,7 +72,11 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
     protected currentUserId: number;
     protected userId: number;
     protected siteId: string;
-    protected originalEvaluation: any = {};
+    protected originalEvaluation = {
+        published: '',
+        text: '',
+        grade: ''
+    };
     protected hasOffline = false;
     protected component = AddonModWorkshopProvider.COMPONENT;
     protected forceLeave = false;
@@ -89,7 +96,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
         this.access = navParams.get('access');
         this.courseId = navParams.get('courseId');
         this.profile = navParams.get('profile');
-        this.submissionInfo = navParams.get('submission');
+        this.submissionInfo = navParams.get('submission') || {};
         this.assessment = navParams.get('assessment') || null;
 
         this.title = this.module.name;
@@ -135,12 +142,9 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
      * @return {boolean|Promise<void>} Resolved if we can leave it, rejected if not.
      */
     ionViewCanLeave(): boolean | Promise<void> {
-        if (this.forceLeave || !this.canAddFeedback) {
+        const assessmentHasChanged = this.assessmentStrategy && this.assessmentStrategy.hasDataChanged();
+        if (this.forceLeave || (!this.hasEvaluationChanged() && !assessmentHasChanged)) {
             return true;
-        }
-
-        if (!this.hasEvaluationChanged()) {
-            return Promise.resolve();
         }
 
         // Show confirmation if some data has been modified.
@@ -155,7 +159,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
             module: module,
             access: this.access,
             courseid: this.courseId,
-            submission: this.submission
+            submissionId: this.submission.id
         };
 
         this.navCtrl.push('AddonModWorkshopEditSubmissionPage', params);
@@ -167,7 +171,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
      * @param {any} data Event data received.
      */
     protected eventReceived(data: any): void {
-        if (this.workshopId === data.workshopid) {
+        if (this.workshopId === data.workshopId) {
             this.content && this.content.scrollToTop();
 
             this.loaded = false;
@@ -185,6 +189,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
             const promises = [];
 
             this.submission = submissionData;
+            this.submission.attachmentfiles = submissionData.attachmentfiles || [];
             this.submission.submissiongrade = this.submissionInfo && this.submissionInfo.submissiongrade;
             this.submission.gradinggrade = this.submissionInfo && this.submissionInfo.gradinggrade;
             this.submission.submissiongradeover = this.submissionInfo && this.submissionInfo.submissiongradeover;
@@ -390,8 +395,16 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
      * Save the assessment.
      */
     saveAssessment(): void {
-        // Call trigger to save.
-        this.eventsProvider.trigger(AddonModWorkshopProvider.ASSESSMENT_SAVE, undefined, this.siteId);
+        if (this.assessmentStrategy && this.assessmentStrategy.hasDataChanged()) {
+            this.assessmentStrategy.saveAssessment().then(() => {
+                this.forceLeavePage();
+            }).catch(() => {
+                // Error, stay on the page.
+            });
+        } else {
+            // Nothing to save, just go back.
+            this.forceLeavePage();
+        }
     }
 
     /**

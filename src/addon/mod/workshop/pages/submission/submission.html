@@ -93,7 +93,7 @@
             </ion-item>
         </form>
 
-        <!--<addon-mod-workshop-assessment-strategy *ngIf="assessmentId" [workshop]="workshop" [access]="access" [assessmentId]="assessmentId" [userId]="assessmentUserId" [strategy]="strategy" [edit]="access.assessingallowed"></addon-mod-workshop-assessment-strategy>-->
+        <addon-mod-workshop-assessment-strategy *ngIf="assessmentId" [workshop]="workshop" [access]="access" [assessmentId]="assessmentId" [userId]="assessmentUserId" [strategy]="strategy" [edit]="access.assessingallowed"></addon-mod-workshop-assessment-strategy>
 
         <ion-list *ngIf="assessmentId && !access.assessingallowed && assessment.feedbackreviewer">
             <ion-item text-wrap>

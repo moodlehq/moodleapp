@@ -40,7 +40,12 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
     module: any;
     courseId: number;
     access: any;
-    submission: any;
+    submission = {
+        id: 0,
+        title: '',
+        content: '',
+        attachmentfiles: [],
+    };
 
     loaded = false;
     component = AddonModWorkshopProvider.COMPONENT;
@@ -48,6 +53,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
     editForm: FormGroup; // The form group.
 
     protected workshopId: number;
+    protected submissionId: number;
     protected userId: number;
     protected originalData: any = {};
     protected hasOffline = false;
@@ -66,7 +72,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
         this.module = navParams.get('module');
         this.courseId = navParams.get('courseId');
         this.access = navParams.get('access');
-        this.submission = navParams.get('submission') || {};
+        this.submissionId = navParams.get('submissionId');
 
         this.workshopId = this.module.instance;
         this.componentId = this.module.id;
@@ -127,12 +133,11 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
         return this.workshopProvider.getWorkshop(this.courseId, this.module.id).then((workshopData) => {
             this.workshop = workshopData;
 
-            if (this.submission && this.submission.id > 0) {
+            if (this.submissionId > 0) {
                 this.editing = true;
 
-                return this.workshopHelper.getSubmissionById(this.workshopId, this.submission.id).then((submissionData) => {
+                return this.workshopHelper.getSubmissionById(this.workshopId, this.submissionId).then((submissionData) => {
                     this.submission = submissionData;
-                    this.submission.text = submissionData.content;
 
                     const canEdit = (this.userId == submissionData.authorid && this.access.cansubmit &&
                         this.access.modifyingsubmissionallowed);
@@ -155,19 +160,15 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
                 if (submissionsActions && submissionsActions.length) {
                     this.hasOffline = true;
                     const actions = this.workshopHelper.filterSubmissionActions(submissionsActions, this.editing ?
-                        this.submission.id : false);
+                        this.submission.id : 0);
 
-                    return this.workshopHelper.applyOfflineData(this.submission, actions).then((offlineSubmission) => {
-                        this.submission.title = offlineSubmission.title;
-                        this.submission.text = offlineSubmission.content;
-                        this.submission.attachmentfiles = offlineSubmission.attachmentfiles;
-                    });
+                    return this.workshopHelper.applyOfflineData(this.submission, actions);
                 } else {
                     this.hasOffline = false;
                 }
             }).finally(() => {
                 this.originalData.title = this.submission.title;
-                this.originalData.content = this.submission.text;
+                this.originalData.content = this.submission.content;
                 this.originalData.attachmentfiles = [];
 
                 this.submission.attachmentfiles.forEach((file) => {
@@ -295,12 +296,12 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
         const inputData = this.getInputData();
 
         if (!inputData.title) {
-            this.domUtils.showAlert('core.notice', 'core.requireduserdatamissing');
+            this.domUtils.showAlertTranslated('core.notice', 'addon.mod_workshop.submissionrequiredtitle');
 
             return Promise.reject(null);
         }
         if (!inputData.content) {
-            this.domUtils.showAlert('core.notice', 'addon.mod_workshop.submissionrequiredcontent');
+            this.domUtils.showAlertTranslated('core.notice', 'addon.mod_workshop.submissionrequiredcontent');
 
             return Promise.reject(null);
         }
@@ -309,13 +310,11 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
             saveOffline = false;
 
         const modal = this.domUtils.showModalLoading('core.sending', true),
-            submissionId = this.submission && (this.submission.id || this.submission.submissionid) || false;
+            submissionId = this.submission.id;
 
         // Check if rich text editor is enabled or not.
         return this.domUtils.isRichTextEditorEnabled().then((rteEnabled) => {
-            if (rteEnabled) {
-                inputData.content = this.textUtils.restorePluginfileUrls(inputData.content, this.submission.inlinefiles);
-            } else {
+            if (!rteEnabled) {
                 // Rich text editor not enabled, add some HTML to the message if needed.
                 inputData.content = this.textUtils.formatHtmlLines(inputData.content);
             }
@@ -323,14 +322,14 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
             // Upload attachments first if any.
             allowOffline = !inputData.attachmentfiles.length;
 
-            return this.workshopHelper.uploadOrStoreSubmissionFiles(this.workshopId, submissionId, inputData.attachmentfiles,
+            return this.workshopHelper.uploadOrStoreSubmissionFiles(this.workshopId, this.submission.id, inputData.attachmentfiles,
                     this.editing, saveOffline).catch(() => {
                 // Cannot upload them in online, save them in offline.
                 saveOffline = true;
                 allowOffline = true;
 
-                return this.workshopHelper.uploadOrStoreSubmissionFiles(this.workshopId, submissionId, inputData.attachmentfiles,
-                    this.editing, saveOffline);
+                return this.workshopHelper.uploadOrStoreSubmissionFiles(this.workshopId, this.submission.id,
+                    inputData.attachmentfiles, this.editing, saveOffline);
             });
         }).then((attachmentsId) => {
             if (this.editing) {

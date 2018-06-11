@@ -43,18 +43,21 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
     submission: any;
     profile: any;
     courseId: number;
-
-    access: any = {};
+    access: any;
     assessmentId: number;
     evaluating = false;
     loaded = false;
     showGrade: any;
     evaluateForm: FormGroup;
     maxGrade: number;
-    workshop: any = {};
+    workshop: any;
     strategy: any;
     title: string;
-    evaluate: any;
+    evaluate = {
+        text: '',
+        grade: -1,
+        weight: 1
+    };
     weights = [];
     evaluateByProfile: any;
     evaluationGrades: any;
@@ -76,10 +79,10 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
             protected domUtils: CoreDomUtilsProvider, protected gradesHelper: CoreGradesHelperProvider,
             protected userProvider: CoreUserProvider) {
 
-        this.assessment = navParams.get('assessment') || {};
+        this.assessment = navParams.get('assessment');
         this.submission = navParams.get('submission') || {};
-        this.profile = navParams.get('profile') || {};
-        this.courseId = navParams.get('courseId') || null;
+        this.profile = navParams.get('profile');
+        this.courseId = navParams.get('courseId');
 
         this.assessmentId = this.assessment.assessmentid || this.assessment.id;
         this.workshopId = this.submission.workshopid || null;
@@ -96,7 +99,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
         // Refresh workshop on sync.
         this.syncObserver = this.eventsProvider.on(AddonModWorkshopSyncProvider.AUTO_SYNCED, (data) => {
             // Update just when all database is synced.
-            if (this.workshopId === data.workshopid) {
+            if (this.workshopId === data.workshopId) {
                 this.loaded = false;
                 this.refreshAllData();
             }
@@ -166,10 +169,8 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
                     let defaultGrade, promise;
 
                     this.assessment = this.workshopHelper.realGradeValue(this.workshop, assessment);
-                    this.evaluate = {
-                        weight: this.assessment.weight,
-                        text: this.assessment.feedbackreviewer
-                    };
+                    this.evaluate.text = this.assessment.feedbackreviewer || '';
+                    this.evaluate.weight = this.assessment.weight;
 
                     if (this.evaluating) {
                         if (accessData.canallocate) {
@@ -195,14 +196,14 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
                                 this.hasOffline = true;
                                 this.evaluate.weight = offlineAssess.weight;
                                 if (accessData.canoverridegrades) {
-                                    this.evaluate.text = offlineAssess.feedbacktext;
+                                    this.evaluate.text = offlineAssess.feedbacktext || '';
                                     this.evaluate.grade = offlineAssess.gradinggradeover || -1;
                                 }
                             }).catch(() => {
                                 this.hasOffline = false;
                                 // No offline, load online.
                                 if (accessData.canoverridegrades) {
-                                    this.evaluate.text = this.assessment.feedbackreviewer;
+                                    this.evaluate.text = this.assessment.feedbackreviewer || '';
                                     this.evaluate.grade = this.assessment.gradinggradeover || -1;
                                 }
                             });
@@ -259,7 +260,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
             return true;
         }
 
-        if (this.access.canoverridegrades) {
+        if (this.access && this.access.canoverridegrades) {
             if (this.originalEvaluation.text != inputData.text) {
                 return true;
             }
@@ -335,7 +336,6 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
         // Check if rich text editor is enabled or not.
         return this.domUtils.isRichTextEditorEnabled().then((rteEnabled) => {
             const inputData = this.evaluateForm.value;
-
             inputData.grade = inputData.grade >= 0 ? inputData.grade : '';
             if (!rteEnabled) {
                 // Rich text editor not enabled, add some HTML to the message if needed.
