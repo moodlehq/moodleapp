@@ -370,7 +370,13 @@ ion-col ion-select {
       white-space: normal;
       text-align: right;
     }
+}
+
+.core-button-select {
+  ion-icon:last-child {
+    margin-left: 5px;
   }
+}
 
 // File uploader.
 // -------------------------
