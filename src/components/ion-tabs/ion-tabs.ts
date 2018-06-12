@@ -24,7 +24,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
  */
 @Component({
     selector: 'core-ion-tabs',
-    templateUrl: 'ion-tabs.html',
+    templateUrl: 'core-ion-tabs.html',
     encapsulation: ViewEncapsulation.None,
     providers: [{provide: RootNode, useExisting: forwardRef(() => CoreIonTabsComponent) }]
 })
