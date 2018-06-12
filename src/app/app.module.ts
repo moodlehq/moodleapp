@@ -14,11 +14,12 @@
 
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
+import { NgModule, COMPILER_OPTIONS } from '@angular/core';
 import { IonicApp, IonicModule, Platform, Content, ScrollEvent } from 'ionic-angular';
 import { assert } from 'ionic-angular/util/util';
 import { HttpModule } from '@angular/http';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -248,7 +249,9 @@ export const CORE_PROVIDERS: any[] = [
             provide: HTTP_INTERCEPTORS,
             useClass: CoreInterceptor,
             multi: true,
-        }
+        },
+        {provide: COMPILER_OPTIONS, useValue: {}, multi: true},
+        {provide: JitCompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS]}
     ]
 })
 export class AppModule {

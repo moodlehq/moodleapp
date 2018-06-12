@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable, Injector, Component, NgModule, Compiler, ComponentFactory, ComponentRef, NgModuleRef } from '@angular/core';
+import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
 import {
     Platform, ActionSheetController, AlertController, LoadingController, ModalController, PopoverController, ToastController,
     IonicModule
@@ -125,6 +126,7 @@ import { AddonNotificationsComponentsModule } from '@addon/notifications/compone
 export class CoreCompileProvider {
 
     protected logger;
+    protected compiler: Compiler;
 
     // Other Ionic/Angular providers that don't depend on where they are injected.
     protected OTHER_PROVIDERS = [
@@ -141,8 +143,10 @@ export class CoreCompileProvider {
         AddonNotificationsComponentsModule
     ];
 
-    constructor(protected injector: Injector, logger: CoreLoggerProvider, protected compiler: Compiler) {
+    constructor(protected injector: Injector, logger: CoreLoggerProvider, compilerFactory: JitCompilerFactory) {
         this.logger = logger.getInstance('CoreCompileProvider');
+
+        this.compiler = compilerFactory.createCompiler();
     }
 
     /**

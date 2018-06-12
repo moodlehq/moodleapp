@@ -37,7 +37,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
  */
 @Component({
     selector: 'core-compile-html',
-    template: '<ng-container #dynamicComponent></ng-container>'
+    template: '<core-loading [hideUntil]="loaded"><ng-container #dynamicComponent></ng-container></core-loading>'
 })
 export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     @Input() text: string; // The HTML text to display.
@@ -49,6 +49,8 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
 
     // Get the container where to put the content.
     @ViewChild('dynamicComponent', { read: ViewContainerRef }) container: ViewContainerRef;
+
+    loaded: boolean;
 
     protected componentRef: ComponentRef<any>;
     protected componentInstance: any;
@@ -93,6 +95,8 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
                     this.componentRef = this.container.createComponent(factory);
                     this.created.emit(this.componentRef.instance);
                 }
+
+                this.loaded = true;
             });
         }
     }
