@@ -17,6 +17,7 @@ import { CoreCronDelegate } from '@providers/cron';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
+import { AddonModWorkshopAssessmentStrategyModule } from './assessment/assessment.module';
 import { AddonModWorkshopComponentsModule } from './components/components.module';
 import { AddonModWorkshopModuleHandler } from './providers/module-handler';
 import { AddonModWorkshopProvider } from './providers/workshop';
@@ -32,7 +33,8 @@ import { AddonModWorkshopSyncCronHandler } from './providers/sync-cron-handler';
     declarations: [
     ],
     imports: [
-        AddonModWorkshopComponentsModule
+        AddonModWorkshopComponentsModule,
+        AddonModWorkshopAssessmentStrategyModule
     ],
     providers: [
         AddonModWorkshopProvider,
