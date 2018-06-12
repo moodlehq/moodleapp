@@ -88,6 +88,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         this.editorElement.onkeyup = this.onChange.bind(this);
         this.editorElement.onpaste = this.onChange.bind(this);
         this.editorElement.oninput = this.onChange.bind(this);
+        this.editorElement.onkeydown = this.moveCursor.bind(this);
 
         // Listen for changes on the control to update the editor (if it is updated from outside of this component).
         this.valueChangeSubscription = this.control.valueChanges.subscribe((param) => {
@@ -116,17 +117,28 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
             }
         }
 
+        // Use paragraph on enter.
+        document.execCommand('DefaultParagraphSeparator', false, 'p');
+
         this.treatExternalContent();
 
         this.resizeFunction = this.maximizeEditorSize.bind(this);
         window.addEventListener('resize', this.resizeFunction);
-        setTimeout(this.resizeFunction, 1000);
+
+        let i = 0;
+        const interval = setInterval(() => {
+            const height = this.maximizeEditorSize();
+            if (i >= 5 || height != 0) {
+                clearInterval(interval);
+            }
+            i++;
+        }, 750);
     }
 
     /**
      * Resize editor to maximize the space occupied.
      */
-    protected maximizeEditorSize(): void {
+    protected maximizeEditorSize(): number {
         this.content.resize();
         const contentVisibleHeight = this.content.contentHeight;
 
@@ -138,7 +150,11 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
             } else {
                 this.element.style.height = '';
             }
+
+            return contentVisibleHeight - height;
         }
+
+        return 0;
     }
 
     /**
@@ -196,6 +212,132 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     }
 
     /**
+     * On key down function to move the cursor.
+     * https://stackoverflow.com/questions/6249095/how-to-set-caretcursor-position-in-contenteditable-element-div
+     *
+     * @param {Event} $event The event.
+     */
+    moveCursor($event: Event): void {
+        if (!this.rteEnabled) {
+            return;
+        }
+
+        if ($event['key'] != 'ArrowLeft' && $event['key'] != 'ArrowRight') {
+            return;
+        }
+
+        $event.preventDefault();
+        $event.stopPropagation();
+
+        const move = $event['key'] == 'ArrowLeft' ? -1 : +1,
+            cursor = this.getCurrentCursorPosition(this.editorElement);
+
+        this.setCurrentCursorPosition(this.editorElement, cursor + move);
+    }
+
+    /**
+     * Returns the number of chars from the beggining where is placed the cursor.
+     *
+     * @param  {Node}   parent Parent where to get the position from.
+     * @return {number}        Position in chars.
+     */
+    protected getCurrentCursorPosition(parent: Node): number {
+        const selection = window.getSelection();
+
+        let charCount = -1,
+            node;
+
+        if (selection.focusNode) {
+            if (parent.contains(selection.focusNode)) {
+                node = selection.focusNode;
+                charCount = selection.focusOffset;
+
+                while (node) {
+                    if (node.isSameNode(parent)) {
+                        break;
+                    }
+
+                    if (node.previousSibling) {
+                        node = node.previousSibling;
+                        charCount += node.textContent.length;
+                    } else {
+                        node = node.parentNode;
+                        if (node === null) {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return charCount;
+    }
+
+    /**
+     * Set the caret position on the character number.
+     *
+     * @param {Node}   parent   Parent where to set the position.
+     * @param {number} [chars]  Number of chars where to place the caret. If not defined it will go to the end.
+     */
+    protected setCurrentCursorPosition(parent: Node, chars?: number): void {
+        /**
+         * Loops round all the child text nodes within the supplied node and sets a range from the start of the initial node to
+         * the characters.
+         *
+         * @param  {Node}  node  Node where to start.
+         * @param  {Range} range Previous calculated range.
+         * @param  {any}   chars Object with counting of characters (input-output param).
+         * @return {Range}       Selection range.
+         */
+        const setRange = (node: Node, range: Range, chars: any): Range => {
+            if (chars.count === 0) {
+                range.setEnd(node, 0);
+            } else if (node && chars.count > 0) {
+                if (node.hasChildNodes()) {
+                    // Navigate through children.
+                    for (let lp = 0; lp < node.childNodes.length; lp++) {
+                        range = setRange(node.childNodes[lp], range, chars);
+
+                        if (chars.count === 0) {
+                            break;
+                        }
+                    }
+                } else if (node.textContent.length < chars.count) {
+                    // Jump this node.
+                    // @todo: empty nodes will be omitted.
+                    chars.count -= node.textContent.length;
+                } else {
+                    // The cursor will be placed in this element.
+                    range.setEnd(node, chars.count);
+                    chars.count = 0;
+                }
+            }
+
+            return range;
+        };
+
+        let range = document.createRange();
+        if (typeof chars === 'undefined') {
+            // Select all so it will go to the end.
+            range.selectNode(parent);
+            range.selectNodeContents(parent);
+        } else if (chars < 0 || chars > parent.textContent.length) {
+            return;
+        } else {
+            range.selectNode(parent);
+            range.setStart(parent, 0);
+            range = setRange(parent, range, {count: chars});
+        }
+
+        if (range) {
+            const selection = window.getSelection();
+            range.collapse(false);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+    }
+
+    /**
      * Toggle from rte editor to textarea syncing values.
      *
      * @param {Event} $event The event.
@@ -204,7 +346,8 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         $event.preventDefault();
         $event.stopPropagation();
 
-        if (this.isNullOrWhiteSpace(this.control.value)) {
+        const isNull = this.isNullOrWhiteSpace(this.control.value);
+        if (isNull) {
             this.clearText();
         } else {
             this.editorElement.innerHTML = this.control.value;
@@ -217,14 +360,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         setTimeout(() => {
             if (this.rteEnabled) {
                 this.editorElement.focus();
-
-                const range = document.createRange();
-                range.selectNodeContents(this.editorElement);
-                range.collapse(false);
-
-                const sel = window.getSelection();
-                sel.removeAllRanges();
-                sel.addRange(range);
+                this.setCurrentCursorPosition(this.editorElement.firstChild);
             } else {
                 this.textarea.setFocus();
             }
@@ -279,8 +415,15 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     clearText(): void {
         this.editorElement.innerHTML = '<p></p>';
         this.textarea.value = '';
+
         // Don't emit event so our valueChanges doesn't get notified by this change.
         this.control.setValue(null, {emitEvent: false});
+
+        setTimeout(() => {
+            if (this.rteEnabled) {
+                this.setCurrentCursorPosition(this.editorElement);
+            }
+        }, 1);
     }
 
     /**
