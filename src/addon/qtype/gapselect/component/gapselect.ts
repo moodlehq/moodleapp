@@ -21,7 +21,7 @@ import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-
  */
 @Component({
     selector: 'addon-qtype-gapselect',
-    templateUrl: 'gapselect.html'
+    templateUrl: 'addon-qtype-gapselect.html'
 })
 export class AddonQtypeGapSelectComponent extends CoreQuestionBaseComponent implements OnInit {
 

@@ -25,7 +25,7 @@ import { CoreSiteHomeProvider } from '../../providers/sitehome';
  */
 @Component({
     selector: 'core-sitehome-index',
-    templateUrl: 'index.html',
+    templateUrl: 'core-sitehome-index.html',
 })
 export class CoreSiteHomeIndexComponent implements OnInit {
     dataLoaded: boolean;

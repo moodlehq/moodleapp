@@ -25,7 +25,7 @@ import { AddonModPagePrefetchHandler } from '../../providers/prefetch-handler';
  */
 @Component({
     selector: 'addon-mod-page-index',
-    templateUrl: 'index.html',
+    templateUrl: 'addon-mod-page-index.html',
 })
 export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComponent {
     component = AddonModPageProvider.COMPONENT;

@@ -27,7 +27,7 @@ import { CoreQuestionHelperProvider } from '../../providers/helper';
  */
 @Component({
     selector: 'core-question',
-    templateUrl: 'question.html'
+    templateUrl: 'core-question.html'
 })
 export class CoreQuestionComponent implements OnInit {
     @Input() question: any; // The question to render.

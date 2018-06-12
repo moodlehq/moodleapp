@@ -21,7 +21,7 @@ import { CoreSitePluginsCompileInitComponent } from '../../classes/compile-init-
  */
 @Component({
     selector: 'core-site-plugins-question',
-    templateUrl: 'question.html',
+    templateUrl: 'core-siteplugins-question.html',
 })
 export class CoreSitePluginsQuestionComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
     @Input() question: any; // The question to render.

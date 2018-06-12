@@ -21,7 +21,7 @@ import { CoreSitePluginsCompileInitComponent } from '../../classes/compile-init-
  */
 @Component({
     selector: 'core-site-plugins-assign-feedback',
-    templateUrl: 'assign-feedback.html',
+    templateUrl: 'core-siteplugins-assign-feedback.html',
 })
 export class CoreSitePluginsAssignFeedbackComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
     @Input() assign: any; // The assignment.

@@ -23,7 +23,7 @@ import { CoreSiteHomeProvider } from '../../providers/sitehome';
  */
 @Component({
     selector: 'core-sitehome-news',
-    templateUrl: 'news.html',
+    templateUrl: 'core-sitehome-news.html',
 })
 export class CoreSiteHomeNewsComponent implements OnInit {
     module: any;

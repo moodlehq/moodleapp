@@ -23,7 +23,7 @@ import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
  */
 @Component({
     selector: 'core-progress-bar',
-    templateUrl: 'progress-bar.html',
+    templateUrl: 'core-progress-bar.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CoreProgressBarComponent implements OnChanges {

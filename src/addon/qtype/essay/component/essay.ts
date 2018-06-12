@@ -22,7 +22,7 @@ import { FormControl, FormBuilder } from '@angular/forms';
  */
 @Component({
     selector: 'addon-qtype-essay',
-    templateUrl: 'essay.html'
+    templateUrl: 'addon-qtype-essay.html'
 })
 export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent implements OnInit {
 

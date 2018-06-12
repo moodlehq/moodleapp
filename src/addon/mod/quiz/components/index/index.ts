@@ -28,7 +28,7 @@ import { CoreConstants } from '@core/constants';
  */
 @Component({
     selector: 'addon-mod-quiz-index',
-    templateUrl: 'index.html',
+    templateUrl: 'addon-mod-quiz-index.html',
 })
 export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComponent {
     component = AddonModQuizProvider.COMPONENT;

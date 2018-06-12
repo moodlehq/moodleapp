@@ -50,7 +50,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
  */
 @Component({
     selector: 'core-dynamic-component',
-    templateUrl: 'dynamic-component.html'
+    templateUrl: 'core-dynamic-component.html'
 })
 export class CoreDynamicComponent implements OnInit, OnChanges, DoCheck {
 

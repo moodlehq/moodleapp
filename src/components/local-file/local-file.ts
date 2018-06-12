@@ -29,7 +29,7 @@ import * as moment from 'moment';
  */
 @Component({
     selector: 'core-local-file',
-    templateUrl: 'local-file.html'
+    templateUrl: 'core-local-file.html'
 })
 export class CoreLocalFileComponent implements OnInit {
     @Input() file: any; // A fileEntry retrieved using CoreFileProvider.getFile or similar.

@@ -30,7 +30,7 @@ import { AddonModForumPrefetchHandler } from '../../providers/prefetch-handler';
  */
 @Component({
     selector: 'addon-mod-forum-index',
-    templateUrl: 'index.html',
+    templateUrl: 'addon-mod-forum-index.html',
 })
 export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityComponent {
     @ViewChild(CoreSplitViewComponent) splitviewCtrl: CoreSplitViewComponent;

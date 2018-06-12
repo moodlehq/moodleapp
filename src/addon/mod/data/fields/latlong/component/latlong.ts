@@ -21,7 +21,7 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
  */
 @Component({
     selector: 'addon-mod-data-field-latlong',
-    templateUrl: 'latlong.html'
+    templateUrl: 'addon-mod-data-field-latlong.html'
 })
 export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginComponent {
 

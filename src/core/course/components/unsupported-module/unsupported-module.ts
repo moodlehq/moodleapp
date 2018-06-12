@@ -21,7 +21,7 @@ import { CoreCourseModuleDelegate } from '../../providers/module-delegate';
  */
 @Component({
     selector: 'core-course-unsupported-module',
-    templateUrl: 'unsupported-module.html',
+    templateUrl: 'core-course-unsupported-module.html',
 })
 export class CoreCourseUnsupportedModuleComponent implements OnInit {
     @Input() course: any; // The course to module belongs to.

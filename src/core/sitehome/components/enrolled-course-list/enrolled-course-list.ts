@@ -20,7 +20,7 @@ import { CoreCoursesProvider } from '@core/courses/providers/courses';
  */
 @Component({
     selector: 'core-sitehome-enrolled-course-list',
-    templateUrl: 'enrolled-course-list.html',
+    templateUrl: 'core-sitehome-enrolled-course-list.html',
 })
 export class CoreSiteHomeEnrolledCourseListComponent implements OnInit {
     show: boolean;

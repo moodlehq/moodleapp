@@ -21,7 +21,7 @@ import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-
  */
 @Component({
     selector: 'core-site-plugins-course-option',
-    templateUrl: 'course-option.html',
+    templateUrl: 'core-siteplugins-course-option.html',
 })
 export class CoreSitePluginsCourseOptionComponent implements OnInit {
     @Input() courseId: number;

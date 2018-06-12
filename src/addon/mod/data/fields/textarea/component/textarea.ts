@@ -22,7 +22,7 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
  */
 @Component({
     selector: 'addon-mod-data-field-textarea',
-    templateUrl: 'textarea.html'
+    templateUrl: 'addon-mod-data-field-textarea.html'
 })
 export class AddonModDataFieldTextareaComponent extends AddonModDataFieldPluginComponent {
 

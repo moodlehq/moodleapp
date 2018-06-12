@@ -26,7 +26,7 @@ import { Subject } from 'rxjs';
  */
 @Component({
     selector: 'core-context-menu',
-    templateUrl: 'context-menu.html'
+    templateUrl: 'core-context-menu.html'
 })
 export class CoreContextMenuComponent implements OnInit, OnDestroy {
     @Input() icon?: string; // Icon to be shown on the navigation bar. Default: Kebab menu icon.

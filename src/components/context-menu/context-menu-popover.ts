@@ -22,7 +22,7 @@ import { CoreLoggerProvider } from '@providers/logger';
  */
 @Component({
     selector: 'core-context-menu-popover',
-    templateUrl: 'context-menu-popover.html'
+    templateUrl: 'core-context-menu-popover.html'
 })
 export class CoreContextMenuPopoverComponent {
     title: string;

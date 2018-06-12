@@ -31,7 +31,7 @@ import { AddonModForumSyncProvider } from '../../providers/sync';
  */
 @Component({
     selector: 'addon-mod-forum-post',
-    templateUrl: 'post.html',
+    templateUrl: 'addon-mod-forum-post.html',
 })
 export class AddonModForumPostComponent implements OnInit, OnDestroy {
 

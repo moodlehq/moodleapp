@@ -27,7 +27,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
  */
 @Component({
     selector: 'core-iframe',
-    templateUrl: 'iframe.html'
+    templateUrl: 'core-iframe.html'
 })
 export class CoreIframeComponent implements OnInit, OnChanges {
 

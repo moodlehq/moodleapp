@@ -26,7 +26,7 @@ import { CoreEventsProvider } from '@providers/events';
  */
 @Component({
     selector: 'addon-messages-contacts',
-    templateUrl: 'contacts.html',
+    templateUrl: 'addon-messages-contacts.html',
 })
 export class AddonMessagesContactsComponent {
 

@@ -20,7 +20,7 @@ import { FormGroup, Validators, FormControl } from '@angular/forms';
  */
 @Component({
     selector: 'addon-user-profile-field-textarea',
-    templateUrl: 'textarea.html'
+    templateUrl: 'addon-user-profile-field-textarea.html'
 })
 export class AddonUserProfileFieldTextareaComponent implements OnInit {
     @Input() field: any; // The profile field to be rendered.

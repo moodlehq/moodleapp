@@ -19,7 +19,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
  */
 @Component({
     selector: 'addon-qbehaviour-informationitem',
-    templateUrl: 'informationitem.html'
+    templateUrl: 'addon-qbehaviour-informationitem.html'
 })
 export class AddonQbehaviourInformationItemComponent {
     @Input() question: any; // The question.

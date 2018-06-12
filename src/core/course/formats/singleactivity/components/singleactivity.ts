@@ -24,7 +24,7 @@ import { CoreDynamicComponent } from '../../../../../components/dynamic-componen
  */
 @Component({
     selector: 'core-course-format-single-activity',
-    templateUrl: 'singleactivity.html'
+    templateUrl: 'core-course-format-single-activity.html'
 })
 export class CoreCourseFormatSingleActivityComponent implements OnChanges {
     @Input() course: any; // The course to render.

@@ -28,7 +28,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
  */
 @Component({
     selector: 'core-search-box',
-    templateUrl: 'search-box.html'
+    templateUrl: 'core-search-box.html'
 })
 export class CoreSearchBoxComponent implements OnInit {
     @Input() searchLabel?: string; // Label to be used on action button.

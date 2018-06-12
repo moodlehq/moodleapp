@@ -20,7 +20,7 @@ import { CoreCoursesProvider } from '@core/courses/providers/courses';
  */
 @Component({
     selector: 'core-sitehome-course-search',
-    templateUrl: 'course-search.html',
+    templateUrl: 'core-sitehome-course-search.html',
 })
 export class CoreSiteHomeCourseSearchComponent {
     show: boolean;

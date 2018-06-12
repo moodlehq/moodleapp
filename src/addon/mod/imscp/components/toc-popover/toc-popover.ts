@@ -20,7 +20,7 @@ import { NavParams, ViewController } from 'ionic-angular';
  */
 @Component({
     selector: 'addon-mod-imscp-toc-popover',
-    templateUrl: 'toc-popover.html'
+    templateUrl: 'addon-mod-imscp-toc-popover.html'
 })
 export class AddonModImscpTocPopoverComponent {
     items = [];

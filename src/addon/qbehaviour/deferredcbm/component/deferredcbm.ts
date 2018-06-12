@@ -19,7 +19,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
  */
 @Component({
     selector: 'addon-qbehaviour-deferredcbm',
-    templateUrl: 'deferredcbm.html'
+    templateUrl: 'addon-qbehaviour-deferredcbm.html'
 })
 export class AddonQbehaviourDeferredCBMComponent {
     @Input() question: any; // The question.

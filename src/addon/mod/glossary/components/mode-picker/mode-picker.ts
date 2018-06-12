@@ -20,7 +20,7 @@ import { NavParams, ViewController } from 'ionic-angular';
  */
 @Component({
     selector: 'addon-mod-glossary-mode-picker-popover',
-    templateUrl: 'mode-picker.html'
+    templateUrl: 'addon-mod-glossary-mode-picker.html'
 })
 export class AddonModGlossaryModePickerPopoverComponent {
     modes = [];

@@ -26,7 +26,7 @@ import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-
  */
 @Component({
     selector: 'core-site-plugins-module-index',
-    templateUrl: 'module-index.html',
+    templateUrl: 'core-siteplugins-module-index.html',
 })
 export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {
     @Input() module: any; // The module.

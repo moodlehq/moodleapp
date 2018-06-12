@@ -21,7 +21,7 @@ import { AddonModBookTocChapter } from '../../providers/book';
  */
 @Component({
     selector: 'addon-mod-book-toc-popover',
-    templateUrl: 'toc-popover.html'
+    templateUrl: 'addon-mod-assign-submission-toc-popover.html'
 })
 export class AddonModBookTocPopoverComponent {
     chapters: AddonModBookTocChapter[];

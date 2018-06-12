@@ -25,7 +25,7 @@ import { AddonModSurveySyncProvider } from '../../providers/sync';
  */
 @Component({
     selector: 'addon-mod-survey-index',
-    templateUrl: 'index.html',
+    templateUrl: 'addon-mod-survey-index.html',
 })
 export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityComponent {
     component = AddonModSurveyProvider.COMPONENT;

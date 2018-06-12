@@ -23,7 +23,7 @@ import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-comp
  */
 @Component({
     selector: 'addon-mod-assign-submission-plugin',
-    templateUrl: 'submission-plugin.html',
+    templateUrl: 'addon-mod-assign-submission-plugin.html',
 })
 export class AddonModAssignSubmissionPluginComponent implements OnInit {
     @ViewChild(CoreDynamicComponent) dynamicComponent: CoreDynamicComponent;

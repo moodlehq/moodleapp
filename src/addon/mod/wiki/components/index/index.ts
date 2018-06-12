@@ -29,7 +29,7 @@ import { AddonModWikiSubwikiPickerComponent } from '../../components/subwiki-pic
  */
 @Component({
     selector: 'addon-mod-wiki-index',
-    templateUrl: 'index.html',
+    templateUrl: 'addon-mod-wiki-index.html',
 })
 export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComponent {
     @ViewChild(CoreTabsComponent) tabs: CoreTabsComponent;

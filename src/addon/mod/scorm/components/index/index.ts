@@ -29,7 +29,7 @@ import { CoreConstants } from '@core/constants';
  */
 @Component({
     selector: 'addon-mod-scorm-index',
-    templateUrl: 'index.html',
+    templateUrl: 'addon-mod-scorm-index.html',
 })
 export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityComponent {
     component = AddonModScormProvider.COMPONENT;

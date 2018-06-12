@@ -19,8 +19,8 @@ import { FormGroup } from '@angular/forms';
  * Component to render the preflight for time limit.
  */
 @Component({
-    selector: 'addon-mod-quiz-acess-time-limit',
-    templateUrl: 'timelimit.html'
+    selector: 'addon-mod-quiz-access-time-limit',
+    templateUrl: 'addon-mod-quiz-access-time-limit.html'
 })
 export class AddonModQuizAccessTimeLimitComponent {
 

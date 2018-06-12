@@ -21,7 +21,7 @@ import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-
  */
 @Component({
     selector: 'addon-qtype-multianswer',
-    templateUrl: 'multianswer.html'
+    templateUrl: 'addon-qtype-multianswer.html'
 })
 export class AddonQtypeMultiAnswerComponent extends CoreQuestionBaseComponent implements OnInit {
 

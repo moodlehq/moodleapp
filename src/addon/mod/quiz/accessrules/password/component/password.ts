@@ -19,8 +19,8 @@ import { FormGroup, FormBuilder } from '@angular/forms';
  * Component to render the preflight for password.
  */
 @Component({
-    selector: 'addon-mod-quiz-acess-password',
-    templateUrl: 'password.html'
+    selector: 'addon-mod-quiz-access-password',
+    templateUrl: 'addon-mod-quiz-access-password.html'
 })
 export class AddonModQuizAccessPasswordComponent implements OnInit {
 

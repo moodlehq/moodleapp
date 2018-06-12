@@ -20,7 +20,7 @@ import { CoreContentLinksDelegate, CoreContentLinksAction } from '@core/contentl
  */
 @Component({
     selector: 'addon-notifications-actions',
-    templateUrl: 'actions.html',
+    templateUrl: 'addon-notifications-actions.html',
 })
 export class AddonNotificationsActionsComponent implements OnInit {
     @Input() contextUrl: string;

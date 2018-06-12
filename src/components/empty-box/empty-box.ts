@@ -22,7 +22,7 @@ import { Component, Input } from '@angular/core';
  */
 @Component({
     selector: 'core-empty-box',
-    templateUrl: 'empty-box.html'
+    templateUrl: 'core-empty-box.html'
 })
 export class CoreEmptyBoxComponent {
     @Input() message: string; // Message to display.

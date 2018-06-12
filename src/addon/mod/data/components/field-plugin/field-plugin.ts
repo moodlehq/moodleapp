@@ -22,7 +22,7 @@ import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-comp
  */
 @Component({
     selector: 'addon-mod-data-field-plugin',
-    templateUrl: 'field-plugin.html',
+    templateUrl: 'addon-mod-data-field-plugin.html',
 })
 export class AddonModDataFieldPluginComponent implements OnInit, OnChanges {
     @ViewChild(CoreDynamicComponent) dynamicComponent: CoreDynamicComponent;

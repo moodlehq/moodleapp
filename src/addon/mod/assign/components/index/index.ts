@@ -29,7 +29,7 @@ import { AddonModAssignSubmissionComponent } from '../submission/submission';
  */
 @Component({
     selector: 'addon-mod-assign-index',
-    templateUrl: 'index.html',
+    templateUrl: 'addon-mod-assign-index.html',
 })
 export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityComponent {
     @ViewChild(AddonModAssignSubmissionComponent) submissionComponent: AddonModAssignSubmissionComponent;

@@ -21,7 +21,7 @@ import { CoreCommentsProvider } from '../../providers/comments';
  */
 @Component({
     selector: 'core-comments',
-    templateUrl: 'comments.html',
+    templateUrl: 'core-comments.html',
 })
 export class CoreCommentsCommentsComponent {
     @Input() contextLevel: string;

@@ -26,7 +26,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
  */
 @Component({
     selector: 'core-navigation-bar',
-    templateUrl: 'navigation-bar.html',
+    templateUrl: 'core-navigation-bar.html',
 })
 export class CoreNavigationBarComponent {
     @Input() previous?: any; // Previous item. If not defined, the previous arrow won't be shown.

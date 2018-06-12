@@ -21,7 +21,7 @@ import { AddonModScormProvider } from '../../providers/scorm';
  */
 @Component({
     selector: 'addon-mod-scorm-toc-popover',
-    templateUrl: 'toc-popover.html'
+    templateUrl: 'addon-mod-scorm-toc-popover.html'
 })
 export class AddonModScormTocPopoverComponent {
     toc: any[];

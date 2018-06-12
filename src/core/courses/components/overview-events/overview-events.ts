@@ -27,7 +27,7 @@ import * as moment from 'moment';
  */
 @Component({
     selector: 'core-courses-overview-events',
-    templateUrl: 'overview-events.html'
+    templateUrl: 'core-courses-overview-events.html'
 })
 export class CoreCoursesOverviewEventsComponent implements OnChanges {
     @Input() events: any[]; // The events to render.

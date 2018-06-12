@@ -20,7 +20,7 @@ import { ViewController, NavParams } from 'ionic-angular';
  */
 @Component({
     selector: 'core-recaptcha-modal',
-    templateUrl: 'recaptchamodal.html'
+    templateUrl: 'core-recaptchamodal.html'
 })
 export class CoreRecaptchaModalComponent {
     expired = false;

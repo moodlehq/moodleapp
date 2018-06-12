@@ -26,7 +26,7 @@ import { AddonNotesSyncProvider } from '../../providers/notes-sync';
  */
 @Component({
     selector: 'addon-notes-list',
-    templateUrl: 'list.html',
+    templateUrl: 'addon-notes-list.html',
 })
 export class AddonNotesListComponent implements OnInit, OnDestroy {
     @Input() courseId: number;

@@ -31,7 +31,7 @@ import * as moment from 'moment';
  */
 @Component({
     selector: 'addon-mod-data-index',
-    templateUrl: 'index.html',
+    templateUrl: 'addon-mod-data-index.html',
 })
 export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComponent {
 

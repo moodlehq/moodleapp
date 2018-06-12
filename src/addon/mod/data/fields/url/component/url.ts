@@ -20,7 +20,7 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
  */
 @Component({
     selector: 'addon-mod-data-field-url',
-    templateUrl: 'url.html'
+    templateUrl: 'addon-mod-data-field-url.html'
 })
 export class AddonModDataFieldUrlComponent extends AddonModDataFieldPluginComponent {
 

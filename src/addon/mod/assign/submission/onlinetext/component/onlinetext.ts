@@ -25,7 +25,7 @@ import { AddonModAssignSubmissionPluginComponent } from '../../../classes/submis
  */
 @Component({
     selector: 'addon-mod-assign-submission-online-text',
-    templateUrl: 'onlinetext.html'
+    templateUrl: 'addon-mod-assign-submission-onlinetext.html'
 })
 export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignSubmissionPluginComponent implements OnInit {
 
