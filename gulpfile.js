@@ -292,8 +292,8 @@ var templatesSrc = [
         './src/components/**/*.html',
         './src/core/**/components/**/*.html',
         './src/core/**/component/**/*.html',
-        './src/addon/**/components/**/*.html',
-        './src/addon/**/component/**/*.html'
+        // Only some addon components are injected to compile to decrease load time. Copy only the ones that are needed.
+        './src/addon/mod/assign/components/**/*.html'
     ],
     templatesDest = './www/templates';
 

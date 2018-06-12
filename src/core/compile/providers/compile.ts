@@ -114,10 +114,7 @@ import { ADDON_PUSHNOTIFICATIONS_PROVIDERS } from '@addon/pushnotifications/push
 import { ADDON_REMOTETHEMES_PROVIDERS } from '@addon/remotethemes/remotethemes.module';
 
 // Import some addon modules that define components, directives and pipes. Only import the important ones.
-import { AddonMessagesComponentsModule } from '@addon/messages/components/components.module';
 import { AddonModAssignComponentsModule } from '@addon/mod/assign/components/components.module';
-import { AddonModForumComponentsModule } from '@addon/mod/forum/components/components.module';
-import { AddonNotificationsComponentsModule } from '@addon/notifications/components/components.module';
 
 /**
  * Service to provide functionalities regarding compiling dynamic HTML and Javascript.
@@ -138,9 +135,7 @@ export class CoreCompileProvider {
     protected IMPORTS = [
         IonicModule, TranslateModule.forChild(), CoreComponentsModule, CoreDirectivesModule, CorePipesModule,
         CoreCourseComponentsModule, CoreCoursesComponentsModule, CoreSiteHomeComponentsModule, CoreUserComponentsModule,
-        CoreCourseDirectivesModule, CoreSitePluginsDirectivesModule, CoreQuestionComponentsModule, AddonMessagesComponentsModule,
-        AddonModAssignComponentsModule, AddonModForumComponentsModule,
-        AddonNotificationsComponentsModule
+        CoreCourseDirectivesModule, CoreSitePluginsDirectivesModule, CoreQuestionComponentsModule, AddonModAssignComponentsModule,
     ];
 
     constructor(protected injector: Injector, logger: CoreLoggerProvider, compilerFactory: JitCompilerFactory) {
