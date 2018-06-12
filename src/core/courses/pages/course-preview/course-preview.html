@@ -13,7 +13,7 @@
             <div *ngIf="course.imageThumb" (click)="openCourse()" class="core-course-thumb">
                 <img [src]="course.imageThumb" core-external-content alt=""/>
             </div>
-            <a ion-item text-wrap (click)="openCourse()" [title]="course.fullname" [attr.detail-none]="!canAccessCourse">
+            <a ion-item text-wrap (click)="openCourse()" [title]="course.fullname" [attr.detail-none]=" avoidOpenCourse || !canAccessCourse">
                 <core-icon name="fa-graduation-cap" fixed-width item-start></core-icon>
                 <h2><core-format-text [text]="course.fullname"></core-format-text></h2>
                 <p *ngIf="course.categoryname"><core-format-text [text]="course.categoryname"></core-format-text></p>
@@ -26,7 +26,12 @@
 
             <ng-container text-wrap *ngIf="course.contacts && course.contacts.length">
                 <ion-item-divider color="light">{{ 'core.teachers' | translate }}</ion-item-divider>
-                <a ion-item text-wrap *ngFor="let contact of course.contacts" core-user-link userId="{{contact.id}}" courseId="{{isEnrolled ? course.id : null}}" [attr.aria-label]="'core.viewprofile' | translate">{{contact.fullname}}</a>
+                <a ion-item text-wrap *ngFor="let contact of course.contacts" core-user-link userId="{{contact.id}}" courseId="{{isEnrolled ? course.id : null}}" [attr.aria-label]="'core.viewprofile' | translate">
+                    <ion-avatar item-start>
+                        <img [src]="contact.userpictureurl" onError="this.src='assets/img/user-avatar.png'" core-external-content [alt]="'core.pictureof' | translate:{$a: contact.userfullname}" role="presentation">
+                    </ion-avatar>
+                    <h2>{{contact.fullname}}</h2>
+                </a>
                 <ion-item-divider color="light"></ion-item-divider>
             </ng-container>
             <core-file *ngFor="let file of course.overviewfiles" [file]="file" [component]="component" [componentId]="course.id"></core-file>
@@ -49,7 +54,7 @@
                 <ion-spinner *ngIf="prefetchCourseData.prefetchCourseIcon == 'spinner'" item-start></ion-spinner>
                 <h2>{{ 'core.course.downloadcourse' | translate }}</h2>
             </a>
-            <a ion-item (click)="openCourse()" [title]="course.fullname" *ngIf="canAccessCourse">
+            <a ion-item (click)="openCourse()" [title]="course.fullname" *ngIf="!avoidOpenCourse && canAccessCourse">
                 <ion-icon name="briefcase" item-start></ion-icon>
                 <h2>{{ 'core.course.contents' | translate }}</h2>
             </a>

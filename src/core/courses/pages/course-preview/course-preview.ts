@@ -24,6 +24,7 @@ import { CoreCoursesProvider } from '../../providers/courses';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
+import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
 
 /**
  * Page that allows "previewing" a course and enrolling in it if enabled and not enrolled.
@@ -41,6 +42,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     selfEnrolInstances: any[] = [];
     paypalEnabled: boolean;
     dataLoaded: boolean;
+    avoidOpenCourse = false;
     prefetchCourseData = {
         prefetchCourseIcon: 'spinner',
         title: 'core.course.downloadcourse'
@@ -67,9 +69,10 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
             private coursesProvider: CoreCoursesProvider, private platform: Platform, private modalCtrl: ModalController,
             private translate: TranslateService, private eventsProvider: CoreEventsProvider,
             private courseOptionsDelegate: CoreCourseOptionsDelegate, private courseHelper: CoreCourseHelperProvider,
-            private courseProvider: CoreCourseProvider) {
+            private courseProvider: CoreCourseProvider, private courseFormatDelegate: CoreCourseFormatDelegate) {
 
         this.course = navParams.get('course');
+        this.avoidOpenCourse = navParams.get('avoidOpenCourse');
         this.isMobile = appProvider.isMobile();
         this.isDesktop = appProvider.isDesktop();
         this.downloadCourseEnabled = !this.coursesProvider.isDownloadCourseDisabledInSite();
@@ -224,11 +227,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
             }).catch(() => {
                 // The user is not an admin/manager. Check if we can provide guest access to the course.
                 return this.canAccessAsGuest().then((passwordRequired) => {
-                    if (!passwordRequired) {
-                        this.canAccessCourse = true;
-                    } else {
-                        this.canAccessCourse = false;
-                    }
+                    this.canAccessCourse = !passwordRequired;
                 }).catch(() => {
                     this.canAccessCourse = false;
                 });
@@ -242,12 +241,12 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
      * Open the course.
      */
     openCourse(): void {
-        if (!this.canAccessCourse) {
-            // Course cannot be opened.
+        if (!this.canAccessCourse || this.avoidOpenCourse) {
+            // Course cannot be opened or we are avoiding opening because we accessed from inside a course.
             return;
         }
 
-        this.navCtrl.push('CoreCourseSectionPage', { course: this.course });
+        this.courseFormatDelegate.openCourse(this.navCtrl, this.course);
     }
 
     /**

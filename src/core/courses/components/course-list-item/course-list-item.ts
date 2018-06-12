@@ -16,6 +16,7 @@ import { Component, Input, OnInit, Optional } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreCoursesProvider } from '../../providers/courses';
+import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
 
 /**
  * This directive is meant to display an item for a list of courses.
@@ -32,7 +33,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit {
     @Input() course: any; // The course to render.
 
     constructor(@Optional() private navCtrl: NavController, private translate: TranslateService,
-            private coursesProvider: CoreCoursesProvider) {
+            private coursesProvider: CoreCoursesProvider, private courseFormatDelegate: CoreCourseFormatDelegate) {
     }
 
     /**
@@ -80,6 +81,10 @@ export class CoreCoursesCourseListItemComponent implements OnInit {
      * @param {any} course The course to open.
      */
     openCourse(course: any): void {
-        this.navCtrl.push('CoreCoursesCoursePreviewPage', {course: course});
+        if (course.isEnrolled) {
+            this.courseFormatDelegate.openCourse(this.navCtrl, course);
+        } else {
+            this.navCtrl.push('CoreCoursesCoursePreviewPage', {course: course});
+        }
     }
 }

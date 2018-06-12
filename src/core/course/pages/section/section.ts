@@ -357,6 +357,13 @@ export class CoreCourseSectionPage implements OnDestroy {
     }
 
     /**
+     * Open the course summary
+     */
+    openCourseSummary(): void {
+        this.navCtrl.push('CoreCoursesCoursePreviewPage', {course: this.course, avoidOpenCourse: true});
+    }
+
+    /**
      * Page destroyed.
      */
     ngOnDestroy(): void {
