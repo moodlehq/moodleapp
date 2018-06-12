@@ -8,7 +8,7 @@
         <div class="core-button-spinner" *ngIf="downloadCourseEnabled">
             <!-- Download course. -->
             <button *ngIf="prefetchCourseData.prefetchCourseIcon != 'spinner'" ion-button icon-only clear color="dark" (click)="prefetchCourse($event)" [attr.aria-label]="prefetchCourseData.title | translate">
-                <ion-icon [name]="prefetchCourseData.prefetchCourseIcon"></ion-icon>
+                <core-icon [name]="prefetchCourseData.prefetchCourseIcon"></core-icon>
             </button>
             <!-- Download course spinner. -->
             <ion-spinner *ngIf="prefetchCourseData.prefetchCourseIcon == 'spinner'"></ion-spinner>

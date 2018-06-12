@@ -27,6 +27,7 @@ import { CoreProgressBarComponent } from './progress-bar/progress-bar';
 import { CoreEmptyBoxComponent } from './empty-box/empty-box';
 import { CoreSearchBoxComponent } from './search-box/search-box';
 import { CoreFileComponent } from './file/file';
+import { CoreIconComponent } from './icon/icon';
 import { CoreContextMenuComponent } from './context-menu/context-menu';
 import { CoreContextMenuItemComponent } from './context-menu/context-menu-item';
 import { CoreContextMenuPopoverComponent } from './context-menu/context-menu-popover';
@@ -60,6 +61,7 @@ import { CoreIonTabComponent } from './ion-tabs/ion-tab';
         CoreEmptyBoxComponent,
         CoreSearchBoxComponent,
         CoreFileComponent,
+        CoreIconComponent,
         CoreContextMenuComponent,
         CoreContextMenuItemComponent,
         CoreContextMenuPopoverComponent,
@@ -103,6 +105,7 @@ import { CoreIonTabComponent } from './ion-tabs/ion-tab';
         CoreEmptyBoxComponent,
         CoreSearchBoxComponent,
         CoreFileComponent,
+        CoreIconComponent,
         CoreContextMenuComponent,
         CoreContextMenuItemComponent,
         CoreChronoComponent,

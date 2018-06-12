@@ -14,7 +14,7 @@
                 <img [src]="course.imageThumb" core-external-content alt=""/>
             </div>
             <a ion-item text-wrap (click)="openCourse()" [title]="course.fullname" [attr.detail-none]="!canAccessCourse">
-                <ion-icon name="ionic" item-start></ion-icon>
+                <core-icon name="fa-graduation-cap" fixed-width item-start></core-icon>
                 <h2><core-format-text [text]="course.fullname"></core-format-text></h2>
                 <p *ngIf="course.categoryname"><core-format-text [text]="course.categoryname"></core-format-text></p>
                 <p *ngIf="course.startdate">{{course.startdate * 1000 | coreFormatDate:"dfdaymonthyear"}} <span *ngIf="course.enddate"> - {{course.enddate * 1000 | coreFormatDate:"dfdaymonthyear"}}</span></p>
@@ -45,7 +45,7 @@
                 <p>{{ 'core.courses.notenrollable' | translate }}</p>
             </ion-item>
             <a ion-item *ngIf="canAccessCourse && downloadCourseEnabled" (click)="prefetchCourse()" detail-none [attr.aria-label]="prefetchCourseData.title | translate">
-                <ion-icon *ngIf="prefetchCourseData.prefetchCourseIcon != 'spinner'" [name]="prefetchCourseData.prefetchCourseIcon" item-start></ion-icon>
+                <core-icon *ngIf="prefetchCourseData.prefetchCourseIcon != 'spinner'" [name]="prefetchCourseData.prefetchCourseIcon" item-start></core-icon>
                 <ion-spinner *ngIf="prefetchCourseData.prefetchCourseIcon == 'spinner'" item-start></ion-spinner>
                 <h2>{{ 'core.course.downloadcourse' | translate }}</h2>
             </a>

@@ -26,7 +26,7 @@
                 <ion-row no-padding justify-content-between *ngIf="communicationHandlers && communicationHandlers.length">
                     <ion-col align-self-center *ngFor="let comHandler of communicationHandlers" text-center>
                         <a (click)="handlerClicked($event, comHandler)" [ngClass]="['core-user-profile-handler', comHandler.class]" title="{{comHandler.title | translate}}" tappable>
-                            <ion-icon [name]="comHandler.icon"></ion-icon>
+                            <core-icon [name]="comHandler.icon"></core-icon>
                             <p>{{comHandler.title | translate}}</p>
                         </a>
                     </ion-col>
@@ -47,13 +47,13 @@
             </ion-item>
 
             <a *ngFor="let npHandler of newPageHandlers" ion-item text-wrap [ngClass]="['core-user-profile-handler', npHandler.class]" (click)="handlerClicked($event, npHandler)" [hidden]="npHandler.hidden" title="{{ npHandler.title | translate }}">
-                <ion-icon *ngIf="npHandler.icon" [name]="npHandler.icon" item-start></ion-icon>
+                <core-icon *ngIf="npHandler.icon" [name]="npHandler.icon" item-start></core-icon>
                 <h2>{{ npHandler.title | translate }}</h2>
             </a>
 
             <ion-item *ngIf="actionHandlers && actionHandlers.length">
                 <button *ngFor="let actHandler of actionHandlers" ion-button block outline [ngClass]="['core-user-profile-handler', actHandler.class]" (click)="handlerClicked($event, actHandler)" [hidden]="actHandler.hidden" title="{{ actHandler.title | translate }}" icon-start [disabled]="actHandler.spinner">
-                    <ion-icon *ngIf="actHandler.icon" [name]="actHandler.icon" start></ion-icon>
+                    <core-icon *ngIf="actHandler.icon" [name]="actHandler.icon" start></core-icon>
                     <span>{{ actHandler.title | translate }}</span>
                     <ion-spinner *ngIf="actHandler.spinner"></ion-spinner>
                 </button>

@@ -5,7 +5,6 @@
 // roboto, and noto sans fonts
 $font-path: "../assets/fonts";
 
-
 // The app direction is used to include
 // rtl styles in your app. For more info, please see:
 // http://ionicframework.com/docs/theming/rtl-support/
@@ -239,3 +238,7 @@ $core-question-state-incorrect-color: $red-light !default;
     -o-transition: $where $time ease-in-out;
     transition: $where $time ease-in-out;
 }
+
+// Font Awesome
+$fa-font-path: $font-path;
+@import "font-awesome";
