@@ -23,12 +23,14 @@ import { CoreCourseComponentsModule } from '@core/course/components/components.m
 import { AddonModWorkshopIndexComponent } from './index/index';
 import { AddonModWorkshopSubmissionComponent } from './submission/submission';
 import { AddonModWorkshopAssessmentComponent } from './assessment/assessment';
+import { AddonModWorkshopAssessmentStrategyComponent } from './assessment-strategy/assessment-strategy';
 
 @NgModule({
     declarations: [
         AddonModWorkshopIndexComponent,
         AddonModWorkshopSubmissionComponent,
-        AddonModWorkshopAssessmentComponent
+        AddonModWorkshopAssessmentComponent,
+        AddonModWorkshopAssessmentStrategyComponent
     ],
     imports: [
         CommonModule,
@@ -44,7 +46,8 @@ import { AddonModWorkshopAssessmentComponent } from './assessment/assessment';
     exports: [
         AddonModWorkshopIndexComponent,
         AddonModWorkshopSubmissionComponent,
-        AddonModWorkshopAssessmentComponent
+        AddonModWorkshopAssessmentComponent,
+        AddonModWorkshopAssessmentStrategyComponent
     ],
     entryComponents: [
         AddonModWorkshopIndexComponent
