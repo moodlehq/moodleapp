@@ -26,9 +26,8 @@
             <!-- Pick the site from a list of fixed sites. -->
             <div *ngIf="fixedSites" text-wrap>
                 <!-- Display them using a select. -->
-                <ion-item *ngIf="!displayAsButtons">
-                    <!-- @todo: Display label and select in different lines. -->
-                    <ion-label for="siteSelect">{{ 'core.login.selectsite' | translate }}</ion-label>
+                <ion-item *ngIf="!displayAsButtons" margin-vertical>
+                    <ion-label stacked for="siteSelect">{{ 'core.login.selectsite' | translate }}</ion-label>
                     <ion-select formControlName="siteUrl" name="url" placeholder="{{ 'core.login.siteaddress' | translate }}" interface="popover">
                         <ion-option *ngFor="let site of fixedSites" [value]="site.url">{{site.name}}</ion-option>
                     </ion-select>
@@ -37,7 +36,7 @@
                 <!-- Display them using buttons. -->
                 <div *ngIf="displayAsButtons">
                     <p class="padding no-padding-bottom">{{ 'core.login.selectsite' | translate }}</p>
-                    <a *ngFor="let site of fixedSites" ion-button block (click)="connect(site.url)" title="{{site.name}}">{{site.name}}</a>
+                    <a *ngFor="let site of fixedSites" ion-button block (click)="connect(site.url)" title="{{site.name}}" margin-bottom>{{site.name}}</a>
                 </div>
             </div>
 
