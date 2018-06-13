@@ -28,6 +28,7 @@ import { AddonModWorkshopHelperProvider } from './providers/helper';
 import { AddonWorkshopAssessmentStrategyDelegate } from './providers/assessment-strategy-delegate';
 import { AddonModWorkshopPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModWorkshopSyncCronHandler } from './providers/sync-cron-handler';
+import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 @NgModule({
     declarations: [
@@ -52,10 +53,60 @@ export class AddonModWorkshopModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModWorkshopModuleHandler,
             contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModWorkshopLinkHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModWorkshopPrefetchHandler,
-            cronDelegate: CoreCronDelegate, syncHandler: AddonModWorkshopSyncCronHandler) {
+            cronDelegate: CoreCronDelegate, syncHandler: AddonModWorkshopSyncCronHandler,
+            updateManager: CoreUpdateManagerProvider) {
+
         moduleDelegate.registerHandler(moduleHandler);
         contentLinksDelegate.registerHandler(linkHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         cronDelegate.register(syncHandler);
+
+        // Allow migrating the tables from the old app to the new schema.
+        updateManager.registerSiteTablesMigration([
+            {
+                name: 'mma_mod_workshop_offline_submissions',
+                newName: AddonModWorkshopOfflineProvider.SUBMISSIONS_TABLE,
+                fields: [
+                    {
+                        name: 'attachmentsid',
+                        type: 'object'
+                    }
+                ]
+            },
+            {
+                name: 'mma_mod_workshop_offline_assessments',
+                newName: AddonModWorkshopOfflineProvider.ASSESSMENTS_TABLE,
+                fields: [
+                    {
+                        name: 'inputdata',
+                        type: 'object'
+                    }
+                ]
+            },
+            {
+                name: 'mma_mod_workshop_offline_evaluate_submissions',
+                newName: AddonModWorkshopOfflineProvider.EVALUATE_SUBMISSIONS_TABLE,
+                fields: [
+                    {
+                        name: 'gradeover',
+                        type: 'object'
+                    },
+                    {
+                        name: 'published',
+                        type: 'boolean'
+                    }
+                ]
+            },
+            {
+                name: 'mma_mod_workshop_offline_evaluate_assessments',
+                newName: AddonModWorkshopOfflineProvider.EVALUATE_ASSESSMENTS_TABLE,
+                fields: [
+                    {
+                        name: 'gradinggradeover',
+                        type: 'object'
+                    }
+                ]
+            }
+        ]);
     }
 }

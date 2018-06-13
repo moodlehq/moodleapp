@@ -25,14 +25,14 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 export class AddonModWorkshopOfflineProvider {
 
     // Variables for database.
-    protected SUBMISSIONS_TABLE = 'addon_mod_workshop_submissions';
-    protected ASSESSMENTS_TABLE = 'addon_mod_workshop_assessments';
-    protected EVALUATE_SUBMISSIONS_TABLE = 'addon_mod_workshop_evaluate_submissions';
-    protected EVALUATE_ASSESSMENTS_TABLE = 'addon_mod_workshop_evaluate_assessments';
+    static SUBMISSIONS_TABLE = 'addon_mod_workshop_submissions';
+    static ASSESSMENTS_TABLE = 'addon_mod_workshop_assessments';
+    static EVALUATE_SUBMISSIONS_TABLE = 'addon_mod_workshop_evaluate_submissions';
+    static EVALUATE_ASSESSMENTS_TABLE = 'addon_mod_workshop_evaluate_assessments';
 
     protected tablesSchema = [
         {
-            name: this.SUBMISSIONS_TABLE,
+            name: AddonModWorkshopOfflineProvider.SUBMISSIONS_TABLE,
             columns: [
                 {
                     name: 'workshopid',
@@ -70,7 +70,7 @@ export class AddonModWorkshopOfflineProvider {
             primaryKeys: ['workshopid', 'submissionid', 'action']
         },
         {
-            name: this.ASSESSMENTS_TABLE,
+            name: AddonModWorkshopOfflineProvider.ASSESSMENTS_TABLE,
             columns: [
                 {
                     name: 'workshopid',
@@ -96,7 +96,7 @@ export class AddonModWorkshopOfflineProvider {
             primaryKeys: ['workshopid', 'assessmentid']
         },
         {
-            name: this.EVALUATE_SUBMISSIONS_TABLE,
+            name: AddonModWorkshopOfflineProvider.EVALUATE_SUBMISSIONS_TABLE,
             columns: [
                 {
                     name: 'workshopid',
@@ -130,7 +130,7 @@ export class AddonModWorkshopOfflineProvider {
             primaryKeys: ['workshopid', 'submissionid']
         },
         {
-            name: this.EVALUATE_ASSESSMENTS_TABLE,
+            name: AddonModWorkshopOfflineProvider.EVALUATE_ASSESSMENTS_TABLE,
             columns: [
                 {
                     name: 'workshopid',
@@ -240,7 +240,7 @@ export class AddonModWorkshopOfflineProvider {
                 action: action
             };
 
-            return site.getDb().deleteRecords(this.SUBMISSIONS_TABLE, conditions);
+            return site.getDb().deleteRecords(AddonModWorkshopOfflineProvider.SUBMISSIONS_TABLE, conditions);
         });
     }
 
@@ -259,7 +259,7 @@ export class AddonModWorkshopOfflineProvider {
                 submissionid: submissionId,
             };
 
-            return site.getDb().deleteRecords(this.SUBMISSIONS_TABLE, conditions);
+            return site.getDb().deleteRecords(AddonModWorkshopOfflineProvider.SUBMISSIONS_TABLE, conditions);
         });
     }
 
@@ -271,7 +271,7 @@ export class AddonModWorkshopOfflineProvider {
      */
     getAllSubmissions(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.SUBMISSIONS_TABLE).then((records) => {
+            return site.getDb().getRecords(AddonModWorkshopOfflineProvider.SUBMISSIONS_TABLE).then((records) => {
                 records.forEach(this.parseSubmissionRecord.bind(this));
 
                 return records;
@@ -292,7 +292,7 @@ export class AddonModWorkshopOfflineProvider {
                 workshopid: workshopId
             };
 
-            return site.getDb().getRecords(this.SUBMISSIONS_TABLE, conditions).then((records) => {
+            return site.getDb().getRecords(AddonModWorkshopOfflineProvider.SUBMISSIONS_TABLE, conditions).then((records) => {
                 records.forEach(this.parseSubmissionRecord.bind(this));
 
                 return records;
@@ -315,7 +315,7 @@ export class AddonModWorkshopOfflineProvider {
                 submissionid: submissionId
             };
 
-            return site.getDb().getRecords(this.SUBMISSIONS_TABLE, conditions).then((records) => {
+            return site.getDb().getRecords(AddonModWorkshopOfflineProvider.SUBMISSIONS_TABLE, conditions).then((records) => {
                 records.forEach(this.parseSubmissionRecord.bind(this));
 
                 return records;
@@ -340,7 +340,7 @@ export class AddonModWorkshopOfflineProvider {
                 action: action
             };
 
-            return site.getDb().getRecord(this.SUBMISSIONS_TABLE, conditions).then((record) => {
+            return site.getDb().getRecord(AddonModWorkshopOfflineProvider.SUBMISSIONS_TABLE, conditions).then((record) => {
                 this.parseSubmissionRecord(record);
 
                 return record;
@@ -377,7 +377,7 @@ export class AddonModWorkshopOfflineProvider {
                 timemodified: timemodified
             };
 
-            return site.getDb().insertRecord(this.SUBMISSIONS_TABLE, assessment);
+            return site.getDb().insertRecord(AddonModWorkshopOfflineProvider.SUBMISSIONS_TABLE, assessment);
         });
     }
 
@@ -405,7 +405,7 @@ export class AddonModWorkshopOfflineProvider {
                 assessmentid: assessmentId
             };
 
-            return site.getDb().deleteRecords(this.ASSESSMENTS_TABLE, conditions);
+            return site.getDb().deleteRecords(AddonModWorkshopOfflineProvider.ASSESSMENTS_TABLE, conditions);
         });
     }
 
@@ -417,7 +417,7 @@ export class AddonModWorkshopOfflineProvider {
      */
     getAllAssessments(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.ASSESSMENTS_TABLE).then((records) => {
+            return site.getDb().getRecords(AddonModWorkshopOfflineProvider.ASSESSMENTS_TABLE).then((records) => {
                 records.forEach(this.parseAssessmentRecord.bind(this));
 
                 return records;
@@ -438,7 +438,7 @@ export class AddonModWorkshopOfflineProvider {
                 workshopid: workshopId
             };
 
-            return site.getDb().getRecords(this.ASSESSMENTS_TABLE, conditions).then((records) => {
+            return site.getDb().getRecords(AddonModWorkshopOfflineProvider.ASSESSMENTS_TABLE, conditions).then((records) => {
                 records.forEach(this.parseAssessmentRecord.bind(this));
 
                 return records;
@@ -461,7 +461,7 @@ export class AddonModWorkshopOfflineProvider {
                 assessmentid: assessmentId
             };
 
-            return site.getDb().getRecord(this.ASSESSMENTS_TABLE, conditions).then((record) => {
+            return site.getDb().getRecord(AddonModWorkshopOfflineProvider.ASSESSMENTS_TABLE, conditions).then((record) => {
                 this.parseAssessmentRecord(record);
 
                 return record;
@@ -489,7 +489,7 @@ export class AddonModWorkshopOfflineProvider {
                 timemodified: this.timeUtils.timestamp()
             };
 
-            return site.getDb().insertRecord(this.ASSESSMENTS_TABLE, assessment);
+            return site.getDb().insertRecord(AddonModWorkshopOfflineProvider.ASSESSMENTS_TABLE, assessment);
         });
     }
 
@@ -517,7 +517,7 @@ export class AddonModWorkshopOfflineProvider {
         };
 
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().deleteRecords(this.EVALUATE_SUBMISSIONS_TABLE, conditions);
+            return site.getDb().deleteRecords(AddonModWorkshopOfflineProvider.EVALUATE_SUBMISSIONS_TABLE, conditions);
         });
     }
 
@@ -529,7 +529,7 @@ export class AddonModWorkshopOfflineProvider {
      */
     getAllEvaluateSubmissions(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.EVALUATE_SUBMISSIONS_TABLE).then((records) => {
+            return site.getDb().getRecords(AddonModWorkshopOfflineProvider.EVALUATE_SUBMISSIONS_TABLE).then((records) => {
                 records.forEach(this.parseEvaluateSubmissionRecord.bind(this));
 
                 return records;
@@ -550,7 +550,8 @@ export class AddonModWorkshopOfflineProvider {
                 workshopid: workshopId
             };
 
-            return site.getDb().getRecords(this.EVALUATE_SUBMISSIONS_TABLE, conditions).then((records) => {
+            return site.getDb().getRecords(AddonModWorkshopOfflineProvider.EVALUATE_SUBMISSIONS_TABLE, conditions)
+                    .then((records) => {
                 records.forEach(this.parseEvaluateSubmissionRecord.bind(this));
 
                 return records;
@@ -573,7 +574,7 @@ export class AddonModWorkshopOfflineProvider {
                 submissionid: submissionId
             };
 
-            return site.getDb().getRecord(this.EVALUATE_SUBMISSIONS_TABLE, conditions).then((record) => {
+            return site.getDb().getRecord(AddonModWorkshopOfflineProvider.EVALUATE_SUBMISSIONS_TABLE, conditions).then((record) => {
                 this.parseEvaluateSubmissionRecord(record);
 
                 return record;
@@ -606,7 +607,7 @@ export class AddonModWorkshopOfflineProvider {
                 gradeover: JSON.stringify(gradeOver)
             };
 
-            return site.getDb().insertRecord(this.EVALUATE_SUBMISSIONS_TABLE, submission);
+            return site.getDb().insertRecord(AddonModWorkshopOfflineProvider.EVALUATE_SUBMISSIONS_TABLE, submission);
         });
     }
 
@@ -635,7 +636,7 @@ export class AddonModWorkshopOfflineProvider {
                 assessmentid: assessmentId
             };
 
-            return site.getDb().deleteRecords(this.EVALUATE_ASSESSMENTS_TABLE, conditions);
+            return site.getDb().deleteRecords(AddonModWorkshopOfflineProvider.EVALUATE_ASSESSMENTS_TABLE, conditions);
         });
     }
 
@@ -647,7 +648,7 @@ export class AddonModWorkshopOfflineProvider {
      */
     getAllEvaluateAssessments(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.EVALUATE_ASSESSMENTS_TABLE).then((records) => {
+            return site.getDb().getRecords(AddonModWorkshopOfflineProvider.EVALUATE_ASSESSMENTS_TABLE).then((records) => {
                 records.forEach(this.parseEvaluateAssessmentRecord.bind(this));
 
                 return records;
@@ -668,7 +669,8 @@ export class AddonModWorkshopOfflineProvider {
                 workshopid: workshopId
             };
 
-            return site.getDb().getRecords(this.EVALUATE_ASSESSMENTS_TABLE, conditions).then((records) => {
+            return site.getDb().getRecords(AddonModWorkshopOfflineProvider.EVALUATE_ASSESSMENTS_TABLE, conditions)
+                    .then((records) => {
                 records.forEach(this.parseEvaluateAssessmentRecord.bind(this));
 
                 return records;
@@ -691,7 +693,7 @@ export class AddonModWorkshopOfflineProvider {
                 assessmentid: assessmentId
             };
 
-            return site.getDb().getRecord(this.EVALUATE_ASSESSMENTS_TABLE, conditions).then((record) => {
+            return site.getDb().getRecord(AddonModWorkshopOfflineProvider.EVALUATE_ASSESSMENTS_TABLE, conditions).then((record) => {
                 this.parseEvaluateAssessmentRecord(record);
 
                 return record;
@@ -724,7 +726,7 @@ export class AddonModWorkshopOfflineProvider {
                 gradinggradeover: JSON.stringify(gradingGradeOver)
             };
 
-            return site.getDb().insertRecord(this.EVALUATE_ASSESSMENTS_TABLE, assessment);
+            return site.getDb().insertRecord(AddonModWorkshopOfflineProvider.EVALUATE_ASSESSMENTS_TABLE, assessment);
         });
     }
 
