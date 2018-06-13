@@ -27,7 +27,7 @@ import { AddonModWorkshopOfflineProvider } from '../../providers/offline';
  */
 @Component({
     selector: 'addon-mod-workshop-index',
-    templateUrl: 'index.html',
+    templateUrl: 'addon-mod-workshop-index.html',
 })
 export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivityComponent {
     @Input() group = 0;

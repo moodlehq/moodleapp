@@ -30,6 +30,15 @@ import { AddonModWorkshopPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModWorkshopSyncCronHandler } from './providers/sync-cron-handler';
 import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
+// List of providers (without handlers).
+export const ADDON_MOD_WORKSHOP_PROVIDERS: any[] = [
+    AddonModWorkshopProvider,
+    AddonModWorkshopOfflineProvider,
+    AddonModWorkshopSyncProvider,
+    AddonModWorkshopHelperProvider,
+    AddonWorkshopAssessmentStrategyDelegate
+];
+
 @NgModule({
     declarations: [
     ],

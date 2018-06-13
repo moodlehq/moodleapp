@@ -25,7 +25,7 @@ import { AddonModWorkshopOfflineProvider } from '../../providers/offline';
  */
 @Component({
     selector: 'addon-mod-workshop-submission',
-    templateUrl: 'submission.html',
+    templateUrl: 'addon-mod-workshop-submission.html',
 })
 export class AddonModWorkshopSubmissionComponent implements OnInit {
     @Input() submission: any;

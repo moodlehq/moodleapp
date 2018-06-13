@@ -33,7 +33,7 @@ import { AddonWorkshopAssessmentStrategyDelegate } from '../../providers/assessm
  */
 @Component({
     selector: 'addon-mod-workshop-assessment-strategy',
-    templateUrl: 'assessment-strategy.html',
+    templateUrl: 'addon-mod-workshop-assessment-strategy.html',
 })
 export class AddonModWorkshopAssessmentStrategyComponent implements OnInit {
 

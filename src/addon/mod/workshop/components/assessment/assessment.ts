@@ -25,7 +25,7 @@ import { AddonModWorkshopOfflineProvider } from '../../providers/offline';
  */
 @Component({
     selector: 'addon-mod-workshop-assessment',
-    templateUrl: 'assessment.html',
+    templateUrl: 'addon-mod-workshop-assessment.html',
 })
 export class AddonModWorkshopAssessmentComponent implements OnInit {
     @Input() assessment: any;
