@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -29,11 +29,13 @@ export interface AddonWorkshopAssessmentStrategyHandler extends CoreDelegateHand
     strategyName: string;
 
     /**
-     * Returns the component to render the plugin.
+     * Return the Component to render the plugin.
+     * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @return {any} The component to use, undefined if not found.
+     * @param {Injector} injector Injector.
+     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
      */
-    getComponent?(): any;
+    getComponent?(injector: Injector): any | Promise<any>;
 
     /**
      * Prepare original values to be shown and compared.
@@ -87,14 +89,15 @@ export interface AddonWorkshopAssessmentStrategyHandler extends CoreDelegateHand
         return this.hasHandler(workshopStrategy, true);
     }
 
-     /**
-      * Get the directive to use for a certain assessment strategy plugin.
-      *
-      * @param  {string} workshopStrategy Assessment strategy name.
-      * @return {any}                     The component, undefined if not found.
-      */
-    getComponentForPlugin(workshopStrategy: string): Promise<any> {
-        return this.executeFunctionOnEnabled(workshopStrategy, 'getComponent', []);
+    /**
+     * Get the directive to use for a certain assessment strategy plugin.
+     *
+     * @param {Injector} injector Injector.
+     * @param  {string} workshopStrategy Assessment strategy name.
+     * @return {any}                     The component, undefined if not found.
+     */
+    getComponentForPlugin(injector: Injector, workshopStrategy: string): Promise<any> {
+        return this.executeFunctionOnEnabled(workshopStrategy, 'getComponent', [injector]);
     }
 
     /**

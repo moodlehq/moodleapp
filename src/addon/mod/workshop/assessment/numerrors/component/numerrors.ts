@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
+import { AddonModWorkshopAssessmentStrategyComponentBase } from '../../../classes/assessment-strategy-component';
 
 /**
  * Component for numerrors assessment strategy.
@@ -21,10 +22,5 @@ import { Component, Input } from '@angular/core';
     selector: 'addon-mod-workshop-assessment-strategy-numerrors',
     templateUrl: 'numerrors.html',
 })
-export class AddonModWorkshopAssessmentStrategyNumErrorsComponent {
-    @Input() workshopId: number;
-    @Input() assessment: any;
-    @Input() edit: boolean;
-    @Input() selectedValues: any[];
-    @Input() fieldErrors: any;
+export class AddonModWorkshopAssessmentStrategyNumErrorsComponent extends AddonModWorkshopAssessmentStrategyComponentBase {
 }

@@ -43,6 +43,7 @@ import { AddonMessageOutputDelegate } from '@addon/messageoutput/providers/deleg
 import { AddonModQuizAccessRuleDelegate } from '@addon/mod/quiz/providers/access-rules-delegate';
 import { AddonModAssignFeedbackDelegate } from '@addon/mod/assign/providers/feedback-delegate';
 import { AddonModAssignSubmissionDelegate } from '@addon/mod/assign/providers/submission-delegate';
+import { AddonWorkshopAssessmentStrategyDelegate } from '@addon/mod/workshop/providers/assessment-strategy-delegate';
 
 // Handler classes.
 import { CoreSitePluginsCourseFormatHandler } from '../classes/handlers/course-format-handler';
@@ -59,6 +60,7 @@ import { CoreSitePluginsMessageOutputHandler } from '../classes/handlers/message
 import { CoreSitePluginsQuizAccessRuleHandler } from '../classes/handlers/quiz-access-rule-handler';
 import { CoreSitePluginsAssignFeedbackHandler } from '../classes/handlers/assign-feedback-handler';
 import { CoreSitePluginsAssignSubmissionHandler } from '../classes/handlers/assign-submission-handler';
+import { CoreSitePluginsWorkshopAssessmentStrategyHandler } from '../classes/handlers/workshop-assessment-strategy-handler';
 
 /**
  * Helper service to provide functionalities regarding site plugins. It basically has the features to load and register site
@@ -85,7 +87,8 @@ export class CoreSitePluginsHelperProvider {
             private questionBehaviourDelegate: CoreQuestionBehaviourDelegate, private questionProvider: CoreQuestionProvider,
             private messageOutputDelegate: AddonMessageOutputDelegate, private accessRulesDelegate: AddonModQuizAccessRuleDelegate,
             private assignSubmissionDelegate: AddonModAssignSubmissionDelegate, private translate: TranslateService,
-            private assignFeedbackDelegate: AddonModAssignFeedbackDelegate) {
+            private assignFeedbackDelegate: AddonModAssignFeedbackDelegate,
+            private workshopAssessmentStrategyDelegate: AddonWorkshopAssessmentStrategyDelegate) {
 
         this.logger = logger.getInstance('CoreSitePluginsHelperProvider');
 
@@ -483,6 +486,10 @@ export class CoreSitePluginsHelperProvider {
                     promise = Promise.resolve(this.registerAssignSubmissionHandler(plugin, handlerName, handlerSchema));
                     break;
 
+                case 'AddonWorkshopAssessmentStrategyDelegate':
+                    promise = Promise.resolve(this.registerWorkshopAssessmentStrategyHandler(plugin, handlerName, handlerSchema));
+                    break;
+
                 default:
                     // Nothing to do.
                     promise = Promise.resolve();
@@ -862,6 +869,26 @@ export class CoreSitePluginsHelperProvider {
             const fieldType = plugin.component.replace('profilefield_', '');
 
             return new CoreSitePluginsUserProfileFieldHandler(uniqueName, fieldType);
+        });
+    }
+
+    /**
+     * Given a handler in a plugin, register it in the workshop assessment strategy delegate.
+     *
+     * @param {any} plugin Data of the plugin.
+     * @param {string} handlerName Name of the handler in the plugin.
+     * @param {any} handlerSchema Data about the handler.
+     * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
+     */
+    protected registerWorkshopAssessmentStrategyHandler(plugin: any, handlerName: string, handlerSchema: any)
+            : string | Promise<string> {
+
+        return this.registerComponentInitHandler(plugin, handlerName, handlerSchema, this.workshopAssessmentStrategyDelegate,
+                    (uniqueName: string, result: any) => {
+
+            const strategyName = plugin.component.replace('workshopform_', '');
+
+            return new CoreSitePluginsWorkshopAssessmentStrategyHandler(uniqueName, strategyName);
         });
     }
 }

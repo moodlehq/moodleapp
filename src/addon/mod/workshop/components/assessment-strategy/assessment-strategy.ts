@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Injector } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreSyncProvider } from '@providers/sync';
@@ -51,6 +51,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit {
         edit: false,
         selectedValues: [],
         fieldErrors: {},
+        strategy: ''
     };
     assessmentStrategyLoaded = false;
     notSupported = false;
@@ -74,6 +75,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit {
     };
 
     constructor(private translate: TranslateService,
+            private injector: Injector,
             private eventsProvider: CoreEventsProvider,
             private fileSessionProvider: CoreFileSessionProvider,
             private syncProvider: CoreSyncProvider,
@@ -99,8 +101,9 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit {
 
         this.data.workshopId = this.workshop.id;
         this.data.edit = this.edit;
+        this.data.strategy = this.strategy;
 
-        this.componentClass = this.strategyDelegate.getComponentForPlugin(this.strategy);
+        this.componentClass = this.strategyDelegate.getComponentForPlugin(this.injector, this.strategy);
         if (this.componentClass) {
             this.overallFeedkback = !!this.workshop.overallfeedbackmode;
             this.overallFeedkbackRequired = this.workshop.overallfeedbackmode == 2;

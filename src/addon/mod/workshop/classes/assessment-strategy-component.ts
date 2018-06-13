@@ -12,15 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
-import { AddonModWorkshopAssessmentStrategyComponentBase } from '../../../classes/assessment-strategy-component';
+import { Input } from '@angular/core';
 
 /**
- * Component for comments assessment strategy.
+ * Base class for component to render an assessment strategy.
  */
-@Component({
-    selector: 'addon-mod-workshop-assessment-strategy-comments',
-    templateUrl: 'comments.html',
-})
-export class AddonModWorkshopAssessmentStrategyCommentsComponent extends AddonModWorkshopAssessmentStrategyComponentBase {
+export class AddonModWorkshopAssessmentStrategyComponentBase {
+    @Input() workshopId: number;
+    @Input() assessment: any;
+    @Input() edit: boolean;
+    @Input() selectedValues: any[];
+    @Input() fieldErrors: any;
+    @Input() strategy: string;
+
+    constructor() {
+        // Nothing to do.
+    }
 }

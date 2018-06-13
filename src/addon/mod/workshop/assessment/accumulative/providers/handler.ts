@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
 import { AddonWorkshopAssessmentStrategyHandler } from '../../../providers/assessment-strategy-delegate';
@@ -37,11 +37,13 @@ export class AddonModWorkshopAssessmentStrategyAccumulativeHandler implements Ad
     }
 
     /**
-     * Returns the component to render the plugin.
+     * Return the Component to render the plugin.
+     * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
+     * @param {Injector} injector Injector.
      * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
      */
-    getComponent(): any {
+    getComponent(injector: Injector): any | Promise<any> {
         return AddonModWorkshopAssessmentStrategyAccumulativeComponent;
     }
 
