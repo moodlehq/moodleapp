@@ -20,7 +20,7 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
  */
 @Component({
     selector: 'addon-mod-data-field-checkbox',
-    templateUrl: 'checkbox.html'
+    templateUrl: 'addon-mod-data-field-checkbox.html'
 })
 export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginComponent {
 

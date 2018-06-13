@@ -22,7 +22,7 @@ import { AddonModAssignFeedbackPluginComponentBase } from '../../../classes/feed
  */
 @Component({
     selector: 'addon-mod-assign-feedback-edit-pdf',
-    templateUrl: 'editpdf.html'
+    templateUrl: 'addon-mod-assign-feedback-editpdf.html'
 })
 export class AddonModAssignFeedbackEditPdfComponent extends AddonModAssignFeedbackPluginComponentBase implements OnInit {
 

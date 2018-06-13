@@ -21,7 +21,7 @@ import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-
  */
 @Component({
     selector: 'addon-qtype-description',
-    templateUrl: 'description.html'
+    templateUrl: 'addon-qtype-description.html'
 })
 export class AddonQtypeDescriptionComponent extends CoreQuestionBaseComponent implements OnInit {
 

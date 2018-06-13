@@ -24,7 +24,7 @@ import { CoreRecaptchaModalComponent } from './recaptchamodal';
  */
 @Component({
     selector: 'core-recaptcha',
-    templateUrl: 'recaptcha.html'
+    templateUrl: 'core-recaptcha.html'
 })
 export class CoreRecaptchaComponent {
     @Input() model: any; // The model where to store the recaptcha response.

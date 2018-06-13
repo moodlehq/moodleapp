@@ -21,7 +21,7 @@ import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-
  */
 @Component({
     selector: 'core-site-plugins-course-format',
-    templateUrl: 'course-format.html',
+    templateUrl: 'core-siteplugins-course-format.html',
 })
 export class CoreSitePluginsCourseFormatComponent implements OnInit {
     @Input() course: any; // The course to render.

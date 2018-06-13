@@ -25,7 +25,7 @@ import * as moment from 'moment';
  */
 @Component({
     selector: 'addon-mod-choice-index',
-    templateUrl: 'index.html',
+    templateUrl: 'addon-mod-choice-index.html',
 })
 export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityComponent {
     component = AddonModChoiceProvider.COMPONENT;

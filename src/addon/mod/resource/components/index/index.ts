@@ -25,7 +25,7 @@ import { AddonModResourceHelperProvider } from '../../providers/helper';
  */
 @Component({
     selector: 'addon-mod-resource-index',
-    templateUrl: 'index.html',
+    templateUrl: 'addon-mod-resource-index.html',
 })
 export class AddonModResourceIndexComponent extends CoreCourseModuleMainResourceComponent {
     component = AddonModResourceProvider.COMPONENT;

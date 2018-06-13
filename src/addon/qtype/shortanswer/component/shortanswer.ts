@@ -21,7 +21,7 @@ import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-
  */
 @Component({
     selector: 'addon-qtype-shortanswer',
-    templateUrl: 'shortanswer.html'
+    templateUrl: 'addon-qtype-shortanswer.html'
 })
 export class AddonQtypeShortAnswerComponent extends CoreQuestionBaseComponent implements OnInit {
 

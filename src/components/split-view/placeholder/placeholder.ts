@@ -20,7 +20,7 @@ import { IonicPage } from 'ionic-angular';
 @IonicPage({ segment: 'core-placeholder' })
 @Component({
     selector: 'core-placeholder',
-    templateUrl: 'placeholder.html',
+    templateUrl: 'core-placeholder.html',
 })
 export class CoreSplitViewPlaceholderPage {
 

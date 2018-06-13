@@ -21,7 +21,7 @@ import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-
  */
 @Component({
     selector: 'addon-qtype-calculated',
-    templateUrl: 'calculated.html'
+    templateUrl: 'addon-qtype-calculated.html'
 })
 export class AddonQtypeCalculatedComponent extends CoreQuestionBaseComponent implements OnInit {
 

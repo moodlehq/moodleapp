@@ -22,7 +22,7 @@ import { Component, Input, OnInit, ElementRef } from '@angular/core';
  */
 @Component({
     selector: 'core-icon',
-    templateUrl: 'icon.html',
+    templateUrl: 'core-icon.html',
 })
 export class CoreIconComponent implements OnInit {
     // Common params.

@@ -31,10 +31,11 @@ export const ADDON_MOD_CHAT_PROVIDERS: any[] = [
     imports: [
         AddonModChatComponentsModule
     ],
-    providers: ADDON_MOD_CHAT_PROVIDERS.concat([
+    providers: [
+        AddonModChatProvider,
         AddonModChatLinkHandler,
         AddonModChatModuleHandler,
-    ])
+    ]
 })
 export class AddonModChatModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModChatModuleHandler,

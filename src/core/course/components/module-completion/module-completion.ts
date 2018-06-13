@@ -30,7 +30,7 @@ import { CoreUserProvider } from '@core/user/providers/user';
  */
 @Component({
     selector: 'core-course-module-completion',
-    templateUrl: 'module-completion.html'
+    templateUrl: 'core-course-module-completion.html'
 })
 export class CoreCourseModuleCompletionComponent implements OnChanges {
     @Input() completion: any; // The completion status.

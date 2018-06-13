@@ -35,11 +35,13 @@ export const ADDON_COMPETENCY_PROVIDERS: any[] = [
     imports: [
         AddonCompetencyComponentsModule
     ],
-    providers: ADDON_COMPETENCY_PROVIDERS.concat([
+    providers: [
+        AddonCompetencyProvider,
+        AddonCompetencyHelperProvider,
         AddonCompetencyCourseOptionHandler,
         AddonCompetencyMainMenuHandler,
         AddonCompetencyUserHandler
-    ])
+    ]
 })
 export class AddonCompetencyModule {
     constructor(mainMenuDelegate: CoreMainMenuDelegate, mainMenuHandler: AddonCompetencyMainMenuHandler,

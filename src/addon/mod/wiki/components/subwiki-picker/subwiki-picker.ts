@@ -20,7 +20,7 @@ import { NavParams, ViewController } from 'ionic-angular';
  */
 @Component({
     selector: 'addon-mod-wiki-subwiki-picker',
-    templateUrl: 'subwiki-picker.html'
+    templateUrl: 'addon-mod-wiki-subwiki-picker.html'
 })
 export class AddonModWikiSubwikiPickerComponent {
     subwikis: any[];

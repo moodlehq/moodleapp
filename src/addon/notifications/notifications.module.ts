@@ -37,11 +37,12 @@ export const ADDON_NOTIFICATIONS_PROVIDERS: any[] = [
     ],
     imports: [
     ],
-    providers: ADDON_NOTIFICATIONS_PROVIDERS.concat([
+    providers: [
+        AddonNotificationsProvider,
         AddonNotificationsMainMenuHandler,
         AddonNotificationsSettingsHandler,
         AddonNotificationsCronHandler,
-    ])
+    ]
 })
 export class AddonNotificationsModule {
     constructor(mainMenuDelegate: CoreMainMenuDelegate, mainMenuHandler: AddonNotificationsMainMenuHandler,

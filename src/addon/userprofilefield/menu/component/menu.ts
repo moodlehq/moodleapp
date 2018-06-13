@@ -20,7 +20,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
  */
 @Component({
     selector: 'addon-user-profile-field-menu',
-    templateUrl: 'menu.html'
+    templateUrl: 'addon-user-profile-field-menu.html'
 })
 export class AddonUserProfileFieldMenuComponent implements OnInit {
     @Input() field: any; // The profile field to be rendered.

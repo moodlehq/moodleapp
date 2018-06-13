@@ -62,9 +62,12 @@ import { CoreInitDelegate } from '@providers/init';
 
 // List of Ionic Native providers.
 export const IONIC_NATIVE_PROVIDERS = [
+    Badge,
     Camera,
     Clipboard,
+    Device,
     File,
+    FileOpener,
     FileTransfer,
     Globalization,
     InAppBrowser,
@@ -72,9 +75,11 @@ export const IONIC_NATIVE_PROVIDERS = [
     LocalNotifications,
     MediaCapture,
     Network,
+    Push,
     SplashScreen,
     StatusBar,
     SQLite,
+    WebIntent,
     Zip
 ];
 

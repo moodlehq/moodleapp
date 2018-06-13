@@ -32,7 +32,7 @@ import { Component, Input } from '@angular/core';
  */
 @Component({
     selector: 'core-course-module-description',
-    templateUrl: 'module-description.html'
+    templateUrl: 'core-course-module-description.html'
 })
 export class CoreCourseModuleDescriptionComponent {
     @Input() description: string; // The description to display.

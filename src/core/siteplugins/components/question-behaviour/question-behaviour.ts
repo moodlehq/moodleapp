@@ -21,7 +21,7 @@ import { CoreSitePluginsCompileInitComponent } from '../../classes/compile-init-
  */
 @Component({
     selector: 'core-site-plugins-question-behaviour',
-    templateUrl: 'question-behaviour.html',
+    templateUrl: 'core-siteplugins-question-behaviour.html',
 })
 export class CoreSitePluginsQuestionBehaviourComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
     @Input() question: any; // The question where the behaviour will be rendered.

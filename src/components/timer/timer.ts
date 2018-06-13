@@ -23,7 +23,7 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
  */
 @Component({
     selector: 'core-timer',
-    templateUrl: 'timer.html'
+    templateUrl: 'core-timer.html'
 })
 export class CoreTimerComponent implements OnInit, OnDestroy {
     @Input() endTime: string | number; // Timestamp (in seconds) when the timer should end.

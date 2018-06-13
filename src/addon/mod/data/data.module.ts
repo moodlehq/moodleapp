@@ -51,7 +51,12 @@ export const ADDON_MOD_DATA_PROVIDERS: any[] = [
         AddonModDataComponentsModule,
         AddonModDataFieldModule
     ],
-    providers: ADDON_MOD_DATA_PROVIDERS.concat([
+    providers: [
+        AddonModDataProvider,
+        AddonModDataHelperProvider,
+        AddonModDataSyncProvider,
+        AddonModDataOfflineProvider,
+        AddonModDataFieldsDelegate,
         AddonModDataModuleHandler,
         AddonModDataPrefetchHandler,
         AddonModDataLinkHandler,
@@ -61,7 +66,7 @@ export const ADDON_MOD_DATA_PROVIDERS: any[] = [
         AddonModDataEditLinkHandler,
         AddonModDataSyncCronHandler,
         AddonModDataDefaultFieldHandler
-    ])
+    ]
 })
 export class AddonModDataModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModDataModuleHandler,

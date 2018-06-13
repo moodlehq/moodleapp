@@ -22,7 +22,7 @@ import { AddonQtypeDdwtosQuestion } from '../classes/ddwtos';
  */
 @Component({
     selector: 'addon-qtype-ddwtos',
-    templateUrl: 'ddwtos.html'
+    templateUrl: 'addon-qtype-ddwtos.html'
 })
 export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent implements OnInit, OnDestroy {
 

@@ -38,7 +38,7 @@ import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-comp
  */
 @Component({
     selector: 'core-course-format',
-    templateUrl: 'format.html'
+    templateUrl: 'core-course-format.html'
 })
 export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Input() course: any; // The course to render.

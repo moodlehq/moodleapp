@@ -21,7 +21,7 @@ import { CoreSitePluginsCompileInitComponent } from '../../classes/compile-init-
  */
 @Component({
     selector: 'core-site-plugins-user-profile-field',
-    templateUrl: 'user-profile-field.html',
+    templateUrl: 'core-siteplugins-user-profile-field.html',
 })
 export class CoreSitePluginsUserProfileFieldComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
     @Input() field: any; // The profile field to be rendered.

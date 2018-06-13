@@ -23,7 +23,7 @@ import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-comp
  */
 @Component({
     selector: 'addon-mod-assign-feedback-plugin',
-    templateUrl: 'feedback-plugin.html',
+    templateUrl: 'addon-mod-assign-feedback-plugin.html',
 })
 export class AddonModAssignFeedbackPluginComponent implements OnInit {
     @ViewChild(CoreDynamicComponent) dynamicComponent: CoreDynamicComponent;

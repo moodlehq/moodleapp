@@ -26,7 +26,7 @@ import { AddonModImscpTocPopoverComponent } from '../../components/toc-popover/t
  */
 @Component({
     selector: 'addon-mod-imscp-index',
-    templateUrl: 'index.html',
+    templateUrl: 'addon-mod-imscp-index.html',
 })
 export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceComponent {
     component = AddonModImscpProvider.COMPONENT;

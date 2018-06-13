@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreEventsProvider } from '@providers/events';
@@ -35,7 +34,6 @@ export interface CoreDelegateHandler {
 /**
  * Superclass to help creating delegates
  */
-@Injectable()
 export class CoreDelegate {
 
     /**

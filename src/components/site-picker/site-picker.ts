@@ -26,7 +26,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
  */
 @Component({
     selector: 'core-site-picker',
-    templateUrl: 'site-picker.html'
+    templateUrl: 'core-site-picker.html'
 })
 export class CoreSitePickerComponent implements OnInit {
     @Input() initialSite?: string; // Initial site. If not provided, current site.

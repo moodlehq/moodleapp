@@ -27,7 +27,7 @@ import * as moment from 'moment';
  */
 @Component({
     selector: 'addon-mod-feedback-index',
-    templateUrl: 'index.html',
+    templateUrl: 'addon-mod-feedback-index.html',
 })
 export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivityComponent {
     @Input() tab = 'overview';

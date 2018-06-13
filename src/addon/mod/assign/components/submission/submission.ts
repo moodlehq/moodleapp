@@ -42,7 +42,7 @@ import { AddonModAssignSubmissionPluginComponent } from '../submission-plugin/su
  */
 @Component({
     selector: 'addon-mod-assign-submission',
-    templateUrl: 'submission.html',
+    templateUrl: 'addon-mod-assign-submission.html',
 })
 export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     @ViewChild(CoreTabsComponent) tabs: CoreTabsComponent;

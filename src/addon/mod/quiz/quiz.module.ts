@@ -66,14 +66,19 @@ export const ADDON_MOD_QUIZ_PROVIDERS: any[] = [
         AddonModQuizAccessSecureWindowModule,
         AddonModQuizAccessTimeLimitModule
     ],
-    providers: ADDON_MOD_QUIZ_PROVIDERS.concat([
+    providers: [
+        AddonModQuizAccessRuleDelegate,
+        AddonModQuizProvider,
+        AddonModQuizOfflineProvider,
+        AddonModQuizHelperProvider,
+        AddonModQuizSyncProvider,
         AddonModQuizModuleHandler,
         AddonModQuizPrefetchHandler,
         AddonModQuizSyncCronHandler,
         AddonModQuizIndexLinkHandler,
         AddonModQuizGradeLinkHandler,
         AddonModQuizReviewLinkHandler
-    ])
+    ]
 })
 export class AddonModQuizModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModQuizModuleHandler,

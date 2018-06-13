@@ -21,7 +21,7 @@ import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-
  */
 @Component({
     selector: 'addon-qtype-match',
-    templateUrl: 'match.html'
+    templateUrl: 'addon-qtype-match.html'
 })
 export class AddonQtypeMatchComponent extends CoreQuestionBaseComponent implements OnInit {
 

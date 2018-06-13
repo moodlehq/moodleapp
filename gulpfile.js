@@ -6,6 +6,8 @@ var gulp = require('gulp'),
     slash = require('gulp-slash'),
     clipEmptyFiles = require('gulp-clip-empty-files'),
     gutil = require('gulp-util'),
+    flatten = require('gulp-flatten'),
+    npmPath = require('path'),
     File = gutil.File,
     license = '' +
         '// (C) Copyright 2015 Martin Dougiamas\n' +
@@ -185,6 +187,22 @@ function buildLangs(filenames, langPaths, buildDest, done) {
     });
 }
 
+// Delete a folder and all its contents.
+function deleteFolderRecursive(path) {
+  if (fs.existsSync(path)) {
+    fs.readdirSync(path).forEach(function(file) {
+      var curPath = npmPath.join(path, file);
+      if (fs.lstatSync(curPath).isDirectory()) {
+        deleteFolderRecursive(curPath);
+      } else {
+        fs.unlinkSync(curPath);
+      }
+    });
+
+    fs.rmdirSync(path);
+  }
+}
+
 // List of app lang files. To be used only if cannot get it from filesystem.
 var appLangFiles = ['ar.json', 'bg.json', 'ca.json', 'cs.json', 'da.json', 'de.json', 'en.json', 'es-mx.json', 'es.json', 'eu.json',
     'fa.json', 'fr.json', 'he.json', 'hu.json', 'it.json', 'ja.json', 'nl.json', 'pl.json', 'pt-br.json', 'pt.json', 'ro.json',
@@ -269,3 +287,23 @@ gulp.task('config', function(done) {
         .pipe(gulp.dest(paths.src))
         .on('end', done);
 });
+
+var templatesSrc = [
+        './src/components/**/*.html',
+        './src/core/**/components/**/*.html',
+        './src/core/**/component/**/*.html',
+        // Only some addon components are injected to compile to decrease load time. Copy only the ones that are needed.
+        './src/addon/mod/assign/components/**/*.html'
+    ],
+    templatesDest = './www/templates';
+
+// Copy component templates to www to make compile-html work in AOT.
+gulp.task('copy-component-templates', function(done) {
+    deleteFolderRecursive(templatesDest);
+
+    gulp.src(templatesSrc)
+        .pipe(flatten())
+        .pipe(gulp.dest(templatesDest))
+        .on('end', done);
+});
+

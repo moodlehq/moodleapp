@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable, Injector, Component, NgModule, Compiler, ComponentFactory, ComponentRef, NgModuleRef } from '@angular/core';
+import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
 import {
     Platform, ActionSheetController, AlertController, LoadingController, ModalController, PopoverController, ToastController,
     IonicModule
@@ -113,10 +114,7 @@ import { ADDON_PUSHNOTIFICATIONS_PROVIDERS } from '@addon/pushnotifications/push
 import { ADDON_REMOTETHEMES_PROVIDERS } from '@addon/remotethemes/remotethemes.module';
 
 // Import some addon modules that define components, directives and pipes. Only import the important ones.
-import { AddonMessagesComponentsModule } from '@addon/messages/components/components.module';
 import { AddonModAssignComponentsModule } from '@addon/mod/assign/components/components.module';
-import { AddonModForumComponentsModule } from '@addon/mod/forum/components/components.module';
-import { AddonNotificationsComponentsModule } from '@addon/notifications/components/components.module';
 
 /**
  * Service to provide functionalities regarding compiling dynamic HTML and Javascript.
@@ -125,6 +123,7 @@ import { AddonNotificationsComponentsModule } from '@addon/notifications/compone
 export class CoreCompileProvider {
 
     protected logger;
+    protected compiler: Compiler;
 
     // Other Ionic/Angular providers that don't depend on where they are injected.
     protected OTHER_PROVIDERS = [
@@ -136,13 +135,13 @@ export class CoreCompileProvider {
     protected IMPORTS = [
         IonicModule, TranslateModule.forChild(), CoreComponentsModule, CoreDirectivesModule, CorePipesModule,
         CoreCourseComponentsModule, CoreCoursesComponentsModule, CoreSiteHomeComponentsModule, CoreUserComponentsModule,
-        CoreCourseDirectivesModule, CoreSitePluginsDirectivesModule, CoreQuestionComponentsModule, AddonMessagesComponentsModule,
-        AddonModAssignComponentsModule, AddonModForumComponentsModule,
-        AddonNotificationsComponentsModule
+        CoreCourseDirectivesModule, CoreSitePluginsDirectivesModule, CoreQuestionComponentsModule, AddonModAssignComponentsModule,
     ];
 
-    constructor(protected injector: Injector, logger: CoreLoggerProvider, protected compiler: Compiler) {
+    constructor(protected injector: Injector, logger: CoreLoggerProvider, compilerFactory: JitCompilerFactory) {
         this.logger = logger.getInstance('CoreCompileProvider');
+
+        this.compiler = compilerFactory.createCompiler();
     }
 
     /**

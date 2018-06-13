@@ -38,7 +38,7 @@ import { coreShowHideAnimation } from '@classes/animations';
  */
 @Component({
     selector: 'core-loading',
-    templateUrl: 'loading.html',
+    templateUrl: 'core-loading.html',
     animations: [coreShowHideAnimation]
 })
 export class CoreLoadingComponent implements OnInit, OnChanges {

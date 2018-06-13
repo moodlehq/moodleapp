@@ -37,12 +37,14 @@ export const ADDON_MOD_FOLDER_PROVIDERS: any[] = [
     imports: [
         AddonModFolderComponentsModule
     ],
-    providers: ADDON_MOD_FOLDER_PROVIDERS.concat([
+    providers: [
+        AddonModFolderProvider,
+        AddonModFolderHelperProvider,
         AddonModFolderModuleHandler,
         AddonModFolderPrefetchHandler,
         AddonModFolderLinkHandler,
         AddonModFolderPluginFileHandler
-    ])
+    ]
 })
 export class AddonModFolderModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModFolderModuleHandler,

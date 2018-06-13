@@ -28,7 +28,7 @@ import { AddonPushNotificationsDelegate } from '@addon/pushnotifications/provide
  */
 @Component({
     selector: 'addon-messages-discussions',
-    templateUrl: 'discussions.html',
+    templateUrl: 'addon-messages-discussions.html',
 })
 export class AddonMessagesDiscussionsComponent implements OnDestroy {
     protected newMessagesObserver: any;

@@ -31,7 +31,7 @@ import { CoreConstants } from '../../../constants';
  */
 @Component({
     selector: 'core-course-module',
-    templateUrl: 'module.html'
+    templateUrl: 'core-course-module.html'
 })
 export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     @Input() module: any; // The module to render.

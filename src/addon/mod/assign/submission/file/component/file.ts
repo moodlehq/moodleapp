@@ -26,7 +26,7 @@ import { AddonModAssignSubmissionPluginComponent } from '../../../classes/submis
  */
 @Component({
     selector: 'addon-mod-assign-submission-file',
-    templateUrl: 'file.html'
+    templateUrl: 'addon-mod-assign-submission-file.html'
 })
 export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmissionPluginComponent implements OnInit {
 

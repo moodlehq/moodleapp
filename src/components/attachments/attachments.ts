@@ -35,7 +35,7 @@ import { CoreFileUploaderHelperProvider } from '@core/fileuploader/providers/hel
  */
 @Component({
     selector: 'core-attachments',
-    templateUrl: 'attachments.html'
+    templateUrl: 'core-attachments.html'
 })
 export class CoreAttachmentsComponent implements OnInit {
     @Input() files: any[]; // List of attachments. New attachments will be added to this array.

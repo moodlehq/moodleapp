@@ -26,7 +26,7 @@ import { CoreCoursesProvider } from '../../providers/courses';
  */
 @Component({
     selector: 'core-courses-course-list-item',
-    templateUrl: 'course-list-item.html'
+    templateUrl: 'core-courses-course-list-item.html'
 })
 export class CoreCoursesCourseListItemComponent implements OnInit {
     @Input() course: any; // The course to render.

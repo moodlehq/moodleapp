@@ -41,13 +41,15 @@ export const CORE_GRADES_PROVIDERS: any[] = [
     imports: [
         CoreGradesComponentsModule
     ],
-    providers: CORE_GRADES_PROVIDERS.concat([
+    providers: [
+        CoreGradesProvider,
+        CoreGradesHelperProvider,
         CoreGradesMainMenuHandler,
         CoreGradesCourseOptionHandler,
         CoreGradesUserLinkHandler,
         CoreGradesOverviewLinkHandler,
         CoreGradesUserHandler
-    ])
+    ]
 })
 export class CoreGradesModule {
     constructor(mainMenuDelegate: CoreMainMenuDelegate, gradesMenuHandler: CoreGradesMainMenuHandler,

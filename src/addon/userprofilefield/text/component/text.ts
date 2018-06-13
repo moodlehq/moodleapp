@@ -21,7 +21,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
  */
 @Component({
     selector: 'addon-user-profile-field-text',
-    templateUrl: 'text.html'
+    templateUrl: 'addon-user-profile-field-text.html'
 })
 export class AddonUserProfileFieldTextComponent implements OnInit {
     @Input() field: any; // The profile field to be rendered.

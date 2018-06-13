@@ -42,12 +42,16 @@ export const ADDON_MOD_SURVEY_PROVIDERS: any[] = [
     imports: [
         AddonModSurveyComponentsModule
     ],
-    providers: ADDON_MOD_SURVEY_PROVIDERS.concat([
+    providers: [
+        AddonModSurveyProvider,
+        AddonModSurveyHelperProvider,
+        AddonModSurveySyncProvider,
+        AddonModSurveyOfflineProvider,
         AddonModSurveyModuleHandler,
         AddonModSurveyPrefetchHandler,
         AddonModSurveyLinkHandler,
         AddonModSurveySyncCronHandler
-    ])
+    ]
 })
 export class AddonModSurveyModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModSurveyModuleHandler,

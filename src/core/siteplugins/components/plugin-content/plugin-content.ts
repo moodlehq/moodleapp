@@ -23,7 +23,7 @@ import { Subject } from 'rxjs';
  */
 @Component({
     selector: 'core-site-plugins-plugin-content',
-    templateUrl: 'plugin-content.html',
+    templateUrl: 'core-siteplugins-plugin-content.html',
 })
 export class CoreSitePluginsPluginContentComponent implements OnInit {
     @Input() component: string;

@@ -29,7 +29,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
  */
 @Component({
     selector: '[core-mark-required]',
-    templateUrl: 'mark-required.html'
+    templateUrl: 'core-mark-required.html'
 })
 export class CoreMarkRequiredComponent implements OnInit, AfterViewInit {
     @Input('core-mark-required') coreMarkRequired: boolean | string = true;

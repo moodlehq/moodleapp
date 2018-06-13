@@ -28,7 +28,7 @@ import { AddonModAssignFeedbackCommentsHandler } from '../providers/handler';
  */
 @Component({
     selector: 'addon-mod-assign-feedback-comments',
-    templateUrl: 'comments.html'
+    templateUrl: 'addon-mod-assign-feedback-comments.html'
 })
 export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedbackPluginComponentBase implements OnInit {
 

@@ -31,7 +31,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
  */
 @Component({
     selector: 'core-show-password',
-    templateUrl: 'show-password.html'
+    templateUrl: 'core-show-password.html'
 })
 export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
     @Input() name: string; // Name of the input affected.

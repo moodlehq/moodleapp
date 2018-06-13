@@ -20,7 +20,7 @@ import { CoreCoursesProvider } from '@core/courses/providers/courses';
  */
 @Component({
     selector: 'core-sitehome-categories',
-    templateUrl: 'categories.html',
+    templateUrl: 'core-sitehome-categories.html',
 })
 export class CoreSiteHomeCategoriesComponent {
     show: boolean;

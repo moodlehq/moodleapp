@@ -21,7 +21,7 @@ import { CoreSitePluginsCompileInitComponent } from '../../classes/compile-init-
  */
 @Component({
     selector: 'core-site-plugins-assign-submission',
-    templateUrl: 'assign-submission.html',
+    templateUrl: 'core-siteplugins-assign-submission.html',
 })
 export class CoreSitePluginsAssignSubmissionComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
     @Input() assign: any; // The assignment.

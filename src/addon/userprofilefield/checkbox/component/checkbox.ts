@@ -21,7 +21,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
  */
 @Component({
     selector: 'addon-user-profile-field-checkbox',
-    templateUrl: 'checkbox.html'
+    templateUrl: 'addon-user-profile-field-checkbox.html'
 })
 export class AddonUserProfileFieldCheckboxComponent implements OnInit {
     @Input() field: any; // The profile field to be rendered.

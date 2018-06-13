@@ -22,7 +22,7 @@ import { FormGroup } from '@angular/forms';
  */
 @Component({
     selector: 'core-site-plugins-quiz-access-rule',
-    templateUrl: 'quiz-access-rule.html',
+    templateUrl: 'core-siteplugins-quiz-access-rule.html',
 })
 export class CoreSitePluginsQuizAccessRuleComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
     @Input() rule: string; // The name of the rule.

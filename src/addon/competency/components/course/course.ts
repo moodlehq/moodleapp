@@ -24,7 +24,7 @@ import { AddonCompetencyHelperProvider } from '../../providers/helper';
  */
 @Component({
     selector: 'addon-competency-course',
-    templateUrl: 'course.html',
+    templateUrl: 'addon-competency-course.html',
 })
 export class AddonCompetencyCourseComponent {
     @ViewChild(Content) content: Content;

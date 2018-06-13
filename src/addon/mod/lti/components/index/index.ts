@@ -22,7 +22,7 @@ import { AddonModLtiProvider } from '../../providers/lti';
  */
 @Component({
     selector: 'addon-mod-lti-index',
-    templateUrl: 'index.html',
+    templateUrl: 'addon-mod-lti-index.html',
 })
 export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityComponent {
     component = AddonModLtiProvider.COMPONENT;

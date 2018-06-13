@@ -21,7 +21,7 @@ import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-
  */
 @Component({
     selector: 'addon-qtype-multichoice',
-    templateUrl: 'multichoice.html'
+    templateUrl: 'addon-qtype-multichoice.html'
 })
 export class AddonQtypeMultichoiceComponent extends CoreQuestionBaseComponent implements OnInit {
 

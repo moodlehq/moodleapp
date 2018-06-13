@@ -36,13 +36,14 @@ export const ADDON_MOD_RESOURCE_PROVIDERS: any[] = [
     imports: [
         AddonModResourceComponentsModule
     ],
-    providers: ADDON_MOD_RESOURCE_PROVIDERS.concat([
+    providers: [
+        AddonModResourceProvider,
         AddonModResourceModuleHandler,
         AddonModResourceHelperProvider,
         AddonModResourcePrefetchHandler,
         AddonModResourceLinkHandler,
         AddonModResourcePluginFileHandler
-    ])
+    ]
 })
 export class AddonModResourceModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModResourceModuleHandler,

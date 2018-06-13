@@ -29,7 +29,9 @@ export const ADDON_REMOTETHEMES_PROVIDERS: any[] = [
     ],
     imports: [
     ],
-    providers: ADDON_REMOTETHEMES_PROVIDERS
+    providers: [
+        AddonRemoteThemesProvider
+    ]
 })
 export class AddonRemoteThemesModule {
     constructor(initDelegate: CoreInitDelegate, remoteThemesProvider: AddonRemoteThemesProvider, eventsProvider: CoreEventsProvider,

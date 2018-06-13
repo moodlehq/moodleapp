@@ -22,7 +22,7 @@ import { AddonModDataProvider } from '../../../providers/data';
  */
 @Component({
     selector: 'addon-mod-data-field-file',
-    templateUrl: 'file.html'
+    templateUrl: 'addon-mod-data-field-file.html'
 })
 export class AddonModDataFieldFileComponent extends AddonModDataFieldPluginComponent {
 

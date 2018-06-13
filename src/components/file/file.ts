@@ -29,7 +29,7 @@ import { CoreConstants } from '@core/constants';
  */
 @Component({
     selector: 'core-file',
-    templateUrl: 'file.html'
+    templateUrl: 'core-file.html'
 })
 export class CoreFileComponent implements OnInit, OnDestroy {
     @Input() file: any; // The file. Must have a property 'filename' and a 'fileurl' or 'url'

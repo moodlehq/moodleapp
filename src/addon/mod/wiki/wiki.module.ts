@@ -43,7 +43,10 @@ export const ADDON_MOD_WIKI_PROVIDERS: any[] = [
     imports: [
         AddonModWikiComponentsModule
     ],
-    providers: ADDON_MOD_WIKI_PROVIDERS.concat([
+    providers: [
+        AddonModWikiProvider,
+        AddonModWikiOfflineProvider,
+        AddonModWikiSyncProvider,
         AddonModWikiModuleHandler,
         AddonModWikiPrefetchHandler,
         AddonModWikiSyncCronHandler,
@@ -51,7 +54,7 @@ export const ADDON_MOD_WIKI_PROVIDERS: any[] = [
         AddonModWikiPageOrMapLinkHandler,
         AddonModWikiCreateLinkHandler,
         AddonModWikiEditLinkHandler
-    ])
+    ]
 })
 export class AddonModWikiModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModWikiModuleHandler,

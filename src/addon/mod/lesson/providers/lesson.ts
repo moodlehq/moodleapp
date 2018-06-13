@@ -776,7 +776,6 @@ export class AddonModLessonProvider {
                 useRegExp = pageData.page.qoption;
             let expectedAnswer = answer.answer,
                 isMatch = false,
-                markIt = false,
                 ignoreCase;
 
             if (useRegExp) {
@@ -826,7 +825,6 @@ export class AddonModLessonProvider {
                         // 2- Check for code for marking wrong strings (coded by initial '++').
                         case '++':
                             expectedAnswer = expectedAnswer.substr(2);
-                            markIt = true;
 
                             // Check for one or several matches.
                             const matches = studentAnswer.match(new RegExp(expectedAnswer, 'g' + ignoreCase));

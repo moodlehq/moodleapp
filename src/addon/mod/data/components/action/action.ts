@@ -23,7 +23,7 @@ import { CoreUserProvider } from '@core/user/providers/user';
  */
 @Component({
     selector: 'addon-mod-data-action',
-    templateUrl: 'action.html',
+    templateUrl: 'addon-mod-data-action.html',
 })
 export class AddonModDataActionComponent implements OnInit {
     @Input() mode: string; // The render mode.

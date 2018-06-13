@@ -44,10 +44,16 @@ export const CORE_COURSE_PROVIDERS: any[] = [
         CoreCourseFormatWeeksModule,
         CoreCourseFormatSocialModule
     ],
-    providers: CORE_COURSE_PROVIDERS.concat([
+    providers: [
+        CoreCourseProvider,
+        CoreCourseHelperProvider,
+        CoreCourseFormatDelegate,
+        CoreCourseModuleDelegate,
+        CoreCourseModulePrefetchDelegate,
+        CoreCourseOptionsDelegate,
         CoreCourseFormatDefaultHandler,
         CoreCourseModuleDefaultHandler
-    ]),
+    ],
     exports: []
 })
 export class CoreCourseModule {}

@@ -20,7 +20,7 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
  */
 @Component({
     selector: 'addon-mod-data-field-radiobutton',
-    templateUrl: 'radiobutton.html'
+    templateUrl: 'addon-mod-data-field-radiobutton.html'
 })
 export class AddonModDataFieldRadiobuttonComponent extends AddonModDataFieldPluginComponent {
 

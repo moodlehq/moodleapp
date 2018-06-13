@@ -32,12 +32,14 @@ export const CORE_COURSES_PROVIDERS: any[] = [
     declarations: [],
     imports: [
     ],
-    providers: CORE_COURSES_PROVIDERS.concat([
+    providers: [
+        CoreCoursesProvider,
+        CoreCoursesMyOverviewProvider,
         CoreCoursesMainMenuHandler,
         CoreCoursesCourseLinkHandler,
         CoreCoursesIndexLinkHandler,
         CoreCoursesMyOverviewLinkHandler
-    ]),
+    ],
     exports: []
 })
 export class CoreCoursesModule {

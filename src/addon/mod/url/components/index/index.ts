@@ -23,7 +23,7 @@ import { AddonModUrlHelperProvider } from '../../providers/helper';
  */
 @Component({
     selector: 'addon-mod-url-index',
-    templateUrl: 'index.html',
+    templateUrl: 'addon-mod-url-index.html',
 })
 export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceComponent {
     component = AddonModUrlProvider.COMPONENT;

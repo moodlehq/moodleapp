@@ -28,7 +28,7 @@ type FetchMode = 'author_all' | 'cat_all' | 'newest_first' | 'recently_updated' 
  */
 @Component({
     selector: 'addon-mod-glossary-index',
-    templateUrl: 'index.html',
+    templateUrl: 'addon-mod-glossary-index.html',
 })
 export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivityComponent {
     @ViewChild(CoreSplitViewComponent) splitviewCtrl: CoreSplitViewComponent;

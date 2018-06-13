@@ -14,13 +14,13 @@
 
 import { Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { AddonModAssignDefaultFeedbackHandler } from '@addon/mod/assign/providers/default-feedback-handler';
+import { AddonModAssignBaseFeedbackHandler } from '@addon/mod/assign/classes/base-feedback-handler';
 import { CoreSitePluginsAssignFeedbackComponent } from '../../components/assign-feedback/assign-feedback';
 
 /**
  * Handler to display an assign feedback site plugin.
  */
-export class CoreSitePluginsAssignFeedbackHandler extends AddonModAssignDefaultFeedbackHandler {
+export class CoreSitePluginsAssignFeedbackHandler extends AddonModAssignBaseFeedbackHandler {
 
     constructor(translate: TranslateService, public name: string, public type: string, protected prefix: string) {
         super(translate);

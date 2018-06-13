@@ -32,7 +32,7 @@ import { CoreCourseHelperProvider } from '@core/course/providers/helper';
  */
 @Component({
     selector: 'core-courses-course-progress',
-    templateUrl: 'course-progress.html'
+    templateUrl: 'core-courses-course-progress.html'
 })
 export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
     @Input() course: any; // The course to render.

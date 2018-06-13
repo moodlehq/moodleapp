@@ -21,7 +21,7 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
  */
 @Component({
     selector: 'addon-mod-data-field-date',
-    templateUrl: 'date.html'
+    templateUrl: 'addon-mod-data-field-date.html'
 })
 export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginComponent {
 

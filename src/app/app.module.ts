@@ -14,11 +14,12 @@
 
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
+import { NgModule, COMPILER_OPTIONS } from '@angular/core';
 import { IonicApp, IonicModule, Platform, Content, ScrollEvent } from 'ionic-angular';
 import { assert } from 'ionic-angular/util/util';
 import { HttpModule } from '@angular/http';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -217,13 +218,41 @@ export const CORE_PROVIDERS: any[] = [
     entryComponents: [
         MoodleMobileApp
     ],
-    providers: CORE_PROVIDERS.concat([
+    providers: [
+        CoreLoggerProvider,
+        CoreDbProvider,
+        CoreAppProvider,
+        CoreConfigProvider,
+        CoreLangProvider,
+        CoreTextUtilsProvider,
+        CoreDomUtilsProvider,
+        CoreTimeUtilsProvider,
+        CoreUrlUtilsProvider,
+        CoreUtilsProvider,
+        CoreMimetypeUtilsProvider,
+        CoreInitDelegate,
+        CoreFileProvider,
+        CoreWSProvider,
+        CoreEventsProvider,
+        CoreSitesFactoryProvider,
+        CoreSitesProvider,
+        CoreLocalNotificationsProvider,
+        CoreGroupsProvider,
+        CoreCronDelegate,
+        CoreFileSessionProvider,
+        CoreFilepoolProvider,
+        CoreUpdateManagerProvider,
+        CorePluginFileDelegate,
+        CoreSyncProvider,
+        CoreFileHelperProvider,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: CoreInterceptor,
             multi: true,
-        }
-    ])
+        },
+        {provide: COMPILER_OPTIONS, useValue: {}, multi: true},
+        {provide: JitCompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS]}
+    ]
 })
 export class AppModule {
     constructor(platform: Platform, initDelegate: CoreInitDelegate, updateManager: CoreUpdateManagerProvider,

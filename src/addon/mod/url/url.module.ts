@@ -33,10 +33,12 @@ export const ADDON_MOD_URL_PROVIDERS: any[] = [
     imports: [
         AddonModUrlComponentsModule
     ],
-    providers: ADDON_MOD_URL_PROVIDERS.concat([
+    providers: [
+        AddonModUrlProvider,
+        AddonModUrlHelperProvider,
         AddonModUrlModuleHandler,
         AddonModUrlLinkHandler
-    ])
+    ]
 })
 export class AddonModUrlModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModUrlModuleHandler,

@@ -22,7 +22,7 @@ import { AddonModAssignSubmissionPluginComponent } from '../../../classes/submis
  */
 @Component({
     selector: 'addon-mod-assign-submission-comments',
-    templateUrl: 'comments.html'
+    templateUrl: 'addon-mod-assign-submission-comments.html'
 })
 export class AddonModAssignSubmissionCommentsComponent extends AddonModAssignSubmissionPluginComponent {
     @ViewChild(CoreCommentsCommentsComponent) commentsComponent: CoreCommentsCommentsComponent;

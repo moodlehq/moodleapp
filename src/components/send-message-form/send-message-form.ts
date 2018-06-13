@@ -28,7 +28,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
  */
 @Component({
     selector: 'core-send-message-form',
-    templateUrl: 'send-message-form.html'
+    templateUrl: 'core-send-message-form.html'
 })
 export class CoreSendMessageFormComponent implements OnInit {
     @Input() message: string; // Input text.

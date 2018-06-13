@@ -22,7 +22,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
  */
 @Component({
     selector: 'addon-user-profile-field-datetime',
-    templateUrl: 'datetime.html'
+    templateUrl: 'addon-user-profile-field-datetime.html'
 })
 export class AddonUserProfileFieldDatetimeComponent implements OnInit {
     @Input() field: any; // The profile field to be rendered.

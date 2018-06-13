@@ -22,7 +22,7 @@ import { AddonQtypeDdMarkerQuestion } from '../classes/ddmarker';
  */
 @Component({
     selector: 'addon-qtype-ddmarker',
-    templateUrl: 'ddmarker.html'
+    templateUrl: 'addon-qtype-ddmarker.html'
 })
 export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent implements OnInit, OnDestroy {
 

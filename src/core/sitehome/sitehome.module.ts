@@ -28,10 +28,11 @@ export const CORE_SITEHOME_PROVIDERS: any[] = [
     declarations: [],
     imports: [
     ],
-    providers: CORE_SITEHOME_PROVIDERS.concat([
+    providers: [
+        CoreSiteHomeProvider,
         CoreSiteHomeMainMenuHandler,
         CoreSiteHomeIndexLinkHandler
-    ]),
+    ],
     exports: []
 })
 export class CoreSiteHomeModule {

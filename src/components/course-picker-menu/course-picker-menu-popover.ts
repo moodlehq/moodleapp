@@ -20,7 +20,7 @@ import { NavParams, ViewController } from 'ionic-angular';
  */
 @Component({
     selector: 'core-course-picker-menu-popover',
-    templateUrl: 'course-picker-menu-popover.html'
+    templateUrl: 'core-course-picker-menu-popover.html'
 })
 export class CoreCoursePickerMenuPopoverComponent {
     courses: any[];

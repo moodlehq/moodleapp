@@ -23,7 +23,7 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
  */
 @Component({
     selector: 'core-user-participants',
-    templateUrl: 'participants.html',
+    templateUrl: 'core-user-participants.html',
 })
 export class CoreUserParticipantsComponent implements OnInit {
     @ViewChild(Content) content: Content;

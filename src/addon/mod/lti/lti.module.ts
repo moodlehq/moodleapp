@@ -31,10 +31,11 @@ export const ADDON_MOD_LTI_PROVIDERS: any[] = [
     imports: [
         AddonModLtiComponentsModule
     ],
-    providers: ADDON_MOD_LTI_PROVIDERS.concat([
+    providers: [
+        AddonModLtiProvider,
         AddonModLtiModuleHandler,
         AddonModLtiLinkHandler
-    ])
+    ]
 })
 export class AddonModLtiModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModLtiModuleHandler,

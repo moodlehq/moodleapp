@@ -22,7 +22,7 @@ import { AddonModAssignFeedbackPluginComponentBase } from '../../../classes/feed
  */
 @Component({
     selector: 'addon-mod-assign-feedback-file',
-    templateUrl: 'file.html'
+    templateUrl: 'addon-mod-assign-feedback-file.html'
 })
 export class AddonModAssignFeedbackFileComponent extends AddonModAssignFeedbackPluginComponentBase implements OnInit {
 

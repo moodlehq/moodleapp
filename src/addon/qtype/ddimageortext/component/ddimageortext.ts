@@ -22,7 +22,7 @@ import { AddonQtypeDdImageOrTextQuestion } from '../classes/ddimageortext';
  */
 @Component({
     selector: 'addon-qtype-ddimageortext',
-    templateUrl: 'ddimageortext.html'
+    templateUrl: 'addon-qtype-ddimageortext.html'
 })
 export class AddonQtypeDdImageOrTextComponent extends CoreQuestionBaseComponent implements OnInit, OnDestroy {
 

@@ -21,7 +21,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
  */
 @Component({
     selector: 'core-user-profile-field',
-    templateUrl: 'user-profile-field.html'
+    templateUrl: 'core-user-profile-field.html'
 })
 export class CoreUserProfileFieldComponent implements OnInit {
     @Input() field: any; // The profile field to be rendered.

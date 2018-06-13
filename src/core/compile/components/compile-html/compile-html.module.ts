@@ -15,13 +15,15 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CoreCompileHtmlComponent } from './compile-html';
+import { CoreComponentsModule } from '@components/components.module';
 
 @NgModule({
     declarations: [
         CoreCompileHtmlComponent
     ],
     imports: [
-        CommonModule
+        CommonModule,
+        CoreComponentsModule
     ],
     exports: [
         CoreCompileHtmlComponent

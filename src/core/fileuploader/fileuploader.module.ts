@@ -34,13 +34,16 @@ export const CORE_FILEUPLOADER_PROVIDERS: any[] = [
     ],
     imports: [
     ],
-    providers: CORE_FILEUPLOADER_PROVIDERS.concat([
+    providers: [
+        CoreFileUploaderProvider,
+        CoreFileUploaderHelperProvider,
+        CoreFileUploaderDelegate,
         CoreFileUploaderAlbumHandler,
         CoreFileUploaderAudioHandler,
         CoreFileUploaderCameraHandler,
         CoreFileUploaderFileHandler,
         CoreFileUploaderVideoHandler
-    ])
+    ]
 })
 export class CoreFileUploaderModule {
     constructor(delegate: CoreFileUploaderDelegate, albumHandler: CoreFileUploaderAlbumHandler,

@@ -40,7 +40,7 @@ import { TranslateService } from '@ngx-translate/core';
  */
 @Component({
     selector: 'core-input-errors',
-    templateUrl: 'input-errors.html'
+    templateUrl: 'core-input-errors.html'
 })
 export class CoreInputErrorsComponent implements OnInit, OnChanges {
     @Input('control') formControl?: FormControl;

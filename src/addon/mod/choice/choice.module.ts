@@ -40,12 +40,15 @@ export const ADDON_MOD_CHOICE_PROVIDERS: any[] = [
     imports: [
         AddonModChoiceComponentsModule
     ],
-    providers: ADDON_MOD_CHOICE_PROVIDERS.concat([
+    providers: [
+        AddonModChoiceProvider,
+        AddonModChoiceSyncProvider,
+        AddonModChoiceOfflineProvider,
         AddonModChoiceModuleHandler,
         AddonModChoicePrefetchHandler,
         AddonModChoiceLinkHandler,
         AddonModChoiceSyncCronHandler
-    ])
+    ]
 })
 export class AddonModChoiceModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModChoiceModuleHandler,

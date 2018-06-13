@@ -39,7 +39,7 @@ import { Content } from 'ionic-angular';
  */
 @Component({
     selector: 'core-tabs',
-    templateUrl: 'tabs.html'
+    templateUrl: 'core-tabs.html'
 })
 export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
     @Input() selectedIndex = 0; // Index of the tab to select.

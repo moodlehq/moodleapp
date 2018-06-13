@@ -25,7 +25,7 @@ import { CoreAppProvider } from '@providers/app';
  */
 @Component({
     selector: 'core-grades-course',
-    templateUrl: 'course.html',
+    templateUrl: 'core-grades-course.html',
 })
 export class CoreGradesCourseComponent {
     @ViewChild(Content) content: Content;

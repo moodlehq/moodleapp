@@ -41,12 +41,16 @@ export const CORE_USER_PROVIDERS: any[] = [
     imports: [
         CoreUserComponentsModule
     ],
-    providers: CORE_USER_PROVIDERS.concat([
+    providers: [
+        CoreUserDelegate,
+        CoreUserProfileFieldDelegate,
+        CoreUserProvider,
+        CoreUserHelperProvider,
         CoreUserProfileMailHandler,
         CoreUserProfileLinkHandler,
         CoreUserParticipantsCourseOptionHandler,
         CoreUserParticipantsLinkHandler
-    ])
+    ]
 })
 export class CoreUserModule {
     constructor(userDelegate: CoreUserDelegate, userProfileMailHandler: CoreUserProfileMailHandler,

@@ -26,7 +26,7 @@ import { AddonModFolderHelperProvider } from '../../providers/helper';
  */
 @Component({
     selector: 'addon-mod-folder-index',
-    templateUrl: 'index.html',
+    templateUrl: 'addon-mod-folder-index.html',
 })
 export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceComponent {
     @Input() path: string; // For subfolders. Use the path instead of a boolean so Angular detects them as different states.

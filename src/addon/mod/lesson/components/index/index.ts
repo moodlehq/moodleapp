@@ -30,7 +30,7 @@ import { CoreConstants } from '@core/constants';
  */
 @Component({
     selector: 'addon-mod-lesson-index',
-    templateUrl: 'index.html',
+    templateUrl: 'addon-mod-lesson-index.html',
 })
 export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityComponent {
     @Input() group: number; // The group to display.

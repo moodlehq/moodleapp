@@ -38,11 +38,14 @@ export const ADDON_NOTES_PROVIDERS: any[] = [
     imports: [
         AddonNotesComponentsModule
     ],
-    providers: ADDON_NOTES_PROVIDERS.concat([
+    providers: [
+        AddonNotesProvider,
+        AddonNotesOfflineProvider,
+        AddonNotesSyncProvider,
         AddonNotesCourseOptionHandler,
         AddonNotesSyncCronHandler,
         AddonNotesUserHandler
-    ])
+    ]
 })
 export class AddonNotesModule {
     constructor(courseOptionsDelegate: CoreCourseOptionsDelegate, courseOptionHandler: AddonNotesCourseOptionHandler,

@@ -19,7 +19,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
  */
 @Component({
     selector: 'addon-mod-book-navigation-arrows',
-    templateUrl: 'navigation-arrows.html'
+    templateUrl: 'addon-mod-assign-submission-navigation-arrows.html'
 })
 export class AddonModBookNavigationArrowsComponent {
     @Input() previous?: string; // Previous chapter ID.

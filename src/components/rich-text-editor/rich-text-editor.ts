@@ -39,7 +39,7 @@ import { Subscription } from 'rxjs';
  */
 @Component({
     selector: 'core-rich-text-editor',
-    templateUrl: 'rich-text-editor.html'
+    templateUrl: 'core-rich-text-editor.html'
 })
 export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy {
     // Based on: https://github.com/judgewest2000/Ionic3RichText/

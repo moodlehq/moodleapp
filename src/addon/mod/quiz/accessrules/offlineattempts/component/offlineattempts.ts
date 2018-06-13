@@ -19,8 +19,8 @@ import { FormGroup, FormBuilder } from '@angular/forms';
  * Component to render the preflight for offline attempts.
  */
 @Component({
-    selector: 'addon-mod-quiz-acess-offline-attempts',
-    templateUrl: 'offlineattempts.html'
+    selector: 'addon-mod-quiz-access-offline-attempts',
+    templateUrl: 'addon-mod-quiz-access-offline-attempts.html'
 })
 export class AddonModQuizAccessOfflineAttemptsComponent implements OnInit {
 

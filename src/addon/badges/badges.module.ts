@@ -30,11 +30,12 @@ export const ADDON_BADGES_PROVIDERS: any[] = [
     ],
     imports: [
     ],
-    providers: ADDON_BADGES_PROVIDERS.concat([
+    providers: [
+        AddonBadgesProvider,
         AddonBadgesUserHandler,
         AddonBadgesMyBadgesLinkHandler,
         AddonBadgesBadgeLinkHandler
-    ])
+    ]
 })
 export class AddonBadgesModule {
     constructor(userDelegate: CoreUserDelegate, userHandler: AddonBadgesUserHandler,
