@@ -6,7 +6,6 @@
             <core-dynamic-component [component]="componentClass" [data]="data"></core-dynamic-component>
         </ng-container>
 
-        <!-- This content will be replaced by the directive if any is applied. -->
         <div class="core-info-card" *ngIf="notSupported">
             {{ 'addon.mod_workshop.assessmentstrategynotsupported' | translate:{$a: strategy} }}
         </div>

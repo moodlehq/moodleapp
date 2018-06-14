@@ -154,14 +154,14 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseModulePrefetchHan
                 groups: groups,
                 files: files.filter((file) => typeof file !== 'undefined')
             };
-        }).catch((message) => {
+        }).catch((message): any => {
             if (omitFail) {
                 // Any error, return the info we have.
-                return Promise.resolve({
+                return {
                     workshop: workshop,
                     groups: groups,
                     files: files.filter((file) => typeof file !== 'undefined')
-                });
+                };
             }
 
             return Promise.reject(message);

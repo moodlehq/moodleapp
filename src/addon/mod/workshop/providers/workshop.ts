@@ -1060,7 +1060,7 @@ export class AddonModWorkshopProvider {
      * @param  {string} [siteId]            Site ID. If not defined, current site.
      * @return {Promise<any>}               Promise resolved when the data is invalidated.
      */
-    invalidateAssessmentFormData(workshopId: number, assessmentId: number, mode: string = 'assesssment', siteId?: string):
+    invalidateAssessmentFormData(workshopId: number, assessmentId: number, mode: string = 'assessment', siteId?: string):
             Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKey(this.getAssessmentFormDataCacheKey(workshopId, assessmentId, mode));

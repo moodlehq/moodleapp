@@ -263,7 +263,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit {
     /**
      * Save the assessment.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return {Promise<any>} Promise resolved when done, rejected if assessment could not be saved.
      */
     saveAssessment(): Promise<any> {
         const files = this.fileSessionProvider.getFiles(AddonModWorkshopProvider.COMPONENT,

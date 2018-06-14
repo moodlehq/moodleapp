@@ -88,10 +88,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
 
         // Since most actions will take the user out of the app, we should refresh the view when the app is resumed.
         this.appResumeSubscription = platform.resume.subscribe(() => {
-            this.content && this.content.scrollToTop();
-
-            this.loaded = false;
-            this.refreshContent(true, false);
+            this.showLoadingAndRefresh(true);
         });
 
         // Refresh workshop on sync.
@@ -114,6 +111,8 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
 
             this.workshopProvider.logView(this.workshop.id).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+            }).catch((error) => {
+                // Ignore errors.
             });
         });
     }
@@ -125,10 +124,8 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
      */
     protected eventReceived(data: any): void {
         if ((this.workshop && this.workshop.id === data.workshopId) || data.cmId === this.module.id) {
-            this.content && this.content.scrollToTop();
+            this.showLoadingAndRefresh(true);
 
-            this.loaded = false;
-            this.refreshContent(true, false);
             // Check completion since it could be configured to complete once the user adds a new discussion or replies.
             this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
         }
@@ -223,8 +220,6 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
                     }
                 });
             }
-
-            return Promise.resolve();
         }).then(() => {
             return this.workshopProvider.getUserPlanPhases(this.workshop.id);
         }).then((phases) => {
