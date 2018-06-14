@@ -131,5 +131,9 @@ export class AddonMessagesModule {
                 }
             ]
         });
+
+        // Migrate the component name.
+        updateManager.registerLocalNotifComponentMigration('mmaMessagesPushSimulation',
+                AddonMessagesProvider.PUSH_SIMULATION_COMPONENT);
     }
 }

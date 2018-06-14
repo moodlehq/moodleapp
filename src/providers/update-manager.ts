@@ -72,6 +72,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
 
     protected VERSION_APPLIED = 'version_applied';
     protected logger;
+    protected localNotificationsComponentsMigrate: {[old: string]: string} = {};
 
     /**
      * Tables to migrate from app DB ('MoodleMobile'). Include all the core ones to decrease the dependencies.
@@ -343,6 +344,9 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
             if (!versionApplied) {
                 // No version applied, either the app was just installed or it's being updated from Ionic 1.
                 return this.migrateAllDBs().then(() => {
+                    // Now that the DBs have been migrated, migrate the local notification components names.
+                    return this.migrateLocalNotificationsComponents();
+                }).then(() => {
                     // DBs migrated, get the version applied again.
                     return this.configProvider.get(this.VERSION_APPLIED, 0);
                 });
@@ -409,6 +413,16 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
      */
     registerSiteTableMigration(table: CoreUpdateManagerMigrateTable): void {
         this.siteDBTables.push(table);
+    }
+
+    /**
+     * Register a migration of component name for local notifications.
+     *
+     * @param {string} oldName The old name.
+     * @param {string} newName The new name.
+     */
+    registerLocalNotifComponentMigration(oldName: string, newName: string): void {
+        this.localNotificationsComponentsMigrate[oldName] = newName;
     }
 
     /**
@@ -554,6 +568,30 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
 
             return Promise.all(promises);
         });
+    }
+
+    /**
+     * Migrate local notifications components from the old nomenclature to the new one.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected migrateLocalNotificationsComponents(): Promise<any> {
+        if (!this.notifProvider.isAvailable()) {
+            // Local notifications not available, nothing to do.
+            return Promise.resolve();
+        }
+
+        const promises = [];
+
+        for (const oldName in this.localNotificationsComponentsMigrate) {
+            const newName = this.localNotificationsComponentsMigrate[oldName];
+
+            promises.push(this.notifProvider.updateComponentName(oldName, newName).catch((error) => {
+                this.logger.error('Error migrating local notif component from ' + oldName + ' to ' + newName + ': ', error);
+            }));
+        }
+
+        return Promise.all(promises);
     }
 
     /**

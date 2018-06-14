@@ -83,5 +83,8 @@ export class AddonPushNotificationsModule {
                 }
             ]
         });
+
+        // Migrate the component name.
+        updateManager.registerLocalNotifComponentMigration('mmaPushNotifications', AddonPushNotificationsProvider.COMPONENT);
     }
 }

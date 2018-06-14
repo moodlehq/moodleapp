@@ -47,9 +47,6 @@ export interface CoreILocalNotification extends ILocalNotification {
  *
  * See https://angular.io/guide/dependency-injection for more info on providers
  * and Angular DI.
- *
- * @todo We might have to translate the old component name to the new one.
- *       Otherwise the unique ID of local notifications could change.
 */
 @Injectable()
 export class CoreLocalNotificationsProvider {
@@ -501,5 +498,19 @@ export class CoreLocalNotificationsProvider {
         };
 
         return this.appDB.insertRecord(this.TRIGGERED_TABLE, entry);
+    }
+
+    /**
+     * Update a component name.
+     *
+     * @param {string} oldName The old name.
+     * @param {string}  newName The new name.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    updateComponentName(oldName: string, newName: string): Promise<any> {
+        const oldId = this.COMPONENTS_TABLE + '#' + oldName,
+            newId = this.COMPONENTS_TABLE + '#' + newName;
+
+        return this.appDB.updateRecords(this.COMPONENTS_TABLE, {id: newId}, {id: oldId});
     }
 }

@@ -73,5 +73,8 @@ export class AddonCalendarModule {
                     'categoryid', 'groupid', 'userid', 'instance', 'modulename', 'timemodified', 'repeatid', 'visible', 'uuid',
                     'sequence', 'subscriptionid', 'notificationtime']
         });
+
+        // Migrate the component name.
+        updateManager.registerLocalNotifComponentMigration('mmaCalendarComponent', AddonCalendarProvider.COMPONENT);
     }
 }
