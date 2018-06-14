@@ -187,7 +187,6 @@ export class CoreExternalContentDirective implements AfterViewInit {
                 this.logger.debug('Using URL ' + finalUrl + ' for ' + url);
                 if (tagName === 'SOURCE') {
                     // The browser does not catch changes in SRC, we need to add a new source.
-                    // @todo: Check if changing src works in Android 4.4, maybe the problem was only in 4.1-4.3.
                     this.addSource(finalUrl);
                 } else {
                     this.element.setAttribute(targetAttr, finalUrl);

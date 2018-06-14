@@ -186,7 +186,6 @@ export class CoreFormatTextDirective implements OnChanges {
             this.element.innerHTML = ''; // Remove current contents.
             if (this.maxHeight && div.innerHTML != '') {
                 // Move the children to the current element to be able to calculate the height.
-                // @todo: Display the element?
                 this.domUtils.moveChildren(div, this.element);
 
                 // Height cannot be calculated if the element is not shown while calculating.
