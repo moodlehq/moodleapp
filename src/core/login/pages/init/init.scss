@@ -1,10 +1,12 @@
 page-core-login-init {
-    .core-bglogo {
+    .scroll-content {
         background-color: $core-color-init-screen; /* Change this to add a bg image or change color */
         background: -webkit-radial-gradient($core-color-init-screen-alt, $core-color-init-screen);
         background: radial-gradient($core-color-init-screen-alt, $core-color-init-screen);
         background-repeat: no-repeat;
         background-position: center center;
+    }
+    .core-bglogo {
         position: absolute;
         top: 0;
         bottom: 0;
