@@ -20,6 +20,8 @@ import { assert } from 'ionic-angular/util/util';
 import { HttpModule } from '@angular/http';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
+import { LocationStrategy } from '@angular/common';
+import { MockLocationStrategy } from '@angular/common/testing';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -254,7 +256,8 @@ export const CORE_PROVIDERS: any[] = [
             multi: true,
         },
         {provide: COMPILER_OPTIONS, useValue: {}, multi: true},
-        {provide: JitCompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS]}
+        {provide: JitCompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS]},
+        {provide: LocationStrategy, useClass: MockLocationStrategy},
     ]
 })
 export class AppModule {
