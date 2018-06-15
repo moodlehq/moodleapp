@@ -12,10 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Injector } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
+import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreFileProvider } from '@providers/file';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
+import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { AddonModScormProvider } from './scorm';
 
 /**
@@ -45,15 +52,18 @@ export interface AddonModScormProgressEvent {
  * Handler to prefetch SCORMs.
  */
 @Injectable()
-export class AddonModScormPrefetchHandler extends CoreCourseModulePrefetchHandlerBase {
+export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHandlerBase {
     name = 'AddonModScorm';
     modName = 'scorm';
     component = AddonModScormProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$|^tracks$/;
 
-    constructor(injector: Injector, protected fileProvider: CoreFileProvider, protected textUtils: CoreTextUtilsProvider,
+    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider, protected fileProvider: CoreFileProvider, protected textUtils: CoreTextUtilsProvider,
              protected scormProvider: AddonModScormProvider) {
-        super(injector);
+
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
 
     /**
@@ -357,15 +367,6 @@ export class AddonModScormPrefetchHandler extends CoreCourseModulePrefetchHandle
 
             return true;
         });
-    }
-
-    /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return {boolean|Promise<boolean>} A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
-     */
-    isEnabled(): boolean | Promise<boolean> {
-        return true;
     }
 
     /**

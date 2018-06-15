@@ -12,8 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Injector } from '@angular/core';
-import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
+import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
+import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModChoiceProvider } from './choice';
 import { AddonModChoiceSyncProvider } from './sync';
@@ -22,28 +29,18 @@ import { AddonModChoiceSyncProvider } from './sync';
  * Handler to prefetch choices.
  */
 @Injectable()
-export class AddonModChoicePrefetchHandler extends CoreCourseModulePrefetchHandlerBase {
+export class AddonModChoicePrefetchHandler extends CoreCourseActivityPrefetchHandlerBase {
     name = 'AddonModChoice';
     modName = 'choice';
     component = AddonModChoiceProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$|^answers$/;
 
-    constructor(protected injector: Injector, protected choiceProvider: AddonModChoiceProvider,
+    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider, protected choiceProvider: AddonModChoiceProvider,
             protected syncProvider: AddonModChoiceSyncProvider, protected userProvider: CoreUserProvider) {
-        super(injector);
-    }
 
-    /**
-     * Download the module.
-     *
-     * @param {any} module The module object returned by WS.
-     * @param {number} courseId Course ID.
-     * @param {string} [dirPath] Path of the directory where to store all the content files. @see downloadOrPrefetch.
-     * @return {Promise<any>} Promise resolved when all content is downloaded.
-     */
-    download(module: any, courseId: number, dirPath?: string): Promise<any> {
-        // Same implementation for download or prefetch.
-        return this.prefetch(module, courseId, false, dirPath);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
 
     /**
@@ -52,7 +49,7 @@ export class AddonModChoicePrefetchHandler extends CoreCourseModulePrefetchHandl
      * @param {any} module Module.
      * @param {number} courseId Course ID the module belongs to.
      * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {string} [dirPath] Path of the directory where to store all the content files. @see downloadOrPrefetch.
+     * @param {string} [dirPath] Path of the directory where to store all the content files.
      * @return {Promise<any>} Promise resolved when done.
      */
     prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string): Promise<any> {
@@ -136,14 +133,5 @@ export class AddonModChoicePrefetchHandler extends CoreCourseModulePrefetchHandl
      */
     invalidateModule(module: any, courseId: number): Promise<any> {
         return this.choiceProvider.invalidateChoiceData(courseId);
-    }
-
-    /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return {boolean|Promise<boolean>} A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
-     */
-    isEnabled(): boolean | Promise<boolean> {
-        return true;
     }
 }

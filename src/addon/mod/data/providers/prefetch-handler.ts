@@ -12,13 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Injector } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreGroupsProvider } from '@providers/groups';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreCommentsProvider } from '@core/comments/providers/comments';
 import { CoreCourseProvider } from '@core/course/providers/course';
-import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
+import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { AddonModDataProvider } from './data';
 import { AddonModDataHelperProvider } from './helper';
 
@@ -26,63 +31,19 @@ import { AddonModDataHelperProvider } from './helper';
  * Handler to prefetch databases.
  */
 @Injectable()
-export class AddonModDataPrefetchHandler extends CoreCourseModulePrefetchHandlerBase {
+export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandlerBase {
     name = 'AddonModData';
     modName = 'data';
     component = AddonModDataProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$|^entries$|^gradeitems$|^outcomes$|^comments$|^ratings/;
 
-    constructor(injector: Injector, protected dataProvider: AddonModDataProvider, protected timeUtils: CoreTimeUtilsProvider,
-            protected filepoolProvider: CoreFilepoolProvider, protected dataHelper: AddonModDataHelperProvider,
-            protected groupsProvider: CoreGroupsProvider, protected commentsProvider: CoreCommentsProvider,
-            protected courseProvider: CoreCourseProvider) {
-        super(injector);
-    }
+    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider, protected dataProvider: AddonModDataProvider,
+            protected timeUtils: CoreTimeUtilsProvider, protected dataHelper: AddonModDataHelperProvider,
+            protected groupsProvider: CoreGroupsProvider, protected commentsProvider: CoreCommentsProvider) {
 
-    /**
-     * Download or prefetch the content.
-     *
-     * @param {any} module The module object returned by WS.
-     * @param {number} courseId Course ID.
-     * @param {boolean} [prefetch] True to prefetch, false to download right away.
-     * @param {string} [dirPath] Path of the directory where to store all the content files. This is to keep the files
-     *                           relative paths and make the package work in an iframe. Undefined to download the files
-     *                           in the filepool root data.
-     * @return {Promise<any>} Promise resolved when all content is downloaded. Data returned is not reliable.
-     */
-    downloadOrPrefetch(module: any, courseId: number, prefetch?: boolean, dirPath?: string): Promise<any> {
-        const promises = [],
-            siteId = this.sitesProvider.getCurrentSiteId();
-
-        promises.push(super.downloadOrPrefetch(module, courseId, prefetch));
-        promises.push(this.getDatabaseInfoHelper(module, courseId, false, false, true, siteId).then((info) => {
-            // Prefetch the database data.
-            const database = info.database,
-                promises = [];
-
-            promises.push(this.dataProvider.getFields(database.id, false, true, siteId));
-
-            promises.push(this.filepoolProvider.addFilesToQueue(siteId, info.files, this.component, module.id));
-
-            info.groups.forEach((group) => {
-               promises.push(this.dataProvider.getDatabaseAccessInformation(database.id, group.id, false, true, siteId));
-            });
-
-            info.entries.forEach((entry) => {
-                promises.push(this.dataProvider.getEntry(database.id, entry.id, siteId));
-                if (database.comments) {
-                    promises.push(this.commentsProvider.getComments('module', database.coursemodule, 'mod_data', entry.id,
-                        'database_entry', 0, siteId));
-                }
-            });
-
-            // Add Basic Info to manage links.
-            promises.push(this.courseProvider.getModuleBasicInfoByInstance(database.id, 'data', siteId));
-
-            return Promise.all(promises);
-        }));
-
-        return Promise.all(promises);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
 
     /**
@@ -281,5 +242,57 @@ export class AddonModDataPrefetchHandler extends CoreCourseModulePrefetchHandler
      */
     isEnabled(): boolean | Promise<boolean> {
         return this.dataProvider.isPluginEnabled();
+    }
+
+    /**
+     * Prefetch a module.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to.
+     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
+     * @param {string} [dirPath] Path of the directory where to store all the content files.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string): Promise<any> {
+        return this.prefetchPackage(module, courseId, single, this.prefetchDatabase.bind(this));
+    }
+
+    /**
+     * Prefetch a database.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to.
+     * @param {boolean} single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param {String} siteId Site ID.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected prefetchDatabase(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
+
+        return this.getDatabaseInfoHelper(module, courseId, false, false, true, siteId).then((info) => {
+            // Prefetch the database data.
+            const database = info.database,
+                promises = [];
+
+            promises.push(this.dataProvider.getFields(database.id, false, true, siteId));
+
+            promises.push(this.filepoolProvider.addFilesToQueue(siteId, info.files, this.component, module.id));
+
+            info.groups.forEach((group) => {
+               promises.push(this.dataProvider.getDatabaseAccessInformation(database.id, group.id, false, true, siteId));
+            });
+
+            info.entries.forEach((entry) => {
+                promises.push(this.dataProvider.getEntry(database.id, entry.id, siteId));
+                if (database.comments) {
+                    promises.push(this.commentsProvider.getComments('module', database.coursemodule, 'mod_data', entry.id,
+                        'database_entry', 0, siteId));
+                }
+            });
+
+            // Add Basic Info to manage links.
+            promises.push(this.courseProvider.getModuleBasicInfoByInstance(database.id, 'data', siteId));
+
+            return Promise.all(promises);
+        });
     }
 }

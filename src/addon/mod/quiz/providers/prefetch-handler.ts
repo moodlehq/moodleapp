@@ -13,9 +13,16 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
+import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreQuestionHelperProvider } from '@core/question/providers/helper';
-import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
+import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { AddonModQuizProvider } from './quiz';
 import { AddonModQuizHelperProvider } from './helper';
 import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
@@ -26,7 +33,7 @@ import { CoreConstants } from '@core/constants';
  * Handler to prefetch quizzes.
  */
 @Injectable()
-export class AddonModQuizPrefetchHandler extends CoreCourseModulePrefetchHandlerBase {
+export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandlerBase {
     name = 'AddonModQuiz';
     modName = 'quiz';
     component = AddonModQuizProvider.COMPONENT;
@@ -34,23 +41,13 @@ export class AddonModQuizPrefetchHandler extends CoreCourseModulePrefetchHandler
 
     protected syncProvider: AddonModQuizSyncProvider; // It will be injected later to prevent circular dependencies.
 
-    constructor(protected injector: Injector, protected quizProvider: AddonModQuizProvider,
+    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider, protected injector: Injector, protected quizProvider: AddonModQuizProvider,
             protected textUtils: CoreTextUtilsProvider, protected quizHelper: AddonModQuizHelperProvider,
             protected accessRuleDelegate: AddonModQuizAccessRuleDelegate, protected questionHelper: CoreQuestionHelperProvider) {
-        super(injector);
-    }
 
-    /**
-     * Download the module.
-     *
-     * @param {any} module The module object returned by WS.
-     * @param {number} courseId Course ID.
-     * @param {string} [dirPath] Path of the directory where to store all the content files. @see downloadOrPrefetch.
-     * @return {Promise<any>} Promise resolved when all content is downloaded.
-     */
-    download(module: any, courseId: number, dirPath?: string): Promise<any> {
-        // Same implementation for download or prefetch.
-        return this.prefetch(module, courseId, false, dirPath);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
 
     /**
@@ -67,18 +64,6 @@ export class AddonModQuizPrefetchHandler extends CoreCourseModulePrefetchHandler
             size: -1,
             total: false
         });
-    }
-
-    /**
-     * Get list of files. If not defined, we'll assume they're in module.contents.
-     *
-     * @param {any} module Module.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @return {Promise<any[]>} Promise resolved with the list of files.
-     */
-    getFiles(module: any, courseId: number, single?: boolean): Promise<any[]> {
-        return Promise.resolve([]);
     }
 
     /**
@@ -190,7 +175,7 @@ export class AddonModQuizPrefetchHandler extends CoreCourseModulePrefetchHandler
      * @param {any} module Module.
      * @param {number} courseId Course ID the module belongs to.
      * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {string} [dirPath] Path of the directory where to store all the content files. @see downloadOrPrefetch.
+     * @param {string} [dirPath] Path of the directory where to store all the content files.
      * @return {Promise<any>} Promise resolved when done.
      */
     prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string): Promise<any> {

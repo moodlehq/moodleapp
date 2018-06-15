@@ -12,22 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Injector } from '@angular/core';
-import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
+import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
+import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseResourcePrefetchHandlerBase } from '@core/course/classes/resource-prefetch-handler';
 import { AddonModFolderProvider } from './folder';
 
 /**
  * Handler to prefetch folders.
  */
 @Injectable()
-export class AddonModFolderPrefetchHandler extends CoreCourseModulePrefetchHandlerBase {
+export class AddonModFolderPrefetchHandler extends CoreCourseResourcePrefetchHandlerBase {
     name = 'AddonModFolder';
     modName = 'folder';
     component = AddonModFolderProvider.COMPONENT;
-    isResource = true;
 
-    constructor(injector: Injector, protected folderProvider: AddonModFolderProvider) {
-        super(injector);
+    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider, protected folderProvider: AddonModFolderProvider) {
+
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
 
     /**

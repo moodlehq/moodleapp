@@ -12,23 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Injector } from '@angular/core';
-import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
+import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
+import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseResourcePrefetchHandlerBase } from '@core/course/classes/resource-prefetch-handler';
 import { AddonModBookProvider } from './book';
 
 /**
  * Handler to prefetch books.
  */
 @Injectable()
-export class AddonModBookPrefetchHandler extends CoreCourseModulePrefetchHandlerBase {
+export class AddonModBookPrefetchHandler extends CoreCourseResourcePrefetchHandlerBase {
     name = 'AddonModBook';
     modName = 'book';
     component = AddonModBookProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$|^entries$/;
-    isResource = true;
 
-    constructor(injector: Injector, protected bookProvider: AddonModBookProvider) {
-        super(injector);
+    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider, protected bookProvider: AddonModBookProvider) {
+
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
 
     /**
