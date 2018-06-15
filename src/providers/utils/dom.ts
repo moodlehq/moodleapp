@@ -45,22 +45,6 @@ export class CoreDomUtilsProvider {
             private modalCtrl: ModalController) { }
 
     /**
-     * Wraps a message with core-format-text if the message contains HTML tags.
-     * @todo Finish the adaptation
-     *
-     * @param {string} message Message to wrap.
-     * @return {string} Result message.
-     */
-    private addFormatTextIfNeeded(message: string): string {
-        // @todo
-        if (this.textUtils.hasHTMLTags(message)) {
-            return '<core-format-text watch="true">' + message + '</core-format-text>';
-        }
-
-        return message;
-    }
-
-    /**
      * Equivalent to element.closest(). If the browser doesn't support element.closest, it will
      * traverse the parents to achieve the same functionality.
      * Returns the closest ancestor of the current element (or the current element itself) which matches the selector.
@@ -776,24 +760,43 @@ export class CoreDomUtilsProvider {
      * @param {string} message Message to show.
      * @param {string} [buttonText] Text of the button.
      * @param {number} [autocloseTime] Number of milliseconds to wait to close the modal. If not defined, modal won't be closed.
-     * @return {Alert} The alert modal.
+     * @return {Promise<Alert>} Promise resolved with the alert modal.
      */
-    showAlert(title: string, message: string, buttonText?: string, autocloseTime?: number): Alert {
-        const alert = this.alertCtrl.create({
-            title: title,
-            message: this.addFormatTextIfNeeded(message), // Add format-text to handle links.
-            buttons: [buttonText || this.translate.instant('core.ok')]
-        });
+    showAlert(title: string, message: string, buttonText?: string, autocloseTime?: number): Promise<Alert> {
+        const hasHTMLTags = this.textUtils.hasHTMLTags(message);
+        let promise;
 
-        alert.present();
-
-        if (autocloseTime > 0) {
-            setTimeout(() => {
-                alert.dismiss();
-            }, autocloseTime);
+        if (hasHTMLTags) {
+            // Format the text.
+            promise = this.textUtils.formatText(message);
+        } else {
+            promise = Promise.resolve(message);
         }
 
-        return alert;
+        return promise.then((message) => {
+
+            const alert = this.alertCtrl.create({
+                title: title,
+                message: message,
+                buttons: [buttonText || this.translate.instant('core.ok')]
+            });
+
+            alert.present().then(() => {
+                if (hasHTMLTags) {
+                    // Treat all anchors so they don't override the app.
+                    const alertMessageEl: HTMLElement = alert.pageRef().nativeElement.querySelector('.alert-message');
+                    this.treatAnchors(alertMessageEl);
+                }
+            });
+
+            if (autocloseTime > 0) {
+                setTimeout(() => {
+                    alert.dismiss();
+                }, autocloseTime);
+            }
+
+            return alert;
+        });
     }
 
     /**
@@ -803,9 +806,9 @@ export class CoreDomUtilsProvider {
      * @param {string} message Message to show.
      * @param {string} [buttonText] Text of the button.
      * @param {number} [autocloseTime] Number of milliseconds to wait to close the modal. If not defined, modal won't be closed.
-     * @return {Alert} The alert modal.
+     * @return {Promise<Alert>} Promise resolved with the alert modal.
      */
-    showAlertTranslated(title: string, message: string, buttonText?: string, autocloseTime?: number): Alert {
+    showAlertTranslated(title: string, message: string, buttonText?: string, autocloseTime?: number): Promise<Alert> {
         title = title ? this.translate.instant(title) : title;
         message = message ? this.translate.instant(message) : message;
         buttonText = buttonText ? this.translate.instant(buttonText) : buttonText;
@@ -825,30 +828,50 @@ export class CoreDomUtilsProvider {
      */
     showConfirm(message: string, title?: string, okText?: string, cancelText?: string, options?: any): Promise<void> {
         return new Promise<void>((resolve, reject): void => {
-            options = options || {};
+            const hasHTMLTags = this.textUtils.hasHTMLTags(message);
+            let promise;
 
-            options.message = this.addFormatTextIfNeeded(message); // Add format-text to handle links.
-            options.title = title;
-            if (!title) {
-                options.cssClass = 'core-nohead';
+            if (hasHTMLTags) {
+                // Format the text.
+                promise = this.textUtils.formatText(message);
+            } else {
+                promise = Promise.resolve(message);
             }
-            options.buttons = [
-                {
-                    text: cancelText || this.translate.instant('core.cancel'),
-                    role: 'cancel',
-                    handler: (): void => {
-                        reject(this.createCanceledError());
-                    }
-                },
-                {
-                    text: okText || this.translate.instant('core.ok'),
-                    handler: (): void => {
-                        resolve();
-                    }
-                }
-            ];
 
-            this.alertCtrl.create(options).present();
+            promise.then((message) => {
+                options = options || {};
+
+                options.message = message;
+                options.title = title;
+                if (!title) {
+                    options.cssClass = 'core-nohead';
+                }
+                options.buttons = [
+                    {
+                        text: cancelText || this.translate.instant('core.cancel'),
+                        role: 'cancel',
+                        handler: (): void => {
+                            reject(this.createCanceledError());
+                        }
+                    },
+                    {
+                        text: okText || this.translate.instant('core.ok'),
+                        handler: (): void => {
+                            resolve();
+                        }
+                    }
+                ];
+
+                const alert = this.alertCtrl.create(options);
+
+                alert.present().then(() => {
+                    if (hasHTMLTags) {
+                        // Treat all anchors so they don't override the app.
+                        const alertMessageEl: HTMLElement = alert.pageRef().nativeElement.querySelector('.alert-message');
+                        this.treatAnchors(alertMessageEl);
+                    }
+                });
+            });
         });
     }
 
@@ -858,9 +881,9 @@ export class CoreDomUtilsProvider {
      * @param {any} error Message to show.
      * @param {boolean} [needsTranslate] Whether the error needs to be translated.
      * @param {number} [autocloseTime] Number of milliseconds to wait to close the modal. If not defined, modal won't be closed.
-     * @return {Alert} The alert modal.
+     * @return {Promise<Alert>} Promise resolved with the alert modal.
      */
-    showErrorModal(error: any, needsTranslate?: boolean, autocloseTime?: number): Alert {
+    showErrorModal(error: any, needsTranslate?: boolean, autocloseTime?: number): Promise<Alert> {
         if (typeof error == 'object') {
             // We received an object instead of a string. Search for common properties.
             if (error.coreCanceled) {
@@ -903,9 +926,9 @@ export class CoreDomUtilsProvider {
      * @param {any} [defaultError] Message to show if the error is not a string.
      * @param {boolean} [needsTranslate] Whether the error needs to be translated.
      * @param {number} [autocloseTime] Number of milliseconds to wait to close the modal. If not defined, modal won't be closed.
-     * @return {Alert} The alert modal.
+     * @return {Promise<Alert>} Promise resolved with the alert modal.
      */
-    showErrorModalDefault(error: any, defaultError: any, needsTranslate?: boolean, autocloseTime?: number): Alert {
+    showErrorModalDefault(error: any, defaultError: any, needsTranslate?: boolean, autocloseTime?: number): Promise<Alert> {
         if (error && error.coreCanceled) {
             // It's a canceled error, don't display an error.
             return;
@@ -927,9 +950,9 @@ export class CoreDomUtilsProvider {
      * @param {any} [defaultError] Message to show if the error is not a string.
      * @param {boolean} [needsTranslate] Whether the error needs to be translated.
      * @param {number} [autocloseTime] Number of milliseconds to wait to close the modal. If not defined, modal won't be closed.
-     * @return {Alert} The alert modal.
+     * @return {Promise<Alert>} Promise resolved with the alert modal.
      */
-    showErrorModalFirstWarning(warnings: any, defaultError: any, needsTranslate?: boolean, autocloseTime?: number): Alert {
+    showErrorModalFirstWarning(warnings: any, defaultError: any, needsTranslate?: boolean, autocloseTime?: number): Promise<Alert> {
         const error = warnings && warnings.length && warnings[0].message;
 
         return this.showErrorModalDefault(error, defaultError, needsTranslate, autocloseTime);
@@ -974,32 +997,52 @@ export class CoreDomUtilsProvider {
      */
     showPrompt(message: string, title?: string, placeholder?: string, type: string = 'password'): Promise<any> {
         return new Promise((resolve, reject): void => {
-            this.alertCtrl.create({
-                message: this.addFormatTextIfNeeded(message), // Add format-text to handle links.
-                title: title,
-                inputs: [
-                    {
-                        name: 'promptinput',
-                        placeholder: placeholder || this.translate.instant('core.login.password'),
-                        type: type
-                    }
-                ],
-                buttons: [
-                    {
-                        text: this.translate.instant('core.cancel'),
-                        role: 'cancel',
-                        handler: (): void => {
-                            reject();
+            const hasHTMLTags = this.textUtils.hasHTMLTags(message);
+            let promise;
+
+            if (hasHTMLTags) {
+                // Format the text.
+                promise = this.textUtils.formatText(message);
+            } else {
+                promise = Promise.resolve(message);
+            }
+
+            promise.then((message) => {
+                const alert = this.alertCtrl.create({
+                    message: message,
+                    title: title,
+                    inputs: [
+                        {
+                            name: 'promptinput',
+                            placeholder: placeholder || this.translate.instant('core.login.password'),
+                            type: type
                         }
-                    },
-                    {
-                        text: this.translate.instant('core.ok'),
-                        handler: (data): void => {
-                            resolve(data.promptinput);
+                    ],
+                    buttons: [
+                        {
+                            text: this.translate.instant('core.cancel'),
+                            role: 'cancel',
+                            handler: (): void => {
+                                reject();
+                            }
+                        },
+                        {
+                            text: this.translate.instant('core.ok'),
+                            handler: (data): void => {
+                                resolve(data.promptinput);
+                            }
                         }
+                    ]
+                });
+
+                alert.present().then(() => {
+                    if (hasHTMLTags) {
+                        // Treat all anchors so they don't override the app.
+                        const alertMessageEl: HTMLElement = alert.pageRef().nativeElement.querySelector('.alert-message');
+                        this.treatAnchors(alertMessageEl);
                     }
-                ]
-            }).present();
+                });
+            });
         });
     }
 
@@ -1067,6 +1110,42 @@ export class CoreDomUtilsProvider {
         element.innerHTML = text;
 
         return element.children;
+    }
+
+    /**
+     * Treat anchors inside alert/modals.
+     *
+     * @param {HTMLElement} container The HTMLElement that can contain anchors.
+     */
+    protected treatAnchors(container: HTMLElement): void {
+        const anchors = Array.from(container.querySelectorAll('a'));
+
+        anchors.forEach((anchor) => {
+            anchor.addEventListener('click', (event) => {
+                if (event.defaultPrevented) {
+                    // Stop.
+                    return;
+                }
+
+                const href = anchor.getAttribute('href');
+                if (href) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    // We cannot use CoreDomUtilsProvider.openInBrowser due to circular dependencies.
+                    if (this.appProvider.isDesktop()) {
+                        // It's a desktop app, use Electron shell library to open the browser.
+                        const shell = require('electron').shell;
+                        if (!shell.openExternal(href)) {
+                            // Open browser failed, open a new window in the app.
+                            window.open(href, '_system');
+                        }
+                    } else {
+                        window.open(href, '_system');
+                    }
+                }
+            });
+        });
     }
 
     /**

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input, Output, EventEmitter, Optional } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, Optional, DoCheck, KeyValueDiffers } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
@@ -25,11 +25,12 @@ import { Subject } from 'rxjs';
     selector: 'core-site-plugins-plugin-content',
     templateUrl: 'core-siteplugins-plugin-content.html',
 })
-export class CoreSitePluginsPluginContentComponent implements OnInit {
+export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
     @Input() component: string;
     @Input() method: string;
     @Input() args: any;
     @Input() initResult: any; // Result of the init WS call of the handler.
+    @Input() data: any; // Data to pass to the component.
     @Output() onContentLoaded?: EventEmitter<boolean>; // Emits an event when the content is loaded.
     @Output() onLoadingContent?: EventEmitter<boolean>; // Emits an event when starts to load the content.
 
@@ -40,11 +41,14 @@ export class CoreSitePluginsPluginContentComponent implements OnInit {
     invalidateObservable: Subject<void>; // An observable to notify observers when to invalidate data.
     jsData: any; // Data to pass to the component.
 
+    protected differ: any; // To detect changes in the data input.
+
     constructor(protected domUtils: CoreDomUtilsProvider, protected sitePluginsProvider: CoreSitePluginsProvider,
-            @Optional() protected navCtrl: NavController) {
+            @Optional() protected navCtrl: NavController, differs: KeyValueDiffers) {
         this.onContentLoaded = new EventEmitter();
         this.onLoadingContent = new EventEmitter();
         this.invalidateObservable = new Subject<void>();
+        this.differ = differs.find([]).create();
     }
 
     /**
@@ -52,6 +56,21 @@ export class CoreSitePluginsPluginContentComponent implements OnInit {
      */
     ngOnInit(): void {
         this.fetchContent();
+    }
+
+    /**
+     * Detect and act upon changes that Angular can’t or won’t detect on its own (objects and arrays).
+     */
+    ngDoCheck(): void {
+        if (!this.data || !this.jsData) {
+            return;
+        }
+
+        // Check if there's any change in the data object.
+        const changes = this.differ.diff(this.data);
+        if (changes) {
+            this.jsData = Object.assign(this.jsData, this.data);
+        }
     }
 
     /**
@@ -67,7 +86,9 @@ export class CoreSitePluginsPluginContentComponent implements OnInit {
             this.content = result.templates.length ? result.templates[0].html : ''; // Load first template.
             this.javascript = result.javascript;
             this.otherData = result.otherdata;
-            this.jsData = this.sitePluginsProvider.createDataForJS(this.initResult, result);
+            this.data = this.data || {};
+
+            this.jsData = Object.assign(this.data, this.sitePluginsProvider.createDataForJS(this.initResult, result));
 
             // Pass some methods as jsData so they can be called from the template too.
             this.jsData.openContent = this.openContent.bind(this);

@@ -10,4 +10,5 @@
         <ion-option value="">{{ 'core.choosedots' | translate }}</ion-option>
         <ion-option *ngFor="let option of field.options" [value]="option">{{option}}</ion-option>
     </ion-select>
+    <core-input-errors item-content [control]="form.controls[field.modelName]"></core-input-errors>
 </ion-item>

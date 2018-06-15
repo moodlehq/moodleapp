@@ -83,7 +83,7 @@ import { CoreSitePluginsQuizAccessRuleComponent } from '@core/siteplugins/compon
 import { CoreSitePluginsAssignFeedbackComponent } from '@core/siteplugins/components/assign-feedback/assign-feedback';
 import { CoreSitePluginsAssignSubmissionComponent } from '@core/siteplugins/components/assign-submission/assign-submission';
 
-// Import addon providers. Do not import database module because it causes circular dependencies. @todo workshop
+// Import addon providers. Do not import database module because it causes circular dependencies.
 import { ADDON_BADGES_PROVIDERS } from '@addon/badges/badges.module';
 import { ADDON_CALENDAR_PROVIDERS } from '@addon/calendar/calendar.module';
 import { ADDON_COMPETENCY_PROVIDERS } from '@addon/competency/competency.module';

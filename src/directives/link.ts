@@ -90,8 +90,8 @@ export class CoreLinkDirective implements OnInit {
             href = href.substr(1);
             // In site links
             if (href.charAt(0) == '/') {
-                // @todo: Investigate how to achieve this behaviour.
-                // $location.url(href);
+                // @todo: This cannot be achieved with push/pop navigation, location.go() doesn't update the state, only the URL.
+                // In Ionic 4 the navigation will change, so maybe it can be done by then.
             } else {
                 // Look for id or name.
                 this.domUtils.scrollToElementBySelector(this.content, '#' + href + ', [name=\'' + href + '\']');

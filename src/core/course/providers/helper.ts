@@ -819,8 +819,6 @@ export class CoreCourseHelperProvider {
             moduleInfo.sizeReadable = this.textUtils.bytesToSize(moduleSize, 2);
         }));
 
-        // @todo: Decide what to display instead of timemodified. Last check_updates?
-
         promises.push(this.prefetchDelegate.getModuleStatus(module, courseId).then((moduleStatus) => {
             moduleInfo.status = moduleStatus;
             switch (moduleStatus) {

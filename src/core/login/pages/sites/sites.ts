@@ -67,7 +67,7 @@ export class CoreLoginSitesPage {
      * Go to the page to add a site.
      */
     add(): void {
-        this.loginHelper.goToAddSite(false);
+        this.loginHelper.goToAddSite(false, true);
     }
 
     /**
@@ -91,7 +91,7 @@ export class CoreLoginSitesPage {
                     // If there are no sites left, go to add site.
                     this.sitesProvider.hasSites().then((hasSites) => {
                         if (!hasSites) {
-                            this.loginHelper.goToAddSite(true);
+                            this.loginHelper.goToAddSite(true, true);
                         }
                     });
                 }).catch((error) => {

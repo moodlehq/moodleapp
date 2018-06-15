@@ -7,4 +7,5 @@
 <ion-item *ngIf="edit && field && field.shortname" text-wrap [formGroup]="form">
     <ion-label stacked [core-mark-required]="field.required">{{ field.name }}</ion-label>
     <ion-input [type]="field.inputType" [formControlName]="field.modelName" [placeholder]="field.name" maxlength="{{field.maxlength}}"></ion-input>
+    <core-input-errors item-content [control]="form.controls[field.modelName]"></core-input-errors>
 </ion-item>

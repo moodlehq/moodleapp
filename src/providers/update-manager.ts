@@ -22,6 +22,7 @@ import { CoreLoggerProvider } from './logger';
 import { CoreSitesProvider } from './sites';
 import { CoreUtilsProvider } from './utils/utils';
 import { CoreConfigConstants } from '../configconstants';
+import { AddonCalendarProvider } from '@addon/calendar/providers/calendar';
 import { SQLiteDB } from '@classes/sqlitedb';
 
 /**
@@ -71,6 +72,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
 
     protected VERSION_APPLIED = 'version_applied';
     protected logger;
+    protected localNotificationsComponentsMigrate: {[old: string]: string} = {};
 
     /**
      * Tables to migrate from app DB ('MoodleMobile'). Include all the core ones to decrease the dependencies.
@@ -323,7 +325,8 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
 
     constructor(logger: CoreLoggerProvider, private configProvider: CoreConfigProvider, private sitesProvider: CoreSitesProvider,
             private filepoolProvider: CoreFilepoolProvider, private notifProvider: CoreLocalNotificationsProvider,
-            private utils: CoreUtilsProvider, private appProvider: CoreAppProvider) {
+            private utils: CoreUtilsProvider, private appProvider: CoreAppProvider,
+            private calendarProvider: AddonCalendarProvider) {
         this.logger = logger.getInstance('CoreUpdateManagerProvider');
     }
 
@@ -341,6 +344,9 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
             if (!versionApplied) {
                 // No version applied, either the app was just installed or it's being updated from Ionic 1.
                 return this.migrateAllDBs().then(() => {
+                    // Now that the DBs have been migrated, migrate the local notification components names.
+                    return this.migrateLocalNotificationsComponents();
+                }).then(() => {
                     // DBs migrated, get the version applied again.
                     return this.configProvider.get(this.VERSION_APPLIED, 0);
                 });
@@ -358,9 +364,8 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
                 promises.push(this.setSitesConfig());
             }
 
-            if (versionCode >= 2018 && versionApplied < 2018 && versionApplied > 0) {
-                promises.push(this.adaptForumOfflineStores());
-            }
+            // In version 2018 we adapted the forum offline stores to match a new schema.
+            // However, due to the migration of data to SQLite we can no longer do that.
 
             return Promise.all(promises).then(() => {
                 return this.configProvider.set(this.VERSION_APPLIED, versionCode);
@@ -408,6 +413,16 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
      */
     registerSiteTableMigration(table: CoreUpdateManagerMigrateTable): void {
         this.siteDBTables.push(table);
+    }
+
+    /**
+     * Register a migration of component name for local notifications.
+     *
+     * @param {string} oldName The old name.
+     * @param {string} newName The new name.
+     */
+    registerLocalNotifComponentMigration(oldName: string, newName: string): void {
+        this.localNotificationsComponentsMigrate[oldName] = newName;
     }
 
     /**
@@ -556,6 +571,30 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
     }
 
     /**
+     * Migrate local notifications components from the old nomenclature to the new one.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected migrateLocalNotificationsComponents(): Promise<any> {
+        if (!this.notifProvider.isAvailable()) {
+            // Local notifications not available, nothing to do.
+            return Promise.resolve();
+        }
+
+        const promises = [];
+
+        for (const oldName in this.localNotificationsComponentsMigrate) {
+            const newName = this.localNotificationsComponentsMigrate[oldName];
+
+            promises.push(this.notifProvider.updateComponentName(oldName, newName).catch((error) => {
+                this.logger.error('Error migrating local notif component from ' + oldName + ' to ' + newName + ': ', error);
+            }));
+        }
+
+        return Promise.all(promises);
+    }
+
+    /**
      * Calendar default notification time is configurable from version 3.2.1, and a new option "Default" is added.
      * All events that were configured to use the fixed default time should now be configured to use "Default" option.
      *
@@ -567,8 +606,27 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
             return Promise.resolve();
         }
 
-        // @todo: Implement it once Calendar addon is implemented.
-        return Promise.resolve();
+        return this.sitesProvider.getSitesIds().then((siteIds) => {
+
+            const promises = [];
+            siteIds.forEach((siteId) => {
+                // Get stored events.
+                promises.push(this.calendarProvider.getAllEventsFromLocalDb(siteId).then((events) => {
+                    const eventPromises = [];
+
+                    events.forEach((event) => {
+                        if (event.notificationtime == AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME) {
+                            event.notificationtime = -1;
+                            eventPromises.push(this.calendarProvider.storeEventInLocalDb(event, siteId));
+                        }
+                    });
+
+                    return Promise.all(eventPromises);
+                }));
+            });
+
+            return Promise.all(promises);
+        });
     }
 
     /**
@@ -625,16 +683,5 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
                 // Ignore errors.
             });
         });
-    }
-
-    /**
-     * The data stored for offline discussions and posts changed its format. Adapt the entries already stored.
-     * Since it can be slow, we'll only block migrating the db of current site, the rest will be in background.
-     *
-     * @return {Promise<any>} Promise resolved when the db is migrated.
-     */
-    protected adaptForumOfflineStores(): Promise<any> {
-        // @todo: Implement it once Forum addon is implemented.
-        return Promise.resolve();
     }
 }

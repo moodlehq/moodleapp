@@ -1226,13 +1226,14 @@ export class CoreSite {
                 }
 
                 if (alertMessage) {
-                    const alert = this.domUtils.showAlert(this.translate.instant('core.notice'), alertMessage, undefined, 3000);
-                    alert.onDidDismiss(() => {
-                        if (inApp) {
-                            resolve(this.utils.openInApp(url, options));
-                        } else {
-                            resolve(this.utils.openInBrowser(url));
-                        }
+                    this.domUtils.showAlert(this.translate.instant('core.notice'), alertMessage, undefined, 3000).then((alert) => {
+                        alert.onDidDismiss(() => {
+                            if (inApp) {
+                                resolve(this.utils.openInApp(url, options));
+                            } else {
+                                resolve(this.utils.openInBrowser(url));
+                            }
+                        });
                     });
                 } else {
                     if (inApp) {

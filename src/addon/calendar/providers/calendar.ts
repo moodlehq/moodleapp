@@ -31,9 +31,9 @@ export class AddonCalendarProvider {
     static DAYS_INTERVAL = 30;
     static COMPONENT = 'AddonCalendarEvents';
     static DEFAULT_NOTIFICATION_TIME_CHANGED = 'AddonCalendarDefaultNotificationTimeChangedEvent';
-    protected DEFAULT_NOTIFICATION_TIME_SETTING = 'mmaCalendarDefaultNotifTime';
+    static DEFAULT_NOTIFICATION_TIME_SETTING = 'mmaCalendarDefaultNotifTime';
+    static DEFAULT_NOTIFICATION_TIME = 60;
     protected ROOT_CACHE_KEY = 'mmaCalendar:';
-    protected DEFAULT_NOTIFICATION_TIME = 60;
 
     // Variables for database.
     static EVENTS_TABLE = 'addon_calendar_events';
@@ -137,6 +137,18 @@ export class AddonCalendarProvider {
     }
 
     /**
+     * Get all calendar events from local Db.
+     *
+     * @param {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
+     * @return {Promise<any[]>} Promise resolved with all the events.
+     */
+    getAllEventsFromLocalDb(siteId?: string): Promise<any[]> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.getDb().getAllRecords(AddonCalendarProvider.EVENTS_TABLE);
+        });
+    }
+
+    /**
      * Get the configured default notification time.
      *
      * @param  {string} [siteId] ID of the site. If not defined, use current site.
@@ -145,9 +157,9 @@ export class AddonCalendarProvider {
     getDefaultNotificationTime(siteId?: string): Promise<number> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        const key = this.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
+        const key = AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
 
-        return this.configProvider.get(key, this.DEFAULT_NOTIFICATION_TIME);
+        return this.configProvider.get(key, AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME);
     }
 
     /**
@@ -496,9 +508,22 @@ export class AddonCalendarProvider {
     setDefaultNotificationTime(time: number, siteId?: string): Promise<any[]> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        const key = this.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
+        const key = AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
 
         return this.configProvider.set(key, time);
+    }
+
+    /**
+     * Store an event in local DB as it is.
+     *
+     * @param {any} event Event to store.
+     * @param {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
+     * @return {Promise<any>} Promise resolved when stored.
+     */
+    storeEventInLocalDb(event: any, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.getDb().insertRecord(AddonCalendarProvider.EVENTS_TABLE, event);
+        });
     }
 
     /**

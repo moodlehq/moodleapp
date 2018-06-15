@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnChanges, Input, ViewChild } from '@angular/core';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-content';
 
@@ -23,10 +23,12 @@ import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-
     selector: 'core-site-plugins-course-format',
     templateUrl: 'core-siteplugins-course-format.html',
 })
-export class CoreSitePluginsCourseFormatComponent implements OnInit {
+export class CoreSitePluginsCourseFormatComponent implements OnChanges {
     @Input() course: any; // The course to render.
     @Input() sections: any[]; // List of course sections.
     @Input() downloadEnabled?: boolean; // Whether the download of sections and modules is enabled.
+    @Input() initialSectionId?: number; // The section to load first (by ID).
+    @Input() initialSectionNumber?: number; // The section to load first (by number).
 
     @ViewChild(CoreSitePluginsPluginContentComponent) content: CoreSitePluginsPluginContentComponent;
 
@@ -34,24 +36,37 @@ export class CoreSitePluginsCourseFormatComponent implements OnInit {
     method: string;
     args: any;
     initResult: any;
+    data: any;
 
     constructor(protected sitePluginsProvider: CoreSitePluginsProvider) { }
 
     /**
-     * Component being initialized.
+     * Detect changes on input properties.
      */
-    ngOnInit(): void {
+    ngOnChanges(): void {
         if (this.course && this.course.format) {
-            const handler = this.sitePluginsProvider.getSitePluginHandler(this.course.format);
-            if (handler) {
-                this.component = handler.plugin.component;
-                this.method = handler.handlerSchema.method;
-                this.args = {
-                    courseid: this.course.id,
-                    downloadenabled: this.downloadEnabled
-                };
-                this.initResult = handler.initResult;
+            if (!this.component) {
+                // Initialize the data.
+                const handler = this.sitePluginsProvider.getSitePluginHandler(this.course.format);
+                if (handler) {
+                    this.component = handler.plugin.component;
+                    this.method = handler.handlerSchema.method;
+                    this.args = {
+                        courseid: this.course.id,
+                        downloadenabled: this.downloadEnabled
+                    };
+                    this.initResult = handler.initResult;
+                }
             }
+
+            // Pass input data to the component.
+            this.data = {
+                course: this.course,
+                sections: this.sections,
+                downloadEnabled: this.downloadEnabled,
+                initialSectionId: this.initialSectionId,
+                initialSectionNumber: this.initialSectionNumber
+            };
         }
     }
 
