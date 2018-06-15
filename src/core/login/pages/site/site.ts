@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { IonicPage, NavController, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, ModalController, NavParams } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -33,10 +33,14 @@ export class CoreLoginSitePage {
     siteForm: FormGroup;
     fixedSites: any[];
     displayAsButtons = false;
+    showKeyboard = false;
 
-    constructor(private navCtrl: NavController, fb: FormBuilder, private appProvider: CoreAppProvider,
+    constructor(navParams: NavParams, private navCtrl: NavController, fb: FormBuilder, private appProvider: CoreAppProvider,
             private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
             private modalCtrl: ModalController, private domUtils: CoreDomUtilsProvider) {
+
+        this.showKeyboard = !!navParams.get('showKeyboard');
+
         let url = '';
 
         // Load fixed sites if they're set.

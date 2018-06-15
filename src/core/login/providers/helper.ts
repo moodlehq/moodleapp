@@ -380,9 +380,10 @@ export class CoreLoginHelperProvider {
      * If a fixed URL is configured, go to credentials instead.
      *
      * @param {boolean} [setRoot] True to set the new page as root, false to add it to the stack.
+     * @param {boolean} [showKeyboard] Whether to show keyboard in the new page. Only if no fixed URL set.
      * @return {Promise<any>} Promise resolved when done.
      */
-    goToAddSite(setRoot?: boolean): Promise<any> {
+    goToAddSite(setRoot?: boolean, showKeyboard?: boolean): Promise<any> {
         let pageName,
             params;
 
@@ -395,6 +396,9 @@ export class CoreLoginHelperProvider {
             params = { siteUrl: url };
         } else {
             pageName = 'CoreLoginSitePage';
+            params = {
+                showKeyboard: showKeyboard
+            };
         }
 
         if (setRoot) {

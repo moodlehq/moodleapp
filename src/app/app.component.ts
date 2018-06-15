@@ -15,7 +15,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
-import { SplashScreen } from '@ionic-native/splash-screen';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLangProvider } from '@providers/lang';
@@ -33,7 +32,7 @@ export class MoodleMobileApp implements OnInit {
     protected logger;
     protected lastUrls = {};
 
-    constructor(private platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, logger: CoreLoggerProvider,
+    constructor(private platform: Platform, statusBar: StatusBar, logger: CoreLoggerProvider,
         private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider,
         private appProvider: CoreAppProvider, private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider) {
         this.logger = logger.getInstance('AppComponent');
@@ -46,8 +45,6 @@ export class MoodleMobileApp implements OnInit {
             } else {
                 statusBar.styleDefault();
             }
-
-            splashScreen.hide();
         });
 
     }

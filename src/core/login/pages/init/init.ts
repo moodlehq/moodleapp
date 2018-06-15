@@ -14,6 +14,7 @@
 
 import { Component } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
+import { SplashScreen } from '@ionic-native/splash-screen';
 import { CoreAppProvider } from '@providers/app';
 import { CoreInitDelegate } from '@providers/init';
 import { CoreSitesProvider } from '@providers/sites';
@@ -31,7 +32,8 @@ import { CoreLoginHelperProvider } from '../../providers/helper';
 export class CoreLoginInitPage {
 
     constructor(private navCtrl: NavController, private appProvider: CoreAppProvider, private initDelegate: CoreInitDelegate,
-        private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider) { }
+        private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
+        private splashScreen: SplashScreen) { }
 
     /**
      * View loaded.
@@ -51,11 +53,11 @@ export class CoreLoginInitPage {
                         // The redirect is pointing to a site, load it.
                         return this.sitesProvider.loadSite(redirectData.siteId).then(() => {
                             if (!this.loginHelper.isSiteLoggedOut(redirectData.page, redirectData.params)) {
-                                this.navCtrl.setRoot(redirectData.page, redirectData.params, { animate: false });
+                                return this.navCtrl.setRoot(redirectData.page, redirectData.params, { animate: false });
                             }
                         }).catch(() => {
                             // Site doesn't exist.
-                            this.loadPage();
+                            return this.loadPage();
                         });
                     } else {
                         // No site to load, just open the state.
@@ -64,24 +66,37 @@ export class CoreLoginInitPage {
                 }
             }
 
-            this.loadPage();
+            return this.loadPage();
+        }).then(() => {
+            // If we hide the splash screen now, the init view is still seen for an instant. Wait a bit to make sure it isn't seen.
+            setTimeout(() => {
+                this.splashScreen.hide();
+            }, 100);
         });
     }
 
     /**
      * Load the right page.
+     *
+     * @return {Promise<any>} Promise resolved when done.
      */
-    protected loadPage(): void {
+    protected loadPage(): Promise<any> {
         if (this.sitesProvider.isLoggedIn()) {
             if (!this.loginHelper.isSiteLoggedOut()) {
-                this.loginHelper.goToSiteInitialPage();
+                // User is logged in, go to site initial page.
+                return this.loginHelper.goToSiteInitialPage();
+            } else {
+                // The site is marked as logged out. Logout and try again.
+                return this.sitesProvider.logout().then(() => {
+                    return this.loadPage();
+                });
             }
         } else {
-            this.sitesProvider.hasSites().then((hasSites) => {
+            return this.sitesProvider.hasSites().then((hasSites) => {
                 if (hasSites) {
-                    this.navCtrl.setRoot('CoreLoginSitesPage');
+                    return this.navCtrl.setRoot('CoreLoginSitesPage');
                 } else {
-                    this.loginHelper.goToAddSite(true);
+                    return this.loginHelper.goToAddSite(true);
                 }
             });
         }
