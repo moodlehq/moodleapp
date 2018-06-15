@@ -4,7 +4,7 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <ion-refresher [enabled]="badgeLoaded" (ionRefresh)="refreshEvent($event)">
+    <ion-refresher [enabled]="badgeLoaded" (ionRefresh)="refreshBadges($event)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="badgeLoaded">
