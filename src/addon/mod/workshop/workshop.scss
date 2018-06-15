@@ -1,0 +1,14 @@
+addon-mod-workshop-submission,
+addon-mod-workshop-submission-page,
+addon-mod-workshop-assessment,
+addon-mod-workshop-assessment-page {
+
+  p.addon-overriden-grade {
+    color: color($colors, success);
+  }
+
+  p.addon-has-overriden-grade {
+    color: color($colors, danger);
+    text-decoration: line-through;
+  }
+}

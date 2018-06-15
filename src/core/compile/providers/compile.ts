@@ -108,6 +108,7 @@ import { ADDON_MOD_SCORM_PROVIDERS } from '@addon/mod/scorm/scorm.module';
 import { ADDON_MOD_SURVEY_PROVIDERS } from '@addon/mod/survey/survey.module';
 import { ADDON_MOD_URL_PROVIDERS } from '@addon/mod/url/url.module';
 import { ADDON_MOD_WIKI_PROVIDERS } from '@addon/mod/wiki/wiki.module';
+import { ADDON_MOD_WORKSHOP_PROVIDERS } from '@addon/mod/workshop/workshop.module';
 import { ADDON_NOTES_PROVIDERS } from '@addon/notes/notes.module';
 import { ADDON_NOTIFICATIONS_PROVIDERS } from '@addon/notifications/notifications.module';
 import { ADDON_PUSHNOTIFICATIONS_PROVIDERS } from '@addon/pushnotifications/pushnotifications.module';
@@ -115,6 +116,7 @@ import { ADDON_REMOTETHEMES_PROVIDERS } from '@addon/remotethemes/remotethemes.m
 
 // Import some addon modules that define components, directives and pipes. Only import the important ones.
 import { AddonModAssignComponentsModule } from '@addon/mod/assign/components/components.module';
+import { AddonModWorkshopComponentsModule } from '@addon/mod/workshop/components/components.module';
 
 /**
  * Service to provide functionalities regarding compiling dynamic HTML and Javascript.
@@ -136,6 +138,7 @@ export class CoreCompileProvider {
         IonicModule, TranslateModule.forChild(), CoreComponentsModule, CoreDirectivesModule, CorePipesModule,
         CoreCourseComponentsModule, CoreCoursesComponentsModule, CoreSiteHomeComponentsModule, CoreUserComponentsModule,
         CoreCourseDirectivesModule, CoreSitePluginsDirectivesModule, CoreQuestionComponentsModule, AddonModAssignComponentsModule,
+        AddonModWorkshopComponentsModule
     ];
 
     constructor(protected injector: Injector, logger: CoreLoggerProvider, compilerFactory: JitCompilerFactory) {
@@ -222,7 +225,7 @@ export class CoreCompileProvider {
                 .concat(ADDON_MOD_LESSON_PROVIDERS).concat(ADDON_MOD_LTI_PROVIDERS).concat(ADDON_MOD_PAGE_PROVIDERS)
                 .concat(ADDON_MOD_QUIZ_PROVIDERS).concat(ADDON_MOD_RESOURCE_PROVIDERS).concat(ADDON_MOD_SCORM_PROVIDERS)
                 .concat(ADDON_MOD_SURVEY_PROVIDERS).concat(ADDON_MOD_URL_PROVIDERS).concat(ADDON_MOD_WIKI_PROVIDERS)
-                .concat(ADDON_NOTES_PROVIDERS).concat(ADDON_NOTIFICATIONS_PROVIDERS)
+                .concat(ADDON_MOD_WORKSHOP_PROVIDERS).concat(ADDON_NOTES_PROVIDERS).concat(ADDON_NOTIFICATIONS_PROVIDERS)
                 .concat(ADDON_PUSHNOTIFICATIONS_PROVIDERS).concat(ADDON_REMOTETHEMES_PROVIDERS);
 
         // We cannot inject anything to this constructor. Use the Injector to inject all the providers into the instance.

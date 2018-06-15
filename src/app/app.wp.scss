@@ -47,3 +47,11 @@
     padding-left: 15px * $i + $item-wp-padding-start;
   }
 }
+
+// Recover borders on items inside cards.
+.card-wp.with-borders  .item-wp.item-block .item-inner {
+  border-bottom: 1px solid $list-wp-border-color;
+}
+.card-wp.with-borders .item-wp:last-child .item-inner {
+  border-bottom: 0;
+}

@@ -1,0 +1,25 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{ 'addon.mod_workshop.selectphase' | translate }}</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-list radio-group [(ngModel)]="selected" (ionChange)="switchPhase()">
+        <ng-container *ngFor="let phase of phases">
+            <ion-item *ngIf="workshopPhase >= phase.code || phase.tasks.length || phase.switchUrl">
+                <ion-label>{{ phase.title }}
+                    <p text-wrap *ngIf="workshopPhase == phase.code">{{ 'addon.mod_workshop.userplancurrentphase' | translate }}</p>
+                </ion-label>
+                <ion-radio [value]="phase.code"></ion-radio>
+            </ion-item>
+            <ion-item *ngIf="!(workshopPhase >= phase.code || phase.tasks.length || phase.switchUrl)">
+                {{ phase.title }}
+            </ion-item>
+        </ng-container>
+    </ion-list>
+</ion-content>

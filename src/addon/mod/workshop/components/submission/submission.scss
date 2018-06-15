@@ -1,0 +1,35 @@
+addon-mod-workshop-submission {
+    .item-md.item-block .item-inner {
+      border-bottom: 1px solid $list-md-border-color;
+    }
+
+    .item-ios.item-block .item-inner {
+      border-bottom: $hairlines-width solid $list-ios-border-color;
+    }
+
+    .item-wp.item-block .item-inner {
+      border-bottom: 1px solid $list-wp-border-color;
+    }
+
+    &:last-child .item .item-inner {
+      border-bottom: 0;
+    }
+}
+
+.card.with-borders addon-mod-workshop-submission {
+    .item-md.item-block .item-inner {
+      border-bottom: 1px solid $list-md-border-color;
+    }
+
+    .item-ios.item-block .item-inner {
+      border-bottom: $hairlines-width solid $list-ios-border-color;
+    }
+
+    .item-wp.item-block .item-inner {
+      border-bottom: 1px solid $list-wp-border-color;
+    }
+
+    &:last-child .item .item-inner {
+      border-bottom: 0;
+    }
+}

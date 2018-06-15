@@ -179,7 +179,7 @@ export class AddonModForumProvider {
             return site.write('mod_forum_add_discussion', params).then((response) => {
                 // Other errors ocurring.
                 if (!response || !response.discussionid) {
-                    return this.utils.createFakeWSError('');
+                    return Promise.reject(this.utils.createFakeWSError(''));
                 } else {
                     return response.discussionid;
                 }
@@ -694,7 +694,7 @@ export class AddonModForumProvider {
 
             return site.write('mod_forum_add_discussion_post', params).then((response) => {
                 if (!response || !response.postid) {
-                    return this.utils.createFakeWSError('');
+                    return Promise.reject(this.utils.createFakeWSError(''));
                 } else {
                     return response.postid;
                 }

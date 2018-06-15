@@ -20,6 +20,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreGradesProvider } from './grades';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 
 /**
@@ -32,7 +33,7 @@ export class CoreGradesHelperProvider {
     constructor(logger: CoreLoggerProvider, private coursesProvider: CoreCoursesProvider,
             private gradesProvider: CoreGradesProvider, private sitesProvider: CoreSitesProvider,
             private textUtils: CoreTextUtilsProvider, private courseProvider: CoreCourseProvider,
-            private domUtils: CoreDomUtilsProvider, private urlUtils: CoreUrlUtilsProvider) {
+            private domUtils: CoreDomUtilsProvider, private urlUtils: CoreUrlUtilsProvider, private utils: CoreUtilsProvider) {
         this.logger = logger.getInstance('CoreGradesHelperProvider');
     }
 
@@ -445,5 +446,56 @@ export class CoreGradesHelperProvider {
         }
 
         return row;
+    }
+
+    /**
+     * Creates an array that represents all the current grades that can be chosen using the given grading type.
+     * Negative numbers are scales, zero is no grade, and positive numbers are maximum grades.
+     *
+     * Taken from make_grades_menu on moodlelib.php
+     *
+     * @param  {number} gradingType     If positive, max grade you can provide. If negative, scale Id.
+     * @param  {number} moduleId        Module Id needed to retrieve the scale.
+     * @param  {string} [defaultLabel]  Element that will become default option, if not defined, it won't be added.
+     * @param  {any}    [defaultValue]  Element that will become default option value. Default ''.
+     * @param  {string} [scale]         Scale csv list String. If not provided, it will take it from the module grade info.
+     * @return {Promise<any[]>}         Array with objects with value and label to create a propper HTML select.
+     */
+    makeGradesMenu(gradingType: number, moduleId: number, defaultLabel: string = '', defaultValue: any = '', scale?: string):
+            Promise<any[]> {
+        if (gradingType < 0) {
+            if (scale) {
+                return Promise.resolve(this.utils.makeMenuFromList(scale, defaultLabel, undefined, defaultValue));
+            } else {
+                return this.courseProvider.getModuleBasicGradeInfo(moduleId).then((gradeInfo) => {
+                    if (gradeInfo.scale) {
+                        return this.utils.makeMenuFromList(gradeInfo.scale, defaultLabel, undefined,  defaultValue);
+                    }
+
+                    return [];
+                });
+            }
+        }
+
+        if (gradingType > 0) {
+            const grades = [];
+            if (defaultLabel) {
+                // Key as string to avoid resorting of the object.
+                grades.push({
+                    label: defaultLabel,
+                    value: defaultValue
+                });
+            }
+            for (let i = gradingType; i >= 0; i--) {
+                 grades.push({
+                    label: i + ' / ' + gradingType,
+                    value: i
+                });
+            }
+
+            return Promise.resolve(grades);
+        }
+
+        return Promise.resolve([]);
     }
 }

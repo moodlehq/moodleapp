@@ -1,0 +1,6 @@
+{
+    "dimensioncommentfor": "Comment for {{$a}}",
+    "dimensiongradefor": "Grade for {{$a}}",
+    "dimensionnumber": "Aspect {{$a}}",
+    "mustchoosegrade": "You have to select a grade for this aspect"
+}

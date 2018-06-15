@@ -268,7 +268,7 @@ export class AddonModSurveyProvider {
 
             return site.write('mod_survey_submit_answers', params).then((response) => {
                 if (!response.status) {
-                    return this.utils.createFakeWSError('');
+                    return Promise.reject(this.utils.createFakeWSError(''));
                 }
             });
         });
