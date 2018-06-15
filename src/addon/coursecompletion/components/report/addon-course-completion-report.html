@@ -1,0 +1,51 @@
+<ion-content>
+    <ion-refresher [enabled]="completionLoaded" (ionRefresh)="refreshCompletion($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="completionLoaded">
+        <ion-card *ngIf="completion">
+            <ion-item text-wrap>
+                <h2>{{ 'addon.coursecompletion.status' | translate }}</h2>
+                <p>{{ completion.statusText | translate }}</p>
+            </ion-item>
+            <ion-item text-wrap>
+                <h2>{{ 'addon.coursecompletion.required' | translate }}</h2>
+                <p *ngIf="completion.aggregation === 1">{{ 'addon.coursecompletion.criteriarequiredall' | translate }}</p>
+                <p *ngIf="completion.aggregation === 2">{{ 'addon.coursecompletion.criteriarequiredany' | translate }}</p>
+            </ion-item>
+        </ion-card>
+        <ion-card *ngIf="completion">
+            <ion-item-divider>{{ 'addon.coursecompletion.requiredcriteria' | translate }}</ion-item-divider>
+            <ion-item class="hidden-tablet" text-wrap *ngFor="let criteria of completion.completions">
+                <h2><core-format-text clean="true" [text]="criteria.details.criteria"></core-format-text></h2>
+                <p><core-format-text clean="true" [text]="criteria.details.requirement"></core-format-text></p>
+                <strong item-end>{{ criteria.status }}</strong>
+            </ion-item>
+            <ion-item class="hidden-phone" text-wrap>
+                <ion-row>
+                    <ion-col><strong>{{ 'addon.coursecompletion.criteriagroup' | translate }}</strong></ion-col>
+                    <ion-col><strong>{{ 'addon.coursecompletion.criteria' | translate }}</strong></ion-col>
+                    <ion-col><strong>{{ 'addon.coursecompletion.requirement' | translate }}</strong></ion-col>
+                    <ion-col><strong>{{ 'addon.coursecompletion.status' | translate }}</strong></ion-col>
+                    <ion-col><strong>{{ 'addon.coursecompletion.complete' | translate }}</strong></ion-col>
+                    <ion-col><strong>{{ 'addon.coursecompletion.completiondate' | translate }}</strong></ion-col>
+                </ion-row>
+                <ion-row *ngFor="let criteria of completion.completions">
+                    <ion-col><core-format-text clean="true" [text]="criteria.title"></core-format-text></ion-col>
+                    <ion-col><core-format-text clean="true" [text]="criteria.details.criteria"></core-format-text></ion-col>
+                    <ion-col><core-format-text clean="true" [text]="criteria.details.requirement"></core-format-text></ion-col>
+                    <ion-col><core-format-text [text]="criteria.details.status"></core-format-text></ion-col>
+                    <ion-col>{{ criteria.status }}</ion-col>
+                    <ion-col *ngIf="criteria.timecompleted">{{ criteria.timecompleted | coreToLocaleString }}</ion-col>
+                    <ion-col *ngIf="!criteria.timecompleted"></ion-col>
+                </ion-row>
+            </ion-item>
+        </ion-card>
+        <ion-card *ngIf="showSelfComplete">
+            <ion-item-divider>{{ 'addon.coursecompletion.manualselfcompletion' | translate }}</ion-item-divider>
+            <ion-item>
+                <button ion-button block (click)="completeCourse()">{{ 'addon.coursecompletion.completecourse' | translate }}</button>
+            </ion-item>
+        </ion-card>
+    </core-loading>
+</ion-content>
