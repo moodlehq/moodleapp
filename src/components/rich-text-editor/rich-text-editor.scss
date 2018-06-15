@@ -39,6 +39,11 @@ core-rich-text-editor {
             font-weight: bold;
         }
 
+        // Make empty elements selectable (to move the cursor).
+        *:empty:after {
+            content: '\200B';
+        }
+
         ul {
             list-style-type: disc;
         }

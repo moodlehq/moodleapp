@@ -22,7 +22,10 @@
       "@components/*": ["components/*"],
       "@directives/*": ["directives/*"],
       "@pipes/*": ["pipes/*"]
-    }
+    },
+    "typeRoots": [
+      "node_modules/@types"
+    ]
   },
   "include": [
     "src/**/*.ts"

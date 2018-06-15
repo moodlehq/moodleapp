@@ -370,7 +370,13 @@ ion-col ion-select {
       white-space: normal;
       text-align: right;
     }
+}
+
+.core-button-select {
+  ion-icon:last-child {
+    margin-left: 5px;
   }
+}
 
 // File uploader.
 // -------------------------
@@ -676,6 +682,16 @@ canvas[core-chart] {
     height: 100% !important;
   }
 }
+
+.has-fab .scroll-content{
+  padding-bottom: 56px;
+}
+
+.scroll-content ion-fab {
+  position: fixed;
+  margin-bottom: 56px;
+}
+
 
 // For some reason, in iOS the pages don't inherit the background-color from ion-app, set it explicitly.
 .ion-page {

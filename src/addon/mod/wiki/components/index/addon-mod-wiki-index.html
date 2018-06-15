@@ -25,7 +25,7 @@
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
-    <core-tabs [selectedIndex]="selectedTab">
+    <core-tabs [hideUntil]="loaded" [selectedIndex]="selectedTab">
         <!-- Page contents. -->
         <core-tab [title]="'addon.mod_wiki.viewpage' | translate" icon="document">
             <ng-template>

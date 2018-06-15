@@ -19,6 +19,7 @@ core-empty-box {
       display: table-cell;
       text-align: center;
       vertical-align: middle;
+      pointer-events: auto;
     }
 
     &.core-empty-box-inline {

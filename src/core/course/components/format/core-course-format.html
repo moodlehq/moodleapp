@@ -16,10 +16,10 @@
         <!-- Section selector. -->
         <core-dynamic-component [component]="sectionSelectorComponent" [data]="data">
             <div text-wrap *ngIf="displaySectionSelector && sections && sections.length" no-padding class="clearfix">
-                <!-- @todo: How to display availabilityinfo and not visible messages? -->
-                <ion-select [ngModel]="selectedSection" (ngModelChange)="sectionChanged($event)" [compareWith]="compareSections" [selectOptions]="selectOptions" float-start interface="popover">
-                    <ion-option *ngFor="let section of sections" [value]="section">{{section.formattedName || section.name}}</ion-option>
-                </ion-select>
+                <button float-start ion-button (click)="showSectionSelector($event)" clear class="core-button-select">
+                    {{selectedSection && (selectedSection.formattedName || selectedSection.name) || 'core.course.sections' | translate }}
+                    <ion-icon name="arrow-dropdown" ios="md-arrow-dropdown"></ion-icon>
+                </button>
                 <!-- Section download. -->
                 <ng-container *ngTemplateOutlet="sectionDownloadTemplate; context: {section: selectedSection}"></ng-container>
             </div>

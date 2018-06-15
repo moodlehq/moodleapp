@@ -15,7 +15,7 @@
 import {
     Component, Input, OnInit, OnChanges, OnDestroy, SimpleChange, Output, EventEmitter, ViewChildren, QueryList, Injector
 } from '@angular/core';
-import { Content } from 'ionic-angular';
+import { Content, ModalController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
@@ -72,7 +72,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     constructor(private cfDelegate: CoreCourseFormatDelegate, translate: TranslateService, private injector: Injector,
             private courseHelper: CoreCourseHelperProvider, private domUtils: CoreDomUtilsProvider,
             eventsProvider: CoreEventsProvider, private sitesProvider: CoreSitesProvider, private content: Content,
-            prefetchDelegate: CoreCourseModulePrefetchDelegate) {
+            prefetchDelegate: CoreCourseModulePrefetchDelegate, private modalCtrl: ModalController) {
 
         this.selectOptions.title = translate.instant('core.course.sections');
         this.completionChanged = new EventEmitter();
@@ -219,6 +219,20 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 });
             }
         }
+    }
+
+    /**
+     * Display the section selector modal.
+     */
+    showSectionSelector(): void {
+        const modal = this.modalCtrl.create('CoreCourseSectionSelectorPage',
+            {sections: this.sections, selected: this.selectedSection});
+        modal.onDidDismiss((newSection) => {
+            if (newSection) {
+                this.sectionChanged(newSection);
+            }
+        });
+        modal.present();
     }
 
     /**

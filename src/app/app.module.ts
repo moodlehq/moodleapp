@@ -15,7 +15,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule, COMPILER_OPTIONS } from '@angular/core';
-import { IonicApp, IonicModule, Platform, Content, ScrollEvent } from 'ionic-angular';
+import { IonicApp, IonicModule, Platform, Content, ScrollEvent, Config } from 'ionic-angular';
 import { assert } from 'ionic-angular/util/util';
 import { HttpModule } from '@angular/http';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -26,6 +26,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { MoodleMobileApp } from './app.component';
 import { CoreInterceptor } from '@classes/interceptor';
+import { CorePageTransition } from '@classes/page-transition';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDbProvider } from '@providers/db';
 import { CoreAppProvider } from '@providers/app';
@@ -154,7 +155,7 @@ export const CORE_PROVIDERS: any[] = [
         HttpClientModule, // HttpClient is used to make JSON requests. It fails for HEAD requests because there is no content.
         HttpModule,
         IonicModule.forRoot(MoodleMobileApp, {
-            pageTransition: 'ios-transition'
+            pageTransition: 'core-page-transition'
         }),
         TranslateModule.forRoot({
             loader: {
@@ -257,7 +258,7 @@ export const CORE_PROVIDERS: any[] = [
     ]
 })
 export class AppModule {
-    constructor(platform: Platform, initDelegate: CoreInitDelegate, updateManager: CoreUpdateManagerProvider,
+    constructor(platform: Platform, initDelegate: CoreInitDelegate, updateManager: CoreUpdateManagerProvider, config: Config,
             sitesProvider: CoreSitesProvider, fileProvider: CoreFileProvider) {
         // Register a handler for platform ready.
         initDelegate.registerProcess({
@@ -288,6 +289,9 @@ export class AppModule {
 
         // Execute the init processes.
         initDelegate.executeInitProcesses();
+
+        // Set transition animation.
+        config.setTransition('core-page-transition', CorePageTransition);
 
         // Decorate ion-content.
         this.decorateIonContent();
