@@ -28,6 +28,7 @@ import { CoreSitePluginsQuestionBehaviourComponent } from './question-behaviour/
 import { CoreSitePluginsQuizAccessRuleComponent } from './quiz-access-rule/quiz-access-rule';
 import { CoreSitePluginsAssignFeedbackComponent } from './assign-feedback/assign-feedback';
 import { CoreSitePluginsAssignSubmissionComponent } from './assign-submission/assign-submission';
+import { CoreSitePluginsWorkshopAssessmentStrategyComponent } from './workshop-assessment-strategy/workshop-assessment-strategy';
 
 @NgModule({
     declarations: [
@@ -40,7 +41,8 @@ import { CoreSitePluginsAssignSubmissionComponent } from './assign-submission/as
         CoreSitePluginsQuestionBehaviourComponent,
         CoreSitePluginsQuizAccessRuleComponent,
         CoreSitePluginsAssignFeedbackComponent,
-        CoreSitePluginsAssignSubmissionComponent
+        CoreSitePluginsAssignSubmissionComponent,
+        CoreSitePluginsWorkshopAssessmentStrategyComponent
     ],
     imports: [
         CommonModule,
@@ -61,7 +63,8 @@ import { CoreSitePluginsAssignSubmissionComponent } from './assign-submission/as
         CoreSitePluginsQuestionBehaviourComponent,
         CoreSitePluginsQuizAccessRuleComponent,
         CoreSitePluginsAssignFeedbackComponent,
-        CoreSitePluginsAssignSubmissionComponent
+        CoreSitePluginsAssignSubmissionComponent,
+        CoreSitePluginsWorkshopAssessmentStrategyComponent
     ],
     entryComponents: [
         CoreSitePluginsModuleIndexComponent,
@@ -72,7 +75,8 @@ import { CoreSitePluginsAssignSubmissionComponent } from './assign-submission/as
         CoreSitePluginsQuestionBehaviourComponent,
         CoreSitePluginsQuizAccessRuleComponent,
         CoreSitePluginsAssignFeedbackComponent,
-        CoreSitePluginsAssignSubmissionComponent
+        CoreSitePluginsAssignSubmissionComponent,
+        CoreSitePluginsWorkshopAssessmentStrategyComponent
     ]
 })
 export class CoreSitePluginsComponentsModule {}
