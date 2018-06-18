@@ -1,0 +1,13 @@
+{
+    "admindisableddownload": "Je Moodle beheerder heeft het downloaden van bestanden uitgeschakeld. Je kunt door de bestandenlijst bladeren, maar ze niet downloaden.",
+    "clicktoupload": "Klik op onderstaande knop om bestanden naar je privé-bestanden te uploaden.",
+    "couldnotloadfiles": "De bestandenlijst kon niet geladen worden.",
+    "emptyfilelist": "Er zijn geen bestanden om te tonen",
+    "erroruploadnotworking": "Jammer genoeg kun je op dit ogenblik geen bestanden uploaden naar de site.",
+    "files": "Bestanden",
+    "myprivatefilesdesc": "Bestanden die jij alleen kan zien.",
+    "privatefiles": "Privébestanden",
+    "sitefiles": "Sitebestanden",
+    "sitefilesdesc": "Andere bestanden voor jou.",
+    "uploadfiles": "Stuur feedbackbestanden"
+}

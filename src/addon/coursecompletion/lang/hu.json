@@ -1,0 +1,17 @@
+{
+    "complete": "Teljes",
+    "completed": "Teljesítve",
+    "coursecompletion": "Kurzus teljesítése",
+    "criteria": "Követelmények",
+    "criteriagroup": "Követelménycsoport",
+    "criteriarequiredall": "Az összes alábbi követelmény teljesítendő",
+    "criteriarequiredany": "Bármely alábbi követelmény teljesítendő",
+    "inprogress": "Folyamatban lévő",
+    "manualselfcompletion": "Saját teljesítés kézzel",
+    "notyetstarted": "Még nem kezdődött el",
+    "pending": "Függőben",
+    "required": "Kitöltendő",
+    "requiredcriteria": "Előírt követelmények",
+    "status": "Állapot",
+    "viewcoursereport": "Kurzusjelentés megtekintése"
+}

@@ -1,0 +1,20 @@
+{
+    "complete": "הושלם",
+    "completecourse": "השלמת קורס",
+    "completed": "הושלם",
+    "completiondate": "תאריך השלמה",
+    "coursecompletion": "השלמת הקורס",
+    "criteria": "תנאי",
+    "criteriagroup": "קבוצת תנאים",
+    "criteriarequiredall": "כל התנאים המצויינים מטה נדרשים",
+    "criteriarequiredany": "לפחות אחד מהתנאים המצויינים מטה נדרשים",
+    "inprogress": "בלמידה",
+    "manualselfcompletion": "השלמה עצמאית ידנית",
+    "notyetstarted": "עדיין לא התחיל",
+    "pending": "בתהליך למידה",
+    "required": "דרוש",
+    "requiredcriteria": "תנאי נדרש",
+    "requirement": "דרישה",
+    "status": "סטטוס ההישג",
+    "viewcoursereport": "צפיה בדוח הקורס"
+}

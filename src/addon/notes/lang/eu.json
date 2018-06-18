@@ -1,0 +1,13 @@
+{
+    "addnewnote": "Ohar berria gehitu",
+    "coursenotes": "Ikastaroko oharrak",
+    "eventnotecreated": "Oharra gehituta",
+    "nonotes": "Oraindik ez dago mota honetako oharrik.",
+    "note": "Oharra",
+    "notes": "Oharrak",
+    "personalnotes": "Ohar pertsonalak",
+    "publishstate": "Testuingurua",
+    "sitenotes": "Guneko oharrak",
+    "userwithid": "{{id}} IDa duen erabiltzailea",
+    "warningnotenotsent": "Ezin izan da {{course}} ikastaroan oharrak gehitu. {{error}}"
+}

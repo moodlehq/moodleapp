@@ -1,0 +1,12 @@
+{
+    "admindisableddownload": "Sivuston pääkäyttäjä on estänyt tiedostojen lataamisen. Voit ainoastaan selata tiedostoja, mutta et voi ladata niitä.",
+    "clicktoupload": "Paina alapuolella olevaa painiketta ladataksesi tiedoston omiin yksityisiin tiedostoihisi.",
+    "couldnotloadfiles": "Tiedostolistaa ei pystytty lataamaan.",
+    "emptyfilelist": "Ei näytettäviä tiedostoja",
+    "erroruploadnotworking": "Valitettavasti tiedostojen lataaminen järjestelmään ei tällä hetkellä onnistu.",
+    "files": "Tiedostot",
+    "myprivatefilesdesc": "Tiedostot, jotka ovat vain sinulle käytettävissä.",
+    "privatefiles": "Yksityiset tiedostot",
+    "sitefiles": "Sivuston tiedostot",
+    "uploadfiles": "Lähetä palautetiedostot"
+}

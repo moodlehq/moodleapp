@@ -1,0 +1,21 @@
+{
+    "complete": "Voltooid",
+    "completecourse": "Voltooi cursus",
+    "completed": "Volledig",
+    "completiondate": "Voltooiingsdatum",
+    "couldnotloadreport": "Kon het voltooiingsrapport van de cursus niet laden. Probeer later opnieuw.",
+    "coursecompletion": "Cursus voltooien",
+    "criteria": "Criteria",
+    "criteriagroup": "Criteria groep",
+    "criteriarequiredall": "Alle onderstaande criteria zijn vereist",
+    "criteriarequiredany": "Al onderstaande criteria zijn vereist",
+    "inprogress": "Actief",
+    "manualselfcompletion": "Manueel voltooien",
+    "notyetstarted": "Nog niet begonnen",
+    "pending": "Bezig",
+    "required": "Verplicht",
+    "requiredcriteria": "Vereiste criteria",
+    "requirement": "Vereiste",
+    "status": "Badge status",
+    "viewcoursereport": "Bekijk cursusrapport"
+}

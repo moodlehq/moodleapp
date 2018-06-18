@@ -1,0 +1,17 @@
+{
+    "addcontact": "添加联系人",
+    "blockcontact": "屏蔽联系人",
+    "blocknoncontacts": "禁止不在联系人中的用户给我发消息",
+    "contactlistempty": "您的联系人名单是空的",
+    "contactname": "联系人",
+    "contacts": "联系人",
+    "deletemessage": "删除消息",
+    "message": "正文",
+    "messages": "消息",
+    "nomessages": "没有新消息",
+    "nousersfound": "未找到用户",
+    "removecontact": "删除联系人",
+    "send": "发送",
+    "sendmessage": "发送消息",
+    "unblockcontact": "不再阻拦联系人"
+}

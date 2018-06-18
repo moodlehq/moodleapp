@@ -1,0 +1,13 @@
+{
+    "badgedetails": "Nişan ayrıntıları",
+    "badges": "Nişanlar",
+    "contact": "İletişim",
+    "dateawarded": "Verilen tarih",
+    "expired": "Üzgünüz, bu etkinlik {{$a}} tarihinde kapandı ve bu etkinliğe artık ulaşılamaz",
+    "expirydate": "Bitiş Tarihi",
+    "issuancedetails": "Rozet sona erme",
+    "issuerdetails": "çıkaran ayrıntıları",
+    "issuername": "Çıkaranın adı",
+    "nobadges": "Uygun nişan bulunmuyor.",
+    "recipientdetails": "Alıcı bilgileri"
+}

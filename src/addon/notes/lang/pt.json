@@ -1,0 +1,13 @@
+{
+    "addnewnote": "Adicionar uma nova anotação",
+    "coursenotes": "Anotações da disciplina",
+    "eventnotecreated": "Anotação criada",
+    "nonotes": "Ainda não existem anotações deste tipo.",
+    "note": "Anotação",
+    "notes": "Análise privada e anotações",
+    "personalnotes": "Anotações pessoais",
+    "publishstate": "Contexto",
+    "sitenotes": "Anotações do site",
+    "userwithid": "Utilizador com o ID {{id}}",
+    "warningnotenotsent": "Não foi possível adicionar anotações à disciplina {{course}}. {{error}}"
+}

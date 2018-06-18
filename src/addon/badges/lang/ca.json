@@ -1,0 +1,13 @@
+{
+    "badgedetails": "Detalls de la insígnia",
+    "badges": "Insígnies",
+    "contact": "Contacte",
+    "dateawarded": "Data publicada",
+    "expired": "Aquesta activitat es va tancar el dia {{$a}} i ja no està disponible.",
+    "expirydate": "Data d'expiració",
+    "issuancedetails": "Expiració de la insígnia",
+    "issuerdetails": "Detalls de l'atorgador",
+    "issuername": "Nom de l'atorgador",
+    "nobadges": "No hi ha insígnies disponibles.",
+    "recipientdetails": "Detalls del receptor"
+}

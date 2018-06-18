@@ -1,0 +1,13 @@
+{
+    "addnewnote": "Pridėti naują užrašą",
+    "coursenotes": "Kursų užrašai",
+    "eventnotecreated": "Užrašas sukurtas",
+    "nonotes": "Nėra jokių šios temos užrašų",
+    "note": "Užrašas",
+    "notes": "Pastabos",
+    "personalnotes": "Asmeniniai užrašai",
+    "publishstate": "Teksto ištrauka",
+    "sitenotes": "Svetainės užrašai",
+    "userwithid": "Vartotojo Id {{id}}",
+    "warningnotenotsent": "Negalima pridėto užrašo(-ų) šiems kursams {{course}}. {{error}}"
+}

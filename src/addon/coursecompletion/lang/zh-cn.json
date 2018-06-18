@@ -1,0 +1,17 @@
+{
+    "complete": "完成",
+    "completed": "已完成",
+    "coursecompletion": "课程进度跟踪",
+    "criteria": "条件",
+    "criteriagroup": "条件组",
+    "criteriarequiredall": "必须满足以下条件",
+    "criteriarequiredany": "必须满足下列任一条件",
+    "inprogress": "进行中",
+    "manualselfcompletion": "手动自设完成",
+    "notyetstarted": "还未开始",
+    "pending": "待决",
+    "required": "必须回答",
+    "requiredcriteria": "必备条件",
+    "status": "勋章状态",
+    "viewcoursereport": "查看课程报告"
+}

@@ -1,0 +1,20 @@
+{
+    "addcontact": "Kapcsolat hozzáadása",
+    "blockcontact": "Kapcsolat zárolása",
+    "blocknoncontacts": "Ismeretlenek üzeneteit ne kapjam meg",
+    "contactlistempty": "Kapcsolatainak jegyzéke jelenleg üres.",
+    "contactname": "Név a kapcsolattartáshoz",
+    "contacts": "Kapcsolatok",
+    "deletemessage": "Üzenet törlése",
+    "deletemessageconfirmation": "Biztosan törli az üzenetet? Az csak a korábbi üzeneteiből törlődik, az azt küldő vagy fogadó fél továbbra is láthatja.",
+    "message": "Üzenet törzsszövege",
+    "messagepreferences": "Üzenet beállításai",
+    "messages": "Üzenetek",
+    "newmessage": "Új üzenet",
+    "nomessages": "Még nincs üzenet",
+    "nousersfound": "Nincs felhasználó",
+    "removecontact": "Kapcsolat törlése",
+    "send": "Elküld",
+    "sendmessage": "Üzenet küldése",
+    "unblockcontact": "Kapcsolat zárolásának feloldása"
+}

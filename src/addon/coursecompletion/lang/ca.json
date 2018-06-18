@@ -1,0 +1,21 @@
+{
+    "complete": "Completa",
+    "completecourse": "Curs complet",
+    "completed": "Completat",
+    "completiondate": "Data de compleció",
+    "couldnotloadreport": "No es pot carregar l'informe de compleció del curs, torneu a intentar-ho més tard.",
+    "coursecompletion": "Compleció de curs",
+    "criteria": "Criteris",
+    "criteriagroup": "Grup de criteris",
+    "criteriarequiredall": "Cal que es compleixin tots els criteris que es mostren a continuació",
+    "criteriarequiredany": "Cal que es compleixi algun dels criteris que es mostren a continuació",
+    "inprogress": "En progrés",
+    "manualselfcompletion": "Auto-compleció manual",
+    "notyetstarted": "No s'ha començat encara",
+    "pending": "Pendent",
+    "required": "Requerit",
+    "requiredcriteria": "Criteri requerit",
+    "requirement": "Requisit",
+    "status": "Estat de la insígnia",
+    "viewcoursereport": "Visualitza l'informe del curs"
+}

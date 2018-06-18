@@ -1,0 +1,21 @@
+{
+    "complete": "Færdiggør",
+    "completecourse": "Fuldfør kursus",
+    "completed": "Gennemført",
+    "completiondate": "Afslutningsdato",
+    "couldnotloadreport": "Kunne ikke indlæse rapporten vedrørende  kursusfuldførelse, prøv igen senere.",
+    "coursecompletion": "Kursusgennemførelse",
+    "criteria": "Kriterie",
+    "criteriagroup": "Kriteriegruppe",
+    "criteriarequiredall": "Alle kriterier herunder er påkrævet",
+    "criteriarequiredany": "Et af kriterierne herunder er påkrævet",
+    "inprogress": "Igangværende",
+    "manualselfcompletion": "Manuel selvregistrering af gennemførelse",
+    "notyetstarted": "Ikke begyndt endnu",
+    "pending": "Behandles",
+    "required": "Påkrævet",
+    "requiredcriteria": "Påkrævede kriterier",
+    "requirement": "Krav",
+    "status": "Badgestatus",
+    "viewcoursereport": "Vis kursusrapport"
+}

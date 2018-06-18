@@ -1,0 +1,19 @@
+{
+    "addcontact": "افزودن به مخاطبين",
+    "blockcontact": "مسدود کردن مخاطب",
+    "blocknoncontacts": "افرادی که در لیست مخاطبین من نیستند نتوانند برای من پیام بفرستند",
+    "contactlistempty": "لیست مخاطبین شما خالی است",
+    "contactname": "نام مخاطب",
+    "contacts": "مخاطبین",
+    "errorwhileretrievingdiscussions": "خطا در دریافت مباحثه‌ها از کارگزار.",
+    "message": "متن پیام",
+    "messagepreferences": "ترجیحات پیام‌دهی",
+    "messages": "پیام‌ها",
+    "newmessage": "پیام جدید",
+    "nomessages": "هنوز پیامی گفته نشده است",
+    "nousersfound": "کاربری پیدا نشد",
+    "removecontact": "حذف کردن مخاطب",
+    "send": "فرستادن",
+    "sendmessage": "ارسال پیام",
+    "unblockcontact": "خارج کردن مخاطب از حالت مسدود"
+}

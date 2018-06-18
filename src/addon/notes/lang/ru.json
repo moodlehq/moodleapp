@@ -1,0 +1,13 @@
+{
+    "addnewnote": "Добавить новую заметку",
+    "coursenotes": "Заметки курса",
+    "eventnotecreated": "Заметка создана",
+    "nonotes": "Нет заметок такого типа.",
+    "note": "Заметка",
+    "notes": "Ваши анализы и заметки",
+    "personalnotes": "Личные заметки",
+    "publishstate": "Контекст",
+    "sitenotes": "Заметки сайта",
+    "userwithid": "Пользователя с ID {{id}}",
+    "warningnotenotsent": "Не получилось добавить заметку(и) к курсу {{course}}. {{error}}"
+}

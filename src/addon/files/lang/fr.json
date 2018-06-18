@@ -1,0 +1,13 @@
+{
+    "admindisableddownload": "L'administrateur de votre Moodle a désactivé le téléchargement des fichiers. Vous pouvez les consulter, mais pas les télécharger.",
+    "clicktoupload": "Cliquer sur le bouton ci-dessous pour déposer les fichiers dans vos fichiers personnels.",
+    "couldnotloadfiles": "La liste des fichiers n'a pas pu être chargée.",
+    "emptyfilelist": "Il n'y a pas de fichier à afficher",
+    "erroruploadnotworking": "Il n'est actuellement pas possible de déposer des fichiers sur votre site.",
+    "files": "Fichiers",
+    "myprivatefilesdesc": "Fichiers auxquels vous seul avez accès.",
+    "privatefiles": "Fichiers personnels",
+    "sitefiles": "Fichiers du site",
+    "sitefilesdesc": "Autres fichiers auxquels vous avez accès sur cette plateforme.",
+    "uploadfiles": "Envoyer des fichiers de feedback"
+}

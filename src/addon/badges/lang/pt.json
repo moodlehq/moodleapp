@@ -1,0 +1,13 @@
+{
+    "badgedetails": "Detalhes da Medalha",
+    "badges": "Medalhas",
+    "contact": "Contacto",
+    "dateawarded": "Data de emissão",
+    "expired": "Esta atividade terminou em {{$a}} e já não está disponível",
+    "expirydate": "Data de validade",
+    "issuancedetails": "Data de validade da Medalha",
+    "issuerdetails": "Detalhes do emissor",
+    "issuername": "Nome do emissor",
+    "nobadges": "Não existem Medalhas disponíveis.",
+    "recipientdetails": "Detalhes do condecorado"
+}

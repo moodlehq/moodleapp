@@ -1,0 +1,13 @@
+{
+    "badgedetails": "Badgedetaljer",
+    "badges": "Badges",
+    "contact": "Kontakt",
+    "dateawarded": "Udstedelsesdato",
+    "expired": "Beklager, denne aktivitet er lukket d. {{$a}} og er ikke længere tilgængelig",
+    "expirydate": "Udløbsdato",
+    "issuancedetails": "Badge-udløb",
+    "issuerdetails": "Udstederdata",
+    "issuername": "Udsteders navn",
+    "nobadges": "Der er ingen tilgængelige badges.",
+    "recipientdetails": "Modtagerdata"
+}

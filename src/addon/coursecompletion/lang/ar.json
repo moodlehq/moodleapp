@@ -1,0 +1,21 @@
+{
+    "complete": "كامل",
+    "completecourse": "مقرر مكتمل",
+    "completed": "تم",
+    "completiondate": "تاريخ إكمال المقرر",
+    "couldnotloadreport": "لا يمكن تحميل تقرير إكمال المقرر، الرجاء المحاولة في وقت آخر",
+    "coursecompletion": "إكمال المقرر الدراسي",
+    "criteria": "معايير",
+    "criteriagroup": "مجموعة المعايير",
+    "criteriarequiredall": "كل المعايير في الأسفل مطلوبة",
+    "criteriarequiredany": "أي معيار في الأسفل مطلوب",
+    "inprogress": "قيد التنفيذ",
+    "manualselfcompletion": "إكمال يدوي ذاتي",
+    "notyetstarted": "لم يبدأ بعد",
+    "pending": "معلق",
+    "required": "مفروض",
+    "requiredcriteria": "المعايير المطلوبة",
+    "requirement": "المتطلبات",
+    "status": "الوضع",
+    "viewcoursereport": "عرض تقرير المقرر"
+}

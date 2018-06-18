@@ -1,0 +1,13 @@
+{
+    "addnewnote": "Anmerkung hinzufügen",
+    "coursenotes": "Anmerkungen zum Kurs",
+    "eventnotecreated": "Anmerkung angelegt",
+    "nonotes": "Keine Anmerkungen",
+    "note": "Anmerkung",
+    "notes": "Anmerkungen",
+    "personalnotes": "Meine Anmerkungen",
+    "publishstate": "Kontext",
+    "sitenotes": "Anmerkungen zur Website",
+    "userwithid": "Nutzer/in mit ID {{id}}",
+    "warningnotenotsent": "Die Anmerkungen konnten nicht zum Kurs {{course}} hinzugefügt werden. {{error}}"
+}

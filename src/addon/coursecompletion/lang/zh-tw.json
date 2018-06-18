@@ -1,0 +1,21 @@
+{
+    "complete": "完成",
+    "completecourse": "完成課程",
+    "completed": "已完成",
+    "completiondate": "完成日期",
+    "couldnotloadreport": "無法載入課程完成報表,請稍後再試.",
+    "coursecompletion": "課程完成度",
+    "criteria": "條件",
+    "criteriagroup": "條件群組",
+    "criteriarequiredall": "以下所有的條件都為必填",
+    "criteriarequiredany": "以下任何條件都為必須",
+    "inprogress": "處理中",
+    "manualselfcompletion": "手動自我完成",
+    "notyetstarted": "還沒有開始",
+    "pending": "暫緩",
+    "required": "必須的",
+    "requiredcriteria": "必須條件",
+    "requirement": "需要",
+    "status": "狀態",
+    "viewcoursereport": "檢視課程報表"
+}

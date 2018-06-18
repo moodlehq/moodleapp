@@ -1,0 +1,13 @@
+{
+    "admindisableddownload": "Teniu en compte que l'administrador de Moodle ha desactivat la descàrrega d'arxius; podeu visualitzar els arxius, però no descarregar-los.",
+    "clicktoupload": "Feu clic al botó del dessota per pujar arxius a l'àrea del vostres fitxers.",
+    "couldnotloadfiles": "La llista d'arxius no s'ha pogut carregar.",
+    "emptyfilelist": "No hi ha fitxers per mostrar",
+    "erroruploadnotworking": "No es poden pujar fitxers al vostre lloc ara mateix.",
+    "files": "Fitxers",
+    "myprivatefilesdesc": "Els arxius que teniu disponibles a la vostra àrea privada en aquest lloc Moodle.",
+    "privatefiles": "Fitxers privats",
+    "sitefiles": "Fitxers del lloc",
+    "sitefilesdesc": "Els altres arxius que es troben disponibles en aquest lloc Moodle.",
+    "uploadfiles": "Envia fitxers de retroacció"
+}

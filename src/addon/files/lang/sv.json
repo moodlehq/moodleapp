@@ -1,0 +1,12 @@
+{
+    "admindisableddownload": "Observera att din Moodle administratör inaktiverade nedladdningar av filer. Du kan bläddra igenom filerna men inte hämta dem.",
+    "clicktoupload": "Klicka på knappen nedan för att ladda upp filer till dina privata filer.",
+    "couldnotloadfiles": "Listan över filer kunde inte läsas in.",
+    "emptyfilelist": "Det finns inga filer att visa.",
+    "files": "Filer",
+    "myprivatefilesdesc": "De filer som finns i din privata område på denna Moodle webbplats.",
+    "privatefiles": "Privata filer",
+    "sitefiles": "Webbplatsens filer",
+    "sitefilesdesc": "De andra filer som är tillgängliga för dig på denna Moodle webbplats.",
+    "uploadfiles": "Skicka återkopplingsfiler"
+}
