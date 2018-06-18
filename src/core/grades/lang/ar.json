@@ -5,9 +5,11 @@
     "grades": "درجات",
     "itemname": "اسم البند",
     "lettergrade": "درجة حرفية",
+    "nogradesreturned": "لا توجد درجات",
     "nooutcome": "لا يوجد مخرجات تعلم",
     "percentage": "النسبة",
     "range": "مجال",
     "rank": "مستوى",
+    "viewgrades": "عرض الدرجات",
     "weight": "الوزن"
 }

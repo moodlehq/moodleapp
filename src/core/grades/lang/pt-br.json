@@ -7,9 +7,11 @@
     "grades": "Notas",
     "itemname": "Nome do Item",
     "lettergrade": "Notas por letras",
+    "nogradesreturned": "Nenhuma avaliação calculada",
     "nooutcome": "Nenhum resultado de aprendizagem",
     "percentage": "Porcentagem",
     "range": "Intervalo",
     "rank": "Classificação",
+    "viewgrades": "Ver notas",
     "weight": "Peso"
 }

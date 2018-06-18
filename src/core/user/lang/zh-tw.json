@@ -15,6 +15,8 @@
     "lastname": "姓氏",
     "manager": "管理者",
     "newpicture": "新照片",
+    "noparticipants": "這個課程沒有參與者",
+    "participants": "參與者",
     "phone1": "電話",
     "phone2": "手機",
     "roles": "角色",

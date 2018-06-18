@@ -7,9 +7,11 @@
     "grades": "Pauta",
     "itemname": "Nome do item",
     "lettergrade": "Nota Alfabética",
+    "nogradesreturned": "Não foram devolvidas notas",
     "nooutcome": "Nenhum resultado da aprendizagem",
     "percentage": "Percentagem",
     "range": "Intervalo",
     "rank": "Posição",
+    "viewgrades": "Ver notas",
     "weight": "Peso"
 }

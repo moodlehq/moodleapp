@@ -6,9 +6,11 @@
     "grades": "성적",
     "itemname": "항목 이름",
     "lettergrade": "문자 성적",
+    "nogradesreturned": "돌아온 성적이 없습니다.",
     "nooutcome": "학습성과 없음",
     "percentage": "백분율",
     "range": "범위",
     "rank": "등위",
+    "viewgrades": "성적 보기",
     "weight": "가중치"
 }

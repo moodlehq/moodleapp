@@ -7,9 +7,11 @@
     "grades": "Oceny",
     "itemname": "Nazwa pozycji",
     "lettergrade": "Nazwy ocen",
+    "nogradesreturned": "Brak stopni",
     "nooutcome": "Brak efektu kształcenia",
     "percentage": "Procentowo",
     "range": "Zakres",
     "rank": "Pozycja",
+    "viewgrades": "Pokaż oceny",
     "weight": "Waga"
 }

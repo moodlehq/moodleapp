@@ -7,9 +7,11 @@
     "grades": "Pontok",
     "itemname": "Tétel neve",
     "lettergrade": "Betűpontozás",
+    "nogradesreturned": "Nincs kapott pont",
     "nooutcome": "Nincs eredmény",
     "percentage": "Százalék",
     "range": "Tartomány",
     "rank": "Sorrend",
+    "viewgrades": "Pontok kijelzése",
     "weight": "Súly"
 }

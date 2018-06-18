@@ -7,9 +7,11 @@
     "grades": "Kalifikazioak",
     "itemname": "Elementuaren izena",
     "lettergrade": "Letren bidezko kalifikazioa",
+    "nogradesreturned": "Ez da kalifikaziorik itzuli",
     "nooutcome": "Ez dago ikas-emaitzarik",
     "percentage": "Portzentajea",
     "range": "Ibiltartea",
     "rank": "Bitartea",
+    "viewgrades": "Ikusi kalifikazioak",
     "weight": "Pisua"
 }

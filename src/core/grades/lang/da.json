@@ -7,9 +7,11 @@
     "grades": "Karakterer",
     "itemname": "Elementnavn",
     "lettergrade": "Bogstavkarakter",
+    "nogradesreturned": "Ingen karakterer returneret",
     "nooutcome": "Intet slutresultat",
     "percentage": "Procentdel",
     "range": "Interval",
     "rank": "Rank",
+    "viewgrades": "Vis karakterer",
     "weight": "Vægt"
 }

@@ -13,6 +13,8 @@
     "lastname": "姓",
     "manager": "管理员",
     "newpicture": "新照片",
+    "noparticipants": "未找到此项课程的参与者",
+    "participants": "课程参与者",
     "phone1": "电话",
     "phone2": "手机",
     "roles": "角色",

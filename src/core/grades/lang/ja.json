@@ -7,9 +7,11 @@
     "grades": "評定",
     "itemname": "項目名",
     "lettergrade": "評定文字",
+    "nogradesreturned": "評点がありません。",
     "nooutcome": "アウトカムなし",
     "percentage": "パーセンテージ",
     "range": "範囲",
     "rank": "ランク",
+    "viewgrades": "評点を表示する",
     "weight": "加重"
 }

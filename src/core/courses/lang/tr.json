@@ -5,6 +5,7 @@
     "courses": "Dersler",
     "enrolme": "Beni kaydet",
     "frontpage": "Ön sayfa",
+    "inprogress": "Devam ediyor",
     "mycourses": "Derslerim",
     "nocourses": "Gösterilecek ders bilgisi yok",
     "nocoursesyet": "Bu kategoride ders yok",
@@ -13,6 +14,7 @@
     "password": "Şifre",
     "paymentrequired": "Bu derse giriş için ödeme yapmanız gerekir.",
     "paypalaccepted": "PayPal ödemeleri kabul edilir",
+    "pluginname": "Depo eklenti adı",
     "search": "Arama...",
     "searchcourses": "Dersleri ara",
     "sendpaymentbutton": "Ödemeyi PayPal ile yap"

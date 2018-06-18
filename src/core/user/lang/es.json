@@ -15,6 +15,8 @@
     "lastname": "Apellido(s)",
     "manager": "Gestor",
     "newpicture": "Imagen nueva",
+    "noparticipants": "No se encontraron participantes en este curso",
+    "participants": "Participantes",
     "phone1": "Teléfono",
     "phone2": "Teléfono móvil",
     "roles": "Roles",

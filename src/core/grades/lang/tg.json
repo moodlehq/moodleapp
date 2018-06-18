@@ -7,9 +7,11 @@
     "grades": "Баҳоҳо",
     "itemname": "Ном",
     "lettergrade": "Баҳои ҳарфӣ",
+    "nogradesreturned": "Баҳоҳо нестанд",
     "nooutcome": "Нишондиҳанда нест",
     "percentage": "Фоизҳо",
     "range": "Диапазон",
     "rank": "Место",
+    "viewgrades": "Дида баромадани баҳоҳо",
     "weight": "вазн"
 }
