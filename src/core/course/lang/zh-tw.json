@@ -1,0 +1,19 @@
+{
+    "activitynotyetviewableremoteaddon": "您的組織安裝了尚未支援的外掛",
+    "activitynotyetviewablesiteupgradeneeded": "您的組織的Moodle安裝需要更新.",
+    "allsections": "全部",
+    "askadmintosupport": "請與網站管理員聯繫, 告知他們您要使用Moodle Mobile應用程式使用此活動.",
+    "confirmdeletemodulefiles": "您確定要刪除此模組檔案嗎?",
+    "confirmdownload": "您即將下載{{size}}. 您確定您要繼續嗎?",
+    "confirmdownloadunknownsize": "我們無法計算下載的容量. 您確定要下載嗎?",
+    "confirmpartialdownloadsize": "您即將下載<strong>至少</ strong> {{size}}. 您確定您要繼續嗎?",
+    "contents": "內容",
+    "couldnotloadsectioncontent": "無法載入區塊內容, 請稍後再試.",
+    "couldnotloadsections": "無法載入區塊, 請稍後再試.",
+    "errordownloadingsection": "載入區塊時發生錯誤",
+    "errorgetmodule": "取得模組資料時出現錯誤",
+    "hiddenfromstudents": "對學生隱藏",
+    "nocontentavailable": "目前無內容可使用",
+    "overriddennotice": "您在這活動的最後成績是手動調整的。",
+    "useactivityonbrowser": "你可以以瀏覽器一直使用"
+}

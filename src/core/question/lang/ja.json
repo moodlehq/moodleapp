@@ -1,0 +1,18 @@
+{
+    "answer": "回答",
+    "answersaved": "解答保存済み",
+    "complete": "詳細",
+    "correct": "正解",
+    "feedback": "フィードバック",
+    "howtodraganddrop": "選んだものをタッチして、あてはまる所にタッチして入れましょう。",
+    "incorrect": "不正解",
+    "information": "情報",
+    "invalidanswer": "不完全な答え",
+    "notanswered": "未投票",
+    "notyetanswered": "未回答",
+    "partiallycorrect": "部分的に正解",
+    "questionmessage": "問題 {{$a}}: {{$b}}",
+    "questionno": "問題 {{$a}}",
+    "requiresgrading": "要評定",
+    "unknown": "不明"
+}

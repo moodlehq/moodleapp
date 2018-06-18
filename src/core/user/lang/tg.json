@@ -1,0 +1,23 @@
+{
+    "address": "Суроға",
+    "city": "Шаҳр",
+    "contact": "Барои тамос",
+    "country": "Кишвар",
+    "description": "Матни муқаддимавӣ",
+    "details": "Тафсилот",
+    "email": "Email",
+    "emailagain": "Адреси почтаи электронӣ (бори дигар)",
+    "firstname": "Ном",
+    "interests": "Шавқмандиҳо",
+    "invaliduser": "Корбари беэътибор.",
+    "lastname": "Фамилия",
+    "manager": "Мудир",
+    "newpicture": "Тасвири нав",
+    "phone1": "Телефон",
+    "phone2": "Телефони мобилӣ",
+    "roles": "Нақшҳо",
+    "sendemail": "Почтаи электронӣ",
+    "student": "Донишҷӯ",
+    "viewprofile": "Дида баромадани профил",
+    "webpage": "Веб-саҳифа"
+}

@@ -1,0 +1,17 @@
+{
+    "allsections": "Tutte le sezioni",
+    "confirmdeletemodulefiles": "Sei sicuro di eliminare questi file?",
+    "confirmdownload": "Stai per scaricare {{size}}. Vuoi continuare?",
+    "confirmdownloadunknownsize": "Non è stato possibile calcolare la dimensione del download. Vuoi continuare?",
+    "confirmpartialdownloadsize": "Stai per scaricare <strong>almeno/strong> {{size}}. Vuoi continuare?",
+    "contents": "Contenuti",
+    "couldnotloadsectioncontent": "Non è stato possibile caricare il contenuto della sezione, per favore riprova più tardi.",
+    "couldnotloadsections": "Non è stato possibile caricare le sezioni, per favore riprova più tardi.",
+    "downloadcourse": "Scarica corso",
+    "errordownloadingcourse": "Si è verificato un errore durante lo scaricamento del corso.",
+    "errordownloadingsection": "Si è verificato un errore durante lo scaricamento della sezione.",
+    "errorgetmodule": "Si è verificato un errore durante la ricezione dei dati dell'attività.",
+    "hiddenfromstudents": "Nascosta agli studenti",
+    "nocontentavailable": "Non sono presenti contenuti.",
+    "overriddennotice": "La tua valutazione finale da questa attività è stata modificata manualmente."
+}

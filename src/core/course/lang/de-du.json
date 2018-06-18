@@ -1,0 +1,22 @@
+{
+    "activitydisabled": "Für diese Website ist die Aktivität in der App deaktiviert.",
+    "activitynotyetviewableremoteaddon": "Für die Website ist ein Plugin installiert, das bisher nicht unterstützt wird.",
+    "activitynotyetviewablesiteupgradeneeded": "Diese Website muss aktualisiert werden.",
+    "allsections": "Alle Abschnitte",
+    "askadmintosupport": "Frage den Administrator der Website, um die Aktivität mit der mobilen App verwenden zu können.",
+    "confirmdeletemodulefiles": "Möchtest du diese Dateien wirklich löschen?",
+    "confirmdownload": "Möchtest du wirklich {{size}} herunterladen?",
+    "confirmdownloadunknownsize": "Die Datenmenge kann nicht berechnet werden. Möchtest du wirklich herunterladen?",
+    "confirmpartialdownloadsize": "Möchtest du wirklich {{size}} herunterladen?",
+    "contents": "Inhalte",
+    "couldnotloadsectioncontent": "Die Abschnittsinhalte konnten nicht geladen werden. Versuche es später noch einmal.",
+    "couldnotloadsections": "Die Abschnitte konnten nicht geladen werden. Versuche es später noch einmal.",
+    "downloadcourse": "Kurs herunterladen",
+    "errordownloadingcourse": "Fehler beim Herunterladen des Kurses",
+    "errordownloadingsection": "Fehler beim Herunterladen des Abschnitts",
+    "errorgetmodule": "Fehler beim Laden von Aktivitätsdaten",
+    "hiddenfromstudents": "Für Teilnehmer/innen verborgen",
+    "nocontentavailable": "Momentan sind keine Inhalte verfügbar",
+    "overriddennotice": "Die endgültige Bewertung zu dieser Aktivität wurde manuell bearbeitet.",
+    "useactivityonbrowser": "Du kannst dies im Webbrowser verwenden."
+}

@@ -1,0 +1,21 @@
+{
+    "answer": "Réponse",
+    "answersaved": "Réponse enregistrée",
+    "complete": "Complet",
+    "correct": "Correct",
+    "errorattachmentsnotsupported": "L'application ne permet pas encore d'annexer des fichiers aux réponses.",
+    "errorinlinefilesnotsupported": "L'app ne permet pas encore la modification de fichiers en ligne.",
+    "errorquestionnotsupported": "Ce type de question n'est pas supporté par l'app : {{$a}}.",
+    "feedback": "Feedback",
+    "howtodraganddrop": "Tapoter pour sélectionner, puis tapoter pour déposer.",
+    "incorrect": "Incorrect",
+    "information": "Description",
+    "invalidanswer": "Réponse incomplète",
+    "notanswered": "Pas encore répondu",
+    "notyetanswered": "Pas encore répondu",
+    "partiallycorrect": "Partiellement correct",
+    "questionmessage": "Question {{$a}} : {{$b}}",
+    "questionno": "Question {{$a}}",
+    "requiresgrading": "Nécessite évaluation",
+    "unknown": "Inconnu"
+}

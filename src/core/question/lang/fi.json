@@ -1,0 +1,21 @@
+{
+    "answer": "Vastaus",
+    "answersaved": "Vastaus tallennettu",
+    "complete": "Valmis",
+    "correct": "Oikeellinen",
+    "errorattachmentsnotsupported": "Mobiilisovellus ei vielä tue vastausten liitetiedostoja.",
+    "errorinlinefilesnotsupported": "Mobiilisovellus ei tue vielä tiedoston muokkaamista.",
+    "errorquestionnotsupported": "Mobiilisovellus ei tue kysymystyyppiä: {{$a}}.",
+    "feedback": "Palaute",
+    "howtodraganddrop": "Napauta valitaksesi ja napauta toisen kerran pudottaaksesi.",
+    "incorrect": "Virheellinen",
+    "information": "Informaatio",
+    "invalidanswer": "Puutteellinen vastaus",
+    "notanswered": "Ei vastattu",
+    "notyetanswered": "Ei vielä vastattu",
+    "partiallycorrect": "Osittain oikein",
+    "questionmessage": "Kysymys {{$a}}: {{$b}}",
+    "questionno": "Kysymys {{$a}}",
+    "requiresgrading": "Vaatii arvioinnin",
+    "unknown": "Tuntematon"
+}

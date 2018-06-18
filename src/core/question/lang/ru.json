@@ -1,0 +1,21 @@
+{
+    "answer": "Ответ",
+    "answersaved": "Ответ сохранен",
+    "complete": "Завершено",
+    "correct": "Верно",
+    "errorattachmentsnotsupported": "Приложение пока не поддерживает прикрепление файлов к ответом.",
+    "errorinlinefilesnotsupported": "Приложение пока не поддерживает редактирование inline-файлов.",
+    "errorquestionnotsupported": "Данный тип вопросов пока не поддерживается приложением: {{$a}}.",
+    "feedback": "Отзыв",
+    "howtodraganddrop": "Нажмите, чтобы выбрать, затем нажмите, чтобы сбросить.",
+    "incorrect": "Неверно",
+    "information": "Информация",
+    "invalidanswer": "Неполный ответ",
+    "notanswered": "Еще не ответили",
+    "notyetanswered": "Пока нет ответа",
+    "partiallycorrect": "Частично верно",
+    "questionmessage": "Вопрос {{$a}}: {{$b}}",
+    "questionno": "Вопрос {{$a}}",
+    "requiresgrading": "Требуется оценивание",
+    "unknown": "неизвестно"
+}

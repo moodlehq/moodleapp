@@ -1,0 +1,15 @@
+{
+    "activitydisabled": "Denne aktivitet er deaktiveret i mobilappen.",
+    "allsections": "Alle sektioner",
+    "confirmdeletemodulefiles": "Er du sikker på at du vil slette disse modulfiler?",
+    "confirmdownload": "Du er ved at hente {{size}}. Er du sikker på at du vil fortsætte?",
+    "confirmdownloadunknownsize": "Vi kunne ikke beregne størrelsen af dit download. Er du sikker på du vil hende det?",
+    "confirmpartialdownloadsize": "Du er ved at downloade <strong>mindst</strong> {{size}}. Er du sikker på at du vil fortsætte?",
+    "contents": "Indhold",
+    "couldnotloadsectioncontent": "Kunne ikke indlæse sektionens indhold, prøv igen senere.",
+    "couldnotloadsections": "Kunne ikke indlæse sektionerne, prøv igen senere.",
+    "errordownloadingsection": "Fejl ved indlæsning af sektion.",
+    "hiddenfromstudents": "Skjult for studerende",
+    "nocontentavailable": "Intet indhold tilgængeligt lige nu.",
+    "overriddennotice": "Din endelige karakter fra denne aktivitet blev justeret manuelt."
+}

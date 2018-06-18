@@ -1,0 +1,9 @@
+{
+    "audio": "오디오 파일 ({{$a.EXT}})",
+    "errorreadingfile": "\"{{$a}}\" 파일 읽기 오류",
+    "file": "파일",
+    "invalidfiletype": "{{$a}} 파일 형식은 쓸 수 없음",
+    "more": "더 이상",
+    "uploadafile": "파일 올리기",
+    "uploading": "올리는 중..."
+}

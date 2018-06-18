@@ -1,0 +1,11 @@
+{
+    "chooseaccountstorefile": "Elija una cuenta en la cual almacenar el archivo.",
+    "chooseactionrepeatedfile": "Ya existe un archivo con este nombre. ¿Desea Usted remplazar el archivo existente o renombrarlo a \"{{$a}}\"?",
+    "errorreceivefilenosites": "No hay sitios almacenados. Por favor, añada un sitio antes de compartir un archivo con la Appp.",
+    "nosharedfiles": "No hay archivos compartidos almacenados en este sitio.",
+    "nosharedfilestoupload": "Usted no tiene archivos para subir aquí. Si Usted desea subir un archivo desde otra App, localice ese archivo y haga click en el botón para 'Abrir en'.",
+    "rename": "Renombrar",
+    "replace": "Reemplazar",
+    "sharedfiles": "Archivos compartidos",
+    "successstorefile": "Archivo almacenado exitosamente. Seleccione el archivo a subir a sus archivos privados o para usar en una actividad."
+}

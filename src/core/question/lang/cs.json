@@ -1,0 +1,21 @@
+{
+    "answer": "Odpověď",
+    "answersaved": "Odpověď uložena",
+    "complete": "Splněno",
+    "correct": "Správná odpověď",
+    "errorattachmentsnotsupported": "Aplikace ještě nepodporuje připojování souborů k odpovědím.",
+    "errorinlinefilesnotsupported": "Aplikace ještě nepodporuje úpravy vložených souborů.",
+    "errorquestionnotsupported": "Tento typ úlohy není aplikací podporován: {{$a}}.",
+    "feedback": "Komentář",
+    "howtodraganddrop": "Klepnutím vyberte potom klepněte na místo umístění.",
+    "incorrect": "Nesprávná odpověď",
+    "information": "Informace",
+    "invalidanswer": "Neúplná odpověď",
+    "notanswered": "Dosud nezodpovězeno",
+    "notyetanswered": "Dosud nezodpovězeno",
+    "partiallycorrect": "Částečně správná odpověď",
+    "questionmessage": "Úloha {{$a}}: {{$b}}",
+    "questionno": "Úloha {{$a}}",
+    "requiresgrading": "Vyžaduje hodnocení",
+    "unknown": "Neznámý"
+}

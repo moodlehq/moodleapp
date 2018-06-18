@@ -1,0 +1,22 @@
+{
+    "address": "Cím",
+    "city": "Helység",
+    "contact": "Kapcsolat",
+    "country": "Ország",
+    "description": "Bevezető szöveg",
+    "details": "SCO nyomon követésének részletei",
+    "email": "E-mail cím",
+    "emailagain": "E-mail (ismét)",
+    "firstname": "Keresztnév",
+    "interests": "Érdeklődési kör",
+    "invaliduser": "Érvénytelen felhasználó",
+    "lastname": "Vezetéknév",
+    "manager": "Igazgató",
+    "newpicture": "Új kép",
+    "phone1": "Telefon",
+    "phone2": "Mobiltelefon",
+    "roles": "Szerepek",
+    "student": "Tanuló",
+    "viewprofile": "Profil megtekintése",
+    "webpage": "Weboldal"
+}

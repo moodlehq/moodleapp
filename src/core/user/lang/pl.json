@@ -1,0 +1,22 @@
+{
+    "address": "Adres",
+    "city": "Miasto",
+    "contact": "Kontakt",
+    "country": "Kraj",
+    "description": "Wstęp",
+    "details": "Szczegóły ścieżki",
+    "email": "E-mail",
+    "emailagain": "E-mail (jeszcze raz)",
+    "firstname": "Imię",
+    "interests": "Zainteresowania",
+    "invaliduser": "Nieprawidłowy użytkownik",
+    "lastname": "Nazwisko",
+    "manager": "Menedżer",
+    "newpicture": "Nowy obraz",
+    "phone1": "Telefon",
+    "phone2": "Tel. komórkowy",
+    "roles": "Role",
+    "student": "Student",
+    "viewprofile": "Zobacz profil",
+    "webpage": "Strona WWW"
+}

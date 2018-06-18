@@ -1,0 +1,20 @@
+{
+    "activitydisabled": "La vostra organització ha desactivat aquesta activitat a l'app mòbil.",
+    "activitynotyetviewableremoteaddon": "La vostra organització ha instal·lat un complement que encara no és compatible amb l'aplicació.",
+    "activitynotyetviewablesiteupgradeneeded": "El Moodle de la vostra organització necessita una actualització.",
+    "allsections": "Totes les seccions",
+    "askadmintosupport": "Contacteu l'administrador del lloc i digueu-li que voleu fer servir aquesta activitat a Moodle Mobile.",
+    "confirmdeletemodulefiles": "Confirmeu que voleu eliminar els fitxers d'aquest mòdul?",
+    "confirmdownload": "Esteu a punt de descarregar {{size}}. Segur que voleu continuar?",
+    "confirmdownloadunknownsize": "No es pot calcular la mida de la descàrrega. Segur que voleu continuar?",
+    "confirmpartialdownloadsize": "Ara descarregareu {{size}} <strong>com a mínim</strong>. Confirmeu que voleu continuar?",
+    "contents": "Continguts",
+    "couldnotloadsectioncontent": "No s'ha pogut carregat el contingut de la secció, torneu-ho a provar més tard.",
+    "couldnotloadsections": "No s'ha pogut carregar les seccions, si us plau, torneu-ho a provar més tard.",
+    "errordownloadingsection": "S'ha produït un error en descarregar la secció.",
+    "errorgetmodule": "S'ha produït un error en recuperar les dades del mòdul.",
+    "hiddenfromstudents": "Ocult per a l'estudiantat",
+    "nocontentavailable": "No hi ha contingut disponible en aquest moment.",
+    "overriddennotice": "La vostra qualificació final en aquesta activitat s'ha modificat manualment.",
+    "useactivityonbrowser": "Tot i així, podeu fer-la servir al navegador del dispositiu."
+}

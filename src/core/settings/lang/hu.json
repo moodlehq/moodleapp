@@ -1,0 +1,21 @@
+{
+    "about": "Ismertetés",
+    "cacheexpirationtime": "Gyorsítótár lejárata (ms)",
+    "currentlanguage": "Aktuális nyelv",
+    "deletesitefiles": "Biztosan törli a portálról a letöltött fájlokat?",
+    "disableall": "Értesítésekkikapcsolása",
+    "disabled": "Ezen a portálon az üzenetküldés ki van kapcsolva",
+    "enabledebugging": "Hibakeresés bekapcsolása",
+    "estimatedfreespace": "Becsült szabad tárhely",
+    "general": "Általános",
+    "language": "Nyelv",
+    "license": "Engedély:",
+    "loggedin": "Bejelentkezve:",
+    "loggedoff": "Kijelentkezve",
+    "processorsettings": "Feldolgozó beállításai",
+    "settings": "Beállítások",
+    "sites": "Portálok",
+    "spaceusage": "Tárhelyhasználat",
+    "synchronization": "Szinkronizálás",
+    "total": "Összesen"
+}

@@ -1,0 +1,16 @@
+{
+    "answer": "Отговор",
+    "answersaved": "Отговорът съхранен",
+    "complete": "Завършен",
+    "correct": "Вярно",
+    "feedback": "Обратна връзка",
+    "incorrect": "Неправилно",
+    "information": "Информация",
+    "invalidanswer": "Непълен отговор",
+    "notanswered": "Още няма отговори",
+    "notyetanswered": "Още без отговор",
+    "partiallycorrect": "Частично верен",
+    "questionno": "Въпрос {{$a}}",
+    "requiresgrading": "Изисква оценяване",
+    "unknown": "Неизвестно"
+}

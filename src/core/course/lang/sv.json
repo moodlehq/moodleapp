@@ -1,0 +1,13 @@
+{
+    "allsections": "Alla sektioner",
+    "confirmdownload": "Du är på väg att ladda ner {{size}}. Är du säker att du vill fortsätta?",
+    "confirmdownloadunknownsize": "Det gick inte att beräkna storleken på nedladdningen . Det gick inte att beräkna storleken på nedladdningen . Är du säker att du vill fortsätta och ladda ner?",
+    "contents": "Innehåll",
+    "couldnotloadsectioncontent": "Det gick inte att läsa sektionens innehåll. Vänligen försök igen senare.",
+    "couldnotloadsections": "Det gick inte att läsa sektionen. Vänligen försök igen senare.",
+    "errordownloadingsection": "Fel vid nedladdning av sektion",
+    "errorgetmodule": "Fel vid hämtning av data",
+    "hiddenfromstudents": "Dolt för studenter/deltagare/elever/lärande",
+    "nocontentavailable": "Inget innehåll tillgängligt för tillfället.",
+    "overriddennotice": "Ditt sammanfattningsbetyg för den här aktiviteten har justerats manuellt."
+}

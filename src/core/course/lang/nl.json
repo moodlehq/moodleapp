@@ -1,0 +1,20 @@
+{
+    "activitydisabled": "Jouw organisatie heeft deze activiteit uitgeschakeld in de mobiele app.",
+    "activitynotyetviewableremoteaddon": "Jouw organisatie heeft een plugin geïnstalleerd die nog niet ondersteund wordt.",
+    "activitynotyetviewablesiteupgradeneeded": "De site gebruikt de niet laatste Moodle-versie en moet worden geüpdatet. Neem contact op met de site-beheerder.",
+    "allsections": "Alle secties",
+    "askadmintosupport": "Neem contact op met de sitebeheerder en geef aan dat je deze activiteit met de Moodle mobile app wilt gebruiken.",
+    "confirmdeletemodulefiles": "Weet je zeker dat je deze modulebestanden wil verwijderen?",
+    "confirmdownload": "Je gaat {{size}} downloaden. Weet je zeker dat je verder wil gaan?",
+    "confirmdownloadunknownsize": "We konden de grootte van de download niet berekenen. Weet je zeker dat je toch wil downloaden?",
+    "confirmpartialdownloadsize": "Je staat op het punt om <strong>minstens</strong> {{size}} te downloaden. Weet je zeker dat je verder wil gaan?",
+    "contents": "Inhoud",
+    "couldnotloadsectioncontent": "Kon sectie-inhoud niet laden. Probeer later opnieuw.",
+    "couldnotloadsections": "Kon secties niet laden. Probeer later opnieuw.",
+    "errordownloadingsection": "Fout bij het downloaden van de sectie.",
+    "errorgetmodule": "Fout bij het ophalen van activiteitsgegevens.",
+    "hiddenfromstudents": "Verborgen voor leerlingen",
+    "nocontentavailable": "Geen inhoud beschikbaar.",
+    "overriddennotice": "Je totaalcijfer voor deze activiteit is manueel aangepast.",
+    "useactivityonbrowser": "Je kunt de activiteit nog steeds via de browser van je apparaat gebruiken."
+}

@@ -1,0 +1,7 @@
+{
+    "chooseaccount": "Valitse käyttäjätili",
+    "chooseaccounttoopenlink": "Valitse käyttäjätili, jolle linkki avataan.",
+    "confirmurlothersite": "Tämä linkki johtaa ulkopuoliselle sivustolle. Haluatko avata sen?",
+    "errornoactions": "Toimintoa, jota voisi hyödyntää tähän linkkiin, ei löytynyt.",
+    "errornosites": "Sivustoa, joka käsittelisi tämän linkin, ei löytynyt."
+}
