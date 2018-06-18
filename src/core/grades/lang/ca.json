@@ -7,9 +7,11 @@
     "grades": "Qualificacions",
     "itemname": "Nom de l'element",
     "lettergrade": "Qualificació per lletres",
+    "nogradesreturned": "No s'han retornat qualificacions",
     "nooutcome": "Sense competències",
     "percentage": "Percentatge",
     "range": "Gamma",
     "rank": "Rang",
+    "viewgrades": "Mostra les qualificacions",
     "weight": "Ponderació"
 }

@@ -6,9 +6,11 @@
     "grades": "Ocjene",
     "itemname": "Naziv stavke",
     "lettergrade": "Slovna ocjena",
+    "nogradesreturned": "Nema ocjena",
     "nooutcome": "Bez ishoda učenja",
     "percentage": "Postotak",
     "range": "Opseg",
     "rank": "Rang",
+    "viewgrades": "Prikaži ocjene",
     "weight": "Ponder"
 }

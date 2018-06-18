@@ -7,9 +7,11 @@
     "grades": "Notlar",
     "itemname": "Öge adı",
     "lettergrade": "Harf notu",
+    "nogradesreturned": "Hiç not yok",
     "nooutcome": "Hedef yok",
     "percentage": "Yüzde",
     "range": "Fark",
     "rank": "Sıra",
+    "viewgrades": "Notlara bak",
     "weight": "Ağırlık"
 }

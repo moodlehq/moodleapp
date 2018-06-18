@@ -15,6 +15,8 @@
     "lastname": "Nachname",
     "manager": "Manager/in",
     "newpicture": "Neues Foto",
+    "noparticipants": "Keine Teilnehmer gefunden",
+    "participants": "Teilnehmer/innen",
     "phone1": "Telefon",
     "phone2": "Mobiltelefon",
     "roles": "Rollen",

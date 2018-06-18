@@ -7,9 +7,11 @@
     "grades": "Valutazioni",
     "itemname": "Nome elemento",
     "lettergrade": "Graduatoria letterale",
+    "nogradesreturned": "Non è stata ottenuta alcuna valutazione",
     "nooutcome": "Nessun obiettivo",
     "percentage": "Percentuale",
     "range": "Intervallo",
     "rank": "Classifica",
+    "viewgrades": "Visualizza risultati",
     "weight": "Peso"
 }

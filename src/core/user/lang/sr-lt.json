@@ -15,6 +15,8 @@
     "lastname": "Prezime",
     "manager": "Menadžer",
     "newpicture": "Nova slika",
+    "noparticipants": "Nijedan učesnik nije pronađen na ovom kursu.",
+    "participants": "Učesnici",
     "phone1": "Telefon",
     "phone2": "Mobilni",
     "roles": "Uloge",

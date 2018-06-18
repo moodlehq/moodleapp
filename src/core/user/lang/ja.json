@@ -13,6 +13,8 @@
     "lastname": "姓",
     "manager": "マネージャ",
     "newpicture": "新しい画像",
+    "noparticipants": "このコースには参加者が登録されていません。",
+    "participants": "参加者",
     "phone1": "電話",
     "phone2": "携帯電話",
     "roles": "ロール",

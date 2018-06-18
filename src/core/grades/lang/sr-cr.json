@@ -7,9 +7,11 @@
     "grades": "Оцене",
     "itemname": "Назив ставке",
     "lettergrade": "Словна оцена",
+    "nogradesreturned": "Нема добијених оцена",
     "nooutcome": "Без исхода учења",
     "percentage": "Проценат",
     "range": "Опсег",
     "rank": "Ранг",
+    "viewgrades": "Приказ оцена",
     "weight": "Пондер"
 }

@@ -13,6 +13,8 @@
     "lastname": "Nazwisko",
     "manager": "Menedżer",
     "newpicture": "Nowy obraz",
+    "noparticipants": "Nie znaleziono uczestników.",
+    "participants": "Uczestnicy",
     "phone1": "Telefon",
     "phone2": "Tel. komórkowy",
     "roles": "Role",

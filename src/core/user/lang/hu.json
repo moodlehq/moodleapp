@@ -13,6 +13,8 @@
     "lastname": "Vezetéknév",
     "manager": "Igazgató",
     "newpicture": "Új kép",
+    "noparticipants": "Nincs résztvevő.",
+    "participants": "Résztvevők",
     "phone1": "Telefon",
     "phone2": "Mobiltelefon",
     "roles": "Szerepek",

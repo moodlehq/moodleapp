@@ -7,9 +7,11 @@
     "grades": "Note",
     "itemname": "Nume element",
     "lettergrade": "Notă sub formă de literă",
+    "nogradesreturned": "Nu au fost returnate note",
     "nooutcome": "fără rezultat",
     "percentage": "Procentaj",
     "range": "Interval",
     "rank": "Rang",
+    "viewgrades": "Afişează note",
     "weight": "pondere"
 }
