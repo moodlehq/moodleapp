@@ -58,7 +58,7 @@ $core-course-image-background: #81ecec, #74b9ff, #a29bfe, #dfe6e9, #00b894, #098
 // To view all the possible Ionic variables, see:
 // http://ionicframework.com/docs/theming/overriding-ionic-variables/
 
-$toolbar-background: $orange;
+$toolbar-background: $core-color;
 $content-padding: 10px;
 
 
@@ -141,7 +141,7 @@ $loading-ios-spinner-color: $core-color;
 $spinner-ios-ios-color: $core-color;
 $tabs-ios-tab-color-inactive: $tabs-tab-color-inactive;
 $button-ios-outline-background-color: $white;
-
+$toolbar-ios-height: 44px + 15;
 
 // App Material Design Variables
 // --------------------------------------------------

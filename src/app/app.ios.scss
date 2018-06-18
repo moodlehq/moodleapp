@@ -41,6 +41,18 @@
     height: calc(100% - #{($navbar-ios-height)});
 }
 
+.platform-cordova.ios .core-avoid-header .menu-inner > ion-content {
+    top: $navbar-ios-height + $cordova-ios-statusbar-padding;
+    height: calc(100% - #{($navbar-ios-height + $cordova-ios-statusbar-padding)});
+}
+
+.platform-cordova.ios .core-avoid-header .core-avoid-header .menu-inner > ion-content,
+.platform-cordova.ios core-tab core-split-view .core-avoid-header .menu-inner > ion-content {
+    top: 0;
+    height: 100%;
+}
+
+
 // Highlights inside the input element.
 @if ($core-text-input-ios-show-highlight) {
   .card-ios, .list-ios {

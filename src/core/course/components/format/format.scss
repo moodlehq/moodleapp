@@ -6,6 +6,11 @@ ion-badge.core-course-download-section-progress {
 }
 
 core-course-format {
+
+    .core-format-progress-list {
+        margin-bottom: 0;
+    }
+
     .core-course-thumb {
         height: 150px;
         width: 100%;
