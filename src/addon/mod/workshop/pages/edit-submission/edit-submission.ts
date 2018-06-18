@@ -312,25 +312,20 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
         const modal = this.domUtils.showModalLoading('core.sending', true),
             submissionId = this.submission.id;
 
-        // Check if rich text editor is enabled or not.
-        return this.domUtils.isRichTextEditorEnabled().then((rteEnabled) => {
-            if (!rteEnabled) {
-                // Rich text editor not enabled, add some HTML to the message if needed.
-                inputData.content = this.textUtils.formatHtmlLines(inputData.content);
-            }
+        // Add some HTML to the message if needed.
+        inputData.content = this.textUtils.formatHtmlLines(inputData.content);
 
-            // Upload attachments first if any.
-            allowOffline = !inputData.attachmentfiles.length;
+        // Upload attachments first if any.
+        allowOffline = !inputData.attachmentfiles.length;
 
-            return this.workshopHelper.uploadOrStoreSubmissionFiles(this.workshopId, this.submission.id, inputData.attachmentfiles,
-                    this.editing, saveOffline).catch(() => {
-                // Cannot upload them in online, save them in offline.
-                saveOffline = true;
-                allowOffline = true;
+        return this.workshopHelper.uploadOrStoreSubmissionFiles(this.workshopId, this.submission.id, inputData.attachmentfiles,
+                this.editing, saveOffline).catch(() => {
+            // Cannot upload them in online, save them in offline.
+            saveOffline = true;
+            allowOffline = true;
 
-                return this.workshopHelper.uploadOrStoreSubmissionFiles(this.workshopId, this.submission.id,
-                    inputData.attachmentfiles, this.editing, saveOffline);
-            });
+            return this.workshopHelper.uploadOrStoreSubmissionFiles(this.workshopId, this.submission.id,
+                inputData.attachmentfiles, this.editing, saveOffline);
         }).then((attachmentsId) => {
             if (this.editing) {
                 if (saveOffline) {

@@ -182,29 +182,29 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
         const files = this.replyData.files || [];
         const options: any = {};
         const modal = this.domUtils.showModalLoading('core.sending', true);
+        let promise;
 
-        // Check if rich text editor is enabled or not.
-        this.domUtils.isRichTextEditorEnabled().then((enabled) => {
-            if (!enabled) {
-                // Rich text editor not enabled, add some HTML to the message if needed.
-                message = this.textUtils.formatHtmlLines(message);
-            }
+        // Add some HTML to the message if needed.
+        message = this.textUtils.formatHtmlLines(message);
 
-            // Upload attachments first if any.
-            if (files.length) {
-                return this.forumHelper.uploadOrStoreReplyFiles(this.forum.id, replyingTo, files, false).catch((error) => {
-                    // Cannot upload them in online, save them in offline.
-                    if (!this.forum.id) {
-                        // Cannot store them in offline without the forum ID. Reject.
-                        return Promise.reject(error);
-                    }
+        // Upload attachments first if any.
+        if (files.length) {
+            promise = this.forumHelper.uploadOrStoreReplyFiles(this.forum.id, replyingTo, files, false).catch((error) => {
+                // Cannot upload them in online, save them in offline.
+                if (!this.forum.id) {
+                    // Cannot store them in offline without the forum ID. Reject.
+                    return Promise.reject(error);
+                }
 
-                    saveOffline = true;
+                saveOffline = true;
 
-                    return this.forumHelper.uploadOrStoreReplyFiles(this.forum.id, replyingTo, files, true);
-                });
-            }
-        }).then((attach) => {
+                return this.forumHelper.uploadOrStoreReplyFiles(this.forum.id, replyingTo, files, true);
+            });
+        } else {
+            promise = Promise.resolve();
+        }
+
+        promise.then((attach) => {
             if (attach) {
                 options.attachmentsid = attach;
             }

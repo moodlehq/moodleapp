@@ -15,7 +15,6 @@ import { Injector, Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AddonModDataFieldTextHandler } from '../../text/providers/handler';
 import { AddonModDataFieldTextareaComponent } from '../component/textarea';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 
 /**
@@ -26,8 +25,7 @@ export class AddonModDataFieldTextareaHandler extends AddonModDataFieldTextHandl
     name = 'AddonModDataFieldTextareaHandler';
     type = 'textarea';
 
-    constructor(protected translate: TranslateService, private textUtils: CoreTextUtilsProvider,
-            private domUtils: CoreDomUtilsProvider) {
+    constructor(protected translate: TranslateService, private textUtils: CoreTextUtilsProvider) {
         super(translate);
     }
 
@@ -54,31 +52,27 @@ export class AddonModDataFieldTextareaHandler extends AddonModDataFieldTextHandl
         const fieldName = 'f_' + field.id;
 
         if (inputData[fieldName]) {
-            return this.domUtils.isRichTextEditorEnabled().then((enabled) => {
-                const files = this.getFieldEditFiles(field, inputData, originalFieldData);
-                let text = this.textUtils.restorePluginfileUrls(inputData[fieldName], files);
+            const files = this.getFieldEditFiles(field, inputData, originalFieldData);
+            let text = this.textUtils.restorePluginfileUrls(inputData[fieldName], files);
 
-                if (!enabled) {
-                    // Rich text editor not enabled, add some HTML to the text if needed.
-                    text = this.textUtils.formatHtmlLines(text);
+            // Add some HTML to the text if needed.
+            text = this.textUtils.formatHtmlLines(text);
+
+            return [{
+                    fieldid: field.id,
+                    value: text
+                },
+                {
+                    fieldid: field.id,
+                    subfield: 'content1',
+                    value: 1
+                },
+                {
+                    fieldid: field.id,
+                    subfield: 'itemid',
+                    files: files
                 }
-
-                return [{
-                        fieldid: field.id,
-                        value: text
-                    },
-                    {
-                        fieldid: field.id,
-                        subfield: 'content1',
-                        value: 1
-                    },
-                    {
-                        fieldid: field.id,
-                        subfield: 'itemid',
-                        files: files
-                    }
-                ];
-            });
+            ];
         }
 
         return false;

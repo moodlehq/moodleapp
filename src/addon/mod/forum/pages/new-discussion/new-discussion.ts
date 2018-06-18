@@ -423,25 +423,25 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
         }
 
         const modal = this.domUtils.showModalLoading('core.sending', true);
+        let promise;
 
-        // Check if rich text editor is enabled or not.
-        this.domUtils.isRichTextEditorEnabled().then((enabled) => {
-            if (!enabled) {
-                // Rich text editor not enabled, add some HTML to the message if needed.
-                message = this.textUtils.formatHtmlLines(message);
-            }
+        // Add some HTML to the message if needed.
+        message = this.textUtils.formatHtmlLines(message);
 
-            // Upload attachments first if any.
-            if (attachments.length) {
-                return this.forumHelper.uploadOrStoreNewDiscussionFiles(this.forumId, discTimecreated, attachments, false)
-                        .catch(() => {
-                    // Cannot upload them in online, save them in offline.
-                    saveOffline = true;
+        // Upload attachments first if any.
+        if (attachments.length) {
+            promise = this.forumHelper.uploadOrStoreNewDiscussionFiles(this.forumId, discTimecreated, attachments, false)
+                    .catch(() => {
+                // Cannot upload them in online, save them in offline.
+                saveOffline = true;
 
-                    return this.forumHelper.uploadOrStoreNewDiscussionFiles(this.forumId, discTimecreated, attachments, true);
-                });
-            }
-        }).then((attach) => {
+                return this.forumHelper.uploadOrStoreNewDiscussionFiles(this.forumId, discTimecreated, attachments, true);
+            });
+        } else {
+            promise = Promise.resolve();
+        }
+
+        promise.then((attach) => {
             if (attach) {
                 options.attachmentsid = attach;
             }

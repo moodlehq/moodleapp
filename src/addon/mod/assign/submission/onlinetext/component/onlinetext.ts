@@ -50,31 +50,16 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
      * Component being initialized.
      */
     ngOnInit(): void {
-        let promise,
-            rteEnabled;
+        // Get the text. Check if we have anything offline.
+        this.assignOfflineProvider.getSubmission(this.assign.id).catch(() => {
+            // No offline data found.
+        }).then((offlineData) => {
+            if (offlineData && offlineData.plugindata && offlineData.plugindata.onlinetext_editor) {
+                return offlineData.plugindata.onlinetext_editor.text;
+            }
 
-        // Check if rich text editor is enabled.
-        if (this.edit) {
-            promise = this.domUtils.isRichTextEditorEnabled();
-        } else {
-            // We aren't editing, so no rich text editor.
-            promise = Promise.resolve(false);
-        }
-
-        promise.then((enabled) => {
-            rteEnabled = enabled;
-
-            // Get the text. Check if we have anything offline.
-            return this.assignOfflineProvider.getSubmission(this.assign.id).catch(() => {
-                // No offline data found.
-            }).then((offlineData) => {
-                if (offlineData && offlineData.plugindata && offlineData.plugindata.onlinetext_editor) {
-                    return offlineData.plugindata.onlinetext_editor.text;
-                }
-
-                // No offline data found, return online text.
-                return this.assignProvider.getSubmissionPluginText(this.plugin, this.edit && !rteEnabled);
-            });
+            // No offline data found, return online text.
+            return this.assignProvider.getSubmissionPluginText(this.plugin);
         }).then((text) => {
             // We receive them as strings, convert to int.
             this.configs.wordlimit = parseInt(this.configs.wordlimit, 10);

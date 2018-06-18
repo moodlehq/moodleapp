@@ -159,9 +159,10 @@ export class AddonModGlossaryEditPage implements OnInit {
      * Save the entry.
      */
     save(): void {
-        let definition = this.entry.definition;
+        let definition = this.entry.definition,
+            saveOffline = false,
+            promise;
         const timecreated = this.entry.timecreated || Date.now();
-        let saveOffline = false;
 
         if (!this.entry.concept || !definition) {
             this.domUtils.showErrorModal('addon.mod_glossary.fillfields', true);
@@ -171,25 +172,24 @@ export class AddonModGlossaryEditPage implements OnInit {
 
         const modal = this.domUtils.showModalLoading('core.sending', true);
 
-        // Check if rich text editor is enabled or not.
-        this.domUtils.isRichTextEditorEnabled().then((enabled) => {
-            if (!enabled) {
-                // Rich text editor not enabled, add some HTML to the definition if needed.
-                definition = this.textUtils.formatHtmlLines(definition);
-            }
+        // Add some HTML to the definition if needed.
+        definition = this.textUtils.formatHtmlLines(definition);
 
-            // Upload attachments first if any.
-            if (this.attachments.length > 0) {
-                return this.glossaryHelper.uploadOrStoreFiles(this.glossary.id, this.entry.concept, timecreated, this.attachments,
-                        false).catch(() => {
-                    // Cannot upload them in online, save them in offline.
-                    saveOffline = true;
+        // Upload attachments first if any.
+        if (this.attachments.length > 0) {
+            promise = this.glossaryHelper.uploadOrStoreFiles(this.glossary.id, this.entry.concept, timecreated, this.attachments,
+                    false).catch(() => {
+                // Cannot upload them in online, save them in offline.
+                saveOffline = true;
 
-                    return this.glossaryHelper.uploadOrStoreFiles(this.glossary.id, this.entry.concept, timecreated,
-                            this.attachments, true);
-                });
-            }
-        }).then((attach) => {
+                return this.glossaryHelper.uploadOrStoreFiles(this.glossary.id, this.entry.concept, timecreated,
+                        this.attachments, true);
+            });
+        } else {
+            promise = Promise.resolve();
+        }
+
+        promise.then((attach) => {
             const options: any = {
                 aliases: this.options.aliases,
                 categories: this.options.categories.join(',')

@@ -63,6 +63,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     protected valueChangeSubscription: Subscription;
 
     rteEnabled = false;
+    editorSupported = true;
 
     constructor(private domUtils: CoreDomUtilsProvider, private keyboard: Keyboard, private urlUtils: CoreUrlUtilsProvider,
             private sitesProvider: CoreSitesProvider, private filepoolProvider: CoreFilepoolProvider,
@@ -78,6 +79,8 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         this.domUtils.isRichTextEditorEnabled().then((enabled) => {
             this.rteEnabled = !!enabled;
         });
+
+        this.editorSupported = this.domUtils.isRichTextEditorSupported();
 
         // Setup the editor.
         this.editorElement = this.editor.nativeElement as HTMLDivElement;
@@ -169,11 +172,12 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         while (element.parentNode && element.parentNode.tagName != 'ION-CONTENT') {
             const parent = element.parentNode;
             if (element.tagName && element.tagName != 'CORE-LOADING') {
-                parent.childNodes.forEach((child) => {
+                for (let x = 0; x < parent.childNodes.length; x++) {
+                    const child = parent.childNodes[x];
                     if (child.tagName && child != element) {
                         height += this.domUtils.getElementHeight(child, false, true, true);
                     }
-                });
+                }
             }
             element = parent;
         }
@@ -368,8 +372,8 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
             }
             setTimeout(() => {
                 this.keyboard.show();
-            }, 1);
-        }, 1);
+            });
+        });
     }
 
     /**
@@ -445,6 +449,17 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         $event.preventDefault();
         $event.stopPropagation();
         document.execCommand(command, false, parameters);
+
+        setTimeout(() => {
+            if (this.rteEnabled) {
+                this.editorElement.focus();
+            } else {
+                this.textarea.setFocus();
+            }
+            setTimeout(() => {
+                this.keyboard.show();
+            });
+        });
     }
 
     /**

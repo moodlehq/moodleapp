@@ -23,7 +23,7 @@
 
 <div [hidden]="rteEnabled">
     <ion-textarea #textarea class="core-textarea" [placeholder]="placeholder" [attr.name]="name" ngControl="control" (ionChange)="onChange($event)"></ion-textarea>
-    <div class="core-rte-toolbar">
+    <div class="core-rte-toolbar" [hidden]="!editorSupported">
         <div #decorate class="core-rte-buttons">
             <button tappable (click)="toggleEditor($event)"><core-icon name="fa-pencil-square-o"></core-icon> {{ 'core.vieweditor' | translate }}</button>
         </div>
