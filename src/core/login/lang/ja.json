@@ -16,7 +16,7 @@
     "invalidemail": "無効なメールアドレスです。",
     "invalidmoodleversion": "Moodleのバージョンが古すぎます。少なくともこれより新しいMoodleである必要があります：",
     "invalidsite": "サイトURLが正しくありません。",
-    "invalidurl": "あなたが入力したURLは正しくありません。",
+    "invalidurl": "無効なURLです。",
     "login": "ログイン",
     "loginbutton": "ログイン",
     "logininsiterequired": "ブラウザウインドウからサイトにログインする必要があります。",

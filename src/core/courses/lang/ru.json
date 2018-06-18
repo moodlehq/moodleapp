@@ -1,10 +1,15 @@
 {
     "allowguests": "Курс доступен гостю",
     "availablecourses": "Доступные курсы",
+    "cannotretrievemorecategories": "Категории глубже уровня {{$a}} не могут быть получены.",
     "categories": "Категории курсов",
+    "confirmselfenrol": "Вы уверены, что хотите записать себя на этот курс?",
     "courses": "Курсы",
     "enrolme": "Записаться на курс",
+    "errorloadcategories": "Во время загрузки категорий произошла ошибка.",
     "errorloadcourses": "При загрузке курсов произошла ошибка.",
+    "errorsearching": "Во время поиска произошла ошибка.",
+    "errorselfenrol": "Во время самостоятельной записи произошла ошибка.",
     "filtermycourses": "Поиск моих курсов",
     "frontpage": "Главная страница",
     "mycourses": "Мои курсы",
@@ -12,10 +17,14 @@
     "nocoursesyet": "В этой категории нет курсов",
     "nosearchresults": "Поиск не дал результатов",
     "notenroled": "Вы не записаны на этот курс",
-    "password": "Общий секретный ключ",
+    "notenrollable": "Вы не можете самостоятельно записаться на этот курс.",
+    "password": "Пароль",
     "paymentrequired": "Для регистрации на этом курсе требуется оплата",
     "paypalaccepted": "Принятые платежи PayPal",
     "search": "Найти",
     "searchcourses": "Поиск курса",
-    "sendpaymentbutton": "Оплатить через PayPal"
+    "searchcoursesadvice": "Вы можете использовать кнопку поиска по курсам, чтобы найти курсы для гостевого доступа к ним или записать себя на курсы, которые это разрешают.",
+    "selfenrolment": "Самостоятельная запись",
+    "sendpaymentbutton": "Оплатить через PayPal",
+    "totalcoursesearchresults": "Всего курсов: {{$a}}"
 }

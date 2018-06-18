@@ -1,0 +1,21 @@
+{
+    "address": "آدرس",
+    "city": "شهر/شهرک",
+    "contact": "تماس",
+    "country": "کشور",
+    "description": "توضیح تکلیف",
+    "details": "جزئیات",
+    "email": "آدرس پست الکترونیک",
+    "emailagain": "پست الکترونیک (دوباره)",
+    "firstname": "نام",
+    "interests": "علایق",
+    "invaliduser": "کاربر نامعتبر",
+    "lastname": "نام خانوادگی",
+    "newpicture": "عکس جدید",
+    "phone1": "تلفن",
+    "phone2": "تلفن همراه",
+    "roles": "نقش‌ها",
+    "student": "شاگرد",
+    "viewprofile": "مشاهدهٔ صفحهٔ مشخصات فردی",
+    "webpage": "صفحهٔ وب"
+}

@@ -1,0 +1,16 @@
+{
+    "answer": "Ҷавоб",
+    "answersaved": "Ҷавоб маҳфуз дошта шудааст",
+    "complete": "Иҷро шуд",
+    "correct": "Дуруст",
+    "feedback": "Тақриз",
+    "incorrect": "Нодуруст",
+    "information": "Иттилоот",
+    "invalidanswer": "Ҷавоби нопурра",
+    "notanswered": "Ҷавоб нест",
+    "notyetanswered": "Ҳанӯз ҷавоб нест",
+    "partiallycorrect": "Қисман дуруст",
+    "questionno": "Саволи {{$a}}",
+    "requiresgrading": "Баҳодиҳӣ талаб карда мешавад",
+    "unknown": "Номаълум"
+}

@@ -1,0 +1,16 @@
+{
+    "answer": "תשובה",
+    "answersaved": "תשובה נשמרה",
+    "complete": "הושלם",
+    "correct": "נכון",
+    "feedback": "תגובות",
+    "incorrect": "לא נכון",
+    "information": "מידע",
+    "invalidanswer": "תשובה שלא הושלמה",
+    "notanswered": "שאלה זו טרם נענתה",
+    "notyetanswered": "עדין לא ענו",
+    "partiallycorrect": "תשובה נכונה חלקית",
+    "questionno": "שאלה {{$a}}",
+    "requiresgrading": "נדרש מתן ציון",
+    "unknown": "לא ידוע"
+}

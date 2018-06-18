@@ -1,0 +1,9 @@
+{
+    "chooseaccountstorefile": "Vælg den konto filen skal gemmes under.",
+    "chooseactionrepeatedfile": "Der er allerede en fil med dette navn. Vil du erstatte den eller omdøbe den til \"{{$a}}\"?",
+    "nosharedfiles": "Der er ikke gemt nogen delte filer på dette websted.",
+    "rename": "Omdøb",
+    "replace": "Erstat",
+    "sharedfiles": "Delte filer",
+    "successstorefile": "Filen er gemt. Du kan vælge den til upload til dine private filer eller vedlægge den i nogle aktiviteter."
+}

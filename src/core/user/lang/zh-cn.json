@@ -1,0 +1,22 @@
+{
+    "address": "地址",
+    "city": "市/县",
+    "contact": "联系方式",
+    "country": "国家和地区",
+    "description": "描述",
+    "details": "详情",
+    "email": "Email",
+    "emailagain": "Email (重复)",
+    "firstname": "名",
+    "interests": "兴趣",
+    "invaliduser": "无效的用户",
+    "lastname": "姓",
+    "manager": "管理员",
+    "newpicture": "新照片",
+    "phone1": "电话",
+    "phone2": "手机",
+    "roles": "角色",
+    "student": "学生",
+    "viewprofile": "查看个人资料",
+    "webpage": "网页"
+}

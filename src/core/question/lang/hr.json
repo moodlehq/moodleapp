@@ -1,0 +1,17 @@
+{
+    "answer": "Odgovor",
+    "answersaved": "Odgovor pohranjen",
+    "complete": "Potpuno",
+    "correct": "Točno",
+    "feedback": "Povratna informacija (Feedback)",
+    "incorrect": "Netočno",
+    "information": "Informacija",
+    "invalidanswer": "Nepotpun odgovor",
+    "notanswered": "Još nisu odgovorili",
+    "notyetanswered": "Još nije odgovoreno",
+    "partiallycorrect": "Djelomično točno",
+    "questionmessage": "Pitanje {{$a}}: {{$b}}",
+    "questionno": "Pitanje {{$a}}",
+    "requiresgrading": "Zahtijeva ocjenjivanje",
+    "unknown": "Nepoznato"
+}

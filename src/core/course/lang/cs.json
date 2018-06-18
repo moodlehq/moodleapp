@@ -1,0 +1,22 @@
+{
+    "activitydisabled": "Vaše organizace zakázal tuto činnost v mobilní aplikaci.",
+    "activitynotyetviewableremoteaddon": "Tato aktivita je doplněk třetí strany, který ještě není aplikací podporován.",
+    "activitynotyetviewablesiteupgradeneeded": "Instalace Moodle vaší organizace je třeba aktualizovat.",
+    "allsections": "Všechny sekce",
+    "askadmintosupport": "Obraťte se na správce webu a řekněte mu, že tuto činnost chcete používat s mobilní Moodle  aplikací.",
+    "confirmdeletemodulefiles": "Jste si jisti, že chcete odstranit tyto soubory modulu?",
+    "confirmdownload": "Chystáte se stahovat {{velikost}}. Jste si jisti, že chcete pokračovat?",
+    "confirmdownloadunknownsize": "Nebyli jsme schopni vypočítat velikost stahování. Jste si jisti, že stahování chcete?",
+    "confirmpartialdownloadsize": "Chystáte se stáhnout <strong> alespoň </strong> {{size}}. Jste si jisti, že chcete pokračovat?",
+    "contents": "Obsah",
+    "couldnotloadsectioncontent": "Nelze načíst obsah sekce. Zkuste to prosím později.",
+    "couldnotloadsections": "Nelze načíst sekce. Zkuste to prosím později.",
+    "downloadcourse": "Stáhnout kurz",
+    "errordownloadingcourse": "Chyba stahování kurzu.",
+    "errordownloadingsection": "Chyba při stahování sekce.",
+    "errorgetmodule": "Chyba při načítání",
+    "hiddenfromstudents": "Skryté před studenty",
+    "nocontentavailable": "V tuto chvíli není k dispozici žádný obsah.",
+    "overriddennotice": "Vaše výsledná známka za tuto činnost byla ručně upravena.",
+    "useactivityonbrowser": "Můžete i nadále používat jej pomocí prohlížeče zařízení."
+}

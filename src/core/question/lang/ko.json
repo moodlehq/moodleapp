@@ -1,0 +1,16 @@
+{
+    "answer": "대답",
+    "answersaved": "답이 저장되었습니다.",
+    "complete": "완료",
+    "correct": "맞음",
+    "feedback": "피드백",
+    "incorrect": "부정확",
+    "information": "정보",
+    "invalidanswer": "불완전한 답",
+    "notanswered": "아직 응답하지 않았습니다",
+    "notyetanswered": "미 응답",
+    "partiallycorrect": "부분 맞음",
+    "questionno": "질문 {{$a}}",
+    "requiresgrading": "채점 필요",
+    "unknown": "알수없음"
+}

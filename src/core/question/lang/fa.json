@@ -1,0 +1,16 @@
+{
+    "answer": "جواب",
+    "answersaved": "پاسخ ذخیره شده",
+    "complete": "کامل",
+    "correct": "صحیح",
+    "feedback": "بازخورد",
+    "incorrect": "نادرست",
+    "information": "توضیح",
+    "invalidanswer": "پاسخ ناقص",
+    "notanswered": "هنوز پاسخ نداده‌اند",
+    "notyetanswered": "هنوز پاسخ داده نشده است",
+    "partiallycorrect": "نیمه درست",
+    "questionno": "سؤال {{$a}}",
+    "requiresgrading": "نمره‌دهی لازم است",
+    "unknown": "نامعلوم"
+}

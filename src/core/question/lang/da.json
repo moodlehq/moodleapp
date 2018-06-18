@@ -1,0 +1,20 @@
+{
+    "answer": "Svar",
+    "answersaved": "Besvaret",
+    "complete": "Færdiggør",
+    "correct": "Rigtigt",
+    "errorattachmentsnotsupported": "Programmet understøtter endnu ikke bilag til svar.",
+    "errorinlinefilesnotsupported": "Programmet understøtter endnu ikke redigering af filer inline.",
+    "errorquestionnotsupported": "Appen understøtter ikke denne type spørgsmål: {{$a}}.",
+    "feedback": "Tilbagemelding",
+    "incorrect": "Forkert",
+    "information": "Information",
+    "invalidanswer": "Ufuldstændigt svar",
+    "notanswered": "Ikke besvaret endnu",
+    "notyetanswered": "Endnu ikke besvaret",
+    "partiallycorrect": "Delvist rigtigt",
+    "questionmessage": "Spørgsmål {{$a}}: {{$b}}",
+    "questionno": "Spørgsmål {{$a}}",
+    "requiresgrading": "Kræver bedømmelse",
+    "unknown": "Ukendt"
+}

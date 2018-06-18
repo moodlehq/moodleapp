@@ -1,0 +1,22 @@
+{
+    "activitydisabled": "Sua organização desativou essa atividade no aplicativo para dispositivos móveis.",
+    "activitynotyetviewableremoteaddon": "Sua organização instalou um plugin que não é suportado ainda.",
+    "activitynotyetviewablesiteupgradeneeded": "O Moodle de sua organização precisa ser atualizado.",
+    "allsections": "Todas as seções",
+    "askadmintosupport": "Contate o administrador do site e diga que você deseja usar essa atividade no aplicativo Moodle Mobile.",
+    "confirmdeletemodulefiles": "Você tem certeza que quer excluir esse modulo arquivos?",
+    "confirmdownload": "Você está prestes a baixar {{size}}. Você tem certeza que quer continuar?",
+    "confirmdownloadunknownsize": "Não fomos capazes de calcular o tamanho do download. Tem certeza de que deseja fazer o download?",
+    "confirmpartialdownloadsize": "Você está prestes a baixar <strong>pelo menos</strong> {{size}}. Você tem certeza que quer continuar?",
+    "contents": "Conteúdo",
+    "couldnotloadsectioncontent": "Não foi possível carregar o conteúdo da seção, por favor tente mais tarde.",
+    "couldnotloadsections": "Não foi possível carregar a seção, por favor tente mais tarde.",
+    "downloadcourse": "Descarregar disciplina",
+    "errordownloadingcourse": "Erro ao descarregar a disciplina",
+    "errordownloadingsection": "Erro ao baixar seção.",
+    "errorgetmodule": "Erro ao obter os dados do módulo.",
+    "hiddenfromstudents": "Oculto para estudantes",
+    "nocontentavailable": "Nenhum conteúdo disponível nesse momento.",
+    "overriddennotice": "Sua nota final para esta atividade foi ajustada manualmente.",
+    "useactivityonbrowser": "Você ainda pode usar isso no navegador do seu dispositivo"
+}

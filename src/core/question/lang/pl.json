@@ -1,0 +1,16 @@
+{
+    "answer": "Odpowiedz",
+    "answersaved": "Odpowiedź zapisana",
+    "complete": "Zakończone",
+    "correct": "Poprawnie",
+    "feedback": "Informacja zwrotna",
+    "incorrect": "Niepoprawnie",
+    "information": "Informacja",
+    "invalidanswer": "Niekompletna odpowiedź",
+    "notanswered": "Jeszcze nie udzielono odpowiedzi",
+    "notyetanswered": "Brak odpowiedzi",
+    "partiallycorrect": "Częściowo poprawnie",
+    "questionno": "Pytanie {{$a}}",
+    "requiresgrading": "Wymaga oceny",
+    "unknown": "Nieznany"
+}

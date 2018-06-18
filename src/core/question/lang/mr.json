@@ -1,0 +1,15 @@
+{
+    "answer": "उत्तर",
+    "complete": "पूर्ण",
+    "correct": "बरोबर्",
+    "errorattachmentsnotsupported": "अर्ज अद्याप फाइल्स संलग्न करण्यास समर्थन देत नाही.",
+    "errorinlinefilesnotsupported": "अनुप्रयोग अद्याप इनलाइन फायली संपादित करण्यास समर्थन देत नाही",
+    "errorquestionnotsupported": "हा प्रश्न प्रकार अॅपद्वारे समर्थित नाही: {{$a}}",
+    "feedback": "प्रतीसाद",
+    "howtodraganddrop": "निवडण्यासाठी टॅप करा नंतर ड्रॉप करण्यासाठी टॅप करा.",
+    "incorrect": "अयोग्य",
+    "notanswered": "आत्ताप्रर्यत उत्तर नाही",
+    "partiallycorrect": "अंशतः बरोबर",
+    "questionmessage": "प्रश्न {{$a}}: {{$b}}",
+    "unknown": "अनोळखी"
+}

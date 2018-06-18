@@ -1,0 +1,17 @@
+{
+    "audio": "صوتي",
+    "camera": "الكاميرا",
+    "errorcapturingaudio": "خطأ في التقاط الصوت",
+    "errorcapturingimage": "خطأ في التقاط الصورة",
+    "errorcapturingvideo": "خطأ في التقاط الفيديو",
+    "errormustbeonlinetoupload": "لابد أن تكون متصل بالأنترنت لكي يتم رفع الملفات",
+    "errorreadingfile": "خطاء في قراءة ملف \"{{$a}}\"",
+    "file": "تم تسليم الملف بنجاح",
+    "fileuploaded": "الملف الذي تم رفعه",
+    "maxbytesfile": "حجم الملف {{$a.file}} كبير جداً . الحد الأقصى الذي تستطيع رفعه هو {{$a.size}}.",
+    "more": "المزيد",
+    "readingfile": "يتم قراءة الملف",
+    "uploadafile": "تحميل ملف",
+    "uploading": "يتم التحميل",
+    "video": "فيديو"
+}

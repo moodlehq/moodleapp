@@ -1,0 +1,22 @@
+{
+    "address": "住所",
+    "city": "都道府県",
+    "contact": "連絡先",
+    "country": "国",
+    "description": "説明",
+    "details": "詳細",
+    "email": "メールアドレス",
+    "emailagain": "メールアドレス (もう一度)",
+    "firstname": "名",
+    "interests": "興味のあること",
+    "invaliduser": "無効なユーザです。",
+    "lastname": "姓",
+    "manager": "マネージャ",
+    "newpicture": "新しい画像",
+    "phone1": "電話",
+    "phone2": "携帯電話",
+    "roles": "ロール",
+    "student": "学生",
+    "viewprofile": "プロファイルを表示する",
+    "webpage": "ウェブページ"
+}

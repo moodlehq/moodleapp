@@ -1,0 +1,11 @@
+{
+    "chooseaccountstorefile": "Valitse mille käyttäjätilille tiedostot tallennetaan.",
+    "chooseactionrepeatedfile": "Tällä nimellä löytyy jo tiedosto. Haluatko korvata olemassa olevan tiedoston vai nimetä sen uudelleen \"{{$a}}\"?",
+    "errorreceivefilenosites": "Yhtään sivustoa ei ole lisätty. Ole hyvä ja lisää sivusto ennen kuin jaat tiedostoja sovelluksella.",
+    "nosharedfiles": "Tällä sivustolla ei ole yhtään jaettuja tiedostoja.",
+    "nosharedfilestoupload": "Sinulla ei ole yhtään tiedostoa lähetettäväksi. Jos haluat lähettää tiedoston toisesta sovelluksesta, niin valitse tiedosto ja paina \"avaa sovelluksessa\"-painiketta ja valitse Moodle Mobile app.",
+    "rename": "Nimeä uudelleen",
+    "replace": "Korvaa",
+    "sharedfiles": "Jaetut tiedosto",
+    "successstorefile": "Tiedosto tallennettiin onnistuneesti. Nyt voit valita tämän tiedoston lähettääksesi sen yksityisiin tiedostoihisi tai liittääksesi sen johonkin aktiviteettiin."
+}
