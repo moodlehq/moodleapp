@@ -1,0 +1,17 @@
+{
+    "cannotsubmit": "对不起，你的提交有误，请再试一次。",
+    "choiceoptions": "投票选项",
+    "expired": "对不起，该活动已于 {{$a}} 关闭，不能再参加",
+    "full": "(已满)",
+    "noresultsviewable": "结果目前不能查看。",
+    "notopenyet": "对于起，此活动在 {{$a}} 之后才可用",
+    "numberofuser": "用户数",
+    "numberofuserinpercentage": "用户数百分比",
+    "previewonly": "这只是该活动的可用选项的预览。你要等到{{$a}}才可以进行投票。",
+    "removemychoice": "删除我的投票",
+    "responses": "回复",
+    "responsesresultgraphheader": "图示",
+    "savemychoice": "保存我的选择",
+    "userchoosethisoption": "选择此选项的用户",
+    "yourselection": "您的选择"
+}

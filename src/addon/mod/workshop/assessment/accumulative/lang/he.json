@@ -1,0 +1,6 @@
+{
+    "dimensioncommentfor": "הערה ל{{$a}}",
+    "dimensiongradefor": "ציון ל {{$a}}",
+    "dimensionnumber": "אמת־מידה {{$a}}",
+    "mustchoosegrade": "עליך לבחור ניקוד עבור אמת־מידה זו"
+}

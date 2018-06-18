@@ -1,0 +1,15 @@
+{
+    "choiceoptions": "Възможности за избиране",
+    "expired": "За съжаление тази дейност е затворена от {{$a}} и вече не е достъпна",
+    "full": "(Пълен)",
+    "noresultsviewable": "В момента резултатите не са за показване.",
+    "notopenyet": "За съжаление тази дейност не е достъпна до {{$a}}",
+    "numberofuser": "Брой участници",
+    "numberofuserinpercentage": "Процент потребители",
+    "removemychoice": "Изтриване на моя избор",
+    "responses": "Отговори",
+    "responsesresultgraphheader": "Показване на графика",
+    "savemychoice": "Запис на моя избор",
+    "userchoosethisoption": "Потребители, избрали възможността",
+    "yourselection": "Вашият избор"
+}

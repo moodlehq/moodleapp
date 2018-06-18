@@ -1,0 +1,20 @@
+{
+    "attachment": "Συνημμένα",
+    "browsemode": "Φάση Προεπισκόπισης",
+    "byalphabet": "Αλφαβητικά",
+    "byauthor": "Ομαδοποίηση ανά συγγραφέα",
+    "bycategory": "Ομαδοποίηση ανά κατηγορία",
+    "bynewestfirst": "Νεότερα πρώτα",
+    "byrecentlyupdated": "Ανανεώθηκαν πρόσφατα",
+    "bysearch": "Αναζήτηση",
+    "cannoteditentry": "Δεν είναι δυνατή η επεξεργασία της καταχώρισης",
+    "casesensitive": "Χρήση κανονικών εκφράσεων",
+    "categories": "Κατηγορίες μαθημάτων",
+    "entriestobesynced": "Entries που πρέπει να συγχρονιστούν",
+    "entrypendingapproval": "Εκκρεμεί η έγκριση για αυτή την καταχώρηση.",
+    "errorloadingentries": "Παρουσιάστηκε σφάλμα κατά τη φόρτωση των καταχωρήσεων.",
+    "errorloadingentry": "Παρουσιάστηκε σφάλμα κατά τη φόρτωση της καταχώρησης.",
+    "errorloadingglossary": "Παρουσιάστηκε σφάλμα κατά τη φόρτωση του glossary.",
+    "noentriesfound": "Δεν βρέθηκαν καταχωρήσεις.",
+    "searchquery": "Αναζήτηση ερωτήματος"
+}

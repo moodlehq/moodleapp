@@ -1,0 +1,13 @@
+{
+    "discussion": "चर्चा",
+    "edit": "तपासा",
+    "errorgetforum": "फोरम डेटा मिळवताना त्रुटी",
+    "errorgetgroups": "गट सेटिंग्ज प्राप्त करताना त्रुटी.",
+    "forumnodiscussionsyet": "या फोरममध्ये अद्याप चर्चा झालेले कोणतेही मुद्दे नाहीत",
+    "group": "ग्रुप्",
+    "message": "संदेश",
+    "numdiscussions": "{{Numdiscussions}} चर्चा",
+    "numreplies": "{{Numreplies}} प्रत्युत्तरे",
+    "refreshdiscussions": "चर्चा रीफ्रेश करा",
+    "refreshposts": "चर्चा पोस्ट रीफ्रेश करा"
+}

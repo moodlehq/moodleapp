@@ -1,0 +1,20 @@
+{
+    "attachment": "Připojit odznak do zprávy",
+    "browsemode": "Režim náhledu",
+    "byalphabet": "Abecedně",
+    "byauthor": "Skupina podle autora",
+    "bycategory": "Skupina podle kategorie",
+    "bynewestfirst": "Nejnovější nejdříve",
+    "byrecentlyupdated": "Posledně aktualizované",
+    "bysearch": "Hledat",
+    "cannoteditentry": "Záznam nelze upravit",
+    "casesensitive": "Používat regulární výrazy",
+    "categories": "Kategorie kurzů",
+    "entriestobesynced": "Příspěvky, které mají být synchronizovány",
+    "entrypendingapproval": "Tato položka čeká na schválení",
+    "errorloadingentries": "Při načítání položek došlo k chybě.",
+    "errorloadingentry": "Při načítání položky došlo k chybě.",
+    "errorloadingglossary": "Při načítání slovníku došlo k chybě.",
+    "noentriesfound": "Nebyly nalezeny žádné záznamy.",
+    "searchquery": "Vyhledávací dotaz"
+}

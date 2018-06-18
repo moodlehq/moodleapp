@@ -1,0 +1,17 @@
+{
+    "attachment": "Allega badge al messaggio",
+    "browsemode": "Modalità anteprima",
+    "byauthor": "Raggruppa per autore",
+    "bycategory": "Raggruppa per categoria",
+    "byrecentlyupdated": "Aggiornati di recente",
+    "bysearch": "Cerca",
+    "cannoteditentry": "Non è possibile modificare la voce",
+    "casesensitive": "Utilizza regular expression",
+    "categories": "Categorie di corso",
+    "entriestobesynced": "Voci da sincronizzare",
+    "entrypendingapproval": "Questa voce è in attesa di approvazione.",
+    "errorloadingentries": "Si è verificato un errore durante il caricamento delle voci.",
+    "errorloadingentry": "Si è verificato un errore durante il caricamento della voce.",
+    "errorloadingglossary": "Si è verificato un errore durante il caricamento del glossario.",
+    "noentriesfound": "Non sono state trovate voci."
+}

@@ -1,0 +1,21 @@
+{
+    "cannoteditpage": "あなたはこのページを編集できません。",
+    "createpage": "ページを作成する",
+    "editingpage": "このページ「 {{$a}} 」を編集する",
+    "errorloadingpage": "ページの読み込み中にエラーが発生しました。",
+    "errornowikiavailable": "このwikiにはまだ内容がありません。",
+    "gowikihome": "Wikiのホームへ移動",
+    "map": "マップ",
+    "newpagehdr": "新しいページ",
+    "newpagetitle": "新しいページタイトル",
+    "nocontent": "このページにはコンテンツがありません。",
+    "notingroup": "グループ外",
+    "page": "ページ: {{$a}}",
+    "pageexists": "このページはすでに存在します。",
+    "pagename": "ページ名",
+    "subwiki": "サブwiki",
+    "titleshouldnotbeempty": "空のタイトルは受け付けられません",
+    "viewpage": "ページを表示",
+    "wikipage": "Wikiページ",
+    "wrongversionlock": "あなたが編集している間、別のユーザがこのページを編集しました。そのため、あなたのコンテンツは古くなりました。"
+}

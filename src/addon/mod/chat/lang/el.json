@@ -1,0 +1,18 @@
+{
+    "beep": "Ηχητικό σήμα",
+    "currentusers": "Τρέχοντες χρήστες",
+    "enterchat": "Κάντε κλικ εδώ για να μπείτε στη συζήτηση τώρα",
+    "entermessage": "Πληκτρολογήστε το μήνυμά σας",
+    "errorwhileconnecting": "Σφάλμα κατά τη σύνδεση στο chat.",
+    "errorwhilegettingchatdata": "Σφάλμα κατά την ανάκτηση των δεδομένων του chat.",
+    "errorwhilegettingchatusers": "Σφάλμα κατά την ανάκτηση των χρηστών του chat.",
+    "errorwhileretrievingmessages": "Σφάλμα κατά την ανάκτηση των μηνυμάτων από το διακομιστή.",
+    "errorwhilesendingmessage": "Σφάλμα κατά την αποστολή του μηνύματος.",
+    "messagebeepsyou": "{{$a}} μόλις σας ειδοποίησε!",
+    "messageenter": "{{$a}} έχει μπει σ' αυτή το συζήτηση",
+    "messageexit": "{{$a}} έχει φύγει από αυτή το συζήτηση",
+    "mustbeonlinetosendmessages": "Πρέπει να είστε συνδεδεμένοι για να στείλετε μηνύματα",
+    "nomessages": "Δεν υπάρχουν ακόμα μηνύματα",
+    "send": "Αποστολή",
+    "sessionstart": "Η επόμενη συνεδρία τσάτ θα αρχίσει στις {{$a.date}}, ({{$a.fromnow}} από τώρα)"
+}

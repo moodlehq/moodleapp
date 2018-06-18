@@ -1,0 +1,20 @@
+{
+    "attachment": "Badge als bijlage bij bericht",
+    "browsemode": "Probeermodus",
+    "byalphabet": "Alfabetisch",
+    "byauthor": "Groepeer per auteur",
+    "bycategory": "Groepeer per categorie",
+    "bynewestfirst": "Nieuwste eerst",
+    "byrecentlyupdated": "Onlangs gewijzigd",
+    "bysearch": "Zoek",
+    "cannoteditentry": "Kan item niet bewerken",
+    "casesensitive": "Regular expressions gebruiken",
+    "categories": "Cursuscategorieën",
+    "entriestobesynced": "Items niet gesynchroniseerd",
+    "entrypendingapproval": "Dit item wacht op goedkeuring.",
+    "errorloadingentries": "Fout bij het laden van de items.",
+    "errorloadingentry": "Fout tijdens het laden van dit item.",
+    "errorloadingglossary": "Fout tijdens het laden van de woordenlijst.",
+    "noentriesfound": "Geen items gevonden.",
+    "searchquery": "Zoekopdracht"
+}

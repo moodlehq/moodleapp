@@ -1,0 +1,20 @@
+{
+    "cannotsubmit": "Omlouváme se, nastal problém odesláním vaší odpovědi. Zkuste to prosím znovu.",
+    "choiceoptions": "Možné odpovědi na anketu",
+    "errorgetchoice": "Chyba při načítání  dat ankety.",
+    "expired": "Je nám líto, tato činnost byla uzavřena {{$a}} a není nadále dostupná",
+    "full": "(Obsazeno)",
+    "noresultsviewable": "Výsledky nejsou momentálně k dispozici",
+    "notopenyet": "Je nám líto, tato činnost není až do {{$a}} dostupná.",
+    "numberofuser": "Počet odpovědí",
+    "numberofuserinpercentage": "Počet odpovědí v procentech",
+    "previewonly": "Toto je náhled dostupných možností v této anketě. Hlasovat budete moci od {{$a}}.",
+    "removemychoice": "Odstranit mou volbu",
+    "responses": "Odpovědi",
+    "responsesresultgraphdescription": "{{number}}% uživatelů zvolilo možnost: {{text}}.",
+    "responsesresultgraphheader": "Graf",
+    "resultsnotsynced": "Vaše poslední odpověď musí být synchronizována předtím, než je zahrnuta do výsledků.",
+    "savemychoice": "Uložit mou volbu",
+    "userchoosethisoption": "Uživatelé, kteří si vybrali tuto alternativu",
+    "yourselection": "Vaše volba"
+}

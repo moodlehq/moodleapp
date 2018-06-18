@@ -1,0 +1,20 @@
+{
+    "attachment": "Вложение:",
+    "browsemode": "Режим предпросмотра",
+    "byalphabet": "Алфавитно",
+    "byauthor": "Группировать по автору",
+    "bycategory": "Группировать по категориям",
+    "bynewestfirst": "Сначала новые",
+    "byrecentlyupdated": "Недавно обновлённые",
+    "bysearch": "Поиск",
+    "cannoteditentry": "Невозможно редактировать запись",
+    "casesensitive": "Использовать регулярные выражения",
+    "categories": "Категории курсов",
+    "entriestobesynced": "Записи на синзронизацию",
+    "entrypendingapproval": "Эта запись ожидает подтверждения.",
+    "errorloadingentries": "При загрузке записей произошла ошибка.",
+    "errorloadingentry": "При загрузке записи произошла ошибка.",
+    "errorloadingglossary": "При загрузке глоссария произошла ошибка.",
+    "noentriesfound": "Записей не было найдено.",
+    "searchquery": "Запрос на поиск"
+}

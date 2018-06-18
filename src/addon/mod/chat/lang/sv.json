@@ -1,0 +1,19 @@
+{
+    "beep": "pipsignal",
+    "currentusers": "Aktuella användare",
+    "enterchat": "Klicka här för att gå in i direktsamtalet nu",
+    "entermessage": "Sriv ditt meddelande",
+    "errorwhileconnecting": "Fel vid anslutning till chatten",
+    "errorwhilegettingchatdata": "Fel vid vid hämtning av chattdata",
+    "errorwhilegettingchatusers": "Fel vid vid hämtning av chattanvändare",
+    "errorwhileretrievingmessages": "Fel vid hämtning av meddelanden från servern",
+    "errorwhilesendingmessage": "Fel när meddelandet skickades",
+    "messagebeepsyou": "{{$a}} har just skickat en pipsignal till Dig",
+    "messageenter": "{{$a}} har precis kommit in i detta direktsamtal",
+    "messageexit": "{{$a}} har lämnat det här direktsamtalet",
+    "mustbeonlinetosendmessages": "Du måste vara online för att skicka meddelanden",
+    "nomessages": "Inga meddelanden än",
+    "send": "Skicka",
+    "sessionstart": "Sessionen för direktsamtal kommer att starta inom: {{$a}}",
+    "talk": "Tala"
+}

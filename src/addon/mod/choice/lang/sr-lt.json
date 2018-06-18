@@ -1,0 +1,20 @@
+{
+    "cannotsubmit": "Izvinite, došlo je do problema prilikom čuvanja odabranog odgovora. Molimo pokušajte ponovo.",
+    "choiceoptions": "Opcije za izbor",
+    "errorgetchoice": "Greška prilikom preuzimanja podataka za 'Izbor'",
+    "expired": "Nažalost, ova aktivnost je zatvorena dana {{$a}} i nije više dostupna",
+    "full": "(Popunjeno)",
+    "noresultsviewable": "Rezultati trenutno nisu vidljivi.",
+    "notopenyet": "Nažalost, ova aktivnost nije dostupna do {{$a}}",
+    "numberofuser": "Broj učesnika",
+    "numberofuserinpercentage": "Procenat učesnika",
+    "previewonly": "Ovo je samo prikaz dostupnih opcija za ovu aktivnost. Nećete biti u mogućnosti da izvršite odabir do {{$a}}.",
+    "removemychoice": "Ukloni moj izbor",
+    "responses": "Odgovori",
+    "responsesresultgraphdescription": "{{number}}% korisnika je izabralo opciju: {{text}}.",
+    "responsesresultgraphheader": "Grafički prikaz",
+    "resultsnotsynced": "Rezultati ne uključuje vaš poslednji odgovor. Pokrenite sinhronizaciju kako biste ih ažurirali.",
+    "savemychoice": "Sačuvaj moj izbor",
+    "userchoosethisoption": "Korisnici koji su izabrali ovu opciju",
+    "yourselection": "Vaš izbor"
+}

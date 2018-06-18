@@ -1,0 +1,6 @@
+{
+    "dimensioncommentfor": "Kommentti - {{$a}}",
+    "dimensiongradefor": "Arvosana - {{$a}}",
+    "dimensionnumber": "Arviointikriteeri {{$a}}",
+    "mustchoosegrade": "Valitse asteikko tälle arviointikriteerille"
+}

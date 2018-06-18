@@ -1,0 +1,20 @@
+{
+    "attachment": "Tilføj badge til besked",
+    "browsemode": "Forhåndsvisning",
+    "byalphabet": "Alfabetisk",
+    "byauthor": "Grupper efter forfatter",
+    "bycategory": "Gruppér efter kategori",
+    "bynewestfirst": "Nyeste først",
+    "byrecentlyupdated": "Senest opdateret",
+    "bysearch": "Søg",
+    "cannoteditentry": "Kan ikke redigere opslaget",
+    "casesensitive": "Brug regulære udtryk",
+    "categories": "Kursuskategorier",
+    "entriestobesynced": "Opslag der skal synkroniseres",
+    "entrypendingapproval": "Dette opslag afventer godkendelse",
+    "errorloadingentries": "Der opstod en fejl under indlæsning af opslag",
+    "errorloadingentry": "Der opstod en fejl under indlæsning af opslaget",
+    "errorloadingglossary": "Der opstod en fejl under indlæsning af ordbogen.",
+    "noentriesfound": "Ingen opslag fundet",
+    "searchquery": "Søgeord"
+}

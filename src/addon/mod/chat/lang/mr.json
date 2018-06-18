@@ -1,0 +1,12 @@
+{
+    "beep": "आवाज",
+    "currentusers": "सध्याचा उपभोक्ता",
+    "enterchat": "संभाषणासाठी प्रवेश करा",
+    "errorwhileconnecting": "चॅटशी कनेक्ट करताना त्रुटी.",
+    "errorwhilegettingchatdata": "गप्पा डेटा मिळवताना त्रुटी",
+    "errorwhilegettingchatusers": "गप्पा वापरकर्ते मिळविताना त्रुटी.",
+    "errorwhileretrievingmessages": "सर्व्हरवरून संदेश पुनर्प्राप्त करताना त्रुटी.",
+    "errorwhilesendingmessage": "संदेश पाठवताना त्रुटी.",
+    "mustbeonlinetosendmessages": "आपल्याला संदेश पाठविण्यासाठी ऑनलाइन असणे आवश्यक आहे",
+    "nomessages": "आजुन पर्यत संदेश नाही"
+}

@@ -1,0 +1,19 @@
+{
+    "areainstructauthors": "Οδηγίες για την υποβολή",
+    "areainstructreviewers": "Οδηγίες για την αξιολόγηση",
+    "assess": "Αξιολόγηση",
+    "assessmentsettings": "Ρυθμίσεις αξιολόγησης",
+    "createsubmission": "Υποβολή",
+    "editsubmission": "Τροποποίηση της υποβολής μου",
+    "gradinggrade": "Βαθμός για την αξιολόγηση",
+    "gradinggradeof": "Βαθμός για την αξιολόγηση (από {{$a}})",
+    "noyoursubmission": "Δεν έχετε υποβάλει την εργασία σας ακόμα",
+    "overallfeedback": "Συνολική ανάδραση",
+    "reassess": "Επανεξέταση",
+    "submissionattachment": "Συνημμένο",
+    "submissiongrade": "Βαθμός για την υποβολή",
+    "submissiongradeof": "Βαθμός για την υποβολή (από {{$a}})",
+    "submissionsreport": "Αναφορά υποβολών εργαστηρίου",
+    "submissiontitle": "Τίτλος",
+    "weightinfo": "Βαρύτητα: {{$a}}"
+}

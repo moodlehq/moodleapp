@@ -1,0 +1,5 @@
+{
+    "dimensioncommentfor": "Commentaire pour {{$a}}",
+    "dimensiongradefor": "Note pour {{$a}}",
+    "dimensionnumber": "Assertion {{$a}}"
+}

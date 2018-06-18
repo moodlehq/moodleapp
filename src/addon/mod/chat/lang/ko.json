@@ -1,0 +1,13 @@
+{
+    "beep": "호출",
+    "currentusers": "현재 참여자",
+    "enterchat": "대화에 참여하려면 여기를 클릭!",
+    "entermessage": "메세지를 입력하세요.",
+    "messagebeepsyou": "{{$a}}가 나를 호출했음!",
+    "messageenter": "{{$a}} 대화방에 들어옴",
+    "messageexit": "{{$a}} 대화방을 나감",
+    "nomessages": "아직 메시지 없음",
+    "send": "전송",
+    "sessionstart": "대화방 세션이 {{$a}} 에 시작할 것입니다.",
+    "talk": "말하기"
+}
