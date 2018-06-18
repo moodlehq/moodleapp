@@ -1,0 +1,21 @@
+{
+    "complete": "완료",
+    "completecourse": "강좌 완료",
+    "completed": "완료됨",
+    "completiondate": "완료일",
+    "couldnotloadreport": "강좌 완료 보고서를 로드 할 수 없습니다. 나중에 다시 시도 해주십시오.",
+    "coursecompletion": "강좌이수완료",
+    "criteria": "기준",
+    "criteriagroup": "기준 모둠",
+    "criteriarequiredall": "아래의 모든 기준이 필요합니다.",
+    "criteriarequiredany": "아래의 어떤 기준도 필요합니다,",
+    "inprogress": "진행 중",
+    "manualselfcompletion": "강좌이수 수동확인",
+    "notyetstarted": "아직 시작 안했습니다.",
+    "pending": "유예",
+    "required": "필수사항",
+    "requiredcriteria": "필수 기준",
+    "requirement": "요구사항",
+    "status": "뱃지 상태",
+    "viewcoursereport": "강좌 보고서 보기"
+}

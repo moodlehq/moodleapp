@@ -1,0 +1,13 @@
+{
+    "addnewnote": "Ajouter une annotation",
+    "coursenotes": "Annotations de cours",
+    "eventnotecreated": "Annotation créée",
+    "nonotes": "Il n'y a pas encore d'annotation de ce type.",
+    "note": "Annotation",
+    "notes": "Votre analyse et vos remarques personnelles",
+    "personalnotes": "Annotations personnelles",
+    "publishstate": "Contexte",
+    "sitenotes": "Annotations du site",
+    "userwithid": "Utilisateur d'ID {{id}}",
+    "warningnotenotsent": "Impossible d'ajouter d'annotation au cours {{course}}. {{error}}"
+}

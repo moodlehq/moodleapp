@@ -1,0 +1,13 @@
+{
+    "admindisableddownload": "あなたのMoodle管理者に、ファイルのダウンロードを無効にするよう知らせてください。そうすれば、ファイルをデバイスにダウンロードせず閲覧のみにすることができます。",
+    "clicktoupload": "ファイルをあなたのプライベートファイル領域にアップロードするには、下のボタンをクリックしてください。",
+    "couldnotloadfiles": "以下のファイルが読み込みできませんでした。",
+    "emptyfilelist": "表示するファイルはありません。",
+    "erroruploadnotworking": "残念ながら、現在、あなたのサイトにファイルをアップロードすることはできません。",
+    "files": "ファイル",
+    "myprivatefilesdesc": "ファイルはMoodleサイト上のあなたのプライベート領域にあります。",
+    "privatefiles": "プライベートファイル",
+    "sitefiles": "サイトファイル",
+    "sitefilesdesc": "本Moodleサイトであなたが利用できる他のファイル",
+    "uploadfiles": "フィードバックファイルを送信する"
+}

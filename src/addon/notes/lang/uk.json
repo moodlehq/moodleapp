@@ -1,0 +1,13 @@
+{
+    "addnewnote": "Додати нову записку",
+    "coursenotes": "Записки курсу",
+    "eventnotecreated": "Записка створена",
+    "nonotes": "Наразі немає записок такого типу",
+    "note": "Записка",
+    "notes": "Ваш особистий аналіз і нотатки",
+    "personalnotes": "Персональні записки",
+    "publishstate": "Контекст",
+    "sitenotes": "Записки сайту",
+    "userwithid": "Користувач з Id {{id}}",
+    "warningnotenotsent": "Неможливо додати записку до курсу {{course}}. {{error}}"
+}

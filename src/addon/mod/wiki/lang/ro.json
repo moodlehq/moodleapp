@@ -1,0 +1,12 @@
+{
+    "cannoteditpage": "Nu puteți edita această pagină.",
+    "createpage": "Creează pagină",
+    "editingpage": "Se editează această pagină  '{{$a}}'",
+    "newpagehdr": "Pagină nouă",
+    "newpagetitle": "Un nou titlu de pagină",
+    "nocontent": "Nu există conținut pentru această pagină",
+    "notingroup": "Nu este în grup",
+    "page": "Pagină",
+    "pageexists": "Această pagină există deja.",
+    "pagename": "Nume pagină"
+}

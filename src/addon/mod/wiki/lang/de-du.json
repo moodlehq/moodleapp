@@ -1,0 +1,21 @@
+{
+    "cannoteditpage": "Sie können diese Seite nicht bearbeiten.",
+    "createpage": "Seite erstellen",
+    "editingpage": "Die Seite '{{$a}}' wird bearbeitet",
+    "errorloadingpage": "Fehler beim Laden der Seite",
+    "errornowikiavailable": "Dieses Wiki hat noch keinen Inhalt.",
+    "gowikihome": "Zur Wiki-Startseite",
+    "map": "Spezialseiten",
+    "newpagehdr": "Neue Seite",
+    "newpagetitle": "Titel für neue Seite\n",
+    "nocontent": "Kein Inhalt auf dieser Seite",
+    "notingroup": "Nicht in Gruppen",
+    "page": "Seite: {{$a}}",
+    "pageexists": "Diese Seite existiert bereits.",
+    "pagename": "Seitenname",
+    "subwiki": "Teilwiki",
+    "titleshouldnotbeempty": "Der Titel kann nicht leer sein.",
+    "viewpage": "Seite anzeigen",
+    "wikipage": "Wiki-Seite",
+    "wrongversionlock": "Jemand anderes hat die Seite aktualisiert, während Sie daran gearbeitet haben. Deswegen ist der von Ihnen verwendete Seiteninhalt veraltet."
+}

@@ -1,0 +1,21 @@
+{
+    "cannoteditpage": "Você não pode editar esta página.",
+    "createpage": "Criar página",
+    "editingpage": "Editando a página '{{$a}}'",
+    "errorloadingpage": "Aconteceu um erro ao carregar a página.",
+    "errornowikiavailable": "Essa wiki não tem nenhum conteúdo ainda.",
+    "gowikihome": "Ir para o ínicio da Wiki",
+    "map": "Mapa",
+    "newpagehdr": "Nova página",
+    "newpagetitle": "Novo título da página",
+    "nocontent": "Não existe conteúdo para esta página",
+    "notingroup": "Não existe no grupo",
+    "page": "Página: {{$a}}",
+    "pageexists": "Esta página já existe.",
+    "pagename": "Nome da página",
+    "subwiki": "Subwiki",
+    "titleshouldnotbeempty": "O título não pode ser vazio",
+    "viewpage": "Ver página",
+    "wikipage": "Página do Wiki",
+    "wrongversionlock": "Outro usuário editou esta página enquanto você estava editando e seu conteúdo é obsoleto."
+}

@@ -1,0 +1,18 @@
+{
+    "beep": "نغمة",
+    "currentusers": "المستخدمين الحاليين",
+    "enterchat": "أضغط هناء للدخول إلى المحادثة",
+    "entermessage": "أدخل رسالتك",
+    "errorwhileconnecting": "خطأ عند الاتصال بالدردشة",
+    "errorwhilegettingchatdata": "خطأ عند الحصول على معلومات الدردشة",
+    "errorwhilegettingchatusers": "خطأ عند الحصول على مستخدمي الدردشة",
+    "errorwhileretrievingmessages": "خطأ عند استرجاع الرسائل من الخادم",
+    "errorwhilesendingmessage": "خطأ عند إرسال الرسالة",
+    "messagebeepsyou": "{{$a}}  أرسل نغمة لك!",
+    "messageenter": "{{$a}}  دخل غرفة محادثة",
+    "messageexit": "{{$a}}  خرج من غرفة محادثة",
+    "nomessages": "لا توجد رسائل بعد",
+    "send": "إرسل",
+    "sessionstart": "ي  {{$a.date}}, ({{$a.fromnow}} وسوف تبدأ جلسة  الدردشة القادمة في من الآن",
+    "talk": "حديث"
+}

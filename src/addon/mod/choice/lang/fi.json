@@ -1,0 +1,19 @@
+{
+    "cannotsubmit": "Vastauksen tallennuksessa oli teknisiä ongelmia. Vastaathan uudestaan.",
+    "choiceoptions": "Vastausvaihtoehdot",
+    "errorgetchoice": "Virhe haettaessa valinnan tietoja.",
+    "expired": "Tämä aktiviteeti on suljettu {{$a}} eikä ole enää käytettävissä.",
+    "full": "(Täysi)",
+    "noresultsviewable": "Tulokset eivät ole juuri nyt nähtävillä",
+    "notopenyet": "Tämä aktiviteetti ei ole saatavilla ennen kuin {{$a}}",
+    "numberofuser": "Osallistujamäärä",
+    "numberofuserinpercentage": "Osallistujamäärä prosentteina",
+    "removemychoice": "Poista valintani",
+    "responses": "Vastaukset",
+    "responsesresultgraphdescription": "{{number}}% käyttäjistä valitsi vaihtoehdon: {{text}}.",
+    "responsesresultgraphheader": "Graafinen esitys",
+    "resultsnotsynced": "Tulokset eivät sisällä viimeisintä vastaustasi. Ole hyvä ja synkronoi päivittääksesi ne.",
+    "savemychoice": "Tallenna valintani",
+    "userchoosethisoption": "Käyttäjä valitsee tämän vaihtoehdon",
+    "yourselection": "Valintasi"
+}

@@ -1,0 +1,10 @@
+{
+    "admindisableddownload": "사이트 관리자가 파일 다운로드를 비활성화 했습니다. 파일을 탐색 할 수는 있지만 다운로드 할 수는 없습니다.",
+    "clicktoupload": "아래 버튼을 클릭하여 개인 파일에 파일을 업로드하십시오.",
+    "emptyfilelist": "보여줄 파일이 없습니다.",
+    "files": "파일",
+    "myprivatefilesdesc": "나만 접근할 수 있는 파일",
+    "sitefiles": "파일 창고",
+    "sitefilesdesc": "이 사이트에서 당신에게 제공되는 기타 파일들",
+    "uploadfiles": "피드백 파일 보내기"
+}

@@ -1,0 +1,20 @@
+{
+    "cannotsubmit": "Desculpe, surgiu um problema ao submeter a sua escolha. Por favor, tente novamente.",
+    "choiceoptions": "Opções de resposta",
+    "errorgetchoice": "Erro ao obter os dados da sondagem.",
+    "expired": "Esta atividade terminou em {{$a}} e já não está disponível",
+    "full": "Completa",
+    "noresultsviewable": "Os resultados da sondagem ainda não estão disponíveis.",
+    "notopenyet": "Lamentamos mas esta atividade só estará disponível em {{$a}}",
+    "numberofuser": "Número de respostas",
+    "numberofuserinpercentage": "Percentagem de respostas",
+    "previewonly": "Esta é apenas uma pré-visualização das opções disponíveis para esta atividade. Não poderá submeter a sua escolha até {{$a}}.",
+    "removemychoice": "Apagar a minha resposta",
+    "responses": "Respostas",
+    "responsesresultgraphdescription": "{{number}}% dos utilizadores escolheram esta opção: {{text}}.",
+    "responsesresultgraphheader": "Gráfico",
+    "resultsnotsynced": "A sua última resposta tem de ser sincronizada para estar incluída nos resultados.",
+    "savemychoice": "Gravar a minha resposta",
+    "userchoosethisoption": "Utilizadores que escolheram esta opção",
+    "yourselection": "A sua resposta"
+}

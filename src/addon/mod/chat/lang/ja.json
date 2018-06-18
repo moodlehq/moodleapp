@@ -1,0 +1,19 @@
+{
+    "beep": "ビープ",
+    "currentusers": "現在のユーザ",
+    "enterchat": "ここをクリックしてチャットルームに入室する",
+    "entermessage": "あなたのメッセージを入力してください。",
+    "errorwhileconnecting": "チャットに接続する際にエラーが発生しました。",
+    "errorwhilegettingchatdata": "チャットのデータを取得中にエラーが発生しました。",
+    "errorwhilegettingchatusers": "チャットのユーザを取得中にエラーが発生しました。",
+    "errorwhileretrievingmessages": "サーバからメッセージを取得中にエラーが発生しました。",
+    "errorwhilesendingmessage": "メッセージ送信中にエラーが発生しました。",
+    "messagebeepsyou": "{{$a}} があなたにビープしました!",
+    "messageenter": "このチャットに {{$a}} が入室しました。",
+    "messageexit": "このチャットから {{$a}} が退室しました。",
+    "mustbeonlinetosendmessages": "メッセージを送信するにはオンラインでなければなりません。",
+    "nomessages": "メッセージがありません。",
+    "send": "送信",
+    "sessionstart": "次のチャットセッションは {{$a.date}} に開始されます (現在から {{$a.fromnow}} 後)。",
+    "talk": "会話"
+}

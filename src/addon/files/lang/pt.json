@@ -1,0 +1,13 @@
+{
+    "admindisableddownload": "O administrador do Moodle desativou a opção de descarregar ficheiros. Poderá navegar nos ficheiros mas não conseguirá descarregá-los.",
+    "clicktoupload": "Clique no botão abaixo para carregar ficheiros para os seus ficheiros privados.",
+    "couldnotloadfiles": "Não foi possível carregar a lista de ficheiros",
+    "emptyfilelist": "Este repositório está vazio",
+    "erroruploadnotworking": "Infelizmente não é possível carregar ficheiros para o seu site.",
+    "files": "Ficheiros",
+    "myprivatefilesdesc": "Ficheiros privados.",
+    "privatefiles": "Ficheiros privados",
+    "sitefiles": "Ficheiros do site",
+    "sitefilesdesc": "Os outros ficheiros que estão disponíveis para si neste site.",
+    "uploadfiles": "Enviar ficheiros de feedback"
+}

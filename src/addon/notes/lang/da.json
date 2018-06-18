@@ -1,0 +1,13 @@
+{
+    "addnewnote": "Tilføj en ny note",
+    "coursenotes": "Kursusnote",
+    "eventnotecreated": "Note oprettet",
+    "nonotes": "Der er endnu ingen noter af denne type",
+    "note": "Note",
+    "notes": "Dine private kommentarer og noter",
+    "personalnotes": "Personlige noter",
+    "publishstate": "Sammenhæng",
+    "sitenotes": "Webstedsnoter",
+    "userwithid": "Bruger med Id {{id}}",
+    "warningnotenotsent": "Kunne ikke tilføje note(r) til kurset {{course}}. {{error}}"
+}

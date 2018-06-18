@@ -1,0 +1,20 @@
+{
+    "attachment": "添付",
+    "browsemode": "プレビューモード",
+    "byalphabet": "アルファベット順",
+    "byauthor": "著者でグループ",
+    "bycategory": "カテゴリでグループ",
+    "bynewestfirst": "新規順",
+    "byrecentlyupdated": "最近の更新",
+    "bysearch": "検索",
+    "cannoteditentry": "エントリの編集ができませんでした",
+    "casesensitive": "正規表現を使用する",
+    "categories": "コースカテゴリ",
+    "entriestobesynced": "エントリの同期ができませんでした",
+    "entrypendingapproval": "このエントリは承認待ちです。",
+    "errorloadingentries": "エントリ読み込み中にエラーが発生しました。",
+    "errorloadingentry": "エントリ読み込み中にエラーが発生しました。",
+    "errorloadingglossary": "用語集を読み込み中にエラーが発生しました。",
+    "noentriesfound": "エントリが見つかりませんでした。",
+    "searchquery": "検索内容"
+}

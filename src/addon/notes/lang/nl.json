@@ -1,0 +1,13 @@
+{
+    "addnewnote": "Voeg een nieuwe notitie toe",
+    "coursenotes": "Cursusnotities",
+    "eventnotecreated": "Notitie gemaakt",
+    "nonotes": "Er zijn nog geen notities van dit type.",
+    "note": "Notitie",
+    "notes": "Je persoonlijke analyse en aantekeningen",
+    "personalnotes": "Persoonlijke notities",
+    "publishstate": "Context",
+    "sitenotes": "Site notities",
+    "userwithid": "Gebruiker met ID {{$a}}",
+    "warningnotenotsent": "Kon notities niet toevoegen aan cursus {{course}}. {{error}}"
+}

@@ -1,0 +1,17 @@
+{
+    "cannoteditpage": "Du kan ikke redigere denne siden",
+    "createpage": "Lag side",
+    "editingpage": "Endrer denne siden '{{$a}}'",
+    "map": "Kart",
+    "newpagehdr": "Ny side",
+    "newpagetitle": "Ny sidetittel",
+    "nocontent": "Denne siden har ikke innhold",
+    "notingroup": "Ikke i gruppen",
+    "page": "Side",
+    "pageexists": "Denne siden eksisterer allerede.",
+    "pagename": "Sidenavn",
+    "titleshouldnotbeempty": "Tittel kan ikke være blank",
+    "viewpage": "Vis side",
+    "wikipage": "Wikiside",
+    "wrongversionlock": "En annen bruker endret denne siden du endrer og ditt innhold er derfor utdatert."
+}

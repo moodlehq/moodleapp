@@ -1,0 +1,19 @@
+{
+    "beep": "Pyp",
+    "currentusers": "Dabartiniai naudotojai",
+    "enterchat": "Spustelėkite čia, kad prisijungtumėte prie pokalbio dabar",
+    "entermessage": "Įveskite savo žinutę",
+    "errorwhileconnecting": "Įvyko klaida jungiantis prie pokalbio.",
+    "errorwhilegettingchatdata": "Klaida gaunant pokalbio duomenis.",
+    "errorwhilegettingchatusers": "Klaida gaunant pokalbio dalyvių informaciją.",
+    "errorwhileretrievingmessages": "Klaida gaunant žinutes iš serverio.",
+    "errorwhilesendingmessage": "Klaida siunčiant žinutę.",
+    "messagebeepsyou": "{{$a}} ką tik pyptelėjo jums!",
+    "messageenter": "{{$a}} ką tik prisijungė prie šio pokalbio",
+    "messageexit": "{{$a}} ką tik paliko šį pokalbį",
+    "mustbeonlinetosendmessages": "Norėdamas išsiųsti žinutę, turite būti prisijungęs.",
+    "nomessages": "Žinučių dar nėra",
+    "send": "Siųsti",
+    "sessionstart": "Kitas pokalbio seansas prasidės {{$a.date}},  ({{$a.fromnow}} nuo dabar)",
+    "talk": "Kalbėti"
+}

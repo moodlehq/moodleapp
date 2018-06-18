@@ -1,0 +1,21 @@
+{
+    "cannoteditpage": "Ezin duzu orri hau editatu.",
+    "createpage": "Sortu orria",
+    "editingpage": "Orri hau editatzen: '{{$a}}'",
+    "errorloadingpage": "Errore bat gertatu da orria kargatzean.",
+    "errornowikiavailable": "Wiki honek oraindik ez du edukirik.",
+    "gowikihome": "Joan wikiaren lehen orrira",
+    "map": "Mapa",
+    "newpagehdr": "Orri berria",
+    "newpagetitle": "Orri berriaren izenburua",
+    "nocontent": "Ez dago edukirik orri honetarako",
+    "notingroup": "Ez dago taldean",
+    "page": "Orria",
+    "pageexists": "Orri hau badago dagoeneko.",
+    "pagename": "Orriaren izena",
+    "subwiki": "Azpiwikia",
+    "titleshouldnotbeempty": "Izenburua ezin da hutsik egon",
+    "viewpage": "Ikusi orria",
+    "wikipage": "Wiki orria",
+    "wrongversionlock": "Beste erabiltzaile batek editatu du orri hau zeu editatzen ari zinen bitartean: zeure edukia zaharkituta dago."
+}

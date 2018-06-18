@@ -1,0 +1,13 @@
+{
+    "addnewnote": "Afegeix una nota",
+    "coursenotes": "Notes del curs",
+    "eventnotecreated": "S'ha creat la nota",
+    "nonotes": "Encara no hi ha notes d'aquest tipus",
+    "note": "Anotació",
+    "notes": "El teu anàlisi privat i les teves notes",
+    "personalnotes": "Anotacions personals",
+    "publishstate": "Context",
+    "sitenotes": "Anotacions del lloc",
+    "userwithid": "Usuari amb id {{id}}",
+    "warningnotenotsent": "No s'han pogut afegir les notes al curs {{course}}. {{error}}"
+}

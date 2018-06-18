@@ -1,0 +1,17 @@
+{
+    "cannotsubmit": "Üzgünüz, seçiminizi gönderirken bir sorun oluştu. Lütfen tekrar deneyin.",
+    "choiceoptions": "Seçim seçenekleri",
+    "expired": "Üzgünüz, bu etkinlik {{$a}} tarihinde kapandı ve bu etkinliğe artık ulaşılamaz",
+    "full": "(Dolu)",
+    "noresultsviewable": "Sonuçlar şu anda görüntülenmemektedir.",
+    "notopenyet": "Üzgünüz, bu etkinliğe {{$a}} tarihine kadar ulaşılamaz",
+    "numberofuser": "Yanıt sayısı",
+    "numberofuserinpercentage": "Yanıtların yüzdesi",
+    "previewonly": "Bu, bu etkinlik için mevcut seçeneklerin bir önizlemesidir. {{$a}} tarihine kadar seçiminizi yapamazsınız.",
+    "removemychoice": "Seçimimi sil",
+    "responses": "Yanıtlar",
+    "responsesresultgraphheader": "Grafik ekranı",
+    "savemychoice": "Seçeneğimi kaydet",
+    "userchoosethisoption": "Bu seçeneği seçen kullanıcılar",
+    "yourselection": "Seçiminiz"
+}

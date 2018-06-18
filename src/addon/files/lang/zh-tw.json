@@ -1,0 +1,13 @@
+{
+    "admindisableddownload": "請注意, 您的Moodle管理員禁止檔案下載, 您可以瀏覽檔案, 但不能下載它們.",
+    "clicktoupload": "點選這個按鈕,將檔案上傳到你的個人檔案區",
+    "couldnotloadfiles": "這些檔案是不能被載入的",
+    "emptyfilelist": "沒有檔案可以顯示",
+    "erroruploadnotworking": "很抱歉, 目前無法將檔案上傳到您的網站.",
+    "files": "檔案",
+    "myprivatefilesdesc": "在此Moodle網站上, 您的私有區域中有可用的文件",
+    "privatefiles": "私人檔案",
+    "sitefiles": "網站檔案",
+    "sitefilesdesc": "您在此Moodle網站上有可用的其他文件.",
+    "uploadfiles": "上傳檔案"
+}

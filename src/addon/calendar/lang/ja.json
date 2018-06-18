@@ -1,0 +1,8 @@
+{
+    "calendarevents": "カレンダーイベント",
+    "defaultnotificationtime": "デフォルト通知時間",
+    "errorloadevent": "イベントの読み込み時にエラーがありました。",
+    "errorloadevents": "イベントの読み込み時にエラーがありました。",
+    "noevents": "到来する活動期限はありません。",
+    "notifications": "通知"
+}

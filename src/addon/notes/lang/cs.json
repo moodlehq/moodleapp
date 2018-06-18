@@ -1,0 +1,13 @@
+{
+    "addnewnote": "Přidat novou poznámku",
+    "coursenotes": "Poznámky kurzu",
+    "eventnotecreated": "Poznámka vytvořena",
+    "nonotes": "Doposud neexistují žádné poznámky tohoto typu.",
+    "note": "Poznámka",
+    "notes": "Vaše soukromé postřehy a poznámky",
+    "personalnotes": "Osobní poznámky",
+    "publishstate": "Kontext",
+    "sitenotes": "Poznámky stránek",
+    "userwithid": "Uživatel s ID {{id}}",
+    "warningnotenotsent": "Nelze přidat poznámku (y) ke  kurzu {{course}}. {{error}}"
+}

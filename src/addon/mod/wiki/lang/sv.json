@@ -1,0 +1,19 @@
+{
+    "cannoteditpage": "Du kan inte redigera den här sidan.",
+    "createpage": "Skapa sida",
+    "editingpage": "Redigerar den här sidan '{{$a}}'",
+    "errorloadingpage": "Ett fel uppstod när sidan laddades",
+    "errornowikiavailable": "Det finns ingen Wiki tillgänglig som kan visas",
+    "gowikihome": "Wiki hem",
+    "map": "Karta",
+    "newpagehdr": "Ny sida",
+    "newpagetitle": "Ny titel på sida",
+    "nocontent": "Det finns inget innehåll för den här sidan",
+    "notingroup": "Inte i grupp",
+    "page": "Sida",
+    "pageexists": "Den här sidan finns redan, länkning dit pågår",
+    "pagename": "Namn på sida",
+    "subwiki": "Subwiki",
+    "viewpage": "Visa sida",
+    "wrongversionlock": "En annan användare har redigerat denna sida samtidigt som du redigerade och ditt innehåll är inte längre användbart."
+}

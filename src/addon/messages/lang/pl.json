@@ -1,0 +1,20 @@
+{
+    "addcontact": "Dodaj kontakt",
+    "blockcontact": "Blokuj kontakt",
+    "blocknoncontacts": "Blokuj wiadomości od użytkowników spoza listy kontaktów",
+    "contactlistempty": "Lista kontaktów jest pusta",
+    "contactname": "Nazwa kontaktu",
+    "contacts": "Kontakty",
+    "deletemessage": "Usuń wiadomość",
+    "deletemessageconfirmation": "Czy jesteś pewien, że chcesz usunąć tę wiadomość? Zostanie ona usunięta wyłącznie z twojej historii wiadomości, użytkownik który ją wysłał lub odebrał nadal będzie mógł ją wyświetlić.",
+    "message": "Treść wiadomości",
+    "messagepreferences": "Preferencje wiadomości",
+    "messages": "Wiadomości",
+    "newmessage": "Nowa wiadomość",
+    "nomessages": "Brak wiadomości",
+    "nousersfound": "Nie znaleziono użytkowników",
+    "removecontact": "Usuń kontakt",
+    "send": "wyślij",
+    "sendmessage": "Wyślij wiadomość",
+    "unblockcontact": "Odblokuj kontakt"
+}

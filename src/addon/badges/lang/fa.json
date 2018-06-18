@@ -1,0 +1,13 @@
+{
+    "badgedetails": "مشخصات مدال",
+    "badges": "مدال‌ها",
+    "contact": "تماس",
+    "dateawarded": "تاریخ صدور",
+    "expired": "با عرض پوزش، این فعالیت در {{$a}} بسته شد و دیگر در دسترس نیست",
+    "expirydate": "تاریخ انقضا",
+    "issuancedetails": "انقضای مدال",
+    "issuerdetails": "مشخصات صادرکننده",
+    "issuername": "نام صادرکننده",
+    "nobadges": "مدالی موجود نیست.",
+    "recipientdetails": "مشخصات دریافت‌کننده"
+}

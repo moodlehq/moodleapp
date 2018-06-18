@@ -1,0 +1,19 @@
+{
+    "beep": "呼叫",
+    "currentusers": "當前用戶",
+    "enterchat": "點選這裡進入聊天室",
+    "entermessage": "輸入您的訊息",
+    "errorwhileconnecting": "連接到聊天時出錯.",
+    "errorwhilegettingchatdata": "取得聊天資料時發生錯誤.",
+    "errorwhilegettingchatusers": "取得聊天使用者時發生錯誤.",
+    "errorwhileretrievingmessages": "從伺服器存取訊息時發生錯誤",
+    "errorwhilesendingmessage": "當傳送訊息時發生錯誤",
+    "messagebeepsyou": "{{$a}} 呼叫您",
+    "messageenter": "{{$a}} 剛加入這次聊天",
+    "messageexit": "{{$a}} 已退出這次聊天",
+    "mustbeonlinetosendmessages": "您必須上線才能傳送訊息",
+    "nomessages": "尚無訊息",
+    "send": "傳送",
+    "sessionstart": "下一個聊天時段即將在{{$a.date}}開始，(離現在{{$a.fromnow}} )",
+    "talk": "交談"
+}

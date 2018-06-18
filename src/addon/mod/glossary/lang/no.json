@@ -1,0 +1,20 @@
+{
+    "attachment": "Vedlegg",
+    "browsemode": "Forhåndsvisningsmodus",
+    "byalphabet": "Alfabetisk",
+    "byauthor": "Gruppér etter forfatter",
+    "bycategory": "Gruppér etter kategori",
+    "bynewestfirst": "Nyeste først",
+    "byrecentlyupdated": "Nylig oppdatert",
+    "bysearch": "Søk",
+    "cannoteditentry": "Kan ikke redigere oppføring",
+    "casesensitive": "Skiller mellom store/små bokstaver",
+    "categories": "Kurskategorier",
+    "entriestobesynced": "Oppføringer som skal synkroniseres",
+    "entrypendingapproval": "Denne oppføringen venter på godkjenning",
+    "errorloadingentries": "Feil ved lasting av oppføringer.",
+    "errorloadingentry": "Feil ved lasting av oppføringen.",
+    "errorloadingglossary": "Feil ved lasting av ordliste",
+    "noentriesfound": "Ingen oppføringer funnet",
+    "searchquery": "Søkeord"
+}

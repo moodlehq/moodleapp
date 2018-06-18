@@ -1,0 +1,20 @@
+{
+    "cannotsubmit": "抱歉，在提交你的投票時發生問題，請再試一次。",
+    "choiceoptions": "票選的選項",
+    "errorgetchoice": "取得選項資料時出錯",
+    "expired": "抱歉，此項活動已經在{{$a}}關閉，不再開放使用。",
+    "full": "(已滿)",
+    "noresultsviewable": "目前無法檢視票選結果",
+    "notopenyet": "抱歉，這個活動在{{$a}}之前不能使用",
+    "numberofuser": "回應的人數",
+    "numberofuserinpercentage": "回應人數的百分比",
+    "previewonly": "這只是這一活動的可用選項的預覽。你要等到{{$a}}才可以進行投票。",
+    "removemychoice": "移除我的選擇",
+    "responses": "答覆",
+    "responsesresultgraphdescription": "{{number}}％的使用者選擇了選項: {{text}}.",
+    "responsesresultgraphheader": "顯示圖表",
+    "resultsnotsynced": "結果不包括您的上次回覆. 請同步更新.",
+    "savemychoice": "儲存我的選擇",
+    "userchoosethisoption": "有選擇這一項的用戶",
+    "yourselection": "您的選擇"
+}

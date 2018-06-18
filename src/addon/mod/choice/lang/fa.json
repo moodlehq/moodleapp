@@ -1,0 +1,15 @@
+{
+    "choiceoptions": "گزینه‌های انتخابی",
+    "expired": "با عرض پوزش، این فعالیت در {{$a}} بسته شد و دیگر در دسترس نیست",
+    "full": "(پر)",
+    "noresultsviewable": "نتایج در این لحظه قابل دیدن نیستند.",
+    "notopenyet": "با عرض معذرت، این فعالیت تا قبل از {{$a}} در دسترس نیست",
+    "numberofuser": "تعداد کاربران",
+    "numberofuserinpercentage": "درصد پاسخ‌ها",
+    "removemychoice": "حذف انتخاب من",
+    "responses": "پاسخ‌ها",
+    "responsesresultgraphheader": "نمایش نمودار",
+    "savemychoice": "ذخیرهٔ انتخاب من",
+    "userchoosethisoption": "کاربرانی که این گزینه را انتخاب کرده‌اند",
+    "yourselection": "انتخاب شما"
+}

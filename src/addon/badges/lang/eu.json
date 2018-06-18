@@ -1,0 +1,13 @@
+{
+    "badgedetails": "Dominaren xehetasunak",
+    "badges": "Dominak",
+    "contact": "Kontaktua",
+    "dateawarded": "Emate-data",
+    "expired": "Sentitzen dugu, jarduera hau {{$a}}(e)an itxi zen eta dagoeneko ez dago eskuragarri.",
+    "expirydate": "Epemugaren data",
+    "issuancedetails": "Dominaren iraungitzea",
+    "issuerdetails": "Emailearen xehetasunak",
+    "issuername": "Emailearen izena",
+    "nobadges": "Ez dago dominarik eskura.",
+    "recipientdetails": "Jasotzailearen zehaztasunak"
+}

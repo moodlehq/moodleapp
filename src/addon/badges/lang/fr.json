@@ -1,0 +1,13 @@
+{
+    "badgedetails": "Description du badge",
+    "badges": "Badges",
+    "contact": "Contact",
+    "dateawarded": "Date de remise",
+    "expired": "Désolé, cette activité s'est terminée le {{$a}} et n'est plus disponible",
+    "expirydate": "Date d'échéance",
+    "issuancedetails": "Échéance du badge",
+    "issuerdetails": "Détail de l'émetteur",
+    "issuername": "Nom de l'émetteur",
+    "nobadges": "Il n'y a pas de badge disponible.",
+    "recipientdetails": "Infos détenteur"
+}

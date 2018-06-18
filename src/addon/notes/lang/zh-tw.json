@@ -1,0 +1,13 @@
+{
+    "addnewnote": "新增註記",
+    "coursenotes": "課程註記",
+    "eventnotecreated": "註記已被建立",
+    "nonotes": "還沒有這種類型的註記",
+    "note": "註記",
+    "notes": "註記",
+    "personalnotes": "個人註記",
+    "publishstate": "上下文",
+    "sitenotes": "網站註記",
+    "userwithid": "使用者編號 {{id}}",
+    "warningnotenotsent": "無法新增註冊到課程 {{course}}. {{error}}"
+}

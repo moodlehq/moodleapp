@@ -1,0 +1,20 @@
+{
+    "attachment": "Liitä viestiin osaamismerkki",
+    "browsemode": "Esikatselunäkymä",
+    "byalphabet": "Aakkosjärjestyksessä",
+    "byauthor": "Ryhmittele kirjoittajan mukaisesti",
+    "bycategory": "Ryhmittele kategorian mukaan",
+    "bynewestfirst": "Uusin ensin",
+    "byrecentlyupdated": "Äskettäin päivitetty",
+    "bysearch": "Hae",
+    "cannoteditentry": "Merkintää ei voi muokata",
+    "casesensitive": "Kirjainkoon merkitys",
+    "categories": "Kategoriat",
+    "entriestobesynced": "Synkronoitavat merkinnät",
+    "entrypendingapproval": "Tämä merkintä odottaa hyväksyntää.",
+    "errorloadingentries": "Merkintöjä ladattaessa tapahtui virhe.",
+    "errorloadingentry": "Virhe ladattaessa merkintää.",
+    "errorloadingglossary": "Virhe ladattaessa sanastoa.",
+    "noentriesfound": "Merkintöjä ei löytynyt.",
+    "searchquery": "Hakukysely"
+}

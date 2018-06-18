@@ -1,0 +1,15 @@
+{
+    "choiceoptions": "خيارات الاختيار",
+    "expired": "عذراً، تم إغلاق هذا النشاط في {{$a}} وهو غير متوفر الآن.",
+    "full": "(كامل)",
+    "noresultsviewable": "حالياً لا يمكن معاينة النتائج",
+    "notopenyet": "عذرا، هذا النشاط سيكون متوفر في {{$a}}",
+    "numberofuser": "عدد المستخدمين",
+    "numberofuserinpercentage": "عدد المستخدمين كنسبة",
+    "removemychoice": "استبعد خياري",
+    "responses": "إجابات",
+    "responsesresultgraphheader": "عرض كمنحني",
+    "savemychoice": "حفظ الاختيار",
+    "userchoosethisoption": "المستخدمين الذين اختاروا هذا الخيار",
+    "yourselection": "أختيارك"
+}

@@ -1,0 +1,6 @@
+{
+    "dimensioncommentfor": "Komentaras {{$a}}",
+    "dimensiongradefor": "Įvertis {{$a}}",
+    "dimensionnumber": "Aspektas {{$a}}",
+    "mustchoosegrade": "Jūs turite pasirinkti vertinimą pasirinktam aspektui"
+}

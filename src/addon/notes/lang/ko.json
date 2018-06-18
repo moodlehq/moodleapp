@@ -1,0 +1,13 @@
+{
+    "addnewnote": "새 메모 추가",
+    "coursenotes": "강좌 메모",
+    "eventnotecreated": "메모 작성",
+    "nonotes": "이 유형의 메모가 아직 없습니다.",
+    "note": "메모",
+    "notes": "당신의 개인적 분석과 기록",
+    "personalnotes": "개인적인 메모",
+    "publishstate": "문맥",
+    "sitenotes": "사이트 메모",
+    "userwithid": "ID가 {{id}} 인 사용자",
+    "warningnotenotsent": "{{course}} 강좌에 메모를 추가 할 수 없습니다. {{오류}}"
+}

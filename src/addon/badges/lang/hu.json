@@ -1,0 +1,13 @@
+{
+    "badgedetails": "Részletek",
+    "badges": "Kitűzők",
+    "contact": "Kapcsolat",
+    "dateawarded": "Kiadás dátuma",
+    "expired": "Ez a tevékenység {{$a}} időpontban lezárult és már nem érhető el",
+    "expirydate": "Lejárat időpontja",
+    "issuancedetails": "A kitűző lejárata",
+    "issuerdetails": "Az adományozó adatai",
+    "issuername": "Az adományozó neve",
+    "nobadges": "Nincs elérhető kitűző.",
+    "recipientdetails": "A megjutalmazott adatai"
+}

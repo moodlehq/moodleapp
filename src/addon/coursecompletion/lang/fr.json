@@ -1,0 +1,21 @@
+{
+    "complete": "Complet",
+    "completecourse": "Terminer le cours",
+    "completed": "Terminé",
+    "completiondate": "Date d'achèvement",
+    "couldnotloadreport": "Impossible de charger le rapport d'achèvement de cours. Veuillez essayer plus tard.",
+    "coursecompletion": "Achèvement de cours",
+    "criteria": "Critères",
+    "criteriagroup": "Groupe de critères",
+    "criteriarequiredall": "Tous les critères ci-dessous sont requis",
+    "criteriarequiredany": "Un des critères ci-dessous est requis",
+    "inprogress": "En cours",
+    "manualselfcompletion": "Auto-achèvement manuel",
+    "notyetstarted": "Pas encore commencé",
+    "pending": "En suspens",
+    "required": "Requis",
+    "requiredcriteria": "Critères requis",
+    "requirement": "Condition",
+    "status": "Statut du badge",
+    "viewcoursereport": "Consulter le rapport du cours"
+}

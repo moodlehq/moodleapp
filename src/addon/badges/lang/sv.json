@@ -1,0 +1,12 @@
+{
+    "badgedetails": "Detaljer för märke",
+    "badges": "Märken",
+    "contact": "Kontakt",
+    "dateawarded": "Utfärdandedatum",
+    "expired": "Den här aktiviteten är stängd på {{$a}} och den är inte längre tillgänglig.",
+    "expirydate": "Förfallodatum",
+    "issuancedetails": "Förfallande av märke",
+    "issuerdetails": "Utfärdarens detaljer",
+    "issuername": "Utfärdarens namn",
+    "nobadges": "Det finns inga märken tillgängliga."
+}

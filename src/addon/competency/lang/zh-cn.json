@@ -1,0 +1,16 @@
+{
+    "activities": "活动",
+    "competenciesmostoftennotproficientincourse": "在这门课程中你有太多不精通的能力",
+    "coursecompetencies": "课程能力",
+    "duedate": "截止日",
+    "evidence": "凭据",
+    "noactivities": "没有设置活动",
+    "path": "路径",
+    "proficient": "精通",
+    "progress": "学生进度",
+    "rating": "正在评分",
+    "status": "勋章状态",
+    "template": "学习计划模板",
+    "xcompetenciesproficientoutofy": "{{$a.y}}个能力中的{{$a.x}}是精通的",
+    "xcompetenciesproficientoutofyincourse": "你精通这门课程{{$a.y}}个能力中的{{$a.x}}个。"
+}

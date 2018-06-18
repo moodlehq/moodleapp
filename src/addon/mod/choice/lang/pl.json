@@ -1,0 +1,16 @@
+{
+    "cannotsubmit": "Wystąpił problem podczas zatwierdzania twojego wyboru. Proszę spróbuj ponownie.",
+    "choiceoptions": "Opcje wyboru odpowiedzi",
+    "expired": "Niestety ta aktywność została zamknięta {{$a}} i nie jest już dostępna.",
+    "full": "(pełne)",
+    "noresultsviewable": "Nie ma wglądu w wyniki głosowania.",
+    "notopenyet": "Moduł nieczynny do {{$a}}",
+    "numberofuser": "Liczba użytkowników",
+    "numberofuserinpercentage": "Ilość użytkowników w procentach",
+    "removemychoice": "Usuń mój wybór",
+    "responses": "Odpowiedzi",
+    "responsesresultgraphheader": "Wyświetl wykres",
+    "savemychoice": "Zapisz mój wybór",
+    "userchoosethisoption": "Użytkownicy, którzy wybrali poszczególne opcje.",
+    "yourselection": "Twój wybór"
+}

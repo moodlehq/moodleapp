@@ -1,0 +1,20 @@
+{
+    "cannotsubmit": "Der var desværre problemer med at indsende dit valg. Prøv igen.",
+    "choiceoptions": "Valgmuligheder",
+    "errorgetchoice": "Fejl ved hentning af valgte data",
+    "expired": "Beklager, denne aktivitet er lukket d. {{$a}} og er ikke længere tilgængelig",
+    "full": "(Fuld)",
+    "noresultsviewable": "Resultaterne er ikke tilgængelige på nuværende tidspunkt.",
+    "notopenyet": "Denne aktivitet er tilgængelig fra {{$a}}",
+    "numberofuser": "Antal svar",
+    "numberofuserinpercentage": "Antal svar i procent",
+    "previewonly": "Dette er en forhåndsvisning af de tilgængelige valgmuligheder i denne afstemning. Du kan ikke indsende dine valg før {{$a}}.",
+    "removemychoice": "Slet mit valg",
+    "responses": "Besvarelser",
+    "responsesresultgraphdescription": "{{number}}% af brugerne vælger denne mulighed: {{test}}",
+    "responsesresultgraphheader": "Grafisk visning",
+    "resultsnotsynced": "Resultater medtager ikke dine seneste svar. Synkroniser for at opdatere dem.",
+    "savemychoice": "Gem",
+    "userchoosethisoption": "Brugerfordeling på svar",
+    "yourselection": "Dine valg"
+}

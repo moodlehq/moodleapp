@@ -1,0 +1,17 @@
+{
+    "attachment": "附件",
+    "browsemode": "瀏覽條目",
+    "byalphabet": "按字母順序排列",
+    "byauthor": "以作者為分群",
+    "bynewestfirst": "最新的優先",
+    "byrecentlyupdated": "最近的更新",
+    "bysearch": "搜尋",
+    "casesensitive": "區分字母的大小寫",
+    "categories": "類別",
+    "entrypendingapproval": "這個項目已被暫緩核可",
+    "errorloadingentries": "載入項目時發生錯誤",
+    "errorloadingentry": "載入項目時發生錯誤",
+    "errorloadingglossary": "載入詞彙表時發生錯誤.",
+    "noentriesfound": "未找到條目.",
+    "searchquery": "搜索查詢"
+}

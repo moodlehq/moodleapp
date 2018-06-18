@@ -1,0 +1,9 @@
+{
+    "cannotsubmitsurvey": "申し訳ありません。あなたの調査提出で問題が発生しました。再度提出を実行してください。",
+    "errorgetsurvey": "調査データの取得中にエラーが発生しました。",
+    "ifoundthat": "私は次のことを発見しました:",
+    "ipreferthat": "私は次のことが好きです:",
+    "responses": "回答",
+    "results": "受験結果",
+    "surveycompletednograph": "あなたはこの調査を完了しました。"
+}

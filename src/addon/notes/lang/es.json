@@ -1,0 +1,13 @@
+{
+    "addnewnote": "Agregar una nueva nota",
+    "coursenotes": "Notas del curso",
+    "eventnotecreated": "Nota creada",
+    "nonotes": "Todavía no hay notas de este tipo",
+    "note": "Nota",
+    "notes": "Su análisis privado y sus notas",
+    "personalnotes": "Notas personales",
+    "publishstate": "Contexto",
+    "sitenotes": "Notas del sitio",
+    "userwithid": "Usuario con id {{id}}",
+    "warningnotenotsent": "No se pudieron añadir notas al curso {{course}}. {{error}}"
+}

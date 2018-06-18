@@ -1,0 +1,5 @@
+{
+    "errorgetlti": "モジュールデータ取得中にエラーが発生しました。",
+    "errorinvalidlaunchurl": "起動するURLが不正です。",
+    "launchactivity": "アクティビティを起動"
+}

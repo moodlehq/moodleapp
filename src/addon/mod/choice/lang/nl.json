@@ -1,0 +1,20 @@
+{
+    "cannotsubmit": "Er was een probleem bij het insturen van je keuze. Probeer opnieuw",
+    "choiceoptions": "Keuze-opties",
+    "errorgetchoice": "Fout bij het ophalen van de keuzegegevens.",
+    "expired": "Sorry, deze activiteit is afgesloten op {{$a}} en is niet meer beschikbaar",
+    "full": "(volledig)",
+    "noresultsviewable": "De resultaten zijn nu niet zichtbaar.",
+    "notopenyet": "Deze activiteit is niet beschikbaar tot {{$a}}",
+    "numberofuser": "Aantal antwoorden",
+    "numberofuserinpercentage": "Percentage antwoorden",
+    "previewonly": "Dit is slechts een voorbeeld van de beschikbare opties voor deze activiteit. Je zult je keuze niet kunnen maken voor {{$a}}.",
+    "removemychoice": "Verwijder mijn keuze",
+    "responses": "Antwoorden",
+    "responsesresultgraphdescription": "{{number}}% van de gebruikers kozen optie: {{text}}.",
+    "responsesresultgraphheader": "Grafiek tonen",
+    "resultsnotsynced": "Jouw laatste reactie moet gesynchroniseerd worden voor ze mee in de resultaten zit.",
+    "savemychoice": "Bewaar mijn antwoord",
+    "userchoosethisoption": "Gebruikers die deze optie kozen",
+    "yourselection": "Jouw selectie"
+}
