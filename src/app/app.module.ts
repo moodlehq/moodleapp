@@ -77,6 +77,7 @@ import { CoreCommentsModule } from '@core/comments/comments.module';
 import { AddonBadgesModule } from '@addon/badges/badges.module';
 import { AddonCalendarModule } from '@addon/calendar/calendar.module';
 import { AddonCompetencyModule } from '@addon/competency/competency.module';
+import { AddonCourseCompletionModule } from '@addon/coursecompletion/coursecompletion.module';
 import { AddonUserProfileFieldModule } from '@addon/userprofilefield/userprofilefield.module';
 import { AddonFilesModule } from '@addon/files/files.module';
 import { AddonModAssignModule } from '@addon/mod/assign/assign.module';
@@ -184,6 +185,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonBadgesModule,
         AddonCalendarModule,
         AddonCompetencyModule,
+        AddonCourseCompletionModule,
         AddonUserProfileFieldModule,
         AddonFilesModule,
         AddonModAssignModule,
