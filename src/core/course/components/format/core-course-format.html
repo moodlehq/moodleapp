@@ -2,7 +2,7 @@
 <core-dynamic-component [component]="courseFormatComponent" [data]="data">
     <!-- Course summary. By default we only display the course progress. -->
     <core-dynamic-component [component]="courseSummaryComponent" [data]="data">
-        <ion-list no-lines>
+        <ion-list no-lines *ngIf="course.imageThumb || (course.progress != null && course.progress >= 0)">
             <div *ngIf="course.imageThumb" class="core-course-thumb">
                 <img [src]="course.imageThumb" core-external-content alt=""/>
             </div>

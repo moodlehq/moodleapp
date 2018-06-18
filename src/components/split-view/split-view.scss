@@ -39,4 +39,7 @@ core-split-view {
     ion-header {
         display: none;
     }
+    ion-content.statusbar-padding:first-child .scroll-content {
+        padding-top: 0 !important;
+    }
 }
