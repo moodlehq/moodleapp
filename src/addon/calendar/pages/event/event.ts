@@ -116,7 +116,7 @@ export class AddonCalendarEventPage {
             }
             this.title = title;
 
-            if (event.courseid != this.siteHomeId) {
+            if (event.courseid && event.courseid != this.siteHomeId) {
                 // It's a course event, retrieve the course name.
                 return this.coursesProvider.getUserCourse(event.courseid, true).then((course) => {
                     this.courseName = course.fullname;
