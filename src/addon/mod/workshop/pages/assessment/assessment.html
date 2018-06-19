@@ -45,7 +45,7 @@
             </ion-item>
             <ion-item text-wrap *ngIf="access.canallocate">
                 <ion-label stacked core-mark-required="true">{{ 'addon.mod_workshop.assessmentweight' | translate }}</ion-label>
-                <ion-select formControlName="weight" required="true">
+                <ion-select formControlName="weight" required="true" interface="popover">
                     <ion-option *ngFor="let w of weights" [value]="w">{{ w }}</ion-option>
                 </ion-select>
             </ion-item>
@@ -55,7 +55,7 @@
             </ion-item>
             <ion-item text-wrap *ngIf="access.canoverridegrades">
                 <ion-label stacked>{{ 'addon.mod_workshop.gradinggradeover' | translate }}</ion-label>
-                <ion-select formControlName="grade">
+                <ion-select formControlName="grade" interface="popover">
                     <ion-option *ngFor="let grade of evaluationGrades" [value]="grade.value">{{grade.label}}</ion-option>
                 </ion-select>
             </ion-item>
