@@ -32,7 +32,6 @@
     "gradehighest": "Highest grade",
     "grademethod": "Grading method",
     "gradesofar": "{{$a.method}}: {{$a.mygrade}} / {{$a.quizgrade}}.",
-    "hasdatatosync": "This quiz has offline data to be synchronised.",
     "marks": "Marks",
     "mustbesubmittedby": "This attempt must be submitted by {{$a}}.",
     "noquestions": "No questions have been added yet",

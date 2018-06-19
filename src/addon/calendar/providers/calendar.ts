@@ -592,9 +592,8 @@ export class AddonCalendarProvider {
                 return Promise.reject(null);
             }
 
-            event.notificationtime = time;
-
-            return site.getDb().insertRecord(AddonCalendarProvider.EVENTS_TABLE, event).then(() => {
+            return site.getDb().updateRecords(AddonCalendarProvider.EVENTS_TABLE, {notificationtime: time}, {id: event.id})
+                    .then(() => {
                 return this.scheduleEventNotification(event, time);
             });
         });
