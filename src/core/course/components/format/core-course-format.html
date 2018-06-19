@@ -16,7 +16,7 @@
         <!-- Section selector. -->
         <core-dynamic-component [component]="sectionSelectorComponent" [data]="data">
             <div text-wrap *ngIf="displaySectionSelector && sections && sections.length" no-padding class="clearfix">
-                <button float-start ion-button (click)="showSectionSelector($event)" clear class="core-button-select">
+                <button float-start ion-button (click)="showSectionSelector($event)" clear class="core-button-select button-no-uppercase">
                     {{selectedSection && (selectedSection.formattedName || selectedSection.name) || 'core.course.sections' | translate }}
                     <ion-icon name="arrow-dropdown" ios="md-arrow-dropdown"></ion-icon>
                 </button>

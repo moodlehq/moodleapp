@@ -18,6 +18,14 @@
         font-size: 1.6rem;
         border: 0;
 
+        span {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            word-wrap: break-word;
+            display: block;
+        }
+
         &[aria-selected=true] {
             color: $core-top-tabs-color-active !important;
             border: 0 !important;

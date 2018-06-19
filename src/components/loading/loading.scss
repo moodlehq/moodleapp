@@ -9,7 +9,7 @@ core-loading {
     }
 
     .core-loading-content {
-        display: unset;
+        display: inline;
         padding-bottom: 1px; /* This makes height be real */
     }
 
@@ -21,7 +21,7 @@ core-loading {
 .scroll-content > core-loading,
 ion-content > .scroll-content > core-loading,
 .core-loading-center {
-    position: unset !important;
+    position: static !important;
 }
 
 .scroll-content > core-loading,

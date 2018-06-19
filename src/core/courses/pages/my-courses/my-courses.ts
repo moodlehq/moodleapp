@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy } from '@angular/core';
-import { IonicPage, NavController } from 'ionic-angular';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { IonicPage, Searchbar, NavController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -31,6 +31,8 @@ import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delega
     templateUrl: 'my-courses.html',
 })
 export class CoreCoursesMyCoursesPage implements OnDestroy {
+    @ViewChild('searchbar') searchbar: Searchbar;
+
     courses: any[];
     filteredCourses: any[];
     searchEnabled: boolean;
@@ -153,6 +155,11 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
         this.filter = '';
         this.showFilter = !this.showFilter;
         this.filteredCourses = this.courses;
+        if (this.showFilter) {
+            setTimeout(() => {
+                this.searchbar.setFocus();
+            });
+        }
     }
 
     /**

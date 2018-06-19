@@ -68,6 +68,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     };
     refreshIcon = 'spinner';
     syncIcon = 'spinner';
+    discussionStr = '';
 
     protected cmId: number;
     protected forumId: number;
@@ -101,6 +102,8 @@ export class AddonModForumDiscussionPage implements OnDestroy {
             this.isOnline = this.appProvider.isOnline();
         });
         this.isSplitViewOn = this.svComponent && this.svComponent.isOn();
+
+        this.discussionStr = translate.instant('addon.mod_forum.discussion');
     }
 
     /**

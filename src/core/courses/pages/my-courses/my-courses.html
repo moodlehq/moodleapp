@@ -19,7 +19,7 @@
     </ion-refresher>
 
     <core-loading [hideUntil]="coursesLoaded">
-        <ion-searchbar *ngIf="showFilter" [(ngModel)]="filter" (ionInput)="filterChanged($event)" (ionCancel)="filterChanged()" [placeholder]="'core.courses.filtermycourses' | translate">
+        <ion-searchbar #searchbar *ngIf="showFilter" [(ngModel)]="filter" (ionInput)="filterChanged($event)" (ionCancel)="filterChanged()" [placeholder]="'core.courses.filtermycourses' | translate">
         </ion-searchbar>
         <ion-grid no-padding>
             <ion-row no-padding>
