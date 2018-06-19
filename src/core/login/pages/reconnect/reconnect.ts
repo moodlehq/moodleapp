@@ -137,7 +137,7 @@ export class CoreLoginReconnectPage {
         this.sitesProvider.getUserToken(siteUrl, username, password).then((data) => {
             return this.sitesProvider.updateSiteToken(this.infoSiteUrl, username, data.token, data.privateToken).then(() => {
                 // Update site info too because functions might have changed (e.g. unisntall local_mobile).
-                return this.sitesProvider.updateSiteInfoByUrl(this.infoSiteUrl, username).finally(() => {
+                return this.sitesProvider.updateSiteInfoByUrl(this.infoSiteUrl, username).then(() => {
                     // Reset fields so the data is not in the view anymore.
                     this.credForm.controls['password'].reset();
 
@@ -148,8 +148,8 @@ export class CoreLoginReconnectPage {
                         return this.loginHelper.goToSiteInitialPage();
                     }
                 }).catch((error) => {
-                    // Site deleted? Go back to login page.
-                    this.domUtils.showErrorModal('core.login.errorupdatesite', true);
+                    // Error, go back to login page.
+                    this.domUtils.showErrorModalDefault(error, 'core.login.errorupdatesite', true);
                     this.cancel();
                 });
             });

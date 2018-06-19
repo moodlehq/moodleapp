@@ -32,6 +32,7 @@
     "invalidurl": "Invalid URL specified",
     "invalidvaluemax": "The maximum value is {{$a}}",
     "invalidvaluemin": "The minimum value is {{$a}}",
+    "legacymoodleversion": "You are trying to connect to an unsupported Moodle version. Please, download the Moodle Classic app to access this Moodle site.",
     "localmobileunexpectedresponse": "Moodle Mobile Additional Features check returned an unexpected response, you will be authenticated using the standard Mobile service.",
     "login": "Log in",
     "loginbutton": "Log in",

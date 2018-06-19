@@ -1050,6 +1050,11 @@ export class CoreSitesProvider {
             return site.fetchSiteInfo().then((info) => {
                 site.setInfo(info);
 
+                if (this.isLegacyMoodleByInfo(info)) {
+                    // The Moodle version is not supported, reject.
+                    return Promise.reject(this.translate.instant('core.login.legacymoodleversion'));
+                }
+
                 // Try to get the site config.
                 return this.getSiteConfig(site).catch(() => {
                     // Error getting config, keep the current one.
@@ -1226,5 +1231,15 @@ export class CoreSitesProvider {
         const site = this.getCurrentSite();
 
         return site && site.wsAvailable(method, checkPrefix);
+    }
+
+    /**
+     * Check if a site is a legacy site by its info.
+     *
+     * @param {any} info The site info.
+     * @return {boolean} Whether it's a legacy Moodle.
+     */
+    isLegacyMoodleByInfo(info: any): boolean {
+        return this.isValidMoodleVersion(info) == this.LEGACY_APP_VERSION;
     }
 }

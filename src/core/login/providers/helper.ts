@@ -178,8 +178,10 @@ export class CoreLoginHelperProvider {
                 this.goToSiteInitialPage();
             }
         }).catch((errorMessage) => {
-            if (typeof errorMessage == 'string' && errorMessage != '') {
+            if (errorMessage) {
+                // An error occurred, display the error and logout the user.
                 this.domUtils.showErrorModal(errorMessage);
+                this.sitesProvider.logout();
             }
         }).finally(() => {
             modal.dismiss();
@@ -436,8 +438,8 @@ export class CoreLoginHelperProvider {
             const info = this.sitesProvider.getCurrentSite().getInfo();
             if (typeof info != 'undefined' && typeof info.username != 'undefined') {
                 return this.sitesProvider.updateSiteToken(info.siteurl, info.username, token, privateToken).then(() => {
-                    this.sitesProvider.updateSiteInfoByUrl(info.siteurl, info.username);
-                }).catch(() => {
+                    return this.sitesProvider.updateSiteInfoByUrl(info.siteurl, info.username);
+                }, () => {
                     // Error updating token, return proper error message.
                     return Promise.reject(this.translate.instant('core.login.errorupdatesite'));
                 });
