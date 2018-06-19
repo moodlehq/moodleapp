@@ -139,6 +139,10 @@ export class AddonModChatChatPage {
 
             return this.chatProvider.getMessagesUserData(messagesInfo.messages, this.courseId).then((messages) => {
                 this.messages = this.messages.concat(messages);
+                if (messages.length) {
+                    // New messages or beeps, scroll to bottom.
+                    setTimeout(() => this.scrollToBottom());
+                }
             });
         });
     }
