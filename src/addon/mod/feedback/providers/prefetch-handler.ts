@@ -26,7 +26,8 @@ import { CoreUserProvider } from '@core/user/providers/user';
  */
 @Injectable()
 export class AddonModFeedbackPrefetchHandler extends CoreCourseModulePrefetchHandlerBase {
-    name = 'feedback';
+    name = 'AddonModFeedback';
+    modName = 'feedback';
     component = AddonModFeedbackProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$|^attemptsfinished|^attemptsunfinished$/;
 
