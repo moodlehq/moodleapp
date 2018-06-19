@@ -227,6 +227,7 @@
     "userdetails": "User details",
     "usernotfullysetup": "User not fully set-up",
     "users": "Users",
+    "usethenewapp": "You are using the Moodle Classic app. Please, download the most recent Moodle app to access this Moodle site and enjoy an improved user experience better interface and additional features for this site.",
     "view": "View",
     "viewprofile": "View profile",
     "warningofflinedatadeleted": "Offline data from {{component}} '{{name}}' has been deleted. {{error}}",
