@@ -367,6 +367,10 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
             // In version 2018 we adapted the forum offline stores to match a new schema.
             // However, due to the migration of data to SQLite we can no longer do that.
 
+            if (versionCode >= 3500 && versionApplied < 3500 && versionApplied > 0) {
+                promises.push(this.logoutLegacySites());
+            }
+
             return Promise.all(promises).then(() => {
                 return this.configProvider.set(this.VERSION_APPLIED, versionCode);
             }).catch((error) => {
@@ -682,6 +686,28 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
             }).catch(() => {
                 // Ignore errors.
             });
+        });
+    }
+
+    /**
+     * Logout from legacy sites.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected logoutLegacySites(): Promise<any> {
+        return this.sitesProvider.getSitesIds().then((siteIds) => {
+            const promises = [];
+
+            siteIds.forEach((siteId) => {
+                promises.push(this.sitesProvider.getSite(siteId).then((site) => {
+                    // If the site is a legacy site, mark it as logged out so the user has to authenticate again.
+                    if (this.sitesProvider.isLegacyMoodleByInfo(site.getInfo())) {
+                        return this.sitesProvider.setSiteLoggedOut(site.getId(), true);
+                    }
+                }));
+            });
+
+            return this.utils.allPromises(promises);
         });
     }
 }
