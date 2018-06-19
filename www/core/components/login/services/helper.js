@@ -29,7 +29,7 @@ angular.module('mm.core.login')
  */
 .factory('$mmLoginHelper', function($q, $log, $mmConfig, mmLoginSSOCode, mmLoginSSOInAppCode, mmLoginLaunchData, $mmEvents,
             md5, $mmSite, $mmSitesManager, $mmLang, $mmUtil, $state, $mmAddonManager, $translate, mmCoreConfigConstants,
-            mmCoreEventSessionExpired, mmUserProfileState, $mmCourses, $mmFS, $mmApp, $mmEmulatorHelper, $mmWS) {
+            mmCoreEventSessionExpired, mmUserProfileState, $mmCourses, $mmFS, $mmApp, $mmEmulatorHelper, $mmWS, mmCoreSecondsDay) {
 
     $log = $log.getInstance('$mmLoginHelper');
 
@@ -266,6 +266,19 @@ angular.module('mm.core.login')
      * @return {Promise} Promise resolved when the state changes.
      */
     self.goToSiteInitialPage = function() {
+        // Check if we should display the warning about using the new app.
+        var lastTimeChecked = window.localStorage.getItem('newAppLastTimeCheck');
+        var timeNow = $mmUtil.timestamp();
+        var weekSecs = 7 * mmCoreSecondsDay;
+
+        if (!lastTimeChecked || timeNow - weekSecs > lastTimeChecked) {
+            if ($mmSite.isVersionGreaterEqualThan('3.1.0')) {
+                // Update the counter only when >= 3.1.0 sites detected.
+                window.localStorage.setItem('newAppLastTimeCheck', timeNow);
+                $mmUtil.showModal('mm.core.notice', 'mm.core.usethenewapp');
+            }
+        }
+
         return isMyOverviewEnabled().then(function(myOverview) {
             var myCourses = !myOverview && isMyCoursesEnabled();
 
