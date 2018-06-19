@@ -90,9 +90,11 @@ export class AddonModSurveyOfflineProvider {
     getAllData(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.getDb().getAllRecords(AddonModSurveyOfflineProvider.SURVEY_TABLE).then((entries) => {
-                return entries.map((entry) => {
+                entries.forEach((entry) => {
                     entry.answers = this.textUtils.parseJSON(entry.answers);
                 });
+
+                return entries;
             });
         });
     }
