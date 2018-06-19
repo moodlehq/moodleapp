@@ -217,17 +217,20 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
 
             this.courseIds = courseIds.join(',');
 
-            // Load course image of all the courses.
-            promises.push(this.coursesProvider.getCoursesByField('ids', this.courseIds).then((coursesInfo) => {
-                coursesInfo = this.utils.arrayToObject(coursesInfo, 'id');
-                courses.forEach((course) => {
-                    if (coursesInfo[course.id] && coursesInfo[course.id].overviewfiles && coursesInfo[course.id].overviewfiles[0]) {
-                        course.imageThumb = coursesInfo[course.id].overviewfiles[0].fileurl;
-                    } else {
-                        course.imageThumb = false;
-                    }
-                });
-            }));
+            if (this.courseIds) {
+                // Load course image of all the courses.
+                promises.push(this.coursesProvider.getCoursesByField('ids', this.courseIds).then((coursesInfo) => {
+                    coursesInfo = this.utils.arrayToObject(coursesInfo, 'id');
+                    courses.forEach((course) => {
+                        if (coursesInfo[course.id] && coursesInfo[course.id].overviewfiles &&
+                                coursesInfo[course.id].overviewfiles[0]) {
+                            course.imageThumb = coursesInfo[course.id].overviewfiles[0].fileurl;
+                        } else {
+                            course.imageThumb = false;
+                        }
+                    });
+                }));
+            }
 
             return Promise.all(promises).then(() => {
                 return courses.sort((a, b) => {
@@ -286,7 +289,9 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
 
         promises.push(this.coursesProvider.invalidateUserCourses());
         promises.push(this.courseOptionsDelegate.clearAndInvalidateCoursesOptions());
-        promises.push(this.coursesProvider.invalidateCoursesByField('ids', this.courseIds));
+        if (this.courseIds) {
+            promises.push(this.coursesProvider.invalidateCoursesByField('ids', this.courseIds));
+        }
 
         return Promise.all(promises).finally(() => {
             switch (this.tabShown) {
