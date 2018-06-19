@@ -12,9 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Injector } from '@angular/core';
-import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
+import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
+import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseResourcePrefetchHandlerBase } from '@core/course/classes/resource-prefetch-handler';
 import { AddonModPageProvider } from './page';
 import { AddonModPageHelperProvider } from './helper';
 
@@ -22,16 +28,18 @@ import { AddonModPageHelperProvider } from './helper';
  * Handler to prefetch pages.
  */
 @Injectable()
-export class AddonModPagePrefetchHandler extends CoreCourseModulePrefetchHandlerBase {
+export class AddonModPagePrefetchHandler extends CoreCourseResourcePrefetchHandlerBase {
     name = 'AddonModPage';
     modName = 'page';
     component = AddonModPageProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$/;
-    isResource = true;
 
-    constructor(injector: Injector, protected pageProvider: AddonModPageProvider, protected utils: CoreUtilsProvider,
+    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider, protected pageProvider: AddonModPageProvider,
             protected pageHelper: AddonModPageHelperProvider) {
-        super(injector);
+
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
 
     /**

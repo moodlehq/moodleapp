@@ -12,19 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injector } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
+import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
-import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
+import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 
 /**
  * Handler to prefetch a module site plugin.
  */
-export class CoreSitePluginsModulePrefetchHandler extends CoreCourseModulePrefetchHandlerBase {
+export class CoreSitePluginsModulePrefetchHandler extends CoreCourseActivityPrefetchHandlerBase {
     protected ROOT_CACHE_KEY = 'CoreSitePluginsModulePrefetchHandler:';
 
-    constructor(injector: Injector, protected sitePluginsProvider: CoreSitePluginsProvider, component: string, name: string,
-            modName: string, protected handlerSchema: any) {
-        super(injector);
+    protected isResource: boolean;
+
+    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider, protected sitePluginsProvider: CoreSitePluginsProvider, component: string,
+            name: string, modName: string, protected handlerSchema: any) {
+
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
 
         this.component = component;
         this.name = name;
@@ -63,7 +74,7 @@ export class CoreSitePluginsModulePrefetchHandler extends CoreCourseModulePrefet
      * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @param {boolean} [prefetch] True to prefetch, false to download right away.
-     * @param {string} [dirPath] Path of the directory where to store all the content files. @see downloadOrPrefetch.
+     * @param {string} [dirPath] Path of the directory where to store all the content files.
      * @return {Promise<any>} Promise resolved when done.
      */
     protected downloadPrefetchPlugin(module: any, courseId: number, single?: boolean, siteId?: string, prefetch?: boolean,
@@ -94,7 +105,7 @@ export class CoreSitePluginsModulePrefetchHandler extends CoreCourseModulePrefet
      * @param {any} module The module object returned by WS.
      * @param {number} courseId Course ID.
      * @param {boolean} [prefetch] True to prefetch, false to download right away.
-     * @param {string} [dirPath] Path of the directory where to store all the content files. @see downloadOrPrefetch.
+     * @param {string} [dirPath] Path of the directory where to store all the content files.
      * @return {Promise<any>} Promise resolved when done.
      */
     protected downloadOrPrefetchFiles(siteId: string, module: any, courseId: number, prefetch?: boolean, dirPath?: string)
@@ -168,5 +179,21 @@ export class CoreSitePluginsModulePrefetchHandler extends CoreCourseModulePrefet
      */
     isEnabled(): boolean | Promise<boolean> {
         return true;
+    }
+
+    /**
+     * Load module contents into module.contents if they aren't loaded already.
+     *
+     * @param {any} module Module to load the contents.
+     * @param {number} [courseId] The course ID. Recommended to speed up the process and minimize data usage.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @return {Promise}           Promise resolved when loaded.
+     */
+    loadContents(module: any, courseId: number, ignoreCache?: boolean): Promise<void> {
+        if (this.isResource) {
+            return this.courseProvider.loadModuleContents(module, courseId, undefined, false, ignoreCache);
+        }
+
+        return Promise.resolve();
     }
 }

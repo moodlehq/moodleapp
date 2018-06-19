@@ -12,11 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Injector } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreGroupsProvider } from '@providers/groups';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
@@ -30,19 +35,21 @@ import { AddonModAssignSubmissionDelegate } from './submission-delegate';
  * Handler to prefetch assigns.
  */
 @Injectable()
-export class AddonModAssignPrefetchHandler extends CoreCourseModulePrefetchHandlerBase {
+export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHandlerBase {
     name = 'AddonModAssign';
     modName = 'assign';
     component = AddonModAssignProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$|^submissions$|^grades$|^gradeitems$|^outcomes$|^comments$/;
 
-    constructor(protected injector: Injector, protected assignProvider: AddonModAssignProvider,
+    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider, protected assignProvider: AddonModAssignProvider,
             protected textUtils: CoreTextUtilsProvider, protected feedbackDelegate: AddonModAssignFeedbackDelegate,
-            protected submissionDelegate: AddonModAssignSubmissionDelegate, protected courseProvider: CoreCourseProvider,
-            protected courseHelper: CoreCourseHelperProvider, protected filepoolProvider: CoreFilepoolProvider,
+            protected submissionDelegate: AddonModAssignSubmissionDelegate, protected courseHelper: CoreCourseHelperProvider,
             protected groupsProvider: CoreGroupsProvider, protected gradesHelper: CoreGradesHelperProvider,
             protected userProvider: CoreUserProvider, protected assignHelper: AddonModAssignHelperProvider) {
-        super(injector);
+
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
 
     /**
@@ -63,19 +70,6 @@ export class AddonModAssignPrefetchHandler extends CoreCourseModulePrefetchHandl
         }).catch(() => {
             return false;
         });
-    }
-
-    /**
-     * Download the module.
-     *
-     * @param {any} module The module object returned by WS.
-     * @param {number} courseId Course ID.
-     * @param {string} [dirPath] Path of the directory where to store all the content files. @see downloadOrPrefetch.
-     * @return {Promise<any>} Promise resolved when all content is downloaded.
-     */
-    download(module: any, courseId: number, dirPath?: string): Promise<any> {
-        // Same implementation for download or prefetch.
-        return this.prefetch(module, courseId, false, dirPath);
     }
 
     /**
@@ -207,7 +201,7 @@ export class AddonModAssignPrefetchHandler extends CoreCourseModulePrefetchHandl
      * @param {any} module Module.
      * @param {number} courseId Course ID the module belongs to.
      * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {string} [dirPath] Path of the directory where to store all the content files. @see downloadOrPrefetch.
+     * @param {string} [dirPath] Path of the directory where to store all the content files.
      * @return {Promise<any>} Promise resolved when done.
      */
     prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string): Promise<any> {

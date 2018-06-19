@@ -12,21 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Injector } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLangProvider } from '@providers/lang';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSite } from '@classes/site';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from './siteplugins';
 import { CoreCompileProvider } from '@core/compile/providers/compile';
 import { CoreQuestionProvider } from '@core/question/providers/question';
+import { CoreCourseProvider } from '@core/course/providers/course';
 
 // Delegates
 import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
@@ -75,7 +78,7 @@ import { CoreSitePluginsWorkshopAssessmentStrategyHandler } from '../classes/han
 export class CoreSitePluginsHelperProvider {
     protected logger;
 
-    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider,  private injector: Injector,
+    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
             private mainMenuDelegate: CoreMainMenuDelegate, private moduleDelegate: CoreCourseModuleDelegate,
             private userDelegate: CoreUserDelegate, private langProvider: CoreLangProvider, private http: Http,
             private sitePluginsProvider: CoreSitePluginsProvider, private prefetchDelegate: CoreCourseModulePrefetchDelegate,
@@ -87,8 +90,9 @@ export class CoreSitePluginsHelperProvider {
             private questionBehaviourDelegate: CoreQuestionBehaviourDelegate, private questionProvider: CoreQuestionProvider,
             private messageOutputDelegate: AddonMessageOutputDelegate, private accessRulesDelegate: AddonModQuizAccessRuleDelegate,
             private assignSubmissionDelegate: AddonModAssignSubmissionDelegate, private translate: TranslateService,
-            private assignFeedbackDelegate: AddonModAssignFeedbackDelegate,
-            private workshopAssessmentStrategyDelegate: AddonWorkshopAssessmentStrategyDelegate) {
+            private assignFeedbackDelegate: AddonModAssignFeedbackDelegate, private appProvider: CoreAppProvider,
+            private workshopAssessmentStrategyDelegate: AddonWorkshopAssessmentStrategyDelegate,
+            private courseProvider: CoreCourseProvider) {
 
         this.logger = logger.getInstance('CoreSitePluginsHelperProvider');
 
@@ -735,8 +739,9 @@ export class CoreSitePluginsHelperProvider {
 
         if (handlerSchema.offlinefunctions && Object.keys(handlerSchema.offlinefunctions).length) {
             // Register the prefetch handler.
-            this.prefetchDelegate.registerHandler(new CoreSitePluginsModulePrefetchHandler(
-                this.injector, this.sitePluginsProvider, plugin.component, uniqueName, modName, handlerSchema));
+            this.prefetchDelegate.registerHandler(new CoreSitePluginsModulePrefetchHandler(this.translate, this.appProvider,
+                this.utils, this.courseProvider, this.filepoolProvider, this.sitesProvider, this.domUtils,
+                this.sitePluginsProvider, plugin.component, uniqueName, modName, handlerSchema));
         }
 
         return modName;

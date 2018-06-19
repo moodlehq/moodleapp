@@ -12,36 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Injector } from '@angular/core';
-import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
+import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseResourcePrefetchHandlerBase } from '@core/course/classes/resource-prefetch-handler';
 import { AddonModImscpProvider } from './imscp';
 
 /**
  * Handler to prefetch IMSCPs.
  */
 @Injectable()
-export class AddonModImscpPrefetchHandler extends CoreCourseModulePrefetchHandlerBase {
+export class AddonModImscpPrefetchHandler extends CoreCourseResourcePrefetchHandlerBase {
     name = 'AddonModImscp';
     modName = 'imscp';
     component = AddonModImscpProvider.COMPONENT;
-    isResource = true;
 
-    constructor(injector: Injector, protected imscpProvider: AddonModImscpProvider,
-            protected filepoolProvider: CoreFilepoolProvider) {
-        super(injector);
-    }
+    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider, protected imscpProvider: AddonModImscpProvider) {
 
-    /**
-     * Download the module.
-     *
-     * @param {any} module The module object returned by WS.
-     * @param {number} courseId Course ID.
-     * @param {string} [dirPath] Path of the directory where to store all the content files. @see downloadOrPrefetch.
-     * @return {Promise<any>} Promise resolved when all content is downloaded.
-     */
-    download(module: any, courseId: number, dirPath?: string): Promise<any> {
-        return this.prefetch(module, courseId, false, dirPath);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
 
     /**

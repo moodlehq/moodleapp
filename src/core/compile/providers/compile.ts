@@ -56,7 +56,8 @@ import { CoreDelegate } from '@classes/delegate';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
 import { CoreContentLinksModuleGradeHandler } from '@core/contentlinks/classes/module-grade-handler';
 import { CoreContentLinksModuleIndexHandler } from '@core/contentlinks/classes/module-index-handler';
-import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
+import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
+import { CoreCourseResourcePrefetchHandlerBase } from '@core/course/classes/resource-prefetch-handler';
 
 // Import all core modules that define components, directives and pipes.
 import { CoreComponentsModule } from '@components/components.module';
@@ -257,7 +258,8 @@ export class CoreCompileProvider {
         instance['CoreContentLinksHandlerBase'] = CoreContentLinksHandlerBase;
         instance['CoreContentLinksModuleGradeHandler'] = CoreContentLinksModuleGradeHandler;
         instance['CoreContentLinksModuleIndexHandler'] = CoreContentLinksModuleIndexHandler;
-        instance['CoreCourseModulePrefetchHandlerBase'] = CoreCourseModulePrefetchHandlerBase;
+        instance['CoreCourseActivityPrefetchHandlerBase'] = CoreCourseActivityPrefetchHandlerBase;
+        instance['CoreCourseResourcePrefetchHandlerBase'] = CoreCourseResourcePrefetchHandlerBase;
         instance['CoreCourseUnsupportedModuleComponent'] = CoreCourseUnsupportedModuleComponent;
         instance['CoreCourseFormatSingleActivityComponent'] = CoreCourseFormatSingleActivityComponent;
         instance['CoreSitePluginsModuleIndexComponent'] = CoreSitePluginsModuleIndexComponent;

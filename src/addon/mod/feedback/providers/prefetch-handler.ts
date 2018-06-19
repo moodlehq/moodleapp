@@ -12,11 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Injector } from '@angular/core';
-import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
+import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
+import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { AddonModFeedbackProvider } from './feedback';
 import { AddonModFeedbackHelperProvider } from './helper';
-import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreGroupsProvider } from '@providers/groups';
 import { CoreUserProvider } from '@core/user/providers/user';
@@ -25,101 +31,19 @@ import { CoreUserProvider } from '@core/user/providers/user';
  * Handler to prefetch feedbacks.
  */
 @Injectable()
-export class AddonModFeedbackPrefetchHandler extends CoreCourseModulePrefetchHandlerBase {
+export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchHandlerBase {
     name = 'AddonModFeedback';
     modName = 'feedback';
     component = AddonModFeedbackProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$|^attemptsfinished|^attemptsunfinished$/;
 
-    constructor(injector: Injector, protected feedbackProvider: AddonModFeedbackProvider,  protected userProvider: CoreUserProvider,
-            protected filepoolProvider: CoreFilepoolProvider, protected feedbackHelper: AddonModFeedbackHelperProvider,
+    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider, protected feedbackProvider: AddonModFeedbackProvider,
+            protected userProvider: CoreUserProvider, protected feedbackHelper: AddonModFeedbackHelperProvider,
             protected timeUtils: CoreTimeUtilsProvider, protected groupsProvider: CoreGroupsProvider) {
-        super(injector);
-    }
 
-    /**
-     * Download or prefetch the content.
-     *
-     * @param {any} module The module object returned by WS.
-     * @param {number} courseId Course ID.
-     * @param {boolean} [prefetch] True to prefetch, false to download right away.
-     * @param {string} [dirPath] Path of the directory where to store all the content files. This is to keep the files
-     *                           relative paths and make the package work in an iframe. Undefined to download the files
-     *                           in the filepool root feedback.
-     * @return {Promise<any>} Promise resolved when all content is downloaded. Data returned is not reliable.
-     */
-    downloadOrPrefetch(module: any, courseId: number, prefetch?: boolean, dirPath?: string): Promise<any> {
-        const promises = [],
-            siteId = this.sitesProvider.getCurrentSiteId();
-
-        promises.push(super.downloadOrPrefetch(module, courseId, prefetch));
-        promises.push(this.feedbackProvider.getFeedback(courseId, module.id).then((feedback) => {
-            const p1 = [];
-
-            p1.push(this.getFiles(module, courseId).then((files) => {
-                return this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id);
-            }));
-
-            p1.push(this.feedbackProvider.getFeedbackAccessInformation(feedback.id, false, true, siteId).then((accessData) => {
-                const p2 = [];
-                if (accessData.canedititems || accessData.canviewreports) {
-                    // Get all groups analysis.
-                    p2.push(this.feedbackProvider.getAnalysis(feedback.id, undefined, siteId));
-                    p2.push(this.groupsProvider.getActivityGroupInfo(feedback.coursemodule, true, undefined, siteId)
-                            .then((groupInfo) => {
-                        const p3 = [],
-                            userIds = [];
-
-                        if (!groupInfo.groups || groupInfo.groups.length == 0) {
-                            groupInfo.groups = [{id: 0}];
-                        }
-                        groupInfo.groups.forEach((group) => {
-                            p3.push(this.feedbackProvider.getAnalysis(feedback.id, group.id, siteId));
-                            p3.push(this.feedbackProvider.getAllResponsesAnalysis(feedback.id, group.id, siteId)
-                                    .then((responses) => {
-                                responses.attempts.forEach((attempt) => {
-                                    userIds.push(attempt.userid);
-                                });
-                            }));
-
-                            if (!accessData.isanonymous) {
-                                p3.push(this.feedbackProvider.getAllNonRespondents(feedback.id, group.id, siteId)
-                                        .then((responses) => {
-                                    responses.users.forEach((user) => {
-                                        userIds.push(user.userid);
-                                    });
-                                }));
-                            }
-                        });
-
-                        return Promise.all(p3).then(() => {
-                            // Prefetch user profiles.
-                            return this.userProvider.prefetchProfiles(userIds, courseId, siteId);
-                        });
-                    }));
-                }
-
-                p2.push(this.feedbackProvider.getItems(feedback.id, siteId));
-
-                if (accessData.cancomplete && accessData.cansubmit && !accessData.isempty) {
-                    // Send empty data, so it will recover last completed feedback attempt values.
-                    p2.push(this.feedbackProvider.processPageOnline(feedback.id, 0, {}, undefined, siteId).finally(() => {
-                        const p4 = [];
-
-                        p4.push(this.feedbackProvider.getCurrentValues(feedback.id, false, true, siteId));
-                        p4.push(this.feedbackProvider.getResumePage(feedback.id, false, true, siteId));
-
-                        return Promise.all(p4);
-                    }));
-                }
-
-                return Promise.all(p2);
-            }));
-
-            return Promise.all(p1);
-        }));
-
-        return Promise.all(promises);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
 
     /**
@@ -223,5 +147,96 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseModulePrefetchHan
      */
     isEnabled(): boolean | Promise<boolean> {
         return this.feedbackProvider.isPluginEnabled();
+    }
+
+    /**
+     * Prefetch a module.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to.
+     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
+     * @param {string} [dirPath] Path of the directory where to store all the content files.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string): Promise<any> {
+        return this.prefetchPackage(module, courseId, single, this.prefetchFeedback.bind(this));
+    }
+
+    /**
+     * Prefetch a feedback.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to.
+     * @param {boolean} single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param {String} siteId Site ID.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected prefetchFeedback(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
+        // Prefetch the feedback data.
+        return this.feedbackProvider.getFeedback(courseId, module.id).then((feedback) => {
+            const p1 = [];
+
+            p1.push(this.getFiles(module, courseId).then((files) => {
+                return this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id);
+            }));
+
+            p1.push(this.feedbackProvider.getFeedbackAccessInformation(feedback.id, false, true, siteId).then((accessData) => {
+                const p2 = [];
+                if (accessData.canedititems || accessData.canviewreports) {
+                    // Get all groups analysis.
+                    p2.push(this.feedbackProvider.getAnalysis(feedback.id, undefined, siteId));
+                    p2.push(this.groupsProvider.getActivityGroupInfo(feedback.coursemodule, true, undefined, siteId)
+                            .then((groupInfo) => {
+                        const p3 = [],
+                            userIds = [];
+
+                        if (!groupInfo.groups || groupInfo.groups.length == 0) {
+                            groupInfo.groups = [{id: 0}];
+                        }
+                        groupInfo.groups.forEach((group) => {
+                            p3.push(this.feedbackProvider.getAnalysis(feedback.id, group.id, siteId));
+                            p3.push(this.feedbackProvider.getAllResponsesAnalysis(feedback.id, group.id, siteId)
+                                    .then((responses) => {
+                                responses.attempts.forEach((attempt) => {
+                                    userIds.push(attempt.userid);
+                                });
+                            }));
+
+                            if (!accessData.isanonymous) {
+                                p3.push(this.feedbackProvider.getAllNonRespondents(feedback.id, group.id, siteId)
+                                        .then((responses) => {
+                                    responses.users.forEach((user) => {
+                                        userIds.push(user.userid);
+                                    });
+                                }));
+                            }
+                        });
+
+                        return Promise.all(p3).then(() => {
+                            // Prefetch user profiles.
+                            return this.userProvider.prefetchProfiles(userIds, courseId, siteId);
+                        });
+                    }));
+                }
+
+                p2.push(this.feedbackProvider.getItems(feedback.id, siteId));
+
+                if (accessData.cancomplete && accessData.cansubmit && !accessData.isempty) {
+                    // Send empty data, so it will recover last completed feedback attempt values.
+                    p2.push(this.feedbackProvider.processPageOnline(feedback.id, 0, {}, undefined, siteId).finally(() => {
+                        const p4 = [];
+
+                        p4.push(this.feedbackProvider.getCurrentValues(feedback.id, false, true, siteId));
+                        p4.push(this.feedbackProvider.getResumePage(feedback.id, false, true, siteId));
+
+                        return Promise.all(p4);
+                    }));
+                }
+
+                return Promise.all(p2);
+            }));
+
+            return Promise.all(p1);
+        });
     }
 }

@@ -57,6 +57,7 @@ export class CoreFormatTextDirective implements OnChanges {
 
     protected tagsToIgnore = ['AUDIO', 'VIDEO', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'A'];
     protected element: HTMLElement;
+    protected clickListener;
 
     constructor(element: ElementRef, private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
             private textUtils: CoreTextUtilsProvider, private translate: TranslateService, private platform: Platform,
@@ -157,6 +158,80 @@ export class CoreFormatTextDirective implements OnChanges {
     }
 
     /**
+     * Calculate the height and check if we need to display show more or not.
+     */
+    protected calculateHeight(): void {
+        // Height cannot be calculated if the element is not shown while calculating.
+        // Force shorten if it was previously shortened.
+        // @todo: Work on calculate this height better.
+        const height = this.element.style.maxHeight ? 0 : this.getElementHeight(this.element);
+
+        // If cannot calculate height, shorten always.
+        if (!height || height > this.maxHeight) {
+            if (!this.clickListener) {
+                this.displayShowMore();
+            }
+        } else if (this.clickListener) {
+            this.hideShowMore();
+        }
+    }
+
+    /**
+     * Display the "Show more" in the element.
+     */
+    protected displayShowMore(): void {
+        const expandInFullview = this.utils.isTrueOrOne(this.fullOnClick) || false,
+            showMoreDiv = document.createElement('div');
+
+        showMoreDiv.classList.add('core-show-more');
+        showMoreDiv.innerHTML = this.translate.instant('core.showmore');
+        this.element.appendChild(showMoreDiv);
+
+        if (expandInFullview) {
+            this.element.classList.add('core-expand-in-fullview');
+        }
+        this.element.classList.add('core-text-formatted');
+        this.element.classList.add('core-shortened');
+        this.element.style.maxHeight = this.maxHeight + 'px';
+
+        this.clickListener = this.elementClicked.bind(this, expandInFullview);
+
+        this.element.addEventListener('click', this.clickListener);
+    }
+
+    /**
+     * Listener to call when the element is clicked.
+     *
+     * @param {boolean}  expandInFullview Whether to expand the text in a new view.
+     * @param {MouseEvent} e Click event.
+     */
+    protected elementClicked(expandInFullview: boolean, e: MouseEvent): void {
+        if (e.defaultPrevented) {
+            // Ignore it if the event was prevented by some other listener.
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const target = <HTMLElement> e.target;
+
+        if (this.tagsToIgnore.indexOf(target.tagName) === -1 || (target.tagName === 'A' &&
+            !target.getAttribute('href'))) {
+            if (!expandInFullview) {
+                // Change class.
+                this.element.classList.toggle('core-shortened');
+
+                return;
+            }
+        }
+
+        // Open a new state with the contents.
+        this.textUtils.expandText(this.fullTitle || this.translate.instant('core.description'), this.text,
+            this.component, this.componentId);
+    }
+
+    /**
      * Finish the rendering, displaying the element again and calling afterRender.
      */
     protected finishRender(): void {
@@ -188,53 +263,15 @@ export class CoreFormatTextDirective implements OnChanges {
                 // Move the children to the current element to be able to calculate the height.
                 this.domUtils.moveChildren(div, this.element);
 
-                // Height cannot be calculated if the element is not shown while calculating.
-                // Force shorten if it was previously shortened.
-                // @todo: Work on calculate this height better.
-                const height = this.element.style.maxHeight ? 0 : this.getElementHeight(this.element);
+                // Calculate the height now.
+                this.calculateHeight();
 
-                // If cannot calculate height, shorten always.
-                if (!height || height > this.maxHeight) {
-                    const expandInFullview = this.utils.isTrueOrOne(this.fullOnClick) || false,
-                        showMoreDiv = document.createElement('div');
-
-                    showMoreDiv.classList.add('core-show-more');
-                    showMoreDiv.innerHTML = this.translate.instant('core.showmore');
-                    this.element.appendChild(showMoreDiv);
-
-                    if (expandInFullview) {
-                        this.element.classList.add('core-expand-in-fullview');
+                // Wait for images to load and calculate the height again if needed.
+                this.waitForImages().then((hasImgToLoad) => {
+                    if (hasImgToLoad) {
+                        this.calculateHeight();
                     }
-                    this.element.classList.add('core-text-formatted');
-                    this.element.classList.add('core-shortened');
-                    this.element.style.maxHeight = this.maxHeight + 'px';
-
-                    this.element.addEventListener('click', (e) => {
-                        if (e.defaultPrevented) {
-                            // Ignore it if the event was prevented by some other listener.
-                            return;
-                        }
-
-                        e.preventDefault();
-                        e.stopPropagation();
-
-                        const target = <HTMLElement> e.target;
-
-                        if (this.tagsToIgnore.indexOf(target.tagName) === -1 || (target.tagName === 'A' &&
-                            !target.getAttribute('href'))) {
-                            if (!expandInFullview) {
-                                // Change class.
-                                this.element.classList.toggle('core-shortened');
-
-                                return;
-                            }
-                        }
-
-                        // Open a new state with the contents.
-                        this.textUtils.expandText(this.fullTitle || this.translate.instant('core.description'), this.text,
-                            this.component, this.componentId);
-                    });
-                }
+                });
             } else {
                 this.domUtils.moveChildren(div, this.element);
             }
@@ -371,6 +408,25 @@ export class CoreFormatTextDirective implements OnChanges {
     }
 
     /**
+     * "Hide" the "Show more" in the element if it's shown.
+     */
+    protected hideShowMore(): void {
+        const showMoreDiv = this.element.querySelector('div.core-show-more');
+
+        if (showMoreDiv) {
+            showMoreDiv.remove();
+        }
+
+        this.element.classList.remove('core-expand-in-fullview');
+        this.element.classList.remove('core-text-formatted');
+        this.element.classList.remove('core-shortened');
+        this.element.style.maxHeight = null;
+
+        this.element.removeEventListener('click', this.clickListener);
+        this.clickListener = null;
+    }
+
+    /**
      * Treat video filters. Currently only treating youtube video using video JS.
      *
      * @param {HTMLElement} el Video element.
@@ -481,6 +537,39 @@ export class CoreFormatTextDirective implements OnChanges {
                 }
             }
         }
+    }
+
+    /**
+     * Wait for images to load.
+     *
+     * @return {Promise<boolean>} Promise resolved with a boolean: whether there was any image to load.
+     */
+    protected waitForImages(): Promise<boolean> {
+        const imgs = Array.from(this.element.querySelectorAll('img')),
+            promises = [];
+        let hasImgToLoad = false;
+
+        imgs.forEach((img) => {
+            if (img && !img.complete) {
+                hasImgToLoad = true;
+
+                // Wait for image to load or fail.
+                promises.push(new Promise((resolve, reject): void => {
+                    const imgLoaded = (): void => {
+                        resolve();
+                        img.removeEventListener('loaded', imgLoaded);
+                        img.removeEventListener('error', imgLoaded);
+                    };
+
+                    img.addEventListener('load', imgLoaded);
+                    img.addEventListener('error', imgLoaded);
+                }));
+            }
+        });
+
+        return Promise.all(promises).then(() => {
+            return hasImgToLoad;
+        });
     }
 
     /**

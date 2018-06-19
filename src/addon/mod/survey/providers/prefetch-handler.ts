@@ -12,8 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Injector } from '@angular/core';
-import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
+import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
+import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { AddonModSurveyProvider } from './survey';
 import { AddonModSurveyHelperProvider } from './helper';
 
@@ -21,40 +28,18 @@ import { AddonModSurveyHelperProvider } from './helper';
  * Handler to prefetch surveys.
  */
 @Injectable()
-export class AddonModSurveyPrefetchHandler extends CoreCourseModulePrefetchHandlerBase {
+export class AddonModSurveyPrefetchHandler extends CoreCourseActivityPrefetchHandlerBase {
     name = 'AddonModSurvey';
     modName = 'survey';
     component = AddonModSurveyProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$|^answers$/;
 
-    constructor(injector: Injector, protected surveyProvider: AddonModSurveyProvider,
+    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider, protected surveyProvider: AddonModSurveyProvider,
             protected surveyHelper: AddonModSurveyHelperProvider) {
-        super(injector);
-    }
 
-    /**
-     * Download or prefetch the content.
-     *
-     * @param {any} module The module object returned by WS.
-     * @param {number} courseId Course ID.
-     * @param {boolean} [prefetch] True to prefetch, false to download right away.
-     * @param {string} [dirPath] Path of the directory where to store all the content files. This is to keep the files
-     *                           relative paths and make the package work in an iframe. Undefined to download the files
-     *                           in the filepool root survey.
-     * @return {Promise<any>} Promise resolved when all content is downloaded. Data returned is not reliable.
-     */
-    downloadOrPrefetch(module: any, courseId: number, prefetch?: boolean, dirPath?: string): Promise<any> {
-        const promises = [];
-
-        promises.push(super.downloadOrPrefetch(module, courseId, prefetch));
-        promises.push(this.surveyProvider.getSurvey(courseId, module.id).then((survey) => {
-            // If survey isn't answered, prefetch the questions.
-            if (!survey.surveydone) {
-                promises.push(this.surveyProvider.getQuestions(survey.id));
-            }
-        }));
-
-        return Promise.all(promises);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
 
     /**
@@ -101,5 +86,44 @@ export class AddonModSurveyPrefetchHandler extends CoreCourseModulePrefetchHandl
      */
     isEnabled(): boolean | Promise<boolean> {
         return true;
+    }
+
+    /**
+     * Prefetch a module.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to.
+     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
+     * @param {string} [dirPath] Path of the directory where to store all the content files.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string): Promise<any> {
+        return this.prefetchPackage(module, courseId, single, this.prefetchSurvey.bind(this));
+    }
+
+    /**
+     * Prefetch a survey.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to.
+     * @param {boolean} single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param {String} siteId Site ID.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected prefetchSurvey(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
+        return this.surveyProvider.getSurvey(courseId, module.id).then((survey) => {
+            const promises = [],
+                files = this.getIntroFilesFromInstance(module, survey);
+
+            // Prefetch files.
+            promises.push(this.filepoolProvider.addFilesToQueue(siteId, files, AddonModSurveyProvider.COMPONENT, module.id));
+
+            // If survey isn't answered, prefetch the questions.
+            if (!survey.surveydone) {
+                promises.push(this.surveyProvider.getQuestions(survey.id));
+            }
+
+            return Promise.all(promises);
+        });
     }
 }
