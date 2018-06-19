@@ -58,7 +58,6 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
     protected blockId: string; // ID to block the subwiki.
     protected editing: boolean; // Whether the user is editing a page (true) or creating a new one (false).
     protected editOffline: boolean; // Whether the user is editing an offline page.
-    protected rteEnabled: boolean; // Whether rich text editor is enabled.
     protected subwikiFiles: any[]; // List of files of the subwiki.
     protected originalContent: string; // The original page content.
     protected version: number; // Page version.
@@ -151,15 +150,8 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
                 // Wait for sync to be over (if any).
                 return this.wikiSync.waitForSync(this.blockId);
             }).then(() => {
-                // Check if rich text editor is enabled.
-                return this.domUtils.isRichTextEditorEnabled();
-            }).then((enabled) => {
-                this.rteEnabled = enabled;
-
-                if (enabled) {
-                    // Get subwiki files, needed to replace URLs for rich text editor.
-                    return this.wikiProvider.getSubwikiFiles(this.wikiId, this.groupId, this.userId);
-                }
+                // Get subwiki files, needed to replace URLs for rich text editor.
+                return this.wikiProvider.getSubwikiFiles(this.wikiId, this.groupId, this.userId);
             }).then((files) => {
                 this.subwikiFiles = files;
 
@@ -167,8 +159,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
                 return this.wikiProvider.getPageForEditing(this.pageId, this.section);
             }).then((editContents) => {
                 // Get the original page contents, treating file URLs if needed.
-                const content = this.rteEnabled ? this.textUtils.replacePluginfileUrls(editContents.content, this.subwikiFiles) :
-                        editContents.content;
+                const content = this.textUtils.replacePluginfileUrls(editContents.content, this.subwikiFiles);
 
                 this.contentControl.setValue(content);
                 this.originalContent = content;
@@ -411,11 +402,8 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
         let promise,
             text = values.text;
 
-        if (this.rteEnabled) {
-            text = this.textUtils.restorePluginfileUrls(text, this.subwikiFiles);
-        } else {
-            text = this.textUtils.formatHtmlLines(text);
-        }
+        text = this.textUtils.restorePluginfileUrls(text, this.subwikiFiles);
+        text = this.textUtils.formatHtmlLines(text);
 
         if (this.editing) {
             // Edit existing page.

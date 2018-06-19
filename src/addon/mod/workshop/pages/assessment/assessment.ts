@@ -331,21 +331,16 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
      * @return {Promise<any>} Resolved when done.
      */
     protected sendEvaluation(): Promise<any> {
-        const modal = this.domUtils.showModalLoading('core.sending', true);
+        const modal = this.domUtils.showModalLoading('core.sending', true),
+            inputData = this.evaluateForm.value;
 
-        // Check if rich text editor is enabled or not.
-        return this.domUtils.isRichTextEditorEnabled().then((rteEnabled) => {
-            const inputData = this.evaluateForm.value;
-            inputData.grade = inputData.grade >= 0 ? inputData.grade : '';
-            if (!rteEnabled) {
-                // Rich text editor not enabled, add some HTML to the message if needed.
-                inputData.text = this.textUtils.formatHtmlLines(inputData.text);
-            }
+        inputData.grade = inputData.grade >= 0 ? inputData.grade : '';
+        // Add some HTML to the message if needed.
+        inputData.text = this.textUtils.formatHtmlLines(inputData.text);
 
-            // Try to send it to server.
-            return this.workshopProvider.evaluateAssessment(this.workshopId, this.assessmentId, this.courseId, inputData.text,
-                inputData.weight, inputData.grade);
-        }).then(() => {
+        // Try to send it to server.
+        return this.workshopProvider.evaluateAssessment(this.workshopId, this.assessmentId, this.courseId, inputData.text,
+                inputData.weight, inputData.grade).then(() => {
             const data = {
                 workshopId: this.workshopId,
                 assessmentId: this.assessmentId,

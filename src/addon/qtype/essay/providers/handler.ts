@@ -14,7 +14,6 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreQuestionHandler } from '@core/question/providers/delegate';
@@ -32,7 +31,7 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
     protected div = document.createElement('div'); // A div element to search in HTML code.
 
     constructor(private utils: CoreUtilsProvider, private questionHelper: CoreQuestionHelperProvider,
-            private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider) { }
+            private textUtils: CoreTextUtilsProvider) { }
 
     /**
      * Return the name of the behaviour to use for the question.
@@ -148,12 +147,8 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
         const textarea = <HTMLTextAreaElement> this.div.querySelector('textarea[name*=_answer]');
 
         if (textarea && typeof answers[textarea.name] != 'undefined') {
-            return this.domUtils.isRichTextEditorEnabled().then((enabled) => {
-                if (!enabled) {
-                    // Rich text editor not enabled, add some HTML to the text if needed.
-                    answers[textarea.name] = this.textUtils.formatHtmlLines(answers[textarea.name]);
-                }
-            });
+            // Add some HTML to the text if needed.
+            answers[textarea.name] = this.textUtils.formatHtmlLines(answers[textarea.name]);
         }
     }
 }

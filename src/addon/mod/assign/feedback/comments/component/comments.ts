@@ -53,22 +53,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
      * Component being initialized.
      */
     ngOnInit(): void {
-        let promise,
-            rteEnabled;
-
-        // Check if rich text editor is enabled.
-        if (this.edit) {
-            promise = this.domUtils.isRichTextEditorEnabled();
-        } else {
-            // We aren't editing, so no rich text editor.
-            promise = Promise.resolve(false);
-        }
-
-        promise.then((enabled) => {
-            rteEnabled = enabled;
-
-            return this.getText(rteEnabled);
-        }).then((text) => {
+        this.getText().then((text) => {
 
             this.text = text;
 
@@ -113,10 +98,9 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
     /**
      * Get the text for the plugin.
      *
-     * @param {boolean} rteEnabled Whether Rich Text Editor is enabled.
      * @return {Promise<string>} Promise resolved with the text.
      */
-    protected getText(rteEnabled: boolean): Promise<string> {
+    protected getText(): Promise<string> {
         // Check if the user already modified the comment.
         return this.feedbackDelegate.getPluginDraftData(this.assign.id, this.userId, this.plugin).then((draft) => {
             if (draft) {
@@ -140,7 +124,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
                     // No offline data found, return online text.
                     this.isSent = true;
 
-                    return this.assignProvider.getSubmissionPluginText(this.plugin, this.edit && !rteEnabled);
+                    return this.assignProvider.getSubmissionPluginText(this.plugin);
                 });
             }
         });

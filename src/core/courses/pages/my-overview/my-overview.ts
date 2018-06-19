@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy } from '@angular/core';
-import { IonicPage, NavController } from 'ionic-angular';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { IonicPage, Searchbar, NavController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -34,6 +34,8 @@ import * as moment from 'moment';
     templateUrl: 'my-overview.html',
 })
 export class CoreCoursesMyOverviewPage implements OnDestroy {
+    @ViewChild('searchbar') searchbar: Searchbar;
+
     firstSelectedTab: number;
     siteHomeEnabled: boolean;
     tabsReady = false;
@@ -245,6 +247,11 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
         this.showFilter = !this.showFilter;
         this.courses.filter = '';
         this.filteredCourses = this.courses[this.courses.selected];
+        if (this.showFilter) {
+            setTimeout(() => {
+                this.searchbar.setFocus();
+            });
+        }
     }
 
     /**

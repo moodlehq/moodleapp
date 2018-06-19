@@ -80,7 +80,7 @@
                             </div>
                         </div>
                         <!-- Filter courses. -->
-                        <ion-searchbar *ngIf="showFilter" [(ngModel)]="courses.filter" (ionInput)="filterChanged($event)" (ionCancel)="filterChanged()" [placeholder]="'core.courses.filtermycourses' | translate">
+                        <ion-searchbar #searchbar *ngIf="showFilter" [(ngModel)]="courses.filter" (ionInput)="filterChanged($event)" (ionCancel)="filterChanged()" [placeholder]="'core.courses.filtermycourses' | translate">
                         </ion-searchbar>
                         <!-- List of courses. -->
                         <div>

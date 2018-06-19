@@ -64,7 +64,6 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit {
     weights: any[];
     weight: number;
 
-    protected rteEnabled: boolean;
     protected obsInvalidated: any;
     protected hasOffline: boolean;
     protected originalData = {
@@ -117,24 +116,13 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit {
                 }
             }
 
-            let promise;
-
             // Check if rich text editor is enabled.
             if (this.edit) {
                 // Block the workshop.
                 this.syncProvider.blockOperation(AddonModWorkshopProvider.COMPONENT, this.workshop.id);
-
-                promise = this.domUtils.isRichTextEditorEnabled();
-            } else {
-                // We aren't editing, so no rich text editor.
-                promise = Promise.resolve(false);
             }
 
-            promise.then((enabled) => {
-                this.rteEnabled = enabled;
-
-                return this.load();
-            }).then(() => {
+            this.load().then(() => {
                 this.obsInvalidated = this.eventsProvider.on(AddonModWorkshopProvider.ASSESSMENT_INVALIDATED,
                         this.load.bind(this), this.sitesProvider.getCurrentSiteId());
             }).finally(() => {

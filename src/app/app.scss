@@ -39,6 +39,10 @@
 .core-big   { font-size: 115%; }
 .invisible { visibility: hidden; }
 
+.button-no-uppercase {
+  text-transform: none;
+}
+
 @include media-breakpoint-up(sm) {
   .core-center-view .scroll-content {
     display: flex!important;

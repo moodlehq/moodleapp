@@ -611,9 +611,9 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy {
         this.loaded = false;
 
         // Use getRawValue to include disabled values.
-        this.lessonHelper.prepareQuestionData(this.question, this.questionForm.getRawValue()).then((data) => {
-            return this.processPage(data);
-        }).finally(() => {
+        const data = this.lessonHelper.prepareQuestionData(this.question, this.questionForm.getRawValue());
+
+        this.processPage(data).finally(() => {
             this.loaded = true;
         });
     }

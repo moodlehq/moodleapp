@@ -107,7 +107,7 @@
                     </ng-container>
 
                     <ion-item>
-                        <button ion-button block (click)="submitQuestion()">{{ question.submitLabel }}</button>
+                        <button ion-button block (click)="submitQuestion()" class="button-no-uppercase">{{ question.submitLabel }}</button>
                     </ion-item>
                 </form>
             </ion-card>
@@ -117,7 +117,7 @@
                 <ion-grid text-wrap *ngIf="pageButtons && pageButtons.length" class="addon-mod_lesson-pagebuttons">
                     <ion-row align-items-center>
                         <ion-col *ngFor="let button of pageButtons" col-12 col-md-6 col-lg-3 col-xl>
-                            <a ion-button block outline text-wrap [id]="button.id" (click)="buttonClicked(button.data)">{{ button.content }}</a>
+                            <a ion-button block outline text-wrap [id]="button.id" (click)="buttonClicked(button.data)" class="button-no-uppercase">{{ button.content }}</a>
                         </ion-col>
                     </ion-row>
                 </ion-grid>
@@ -174,7 +174,7 @@
                     <core-format-text [text]="eolData.displayofgrade.message"></core-format-text>
                 </ion-item>
                 <ion-item text-wrap *ngIf="eolData.reviewlesson">
-                    <a ion-button block (click)="reviewLesson(eolData.reviewlesson.pageid)">
+                    <a ion-button block (click)="reviewLesson(eolData.reviewlesson.pageid)" class="button-no-uppercase">
                         <core-format-text [text]="'addon.mod_lesson.reviewlesson' | translate"></core-format-text>
                     </a>
                 </ion-item>
@@ -184,7 +184,7 @@
                 <ion-item text-wrap *ngIf="eolData.activitylink && eolData.activitylink.value">
                     <ng-container *ngIf="eolData.activitylink.value.formatted">
                         <!-- Activity link was successfully formatted, render the button. -->
-                        <a ion-button block color="light" [href]="eolData.activitylink.value.href" core-link [capture]="true">
+                        <a ion-button block color="light" [href]="eolData.activitylink.value.href" core-link [capture]="true" class="button-no-uppercase">
                             <core-format-text [text]="eolData.activitylink.value.label"></core-format-text>
                         </a>
                     </ng-container>

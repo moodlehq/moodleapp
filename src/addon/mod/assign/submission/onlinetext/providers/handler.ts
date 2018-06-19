@@ -16,7 +16,6 @@
 import { Injectable, Injector } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreWSProvider } from '@providers/ws';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { AddonModAssignProvider } from '../../../providers/assign';
 import { AddonModAssignOfflineProvider } from '../../../providers/assign-offline';
@@ -33,9 +32,8 @@ export class AddonModAssignSubmissionOnlineTextHandler implements AddonModAssign
     type = 'onlinetext';
 
     constructor(private sitesProvider: CoreSitesProvider, private wsProvider: CoreWSProvider,
-        private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
-        private assignProvider: AddonModAssignProvider, private assignOfflineProvider: AddonModAssignOfflineProvider,
-        private assignHelper: AddonModAssignHelperProvider) { }
+        private textUtils: CoreTextUtilsProvider, private assignProvider: AddonModAssignProvider,
+        private assignOfflineProvider: AddonModAssignOfflineProvider, private assignHelper: AddonModAssignHelperProvider) { }
 
     /**
      * Whether the plugin can be edited in offline for existing submissions. In general, this should return false if the
@@ -238,19 +236,16 @@ export class AddonModAssignSubmissionOnlineTextHandler implements AddonModAssign
     prepareSubmissionData(assign: any, submission: any, plugin: any, inputData: any, pluginData: any, offline?: boolean,
             userId?: number, siteId?: string): void | Promise<any> {
 
-        return this.domUtils.isRichTextEditorEnabled().then((enabled) => {
-            let text = this.getTextToSubmit(plugin, inputData);
-            if (!enabled) {
-                // Rich text editor not enabled, add some HTML to the text if needed.
-                text = this.textUtils.formatHtmlLines(text);
-            }
+        let text = this.getTextToSubmit(plugin, inputData);
 
-            pluginData.onlinetext_editor = {
-                text: text,
-                format: 1,
-                itemid: 0 // Can't add new files yet, so we use a fake itemid.
-            };
-        });
+        // Add some HTML to the text if needed.
+        text = this.textUtils.formatHtmlLines(text);
+
+        pluginData.onlinetext_editor = {
+            text: text,
+            format: 1,
+            itemid: 0 // Can't add new files yet, so we use a fake itemid.
+        };
     }
 
     /**

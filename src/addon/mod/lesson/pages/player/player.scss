@@ -12,10 +12,12 @@ page-addon-mod-lesson-player {
 
     .addon-mod_lesson-pagebuttons .button-block {
         contain: content;
-        height: auto;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
 
         .button-inner {
-            height: auto;
+            flex-grow: 1;
         }
     }
 }

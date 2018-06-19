@@ -546,8 +546,7 @@ export class CoreDomUtilsProvider {
      * @return {boolean} Whether it's supported.
      */
     isRichTextEditorSupported(): boolean {
-        // Disabled just for iOS.
-        return !this.platform.is('ios');
+        return true;
     }
 
     /**

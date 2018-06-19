@@ -15,7 +15,6 @@
 
 import { Injectable, Injector } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { AddonModAssignProvider } from '../../../providers/assign';
 import { AddonModAssignOfflineProvider } from '../../../providers/assign-offline';
@@ -32,9 +31,8 @@ export class AddonModAssignFeedbackCommentsHandler implements AddonModAssignFeed
 
     protected drafts = {}; // Store the data in this service so it isn't lost if the user performs a PTR in the page.
 
-    constructor(private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
-            private textUtils: CoreTextUtilsProvider, private assignProvider: AddonModAssignProvider,
-            private assignOfflineProvider: AddonModAssignOfflineProvider) { }
+    constructor(private sitesProvider: CoreSitesProvider, private textUtils: CoreTextUtilsProvider,
+            private assignProvider: AddonModAssignProvider, private assignOfflineProvider: AddonModAssignOfflineProvider) { }
 
     /**
      * Discard the draft data of the feedback plugin.
@@ -133,9 +131,7 @@ export class AddonModAssignFeedbackCommentsHandler implements AddonModAssignFeed
             }
 
             // No offline data found, get text from plugin.
-            return this.domUtils.isRichTextEditorEnabled().then((enabled) => {
-                return this.assignProvider.getSubmissionPluginText(plugin, !enabled);
-            });
+            return this.assignProvider.getSubmissionPluginText(plugin);
         }).then((initialText) => {
             const newText = AddonModAssignFeedbackCommentsHandler.getTextFromInputData(this.textUtils, plugin, inputData);
 
@@ -185,14 +181,10 @@ export class AddonModAssignFeedbackCommentsHandler implements AddonModAssignFeed
         const draft = this.getDraft(assignId, userId, siteId);
 
         if (draft) {
-            return this.domUtils.isRichTextEditorEnabled().then((enabled) => {
-                if (!enabled) {
-                    // Rich text editor not enabled, add some HTML to the text if needed.
-                    draft.text = this.textUtils.formatHtmlLines(draft.text);
-                }
+            // Add some HTML to the text if needed.
+            draft.text = this.textUtils.formatHtmlLines(draft.text);
 
-                pluginData.assignfeedbackcomments_editor = draft;
-            });
+            pluginData.assignfeedbackcomments_editor = draft;
         }
     }
 

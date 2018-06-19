@@ -19,7 +19,7 @@
     "displayformat": "Display format",
     "enabledownloadsection": "Enable download sections",
     "enablerichtexteditor": "Enable text editor",
-    "enablerichtexteditordescription": "If enabled, a text editor will be available when entering content.",
+    "enablerichtexteditordescription": "If enabled, a rich text editor will be shown when entering content. If disabled, plain text editor will be shown. You can toggle between both while editing.",
     "enablesyncwifi": "Allow sync only when on Wi-Fi",
     "errordeletesitefiles": "Error deleting site files.",
     "errorsyncsite": "Error synchronising site data. Please check your Internet connection and try again.",

@@ -452,19 +452,12 @@ export class AddonModLessonHelperProvider {
      *
      * @param {any} question Question to prepare.
      * @param {any} data Data to prepare.
-     * @return {Promise<any>} Promise resolved with the data to send when done.
+     * @return {any} Data to send.
      */
-    prepareQuestionData(question: any, data: any): Promise<any> {
+    prepareQuestionData(question: any, data: any): any {
         if (question.template == 'essay' && question.textarea) {
-            // The answer might need formatting. Check if rich text editor is enabled or not.
-            return this.domUtils.isRichTextEditorEnabled().then((enabled) => {
-                if (!enabled) {
-                    // Rich text editor not enabled, add some HTML to the answer if needed.
-                    data[question.textarea.property] = this.textUtils.formatHtmlLines(data[question.textarea.property]);
-                }
-
-                return data;
-            });
+            // Add some HTML to the answer if needed.
+            data[question.textarea.property] = this.textUtils.formatHtmlLines(data[question.textarea.property]);
         } else if (question.template == 'multichoice' && question.multi) {
             // Only send the options with value set to true.
             for (const name in data) {
@@ -474,7 +467,7 @@ export class AddonModLessonHelperProvider {
             }
         }
 
-        return Promise.resolve(data);
+        return data;
     }
 
     /**
