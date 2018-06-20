@@ -61,7 +61,7 @@ export class CoreCoursesMainMenuHandler implements CoreMainMenuHandler {
             };
         } else {
             return {
-                icon: 'ionic',
+                icon: 'fa-graduation-cap',
                 title: 'core.courses.mycourses',
                 page: 'CoreCoursesMyCoursesPage',
                 class: 'core-mycourses-handler'

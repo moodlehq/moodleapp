@@ -24,11 +24,11 @@ export class AddonCalendarHelperProvider {
     protected logger;
 
     protected EVENTICONS = {
-        course: 'ionic',
+        course: 'fa-university',
         group: 'people',
         site: 'globe',
         user: 'person',
-        category: 'albums'
+        category: 'fa-cubes'
     };
 
     constructor(logger: CoreLoggerProvider, private courseProvider: CoreCourseProvider) {
