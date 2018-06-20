@@ -51,9 +51,13 @@ core-course-module {
 }
 
 .md core-course-module {
-    .core-module-description,
-    .core-module-description .core-show-more {
+    .core-module-description {
         padding-right: $label-md-margin-end;
+        margin-bottom: $label-md-margin-bottom;
+
+        .core-module-description .core-show-more {
+            padding-right: $label-md-margin-end;
+        }
     }
 
     a.core-course-module-handler .core-module-icon {
@@ -77,9 +81,13 @@ core-course-module {
 }
 
 .ios core-course-module {
-    .core-module-description,
-    .core-module-description .core-show-more {
+    .core-module-description {
         padding-right: $label-ios-margin-end;
+        margin-bottom: $label-md-margin-bottom;
+
+        .core-module-description .core-show-more {
+            padding-right: $label-ios-margin-end;
+        }
     }
 
     a.core-course-module-handler .core-module-icon {
@@ -98,9 +106,13 @@ core-course-module {
 }
 
 .wp core-course-module {
-    .core-module-description,
-    .core-module-description .core-show-more {
+    .core-module-description {
         padding-right: ($item-wp-padding-end / 2);
+        margin-bottom: $label-md-margin-bottom;
+
+        .core-module-description .core-show-more {
+            padding-right: ($item-wp-padding-end / 2);
+        }
     }
 
     a.core-course-module-handler .core-module-icon {

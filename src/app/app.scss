@@ -180,8 +180,8 @@ ion-datetime {
 }
 
 /** Format Text */
-core-format-text[maxHeight], *[core-format-text][maxHeight],
-core-format-text[ng-reflect-max-height], *[core-format-text][ng-reflect-max-height] {
+core-format-text[maxHeight],
+core-format-text[ng-reflect-max-height] {
   display: block;
   position: relative;
   width: 100%;
@@ -254,8 +254,8 @@ core-format-text[ng-reflect-max-height], *[core-format-text][ng-reflect-max-heig
   }
 }
 
-core-format-text[singleLine="true"], *[core-format-text][singleLine="true"],
-core-format-text[ng-reflect-single-line="true"], *[core-format-text][ng-reflect-single-line="true"] {
+core-format-text[singleLine="true"],
+core-format-text[ng-reflect-single-line="true"] {
     cursor: pointer;
     pointer-events: auto;
     white-space: nowrap;
@@ -298,7 +298,7 @@ audio.core-media-adapt-width {
   }
 }
 
-core-format-text, *[core-format-text] {
+core-format-text {
   audio, video, a, iframe {
     pointer-events: auto;
   }
@@ -329,12 +329,6 @@ core-format-text, *[core-format-text] {
     position: initial !important;
   }
 
-  // Images in ion-card have width 100% and display block. Remove that when the image is in core-format-text.
-  img {
-    width: initial;
-    display: inline;
-  }
-
   .core-disable-media-adapt,
   .core-disable-media-adapt .core-media-adapt-width {
     max-width: none !important;
@@ -343,6 +337,12 @@ core-format-text, *[core-format-text] {
     height: initial !important;
     display: inline-block !important;
   }
+}
+
+// Images in ion-card have width 100% and display block. Remove that when the image is in core-format-text.
+ion-card core-format-text img {
+  width: initial;
+  display: inline;
 }
 
 // Message item.
