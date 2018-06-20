@@ -237,10 +237,13 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
         }, 0);
 
         this.slidesShown = Math.min(this.maxSlides, this.numTabsShown);
-        this.slides.update();
-        this.slides.resize();
 
         this.slideChanged();
+
+        setTimeout(() => {
+            this.slides.update();
+            this.slides.resize();
+        });
     }
 
     protected calculateMaxSlides(): void {
@@ -356,5 +359,12 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
 
             this.tabs = newTabs;
         }
+    }
+
+    /**
+     * Function to call when the visibility of a tab has changed.
+     */
+    tabVisibilityChanged(): void {
+       this.updateSlides();
     }
 }
