@@ -89,8 +89,10 @@ export class CoreMainMenuPage implements OnDestroy {
                     this.initialTab = 0;
 
                     for (let i = 0; i < this.tabs.length; i++) {
-                        if (this.tabs[i].page == this.redirectPage) {
+                        const tab = this.tabs[i];
+                        if (tab.page == this.redirectPage) {
                             this.initialTab = i + 1;
+                            tab.pageParams = Object.assign(tab.pageParams || {}, this.redirectParams);
                             break;
                         }
                     }

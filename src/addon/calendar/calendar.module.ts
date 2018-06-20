@@ -58,7 +58,7 @@ export class AddonCalendarModule {
                             return;
                         }
 
-                        loginHelper.redirect('AddonCalendarListPage', {eventid: data.eventid}, data.siteId);
+                        loginHelper.redirect('AddonCalendarListPage', {eventId: data.eventid}, data.siteId);
                     });
                 });
             }
