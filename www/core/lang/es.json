@@ -208,6 +208,7 @@
     "userdeleted": "Esta cuenta se ha cancelado",
     "userdetails": "Detalles de usuario",
     "users": "Usuarios",
+    "usethenewapp": "Está usando la app Moodle Classic. Por favor, descargue la app Moodle más reciente para acceder a este sitio Moodle y disfrutar una experiencia de usuario mejorada y nuevas funcionalidades.",
     "view": "Vista",
     "viewprofile": "Ver perfil",
     "warningofflinedatadeleted": "Los datos fuera de línea de {{component}} '{{name}}' han sido borrados. {{error}}",
