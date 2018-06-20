@@ -64,7 +64,7 @@
                         </div>
                     </ion-item>
                 </ng-container>
-                <ion-grid>
+                <ion-grid *ngIf="!preview">
                     <ion-row align-items-center>
                         <ion-col *ngIf="hasPrevPage">
                             <button ion-button block outline icon-start (click)="gotoPage(true)">
