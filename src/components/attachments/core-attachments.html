@@ -1,10 +1,10 @@
 <ion-item text-wrap>
     {{ 'core.maxsizeandattachments' | translate:{$a: {size: maxSizeReadable, attachments: maxSubmissionsReadable} } }}
 </ion-item>
-<ion-item text-wrap *ngIf="filetypes && filetypes.mimetypes && filetypes.mimetypes.length">
+<ion-item text-wrap *ngIf="fileTypes && fileTypes.mimetypes && fileTypes.mimetypes.length">
     <p>{{ 'core.fileuploader.filesofthesetypes' | translate }}</p>
     <ul class="list-with-style">
-        <li *ngFor="let typeInfo of filetypes.info">
+        <li *ngFor="let typeInfo of fileTypes.info">
             <strong *ngIf="typeInfo.name">{{typeInfo.name}} </strong>{{typeInfo.extlist}}
         </li>
     </ul>
