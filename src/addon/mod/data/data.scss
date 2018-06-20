@@ -34,19 +34,20 @@ page-addon-mod-data-edit {
         vertical-align: top;
     }
 
-    .item.item-input.item-block .item-inner ion-input,
-    .item.item-input.item-input-has-focus .item-inner ion-input,
-    .item.item-input.input-has-focus .item-inner ion-input {
-      border: 0 !important;
-      box-shadow: none;
-    }
-
     .addon-data-lantlong {
       display: flex;
     }
 
-    form, .addon-data-advanced-search {
+    .addon-data-contents form,
+    form .addon-data-advanced-search {
         background-color: $list-background-color;
+
+        .item.item-input .item-block .item-inner ion-input,
+        .item.item-input.item-input-has-focus .item-inner ion-input,
+        .item.item-input.input-has-focus .item-inner ion-input {
+          border: 0 !important;
+          box-shadow: none;
+        }
 
         .core-mark-required {
           float: right;

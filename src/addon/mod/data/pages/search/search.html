@@ -10,8 +10,8 @@
 </ion-header>
 <ion-content>
     <div class="fixed-content core-tabs-bar">
-        <a [attr.aria-selected]="!search.searchingAdvanced" (click)="toggleAdvanced()">{{ 'addon.mod_data.search' | translate}}</a>
-        <a [attr.aria-selected]="search.searchingAdvanced" (click)="toggleAdvanced()">{{ 'addon.mod_data.advancedsearch' | translate }}</a>
+        <a class="tab-slide" [attr.aria-selected]="!search.searchingAdvanced" (click)="toggleAdvanced()">{{ 'addon.mod_data.search' | translate}}</a>
+        <a class="tab-slide" [attr.aria-selected]="search.searchingAdvanced" (click)="toggleAdvanced()">{{ 'addon.mod_data.advancedsearch' | translate }}</a>
     </div>
     <form (ngSubmit)="searchEntries()" [formGroup]="searchForm">
         <ion-list no-margin>
