@@ -36,7 +36,6 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
 
     static AUTO_SYNCED = 'addon_mod_forum_autom_synced';
     static MANUAL_SYNCED = 'addon_mod_forum_manual_synced';
-    static SYNC_TIME = 600000;
 
     protected componentTranslate: string;
 

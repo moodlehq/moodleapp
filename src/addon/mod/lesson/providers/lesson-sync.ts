@@ -53,7 +53,6 @@ export interface AddonModLessonSyncResult {
 export class AddonModLessonSyncProvider extends CoreSyncBaseProvider {
 
     static AUTO_SYNCED = 'addon_mod_lesson_autom_synced';
-    static SYNC_TIME = 300000;
 
     protected componentTranslate: string;
 

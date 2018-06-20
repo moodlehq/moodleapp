@@ -42,6 +42,6 @@ export class AddonModQuizSyncCronHandler implements CoreCronHandler {
      * @return {number} Time between consecutive executions (in ms).
      */
     getInterval(): number {
-        return AddonModQuizSyncProvider.SYNC_TIME;
+        return this.quizSync.syncInterval;
     }
 }

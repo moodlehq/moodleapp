@@ -77,7 +77,7 @@ export class AddonModChoiceSyncProvider extends CoreSyncBaseProvider {
 
             // Sync all responses.
             responses.forEach((response) => {
-                promises.push(this.syncChoice(response.choiceid, response.userid, siteId).then((result) => {
+                promises.push(this.syncChoiceIfNeeded(response.choiceid, response.userid, siteId).then((result) => {
                     if (result && result.updated) {
                         // Sync successful, send event.
                         this.eventsProvider.trigger(AddonModChoiceSyncProvider.AUTO_SYNCED, {
@@ -88,6 +88,24 @@ export class AddonModChoiceSyncProvider extends CoreSyncBaseProvider {
                     }
                 }));
             });
+        });
+    }
+
+    /**
+     * Sync an choice only if a certain time has passed since the last time.
+     *
+     * @param  {number} choiceId Choice ID to be synced.
+     * @param  {number} userId   User the answers belong to.
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when the choice is synced or it doesn't need to be synced.
+     */
+    syncChoiceIfNeeded(choiceId: number, userId: number, siteId?: string): Promise<any> {
+        const syncId = this.getSyncId(choiceId, userId);
+
+        return this.isSyncNeeded(syncId, siteId).then((needed) => {
+            if (needed) {
+                return this.syncChoice(choiceId, userId, siteId);
+            }
         });
     }
 

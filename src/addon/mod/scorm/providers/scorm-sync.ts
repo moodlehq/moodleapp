@@ -57,7 +57,6 @@ export interface AddonModScormSyncResult {
 export class AddonModScormSyncProvider extends CoreSyncBaseProvider {
 
     static AUTO_SYNCED = 'addon_mod_scorm_autom_synced';
-    static SYNC_TIME = 600000;
 
     protected componentTranslate: string;
 

@@ -26,7 +26,7 @@ export class AddonModQuizAccessOfflineAttemptsHandler implements AddonModQuizAcc
     name = 'AddonModQuizAccessOfflineAttempts';
     ruleName = 'quizaccess_offlineattempts';
 
-    constructor() {
+    constructor(protected quizSync: AddonModQuizSyncProvider) {
         // Nothing to do.
     }
 
@@ -86,6 +86,6 @@ export class AddonModQuizAccessOfflineAttemptsHandler implements AddonModQuizAcc
         }
 
         // Show warning if last sync was a while ago.
-        return Date.now() - AddonModQuizSyncProvider.SYNC_TIME > quiz.syncTime;
+        return Date.now() - this.quizSync.syncInterval > quiz.syncTime;
     }
 }
