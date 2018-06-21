@@ -381,8 +381,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      */
     protected eventReceived(data: any): void {
         if (this.glossary && this.glossary.id === data.glossaryId) {
-            this.loaded = false;
-            this.loadContent();
+            this.showLoadingAndRefresh(false);
 
             // Check completion since it could be configured to complete once the user adds a new discussion or replies.
             this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
