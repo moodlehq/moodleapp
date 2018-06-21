@@ -17,6 +17,7 @@ import {
     LoadingController, Loading, ToastController, Toast, AlertController, Alert, Platform, Content,
     ModalController
 } from 'ionic-angular';
+import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from './text';
 import { CoreAppProvider } from '../app';
@@ -42,7 +43,7 @@ export class CoreDomUtilsProvider {
     constructor(private translate: TranslateService, private loadingCtrl: LoadingController, private toastCtrl: ToastController,
             private alertCtrl: AlertController, private textUtils: CoreTextUtilsProvider, private appProvider: CoreAppProvider,
             private platform: Platform, private configProvider: CoreConfigProvider, private urlUtils: CoreUrlUtilsProvider,
-            private modalCtrl: ModalController) { }
+            private modalCtrl: ModalController, private sanitizer: DomSanitizer) { }
 
     /**
      * Equivalent to element.closest(). If the browser doesn't support element.closest, it will
@@ -474,13 +475,16 @@ export class CoreDomUtilsProvider {
      * Given an error message, return a suitable error title.
      *
      * @param {string} message The error message.
-     * @return {string} Title.
+     * @return {any} Title.
      */
-    private getErrorTitle(message: string): string {
+    private getErrorTitle(message: string): any {
         if (message == this.translate.instant('core.networkerrormsg') ||
             message == this.translate.instant('core.fileuploader.errormustbeonlinetoupload')) {
-            return '<span class="core-icon-with-badge"><i class="icon ion-wifi"></i>\
-                <i class="icon ion-alert-circled core-icon-badge"></i></span>';
+            return this.sanitizer.bypassSecurityTrustHtml('<div text-center><span class="core-icon-with-badge">' +
+                    '<ion-icon role="img" class="icon fa fa-wifi" aria-label="wifi"></ion-icon>' +
+                    '<ion-icon class="icon fa fa-exclamation-triangle core-icon-badge"></ion-icon>' +
+                '</span></div>');
+
         }
 
         return this.textUtils.decodeHTML(this.translate.instant('core.error'));

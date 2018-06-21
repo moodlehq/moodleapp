@@ -796,3 +796,22 @@ ion-alert.core-inapp-notification {
     }
   }
 }
+
+.core-icon-with-badge {
+  position: relative;
+
+  .icon {
+    font-size: 32px;
+  }
+
+  .core-icon-badge {
+    width: auto;
+    height: auto;
+    margin: 0;
+    position: absolute;
+    top: -18px;
+    right: -8px;
+    color: red;
+    font-size: 16px;
+  }
+}
