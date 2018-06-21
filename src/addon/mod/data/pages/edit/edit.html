@@ -2,8 +2,8 @@
     <ion-navbar>
         <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
         <ion-buttons end>
-            <button ion-button icon-only (click)="save()" [attr.aria-label]="'core.save' | translate">
-                <ion-icon name="send"></ion-icon>
+            <button ion-button clear (click)="save()" [attr.aria-label]="'core.save' | translate">
+                {{ 'core.save' | translate }}
             </button>
         </ion-buttons>
     </ion-navbar>

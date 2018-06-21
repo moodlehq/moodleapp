@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { Component, Input, OnInit, Injector, ViewChild, OnChanges, SimpleChange } from '@angular/core';
+import { Component, Input, Output, OnInit, Injector, ViewChild, OnChanges, SimpleChange, EventEmitter } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { AddonModDataProvider } from '../../providers/data';
 import { AddonModDataFieldsDelegate } from '../../providers/fields-delegate';
@@ -32,7 +32,7 @@ export class AddonModDataFieldPluginComponent implements OnInit, OnChanges {
     @Input() value?: any; // The value of the field.
     @Input() database?: any; // Database object.
     @Input() error?: string; // Error when editing.
-    @Input() viewAction: string; // Action to perform.
+    @Output() gotoEntry: EventEmitter<number>; // Action to perform.
     @Input() form?: FormGroup; // Form where to add the form control. Just required for edit and search modes.
     @Input() search?: any; // The search value of all fields.
 
@@ -42,6 +42,7 @@ export class AddonModDataFieldPluginComponent implements OnInit, OnChanges {
 
     constructor(protected injector: Injector, protected dataDelegate: AddonModDataFieldsDelegate,
             protected dataProvider: AddonModDataProvider) {
+        this.gotoEntry = new EventEmitter();
     }
 
     /**
@@ -66,7 +67,7 @@ export class AddonModDataFieldPluginComponent implements OnInit, OnChanges {
                     value: this.value,
                     database: this.database,
                     error: this.error,
-                    viewAction: this.viewAction,
+                    gotoEntry: this.gotoEntry,
                     form: this.form,
                     search: this.search
                 };
