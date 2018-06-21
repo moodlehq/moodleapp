@@ -28,7 +28,7 @@
 <span *ngIf="action == 'timemodified'">{{ entry.timemodified * 1000 |  coreFormatDate:"dffulldate" }}</span>
 
 <a *ngIf="action == 'userpicture'" core-user-link [courseId]="database.courseid" [userId]="entry.userid" [title]="entry.fullname">
-    <img class="avatar-round" [src]="userPicture" [alt]="'core.pictureof' | translate:{$a: user.fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'" role="presentation">
+    <img class="avatar-round" [src]="userPicture" [alt]="'core.pictureof' | translate:{$a: entry.fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'" role="presentation">
 </a>
 
-<a *ngIf="action == 'user'" core-user-link [courseId]="database.courseid" [userId]="entry.userid" [title]="entry.fullname">{{entry.fullname}}</a>
+<a *ngIf="action == 'user' && entry" core-user-link [courseId]="database.courseid" [userId]="entry.userid" [title]="entry.fullname">{{entry.fullname}}</a>

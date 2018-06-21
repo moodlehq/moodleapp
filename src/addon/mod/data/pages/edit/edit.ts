@@ -253,12 +253,14 @@ export class AddonModDataEditPage {
                     });
                 } else {
                     this.errors = {};
-                    result.fieldnotifications.forEach((fieldNotif) => {
-                        const field = this.fieldsArray.find((field) => field.name == fieldNotif.fieldname);
-                        if (field) {
-                            this.errors[field.id] = fieldNotif.notification;
-                        }
-                    });
+                    if (result.fieldnotifications) {
+                        result.fieldnotifications.forEach((fieldNotif) => {
+                            const field = this.fieldsArray.find((field) => field.name == fieldNotif.fieldname);
+                            if (field) {
+                                this.errors[field.id] = fieldNotif.notification;
+                            }
+                        });
+                    }
                     this.jsData['errors'] = this.errors;
 
                     setTimeout(() => {
