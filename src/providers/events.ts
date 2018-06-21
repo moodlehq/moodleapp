@@ -54,6 +54,7 @@ export class CoreEventsProvider {
     static IAB_EXIT = 'inappbrowser_exit';
     static APP_LAUNCHED_URL = 'app_launched_url'; // App opened with a certain URL (custom URL scheme).
     static FILE_SHARED = 'file_shared';
+    static KEYBOARD_CHANGE = 'keyboard_change';
 
     protected logger;
     protected observables: { [s: string]: Subject<any> } = {};

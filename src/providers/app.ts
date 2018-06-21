@@ -19,6 +19,7 @@ import { Network } from '@ionic-native/network';
 
 import { CoreDbProvider } from './db';
 import { CoreLoggerProvider } from './logger';
+import { CoreEventsProvider } from './events';
 import { SQLiteDB } from '@classes/sqlitedb';
 
 /**
@@ -69,16 +70,18 @@ export class CoreAppProvider {
     protected isKeyboardShown = false;
 
     constructor(dbProvider: CoreDbProvider, private platform: Platform, private keyboard: Keyboard, private appCtrl: App,
-            private network: Network, logger: CoreLoggerProvider) {
+            private network: Network, logger: CoreLoggerProvider, events: CoreEventsProvider) {
         this.logger = logger.getInstance('CoreAppProvider');
         this.db = dbProvider.getDB(this.DBNAME);
 
         this.keyboard.onKeyboardShow().subscribe((data) => {
             this.isKeyboardShown = true;
+            events.trigger(CoreEventsProvider.KEYBOARD_CHANGE, this.isKeyboardShown);
 
         });
         this.keyboard.onKeyboardHide().subscribe((data) => {
             this.isKeyboardShown = false;
+            events.trigger(CoreEventsProvider.KEYBOARD_CHANGE, this.isKeyboardShown);
         });
     }
 
