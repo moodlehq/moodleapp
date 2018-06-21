@@ -20,7 +20,7 @@ import { AddonModWorkshopAssessmentStrategyComponentBase } from '../../../classe
  */
 @Component({
     selector: 'addon-mod-workshop-assessment-strategy-accumulative',
-    templateUrl: 'accumulative.html',
+    templateUrl: 'addon-mod-workshop-assessment-strategy-accumulative.html',
 })
 export class AddonModWorkshopAssessmentStrategyAccumulativeComponent extends AddonModWorkshopAssessmentStrategyComponentBase {
 }

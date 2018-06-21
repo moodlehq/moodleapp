@@ -292,9 +292,9 @@ var templatesSrc = [
         './src/components/**/*.html',
         './src/core/**/components/**/*.html',
         './src/core/**/component/**/*.html',
-        // Only some addon components are injected to compile to decrease load time. Copy only the ones that are needed.
-        './src/addon/mod/assign/components/**/*.html',
-        './src/addon/mod/workshop/components/**/*.html'
+        // Copy all addon components because any component can be injected using extraImports.
+        './src/addon/**/components/**/*.html',
+        './src/addon/**/component/**/*.html'
     ],
     templatesDest = './www/templates';
 

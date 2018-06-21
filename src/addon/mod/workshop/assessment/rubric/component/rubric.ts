@@ -20,7 +20,7 @@ import { AddonModWorkshopAssessmentStrategyComponentBase } from '../../../classe
  */
 @Component({
     selector: 'addon-mod-workshop-assessment-strategy-rubric',
-    templateUrl: 'rubric.html',
+    templateUrl: 'addon-mod-workshop-assessment-strategy-rubric.html',
 })
 export class AddonModWorkshopAssessmentStrategyRubricComponent extends AddonModWorkshopAssessmentStrategyComponentBase {
 }
