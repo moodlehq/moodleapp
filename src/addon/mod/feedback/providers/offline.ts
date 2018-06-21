@@ -38,7 +38,7 @@ export class AddonModFeedbackOfflineProvider {
                 },
                 {
                     name: 'page',
-                    type: 'TEXT'
+                    type: 'INTEGER'
                 },
                 {
                     name: 'courseid',
@@ -86,9 +86,11 @@ export class AddonModFeedbackOfflineProvider {
     getAllFeedbackResponses(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.getDb().getAllRecords(AddonModFeedbackOfflineProvider.FEEDBACK_TABLE).then((entries) => {
-                return entries.map((entry) => {
+                entries.forEach((entry) => {
                     entry.responses = this.textUtils.parseJSON(entry.responses);
                 });
+
+                return entries;
             });
         });
     }
@@ -104,9 +106,11 @@ export class AddonModFeedbackOfflineProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.getDb().getRecords(AddonModFeedbackOfflineProvider.FEEDBACK_TABLE, {feedbackid: feedbackId});
         }).then((entries) => {
-            return entries.map((entry) => {
+            entries.forEach((entry) => {
                 entry.responses = this.textUtils.parseJSON(entry.responses);
             });
+
+            return entries;
         });
     }
 
