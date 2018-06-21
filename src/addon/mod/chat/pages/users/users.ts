@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavParams, ViewController } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreSitesProvider } from '@providers/sites';
@@ -38,14 +38,17 @@ export class AddonModChatUsersPage {
     protected sessionId: number;
     protected onlineObserver: any;
 
-    constructor(navParams: NavParams, network: Network, private appProvider: CoreAppProvider,
+    constructor(navParams: NavParams, network: Network,  zone: NgZone, private appProvider: CoreAppProvider,
             private sitesProvider: CoreSitesProvider, private viewCtrl: ViewController,
             private domUtils: CoreDomUtilsProvider, private chatProvider: AddonModChatProvider) {
         this.sessionId = navParams.get('sessionId');
         this.isOnline = this.appProvider.isOnline();
         this.currentUserId = this.sitesProvider.getCurrentSiteUserId();
         this.onlineObserver = network.onchange().subscribe((online) => {
-            this.isOnline = this.appProvider.isOnline();
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            zone.run(() => {
+                this.isOnline = this.appProvider.isOnline();
+            });
         });
     }
 

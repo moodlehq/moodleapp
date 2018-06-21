@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, Optional } from '@angular/core';
+import { Component, OnDestroy, Optional, NgZone } from '@angular/core';
 import { IonicPage, NavParams, NavController, Content } from 'ionic-angular';
 import { Network } from '@ionic-native/network';
 import { TranslateService } from '@ngx-translate/core';
@@ -69,7 +69,7 @@ export class AddonModFeedbackFormPage implements OnDestroy {
             protected eventsProvider: CoreEventsProvider, protected feedbackSync: AddonModFeedbackSyncProvider, network: Network,
             protected translate: TranslateService, protected loginHelper: CoreLoginHelperProvider,
             protected linkHelper: CoreContentLinksHelperProvider, sitesProvider: CoreSitesProvider,
-            @Optional() private content: Content) {
+            @Optional() private content: Content, zone: NgZone) {
 
         this.module = navParams.get('module');
         this.courseId = navParams.get('courseId');
@@ -82,7 +82,10 @@ export class AddonModFeedbackFormPage implements OnDestroy {
 
         // Refresh online status when changes.
         this.onlineObserver = network.onchange().subscribe((online) => {
-            this.offline = !online;
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            zone.run(() => {
+                this.offline = !online;
+            });
         });
     }
 

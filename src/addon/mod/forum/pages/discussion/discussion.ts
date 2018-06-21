@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Optional, OnDestroy, ViewChild, NgZone } from '@angular/core';
 import { IonicPage, NavParams, Content } from 'ionic-angular';
 import { Network } from '@ionic-native/network';
 import { TranslateService } from '@ngx-translate/core';
@@ -78,6 +78,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
 
     constructor(navParams: NavParams,
             network: Network,
+            zone: NgZone,
             private appProvider: CoreAppProvider,
             private eventsProvider: CoreEventsProvider,
             private sitesProvider: CoreSitesProvider,
@@ -99,7 +100,10 @@ export class AddonModForumDiscussionPage implements OnDestroy {
 
         this.isOnline = this.appProvider.isOnline();
         this.onlineObserver = network.onchange().subscribe((online) => {
-            this.isOnline = this.appProvider.isOnline();
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            zone.run(() => {
+                this.isOnline = this.appProvider.isOnline();
+            });
         });
         this.isSplitViewOn = this.svComponent && this.svComponent.isOn();
 

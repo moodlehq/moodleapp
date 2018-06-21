@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Network } from '@ionic-native/network';
 import { CoreAppProvider } from './app';
 import { CoreEventsProvider } from './events';
@@ -436,7 +436,8 @@ export class CoreFilepoolProvider {
             private sitesProvider: CoreSitesProvider, private wsProvider: CoreWSProvider, private textUtils: CoreTextUtilsProvider,
             private utils: CoreUtilsProvider, private mimeUtils: CoreMimetypeUtilsProvider, private urlUtils: CoreUrlUtilsProvider,
             private timeUtils: CoreTimeUtilsProvider, private eventsProvider: CoreEventsProvider, initDelegate: CoreInitDelegate,
-            network: Network, private pluginFileDelegate: CorePluginFileDelegate, private domUtils: CoreDomUtilsProvider) {
+            network: Network, private pluginFileDelegate: CorePluginFileDelegate, private domUtils: CoreDomUtilsProvider,
+            zone: NgZone) {
         this.logger = logger.getInstance('CoreFilepoolProvider');
 
         this.appDB = this.appProvider.getDB();
@@ -450,7 +451,10 @@ export class CoreFilepoolProvider {
 
             // Start queue when device goes online.
             network.onConnect().subscribe(() => {
-                this.checkQueueProcessing();
+                // Execute the callback in the Angular zone, so change detection doesn't stop working.
+                zone.run(() => {
+                    this.checkQueueProcessing();
+                });
             });
         });
     }

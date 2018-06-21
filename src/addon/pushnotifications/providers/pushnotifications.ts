@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { Badge } from '@ionic-native/badge';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
@@ -65,7 +65,7 @@ export class AddonPushNotificationsProvider {
             protected pushNotificationsDelegate: AddonPushNotificationsDelegate, protected sitesProvider: CoreSitesProvider,
             private badge: Badge, private localNotificationsProvider: CoreLocalNotificationsProvider,
             private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider, private push: Push,
-            private configProvider: CoreConfigProvider, private device: Device) {
+            private configProvider: CoreConfigProvider, private device: Device, private zone: NgZone) {
         this.logger = logger.getInstance('AddonPushNotificationsProvider');
         this.appDB = appProvider.getDB();
         this.appDB.createTablesFromSchema(this.tablesSchema);
@@ -326,19 +326,28 @@ export class AddonPushNotificationsProvider {
                 const pushObject: PushObject = this.push.init(options);
 
                 pushObject.on('notification').subscribe((notification: any) => {
-                    this.logger.log('Received a notification', notification);
-                    this.onMessageReceived(notification);
+                    // Execute the callback in the Angular zone, so change detection doesn't stop working.
+                    this.zone.run(() => {
+                        this.logger.log('Received a notification', notification);
+                        this.onMessageReceived(notification);
+                    });
                 });
 
                 pushObject.on('registration').subscribe((data: any) => {
-                    this.pushID = data.registrationId;
-                    this.registerDeviceOnMoodle().catch((error) => {
-                        this.logger.warn('Can\'t register device', error);
+                    // Execute the callback in the Angular zone, so change detection doesn't stop working.
+                    this.zone.run(() => {
+                        this.pushID = data.registrationId;
+                        this.registerDeviceOnMoodle().catch((error) => {
+                            this.logger.warn('Can\'t register device', error);
+                        });
                     });
                 });
 
                 pushObject.on('error').subscribe((error: any) => {
-                    this.logger.warn('Error with Push plugin', error);
+                    // Execute the callback in the Angular zone, so change detection doesn't stop working.
+                    this.zone.run(() => {
+                        this.logger.warn('Error with Push plugin', error);
+                    });
                 });
             });
         } catch (ex) {
