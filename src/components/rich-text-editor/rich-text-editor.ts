@@ -19,6 +19,8 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreEventsProvider } from '@providers/events';
 import { FormControl } from '@angular/forms';
 import { Keyboard } from '@ionic-native/keyboard';
 import { Subscription } from 'rxjs';
@@ -61,13 +63,15 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     protected resizeFunction;
 
     protected valueChangeSubscription: Subscription;
+    protected keyboardObs: any;
 
     rteEnabled = false;
     editorSupported = true;
 
     constructor(private domUtils: CoreDomUtilsProvider, private keyboard: Keyboard, private urlUtils: CoreUrlUtilsProvider,
             private sitesProvider: CoreSitesProvider, private filepoolProvider: CoreFilepoolProvider,
-            @Optional() private content: Content, elementRef: ElementRef) {
+            @Optional() private content: Content, elementRef: ElementRef, private events: CoreEventsProvider,
+            private utils: CoreUtilsProvider) {
         this.contentChanged = new EventEmitter<string>();
         this.element = elementRef.nativeElement as HTMLDivElement;
     }
@@ -130,34 +134,50 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
 
         let i = 0;
         const interval = setInterval(() => {
-            const height = this.maximizeEditorSize();
-            if (i >= 5 || height != 0) {
-                clearInterval(interval);
-            }
-            i++;
+            this.maximizeEditorSize().then((height) => {
+                if (i >= 5 || height != 0) {
+                    clearInterval(interval);
+                }
+                i++;
+            });
         }, 750);
+
+        this.keyboardObs = this.events.on(CoreEventsProvider.KEYBOARD_CHANGE, (isOn) => {
+            this.maximizeEditorSize();
+        });
     }
 
     /**
      * Resize editor to maximize the space occupied.
+     *
+     * @return {Promise<number>} Resolved with calculated editor size.
      */
-    protected maximizeEditorSize(): number {
+    protected maximizeEditorSize(): Promise<number> {
         this.content.resize();
-        const contentVisibleHeight = this.content.contentHeight;
 
-        // Editor is ready, adjust Height if needed.
-        if (contentVisibleHeight > 0) {
-            const height = this.getSurroundingHeight(this.element);
-            if (contentVisibleHeight > height) {
-                this.element.style.height = this.domUtils.formatPixelsSize(contentVisibleHeight - height);
-            } else {
-                this.element.style.height = '';
+        const deferred = this.utils.promiseDefer();
+
+        setTimeout(() => {
+            const contentVisibleHeight = this.content.contentHeight;
+
+            // Editor is ready, adjust Height if needed.
+            if (contentVisibleHeight > 0) {
+                const height = this.getSurroundingHeight(this.element);
+                if (contentVisibleHeight > height) {
+                    this.element.style.height = this.domUtils.formatPixelsSize(contentVisibleHeight - height);
+                } else {
+                    this.element.style.height = '';
+                }
+
+                deferred.resolve(contentVisibleHeight - height);
+
+                return;
             }
 
-            return contentVisibleHeight - height;
-        }
+            deferred.resolve(0);
+        });
 
-        return 0;
+        return deferred.promise;
     }
 
     /**
@@ -467,6 +487,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
      */
     ngOnDestroy(): void {
         this.valueChangeSubscription && this.valueChangeSubscription.unsubscribe();
+        this.keyboardObs && this.keyboardObs.off();
         window.removeEventListener('resize', this.resizeFunction);
     }
 }
