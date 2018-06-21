@@ -47,7 +47,19 @@ export class CoreTabComponent implements OnInit, OnDestroy {
     @Input() badge?: string; // A badge to add in the tab.
     @Input() badgeStyle?: string; // The badge color.
     @Input() enabled = true; // Whether the tab is enabled.
-    @Input() show = true; // Whether the tab should be shown.
+    @Input() set show(val: boolean) { // Whether the tab should be shown. Use a setter to detect changes on the value.
+        if (typeof val != 'undefined') {
+            const hasChanged = this._show != val;
+            this._show = val;
+
+            if (this.initialized && hasChanged) {
+                this.tabs.tabVisibilityChanged();
+            }
+        }
+    }
+    get show(): boolean { // Getter to be able to access "_show" just using .show.
+        return this._show;
+    }
     @Input() id?: string; // An ID to identify the tab.
     @Output() ionSelect: EventEmitter<CoreTabComponent> = new EventEmitter<CoreTabComponent>();
 
@@ -56,6 +68,8 @@ export class CoreTabComponent implements OnInit, OnDestroy {
 
     element: HTMLElement; // The core-tab element.
     loaded = false;
+    initialized = false;
+    _show = true;
 
     constructor(protected tabs: CoreTabsComponent, element: ElementRef, protected domUtils: CoreDomUtilsProvider) {
         this.element = element.nativeElement;
@@ -66,6 +80,7 @@ export class CoreTabComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.tabs.addTab(this);
+        this.initialized = true;
     }
 
     /**

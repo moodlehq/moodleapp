@@ -35,6 +35,7 @@
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="15000" />
     <preference name="SplashMaintainAspectRatio" value="true" />
+    <preference name="LoadUrlTimeoutValue" value="60000" />
     <feature name="StatusBar">
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
@@ -90,8 +91,6 @@
         <splash height="960" src="resources/ios/splash/Default@2x~iphone.png" width="640" />
         <splash height="480" src="resources/ios/splash/Default~iphone.png" width="320" />
     </platform>
-    <engine name="android" spec="6.1.2" />
-    <engine name="ios" spec="4.3.1" />
     <plugin name="cordova-plugin-file" spec="4.3.3" />
     <plugin name="cordova-plugin-file-transfer" spec="1.6.3" />
     <plugin name="cordova-plugin-camera" spec="2.4.1">
@@ -124,4 +123,7 @@
     <plugin name="cordova-plugin-file-opener2" spec="~2.0.19" />
     <plugin name="com-darryncampbell-cordova-plugin-intent" spec="~1.0.2" />
     <plugin name="cordova-sqlite-evcore-extbuild-free" spec="~0.9.7" />
+    <plugin name="cordova-plugin-badge" spec="0.8.7" />
+    <engine name="android" spec="6.1.2" />
+    <engine name="ios" spec="4.3.1" />
 </widget>

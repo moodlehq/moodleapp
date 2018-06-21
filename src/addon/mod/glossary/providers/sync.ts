@@ -35,7 +35,6 @@ import { AddonModGlossaryOfflineProvider } from './offline';
 export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
 
     static AUTO_SYNCED = 'addon_mod_glossary_autom_synced';
-    static SYNC_TIME = 600000; // 10 minutes.
 
     protected componentTranslate: string;
 

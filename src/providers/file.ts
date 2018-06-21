@@ -609,7 +609,17 @@ export class CoreFileProvider {
 
                 return this.file.moveFile(commonPath, originalPath, commonPath, newPath);
             } else {
-                return this.file.moveFile(this.basePath, originalPath, this.basePath, newPath);
+                return this.file.moveFile(this.basePath, originalPath, this.basePath, newPath).catch((error) => {
+                    // The move can fail if the path has encoded characters. Try again if that's the case.
+                    const decodedOriginal = decodeURI(originalPath),
+                        decodedNew = decodeURI(newPath);
+
+                    if (decodedOriginal != originalPath || decodedNew != newPath) {
+                        return this.file.moveFile(this.basePath, decodedOriginal, this.basePath, decodedNew);
+                    } else {
+                        return Promise.reject(error);
+                    }
+                });
             }
         });
     }
@@ -645,7 +655,17 @@ export class CoreFileProvider {
 
                 return this.file.copyFile(fromDir, fromFileAndDir.name, toDir, toFileAndDir.name);
             } else {
-                return this.file.copyFile(this.basePath, from, this.basePath, to);
+                return this.file.copyFile(this.basePath, from, this.basePath, to).catch((error) => {
+                    // The copy can fail if the path has encoded characters. Try again if that's the case.
+                    const decodedFrom = decodeURI(from),
+                        decodedTo = decodeURI(to);
+
+                    if (from != decodedFrom || to != decodedTo) {
+                        return this.file.copyFile(this.basePath, decodedFrom, this.basePath, decodedTo);
+                    } else {
+                        return Promise.reject(error);
+                    }
+                });
             }
         });
     }

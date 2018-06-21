@@ -42,6 +42,6 @@ export class AddonModGlossarySyncCronHandler implements CoreCronHandler {
      * @return {number} Time between consecutive executions (in ms).
      */
     getInterval(): number {
-        return AddonModGlossarySyncProvider.SYNC_TIME;
+        return this.glossarySync.syncInterval;
     }
 }

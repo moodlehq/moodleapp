@@ -160,11 +160,13 @@ export class CoreLoginHelperProvider {
             return false;
         }
 
-        const modal = this.domUtils.showModalLoading('core.login.authenticating', true);
-        let siteData: CoreLoginSSOData;
+        let siteData: CoreLoginSSOData,
+            modal;
 
         // Wait for app to be ready.
         this.initDelegate.ready().then(() => {
+            modal = this.domUtils.showModalLoading('core.login.authenticating', true);
+
             return this.validateBrowserSSOLogin(url);
         }).then((data) => {
             siteData = data;

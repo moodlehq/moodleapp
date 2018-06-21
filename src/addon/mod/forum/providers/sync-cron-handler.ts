@@ -42,6 +42,6 @@ export class AddonModForumSyncCronHandler implements CoreCronHandler {
      * @return {number} Time between consecutive executions (in ms).
      */
     getInterval(): number {
-        return AddonModForumSyncProvider.SYNC_TIME;
+        return this.forumSync.syncInterval;
     }
 }

@@ -42,6 +42,6 @@ export class AddonModDataSyncCronHandler implements CoreCronHandler {
      * @return {number} Time between consecutive executions (in ms).
      */
     getInterval(): number {
-        return 600000; // 10 minutes.
+        return this.dataSync.syncInterval;
     }
 }

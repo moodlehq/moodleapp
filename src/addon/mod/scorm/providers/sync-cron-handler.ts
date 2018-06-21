@@ -42,6 +42,6 @@ export class AddonModScormSyncCronHandler implements CoreCronHandler {
      * @return {number} Time between consecutive executions (in ms).
      */
     getInterval(): number {
-        return AddonModScormSyncProvider.SYNC_TIME;
+        return this.scormSync.syncInterval;
     }
 }

@@ -78,7 +78,7 @@ export class AddonCalendarListPage implements OnDestroy {
             }, sitesProvider.getCurrentSiteId());
         }
 
-        this.eventId = navParams.get('eventid') || false;
+        this.eventId = navParams.get('eventId') || false;
     }
 
     /**

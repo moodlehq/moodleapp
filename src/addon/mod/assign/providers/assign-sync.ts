@@ -52,7 +52,6 @@ export interface AddonModAssignSyncResult {
 export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
 
     static AUTO_SYNCED = 'addon_mod_assign_autom_synced';
-    static SYNC_TIME = 300000;
 
     protected componentTranslate: string;
 

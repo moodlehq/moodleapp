@@ -18,6 +18,7 @@ import { LocalNotifications, ILocalNotification } from '@ionic-native/local-noti
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from './app';
 import { CoreConfigProvider } from './config';
+import { CoreEventsProvider } from './events';
 import { CoreLoggerProvider } from './logger';
 import { CoreTextUtilsProvider } from './utils/text';
 import { CoreUtilsProvider } from './utils/utils';
@@ -117,10 +118,31 @@ export class CoreLocalNotificationsProvider {
 
     constructor(logger: CoreLoggerProvider, private localNotifications: LocalNotifications, private platform: Platform,
             private appProvider: CoreAppProvider, private utils: CoreUtilsProvider, private configProvider: CoreConfigProvider,
-            private textUtils: CoreTextUtilsProvider, private translate: TranslateService, private alertCtrl: AlertController) {
+            private textUtils: CoreTextUtilsProvider, private translate: TranslateService, private alertCtrl: AlertController,
+            eventsProvider: CoreEventsProvider) {
+
         this.logger = logger.getInstance('CoreLocalNotificationsProvider');
         this.appDB = appProvider.getDB();
         this.appDB.createTablesFromSchema(this.tablesSchema);
+
+        localNotifications.on('trigger', (notification, state) => {
+            this.trigger(notification);
+        });
+
+        localNotifications.on('click', (notification, state) => {
+            if (notification && notification.data) {
+                this.logger.debug('Notification clicked: ', notification.data);
+
+                const data = textUtils.parseJSON(notification.data);
+                this.notifyClick(data);
+            }
+        });
+
+        eventsProvider.on(CoreEventsProvider.SITE_DELETED, (site) => {
+            if (site) {
+                this.cancelSiteNotifications(site.id);
+            }
+        });
     }
 
     /**

@@ -291,10 +291,12 @@ export class CoreQuestionBaseComponent {
             };
 
             // Check if question is marked as correct.
-            if (input.className.indexOf('incorrect') >= 0) {
-                this.question.input.isCorrect = 0;
-            } else if (input.className.indexOf('correct') >= 0) {
-                this.question.input.isCorrect = 1;
+            if (input.classList.contains('incorrect')) {
+                this.question.input.correctClass = 'core-question-incorrect';
+            } else if (input.classList.contains('correct')) {
+                this.question.input.correctClass = 'core-question-correct';
+            } else if (input.classList.contains('partiallycorrect')) {
+                this.question.input.correctClass = 'core-question-partiallycorrect';
             }
         }
 

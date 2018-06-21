@@ -42,6 +42,6 @@ export class AddonModWorkshopSyncCronHandler implements CoreCronHandler {
      * @return {number} Time between consecutive executions (in ms).
      */
     getInterval(): number {
-        return AddonModWorkshopSyncProvider.SYNC_TIME;
+        return this.workshopSync.syncInterval;
     }
 }

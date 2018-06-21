@@ -52,7 +52,6 @@ export interface AddonModQuizSyncResult {
 export class AddonModQuizSyncProvider extends CoreSyncBaseProvider {
 
     static AUTO_SYNCED = 'addon_mod_quiz_autom_synced';
-    static SYNC_TIME = 300000;
 
     protected componentTranslate: string;
 
