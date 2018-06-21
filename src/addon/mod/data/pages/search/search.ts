@@ -47,14 +47,26 @@ export class AddonModDataSearchPage {
         this.data = params.get('data');
 
         const advanced = {};
-        this.search.advanced.forEach((field) => {
-            advanced[field.name] = field.value ? this.textUtils.parseJSON(field.value) : '';
-        });
+        if (typeof this.search.advanced == 'object') {
+            Object.keys(this.search.advanced).forEach((index) => {
+                if (typeof this.search.advanced[index] != 'undefined' && typeof this.search.advanced[index].name != 'undefined') {
+                    advanced[this.search.advanced[index].name] = this.search.advanced[index].value ?
+                        this.textUtils.parseJSON(this.search.advanced[index].value) : '';
+                } else {
+                    advanced[index] = this.search.advanced[index] ?
+                        this.textUtils.parseJSON(this.search.advanced[index]) : '';
+                }
+            });
+        } else {
+            this.search.advanced.forEach((field) => {
+                advanced[field.name] = field.value ? this.textUtils.parseJSON(field.value) : '';
+            });
+        }
         this.search.advanced = advanced;
 
         this.searchForm = fb.group({
             text: [this.search.text],
-            sortBy: [this.search.sortBy || 0],
+            sortBy: [this.search.sortBy || '0'],
             sortDirection: [this.search.sortDirection || 'DESC'],
             firstname: [this.search.advanced['firstname'] || ''],
             lastname: [this.search.advanced['lastname'] || '']

@@ -23,7 +23,7 @@ import { CoreCoursesMyOverviewProvider } from '@core/courses/providers/my-overvi
 @Injectable()
 export class CoreSiteHomeMainMenuHandler implements CoreMainMenuHandler {
     name = 'CoreSiteHome';
-    priority = 1000;
+    priority = 1200;
     isOverviewEnabled: boolean;
 
     constructor(private siteHomeProvider: CoreSiteHomeProvider, private myOverviewProvider: CoreCoursesMyOverviewProvider) { }

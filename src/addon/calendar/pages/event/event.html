@@ -11,7 +11,7 @@
         <ion-card>
             <ion-card-content>
                 <ion-card-title text-wrap>
-                    <ion-icon *ngIf="!event.moduleIcon" name="{{event.icon}}" item-start></ion-icon>
+                    <core-icon *ngIf="event.icon && !event.moduleIcon" [name]="event.icon" item-start></core-icon>
                     <core-format-text [text]="event.name"></core-format-text>
                 </ion-card-title>
                 <ion-item text-wrap>

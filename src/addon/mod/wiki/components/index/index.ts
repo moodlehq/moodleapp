@@ -49,7 +49,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     wiki: any; // The wiki instance.
     isMainPage: boolean; // Whether the user is viewing wiki's main page (just entered the wiki).
     canEdit = false; // Whether user can edit the page.
-    pageStr = this.translate.instant('addon.mod_wiki.page');
+    pageStr = '';
     pageWarning: string; // Message telling that the page was discarded.
     loadedSubwikis: any[] = []; // The loaded subwikis.
     pageIsOffline: boolean; // Whether the loaded page is an offline page.
@@ -83,6 +83,8 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             protected navCtrl: NavController, protected utils: CoreUtilsProvider, protected groupsProvider: CoreGroupsProvider,
             protected userProvider: CoreUserProvider, private popoverCtrl: PopoverController) {
         super(injector, content);
+
+        this.pageStr = this.translate.instant('addon.mod_wiki.page');
     }
 
     /**
