@@ -13,4 +13,4 @@
 
 <span *ngIf="mode == 'list' && imageUrl" (click)="gotoEntry.emit(entryId)"><img [src]="imageUrl" [alt]="title" [title]="title" class="core-media-adapt-width list_picture" core-external-content/></span>
 
-<img *ngIf="mode == 'show' && imageUrl" [src]="imageUrl" [alt]="title" [title]="title" class="core-media-adapt-width list_picture" [width]="width" [height]="height" core-external-content/>
+<img *ngIf="mode == 'show' && imageUrl" [src]="imageUrl" [alt]="title" [title]="title" class="core-media-adapt-width list_picture" [attr.width]="width" [attr.height]="height" core-external-content/>
