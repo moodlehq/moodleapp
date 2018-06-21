@@ -27,6 +27,7 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from './options-delegate';
 import { CoreSiteHomeProvider } from '@core/sitehome/providers/sitehome';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCourseProvider } from './course';
 import { CoreCourseModuleDelegate } from './module-delegate';
 import { CoreCourseModulePrefetchDelegate } from './module-prefetch-delegate';
@@ -120,7 +121,8 @@ export class CoreCourseHelperProvider {
         private utils: CoreUtilsProvider, private translate: TranslateService, private loginHelper: CoreLoginHelperProvider,
         private courseOptionsDelegate: CoreCourseOptionsDelegate, private siteHomeProvider: CoreSiteHomeProvider,
         private eventsProvider: CoreEventsProvider, private fileHelper: CoreFileHelperProvider,
-        private appProvider: CoreAppProvider, private fileProvider: CoreFileProvider, private injector: Injector) { }
+        private appProvider: CoreAppProvider, private fileProvider: CoreFileProvider, private injector: Injector,
+        private coursesProvider: CoreCoursesProvider) { }
 
     /**
      * This function treats every module on the sections provided to load the handler data, treat completion
@@ -1003,6 +1005,10 @@ export class CoreCourseHelperProvider {
                     promises.push(handler.prefetch(course));
                 }
             });
+
+            // Prefetch other data needed to render the course.
+            promises.push(this.coursesProvider.getCoursesByField('id', course.id));
+            promises.push(this.courseProvider.getActivitiesCompletionStatus(course.id));
 
             return this.utils.allPromises(promises);
         }).then(() => {

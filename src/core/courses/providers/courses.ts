@@ -115,6 +115,10 @@ export class CoreCoursesProvider {
                     return courseIds;
                 });
             } else {
+                if (courseIds.length > 1 && courseIds.indexOf(siteHomeId) == -1) {
+                    courseIds.push(siteHomeId);
+                }
+
                 return courseIds;
             }
         });
