@@ -18,7 +18,7 @@
 
                 <!-- Input to enter the answer. -->
                 <ion-col>
-                    <ion-input padding-left type="text" placeholder="{{ 'core.question.answer' | translate }}" [attr.name]="question.input.name" [value]="question.input.value" [disabled]="question.input.readOnly" [ngClass]='{"core-question-answer-correct": question.input.isCorrect === 1, "core-question-answer-incorrect": question.input.isCorrect === 0}' autocorrect="off">
+                    <ion-input padding-left type="text" placeholder="{{ 'core.question.answer' | translate }}" [attr.name]="question.input.name" [value]="question.input.value" [disabled]="question.input.readOnly" [ngClass]="[question.input.correctClass]" autocorrect="off">
                     </ion-input>
                 </ion-col>
 
@@ -40,7 +40,7 @@
 <ng-template #selectUnits>
     <ion-col>
         <label *ngIf="question.select.accessibilityLabel" class="accesshide" for="{{question.select.id}}">{{ question.select.accessibilityLabel }}</label>
-        <ion-select id="{{question.select.id}}" [name]="question.select.name" [(ngModel)]="question.select.selected" interface="popover">
+        <ion-select id="{{question.select.id}}" [name]="question.select.name" [(ngModel)]="question.select.selected" interface="popover" [disabled]="question.select.disabled">
             <ion-option *ngFor="let option of question.select.options" [value]="option.value">{{option.label}}</ion-option>
         </ion-select>
 
@@ -56,7 +56,7 @@
             <ion-label>
                 <p>{{option.text}}</p>
             </ion-label>
-            <ion-radio [value]="option.value" [disabled]="option.disabled"></ion-radio>
+            <ion-radio [value]="option.value" [disabled]="option.disabled || question.input.readOnly"></ion-radio>
         </ion-item>
 
         <!-- ion-radio doesn't use an input. Create a hidden input to hold the selected value. -->
