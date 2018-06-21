@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform, ModalController, Modal } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
@@ -69,7 +69,8 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
             private coursesProvider: CoreCoursesProvider, private platform: Platform, private modalCtrl: ModalController,
             private translate: TranslateService, private eventsProvider: CoreEventsProvider,
             private courseOptionsDelegate: CoreCourseOptionsDelegate, private courseHelper: CoreCourseHelperProvider,
-            private courseProvider: CoreCourseProvider, private courseFormatDelegate: CoreCourseFormatDelegate) {
+            private courseProvider: CoreCourseProvider, private courseFormatDelegate: CoreCourseFormatDelegate,
+            private zone: NgZone) {
 
         this.course = navParams.get('course');
         this.avoidOpenCourse = navParams.get('avoidOpenCourse');
@@ -292,9 +293,15 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
 
             if (this.isDesktop || this.isMobile) {
                 // Observe loaded pages in the InAppBrowser to check if the enrol process has ended.
-                inAppLoadSubscription = window.on('loadstart').subscribe(urlLoaded);
+                inAppLoadSubscription = window.on('loadstart').subscribe((event) => {
+                    // Execute the callback in the Angular zone, so change detection doesn't stop working.
+                    this.zone.run(() => urlLoaded(event));
+                });
                 // Observe window closed.
-                inAppExitSubscription = window.on('exit').subscribe(inAppClosed);
+                inAppExitSubscription = window.on('exit').subscribe(() => {
+                    // Execute the callback in the Angular zone, so change detection doesn't stop working.
+                    this.zone.run(inAppClosed);
+                });
             }
 
             if (this.isDesktop) {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { CoreAppProvider } from '@providers/app';
@@ -33,7 +33,7 @@ export class MoodleMobileApp implements OnInit {
     protected lastUrls = {};
 
     constructor(private platform: Platform, statusBar: StatusBar, logger: CoreLoggerProvider,
-        private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider,
+        private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider, private zone: NgZone,
         private appProvider: CoreAppProvider, private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider) {
         this.logger = logger.getInstance('AppComponent');
 
@@ -101,17 +101,20 @@ export class MoodleMobileApp implements OnInit {
 
         // Handle app launched with a certain URL (custom URL scheme).
         (<any> window).handleOpenURL = (url: string): void => {
-            // First check that the URL hasn't been treated a few seconds ago. Sometimes this function is called more than once.
-            if (this.lastUrls[url] && Date.now() - this.lastUrls[url] < 3000) {
-                // Function called more than once, stop.
-                return;
-            }
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            this.zone.run(() => {
+                // First check that the URL hasn't been treated a few seconds ago. Sometimes this function is called more than once.
+                if (this.lastUrls[url] && Date.now() - this.lastUrls[url] < 3000) {
+                    // Function called more than once, stop.
+                    return;
+                }
 
-            this.logger.debug('App launched by URL ', url);
+                this.logger.debug('App launched by URL ', url);
 
-            this.lastUrls[url] = Date.now();
+                this.lastUrls[url] = Date.now();
 
-            this.eventsProvider.trigger(CoreEventsProvider.APP_LAUNCHED_URL, url);
+                this.eventsProvider.trigger(CoreEventsProvider.APP_LAUNCHED_URL, url);
+            });
         };
 
         // Listen for app launched URLs. If we receive one, check if it's a SSO authentication.

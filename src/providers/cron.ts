@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Network } from '@ionic-native/network';
 import { CoreAppProvider } from './app';
 import { CoreConfigProvider } from './config';
@@ -115,7 +115,7 @@ export class CoreCronDelegate {
     protected queuePromise = Promise.resolve();
 
     constructor(logger: CoreLoggerProvider, private appProvider: CoreAppProvider, private configProvider: CoreConfigProvider,
-            private utils: CoreUtilsProvider, network: Network) {
+            private utils: CoreUtilsProvider, network: Network, zone: NgZone) {
         this.logger = logger.getInstance('CoreCronDelegate');
 
         this.appDB = this.appProvider.getDB();
@@ -123,7 +123,10 @@ export class CoreCronDelegate {
 
         // When the app is re-connected, start network handlers that were stopped.
         network.onConnect().subscribe(() => {
-            this.startNetworkHandlers();
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            zone.run(() => {
+                this.startNetworkHandlers();
+            });
         });
     }
 

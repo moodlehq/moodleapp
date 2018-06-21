@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { NgModule, NgZone } from '@angular/core';
 import { Network } from '@ionic-native/network';
 import { AddonMessagesProvider } from './providers/messages';
 import { AddonMessagesOfflineProvider } from './providers/messages-offline';
@@ -69,7 +69,7 @@ export class AddonMessagesModule {
             contentLinksDelegate: CoreContentLinksDelegate, indexLinkHandler: AddonMessagesIndexLinkHandler,
             discussionLinkHandler: AddonMessagesDiscussionLinkHandler, sendMessageHandler: AddonMessagesSendMessageUserHandler,
             userDelegate: CoreUserDelegate, cronDelegate: CoreCronDelegate, syncHandler: AddonMessagesSyncCronHandler,
-            network: Network, messagesSync: AddonMessagesSyncProvider, appProvider: CoreAppProvider,
+            network: Network, zone: NgZone, messagesSync: AddonMessagesSyncProvider, appProvider: CoreAppProvider,
             localNotifications: CoreLocalNotificationsProvider, messagesProvider: AddonMessagesProvider,
             sitesProvider: CoreSitesProvider, linkHelper: CoreContentLinksHelperProvider, updateManager: CoreUpdateManagerProvider,
             settingsHandler: AddonMessagesSettingsHandler, settingsDelegate: CoreSettingsDelegate,
@@ -88,7 +88,10 @@ export class AddonMessagesModule {
 
         // Sync some discussions when device goes online.
         network.onConnect().subscribe(() => {
-            messagesSync.syncAllDiscussions(undefined, true);
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            zone.run(() => {
+                messagesSync.syncAllDiscussions(undefined, true);
+            });
         });
 
         const notificationClicked = (notification: any): void => {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, NgZone } from '@angular/core';
 import { Content, IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -52,7 +52,7 @@ export class AddonModChatChatPage {
     protected viewDestroyed = false;
     protected pollingRunning = false;
 
-    constructor(navParams: NavParams, logger: CoreLoggerProvider, network: Network, private navCtrl: NavController,
+    constructor(navParams: NavParams, logger: CoreLoggerProvider, network: Network,  zone: NgZone, private navCtrl: NavController,
             private chatProvider: AddonModChatProvider, private appProvider: CoreAppProvider, sitesProvider: CoreSitesProvider,
             private modalCtrl: ModalController, private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider) {
 
@@ -63,7 +63,10 @@ export class AddonModChatChatPage {
         this.currentUserBeep = 'beep ' + sitesProvider.getCurrentSiteUserId();
         this.isOnline = this.appProvider.isOnline();
         this.onlineObserver = network.onchange().subscribe((online) => {
-            this.isOnline = this.appProvider.isOnline();
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            zone.run(() => {
+                this.isOnline = this.appProvider.isOnline();
+            });
         });
     }
 

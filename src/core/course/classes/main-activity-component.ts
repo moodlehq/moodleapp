@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injector, Input } from '@angular/core';
+import { Injector, Input, NgZone } from '@angular/core';
 import { Content } from 'ionic-angular';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseProvider } from '@core/course/providers/course';
@@ -60,10 +60,14 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
         this.modulePrefetchDelegate = injector.get(CoreCourseModulePrefetchDelegate);
 
         const network = injector.get(Network);
+        const zone = injector.get(NgZone);
 
         // Refresh online status when changes.
         this.onlineObserver = network.onchange().subscribe((online) => {
-            this.isOnline = online;
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            zone.run(() => {
+                this.isOnline = online;
+            });
         });
     }
 
