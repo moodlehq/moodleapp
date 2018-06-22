@@ -119,7 +119,7 @@ export class AddonModDataHelperProvider {
 
             // Replace field by a generic directive.
             render = '<addon-mod-data-field-plugin [field]="fields[' + field.id + ']" [value]="entries[' + entry.id +
-                    '].contents[' + field.id + ']" mode="' + mode + '" [database]="data" (viewAction)="gotoEntry(' + entry.id +
+                    '].contents[' + field.id + ']" mode="' + mode + '" [database]="data" (gotoEntry)="gotoEntry(' + entry.id +
                     ')"></addon-mod-data-field-plugin>';
             template = template.replace(replace, render);
         });

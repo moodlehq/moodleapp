@@ -329,7 +329,8 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                     this.jsData = {
                         fields: this.fields,
                         entries: this.entries,
-                        data: this.data
+                        data: this.data,
+                        gotoEntry: this.gotoEntry.bind(this)
                     };
                 });
             } else if (!this.search.searching) {

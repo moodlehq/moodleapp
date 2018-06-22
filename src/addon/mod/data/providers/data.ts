@@ -62,7 +62,7 @@ export class AddonModDataProvider {
                     .then((entry) => {
                 return {
                     // Return provissional entry Id.
-                    newentryid: entry[1]
+                    newentryid: entry
                 };
             });
         };
@@ -194,8 +194,9 @@ export class AddonModDataProvider {
         });
 
         // App is offline, check required fields.
-        fields.forEach((field) => {
-            const notification = this.fieldsDelegate.getFieldsNotifications(field, contentsIndexed[field.id]);
+        Object.keys(fields).forEach((key) => {
+            const field = fields[key],
+                notification = this.fieldsDelegate.getFieldsNotifications(field, contentsIndexed[field.id]);
             if (notification) {
                 notifications.push({
                     fieldname: field.name,

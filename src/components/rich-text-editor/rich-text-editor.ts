@@ -46,6 +46,7 @@ import { Subscription } from 'rxjs';
 export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy {
     // Based on: https://github.com/judgewest2000/Ionic3RichText/
     // @todo: Anchor button, fullscreen...
+    // @todo: Textarea height is not being updated when editor is resized. Height is calculated if any css is changed.
 
     @Input() placeholder = ''; // Placeholder to set in textarea.
     @Input() control: FormControl; // Form control.
@@ -154,14 +155,21 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
      */
     protected maximizeEditorSize(): Promise<number> {
         this.content.resize();
+        const contentVisibleHeight = this.content.contentHeight;
 
         const deferred = this.utils.promiseDefer();
 
         setTimeout(() => {
             const contentVisibleHeight = this.content.contentHeight;
 
-            // Editor is ready, adjust Height if needed.
-            if (contentVisibleHeight > 0) {
+            if (contentVisibleHeight <= 0) {
+                deferred.resolve(0);
+
+                return;
+            }
+
+            setTimeout(() => {
+                // Editor is ready, adjust Height if needed.
                 const height = this.getSurroundingHeight(this.element);
                 if (contentVisibleHeight > height) {
                     this.element.style.height = this.domUtils.formatPixelsSize(contentVisibleHeight - height);
@@ -170,11 +178,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
                 }
 
                 deferred.resolve(contentVisibleHeight - height);
-
-                return;
-            }
-
-            deferred.resolve(0);
+            }, 100);
         });
 
         return deferred.promise;
@@ -205,6 +209,13 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         const cs = getComputedStyle(element);
         height += this.domUtils.getComputedStyleMeasure(cs, 'paddingTop') +
             this.domUtils.getComputedStyleMeasure(cs, 'paddingBottom');
+
+        if (element && element.parentNode && element.parentNode.tagName == 'ION-CONTENT') {
+            const cs2 = getComputedStyle(element);
+
+            height -= this.domUtils.getComputedStyleMeasure(cs2, 'paddingTop') +
+                this.domUtils.getComputedStyleMeasure(cs2, 'paddingBottom');
+        }
 
         return height;
     }
@@ -487,7 +498,6 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
      */
     ngOnDestroy(): void {
         this.valueChangeSubscription && this.valueChangeSubscription.unsubscribe();
-        this.keyboardObs && this.keyboardObs.off();
         window.removeEventListener('resize', this.resizeFunction);
     }
 }

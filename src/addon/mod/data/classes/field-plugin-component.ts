@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { Input, OnInit, OnChanges, SimpleChange } from '@angular/core';
+import { Input, Output, OnInit, OnChanges, SimpleChange, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 /**
@@ -23,11 +23,13 @@ export class AddonModDataFieldPluginComponent implements OnInit, OnChanges {
     @Input() value?: any; // The value of the field.
     @Input() database?: any; // Database object.
     @Input() error?: string; // Error when editing.
-    @Input() viewAction?: string; // Action to perform.
+    @Output() gotoEntry?: EventEmitter<number>; // Action to perform.
     @Input() form?: FormGroup; // Form where to add the form control. Just required for edit and search modes.
     @Input() search?: any; // The search value of all fields.
 
-    constructor(protected fb: FormBuilder) { }
+    constructor(protected fb: FormBuilder) {
+        this.gotoEntry = new EventEmitter();
+    }
 
     /**
      * Add the form control for the search mode.

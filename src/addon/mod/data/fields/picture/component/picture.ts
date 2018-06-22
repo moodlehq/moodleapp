@@ -13,8 +13,9 @@
 // limitations under the License.
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
 import { CoreFileSessionProvider } from '@providers/file-session';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
 import { AddonModDataProvider } from '../../../providers/data';
 
 /**
@@ -38,7 +39,8 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginCo
     width: string;
     height: string;
 
-    constructor(protected fb: FormBuilder, private fileSessionprovider: CoreFileSessionProvider) {
+    constructor(protected fb: FormBuilder, private fileSessionprovider: CoreFileSessionProvider,
+            private domUtils: CoreDomUtilsProvider) {
         super(fb);
     }
 
@@ -129,8 +131,8 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginCo
                     this.imageUrl = (this.image && this.image.fileurl) || null;
                 }
             }
-            this.width  = this.field.param1 || '';
-            this.height = this.field.param2 || '';
+            this.width  = this.domUtils.formatPixelsSize(this.field.param1);
+            this.height = this.domUtils.formatPixelsSize(this.field.param2);
         }
     }
 }
