@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Optional, Injector } from '@angular/core';
+import { Component, Input, Optional, Injector, ViewChild } from '@angular/core';
 import { Content, NavController } from 'ionic-angular';
 import { CoreGroupInfo, CoreGroupsProvider } from '@providers/groups';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
@@ -21,6 +21,7 @@ import { AddonModFeedbackHelperProvider } from '../../providers/helper';
 import { AddonModFeedbackOfflineProvider } from '../../providers/offline';
 import { AddonModFeedbackSyncProvider } from '../../providers/sync';
 import * as moment from 'moment';
+import { CoreTabsComponent } from '@components/tabs/tabs';
 
 /**
  * Component that displays a feedback index page.
@@ -30,6 +31,8 @@ import * as moment from 'moment';
     templateUrl: 'addon-mod-feedback-index.html',
 })
 export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivityComponent {
+    @ViewChild(CoreTabsComponent) tabsComponent: CoreTabsComponent;
+
     @Input() tab = 'overview';
     @Input() group = 0;
 
@@ -346,6 +349,24 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
             preview: preview
         };
         this.navCtrl.push('AddonModFeedbackFormPage', stateParams);
+    }
+
+    /**
+     * User entered the page that contains the component.
+     */
+    ionViewDidEnter(): void {
+        super.ionViewDidEnter();
+
+        this.tabsComponent && this.tabsComponent.ionViewDidEnter();
+    }
+
+    /**
+     * User left the page that contains the component.
+     */
+    ionViewDidLeave(): void {
+        super.ionViewDidLeave();
+
+        this.tabsComponent && this.tabsComponent.ionViewDidLeave();
     }
 
     /**

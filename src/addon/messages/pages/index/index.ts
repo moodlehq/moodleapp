@@ -18,6 +18,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { AddonMessagesProvider } from '../../providers/messages';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreTabsComponent } from '@components/tabs/tabs';
 
 /**
  * Page that displays the messages index page.
@@ -29,6 +30,7 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 })
 export class AddonMessagesIndexPage implements OnDestroy {
     @ViewChild(CoreSplitViewComponent) splitviewCtrl: CoreSplitViewComponent;
+    @ViewChild(CoreTabsComponent) tabsComponent: CoreTabsComponent;
 
     protected loadSplitViewObserver: any;
     protected siteId: string;
@@ -59,6 +61,20 @@ export class AddonMessagesIndexPage implements OnDestroy {
             params['message'] = messageId;
         }
         this.splitviewCtrl.push('AddonMessagesDiscussionPage', params);
+    }
+
+    /**
+     * User entered the page.
+     */
+    ionViewDidEnter(): void {
+        this.tabsComponent && this.tabsComponent.ionViewDidEnter();
+    }
+
+    /**
+     * User left the page.
+     */
+    ionViewDidLeave(): void {
+        this.tabsComponent && this.tabsComponent.ionViewDidLeave();
     }
 
     /**

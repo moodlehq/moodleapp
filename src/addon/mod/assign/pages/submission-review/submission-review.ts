@@ -77,6 +77,20 @@ export class AddonModAssignSubmissionReviewPage implements OnInit {
     }
 
     /**
+     * User entered the page.
+     */
+    ionViewDidEnter(): void {
+        this.submissionComponent && this.submissionComponent.ionViewDidEnter();
+    }
+
+    /**
+     * User left the page.
+     */
+    ionViewDidLeave(): void {
+        this.submissionComponent && this.submissionComponent.ionViewDidLeave();
+    }
+
+    /**
      * Get the submission.
      *
      * @return {Promise<any>} Promise resolved when done.

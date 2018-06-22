@@ -735,6 +735,8 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     ionViewDidEnter(): void {
         super.ionViewDidEnter();
 
+        this.tabs && this.tabs.ionViewDidEnter();
+
         if (this.hasEdited) {
             this.hasEdited = false;
             this.showLoadingAndRefresh(true, false);
@@ -746,6 +748,8 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      */
     ionViewDidLeave(): void {
         super.ionViewDidLeave();
+
+        this.tabs && this.tabs.ionViewDidLeave();
 
         if (this.navCtrl.getActive().component.name == 'AddonModWikiEditPage') {
             this.hasEdited = true;

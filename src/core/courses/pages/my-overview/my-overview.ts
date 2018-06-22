@@ -24,6 +24,7 @@ import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
 import { CoreSiteHomeProvider } from '@core/sitehome/providers/sitehome';
 import * as moment from 'moment';
+import { CoreTabsComponent } from '@components/tabs/tabs';
 
 /**
  * Page that displays My Overview.
@@ -34,6 +35,7 @@ import * as moment from 'moment';
     templateUrl: 'my-overview.html',
 })
 export class CoreCoursesMyOverviewPage implements OnDestroy {
+    @ViewChild(CoreTabsComponent) tabsComponent: CoreTabsComponent;
     @ViewChild('searchbar') searchbar: Searchbar;
 
     firstSelectedTab: number;
@@ -111,6 +113,20 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
             this.firstSelectedTab = displaySiteHome ? 0 : 2;
             this.tabsReady = true;
         });
+    }
+
+    /**
+     * User entered the page.
+     */
+    ionViewDidEnter(): void {
+        this.tabsComponent && this.tabsComponent.ionViewDidEnter();
+    }
+
+    /**
+     * User left the page.
+     */
+    ionViewDidLeave(): void {
+        this.tabsComponent && this.tabsComponent.ionViewDidLeave();
     }
 
     /**
