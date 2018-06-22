@@ -274,6 +274,24 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
+     * User entered the page that contains the component.
+     */
+    ionViewDidEnter(): void {
+        super.ionViewDidEnter();
+
+        this.submissionComponent && this.submissionComponent.ionViewDidEnter();
+    }
+
+    /**
+     * User left the page that contains the component.
+     */
+    ionViewDidLeave(): void {
+        super.ionViewDidLeave();
+
+        this.submissionComponent && this.submissionComponent.ionViewDidLeave();
+    }
+
+    /**
      * Compares sync event data with current data to check if refresh content is needed.
      *
      * @param {any} syncEventData Data receiven on sync observer.

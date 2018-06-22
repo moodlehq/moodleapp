@@ -314,6 +314,20 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * User entered the page that contains the component.
+     */
+    ionViewDidEnter(): void {
+        this.tabs && this.tabs.ionViewDidEnter();
+    }
+
+    /**
+     * User left the page that contains the component.
+     */
+    ionViewDidLeave(): void {
+        this.tabs && this.tabs.ionViewDidLeave();
+    }
+
+    /**
      * Invalidate and refresh data.
      *
      * @return {Promise<any>} Promise resolved when done.

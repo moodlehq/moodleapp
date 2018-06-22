@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, Injector, Input } from '@angular/core';
+import { Component, Optional, Injector, Input, ViewChild } from '@angular/core';
 import { Content, NavController } from 'ionic-angular';
 import { CoreGroupsProvider, CoreGroupInfo } from '@providers/groups';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
@@ -24,6 +24,7 @@ import { AddonModLessonOfflineProvider } from '../../providers/lesson-offline';
 import { AddonModLessonSyncProvider } from '../../providers/lesson-sync';
 import { AddonModLessonPrefetchHandler } from '../../providers/prefetch-handler';
 import { CoreConstants } from '@core/constants';
+import { CoreTabsComponent } from '@components/tabs/tabs';
 
 /**
  * Component that displays a lesson entry page.
@@ -33,6 +34,8 @@ import { CoreConstants } from '@core/constants';
     templateUrl: 'addon-mod-lesson-index.html',
 })
 export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityComponent {
+    @ViewChild(CoreTabsComponent) tabsComponent: CoreTabsComponent;
+
     @Input() group: number; // The group to display.
     @Input() action: string; // The "action" to display first.
 
@@ -226,6 +229,8 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     ionViewDidEnter(): void {
         super.ionViewDidEnter();
 
+        this.tabsComponent && this.tabsComponent.ionViewDidEnter();
+
         // Update data when we come back from the player since the status could have changed.
         if (this.hasPlayed) {
             this.hasPlayed = false;
@@ -239,6 +244,8 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      */
     ionViewDidLeave(): void {
         super.ionViewDidLeave();
+
+        this.tabsComponent && this.tabsComponent.ionViewDidLeave();
 
         if (this.navCtrl.getActive().component.name == 'AddonModLessonPlayerPage') {
             this.hasPlayed = true;

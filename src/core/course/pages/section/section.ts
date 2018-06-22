@@ -26,6 +26,7 @@ import { CoreCourseModulePrefetchDelegate } from '../../providers/module-prefetc
 import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from '../../providers/options-delegate';
 import { CoreCourseFormatComponent } from '../../components/format/format';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CoreTabsComponent } from '@components/tabs/tabs';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -38,6 +39,7 @@ import { CoreCoursesProvider } from '@core/courses/providers/courses';
 export class CoreCourseSectionPage implements OnDestroy {
     @ViewChild(Content) content: Content;
     @ViewChild(CoreCourseFormatComponent) formatComponent: CoreCourseFormatComponent;
+    @ViewChild(CoreTabsComponent) tabsComponent: CoreTabsComponent;
 
     title: string;
     course: any;
@@ -378,6 +380,7 @@ export class CoreCourseSectionPage implements OnDestroy {
      */
     ionViewDidEnter(): void {
         this.formatComponent && this.formatComponent.ionViewDidEnter();
+        this.tabsComponent && this.tabsComponent.ionViewDidEnter();
     }
 
     /**
@@ -385,5 +388,6 @@ export class CoreCourseSectionPage implements OnDestroy {
      */
     ionViewDidLeave(): void {
         this.formatComponent && this.formatComponent.ionViewDidLeave();
+        this.tabsComponent && this.tabsComponent.ionViewDidLeave();
     }
 }
