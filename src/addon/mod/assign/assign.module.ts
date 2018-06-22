@@ -14,6 +14,7 @@
 
 import { NgModule } from '@angular/core';
 import { CoreCronDelegate } from '@providers/cron';
+import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { AddonModAssignProvider } from './providers/assign';
@@ -27,6 +28,7 @@ import { AddonModAssignDefaultSubmissionHandler } from './providers/default-subm
 import { AddonModAssignModuleHandler } from './providers/module-handler';
 import { AddonModAssignPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModAssignSyncCronHandler } from './providers/sync-cron-handler';
+import { AddonModAssignIndexLinkHandler } from './providers/index-link-handler';
 import { AddonModAssignSubmissionModule } from './submission/submission.module';
 import { AddonModAssignFeedbackModule } from './feedback/feedback.module';
 import { CoreUpdateManagerProvider } from '@providers/update-manager';
@@ -59,16 +61,19 @@ export const ADDON_MOD_ASSIGN_PROVIDERS: any[] = [
         AddonModAssignDefaultSubmissionHandler,
         AddonModAssignModuleHandler,
         AddonModAssignPrefetchHandler,
-        AddonModAssignSyncCronHandler
+        AddonModAssignSyncCronHandler,
+        AddonModAssignIndexLinkHandler
     ]
 })
 export class AddonModAssignModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModAssignModuleHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModAssignPrefetchHandler,
-            cronDelegate: CoreCronDelegate, syncHandler: AddonModAssignSyncCronHandler, updateManager: CoreUpdateManagerProvider) {
+            cronDelegate: CoreCronDelegate, syncHandler: AddonModAssignSyncCronHandler, updateManager: CoreUpdateManagerProvider,
+            contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModAssignIndexLinkHandler) {
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         cronDelegate.register(syncHandler);
+        contentLinksDelegate.registerHandler(linkHandler);
 
         // Allow migrating the tables from the old app to the new schema.
         updateManager.registerSiteTablesMigration([
