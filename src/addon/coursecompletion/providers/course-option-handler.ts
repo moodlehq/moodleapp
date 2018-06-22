@@ -69,7 +69,7 @@ export class AddonCourseCompletionCourseOptionHandler implements CoreCourseOptio
      */
     getDisplayData?(injector: Injector, courseId: number): CoreCourseOptionsHandlerData {
         return {
-            title: 'addon.coursecompletion.coursecompletion',
+            title: 'addon.coursecompletion.completionmenuitem',
             class: 'addon-coursecompletion-course-handler',
             component: AddonCourseCompletionReportComponent,
         };

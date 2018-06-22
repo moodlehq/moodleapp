@@ -155,7 +155,6 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
      */
     protected maximizeEditorSize(): Promise<number> {
         this.content.resize();
-        const contentVisibleHeight = this.content.contentHeight;
 
         const deferred = this.utils.promiseDefer();
 

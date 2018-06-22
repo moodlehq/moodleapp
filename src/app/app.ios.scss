@@ -41,6 +41,7 @@
     height: calc(100% - #{($navbar-ios-height)});
 }
 
+.platform-cordova.ios .core-avoid-header ion-content.statusbar-padding,
 .platform-cordova.ios .core-avoid-header .menu-inner > ion-content {
     top: $navbar-ios-height + $cordova-ios-statusbar-padding;
     height: calc(100% - #{($navbar-ios-height + $cordova-ios-statusbar-padding)});

@@ -17,6 +17,7 @@
         color: $core-top-tabs-color !important;
         font-size: 1.6rem;
         border: 0;
+        padding: 0 !important;
 
         span {
             text-overflow: ellipsis;
@@ -24,6 +25,7 @@
             overflow: hidden;
             word-wrap: break-word;
             display: block;
+            width: 100%;
         }
 
         &[aria-selected=true] {
