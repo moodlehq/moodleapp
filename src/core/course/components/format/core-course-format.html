@@ -1,3 +1,10 @@
+<!-- Buttons to add to the header. *ngIf is needed, otherwise the component is executed too soon and doesn't find the header. -->
+<core-navbar-buttons end *ngIf="loaded">
+    <core-context-menu>
+        <core-context-menu-item [hidden]="!displaySectionSelector || !sections || !sections.length" [priority]="500" [content]="'core.course.sections' | translate" (action)="showSectionSelector($event)" iconAction="menu"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
 <!-- Default course format. -->
 <core-dynamic-component [component]="courseFormatComponent" [data]="data">
     <!-- Course summary. By default we only display the course progress. -->

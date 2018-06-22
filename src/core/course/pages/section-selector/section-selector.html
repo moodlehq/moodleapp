@@ -10,10 +10,10 @@
 </ion-header>
 <ion-content>
     <ng-container *ngFor="let section of sections">
-        <ion-item *ngIf="sectionHasContent(section)" text-wrap (click)="selectSection(section)" [class.core-primary-item]="selected.id == section.id" [class.item-dimmed]="section.visible === 0 || section.uservisible === false">
+        <a ion-item *ngIf="sectionHasContent(section)" text-wrap (click)="selectSection(section)" [class.core-primary-item]="selected.id == section.id" [class.item-dimmed]="section.visible === 0 || section.uservisible === false" detail-none>
             <h2><core-format-text [text]="section.formattedName || section.name"></core-format-text></h2>
             <ion-badge color="secondary" *ngIf="section.visible === 0">{{ 'core.course.nocontentavailable' | translate }}</ion-badge>
             <ion-badge color="secondary" *ngIf="section.availabilityinfo"><core-format-text  [text]=" section.availabilityinfo"></core-format-text></ion-badge>
-        </ion-item>
+        </a>
     </ng-container>
 </ion-content>
