@@ -77,6 +77,7 @@ export class CoreAppProvider {
         this.keyboard.onKeyboardShow().subscribe((data) => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             zone.run(() => {
+                document.body.classList.add('keyboard-is-open');
                 this.isKeyboardShown = true;
                 events.trigger(CoreEventsProvider.KEYBOARD_CHANGE, this.isKeyboardShown);
             });
@@ -84,6 +85,7 @@ export class CoreAppProvider {
         this.keyboard.onKeyboardHide().subscribe((data) => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             zone.run(() => {
+                document.body.classList.remove('keyboard-is-open');
                 this.isKeyboardShown = false;
                 events.trigger(CoreEventsProvider.KEYBOARD_CHANGE, this.isKeyboardShown);
             });

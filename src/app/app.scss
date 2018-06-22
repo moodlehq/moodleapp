@@ -815,3 +815,7 @@ ion-alert.core-inapp-notification {
     font-size: 16px;
   }
 }
+
+body.keyboard-is-open core-ion-tabs .tabbar {
+    display: none;
+}
