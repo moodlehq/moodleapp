@@ -51,13 +51,13 @@
                 <ion-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">{{groupOpt.name}}</ion-option>
             </ion-select>
         </ion-item>
-        <ion-item text-wrap *ngIf="access.canviewreports || access.canedititems" (click)="access.canviewreports && openFeature('Respondents')" [attr.detail-push]="access.canviewreports ? true : null">
+        <a ion-item text-wrap *ngIf="access.canviewreports || access.canedititems" (click)="access.canviewreports && openFeature('Respondents')" [attr.detail-none]="access.canviewreports ? null : true">
             <h2>{{ 'addon.mod_feedback.completed_feedbacks' | translate }}</h2>
             <ion-badge item-end>{{feedback.completedCount}}</ion-badge>
-        </ion-item>
-        <ion-item text-wrap *ngIf="!access.isanonymous && access.canviewreports" (click)="openFeature('NonRespondents')" detail-push>
+        </a>
+        <a ion-item text-wrap *ngIf="!access.isanonymous && access.canviewreports" (click)="openFeature('NonRespondents')" detail-push>
             <h2>{{ 'addon.mod_feedback.show_nonrespondents' | translate }}</h2>
-        </ion-item>
+        </a>
         <ion-item text-wrap *ngIf="access.canedititems">
             <h2>{{ 'addon.mod_feedback.questions' | translate }}</h2>
             <ion-badge item-end>{{feedback.itemsCount}}</ion-badge>

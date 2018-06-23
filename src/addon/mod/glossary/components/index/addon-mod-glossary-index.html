@@ -36,9 +36,9 @@
                 <ion-item-divider color="light">
                     {{ 'addon.mod_glossary.entriestobesynced' | translate }}
                 </ion-item-divider>
-                <ion-item *ngFor="let entry of offlineEntries" (click)="openNewEntry(entry)">
+                <a ion-item *ngFor="let entry of offlineEntries" (click)="openNewEntry(entry)" detail-none>
                     <p>{{entry.concept}}</p>
-                </ion-item>
+                </a>
             </ion-list>
 
             <ion-list *ngIf="entries.length > 0">
@@ -48,9 +48,9 @@
                         {{getDivider(entry)}}
                     </ion-item-divider>
 
-                    <ion-item (click)="openEntry(entry.id)" [class.core-split-item-selected]="entry.id == selectedEntry">
+                    <a ion-item (click)="openEntry(entry.id)" [class.core-split-item-selected]="entry.id == selectedEntry" detail-none>
                         <p>{{entry.concept}}</p>
-                    </ion-item>
+                    </a>
                 </ng-container>
             </ion-list>
 
