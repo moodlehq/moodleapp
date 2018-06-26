@@ -201,14 +201,14 @@
                 </ion-item>
 
                 <!-- Data about the grader (teacher who graded). -->
-                <ion-item text-wrap *ngIf="grader" (click)="openUserProfile(grader.id)" [title]="grader.fullname" detail-push>
+                <a ion-item text-wrap *ngIf="grader" (click)="openUserProfile(grader.id)" [title]="grader.fullname" detail-push>
                     <ion-avatar item-start>
                         <img [src]="grader.profileimageurl" core-external-content [alt]="'core.pictureof' | translate:{$a: grader.fullname}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
                     </ion-avatar>
                     <h2>{{ 'addon.mod_assign.gradedby' | translate }}</h2>
                     <h2>{{ grader.fullname }}</h2>
                     <p *ngIf="feedback.gradeddate">{{ feedback.gradeddate * 1000 | coreFormatDate:"dfmediumdate" }}</p>
-                </ion-item>
+                </a>
 
                 <!-- Warning message if cannot save grades. -->
                 <div *ngIf="isGrading && !canSaveGrades" class="core-warning-card" icon-start>

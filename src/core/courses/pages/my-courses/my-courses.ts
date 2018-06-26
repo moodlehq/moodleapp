@@ -96,7 +96,7 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
 
             this.courseIds = courseIds.join(',');
 
-            if (this.courseIds) {
+            if (this.courseIds && this.coursesProvider.isGetCoursesByFieldAvailable()) {
                 // Load course image of all the courses.
                 promises.push(this.coursesProvider.getCoursesByField('ids', this.courseIds).then((coursesInfo) => {
                     coursesInfo = this.utils.arrayToObject(coursesInfo, 'id');
@@ -111,12 +111,14 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
                 }));
             }
 
-            promises.push(this.coursesProvider.getCoursesAdminAndNavOptions(courseIds).then((options) => {
-                courses.forEach((course) => {
-                    course.navOptions = options.navOptions[course.id];
-                    course.admOptions = options.admOptions[course.id];
-                });
-            }));
+            if (this.coursesProvider.canGetAdminAndNavOptions()) {
+                promises.push(this.coursesProvider.getCoursesAdminAndNavOptions(courseIds).then((options) => {
+                    courses.forEach((course) => {
+                        course.navOptions = options.navOptions[course.id];
+                        course.admOptions = options.admOptions[course.id];
+                    });
+                }));
+            }
 
             return Promise.all(promises).then(() => {
                 this.courses = courses;

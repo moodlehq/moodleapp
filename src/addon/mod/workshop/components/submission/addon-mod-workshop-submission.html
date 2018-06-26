@@ -47,7 +47,7 @@
         </ion-item>
     </div>
 
-    <ion-item text-wrap *ngIf="summary" [attr.detail-push]="submission.timemodified? true : null" (click)="gotoSubmission()">
+    <a ion-item text-wrap *ngIf="summary" [attr.detail-none]="submission.timemodified ? null : true" (click)="gotoSubmission()">
         <ion-avatar item-start>
             <img [src]="profile && profile.profileimageurl" core-external-content [alt]="'core.pictureof' | translate:{$a: profile && profile.fullname}" core-user-link [courseId]="courseId" [userId]="profile && profile.id" role="presentation" onError="this.src='assets/img/user-avatar.png'">
         </ion-avatar>
@@ -78,5 +78,5 @@
             <div *ngIf="offline"><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</div>
             <div *ngIf="submission.deleted"><ion-icon name="trash"></ion-icon> {{ 'core.deletedoffline' | translate }}</div>
         </ion-note>
-    </ion-item>
+    </a>
 </core-loading>

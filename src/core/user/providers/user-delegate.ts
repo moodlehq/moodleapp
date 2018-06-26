@@ -213,51 +213,62 @@ export class CoreUserDelegate extends CoreDelegate {
      * @return {Subject<CoreUserProfileHandlerToDisplay[]>} Resolved with the handlers.
      */
     getProfileHandlersFor(user: any, courseId: number): Subject<CoreUserProfileHandlerToDisplay[]> {
-        const promises = [];
+        let promise,
+            navOptions,
+            admOptions;
+
+        if (this.coursesProvider.canGetAdminAndNavOptions()) {
+            // Get course options.
+            promise = this.coursesProvider.getUserCourses(true).then((courses) => {
+                const courseIds = courses.map((course) => {
+                    return course.id;
+                });
+
+                return this.coursesProvider.getCoursesAdminAndNavOptions(courseIds).then((options) => {
+                    // For backwards compatibility we don't modify the courseId.
+                    const courseIdForOptions = courseId || this.sitesProvider.getCurrentSiteHomeId();
+
+                    navOptions = options.navOptions[courseIdForOptions];
+                    admOptions = options.admOptions[courseIdForOptions];
+                });
+            });
+        } else {
+            promise = Promise.resolve();
+        }
 
         this.userHandlers = [];
 
-        // Retrieve course options forcing cache.
-        this.coursesProvider.getUserCourses(true).then((courses) => {
-            const courseIds = courses.map((course) => {
-                return course.id;
-            });
+        promise.then(() => {
+            const promises = [];
 
-            return this.coursesProvider.getCoursesAdminAndNavOptions(courseIds).then((options) => {
-                // For backwards compatibility we don't modify the courseId.
-                const courseIdForOptions = courseId || this.sitesProvider.getCurrentSiteHomeId(),
-                    navOptions = options.navOptions[courseIdForOptions],
-                    admOptions = options.admOptions[courseIdForOptions];
-
-                for (const name in this.enabledHandlers) {
-                    // Checks if the handler is enabled for the user.
-                    const handler = <CoreUserProfileHandler> this.handlers[name],
-                        isEnabledForUser = handler.isEnabledForUser(user, courseId, navOptions, admOptions),
-                        promise = Promise.resolve(isEnabledForUser).then((enabled) => {
-                            if (enabled) {
-                                this.userHandlers.push({
-                                    name: name,
-                                    data: handler.getDisplayData(user, courseId),
-                                    priority: handler.priority,
-                                    type: handler.type || CoreUserDelegate.TYPE_NEW_PAGE
-                                });
-                            } else {
-                                return Promise.reject(null);
-                            }
-                        }).catch(() => {
-                            // Nothing to do here, it is not enabled for this user.
-                        });
-                    promises.push(promise);
-                }
-
-                return Promise.all(promises).then(() => {
-                    // Sort them by priority.
-                    this.userHandlers.sort((a, b) => {
-                        return b.priority - a.priority;
+            for (const name in this.enabledHandlers) {
+                // Checks if the handler is enabled for the user.
+                const handler = <CoreUserProfileHandler> this.handlers[name],
+                    isEnabledForUser = handler.isEnabledForUser(user, courseId, navOptions, admOptions),
+                    promise = Promise.resolve(isEnabledForUser).then((enabled) => {
+                        if (enabled) {
+                            this.userHandlers.push({
+                                name: name,
+                                data: handler.getDisplayData(user, courseId),
+                                priority: handler.priority,
+                                type: handler.type || CoreUserDelegate.TYPE_NEW_PAGE
+                            });
+                        } else {
+                            return Promise.reject(null);
+                        }
+                    }).catch(() => {
+                        // Nothing to do here, it is not enabled for this user.
                     });
-                    this.loaded = true;
-                    this.observableHandlers.next(this.userHandlers);
+                promises.push(promise);
+            }
+
+            return Promise.all(promises).then(() => {
+                // Sort them by priority.
+                this.userHandlers.sort((a, b) => {
+                    return b.priority - a.priority;
                 });
+                this.loaded = true;
+                this.observableHandlers.next(this.userHandlers);
             });
         }).catch(() => {
             // Never fails.

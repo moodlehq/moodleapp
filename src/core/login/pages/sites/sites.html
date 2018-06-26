@@ -11,7 +11,7 @@
 </ion-header>
 <ion-content class="has-fab">
     <ion-list>
-        <ion-item (click)="login(site.id)" *ngFor="let site of sites; let idx = index">
+        <a ion-item (click)="login(site.id)" *ngFor="let site of sites; let idx = index" detail-none>
             <ion-avatar item-start>
                 <img [src]="site.avatar" core-external-content [siteId]="site.id" alt="{{ 'core.pictureof' | translate:{$a: site.fullname} }}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
             </ion-avatar>
@@ -22,7 +22,7 @@
             <button *ngIf="showDelete" item-end ion-button icon-only clear color="danger" (click)="deleteSite($event, idx)" [attr.aria-label]="'core.delete' | translate">
                 <ion-icon name="trash"></ion-icon>
             </button>
-        </ion-item>
+        </a>
     </ion-list>
     <ion-fab bottom right>
         <button ion-fab (click)="add()" [attr.aria-label]="'core.add' | translate">

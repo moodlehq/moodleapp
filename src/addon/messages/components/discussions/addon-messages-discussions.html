@@ -16,17 +16,17 @@
                 <h2>{{ 'core.searchresults' | translate }}</h2>
                 <ion-note item-end>{{ search.results.length }}</ion-note>
             </ion-item-divider>
-            <ion-item text-wrap *ngFor="let result of search.results" [title]="result.fullname" (click)="gotoDiscussion(result.userid, result.messageid)" [class.core-split-item-selected]="result.userid == discussionUserId" detail-none>
+            <a ion-item text-wrap *ngFor="let result of search.results" [title]="result.fullname" (click)="gotoDiscussion(result.userid, result.messageid)" [class.core-split-item-selected]="result.userid == discussionUserId" detail-none>
                 <ion-avatar item-start>
                     <img src="{{result.profileimageurl}}" [alt]="'core.pictureof' | translate:{$a: result.fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'">
                 </ion-avatar>
                 <h2><core-format-text [text]="result.fullname"></core-format-text></h2>
                 <p><core-format-text clean="true" singleLine="true" [text]="result.lastmessage"></core-format-text></p>
-            </ion-item>
+            </a>
         </ion-list>
 
         <ion-list *ngIf="!search.showResults" no-margin>
-            <ion-item text-wrap *ngFor="let discussion of discussions" [title]="discussion.fullname" (click)="gotoDiscussion(discussion.message.user)" [class.core-split-item-selected]="discussion.message.user == discussionUserId" detail-none>
+            <a ion-item text-wrap *ngFor="let discussion of discussions" [title]="discussion.fullname" (click)="gotoDiscussion(discussion.message.user)" [class.core-split-item-selected]="discussion.message.user == discussionUserId" detail-none>
                 <ion-avatar item-start>
                     <img src="{{discussion.profileimageurl}}" [alt]="'core.pictureof' | translate:{$a: discussion.fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'">
                 </ion-avatar>
@@ -38,7 +38,7 @@
                     </ion-note>
                 </h2>
                 <p><core-format-text clean="true" singleLine="true" [text]="discussion.message.message"></core-format-text></p>
-            </ion-item>
+            </a>
         </ion-list>
     </core-loading>
 </ion-content>

@@ -34,6 +34,16 @@ export class CoreCoursesProvider {
     }
 
     /**
+     * Whether current site supports getting course options.
+     *
+     * @return {boolean} Whether current site supports getting course options.
+     */
+    canGetAdminAndNavOptions(): boolean {
+        return this.sitesProvider.wsAvailableInCurrentSite('core_course_get_user_navigation_options') &&
+                this.sitesProvider.wsAvailableInCurrentSite('core_course_get_user_administration_options');
+    }
+
+    /**
      * Get categories. They can be filtered by id.
      *
      * @param {number} categoryId Category ID to get.

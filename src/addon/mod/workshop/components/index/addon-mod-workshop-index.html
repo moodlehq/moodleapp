@@ -15,11 +15,11 @@
     <core-course-module-description *ngIf="description && selectedPhase == workshopPhases.PHASE_SETUP" [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
 
     <ion-card class="with-borders" *ngIf="phases">
-        <ion-item (click)="selectPhase()">
+        <a ion-item (click)="selectPhase()" detail-none>
             <h2 stacked text-wrap>{{ phases[selectedPhase].title }}</h2>
             <p text-wrap *ngIf="phases[selectedPhase].code == workshop.phase">{{ 'addon.mod_workshop.userplancurrentphase' | translate }}</p>
             <ion-icon item-end name="arrow-dropdown"></ion-icon>
-        </ion-item>
+        </a>
         <a ion-item text-wrap *ngIf="phases[selectedPhase].switchUrl" [href]="phases[selectedPhase].switchUrl" detail-none>
             <ion-icon item-start name="swap"></ion-icon>
             {{ 'addon.mod_workshop.switchphase' + selectedPhase | translate }}
@@ -28,7 +28,7 @@
     </ion-card>
 
     <ion-card class="with-borders" *ngIf="phases && phases[selectedPhase] && phases[selectedPhase].tasks && phases[selectedPhase].tasks.length">
-        <ion-item text-wrap *ngFor="let task of phases[selectedPhase].tasks" [class.item-dimmed]="selectedPhase != workshop.phase" (click)="runTask(task)" detail-none>
+        <a ion-item text-wrap *ngFor="let task of phases[selectedPhase].tasks" [class.item-dimmed]="selectedPhase != workshop.phase" (click)="runTask(task)" detail-none>
             <ion-icon item-start name="radio-button-off" *ngIf="task.completed == null"></ion-icon>
             <ion-icon item-start name="close-circle" color="danger" *ngIf="task.completed == ''"></ion-icon>
             <ion-icon item-start name="information-circle" color="info" *ngIf="task.completed == 'info'"></ion-icon>
@@ -37,7 +37,7 @@
             <h2>{{task.title}}</h2>
             <p *ngIf="task.details"><core-format-text [text]="task.details"></core-format-text></p>
             <ion-icon item-end *ngIf="task.link && !task.support" name="open"></ion-icon>
-        </ion-item>
+        </a>
     </ion-card>
 
     <!-- Has something offline. -->
@@ -102,12 +102,12 @@
         </ng-container>
 
         <ion-card class="with-borders" *ngIf="!access.canviewallsubmissions && selectedPhase == workshop.phase && (canSubmit || canAssess) && selectedPhase == workshopPhases.PHASE_EVALUATION">
-            <ion-item text-wrap *ngIf="submission" (click)="switchPhase(workshopPhases.PHASE_SUBMISSION)" detail-push>
+            <a ion-item text-wrap *ngIf="submission" (click)="switchPhase(workshopPhases.PHASE_SUBMISSION)" detail-push>
                 <h2>{{ 'addon.mod_workshop.yoursubmission' | translate }}</h2>
-            </ion-item>
-            <ion-item text-wrap *ngIf="canAssess" (click)="switchPhase(workshopPhases.PHASE_ASSESSMENT)" detail-push>
+            </a>
+            <a ion-item text-wrap *ngIf="canAssess" (click)="switchPhase(workshopPhases.PHASE_ASSESSMENT)" detail-push>
                 <h2>{{ 'addon.mod_workshop.assignedassessments' | translate }}</h2>
-            </ion-item>
+            </a>
         </ion-card>
 
         <!-- CLOSED PHASE -->
@@ -123,14 +123,14 @@
                 <ion-item-divider color="light" text-wrap>
                     <h2>{{ 'addon.mod_workshop.yourgrades' | translate }}</h2>
                 </ion-item-divider>
-                <ion-item text-wrap *ngIf="userGrades.submissionlongstrgrade" (click)="switchPhase(workshopPhases.PHASE_SUBMISSION)" detail-push>
+                <a ion-item text-wrap *ngIf="userGrades.submissionlongstrgrade" (click)="switchPhase(workshopPhases.PHASE_SUBMISSION)" detail-push>
                     <h2>{{ 'addon.mod_workshop.submissiongrade' | translate }}</h2>
                     <core-format-text [text]="userGrades.submissionlongstrgrade"></core-format-text>
-                </ion-item>
-                <ion-item text-wrap *ngIf="userGrades.assessmentlongstrgrade" (click)="switchPhase(workshopPhases.PHASE_ASSESSMENT)" detail-push>
+                </a>
+                <a ion-item text-wrap *ngIf="userGrades.assessmentlongstrgrade" (click)="switchPhase(workshopPhases.PHASE_ASSESSMENT)" detail-push>
                     <h2>{{ 'addon.mod_workshop.gradinggrade' | translate }}</h2>
                     <core-format-text [text]="userGrades.assessmentlongstrgrade"></core-format-text>
-                </ion-item>
+                </a>
             </ion-card>
 
             <ion-card class="with-borders" *ngIf="publishedSubmissions && publishedSubmissions.length">
