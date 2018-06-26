@@ -63,6 +63,10 @@
                     </ion-refresher>
 
                     <core-loading [hideUntil]="courses.loaded" class="core-loading-center">
+                        <core-empty-box *ngIf="courses[courses.selected].length == 0 && courses.selected == 'inprogress'" image="assets/img/icons/courses.svg" [message]="'core.courses.nocoursesinprogress' | translate"></core-empty-box>
+                        <core-empty-box *ngIf="courses[courses.selected].length == 0 && courses.selected == 'future'" image="assets/img/icons/courses.svg" [message]="'core.courses.nocoursesfuture' | translate"></core-empty-box>
+                        <core-empty-box *ngIf="courses[courses.selected].length == 0 && courses.selected == 'past'" image="assets/img/icons/courses.svg" [message]="'core.courses.nocoursespast' | translate"></core-empty-box>
+
                         <!-- "Time" selector. -->
                         <div no-padding class="clearfix" [hidden]="showFilter">
                             <ion-select [title]="'core.show' | translate" [(ngModel)]="courses.selected" float-start (ngModelChange)="selectedChanged()" interface="popover">
@@ -91,10 +95,6 @@
                                     </ion-col>
                                 </ion-row>
                             </ion-grid>
-
-                            <core-empty-box *ngIf="courses[courses.selected].length == 0 && courses.selected == 'inprogress'" image="assets/img/icons/courses.svg" [message]="'core.courses.nocoursesinprogress' | translate"></core-empty-box>
-                            <core-empty-box *ngIf="courses[courses.selected].length == 0 && courses.selected == 'future'" image="assets/img/icons/courses.svg" [message]="'core.courses.nocoursesfuture' | translate"></core-empty-box>
-                            <core-empty-box *ngIf="courses[courses.selected].length == 0 && courses.selected == 'past'" image="assets/img/icons/courses.svg" [message]="'core.courses.nocoursespast' | translate"></core-empty-box>
                         </div>
                     </core-loading>
                 </ion-content>
