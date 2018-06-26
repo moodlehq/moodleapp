@@ -148,11 +148,11 @@ core-tabs {
 
 .ios, .md, .wp {
     .core-avoid-header ion-content core-tabs core-tab ion-content {
-        top: 0;
-        height: 100%;
+        top: 0 !important;
+        height: 100% !important;
     }
     ion-content core-tabs core-tab .core-avoid-header ion-content {
-        top: 0;
-        height: 100%;
+        top: 0 !important;
+        height: 100% !important;
     }
 }
