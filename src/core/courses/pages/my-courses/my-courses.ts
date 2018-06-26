@@ -111,12 +111,14 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
                 }));
             }
 
-            promises.push(this.coursesProvider.getCoursesAdminAndNavOptions(courseIds).then((options) => {
-                courses.forEach((course) => {
-                    course.navOptions = options.navOptions[course.id];
-                    course.admOptions = options.admOptions[course.id];
-                });
-            }));
+            if (this.coursesProvider.canGetAdminAndNavOptions()) {
+                promises.push(this.coursesProvider.getCoursesAdminAndNavOptions(courseIds).then((options) => {
+                    courses.forEach((course) => {
+                        course.navOptions = options.navOptions[course.id];
+                        course.admOptions = options.admOptions[course.id];
+                    });
+                }));
+            }
 
             return Promise.all(promises).then(() => {
                 this.courses = courses;

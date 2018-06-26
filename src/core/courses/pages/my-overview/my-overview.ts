@@ -223,13 +223,15 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
                 return course.id;
             });
 
-            // Load course options of the course.
-            promises.push(this.coursesProvider.getCoursesAdminAndNavOptions(courseIds).then((options) => {
-                courses.forEach((course) => {
-                    course.navOptions = options.navOptions[course.id];
-                    course.admOptions = options.admOptions[course.id];
-                });
-            }));
+            if (this.coursesProvider.canGetAdminAndNavOptions()) {
+                // Load course options of the course.
+                promises.push(this.coursesProvider.getCoursesAdminAndNavOptions(courseIds).then((options) => {
+                    courses.forEach((course) => {
+                        course.navOptions = options.navOptions[course.id];
+                        course.admOptions = options.admOptions[course.id];
+                    });
+                }));
+            }
 
             this.courseIds = courseIds.join(',');
 

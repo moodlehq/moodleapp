@@ -395,7 +395,9 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
      * @return {Promise<void>} Promise resolved when done.
      */
     protected loadCourseOptions(course: any, refresh?: boolean): Promise<void> {
-        if (typeof course.navOptions == 'undefined' || typeof course.admOptions == 'undefined' || refresh) {
+        if (this.coursesProvider.canGetAdminAndNavOptions() &&
+                (typeof course.navOptions == 'undefined' || typeof course.admOptions == 'undefined' || refresh)) {
+
             return this.coursesProvider.getCoursesAdminAndNavOptions([course.id]).then((options) => {
                 course.navOptions = options.navOptions[course.id];
                 course.admOptions = options.admOptions[course.id];
