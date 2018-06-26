@@ -209,7 +209,7 @@ export class CoreCourseSectionPage implements OnDestroy {
             // Get the overview files.
             if (this.course.overviewfiles) {
                 this.course.imageThumb = this.course.overviewfiles[0] && this.course.overviewfiles[0].fileurl;
-            } else {
+            } else if (this.coursesProvider.isGetCoursesByFieldAvailable()) {
                 promises.push(this.coursesProvider.getCoursesByField('id', this.course.id).then((coursesInfo) => {
                     if (coursesInfo[0] && coursesInfo[0].overviewfiles && coursesInfo[0].overviewfiles[0]) {
                         this.course.imageThumb = coursesInfo[0].overviewfiles[0].fileurl;

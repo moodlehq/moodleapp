@@ -97,6 +97,15 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      * @return {any|Promise<any>} Current section (or promise resolved with current section).
      */
     getCurrentSection(course: any, sections: any[]): any | Promise<any> {
+        if (!this.coursesProvider.isGetCoursesByFieldAvailable()) {
+            // Cannot get the current section, return the first one.
+            if (sections[0].id != CoreCourseProvider.ALL_SECTIONS_ID) {
+                return sections[0];
+            }
+
+            return sections[1];
+        }
+
         // We need the "marker" to determine the current section.
         return this.coursesProvider.getCoursesByField('id', course.id).catch(() => {
             // Ignore errors.

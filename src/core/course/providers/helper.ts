@@ -1007,7 +1007,9 @@ export class CoreCourseHelperProvider {
             });
 
             // Prefetch other data needed to render the course.
-            promises.push(this.coursesProvider.getCoursesByField('id', course.id));
+            if (this.coursesProvider.isGetCoursesByFieldAvailable()) {
+                promises.push(this.coursesProvider.getCoursesByField('id', course.id));
+            }
             promises.push(this.courseProvider.getActivitiesCompletionStatus(course.id));
 
             return this.utils.allPromises(promises);

@@ -233,7 +233,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
 
             this.courseIds = courseIds.join(',');
 
-            if (this.courseIds) {
+            if (this.courseIds && this.coursesProvider.isGetCoursesByFieldAvailable()) {
                 // Load course image of all the courses.
                 promises.push(this.coursesProvider.getCoursesByField('ids', this.courseIds).then((coursesInfo) => {
                     coursesInfo = this.utils.arrayToObject(coursesInfo, 'id');
