@@ -910,10 +910,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                         }));
                     }
                 });
-
-                response.lastattempt.submissiongroupmemberswhoneedtosubmitblind.forEach((member) => {
-                    this.membersToSubmit.push(member);
-                });
             }
         }
 

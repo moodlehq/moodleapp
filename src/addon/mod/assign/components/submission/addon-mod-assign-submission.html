@@ -110,7 +110,7 @@
 
                 <!-- Team members that need to submit it too. -->
                 <ion-item text-wrap *ngIf="membersToSubmit && membersToSubmit.length > 0">
-                    <h2>{{ 'addon.mod_assign.userswhoneedtosubmit' | translate }}</h2>
+                    <h2>{{ 'addon.mod_assign.userswhoneedtosubmit' | translate: {$a: ''} }}</h2>
                     <div *ngFor="let user of membersToSubmit">
                         <a *ngIf="user.fullname" (click)="openUserProfile(user.id)" [title]="user.fullname">
                             <ion-avatar item-start>
