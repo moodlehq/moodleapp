@@ -15,6 +15,7 @@
 import { Component, ViewChild, NgZone } from '@angular/core';
 import { Content, IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
+import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -49,12 +50,14 @@ export class AddonModChatChatPage {
     protected lastTime = 0;
     protected oldContentHeight = 0;
     protected onlineObserver: any;
+    protected keyboardObserver: any;
     protected viewDestroyed = false;
     protected pollingRunning = false;
 
     constructor(navParams: NavParams, logger: CoreLoggerProvider, network: Network,  zone: NgZone, private navCtrl: NavController,
             private chatProvider: AddonModChatProvider, private appProvider: CoreAppProvider, sitesProvider: CoreSitesProvider,
-            private modalCtrl: ModalController, private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider) {
+            private modalCtrl: ModalController, private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
+            private eventsProvider: CoreEventsProvider) {
 
         this.chatId = navParams.get('chatId');
         this.courseId = navParams.get('courseId');
@@ -86,6 +89,11 @@ export class AddonModChatChatPage {
             this.navCtrl.pop();
         }).finally(() => {
             this.loaded = true;
+        });
+
+        // Recalculate footer position when keyboard is shown or hidden.
+        this.keyboardObserver = this.eventsProvider.on(CoreEventsProvider.KEYBOARD_CHANGE, (isOn) => {
+            this.content.resize();
         });
     }
 
@@ -313,6 +321,7 @@ export class AddonModChatChatPage {
      */
     ngOnDestroy(): void {
         this.onlineObserver && this.onlineObserver.unsubscribe();
+        this.keyboardObserver && this.keyboardObserver.off();
         this.stopPolling();
         this.viewDestroyed = true;
     }
