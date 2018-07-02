@@ -34,7 +34,7 @@ core-progress-bar {
 
         .progress-bar-fallback span,
         &[value]::-webkit-progress-value {
-            background-color: $core-color-light;
+            background-color: $core-progressbar-color;
             border-radius: 2px;
         }
 
