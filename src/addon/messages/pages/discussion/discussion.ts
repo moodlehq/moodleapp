@@ -52,6 +52,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     protected keepMessageMap = {};
     protected syncObserver: any;
     protected oldContentHeight = 0;
+    protected keyboardObserver: any;
 
     userId: number;
     currentUserId: number;
@@ -177,6 +178,11 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                 this.resizeContent();
                 this.loaded = true;
             });
+        });
+
+        // Recalculate footer position when keyboard is shown or hidden.
+        this.keyboardObserver = this.eventsProvider.on(CoreEventsProvider.KEYBOARD_CHANGE, (isOn) => {
+            this.content.resize();
         });
     }
 
@@ -692,6 +698,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         // Unset again, just in case.
         this.unsetPolling();
         this.syncObserver && this.syncObserver.off();
+        this.keyboardObserver && this.keyboardObserver.off();
         this.viewDestroyed = true;
     }
 }
