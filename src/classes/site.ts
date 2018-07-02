@@ -1081,7 +1081,7 @@ export class CoreSite {
                         return Promise.reject(this.translate.instant('core.unexpectederror'));
                 }
             } else {
-                return { code: code, service: service, coresupported: !!data.coresupported };
+                return { code: code, service: service, coreSupported: !!data.coresupported };
             }
         }, () => {
             return { code: 0 };
