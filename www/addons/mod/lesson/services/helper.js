@@ -484,6 +484,13 @@ angular.module('mm.addons.mod_lesson')
                     model[row.name] = model[row.name].value;
                 }
             });
+        } else if (question.template == 'multichoice' && question.multi) {
+            // Only send the options with value set to true.
+            for (var name in model) {
+                if (name.match(/answer\[\d+\]/) && model[name] == false) {
+                    delete model[name];
+                }
+            }
         }
 
         return $q.when(model);
