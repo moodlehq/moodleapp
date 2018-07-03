@@ -14,20 +14,22 @@
   (function () {
     'use strict';
 
+    var EvTarget = EventTarget || Element; // EventTarget doesn't exist in iOS 8 and 9.
+
     window.addEventListener = function () {
-      EventTarget.prototype.addEventListener.apply(this, arguments);
+      EvTarget.prototype.addEventListener.apply(this, arguments);
     };
 
     window.removeEventListener = function () {
-      EventTarget.prototype.removeEventListener.apply(this, arguments);
+      EvTarget.prototype.removeEventListener.apply(this, arguments);
     };
 
     document.addEventListener = function () {
-      EventTarget.prototype.addEventListener.apply(this, arguments);
+      EvTarget.prototype.addEventListener.apply(this, arguments);
     };
 
     document.removeEventListener = function () {
-      EventTarget.prototype.removeEventListener.apply(this, arguments);
+      EvTarget.prototype.removeEventListener.apply(this, arguments);
     };
   })();
   </script>
