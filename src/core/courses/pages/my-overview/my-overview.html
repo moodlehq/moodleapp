@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar>
-        <ion-title>{{ 'core.courses.courseoverview' | translate }}</ion-title>
+        <ion-title><core-format-text [text]="siteName"></core-format-text></ion-title>
 
         <ion-buttons end>
             <button *ngIf="tabShown == 'courses' && courses[courses.selected] && courses[courses.selected].length > 5" ion-button icon-only [attr.aria-label]="'core.courses.filtermycourses' | translate" (click)="switchFilter()">
