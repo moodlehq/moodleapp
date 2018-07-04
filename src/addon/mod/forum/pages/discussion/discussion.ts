@@ -69,8 +69,9 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     refreshIcon = 'spinner';
     syncIcon = 'spinner';
     discussionStr = '';
+    component = AddonModForumProvider.COMPONENT;
+    cmId: number;
 
-    protected cmId: number;
     protected forumId: number;
     protected onlineObserver: any;
     protected syncObserver: any;
