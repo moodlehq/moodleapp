@@ -297,6 +297,8 @@ export class CoreQuestionBaseComponent {
                 this.question.input.correctClass = 'core-question-correct';
             } else if (input.classList.contains('partiallycorrect')) {
                 this.question.input.correctClass = 'core-question-partiallycorrect';
+            } else {
+                this.question.input.correctClass = '';
             }
         }
 
