@@ -23,33 +23,39 @@ $gray-lighter:    #f5f5f5;
 $white:           #ffffff; // Background, reversed text.
 
 $blue:            #0064d2; // Link, background.
-$blue-light:      mix($blue, white, 20%); // Background.
-$blue-dark:       darken($blue, 10%);
-
 $turquoise:       #007982; // Accent.
-$turquoise-light: mix($turquoise, white, 20%); // Background.
-$turquoise-dark:  darken($turquoise, 10%);
-
 $green:           #5e8100; // Accent.
-$green-light:     mix($green, white, 20%);
-$green-dark:      darken($green, 10%);
-
 $red:             #cb3d4d;
-$red-light:       mix($red, white, 20%);
-$red-dark:        darken($red, 10%);
-
 $orange:          #f98012; // Accent (never text).
-$orange-light:    lighten($orange, 10%);
-
 $yellow:          #fbad1a; // Accent (never text).
-$yellow-light:    mix($yellow, white, 20%);
-$yellow-dark:     mix($yellow, black, 40%);
+$core-color:      $orange;
 
-$core-color:          $orange;
-$core-color-light:    lighten($core-color, 10%);
-$core-color-dark:     darken($core-color, 10%);
+// Branded apps customization
+// --------------------------------------------------
+@import "bmma";
 
-$core-course-image-background: #81ecec, #74b9ff, #a29bfe, #dfe6e9, #00b894, #0984e3, #b2bec3, #fdcb6e, #fd79a8, #6c5ce7;
+
+$blue-light:      mix($blue, white, 20%) !default; // Background.
+$blue-dark:       darken($blue, 10%) !default;
+
+$turquoise-light: mix($turquoise, white, 20%) !default; // Background.
+$turquoise-dark:  darken($turquoise, 10%) !default;
+
+$green-light:     mix($green, white, 20%) !default;
+$green-dark:      darken($green, 10%) !default;
+
+$red-light:       mix($red, white, 20%) !default;
+$red-dark:        darken($red, 10%) !default;
+
+$orange-light:    lighten($orange, 10%) !default;
+
+$yellow-light:    mix($yellow, white, 20%) !default;
+$yellow-dark:     mix($yellow, black, 40%) !default;
+
+$core-color-light:    lighten($core-color, 10%) !default;
+$core-color-dark:     darken($core-color, 10%) !default;
+
+$core-course-image-background: #81ecec, #74b9ff, #a29bfe, #dfe6e9, #00b894, #0984e3, #b2bec3, #fdcb6e, #fd79a8, #6c5ce7 !default;
 
 // Shared Variables
 // --------------------------------------------------
@@ -58,10 +64,8 @@ $core-course-image-background: #81ecec, #74b9ff, #a29bfe, #dfe6e9, #00b894, #098
 // To view all the possible Ionic variables, see:
 // http://ionicframework.com/docs/theming/overriding-ionic-variables/
 
-$toolbar-background: $core-color;
+$toolbar-background: $core-color !default;
 $content-padding: 10px;
-
-
 
 // Named Color Variables
 // --------------------------------------------------
@@ -83,52 +87,54 @@ $colors: (
   info:       $blue
 );
 
-$text-color:                 $black;
-$link-color:                 $blue;
-$background-color:           $gray-light;
-$subdued-text-color:         $gray-darker;
+$text-color:                 $black !default;
+$link-color:                 $blue !default;
+$background-color:           $gray-light !default;
+$subdued-text-color:         $gray-darker !default;
 
 $core-warning-color: colors($colors, warning) !default; // yellow.
 $core-success-color: colors($colors, success) !default; // green.
 $core-info-color: colors($colors, info) !default; // / blue.
 $core-error-color: colors($colors, alert) !default; // Red.
 
-$list-background-color:      $white;
+$list-background-color:      $white !default;
 
-$tabs-background:            $gray-darker;
+$tabs-background:            $gray-darker !default;
 $tabs-border-color:          #b2b2b2 !default;
-$tabs-tab-color-active:      $core-color;
-$tabs-tab-color-inactive:    $white;
+$tabs-tab-color-active:      $core-color !default;
+$tabs-tab-color-inactive:    $white !default;
 
-$text-input-highlight-color-valid: $green;
-$text-input-highlight-color-invalid: $red;
+$text-input-highlight-color-valid: $green !default;
+$text-input-highlight-color-invalid: $red !default;
 
 $button-md-box-shadow: 0 2px 2px 1px rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12) ;
 
-$refresher-icon-color: $core-color;
+$refresher-icon-color: $core-color !default;
 
 
 // Moodle Mobile variables
 // --------------------------------------------------
 
-// Variables copied from Ionic 1.
-$item-icon-accessory-color:       #ccc !default;
-$item-icon-accessory-font-size:   16px !default;
-
 // Init screen.
-$core-color-init-screen:          #ff5c00;
-$core-color-init-screen-alt:      #ff7600;
-$core-init-screen-spinner-color:  $white;
-$core-init-screen-logo-width:     60%;
-$core-init-screen-logo-max-width: 300px;
+$core-color-init-screen:          #ff5c00 !default;
+$core-color-init-screen-alt:      #ff7600 !default;
+$core-init-screen-spinner-color:  $white !default;
+$core-init-screen-logo-width:     60% !default;
+$core-init-screen-logo-max-width: 300px !default;
 
-$core-fixed-url:                  false;
+$core-fixed-url:                  false !default;
 
+$core-loading-spinner-color: $core-color !default;
+$core-spinner-color: $core-color !default;
+$core-button-outline-background-color: $white !default;
 
-// Branded apps customization
-// --------------------------------------------------
-@import "bmma";
-
+// Login.
+$core-login-page-background-color: radial-gradient(white, $gray-light) !default;
+$core-login-box-background-color: $white !default;
+$core-login-box-background-border: $gray !default;
+$core-login-box-text-color: $text-color !default;
+$core-login-button-outline: false !default;
+$core-login-loading-color: false !default;
 
 // App iOS Variables
 // --------------------------------------------------
@@ -137,10 +143,10 @@ $core-fixed-url:                  false;
 $text-input-ios-show-focus-highlight: false;
 $core-text-input-ios-show-highlight: false;
 $item-ios-avatar-size: 54px;
-$loading-ios-spinner-color: $core-color;
-$spinner-ios-ios-color: $core-color;
+$loading-ios-spinner-color: $core-loading-spinner-color;
+$spinner-ios-ios-color: $core-spinner-color;
 $tabs-ios-tab-color-inactive: $tabs-tab-color-inactive;
-$button-ios-outline-background-color: $white;
+$button-ios-outline-background-color: $core-button-outline-background-color;
 $toolbar-ios-height: 44px + 15;
 
 // App Material Design Variables
@@ -151,10 +157,10 @@ $text-input-md-show-focus-highlight: false;
 $core-text-input-md-show-highlight: true;
 $item-md-detail-push-show: true;
 $item-md-avatar-size: 54px;
-$loading-md-spinner-color: $core-color;
-$spinner-md-crescent-color: $core-color;
+$loading-md-spinner-color: $core-loading-spinner-color;
+$spinner-md-crescent-color: $core-spinner-color;
 $tabs-md-tab-color-inactive: $tabs-tab-color-inactive;
-$button-md-outline-background-color: $white;
+$button-md-outline-background-color: $core-button-outline-background-color;
 
 
 // App Windows Variables
@@ -164,10 +170,10 @@ $button-md-outline-background-color: $white;
 $text-input-wp-show-focus-highlight: true;
 $item-wp-detail-push-show: true;
 $item-wp-avatar-size: 54px;
-$loading-wp-spinner-color: $core-color;
-$spinner-wp-circles-color: $core-color;
+$loading-wp-spinner-color: $core-loading-spinner-color;
+$spinner-wp-circles-color: $core-spinner-color;
 $tabs-wp-tab-color-inactive: $tabs-tab-color-inactive;
-$button-wp-outline-background-color: $white;
+$button-wp-outline-background-color: $core-button-outline-background-color;
 
 
 // App Theme
@@ -201,12 +207,15 @@ $button-wp-outline-background-color: $white;
 $item-media-width: 32px !default;
 $item-media-height: 32px !default;
 
-$core-top-tabs-background: $white;
-$core-top-tabs-color: $gray-dark;
-$core-top-tabs-border: $gray;
-$core-top-tabs-color-active: $core-color;
+$core-top-tabs-background: $white !default;
+$core-top-tabs-color: $gray-dark !default;
+$core-top-tabs-border: $gray !default;
+$core-top-tabs-color-active: $core-color !default;
 
-$core-user-profile-communication-icons-color: $core-color;
+$core-splitview-selected: $core-color-light !default;
+$core-progressbar-color: $core-color-light !default;
+
+$core-user-profile-communication-icons-color: $core-color !default;
 
 $core-rte-min-height: 80px;
 

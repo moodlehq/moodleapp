@@ -24,7 +24,7 @@ core-split-view {
 
         .split-pane-side .core-split-item-selected {
             background-color: $gray-lighter;
-            border-left: 5px solid $core-color-light;
+            border-left: 5px solid $core-splitview-selected;
             &.item-md {
                 padding-left: $item-md-padding-start - 5px;
             }

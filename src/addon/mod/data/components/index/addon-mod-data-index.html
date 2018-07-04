@@ -84,11 +84,6 @@
     </ion-grid>
 
     <core-empty-box *ngIf="isEmpty && !search.searching" icon="archive" [message]="'addon.mod_data.norecords' | translate">
-        <div padding-top *ngIf="canAdd">
-            <button block (click)="gotoAddEntries($event)">
-                {{ 'addon.mod_data.addentries' | translate }}
-            </button>
-        </div>
     </core-empty-box>
 
     <core-empty-box *ngIf="isEmpty && search.searching" icon="archive" [message]="'addon.mod_data.nomatch' | translate">
