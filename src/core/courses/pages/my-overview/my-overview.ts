@@ -71,6 +71,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
         future: {}
     };
     downloadAllCoursesEnabled: boolean;
+    siteName: string;
 
     protected prefetchIconsInitialized = false;
     protected isDestroyed;
@@ -82,6 +83,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
             private courseHelper: CoreCourseHelperProvider, private sitesProvider: CoreSitesProvider,
             private siteHomeProvider: CoreSiteHomeProvider, private courseOptionsDelegate: CoreCourseOptionsDelegate,
             private eventsProvider: CoreEventsProvider, private utils: CoreUtilsProvider) {
+        this.loadSiteName();
     }
 
     /**
@@ -102,6 +104,8 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
                 // Download all courses is enabled now, initialize it.
                 this.initPrefetchCoursesIcons();
             }
+
+            this.loadSiteName();
         });
 
         // Decide which tab to load first.
@@ -472,6 +476,13 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
             });
 
         });
+    }
+
+    /**
+     * Load the site name.
+     */
+    protected loadSiteName(): void {
+        this.siteName = this.sitesProvider.getCurrentSite().getInfo().sitename;
     }
 
     /**

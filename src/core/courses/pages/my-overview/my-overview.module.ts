@@ -17,6 +17,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreCoursesMyOverviewPage } from './my-overview';
 import { CoreComponentsModule } from '@components/components.module';
+import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreCoursesComponentsModule } from '../../components/components.module';
 import { CoreSiteHomeComponentsModule } from '@core/sitehome/components/components.module';
 
@@ -26,6 +27,7 @@ import { CoreSiteHomeComponentsModule } from '@core/sitehome/components/componen
     ],
     imports: [
         CoreComponentsModule,
+        CoreDirectivesModule,
         CoreCoursesComponentsModule,
         CoreSiteHomeComponentsModule,
         IonicPageModule.forChild(CoreCoursesMyOverviewPage),
