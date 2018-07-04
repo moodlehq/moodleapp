@@ -23,7 +23,7 @@
 
     <div *ngIf="scorm && loaded && !scorm.warningMessage">
         <!-- Attempts status. -->
-        <ion-card *ngIf="scorm.displayattemptstatus || Object.keys(scorm.offlineAttempts).length">
+        <ion-card *ngIf="scorm.displayattemptstatus || (scorm.offlineAttempts && scorm.offlineAttempts.length)">
             <ion-card-header text-wrap>
                 <h2>{{ 'addon.mod_scorm.attempts' | translate }}</h2>
             </ion-card-header>

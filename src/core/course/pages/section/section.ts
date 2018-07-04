@@ -80,9 +80,14 @@ export class CoreCourseSectionPage implements OnDestroy {
         this.displayEnableDownload = courseFormatDelegate.displayEnableDownload(this.course);
         this.downloadCourseEnabled = !this.coursesProvider.isDownloadCourseDisabledInSite();
 
-        this.completionObserver = eventsProvider.on(CoreEventsProvider.COMPLETION_MODULE_VIEWED, (data) => {
-            if (data && data.courseId == this.course.id) {
-                this.refreshAfterCompletionChange();
+        // Check if the course format requires the view to be refreshed when completion changes.
+        courseFormatDelegate.shouldRefreshWhenCompletionChanges(this.course).then((shouldRefresh) => {
+            if (shouldRefresh) {
+                this.completionObserver = eventsProvider.on(CoreEventsProvider.COMPLETION_MODULE_VIEWED, (data) => {
+                    if (data && data.courseId == this.course.id) {
+                        this.refreshAfterCompletionChange();
+                    }
+                });
             }
         });
 

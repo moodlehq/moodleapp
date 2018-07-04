@@ -158,6 +158,15 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
     invalidateData?(course: any, sections: any[]): Promise<any>;
+
+    /**
+     * Whether the view should be refreshed when completion changes. If your course format doesn't display
+     * activity completion then you should return false.
+     *
+     * @param {any} course The course.
+     * @return {boolean|Promise<boolean>} Whether course view should be refreshed when an activity completion changes.
+     */
+    shouldRefreshWhenCompletionChanges?(course: any): boolean | Promise<boolean>;
 }
 
 /**
@@ -336,5 +345,16 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
      */
     openCourse(navCtrl: NavController, course: any): Promise<any> {
         return this.executeFunctionOnEnabled(course.format, 'openCourse', [navCtrl, course]);
+    }
+
+    /**
+     * Whether the view should be refreshed when completion changes. If your course format doesn't display
+     * activity completion then you should return false.
+     *
+     * @param {any} course The course.
+     * @return {Promise<boolean>} Whether course view should be refreshed when an activity completion changes.
+     */
+    shouldRefreshWhenCompletionChanges(course: any): Promise<boolean> {
+        return Promise.resolve(this.executeFunctionOnEnabled(course.format, 'shouldRefreshWhenCompletionChanges', [course]));
     }
 }

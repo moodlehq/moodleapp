@@ -157,4 +157,15 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
     openCourse(navCtrl: NavController, course: any): Promise<any> {
         return navCtrl.push('CoreCourseSectionPage', { course: course });
     }
+
+    /**
+     * Whether the view should be refreshed when completion changes. If your course format doesn't display
+     * activity completion then you should return false.
+     *
+     * @param {any} course The course.
+     * @return {boolean|Promise<boolean>} Whether course view should be refreshed when an activity completion changes.
+     */
+    shouldRefreshWhenCompletionChanges(course: any): boolean | Promise<boolean> {
+        return true;
+    }
 }
