@@ -14,7 +14,7 @@
 
 import { Pipe, PipeTransform } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import * as moment from 'moment';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 
 /**
  * Filter to turn a number of seconds to a duration. E.g. 60 -> 1 minute.
@@ -25,7 +25,7 @@ import * as moment from 'moment';
 export class CoreDurationPipe implements PipeTransform {
     protected logger;
 
-    constructor(logger: CoreLoggerProvider) {
+    constructor(logger: CoreLoggerProvider, private timeUtils: CoreTimeUtilsProvider) {
         this.logger = logger.getInstance('CoreBytesToSizePipe');
     }
 
@@ -47,6 +47,6 @@ export class CoreDurationPipe implements PipeTransform {
             seconds = numberSeconds;
         }
 
-        return moment.duration(seconds * 1000).humanize();
+        return this.timeUtils.formatTime(seconds);
     }
 }

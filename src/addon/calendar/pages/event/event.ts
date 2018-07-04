@@ -22,7 +22,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreCourseProvider } from '@core/course/providers/course';
-import * as moment from 'moment';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 
 /**
  * Page that displays a single calendar event.
@@ -46,7 +46,7 @@ export class AddonCalendarEventPage {
     notificationsEnabled = false;
 
     constructor(private translate: TranslateService, private calendarProvider: AddonCalendarProvider, navParams: NavParams,
-            private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider,
+            private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider, timeUtils: CoreTimeUtilsProvider,
             private calendarHelper: AddonCalendarHelperProvider, sitesProvider: CoreSitesProvider,
             localNotificationsProvider: CoreLocalNotificationsProvider, private courseProvider: CoreCourseProvider) {
 
@@ -63,7 +63,7 @@ export class AddonCalendarEventPage {
                     // Disabled by default.
                     this.defaultTimeReadable = this.translate.instant('core.settings.disabled');
                 } else {
-                    this.defaultTimeReadable = moment.duration(defaultTime * 60 * 1000).humanize();
+                    this.defaultTimeReadable = timeUtils.formatTime(defaultTime * 60);
                 }
             });
         }
