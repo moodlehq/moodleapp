@@ -819,3 +819,11 @@ ion-alert.core-inapp-notification {
 body.keyboard-is-open core-ion-tabs .tabbar {
     display: none;
 }
+
+// Fix links and videos in ion-radio and ion-checkbox.
+.item.item-radio, .item.item-checkbox {
+  .input-wrapper {
+    z-index: 5;
+    pointer-events: none;
+  }
+}
