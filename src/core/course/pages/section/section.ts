@@ -37,7 +37,7 @@ import { CoreTabsComponent } from '@components/tabs/tabs';
     templateUrl: 'section.html',
 })
 export class CoreCourseSectionPage implements OnDestroy {
-    @ViewChild(Content) content: Content;
+    @ViewChild('courseSectionContent') content: Content;
     @ViewChild(CoreCourseFormatComponent) formatComponent: CoreCourseFormatComponent;
     @ViewChild(CoreTabsComponent) tabsComponent: CoreTabsComponent;
 
@@ -304,7 +304,11 @@ export class CoreCourseSectionPage implements OnDestroy {
 
         this.loadData().finally(() => {
             this.dataLoaded = true;
-            this.content.scrollTo(scrollLeft, scrollTop);
+
+            // Wait for new content height to be calculated and scroll without animation.
+            setTimeout(() => {
+                this.content.scrollTo(scrollLeft, scrollTop, 0);
+            });
         });
     }
 

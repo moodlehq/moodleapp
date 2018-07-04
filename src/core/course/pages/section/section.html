@@ -17,7 +17,7 @@
                         <core-context-menu-item [priority]="1800" [content]="'core.course.coursesummary' | translate" (action)="openCourseSummary()" iconAction="fa-graduation-cap"></core-context-menu-item>
                     </core-context-menu>
                 </core-navbar-buttons>
-                <ion-content>
+                <ion-content #courseSectionContent>
                     <ion-refresher [enabled]="dataLoaded && displayRefresher" (ionRefresh)="doRefresh($event)">
                         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
                     </ion-refresher>
