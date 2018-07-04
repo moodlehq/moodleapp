@@ -43,7 +43,7 @@ export class CoreUserProfilePage {
 
     userLoaded = false;
     isLoadingHandlers = false;
-    user: any = {};
+    user: any;
     title: string;
     isDeleted = false;
     canChangeProfilePicture = false;
@@ -71,7 +71,7 @@ export class CoreUserProfilePage {
             !this.userProvider.isUpdatePictureDisabledInSite(this.site);
 
         this.obsProfileRefreshed = eventsProvider.on(CoreUserProvider.PROFILE_REFRESHED, (data) => {
-            if (typeof data.user != 'undefined') {
+            if (this.user && typeof data.user != 'undefined') {
                 this.user.email = data.user.email;
                 this.user.address = this.userHelper.formatAddress('', data.user.city, data.user.country);
             }
@@ -126,7 +126,10 @@ export class CoreUserProfilePage {
             });
 
         }).catch((error) => {
-            this.domUtils.showErrorModalDefault(error, 'core.user.errorloaduser', true);
+            // Error is null for deleted users, do not show the modal.
+            if (error) {
+                this.domUtils.showErrorModal(error);
+            }
         });
     }
 
