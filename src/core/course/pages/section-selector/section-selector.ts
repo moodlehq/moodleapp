@@ -28,13 +28,10 @@ export class CoreCourseSectionSelectorPage {
 
     sections: any;
     selected: number;
-    sectionHasContent: any;
 
     constructor(navParams: NavParams, courseHelper: CoreCourseHelperProvider, private viewCtrl: ViewController) {
         this.sections = navParams.get('sections');
         this.selected = navParams.get('selected');
-
-        this.sectionHasContent = courseHelper.sectionHasContent;
     }
 
     /**

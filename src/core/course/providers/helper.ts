@@ -1168,7 +1168,7 @@ export class CoreCourseHelperProvider {
      * @return {boolean} Whether the section has content.
      */
     sectionHasContent(section: any): boolean {
-        if (section.id == CoreCourseProvider.ALL_SECTIONS_ID || section.hiddenbynumsections) {
+        if (section.hiddenbynumsections) {
             return false;
         }
 

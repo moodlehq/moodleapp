@@ -194,7 +194,8 @@ export class CoreCourseSectionPage implements OnDestroy {
                         // Add a fake first section (all sections).
                         this.sections.unshift({
                             name: this.translate.instant('core.course.allsections'),
-                            id: CoreCourseProvider.ALL_SECTIONS_ID
+                            id: CoreCourseProvider.ALL_SECTIONS_ID,
+                            hasContent: true
                         });
                     }
 
