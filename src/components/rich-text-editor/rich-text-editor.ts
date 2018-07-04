@@ -101,6 +101,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         // Listen for changes on the control to update the editor (if it is updated from outside of this component).
         this.valueChangeSubscription = this.control.valueChanges.subscribe((param) => {
             this.editorElement.innerHTML = param;
+            this.textarea.value = param;
         });
 
         // Setup button actions.
