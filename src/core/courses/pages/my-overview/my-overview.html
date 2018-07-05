@@ -21,39 +21,6 @@
             </ng-template>
         </core-tab>
 
-        <!-- Timeline tab. -->
-        <core-tab [title]="'core.courses.timeline' | translate" (ionSelect)="tabChanged('timeline')">
-            <ng-template>
-                <ion-content>
-                    <ion-refresher [enabled]="timeline.loaded || timelineCourses.loaded || courses.loaded" (ionRefresh)="refreshMyOverview($event)">
-                        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
-                    </ion-refresher>
-
-                    <div no-padding [hidden]="!(timeline.loaded || timelineCourses.loaded)">
-                        <ion-select [(ngModel)]="timeline.sort" (ngModelChange)="switchSort()" interface="popover">
-                            <ion-option value="sortbydates">{{ 'core.courses.sortbydates' | translate }}</ion-option>
-                            <ion-option value="sortbycourses">{{ 'core.courses.sortbycourses' | translate }}</ion-option>
-                        </ion-select>
-                    </div>
-                    <core-loading [hideUntil]="timeline.loaded" [hidden]="timeline.sort != 'sortbydates'" class="core-loading-center">
-                        <core-courses-overview-events [events]="timeline.events" showCourse="true" [canLoadMore]="timeline.canLoadMore" (loadMore)="loadMoreTimeline()"></core-courses-overview-events>
-                    </core-loading>
-                    <core-loading [hideUntil]="timelineCourses.loaded" [hidden]="timeline.sort != 'sortbycourses'" class="core-loading-center">
-                        <ion-grid no-padding>
-                            <ion-row no-padding>
-                                <ion-col *ngFor="let course of timelineCourses.courses" no-padding col-12 col-md-6>
-                                    <core-courses-course-progress [course]="course">
-                                        <core-courses-overview-events [events]="course.events" [canLoadMore]="course.canLoadMore" (loadMore)="loadMoreCourse(course)"></core-courses-overview-events>
-                                    </core-courses-course-progress>
-                                </ion-col>
-                            </ion-row>
-                        </ion-grid>
-                        <core-empty-box *ngIf="timelineCourses.courses.length == 0" image="assets/img/icons/courses.svg" [message]="'core.courses.nocoursesoverview' | translate"></core-empty-box>
-                    </core-loading>
-                </ion-content>
-            </ng-template>
-        </core-tab>
-
         <!-- Courses tab. -->
         <core-tab [title]="'core.courses.courses' | translate" (ionSelect)="tabChanged('courses')">
             <ng-template>
@@ -96,6 +63,39 @@
                                 </ion-row>
                             </ion-grid>
                         </div>
+                    </core-loading>
+                </ion-content>
+            </ng-template>
+        </core-tab>
+
+        <!-- Timeline tab. -->
+        <core-tab [title]="'core.courses.timeline' | translate" (ionSelect)="tabChanged('timeline')">
+            <ng-template>
+                <ion-content>
+                    <ion-refresher [enabled]="timeline.loaded || timelineCourses.loaded || courses.loaded" (ionRefresh)="refreshMyOverview($event)">
+                        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+                    </ion-refresher>
+
+                    <div no-padding [hidden]="!(timeline.loaded || timelineCourses.loaded)">
+                        <ion-select [(ngModel)]="timeline.sort" (ngModelChange)="switchSort()" interface="popover">
+                            <ion-option value="sortbydates">{{ 'core.courses.sortbydates' | translate }}</ion-option>
+                            <ion-option value="sortbycourses">{{ 'core.courses.sortbycourses' | translate }}</ion-option>
+                        </ion-select>
+                    </div>
+                    <core-loading [hideUntil]="timeline.loaded" [hidden]="timeline.sort != 'sortbydates'" class="core-loading-center">
+                        <core-courses-overview-events [events]="timeline.events" showCourse="true" [canLoadMore]="timeline.canLoadMore" (loadMore)="loadMoreTimeline()"></core-courses-overview-events>
+                    </core-loading>
+                    <core-loading [hideUntil]="timelineCourses.loaded" [hidden]="timeline.sort != 'sortbycourses'" class="core-loading-center">
+                        <ion-grid no-padding>
+                            <ion-row no-padding>
+                                <ion-col *ngFor="let course of timelineCourses.courses" no-padding col-12 col-md-6>
+                                    <core-courses-course-progress [course]="course">
+                                        <core-courses-overview-events [events]="course.events" [canLoadMore]="course.canLoadMore" (loadMore)="loadMoreCourse(course)"></core-courses-overview-events>
+                                    </core-courses-course-progress>
+                                </ion-col>
+                            </ion-row>
+                        </ion-grid>
+                        <core-empty-box *ngIf="timelineCourses.courses.length == 0" image="assets/img/icons/courses.svg" [message]="'core.courses.nocoursesoverview' | translate"></core-empty-box>
                     </core-loading>
                 </ion-content>
             </ng-template>
