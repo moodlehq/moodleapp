@@ -268,6 +268,7 @@ core-format-text[ng-reflect-single-line="true"] {
 
 .core-media-adapt-width {
   max-width: 100%;
+  height: auto;
 }
 
 audio.core-media-adapt-width {
@@ -341,7 +342,7 @@ core-format-text {
 
 // Images in ion-card have width 100% and display block. Remove that when the image is in core-format-text.
 ion-card core-format-text img {
-  width: initial;
+  width: min-content;
   display: inline;
 }
 
