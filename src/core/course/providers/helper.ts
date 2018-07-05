@@ -181,7 +181,8 @@ export class CoreCourseHelperProvider {
 
             // Set this section data.
             section.showDownload = result.status === CoreConstants.NOT_DOWNLOADED;
-            section.showRefresh = result.status === CoreConstants.OUTDATED;
+            section.showRefresh = result.status === CoreConstants.OUTDATED ||
+                    (!this.prefetchDelegate.canCheckUpdates() && result.status === CoreConstants.DOWNLOADED);
 
             if (result.status !== CoreConstants.DOWNLOADING || !this.prefetchDelegate.isBeingDownloaded(section.id)) {
                 section.isDownloading = false;
@@ -232,7 +233,8 @@ export class CoreCourseHelperProvider {
             if (allSectionsSection) {
                 // Set "All sections" data.
                 allSectionsSection.showDownload = allSectionsStatus === CoreConstants.NOT_DOWNLOADED;
-                allSectionsSection.showRefresh = allSectionsStatus === CoreConstants.OUTDATED;
+                allSectionsSection.showRefresh = allSectionsStatus === CoreConstants.OUTDATED ||
+                        (!this.prefetchDelegate.canCheckUpdates() && allSectionsStatus === CoreConstants.DOWNLOADED);
                 allSectionsSection.isDownloading = allSectionsStatus === CoreConstants.DOWNLOADING;
             }
         }).finally(() => {
@@ -1090,7 +1092,8 @@ export class CoreCourseHelperProvider {
             return this.utils.allPromises(promises).then(() => {
                 // Set "All sections" data.
                 section.showDownload = allSectionsStatus === CoreConstants.NOT_DOWNLOADED;
-                section.showRefresh = allSectionsStatus === CoreConstants.OUTDATED;
+                section.showRefresh = allSectionsStatus === CoreConstants.OUTDATED ||
+                        (!this.prefetchDelegate.canCheckUpdates() && allSectionsStatus === CoreConstants.DOWNLOADED);
                 section.isDownloading = allSectionsStatus === CoreConstants.DOWNLOADING;
             }).finally(() => {
                 section.isDownloading = false;

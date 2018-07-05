@@ -702,7 +702,7 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
                         promise = this.getCourseUpdatesByCourseId(courseId);
                     } else if (updates === false) {
                         // Cannot check updates.
-                        return Promise.resolve();
+                        return status;
                     } else {
                         promise = Promise.resolve(updates);
                     }
@@ -803,7 +803,7 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
                             result.total++;
                         }
                     }).catch((error) => {
-                        let cacheStatus = this.statusCache.getValue(packageId, 'status', true);
+                        const cacheStatus = this.statusCache.getValue(packageId, 'status', true);
                         if (typeof cacheStatus == 'undefined') {
                             return Promise.reject(error);
                         }
