@@ -12,6 +12,7 @@ core-empty-box {
     padding: 0;
     clear: both;
     pointer-events: none;
+    z-index: -5;
 
     .core-empty-box-content {
       color: $black;
