@@ -70,6 +70,8 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     protected resizeFunction;
     protected isDestroyed = false;
     protected isCurrentView = true;
+    protected shouldSlideToInitial = false; // Whether we need to slide to the initial slide because it's out of view.
+    protected hasSliddenToInitial = false; // Whether we've already slidden to the initial slide or there was no need.
 
     constructor(element: ElementRef, protected content: Content, protected domUtils: CoreDomUtilsProvider) {
         this.tabBarElement = element.nativeElement;
@@ -265,6 +267,11 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             this.showPrevButton = false;
             this.showNextButton = this.numTabsShown > this.slidesShown;
         }
+
+        if (this.shouldSlideToInitial && currentIndex != this.selected) {
+            // Current tab has changed, don't slide to initial anymore.
+            this.shouldSlideToInitial = false;
+        }
     }
 
     /**
@@ -282,6 +289,20 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         setTimeout(() => {
             this.slides.update();
             this.slides.resize();
+
+            if (!this.hasSliddenToInitial && this.selected && this.selected >= this.slidesShown) {
+                this.hasSliddenToInitial = true;
+                this.shouldSlideToInitial = true;
+
+                setTimeout(() => {
+                    if (this.shouldSlideToInitial) {
+                        this.slides.slideTo(this.selected, 0);
+                        this.shouldSlideToInitial = false;
+                    }
+                }, 400);
+            } else if (this.selected) {
+                this.hasSliddenToInitial = true;
+            }
         });
     }
 
