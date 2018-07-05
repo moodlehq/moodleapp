@@ -797,7 +797,7 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
                     const packageId = this.filepoolProvider.getPackageId(handler.component, module.id);
 
                     promises.push(this.getModuleStatus(module, courseId, updates, refresh).then((modStatus) => {
-                        if (modStatus != CoreConstants.NOT_DOWNLOADABLE) {
+                        if (result[modStatus]) {
                             status = this.filepoolProvider.determinePackagesStatus(status, modStatus);
                             result[modStatus].push(module);
                             result.total++;
@@ -808,8 +808,8 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
                             return Promise.reject(error);
                         }
 
-                        if (cacheStatus != CoreConstants.NOT_DOWNLOADABLE) {
-                            cacheStatus = this.filepoolProvider.determinePackagesStatus(status, cacheStatus);
+                        if (result[cacheStatus]) {
+                            status = this.filepoolProvider.determinePackagesStatus(status, cacheStatus);
                             result[cacheStatus].push(module);
                             result.total++;
                         }
