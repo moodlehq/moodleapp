@@ -481,11 +481,6 @@ export class CoreQuestionBaseComponent {
 
                 return this.questionHelper.showComponentError(this.onAbort);
             }
-
-            if (!this.question.multi && typeof this.question.singleChoiceModel == 'undefined') {
-                // We couldn't find the option to select, select the first one.
-                this.question.singleChoiceModel = options[0].value;
-            }
         }
 
         return questionDiv;
