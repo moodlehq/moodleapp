@@ -260,6 +260,12 @@ export class CoreFormatTextDirective implements OnChanges {
 
             this.element.innerHTML = ''; // Remove current contents.
             if (this.maxHeight && div.innerHTML != '') {
+
+                // For some reason, in iOS the inputs and ng-reflect aren't in the DOM sometimes. Add it so styles are applied.
+                if (!this.element.getAttribute('maxHeight')) {
+                    this.element.setAttribute('maxHeight', String(this.maxHeight));
+                }
+
                 // Move the children to the current element to be able to calculate the height.
                 this.domUtils.moveChildren(div, this.element);
 
