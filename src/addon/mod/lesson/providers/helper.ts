@@ -457,7 +457,7 @@ export class AddonModLessonHelperProvider {
     prepareQuestionData(question: any, data: any): any {
         if (question.template == 'essay' && question.textarea) {
             // Add some HTML to the answer if needed.
-            data[question.textarea.property] = this.textUtils.formatHtmlLines(data[question.textarea.property]);
+            data[question.textarea.name] = this.textUtils.formatHtmlLines(data[question.textarea.name]);
         } else if (question.template == 'multichoice' && question.multi) {
             // Only send the options with value set to true.
             for (const name in data) {
