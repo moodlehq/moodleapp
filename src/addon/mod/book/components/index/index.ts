@@ -26,7 +26,7 @@ import { AddonModBookTocPopoverComponent } from '../../components/toc-popover/to
  */
 @Component({
     selector: 'addon-mod-book-index',
-    templateUrl: 'addon-mod-assign-submission-index.html',
+    templateUrl: 'addon-mod-book-index.html',
 })
 export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComponent {
     component = AddonModBookProvider.COMPONENT;
