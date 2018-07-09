@@ -47,14 +47,13 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
             return this.questionHelper.showComponentError(this.onAbort);
         }
 
-        const div = document.createElement('div');
-        div.innerHTML = this.question.html;
+        const element = this.domUtils.convertToElement(this.question.html);
 
         // Get D&D area, form and question text.
-        const ddArea = div.querySelector('.ddarea'),
-            ddForm = div.querySelector('.ddform');
+        const ddArea = element.querySelector('.ddarea'),
+            ddForm = element.querySelector('.ddform');
 
-        this.question.text = this.domUtils.getContentsOfElement(div, '.qtext');
+        this.question.text = this.domUtils.getContentsOfElement(element, '.qtext');
         if (!ddArea || !ddForm || typeof this.question.text == 'undefined') {
             this.logger.warn('Aborting because of an error parsing question.', this.question.name);
 
@@ -64,7 +63,7 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
         // Build the D&D area HTML.
         this.question.ddArea = ddArea.outerHTML;
 
-        const wrongParts = div.querySelector('.wrongparts');
+        const wrongParts = element.querySelector('.wrongparts');
         if (wrongParts) {
             this.question.ddArea += wrongParts.outerHTML;
         }

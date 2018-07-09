@@ -14,6 +14,7 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreQuestionHandler } from '@core/question/providers/delegate';
 import { AddonQtypeNumericalHandler } from '@addon/qtype/numerical/providers/handler';
@@ -27,7 +28,8 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
     name = 'AddonQtypeCalculated';
     type = 'qtype_calculated';
 
-    constructor(private utils: CoreUtilsProvider, private numericalHandler: AddonQtypeNumericalHandler) { }
+    constructor(private utils: CoreUtilsProvider, private numericalHandler: AddonQtypeNumericalHandler,
+            private domUtils: CoreDomUtilsProvider) { }
 
     /**
      * Return the Component to use to display the question.
@@ -120,9 +122,8 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
      * @return {boolean} Whether the question requires units.
      */
     requiresUnits(question: any): boolean {
-        const div = document.createElement('div');
-        div.innerHTML = question.html;
+        const element = this.domUtils.convertToElement(question.html);
 
-        return !!(div.querySelector('select[name*=unit]') || div.querySelector('input[type="radio"]'));
+        return !!(element.querySelector('select[name*=unit]') || element.querySelector('input[type="radio"]'));
     }
 }

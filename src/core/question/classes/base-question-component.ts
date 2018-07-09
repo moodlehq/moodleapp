@@ -51,12 +51,12 @@ export class CoreQuestionBaseComponent {
      */
     initCalculatedComponent(): void | HTMLElement {
         // Treat the input text first.
-        const questionDiv = this.initInputTextComponent();
-        if (questionDiv) {
+        const questionEl = this.initInputTextComponent();
+        if (questionEl) {
 
             // Check if the question has a select for units.
             const selectModel: any = {},
-                select = <HTMLSelectElement> questionDiv.querySelector('select[name*=unit]'),
+                select = <HTMLSelectElement> questionEl.querySelector('select[name*=unit]'),
                 options = select && Array.from(select.querySelectorAll('option'));
 
             if (select && options && options.length) {
@@ -94,24 +94,24 @@ export class CoreQuestionBaseComponent {
                 }
 
                 // Get the accessibility label.
-                const accessibilityLabel = questionDiv.querySelector('label[for="' + select.id + '"]');
+                const accessibilityLabel = questionEl.querySelector('label[for="' + select.id + '"]');
                 selectModel.accessibilityLabel = accessibilityLabel && accessibilityLabel.innerHTML;
 
                 this.question.select = selectModel;
 
                 // Check which one should be displayed first: the select or the input.
-                const input = questionDiv.querySelector('input[type="text"][name*=answer]');
+                const input = questionEl.querySelector('input[type="text"][name*=answer]');
                 this.question.selectFirst =
-                        questionDiv.innerHTML.indexOf(input.outerHTML) > questionDiv.innerHTML.indexOf(select.outerHTML);
+                        questionEl.innerHTML.indexOf(input.outerHTML) > questionEl.innerHTML.indexOf(select.outerHTML);
 
-                return questionDiv;
+                return questionEl;
             }
 
             // Check if the question has radio buttons for units.
-            const radios = <HTMLInputElement[]> Array.from(questionDiv.querySelectorAll('input[type="radio"]'));
+            const radios = <HTMLInputElement[]> Array.from(questionEl.querySelectorAll('input[type="radio"]'));
             if (!radios.length) {
                 // No select and no radio buttons. The units need to be entered in the input text.
-                return questionDiv;
+                return questionEl;
             }
 
             this.question.options = [];
@@ -126,7 +126,7 @@ export class CoreQuestionBaseComponent {
                         disabled: radioEl.disabled
                     },
                     // Get the label with the question text.
-                    label = <HTMLElement> questionDiv.querySelector('label[for="' + option.id + '"]');
+                    label = <HTMLElement> questionEl.querySelector('label[for="' + option.id + '"]');
 
                 this.question.optionsName = option.name;
 
@@ -154,9 +154,9 @@ export class CoreQuestionBaseComponent {
             }
 
             // Check which one should be displayed first: the options or the input.
-            const input = questionDiv.querySelector('input[type="text"][name*=answer]');
+            const input = questionEl.querySelector('input[type="text"][name*=answer]');
             this.question.optionsFirst =
-                    questionDiv.innerHTML.indexOf(input.outerHTML) > questionDiv.innerHTML.indexOf(radios[0].outerHTML);
+                    questionEl.innerHTML.indexOf(input.outerHTML) > questionEl.innerHTML.indexOf(radios[0].outerHTML);
         }
     }
 
@@ -172,18 +172,17 @@ export class CoreQuestionBaseComponent {
             return this.questionHelper.showComponentError(this.onAbort);
         }
 
-        const div = document.createElement('div');
-        div.innerHTML = this.question.html;
+        const element = this.domUtils.convertToElement(this.question.html);
 
         // Extract question text.
-        this.question.text = this.domUtils.getContentsOfElement(div, '.qtext');
+        this.question.text = this.domUtils.getContentsOfElement(element, '.qtext');
         if (typeof this.question.text == 'undefined') {
             this.logger.warn('Aborting because of an error parsing question.', this.question.name);
 
             return this.questionHelper.showComponentError(this.onAbort);
         }
 
-        return div;
+        return element;
     }
 
     /**
@@ -192,24 +191,24 @@ export class CoreQuestionBaseComponent {
      * @return {void|HTMLElement} Element containing the question HTML, void if the data is not valid.
      */
     initEssayComponent(): void | HTMLElement {
-        const questionDiv = this.initComponent();
+        const questionEl = this.initComponent();
 
-        if (questionDiv) {
+        if (questionEl) {
             // First search the textarea.
-            const textarea = <HTMLTextAreaElement> questionDiv.querySelector('textarea[name*=_answer]');
-            this.question.allowsAttachments = !!questionDiv.querySelector('div[id*=filemanager]');
-            this.question.isMonospaced = !!questionDiv.querySelector('.qtype_essay_monospaced');
-            this.question.isPlainText = this.question.isMonospaced || !!questionDiv.querySelector('.qtype_essay_plain');
-            this.question.hasDraftFiles = this.questionHelper.hasDraftFileUrls(questionDiv.innerHTML);
+            const textarea = <HTMLTextAreaElement> questionEl.querySelector('textarea[name*=_answer]');
+            this.question.allowsAttachments = !!questionEl.querySelector('div[id*=filemanager]');
+            this.question.isMonospaced = !!questionEl.querySelector('.qtype_essay_monospaced');
+            this.question.isPlainText = this.question.isMonospaced || !!questionEl.querySelector('.qtype_essay_plain');
+            this.question.hasDraftFiles = this.questionHelper.hasDraftFileUrls(questionEl.innerHTML);
 
             if (!textarea) {
                 // Textarea not found, we might be in review. Search the answer and the attachments.
-                this.question.answer = this.domUtils.getContentsOfElement(questionDiv, '.qtype_essay_response');
+                this.question.answer = this.domUtils.getContentsOfElement(questionEl, '.qtype_essay_response');
                 this.question.attachments = this.questionHelper.getQuestionAttachmentsFromHtml(
-                        this.domUtils.getContentsOfElement(questionDiv, '.attachments'));
+                        this.domUtils.getContentsOfElement(questionEl, '.attachments'));
             } else {
                 // Textarea found.
-                const input = <HTMLInputElement> questionDiv.querySelector('input[type="hidden"][name*=answerformat]'),
+                const input = <HTMLInputElement> questionEl.querySelector('input[type="hidden"][name*=answerformat]'),
                     content = textarea.innerHTML;
 
                 this.question.textarea = {
@@ -241,11 +240,10 @@ export class CoreQuestionBaseComponent {
             return this.questionHelper.showComponentError(this.onAbort);
         }
 
-        const div = document.createElement('div');
-        div.innerHTML = this.question.html;
+        const element = this.domUtils.convertToElement(this.question.html);
 
         // Get question content.
-        const content = <HTMLElement> div.querySelector(contentSelector);
+        const content = <HTMLElement> element.querySelector(contentSelector);
         if (!content) {
             this.logger.warn('Aborting because of an error parsing question.', this.question.name);
 
@@ -257,11 +255,11 @@ export class CoreQuestionBaseComponent {
         this.domUtils.removeElement(content, '.validationerror');
 
         // Replace Moodle's correct/incorrect and feedback classes with our own.
-        this.questionHelper.replaceCorrectnessClasses(div);
-        this.questionHelper.replaceFeedbackClasses(div);
+        this.questionHelper.replaceCorrectnessClasses(element);
+        this.questionHelper.replaceFeedbackClasses(element);
 
         // Treat the correct/incorrect icons.
-        this.questionHelper.treatCorrectnessIcons(div);
+        this.questionHelper.treatCorrectnessIcons(element);
 
         // Set the question text.
         this.question.text = content.innerHTML;
@@ -273,10 +271,10 @@ export class CoreQuestionBaseComponent {
      * @return {void|HTMLElement} Element containing the question HTML, void if the data is not valid.
      */
     initInputTextComponent(): void | HTMLElement {
-        const questionDiv = this.initComponent();
-        if (questionDiv) {
+        const questionEl = this.initComponent();
+        if (questionEl) {
             // Get the input element.
-            const input = <HTMLInputElement> questionDiv.querySelector('input[type="text"][name*=answer]');
+            const input = <HTMLInputElement> questionEl.querySelector('input[type="text"][name*=answer]');
             if (!input) {
                 this.logger.warn('Aborting because couldn\'t find input.', this.question.name);
 
@@ -302,7 +300,7 @@ export class CoreQuestionBaseComponent {
             }
         }
 
-        return questionDiv;
+        return questionEl;
     }
 
     /**
@@ -311,11 +309,11 @@ export class CoreQuestionBaseComponent {
      * @return {void|HTMLElement} Element containing the question HTML, void if the data is not valid.
      */
     initMatchComponent(): void | HTMLElement {
-        const questionDiv = this.initComponent();
+        const questionEl = this.initComponent();
 
-        if (questionDiv) {
+        if (questionEl) {
             // Find rows.
-            const rows = Array.from(questionDiv.querySelectorAll('table.answer tr'));
+            const rows = Array.from(questionEl.querySelectorAll('table.answer tr'));
             if (!rows || !rows.length) {
                 this.logger.warn('Aborting because couldn\'t find any row.', this.question.name);
 
@@ -394,7 +392,7 @@ export class CoreQuestionBaseComponent {
             this.question.loaded = true;
         }
 
-        return questionDiv;
+        return questionEl;
     }
 
     /**
@@ -403,19 +401,19 @@ export class CoreQuestionBaseComponent {
      * @return {void|HTMLElement} Element containing the question HTML, void if the data is not valid.
      */
     initMultichoiceComponent(): void | HTMLElement {
-        const questionDiv = this.initComponent();
+        const questionEl = this.initComponent();
 
-        if (questionDiv) {
+        if (questionEl) {
 
             // Get the prompt.
-            this.question.prompt = this.domUtils.getContentsOfElement(questionDiv, '.prompt');
+            this.question.prompt = this.domUtils.getContentsOfElement(questionEl, '.prompt');
 
             // Search radio buttons first (single choice).
-            let options = <HTMLInputElement[]> Array.from(questionDiv.querySelectorAll('input[type="radio"]'));
+            let options = <HTMLInputElement[]> Array.from(questionEl.querySelectorAll('input[type="radio"]'));
             if (!options || !options.length) {
                 // Radio buttons not found, it should be a multi answer. Search for checkbox.
                 this.question.multi = true;
-                options = <HTMLInputElement[]> Array.from(questionDiv.querySelectorAll('input[type="checkbox"]'));
+                options = <HTMLInputElement[]> Array.from(questionEl.querySelectorAll('input[type="checkbox"]'));
 
                 if (!options || !options.length) {
                     // No checkbox found either. Abort.
@@ -441,7 +439,7 @@ export class CoreQuestionBaseComponent {
                 this.question.optionsName = option.name;
 
                 // Get the label with the question text.
-                const label = questionDiv.querySelector('label[for="' + option.id + '"]');
+                const label = questionEl.querySelector('label[for="' + option.id + '"]');
                 if (label) {
                     option.text = label.innerHTML;
 
@@ -483,6 +481,6 @@ export class CoreQuestionBaseComponent {
             }
         }
 
-        return questionDiv;
+        return questionEl;
     }
 }
