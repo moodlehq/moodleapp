@@ -27,8 +27,6 @@ import * as moment from 'moment';
 @Injectable()
 export class AddonModLessonHelperProvider {
 
-    protected div = document.createElement('div'); // A div element to search in HTML code.
-
     constructor(private domUtils: CoreDomUtilsProvider, private fb: FormBuilder, private translate: TranslateService,
             private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider) { }
 
@@ -39,8 +37,9 @@ export class AddonModLessonHelperProvider {
      * @return {{formatted: boolean, label: string, href: string}} Formatted data.
      */
     formatActivityLink(activityLink: string): {formatted: boolean, label: string, href: string} {
-        this.div.innerHTML = activityLink;
-        const anchor = this.div.querySelector('a');
+        const element = this.domUtils.convertToElement(activityLink),
+            anchor = element.querySelector('a');
+
         if (!anchor) {
             // Anchor not found, return the original HTML.
             return {
@@ -67,11 +66,11 @@ export class AddonModLessonHelperProvider {
         const data = {
                 buttonText: '',
                 content: ''
-            };
+            },
+            element = this.domUtils.convertToElement(html);
 
         // Search the input button.
-        this.div.innerHTML = html;
-        const button = <HTMLInputElement> this.div.querySelector('input[type="button"]');
+        const button = <HTMLInputElement> element.querySelector('input[type="button"]');
 
         if (button) {
             // Extract the button content and remove it from the HTML.
@@ -79,7 +78,7 @@ export class AddonModLessonHelperProvider {
             button.remove();
         }
 
-        data.content = this.div.innerHTML.trim();
+        data.content = element.innerHTML.trim();
 
         return data;
     }
@@ -91,19 +90,19 @@ export class AddonModLessonHelperProvider {
      * @return {any[]} List of buttons.
      */
     getPageButtonsFromHtml(html: string): any[] {
-        const buttons = [];
+        const buttons = [],
+            element = this.domUtils.convertToElement(html);
 
         // Get the container of the buttons if it exists.
-        this.div.innerHTML = html;
-        let buttonsContainer = this.div.querySelector('.branchbuttoncontainer');
+        let buttonsContainer = element.querySelector('.branchbuttoncontainer');
 
         if (!buttonsContainer) {
             // Button container not found, might be a legacy lesson (from 1.9).
-            if (!this.div.querySelector('form input[type="submit"]')) {
+            if (!element.querySelector('form input[type="submit"]')) {
                 // No buttons found.
                 return buttons;
             }
-            buttonsContainer = this.div;
+            buttonsContainer = element;
         }
 
         const forms = Array.from(buttonsContainer.querySelectorAll('form'));
@@ -144,8 +143,8 @@ export class AddonModLessonHelperProvider {
      */
     getPageContentsFromPageData(data: any): string {
         // Search the page contents inside the whole page HTML. Use data.pagecontent because it's filtered.
-        this.div.innerHTML = data.pagecontent;
-        const contents = this.div.querySelector('.contents');
+        const element = this.domUtils.convertToElement(data.pagecontent),
+            contents = element.querySelector('.contents');
 
         if (contents) {
             return contents.innerHTML.trim();
@@ -163,20 +162,20 @@ export class AddonModLessonHelperProvider {
      * @return {any} Question data.
      */
     getQuestionFromPageData(questionForm: FormGroup, pageData: any): any {
-        const question: any = {};
+        const question: any = {},
+            element = this.domUtils.convertToElement(pageData.pagecontent);
 
         // Get the container of the question answers if it exists.
-        this.div.innerHTML = pageData.pagecontent;
-        const fieldContainer = this.div.querySelector('.fcontainer');
+        const fieldContainer = element.querySelector('.fcontainer');
 
         // Get hidden inputs and add their data to the form group.
-        const hiddenInputs = <HTMLInputElement[]> Array.from(this.div.querySelectorAll('input[type="hidden"]'));
+        const hiddenInputs = <HTMLInputElement[]> Array.from(element.querySelectorAll('input[type="hidden"]'));
         hiddenInputs.forEach((input) => {
             questionForm.addControl(input.name, this.fb.control(input.value));
         });
 
         // Get the submit button and extract its value.
-        const submitButton = <HTMLInputElement> this.div.querySelector('input[type="submit"]');
+        const submitButton = <HTMLInputElement> element.querySelector('input[type="submit"]');
         question.submitLabel = submitButton ? submitButton.value : this.translate.instant('addon.mod_lesson.submit');
 
         if (!fieldContainer) {
@@ -358,28 +357,27 @@ export class AddonModLessonHelperProvider {
      *               the HTML.
      */
     getQuestionPageAnswerDataFromHtml(html: string): any {
-        const data: any = {};
-
-        this.div.innerHTML = html;
+        const data: any = {},
+            element = this.domUtils.convertToElement(html);
 
         // Check if it has a checkbox.
-        let input = <HTMLInputElement> this.div.querySelector('input[type="checkbox"][name*="answer"]');
+        let input = <HTMLInputElement> element.querySelector('input[type="checkbox"][name*="answer"]');
 
         if (input) {
             // Truefalse or multichoice.
             data.isCheckbox = true;
             data.checked = !!input.checked;
             data.name = input.name;
-            data.highlight = !!this.div.querySelector('.highlight');
+            data.highlight = !!element.querySelector('.highlight');
 
             input.remove();
-            data.content = this.div.innerHTML.trim();
+            data.content = element.innerHTML.trim();
 
             return data;
         }
 
         // Check if it has an input text or number.
-        input = <HTMLInputElement> this.div.querySelector('input[type="number"],input[type="text"]');
+        input = <HTMLInputElement> element.querySelector('input[type="number"],input[type="text"]');
         if (input) {
             // Short answer or numeric.
             data.isText = true;
@@ -389,7 +387,7 @@ export class AddonModLessonHelperProvider {
         }
 
         // Check if it has a select.
-        const select = <HTMLSelectElement> this.div.querySelector('select');
+        const select = <HTMLSelectElement> element.querySelector('select');
         if (select && select.options) {
             // Matching.
             const selectedOption = select.options[select.selectedIndex];
@@ -402,7 +400,7 @@ export class AddonModLessonHelperProvider {
             }
 
             select.remove();
-            data.content = this.div.innerHTML.trim();
+            data.content = element.innerHTML.trim();
 
             return data;
         }
@@ -477,11 +475,11 @@ export class AddonModLessonHelperProvider {
      * @return {string} Feedback without the question text.
      */
     removeQuestionFromFeedback(html: string): string {
-        this.div.innerHTML = html;
+        const element = this.domUtils.convertToElement(html);
 
         // Remove the question text.
-        this.domUtils.removeElement(this.div, '.generalbox:not(.feedback):not(.correctanswer)');
+        this.domUtils.removeElement(element, '.generalbox:not(.feedback):not(.correctanswer)');
 
-        return this.div.innerHTML.trim();
+        return element.innerHTML.trim();
     }
 }

@@ -27,8 +27,6 @@ import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
 @Injectable()
 export class AddonModQuizHelperProvider {
 
-    protected div = document.createElement('div'); // A div element to search in HTML code.
-
     constructor(private domUtils: CoreDomUtilsProvider, private translate: TranslateService, private utils: CoreUtilsProvider,
             private accessRuleDelegate: AddonModQuizAccessRuleDelegate, private quizProvider: AddonModQuizProvider,
             private modalCtrl: ModalController, private quizOfflineProvider: AddonModQuizOfflineProvider) { }
@@ -153,9 +151,9 @@ export class AddonModQuizHelperProvider {
      * @return {string}      Question's mark.
      */
     getQuestionMarkFromHtml(html: string): string {
-        this.div.innerHTML = html;
+        const element = this.domUtils.convertToElement(html);
 
-        return this.domUtils.getContentsOfElement(this.div, '.grade');
+        return this.domUtils.getContentsOfElement(element, '.grade');
     }
 
     /**

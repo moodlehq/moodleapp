@@ -33,10 +33,10 @@ export class AddonQtypeDescriptionComponent extends CoreQuestionBaseComponent im
      * Component being initialized.
      */
     ngOnInit(): void {
-        const questionDiv = this.initComponent();
-        if (questionDiv) {
+        const questionEl = this.initComponent();
+        if (questionEl) {
             // Get the "seen" hidden input.
-            const input = <HTMLInputElement> questionDiv.querySelector('input[type="hidden"][name*=seen]');
+            const input = <HTMLInputElement> questionEl.querySelector('input[type="hidden"][name*=seen]');
             if (input) {
                 this.question.seenInput = {
                     name: input.name,

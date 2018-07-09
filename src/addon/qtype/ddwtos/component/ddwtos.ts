@@ -47,17 +47,16 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
             return this.questionHelper.showComponentError(this.onAbort);
         }
 
-        const div = document.createElement('div');
-        div.innerHTML = this.question.html;
+        const element = this.domUtils.convertToElement(this.question.html);
 
         // Replace Moodle's correct/incorrect and feedback classes with our own.
-        this.questionHelper.replaceCorrectnessClasses(div);
-        this.questionHelper.replaceFeedbackClasses(div);
+        this.questionHelper.replaceCorrectnessClasses(element);
+        this.questionHelper.replaceFeedbackClasses(element);
 
         // Treat the correct/incorrect icons.
-        this.questionHelper.treatCorrectnessIcons(div);
+        this.questionHelper.treatCorrectnessIcons(element);
 
-        const answerContainer = div.querySelector('.answercontainer');
+        const answerContainer = element.querySelector('.answercontainer');
         if (!answerContainer) {
             this.logger.warn('Aborting because of an error parsing question.', this.question.name);
 
@@ -67,7 +66,7 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
         this.question.readOnly = answerContainer.classList.contains('readonly');
         this.question.answers = answerContainer.outerHTML;
 
-        this.question.text = this.domUtils.getContentsOfElement(div, '.qtext');
+        this.question.text = this.domUtils.getContentsOfElement(element, '.qtext');
         if (typeof this.question.text == 'undefined') {
             this.logger.warn('Aborting because of an error parsing question.', this.question.name);
 
@@ -75,7 +74,7 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
         }
 
         // Get the inputs where the answers will be stored and add them to the question text.
-        const inputEls = <HTMLElement[]> Array.from(div.querySelectorAll('input[type="hidden"]:not([name*=sequencecheck])'));
+        const inputEls = <HTMLElement[]> Array.from(element.querySelectorAll('input[type="hidden"]:not([name*=sequencecheck])'));
 
         inputEls.forEach((inputEl) => {
             this.question.text += inputEl.outerHTML;

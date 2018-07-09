@@ -35,7 +35,8 @@ export class CoreDomUtilsProvider {
         'search', 'tel', 'text', 'time', 'url', 'week'];
     protected INSTANCE_ID_ATTR_NAME = 'core-instance-id';
 
-    protected element = document.createElement('div'); // Fake element to use in some functions, to prevent creating it each time.
+    protected parser = new DOMParser(); // Parser to treat HTML.
+
     protected matchesFn: string; // Name of the "matches" function to use when simulating a closest call.
     protected instances: {[id: string]: any} = {}; // Store component/directive instances by id.
     protected lastInstanceId = 0;
@@ -125,6 +126,28 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Convert some HTML as text into an HTMLElement. This HTML is put inside a div or a body.
+     *
+     * @param {string} html Text to convert.
+     * @return {HTMLElement} Element.
+     */
+    convertToElement(html: string): HTMLElement {
+        if (this.parser) {
+            const doc = this.parser.parseFromString(html, 'text/html');
+
+            // Verify that the doc is valid. In some OS like Android 4.4 only XML parsing is supported, so doc is null.
+            if (doc) {
+                return doc.body;
+            }
+        }
+
+        const element = document.createElement('div');
+        element.innerHTML = html;
+
+        return element;
+    }
+
+    /**
      * Create a "cancelled" error. These errors won't display an error message in showErrorModal functions.
      *
      * @return {any} The error object.
@@ -169,8 +192,8 @@ export class CoreDomUtilsProvider {
         const urls = [];
         let elements;
 
-        this.element.innerHTML = html;
-        elements = this.element.querySelectorAll('a, img, audio, video, source, track');
+        const element = this.convertToElement(html);
+        elements = element.querySelectorAll('a, img, audio, video, source, track');
 
         for (let i = 0; i < elements.length; i++) {
             const element = elements[i];
@@ -599,21 +622,21 @@ export class CoreDomUtilsProvider {
     removeElementFromHtml(html: string, selector: string, removeAll?: boolean): string {
         let selected;
 
-        this.element.innerHTML = html;
+        const element = this.convertToElement(html);
 
         if (removeAll) {
-            selected = this.element.querySelectorAll(selector);
+            selected = element.querySelectorAll(selector);
             for (let i = 0; i < selected.length; i++) {
                 selected[i].remove();
             }
         } else {
-            selected = this.element.querySelector(selector);
+            selected = element.querySelector(selector);
             if (selected) {
                 selected.remove();
             }
         }
 
-        return this.element.innerHTML;
+        return element.innerHTML;
     }
 
     /**
@@ -665,10 +688,10 @@ export class CoreDomUtilsProvider {
         let media,
             anchors;
 
-        this.element.innerHTML = html;
+        const element = this.convertToElement(html);
 
         // Treat elements with src (img, audio, video, ...).
-        media = this.element.querySelectorAll('img, video, audio, source, track');
+        media = element.querySelectorAll('img, video, audio, source, track');
         media.forEach((media: HTMLElement) => {
             let newSrc = paths[this.textUtils.decodeURIComponent(media.getAttribute('src'))];
 
@@ -686,7 +709,7 @@ export class CoreDomUtilsProvider {
         });
 
         // Now treat links.
-        anchors = this.element.querySelectorAll('a');
+        anchors = element.querySelectorAll('a');
         anchors.forEach((anchor: HTMLElement) => {
             const href = this.textUtils.decodeURIComponent(anchor.getAttribute('href')),
                 newUrl = paths[href];
@@ -700,7 +723,7 @@ export class CoreDomUtilsProvider {
             }
         });
 
-        return this.element.innerHTML;
+        return element.innerHTML;
     }
 
     /**
@@ -1104,13 +1127,13 @@ export class CoreDomUtilsProvider {
     }
 
     /**
-     * Converts HTML formatted text to DOM element.
-     * @param  {string}      text HTML text.
-     * @return {HTMLCollection}      Same text converted to HTMLCollection.
+     * Converts HTML formatted text to DOM element(s).
+     *
+     * @param {string} text HTML text.
+     * @return {HTMLCollection} Same text converted to HTMLCollection.
      */
     toDom(text: string): HTMLCollection {
-        const element = document.createElement('div');
-        element.innerHTML = text;
+        const element = this.convertToElement(text);
 
         return element.children;
     }

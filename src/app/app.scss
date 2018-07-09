@@ -824,6 +824,7 @@ body.keyboard-is-open core-ion-tabs .tabbar {
 // Fix links and videos in ion-radio and ion-checkbox.
 .item.item-radio, .item.item-checkbox {
   .input-wrapper {
+    position: relative;
     z-index: 5;
     pointer-events: none;
   }

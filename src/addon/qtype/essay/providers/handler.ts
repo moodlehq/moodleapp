@@ -15,6 +15,7 @@
 
 import { Injectable, Injector } from '@angular/core';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreQuestionHandler } from '@core/question/providers/delegate';
 import { CoreQuestionHelperProvider } from '@core/question/providers/helper';
@@ -28,10 +29,8 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
     name = 'AddonQtypeEssay';
     type = 'qtype_essay';
 
-    protected div = document.createElement('div'); // A div element to search in HTML code.
-
     constructor(private utils: CoreUtilsProvider, private questionHelper: CoreQuestionHelperProvider,
-            private textUtils: CoreTextUtilsProvider) { }
+            private textUtils: CoreTextUtilsProvider, private domUtils: CoreDomUtilsProvider) { }
 
     /**
      * Return the name of the behaviour to use for the question.
@@ -65,14 +64,14 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
      * @return {string} Prevent submit message. Undefined or empty if can be submitted.
      */
     getPreventSubmitMessage(question: any): string {
-        this.div.innerHTML = question.html;
+        const element = this.domUtils.convertToElement(question.html);
 
-        if (this.div.querySelector('div[id*=filemanager]')) {
+        if (element.querySelector('div[id*=filemanager]')) {
             // The question allows attachments. Since the app cannot attach files yet we will prevent submitting the question.
             return 'core.question.errorattachmentsnotsupported';
         }
 
-        if (this.questionHelper.hasDraftFileUrls(this.div.innerHTML)) {
+        if (this.questionHelper.hasDraftFileUrls(element.innerHTML)) {
             return 'core.question.errorinlinefilesnotsupported';
         }
     }
@@ -85,10 +84,10 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
      * @return {number} 1 if complete, 0 if not complete, -1 if cannot determine.
      */
     isCompleteResponse(question: any, answers: any): number {
-        this.div.innerHTML = question.html;
+        const element = this.domUtils.convertToElement(question.html);
 
         const hasInlineText = answers['answer'] && answers['answer'] !== '',
-            allowsAttachments = !!this.div.querySelector('div[id*=filemanager]');
+            allowsAttachments = !!element.querySelector('div[id*=filemanager]');
 
         if (!allowsAttachments) {
             return hasInlineText ? 1 : 0;
@@ -141,10 +140,10 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
      * @return {void|Promise<any>} Return a promise resolved when done if async, void if sync.
      */
     prepareAnswers(question: any, answers: any, offline: boolean, siteId?: string): void | Promise<any> {
-        this.div.innerHTML = question.html;
+        const element = this.domUtils.convertToElement(question.html);
 
         // Search the textarea to get its name.
-        const textarea = <HTMLTextAreaElement> this.div.querySelector('textarea[name*=_answer]');
+        const textarea = <HTMLTextAreaElement> element.querySelector('textarea[name*=_answer]');
 
         if (textarea && typeof answers[textarea.name] != 'undefined') {
             // Add some HTML to the text if needed.

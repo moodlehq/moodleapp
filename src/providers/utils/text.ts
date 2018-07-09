@@ -68,7 +68,7 @@ export class CoreTextUtilsProvider {
         {old: /_mmaModWorkshop/g, new: '_AddonModWorkshop'},
     ];
 
-    protected element = document.createElement('div'); // Fake element to use in some functions, to prevent creating it each time.
+    protected parser = new DOMParser(); // Parser to treat HTML.
 
     constructor(private translate: TranslateService, private langProvider: CoreLangProvider, private modalCtrl: ModalController) { }
 
@@ -142,8 +142,8 @@ export class CoreTextUtilsProvider {
         // First, we use a regexpr.
         text = text.replace(/(<([^>]+)>)/ig, '');
         // Then, we rely on the browser. We need to wrap the text to be sure is HTML.
-        this.element.innerHTML = text;
-        text = this.element.textContent;
+        const element = this.convertToElement(text);
+        text = element.textContent;
         // Recover or remove new lines.
         text = this.replaceNewLines(text, singleLine ? ' ' : '<br>');
 
@@ -174,6 +174,29 @@ export class CoreTextUtilsProvider {
         } else {
             return leftPath + rightPath;
         }
+    }
+
+    /**
+     * Convert some HTML as text into an HTMLElement. This HTML is put inside a div or a body.
+     * This function is the same as in DomUtils, but we cannot use that one because of circular dependencies.
+     *
+     * @param {string} html Text to convert.
+     * @return {HTMLElement} Element.
+     */
+    protected convertToElement(html: string): HTMLElement {
+        if (this.parser) {
+            const doc = this.parser.parseFromString(html, 'text/html');
+
+            // Verify that the doc is valid. In some OS like Android 4.4 only XML parsing is supported, so doc is null.
+            if (doc) {
+                return doc.body;
+            }
+        }
+
+        const element = document.createElement('div');
+        element.innerHTML = html;
+
+        return element;
     }
 
     /**
@@ -225,9 +248,8 @@ export class CoreTextUtilsProvider {
      */
     decodeHTMLEntities(text: string): string {
         if (text) {
-            this.element.innerHTML = text;
-            text = this.element.textContent;
-            this.element.textContent = '';
+            const element = this.convertToElement(text);
+            text = element.textContent;
         }
 
         return text;

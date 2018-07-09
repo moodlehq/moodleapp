@@ -29,7 +29,6 @@ import { CoreQuestionDelegate } from './delegate';
 @Injectable()
 export class CoreQuestionHelperProvider {
     protected lastErrorShown = 0;
-    protected div = document.createElement('div'); // A div element to search in HTML code.
 
     constructor(private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
         private questionProvider: CoreQuestionProvider, private sitesProvider: CoreSitesProvider,
@@ -70,15 +69,15 @@ export class CoreQuestionHelperProvider {
     extractQbehaviourButtons(question: any, selector?: string): void {
         selector = selector || '.im-controls input[type="submit"]';
 
-        this.div.innerHTML = question.html;
+        const element = this.domUtils.convertToElement(question.html);
 
         // Search the buttons.
-        const buttons = <HTMLInputElement[]> Array.from(this.div.querySelectorAll(selector));
+        const buttons = <HTMLInputElement[]> Array.from(element.querySelectorAll(selector));
         buttons.forEach((button) => {
             this.addBehaviourButton(question, button);
         });
 
-        question.html = this.div.innerHTML;
+        question.html = element.innerHTML;
     }
 
     /**
@@ -91,9 +90,9 @@ export class CoreQuestionHelperProvider {
      * @return {boolean} Wether the certainty is found.
      */
     extractQbehaviourCBM(question: any): boolean {
-        this.div.innerHTML = question.html;
+        const element = this.domUtils.convertToElement(question.html);
 
-        const labels = Array.from(this.div.querySelectorAll('.im-controls .certaintychoices label[for*="certainty"]'));
+        const labels = Array.from(element.querySelectorAll('.im-controls .certaintychoices label[for*="certainty"]'));
         question.behaviourCertaintyOptions = [];
 
         labels.forEach((label) => {
@@ -158,10 +157,10 @@ export class CoreQuestionHelperProvider {
      * @return {boolean} Whether the seen input is found.
      */
     extractQbehaviourSeenInput(question: any): boolean {
-        this.div.innerHTML = question.html;
+        const element = this.domUtils.convertToElement(question.html);
 
         // Search the "seen" input.
-        const seenInput = <HTMLInputElement> this.div.querySelector('input[type="hidden"][name*=seen]');
+        const seenInput = <HTMLInputElement> element.querySelector('input[type="hidden"][name*=seen]');
         if (seenInput) {
             // Get the data and remove the input.
             question.behaviourSeenInput = {
@@ -169,7 +168,7 @@ export class CoreQuestionHelperProvider {
                 value: seenInput.value
             };
             seenInput.parentElement.removeChild(seenInput);
-            question.html = this.div.innerHTML;
+            question.html = element.innerHTML;
 
             return true;
         }
@@ -214,9 +213,9 @@ export class CoreQuestionHelperProvider {
      * @param {string} attrName Name of the attribute to store the HTML in.
      */
     protected extractQuestionLastElementNotInContent(question: any, selector: string, attrName: string): void {
-        this.div.innerHTML = question.html;
+        const element = this.domUtils.convertToElement(question.html);
 
-        const matches = <HTMLElement[]> Array.from(this.div.querySelectorAll(selector));
+        const matches = <HTMLElement[]> Array.from(element.querySelectorAll(selector));
 
         // Get the last element and check it's not in the question contents.
         let last = matches.pop();
@@ -225,7 +224,7 @@ export class CoreQuestionHelperProvider {
                 // Not in question contents. Add it to a separate attribute and remove it from the HTML.
                 question[attrName] = last.innerHTML;
                 last.parentElement.removeChild(last);
-                question.html = this.div.innerHTML;
+                question.html = element.innerHTML;
 
                 return;
             }
@@ -283,10 +282,9 @@ export class CoreQuestionHelperProvider {
      * @return {any} Object where the keys are the names.
      */
     getAllInputNamesFromHtml(html: string): any {
-        const form = document.createElement('form'),
+        const element = this.domUtils.convertToElement('<form>' + html + '</form>'),
+            form = <HTMLFormElement> element.children[0],
             answers = {};
-
-        form.innerHTML = html;
 
         // Search all input elements.
         Array.from(form.elements).forEach((element: HTMLInputElement) => {
@@ -350,13 +348,13 @@ export class CoreQuestionHelperProvider {
      * @return {Object[]}    Attachments.
      */
     getQuestionAttachmentsFromHtml(html: string): any[] {
-        this.div.innerHTML = html;
+        const element = this.domUtils.convertToElement(html);
 
         // Remove the filemanager (area to attach files to a question).
-        this.domUtils.removeElement(this.div, 'div[id*=filemanager]');
+        this.domUtils.removeElement(element, 'div[id*=filemanager]');
 
         // Search the anchors.
-        const anchors = Array.from(this.div.querySelectorAll('a')),
+        const anchors = Array.from(element.querySelectorAll('a')),
             attachments = [];
 
         anchors.forEach((anchor) => {
@@ -383,10 +381,10 @@ export class CoreQuestionHelperProvider {
      */
     getQuestionSequenceCheckFromHtml(html: string): {name: string, value: string} {
         if (html) {
-            this.div.innerHTML = html;
+            const element = this.domUtils.convertToElement(html);
 
             // Search the input holding the sequencecheck.
-            const input = <HTMLInputElement> this.div.querySelector('input[name*=sequencecheck]');
+            const input = <HTMLInputElement> element.querySelector('input[name*=sequencecheck]');
             if (input && typeof input.name != 'undefined' && typeof input.value != 'undefined') {
                 return {
                     name: input.name,
@@ -415,9 +413,9 @@ export class CoreQuestionHelperProvider {
      * @return {string} Validation error message if present.
      */
     getValidationErrorFromHtml(html: string): string {
-        this.div.innerHTML = html;
+        const element = this.domUtils.convertToElement(html);
 
-        return this.domUtils.getContentsOfElement(this.div, '.validationerror');
+        return this.domUtils.getContentsOfElement(element, '.validationerror');
     }
 
     /**
@@ -443,8 +441,8 @@ export class CoreQuestionHelperProvider {
      * @param {any} question Question.
      */
     loadLocalAnswersInHtml(question: any): void {
-        const form = document.createElement('form');
-        form.innerHTML = question.html;
+        const element = this.domUtils.convertToElement('<form>' + question.html + '</form>'),
+            form = <HTMLFormElement> element.children[0];
 
         // Search all input elements.
         Array.from(form.elements).forEach((element: HTMLInputElement | HTMLButtonElement) => {
@@ -574,9 +572,9 @@ export class CoreQuestionHelperProvider {
      * @return {boolean} Whether the button is found.
      */
     protected searchBehaviourButton(question: any, htmlProperty: string, selector: string): boolean {
-        this.div.innerHTML = question[htmlProperty];
+        const element = this.domUtils.convertToElement(question[htmlProperty]);
 
-        const button = <HTMLInputElement> this.div.querySelector(selector);
+        const button = <HTMLInputElement> element.querySelector(selector);
         if (button) {
             // Add a behaviour button to the question's "behaviourButtons" property.
             this.addBehaviourButton(question, button);
@@ -585,7 +583,7 @@ export class CoreQuestionHelperProvider {
             button.parentElement.removeChild(button);
 
             // Update the question's html.
-            question[htmlProperty] = this.div.innerHTML;
+            question[htmlProperty] = element.innerHTML;
 
             return true;
         }

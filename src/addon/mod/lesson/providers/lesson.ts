@@ -17,6 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreGradesProvider } from '@core/grades/providers/grades';
 import { CoreSiteWSPreSets } from '@classes/site';
@@ -170,10 +171,9 @@ export class AddonModLessonProvider {
 
     protected ROOT_CACHE_KEY = 'mmaModLesson:';
     protected logger;
-    protected div = document.createElement('div'); // A div element to search in HTML code.
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
-            private translate: TranslateService, private textUtils: CoreTextUtilsProvider,
+            private translate: TranslateService, private textUtils: CoreTextUtilsProvider, private domUtils: CoreDomUtilsProvider,
             private lessonOfflineProvider: AddonModLessonOfflineProvider) {
         this.logger = logger.getInstance('AddonModLessonProvider');
 
@@ -233,9 +233,9 @@ export class AddonModLessonProvider {
         if (page.answerdata && !this.answerPageIsQuestion(page)) {
             // It isn't a question page, but it can be an end of branch, etc. Check if the first answer has a button.
             if (page.answerdata.answers && page.answerdata.answers[0]) {
-                this.div.innerHTML = page.answerdata.answers[0][0];
+                const element = this.domUtils.convertToElement(page.answerdata.answers[0][0]);
 
-                return !!this.div.querySelector('input[type="button"]');
+                return !!element.querySelector('input[type="button"]');
             }
         }
 

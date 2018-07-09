@@ -17,6 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -56,13 +57,13 @@ export class AddonModQuizProvider {
 
     protected ROOT_CACHE_KEY = 'mmaModQuiz:';
     protected logger;
-    protected div = document.createElement('div'); // A div element to search in HTML code.
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
             private translate: TranslateService, private textUtils: CoreTextUtilsProvider,
             private gradesHelper: CoreGradesHelperProvider, private questionDelegate: CoreQuestionDelegate,
             private filepoolProvider: CoreFilepoolProvider, private timeUtils: CoreTimeUtilsProvider,
-            private accessRulesDelegate: AddonModQuizAccessRuleDelegate, private quizOfflineProvider: AddonModQuizOfflineProvider) {
+            private accessRulesDelegate: AddonModQuizAccessRuleDelegate, private quizOfflineProvider: AddonModQuizOfflineProvider,
+            private domUtils: CoreDomUtilsProvider) {
         this.logger = logger.getInstance('AddonModQuizProvider');
     }
 
@@ -1480,9 +1481,9 @@ export class AddonModQuizProvider {
      * @return {boolean} Whether it's blocked.
      */
     isQuestionBlocked(question: any): boolean {
-        this.div.innerHTML = question.html;
+        const element = this.domUtils.convertToElement(question.html);
 
-        return !!this.div.querySelector('.mod_quiz-blocked_question_warning');
+        return !!element.querySelector('.mod_quiz-blocked_question_warning');
     }
 
     /**
