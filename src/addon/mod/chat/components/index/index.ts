@@ -24,7 +24,7 @@ import * as moment from 'moment';
  */
 @Component({
     selector: 'addon-mod-chat-index',
-    templateUrl: 'addon-mod-assign-submission-index.html',
+    templateUrl: 'addon-mod-chat-index.html',
 })
 export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComponent {
     component = AddonModChatProvider.COMPONENT;
