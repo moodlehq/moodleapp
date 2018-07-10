@@ -68,8 +68,6 @@ export class CoreTextUtilsProvider {
         {old: /_mmaModWorkshop/g, new: '_AddonModWorkshop'},
     ];
 
-    protected parser = new DOMParser(); // Parser to treat HTML.
-
     constructor(private translate: TranslateService, private langProvider: CoreLangProvider, private modalCtrl: ModalController) { }
 
     /**
@@ -179,20 +177,13 @@ export class CoreTextUtilsProvider {
     /**
      * Convert some HTML as text into an HTMLElement. This HTML is put inside a div or a body.
      * This function is the same as in DomUtils, but we cannot use that one because of circular dependencies.
+     * @todo: Try to use DOMParser or similar since this approach will send a request to all embedded media.
+     * We removed DOMParser solution because it isn't synchronous, document.body wasn't always loaded at start.
      *
      * @param {string} html Text to convert.
      * @return {HTMLElement} Element.
      */
     protected convertToElement(html: string): HTMLElement {
-        if (this.parser) {
-            const doc = this.parser.parseFromString(html, 'text/html');
-
-            // Verify that the doc is valid. In some OS like Android 4.4 only XML parsing is supported, so doc is null.
-            if (doc) {
-                return doc.body;
-            }
-        }
-
         const element = document.createElement('div');
         element.innerHTML = html;
 
