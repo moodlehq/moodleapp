@@ -214,10 +214,15 @@ export class CoreEmulatorModule {
 
         // Emulate Custom URL Scheme plugin in desktop apps.
         if (appProvider.isDesktop()) {
-            require('electron').ipcRenderer.on('mmAppLaunched', (event, url) => {
+            require('electron').ipcRenderer.on('coreAppLaunched', (event, url) => {
                 if (typeof win.handleOpenURL != 'undefined') {
                     win.handleOpenURL(url);
                 }
+            });
+
+            // Listen for 'resume' events.
+            require('electron').ipcRenderer.on('coreAppFocused', function() {
+                document.dispatchEvent(new Event('resume'));
             });
         }
 

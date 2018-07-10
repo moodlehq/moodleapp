@@ -14,7 +14,18 @@ const customConfig = {
       '@directives': resolve('./src/directives'),
       '@pipes': resolve('./src/pipes')
     }
-  }
+  },
+  externals: [
+    (function () {
+        var IGNORES = ["fs","child_process","electron","path","assert","cluster","crypto","dns","domain","events","http","https","net","os","process","punycode","querystring","readline","repl","stream","string_decoder","tls","tty","dgram","url","util","v8","vm","zlib"];
+        return function (context, request, callback) {
+            if (IGNORES.indexOf(request) >= 0) {
+                return callback(null, "require('" + request + "')");
+            }
+            return callback();
+        };
+    })()
+  ],
 };
 
 module.exports = {

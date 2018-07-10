@@ -32,7 +32,10 @@
     "ionic:build:before": "gulp",
     "ionic:watch:before": "gulp",
     "ionic:build:after": "gulp copy-component-templates",
-    "postionic:build": "gulp copy-component-templates"
+    "postionic:build": "gulp copy-component-templates",
+    "desktop.pack": "electron-builder --dir",
+    "desktop.dist": "electron-builder",
+    "windows.store": "electron-windows-store --input-directory .\\desktop\\dist\\win-unpacked --output-directory .\\desktop\\store --flatten true -a .\\resources\\desktop -m .\\desktop\\assets\\windows\\AppXManifest.xml --package-version 0.0.0.0 --package-name MoodleDesktop"
   },
   "dependencies": {
     "@angular/animations": "5.2.10",
@@ -95,7 +98,12 @@
     "gulp-slash": "^1.1.3",
     "through": "^2.3.8",
     "typescript": "~2.6.2",
-    "webpack-merge": "^4.1.2"
+    "webpack-merge": "^4.1.2",
+    "electron-rebuild": "^1.8.1"
+  },
+  "optionalDependencies": {
+    "electron-windows-notifications": "^2.1.1",
+    "electron-builder-squirrel-windows": "^20.19.0"
   },
   "browser": {
     "electron": false
@@ -105,5 +113,57 @@
       "android",
       "ios"
     ]
+  },
+  "main": "desktop/electron.js",
+  "build": {
+    "appId": "com.moodle.moodledesktop",
+    "productName": "Moodle Desktop",
+    "files": [
+      "desktop/electron.js",
+      "www/**/*",
+      "!config",
+      "!desktop/assets",
+      "!desktop/dist",
+      "!node_modules",
+      "!**/e2e",
+      "!hooks",
+      "!platforms",
+      "!plugins",
+      "!resources",
+      "!src",
+      "!**/*.scss"
+    ],
+    "directories": {
+      "output": "desktop/dist"
+    },
+    "protocols": [
+      {
+        "name": "Moodle Mobile URL",
+        "schemes": [
+          "moodlemobile"
+        ],
+        "role": "Viewer"
+      }
+    ],
+    "compression": "maximum",
+    "electronVersion": "2.0.4",
+    "mac": {
+      "category": "public.app-category.education",
+      "icon": "resources/desktop/icon.icns",
+      "target": "mas",
+      "extendInfo": {
+        "ElectronTeamID": "2NU57U5PAW"
+      }
+    },
+    "win": {
+      "target": "appx",
+      "icon": "resources/desktop/icon.ico"
+    },
+    "linux": {
+      "category": "Education"
+    },
+    "snap": {
+      "confinement": "classic"
+    }
   }
 }
