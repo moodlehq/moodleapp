@@ -15,8 +15,10 @@
 import { Injectable } from '@angular/core';
 import { File, Entry, DirectoryEntry, FileEntry, FileError, IWriteOptions } from '@ionic-native/file';
 import { CoreAppProvider } from '@providers/app';
+import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreConfigConstants } from '../../../configconstants';
+import { FileEntryMock, DirectoryEntryMock } from '../classes/filesystem';
 
 /**
  * Emulates the Cordova File plugin in desktop apps and in browser.
@@ -25,7 +27,8 @@ import { CoreConfigConstants } from '../../../configconstants';
 @Injectable()
 export class FileMock extends File {
 
-    constructor(private appProvider: CoreAppProvider, private textUtils: CoreTextUtilsProvider) {
+    constructor(private appProvider: CoreAppProvider, private textUtils: CoreTextUtilsProvider,
+            private mimeUtils: CoreMimetypeUtilsProvider) {
         super();
     }
 
@@ -191,6 +194,34 @@ export class FileMock extends File {
     }
 
     /**
+     * Emulate Cordova file plugin using NodeJS functions. This is only for NodeJS environments,
+     * browser works with the default resolveLocalFileSystemURL.
+     *
+     * @param {any} fs Node module 'fs'.
+     */
+    protected emulateCordovaFileForDesktop(fs: any): void {
+        if (!this.appProvider.isDesktop()) {
+            return;
+        }
+
+        // Implement resolveLocalFileSystemURL.
+        window.resolveLocalFileSystemURL = (path: string, successCallback: Function, errorCallback: Function): void => {
+            // Check that the file/dir exists.
+            fs.stat(path, (err, stats) => {
+                if (err) {
+                    errorCallback && errorCallback(err);
+                } else {
+                    // The file/dir exists, return an instance.
+                    const constructor = stats.isDirectory() ? DirectoryEntryMock : FileEntryMock,
+                        fileName = path.substr(path.lastIndexOf('/') + 1);
+
+                    successCallback && successCallback(new constructor(this.textUtils, this.mimeUtils, fileName, path));
+                }
+            });
+        };
+    }
+
+    /**
      * Fill the message for an error.
      *
      * @param {any} err Error.
@@ -336,7 +367,7 @@ export class FileMock extends File {
                 const fs = require('fs'),
                     app = require('electron').remote.app;
 
-                // @todo emulateCordovaFileForDesktop(fs);
+                this.emulateCordovaFileForDesktop(fs);
 
                 // Initialize File System. Get the path to use.
                 basePath = app.getPath('documents') || app.getPath('home');
@@ -352,7 +383,6 @@ export class FileMock extends File {
                 fs.mkdir(basePath, (e) => {
                     if (!e || (e && e.code === 'EEXIST')) {
                         // Create successful or it already exists. Resolve.
-                        // @todo this.fileProvider.setHTMLBasePath(basePath);
                         resolve(basePath);
                     } else {
                         reject('Error creating base path.');

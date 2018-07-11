@@ -55,6 +55,7 @@ import { CoreEmulatorHelperProvider } from './providers/helper';
 import { CoreEmulatorCaptureHelperProvider } from './providers/capture-helper';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFileProvider } from '@providers/file';
+import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -125,10 +126,11 @@ export const IONIC_NATIVE_PROVIDERS = [
         Device,
         {
             provide: File,
-            deps: [CoreAppProvider, CoreTextUtilsProvider],
-            useFactory: (appProvider: CoreAppProvider, textUtils: CoreTextUtilsProvider): File => {
+            deps: [CoreAppProvider, CoreTextUtilsProvider, CoreMimetypeUtilsProvider],
+            useFactory: (appProvider: CoreAppProvider, textUtils: CoreTextUtilsProvider, mimeUtils: CoreMimetypeUtilsProvider)
+                    : File => {
                 // Use platform instead of CoreAppProvider to prevent circular dependencies.
-                return appProvider.isMobile() ? new File() : new FileMock(appProvider, textUtils);
+                return appProvider.isMobile() ? new File() : new FileMock(appProvider, textUtils, mimeUtils);
             }
         },
         {
@@ -221,7 +223,7 @@ export class CoreEmulatorModule {
             });
 
             // Listen for 'resume' events.
-            require('electron').ipcRenderer.on('coreAppFocused', function() {
+            require('electron').ipcRenderer.on('coreAppFocused', () => {
                 document.dispatchEvent(new Event('resume'));
             });
         }
