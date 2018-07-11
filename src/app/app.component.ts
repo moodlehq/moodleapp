@@ -141,5 +141,29 @@ export class MoodleMobileApp implements OnInit {
                 loadCustomStrings();
             }
         });
+
+        // Pause Youtube videos in Android when app is put in background or screen is locked.
+        this.platform.pause.subscribe(() => {
+            if (!this.platform.is('android')) {
+                return;
+            }
+
+            const pauseVideos = (window: Window): void => {
+                // Search videos in iframes recursively.
+                for (let i = 0; i < window.length; i++) {
+                    pauseVideos(window[i]);
+                }
+
+                if (window.location.hostname.match(/^www\.youtube(-nocookie)?\.com$/)) {
+                    // Embedded Youtube video, pause it.
+                    const videos = window.document.querySelectorAll('video');
+                    for (let i = 0; i < videos.length; i++) {
+                        videos[i].pause();
+                    }
+                }
+            };
+
+            pauseVideos(window);
+        });
     }
 }
