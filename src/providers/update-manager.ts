@@ -106,10 +106,6 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
             name: 'desktop_local_notifications',
             fields: [
                 {
-                    name: 'at',
-                    type: 'date'
-                },
-                {
                     name: 'data',
                     type: 'object'
                 },

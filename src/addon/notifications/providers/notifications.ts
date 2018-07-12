@@ -58,10 +58,12 @@ export class AddonNotificationsProvider {
             if (cid && cid[1]) {
                 notification.courseid = cid[1];
             }
-            // Try to get the profile picture of the user.
-            this.userProvider.getProfile(notification.useridfrom, notification.courseid, true).then((user) => {
-                notification.profileimageurlfrom = user.profileimageurl;
-            });
+            if (notification.useridfrom > 0) {
+                // Try to get the profile picture of the user.
+                this.userProvider.getProfile(notification.useridfrom, notification.courseid, true).then((user) => {
+                    notification.profileimageurlfrom = user.profileimageurl;
+                });
+            }
         });
     }
 
