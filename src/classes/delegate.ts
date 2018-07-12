@@ -252,9 +252,8 @@ export class CoreDelegate {
         this.updatePromises[siteId][handler.name] = promise.catch(() => {
             return false;
         }).then((enabled: boolean) => {
-            // Verify that this call is the last one that was started.
             // Check that site hasn't changed since the check started.
-            if (this.isLastUpdateCall(time) && this.sitesProvider.getCurrentSiteId() === siteId) {
+            if (this.sitesProvider.getCurrentSiteId() === siteId) {
                 if (enabled) {
                     this.enabledHandlers[handler[this.handlerNameProperty]] = handler;
                 } else {
