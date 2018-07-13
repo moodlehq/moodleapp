@@ -62,6 +62,8 @@ export class AddonNotificationsProvider {
                 // Try to get the profile picture of the user.
                 this.userProvider.getProfile(notification.useridfrom, notification.courseid, true).then((user) => {
                     notification.profileimageurlfrom = user.profileimageurl;
+                }).catch(() => {
+                    // Error getting user. This can happen if device is offline or the user is deleted.
                 });
             }
         });
