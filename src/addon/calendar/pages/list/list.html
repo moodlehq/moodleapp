@@ -1,5 +1,5 @@
 <ion-header>
-    <ion-navbar>
+    <ion-navbar core-back-button>
         <ion-title>{{ 'addon.calendar.calendarevents' | translate }}</ion-title>
         <ion-buttons end>
             <button *ngIf="courses && courses.length" ion-button icon-only (click)="openCourseFilter($event)" [attr.aria-label]="'core.courses.filter' | translate">

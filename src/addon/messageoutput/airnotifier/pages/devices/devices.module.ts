@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '@components/components.module';
+import { CoreDirectivesModule } from '@directives/directives.module';
 import { AddonMessageOutputAirnotifierDevicesPage } from './devices';
 
 @NgModule({
@@ -24,6 +25,7 @@ import { AddonMessageOutputAirnotifierDevicesPage } from './devices';
     ],
     imports: [
         CoreComponentsModule,
+        CoreDirectivesModule,
         IonicPageModule.forChild(AddonMessageOutputAirnotifierDevicesPage),
         TranslateModule.forChild()
     ],

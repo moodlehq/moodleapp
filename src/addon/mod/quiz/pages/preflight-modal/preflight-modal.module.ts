@@ -17,6 +17,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { AddonModQuizPreflightModalPage } from './preflight-modal';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '@components/components.module';
+import { CoreDirectivesModule } from '@directives/directives.module';
 
 @NgModule({
     declarations: [
@@ -24,6 +25,7 @@ import { CoreComponentsModule } from '@components/components.module';
     ],
     imports: [
         CoreComponentsModule,
+        CoreDirectivesModule,
         IonicPageModule.forChild(AddonModQuizPreflightModalPage),
         TranslateModule.forChild()
     ]

@@ -23,6 +23,7 @@ import { CoreUserLinkDirective } from './user-link';
 import { CoreAutoRowsDirective } from './auto-rows';
 import { CoreLongPressDirective } from './long-press';
 import { CoreChartDirective } from './chart';
+import { CoreBackButtonDirective } from './back-button';
 
 @NgModule({
     declarations: [
@@ -35,7 +36,8 @@ import { CoreChartDirective } from './chart';
         CoreUserLinkDirective,
         CoreAutoRowsDirective,
         CoreLongPressDirective,
-        CoreChartDirective
+        CoreChartDirective,
+        CoreBackButtonDirective
     ],
     imports: [],
     exports: [
@@ -48,7 +50,8 @@ import { CoreChartDirective } from './chart';
         CoreUserLinkDirective,
         CoreAutoRowsDirective,
         CoreLongPressDirective,
-        CoreChartDirective
+        CoreChartDirective,
+        CoreBackButtonDirective
     ]
 })
 export class CoreDirectivesModule {}

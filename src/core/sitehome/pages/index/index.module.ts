@@ -15,6 +15,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreSiteHomeIndexPage } from './index';
 import { CoreSiteHomeComponentsModule } from '../../components/components.module';
 
@@ -23,6 +24,7 @@ import { CoreSiteHomeComponentsModule } from '../../components/components.module
         CoreSiteHomeIndexPage,
     ],
     imports: [
+        CoreDirectivesModule,
         CoreSiteHomeComponentsModule,
         IonicPageModule.forChild(CoreSiteHomeIndexPage),
         TranslateModule.forChild()

@@ -16,12 +16,14 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { AddonModQuizNavigationModalPage } from './navigation-modal';
 import { TranslateModule } from '@ngx-translate/core';
+import { CoreDirectivesModule } from '@directives/directives.module';
 
 @NgModule({
     declarations: [
         AddonModQuizNavigationModalPage
     ],
     imports: [
+        CoreDirectivesModule,
         IonicPageModule.forChild(AddonModQuizNavigationModalPage),
         TranslateModule.forChild()
     ]

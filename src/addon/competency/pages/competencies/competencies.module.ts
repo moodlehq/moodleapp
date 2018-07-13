@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '@components/components.module';
+import { CoreDirectivesModule } from '@directives/directives.module';
 import { AddonCompetencyCompetenciesPage } from './competencies';
 
 @NgModule({
@@ -24,6 +25,7 @@ import { AddonCompetencyCompetenciesPage } from './competencies';
     ],
     imports: [
         CoreComponentsModule,
+        CoreDirectivesModule,
         IonicPageModule.forChild(AddonCompetencyCompetenciesPage),
         TranslateModule.forChild()
     ],
