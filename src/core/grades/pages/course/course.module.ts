@@ -15,6 +15,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreGradesCoursePage } from './course';
 import { CoreGradesComponentsModule } from '../../components/components.module';
 
@@ -23,6 +24,7 @@ import { CoreGradesComponentsModule } from '../../components/components.module';
         CoreGradesCoursePage
     ],
     imports: [
+        CoreDirectivesModule,
         CoreGradesComponentsModule,
         IonicPageModule.forChild(CoreGradesCoursePage),
         TranslateModule.forChild()

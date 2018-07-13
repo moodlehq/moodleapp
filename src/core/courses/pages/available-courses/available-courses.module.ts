@@ -17,6 +17,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreCoursesAvailableCoursesPage } from './available-courses';
 import { CoreComponentsModule } from '@components/components.module';
+import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreCoursesComponentsModule } from '../../components/components.module';
 
 @NgModule({
@@ -25,6 +26,7 @@ import { CoreCoursesComponentsModule } from '../../components/components.module'
     ],
     imports: [
         CoreComponentsModule,
+        CoreDirectivesModule,
         CoreCoursesComponentsModule,
         IonicPageModule.forChild(CoreCoursesAvailableCoursesPage),
         TranslateModule.forChild()

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreSettingsDelegate } from './providers/delegate';
 import { CoreSettingsHelper } from './providers/helper';
 
@@ -20,6 +21,7 @@ import { CoreSettingsHelper } from './providers/helper';
     declarations: [
     ],
     imports: [
+        CoreDirectivesModule,
     ],
     providers: [
         CoreSettingsDelegate,
