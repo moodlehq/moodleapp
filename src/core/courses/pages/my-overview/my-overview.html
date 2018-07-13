@@ -17,7 +17,12 @@
         <!-- Site home tab. -->
         <core-tab [show]="siteHomeEnabled" [title]="'core.sitehome.sitehome' | translate" (ionSelect)="tabChanged('sitehome')">
             <ng-template>
-                <core-sitehome-index></core-sitehome-index>
+                <ion-content>
+                    <ion-refresher [enabled]="siteHomeComponent && siteHomeComponent.dataLoaded" (ionRefresh)="siteHomeComponent.doRefresh($event)">
+                        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+                    </ion-refresher>
+                    <core-sitehome-index></core-sitehome-index>
+                </ion-content>
             </ng-template>
         </core-tab>
 

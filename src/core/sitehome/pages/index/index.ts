@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavParams, NavController } from 'ionic-angular';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
+import { CoreSiteHomeIndexComponent } from '../../components/index/index';
 
 /**
  * Page that displays site home index.
@@ -26,6 +27,7 @@ import { CoreCourseHelperProvider } from '@core/course/providers/helper';
     templateUrl: 'index.html',
 })
 export class CoreSiteHomeIndexPage {
+    @ViewChild(CoreSiteHomeIndexComponent) siteHomeComponent: CoreSiteHomeIndexComponent;
 
     constructor(navParams: NavParams, navCtrl: NavController, courseHelper: CoreCourseHelperProvider,
             sitesProvider: CoreSitesProvider) {
