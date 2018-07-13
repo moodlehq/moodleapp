@@ -25,6 +25,7 @@ import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delega
 import { CoreSiteHomeProvider } from '@core/sitehome/providers/sitehome';
 import * as moment from 'moment';
 import { CoreTabsComponent } from '@components/tabs/tabs';
+import { CoreSiteHomeIndexComponent } from '@core/sitehome/components/index/index';
 
 /**
  * Page that displays My Overview.
@@ -37,6 +38,7 @@ import { CoreTabsComponent } from '@components/tabs/tabs';
 export class CoreCoursesMyOverviewPage implements OnDestroy {
     @ViewChild(CoreTabsComponent) tabsComponent: CoreTabsComponent;
     @ViewChild('searchbar') searchbar: Searchbar;
+    @ViewChild(CoreSiteHomeIndexComponent) siteHomeComponent: CoreSiteHomeIndexComponent;
 
     firstSelectedTab: number;
     siteHomeEnabled: boolean;
