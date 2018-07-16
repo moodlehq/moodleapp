@@ -96,7 +96,10 @@ export class AddonModLtiModuleHandler implements CoreCourseModuleHandler {
             const icon = ltiData.secureicon || ltiData.icon;
             if (icon) {
                 const siteId = this.sitesProvider.getCurrentSiteId();
-                this.filepoolProvider.downloadUrl(siteId,  icon, false, AddonModLtiProvider.COMPONENT, module.id).then((url) => {
+                this.filepoolProvider.downloadUrl(siteId,  icon, false, AddonModLtiProvider.COMPONENT, module.id).then(() => {
+                    // Get the internal URL.
+                    return this.filepoolProvider.getSrcByUrl(siteId, icon, AddonModLtiProvider.COMPONENT, module.id);
+                }).then((url) => {
                     data.icon = url;
                 }).catch(() => {
                     // Error downloading. If we're online we'll set the online url.
