@@ -37,7 +37,7 @@
                         <ion-item>
                             <core-show-password item-content [name]="'password'">
                                 <ion-label>{{ 'addon.mod_lesson.enterpassword' | translate }}</ion-label>
-                                <ion-input name="password" type="password" placeholder="{{ 'core.login.password' | translate }}" [core-auto-focus] #passwordinput></ion-input>
+                                <ion-input name="password" type="password" placeholder="{{ 'core.login.password' | translate }}" [core-auto-focus] #passwordinput [clearOnEdit]="false"></ion-input>
                             </core-show-password>
                         </ion-item>
                         <ion-item>
