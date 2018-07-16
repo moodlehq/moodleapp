@@ -455,6 +455,7 @@ export class CoreFormatTextDirective implements OnChanges {
         iframe.id = video.id;
         iframe.src = 'https://www.youtube.com/embed/' + youtubeId;
         iframe.setAttribute('frameborder', '0');
+        iframe.setAttribute('allowfullscreen', '1');
         iframe.width = '100%';
         iframe.height = '300';
 
