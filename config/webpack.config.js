@@ -26,6 +26,14 @@ const customConfig = {
         };
     })()
   ],
+  module: {
+    loaders: [
+      {
+        test: /\.node$/,
+        use: 'node-loader'
+      }
+    ]
+  }
 };
 
 module.exports = {
