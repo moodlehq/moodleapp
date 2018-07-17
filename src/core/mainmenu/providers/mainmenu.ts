@@ -139,7 +139,7 @@ export class CoreMainMenuProvider {
 
                         if (!data) {
                             // No valid label, ignore this entry.
-                            return;
+                            continue;
                         }
                     }
 
@@ -151,7 +151,10 @@ export class CoreMainMenuProvider {
                     };
                 }
 
-                return result;
+                // Remove undefined values.
+                return result.filter((entry) => {
+                    return typeof entry != 'undefined';
+                });
             });
         });
     }

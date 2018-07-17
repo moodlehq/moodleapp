@@ -4,5 +4,7 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <core-iframe [src]="url"></core-iframe>
+    <core-loading [hideUntil]="url">
+        <core-iframe *ngIf="url" [src]="url"></core-iframe>
+    </core-loading>
 </ion-content>

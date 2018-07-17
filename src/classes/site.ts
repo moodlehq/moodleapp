@@ -1221,59 +1221,30 @@ export class CoreSite {
      * @return {Promise<InAppBrowserObject|void>} Promise resolved when done. Resolve param is returned only if inApp=true.
      */
     openWithAutoLogin(inApp: boolean, url: string, options?: any, alertMessage?: string): Promise<InAppBrowserObject | void> {
-        // Convenience function to open the URL.
-        const open = (url): Promise<any> => {
-            return new Promise<InAppBrowserObject | void>((resolve, reject): void => {
-                if (modal) {
-                    modal.dismiss();
-                }
-
-                if (alertMessage) {
-                    this.domUtils.showAlert(this.translate.instant('core.notice'), alertMessage, undefined, 3000).then((alert) => {
-                        alert.onDidDismiss(() => {
-                            if (inApp) {
-                                resolve(this.utils.openInApp(url, options));
-                            } else {
-                                resolve(this.utils.openInBrowser(url));
-                            }
-                        });
-                    });
+        // Get the URL to open.
+        return this.getAutoLoginUrl(url).then((url) => {
+            if (!alertMessage) {
+                // Just open the URL.
+                if (inApp) {
+                    return this.utils.openInApp(url, options);
                 } else {
-                    if (inApp) {
-                        resolve(this.utils.openInApp(url, options));
-                    } else {
-                        resolve(this.utils.openInBrowser(url));
-                    }
+                    return this.utils.openInBrowser(url);
                 }
-            });
-        };
-
-        if (!this.privateToken || !this.wsAvailable('tool_mobile_get_autologin_key') ||
-                (this.lastAutoLogin && this.timeUtils.timestamp() - this.lastAutoLogin < CoreConstants.SECONDS_MINUTE * 6)) {
-            // No private token, WS not available or last auto-login was less than 6 minutes ago.
-            // Open the final URL without auto-login.
-            return Promise.resolve(open(url));
-        }
-
-        const userId = this.getUserId(),
-            params = {
-                privatetoken: this.privateToken
-            },
-            modal = this.domUtils.showModalLoading();
-
-        // Use write to not use cache.
-        return this.write('tool_mobile_get_autologin_key', params).then((data) => {
-            if (!data.autologinurl || !data.key) {
-                // Not valid data, open the final URL without auto-login.
-                return open(url);
             }
 
-            this.lastAutoLogin = this.timeUtils.timestamp();
+            // Show an alert first.
+            return this.domUtils.showAlert(this.translate.instant('core.notice'), alertMessage, undefined, 3000).then((alert) => {
 
-            return open(data.autologinurl + '?userid=' + userId + '&key=' + data.key + '&urltogo=' + url);
-        }).catch(() => {
-            // Couldn't get autologin key, open the final URL without auto-login.
-            return open(url);
+                return new Promise<InAppBrowserObject | void>((resolve, reject): void => {
+                    alert.onDidDismiss(() => {
+                        if (inApp) {
+                            resolve(this.utils.openInApp(url, options));
+                        } else {
+                            resolve(this.utils.openInBrowser(url));
+                        }
+                    });
+                });
+            });
         });
     }
 
@@ -1457,6 +1428,44 @@ export class CoreSite {
         }
 
         return false;
+    }
+
+    /**
+     * Given a URL, convert it to a URL that will auto-login if supported.
+     *
+     * @param {string} url The URL to convert.
+     * @return {Promise<string>} Promise resolved with the converted URL.
+     */
+    getAutoLoginUrl(url: string): Promise<string> {
+
+        if (!this.privateToken || !this.wsAvailable('tool_mobile_get_autologin_key') ||
+                (this.lastAutoLogin && this.timeUtils.timestamp() - this.lastAutoLogin < CoreConstants.SECONDS_MINUTE * 6)) {
+            // No private token, WS not available or last auto-login was less than 6 minutes ago. Don't change the URL.
+            return Promise.resolve(url);
+        }
+
+        const userId = this.getUserId(),
+            params = {
+                privatetoken: this.privateToken
+            },
+            modal = this.domUtils.showModalLoading();
+
+        // Use write to not use cache.
+        return this.write('tool_mobile_get_autologin_key', params).then((data) => {
+            if (!data.autologinurl || !data.key) {
+                // Not valid data, return the same URL.
+                return url;
+            }
+
+            this.lastAutoLogin = this.timeUtils.timestamp();
+
+            return data.autologinurl + '?userid=' + userId + '&key=' + data.key + '&urltogo=' + url;
+        }).catch(() => {
+            // Couldn't get autologin key, return the same URL.
+            return url;
+        }).finally(() => {
+            modal.dismiss();
+        });
     }
 
     /**
