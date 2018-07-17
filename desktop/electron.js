@@ -88,18 +88,24 @@ app.on('activate', () => {
 fs.readFile(path.join(__dirname, 'config.json'), 'utf8', (err, data) => {
     configRead = true;
 
-    var ssoScheme = 'moodlemobile'; // Default value.
+    // Default values.
+    var ssoScheme = 'moodlemobile',
+        appId = 'com.moodle.moodlemobile';
 
     if (!err) {
         try {
             data = JSON.parse(data);
             ssoScheme = data.customurlscheme;
             appName = data.desktopappname;
+            appId = data.app_id;
         } catch(ex) {}
     }
 
     // Set default protocol (custom URL scheme).
     app.setAsDefaultProtocolClient(ssoScheme);
+
+    // Fix notifications in Windows.
+    app.setAppUserModelId(appId);
 
     if (isReady) {
         setAppMenu();
