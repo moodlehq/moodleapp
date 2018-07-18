@@ -173,7 +173,7 @@ export class CoreLangProvider {
             return language;
         }).catch(() => {
             // User hasn't defined a language. If default language is forced, use it.
-            if (CoreConfigConstants.default_lang && !CoreConfigConstants.forcedefaultlanguage) {
+            if (CoreConfigConstants.default_lang && CoreConfigConstants.forcedefaultlanguage) {
                 return CoreConfigConstants.default_lang;
             }
 
@@ -188,6 +188,11 @@ export class CoreLangProvider {
                             language = language.substr(0, language.indexOf('-'));
 
                         }
+                    }
+
+                    if (typeof CoreConfigConstants.languages[language] == 'undefined') {
+                        // Language not supported, use fallback language.
+                        return this.fallbackLanguage;
                     }
 
                     return language;
