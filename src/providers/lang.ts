@@ -25,7 +25,8 @@ import { CoreConfigConstants } from '../configconstants';
 */
 @Injectable()
 export class CoreLangProvider {
-    protected fallbackLanguage = CoreConfigConstants.default_lang || 'en';
+    protected fallbackLanguage = 'en'; // Always use English as fallback language since it contains all strings.
+    protected defaultLanguage = CoreConfigConstants.default_lang || 'en'; // Lang to use if device lang not valid or is forced.
     protected currentLanguage: string; // Save current language in a variable to speed up the get function.
     protected customStrings = {}; // Strings defined using the admin tool.
     protected customStringsRaw: string;
@@ -35,7 +36,7 @@ export class CoreLangProvider {
             private globalization: Globalization) {
         // Set fallback language and language to use until the app determines the right language to use.
         translate.setDefaultLang(this.fallbackLanguage);
-        translate.use(this.fallbackLanguage);
+        translate.use(this.defaultLanguage);
 
         platform.ready().then(() => {
             this.getCurrentLanguage().then((language) => {
@@ -191,18 +192,18 @@ export class CoreLangProvider {
                     }
 
                     if (typeof CoreConfigConstants.languages[language] == 'undefined') {
-                        // Language not supported, use fallback language.
-                        return this.fallbackLanguage;
+                        // Language not supported, use default language.
+                        return this.defaultLanguage;
                     }
 
                     return language;
                 }).catch(() => {
                     // Error getting locale. Use default language.
-                    return this.fallbackLanguage;
+                    return this.defaultLanguage;
                 });
             } catch (err) {
                 // Error getting locale. Use default language.
-                return Promise.resolve(this.fallbackLanguage);
+                return Promise.resolve(this.defaultLanguage);
             }
         }).then((language) => {
             this.currentLanguage = language; // Save it for later.
