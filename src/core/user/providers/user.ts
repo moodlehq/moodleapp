@@ -383,6 +383,10 @@ export class CoreUserProvider {
             promises = [];
 
         userIds.forEach((userId) => {
+            if (userId === null) {
+                return;
+            }
+
             userId = Number(userId); // Make sure it's a number.
 
             // Prevent repeats and errors.
