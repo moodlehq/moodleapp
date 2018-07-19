@@ -953,6 +953,11 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
      * @return {Promise<boolean>} Promise resolved with true if downloadable, false otherwise.
      */
     isModuleDownloadable(module: any, courseId: number): Promise<boolean> {
+        if (module.uservisible === false) {
+            // Module isn't visible by the user, cannot be downloaded.
+            return Promise.resolve(false);
+        }
+
         const handler = this.getPrefetchHandlerFor(module);
 
         if (handler) {

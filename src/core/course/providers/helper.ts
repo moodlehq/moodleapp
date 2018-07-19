@@ -1114,6 +1114,11 @@ export class CoreCourseHelperProvider {
             return Promise.resolve();
         }
 
+        if (section.hiddenbynumsections) {
+            // Hidden section.
+            return Promise.resolve();
+        }
+
         section.isDownloading = true;
 
         // Validate the section needs to be downloaded and calculate amount of modules that need to be downloaded.
