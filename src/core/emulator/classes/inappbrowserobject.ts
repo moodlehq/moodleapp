@@ -43,7 +43,17 @@ export class InAppBrowserObjectMock {
         let width = 800,
             height = 600,
             display;
-        const bwOptions: any = {};
+
+        const bwOptions: any = {
+                webPreferences: {}
+            };
+
+        try {
+            // Create a separate session for inappbrowser so we can clear its data without affecting the app.
+            bwOptions.webPreferences.session = require('electron').remote.session.fromPartition('inappbrowsersession');
+        } catch (ex) {
+            // Ignore errors.
+        }
 
         if (screen) {
             display = this.screen.getPrimaryDisplay();
@@ -64,6 +74,9 @@ export class InAppBrowserObjectMock {
         }
         if (options.indexOf('fullscreen=yes') != -1) {
             bwOptions.fullscreen = true;
+        }
+        if (options.indexOf('clearsessioncache=yes') != -1 && bwOptions.webPreferences.session) {
+            bwOptions.webPreferences.session.clearStorageData({storages: 'cookies'});
         }
 
         this.window = new this.browserWindow(bwOptions);
