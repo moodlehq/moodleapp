@@ -27,7 +27,7 @@ function createWindow() {
         }
     }
 
-    mainWindow = new BrowserWindow({
+    const options = {
         width: width,
         height: height,
         minWidth: 400,
@@ -35,7 +35,13 @@ function createWindow() {
         textAreasAreResizable: false,
         plugins: true,
         show: false // Don't show it until it's ready to prevent showing a blank screen.
-    });
+    };
+
+    if (os.platform().indexOf('linux') === 0) {
+        options.icon = path.join(__dirname, '/../www/assets/icon/icon.png');
+    }
+
+    mainWindow = new BrowserWindow(options);
 
     // And load the index.html of the app.
     mainWindow.loadURL(url.format({
