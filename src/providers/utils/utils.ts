@@ -853,7 +853,7 @@ export class CoreUtilsProvider {
         }
 
         // In the rest of platforms we need to open them in InAppBrowser.
-        window.open(url, '_blank');
+        this.openInApp(url);
 
         return Promise.resolve();
     }

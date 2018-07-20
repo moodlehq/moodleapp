@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from './user-delegate';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
  * Profile links email handler.
@@ -25,7 +26,7 @@ export class CoreUserProfileMailHandler implements CoreUserProfileHandler {
     priority = 700;
     type = CoreUserDelegate.TYPE_COMMUNICATION;
 
-    constructor(protected sitesProvider: CoreSitesProvider) { }
+    constructor(protected sitesProvider: CoreSitesProvider, protected utils: CoreUtilsProvider) { }
 
     /**
      * Check if handler is enabled.
@@ -63,7 +64,8 @@ export class CoreUserProfileMailHandler implements CoreUserProfileHandler {
             action: (event, navCtrl, user, courseId): void => {
                 event.preventDefault();
                 event.stopPropagation();
-                window.open('mailto:' + user.email, '_blank');
+
+                this.utils.openInBrowser('mailto:' + user.email);
             }
         };
     }
