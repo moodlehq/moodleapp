@@ -94,7 +94,16 @@ export class InAppBrowserObjectMock {
      * Close the window.
      */
     close(): void {
-        this.window.close();
+        if (this.window.isDestroyed()) {
+            // Window already closed, nothing to do.
+            return;
+        }
+
+        try {
+            this.window.close();
+        } catch (ex) {
+            // Ignore errors.
+        }
     }
 
     /**

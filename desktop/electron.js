@@ -184,10 +184,11 @@ ipcMain.on('openItem', (event, path) => {
 });
 
 ipcMain.on('closeSecondaryWindows', () => {
-    var windows = BrowserWindow.getAllWindows();
-    for (var i = 0; i < windows.length; i++) {
-        if (!mainWindow || windows[i].id != mainWindow.id) {
-            windows[i].close();
+    const windows = BrowserWindow.getAllWindows();
+    for (let i = 0; i < windows.length; i++) {
+        const win = windows[i];
+        if (!win.isDestroyed() && (!mainWindow || win.id != mainWindow.id)) {
+            win.close();
         }
     }
 });
