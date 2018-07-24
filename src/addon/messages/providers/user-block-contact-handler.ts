@@ -92,7 +92,7 @@ export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHand
                     return;
                 }
                 this.disabled = true;
-                this.updateButton({spinner: true});
+                this.updateButton(user.id, {spinner: true});
 
                 this.messagesProvider.isBlocked(user.id).then((isBlocked) => {
                     if (isBlocked) {
@@ -124,11 +124,11 @@ export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHand
      * @return {Promise<void>}   Promise resolved when done.
      */
     protected checkButton(userId: number): Promise<void> {
-        this.updateButton({spinner: true});
+        this.updateButton(userId, {spinner: true});
 
         return this.messagesProvider.isBlocked(userId).then((isBlocked) => {
             if (isBlocked) {
-                this.updateButton({
+                this.updateButton(userId, {
                     title: 'addon.messages.unblockcontact',
                     class: 'addon-messages-unblockcontact-handler',
                     icon: 'checkmark-circle',
@@ -136,7 +136,7 @@ export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHand
                     spinner: false
                 });
             } else {
-                this.updateButton({
+                this.updateButton(userId, {
                     title: 'addon.messages.blockcontact',
                     class: 'addon-messages-blockcontact-handler',
                     icon: 'close-circle',
@@ -146,17 +146,19 @@ export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHand
             }
         }).catch(() => {
             // This fails for some reason, let's just hide the button.
-            this.updateButton({hidden: true});
+            this.updateButton(userId, {hidden: true});
         });
     }
 
     /**
      * Triggers the event to update the handler information.
+     *
+     * @param {number} userId The user ID the handler belongs to.
      * @param {any} data Data that should be updated.
      */
-    protected updateButton(data: any): void {
+    protected updateButton(userId: number, data: any): void {
         // This fails for some reason, let's just hide the button.
-        this.eventsProvider.trigger(CoreUserDelegate.UPDATE_HANDLER_EVENT, { handler: this.name, data: data });
+        this.eventsProvider.trigger(CoreUserDelegate.UPDATE_HANDLER_EVENT, { handler: this.name, data: data, userId: userId });
     }
 
     /**
