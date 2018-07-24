@@ -1,5 +1,5 @@
 <ng-template #eventTemplate let-event="event">
-    <a ion-item core-link text-wrap detail-none captureLink="true" class="core-course-module-handler item-media" [href]="event.url" [title]="event.name" [class.item-badge-right-phone]="event.action && event.action.showitemcount">
+    <a ion-item core-link text-wrap detail-none capture="true" class="core-course-module-handler item-media" [href]="event.url" [title]="event.name" [class.item-badge-right-phone]="event.action && event.action.showitemcount">
         <img item-start [src]="event.iconUrl" core-external-content alt="" role="presentation" *ngIf="event.iconUrl" class="core-module-icon">
         <h2><core-format-text [text]="event.name"></core-format-text></h2>
         <p>{{event.timesort * 1000 | coreFormatDate:"dfmediumdate" }} <core-format-text *ngIf="showCourse" [text]="event.course.fullnamedisplay"></core-format-text></p>
