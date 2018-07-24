@@ -68,6 +68,8 @@ export class CoreTextUtilsProvider {
         {old: /_mmaModWorkshop/g, new: '_AddonModWorkshop'},
     ];
 
+    protected template = document.createElement('template'); // A template element to convert HTML to element.
+
     constructor(private translate: TranslateService, private langProvider: CoreLangProvider, private modalCtrl: ModalController) { }
 
     /**
@@ -177,17 +179,15 @@ export class CoreTextUtilsProvider {
     /**
      * Convert some HTML as text into an HTMLElement. This HTML is put inside a div or a body.
      * This function is the same as in DomUtils, but we cannot use that one because of circular dependencies.
-     * @todo: Try to use DOMParser or similar since this approach will send a request to all embedded media.
-     * We removed DOMParser solution because it isn't synchronous, document.body wasn't always loaded at start.
      *
      * @param {string} html Text to convert.
      * @return {HTMLElement} Element.
      */
     protected convertToElement(html: string): HTMLElement {
-        const element = document.createElement('div');
-        element.innerHTML = html;
+        // Add a div to hold the content, that's the element that will be returned.
+        this.template.innerHTML = '<div>' + html + '</div>';
 
-        return element;
+        return <HTMLElement> this.template.content.children[0];
     }
 
     /**
