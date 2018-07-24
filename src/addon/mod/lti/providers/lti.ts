@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
 import { CoreFileProvider } from '@providers/file';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -40,7 +41,8 @@ export class AddonModLtiProvider {
             private textUtils: CoreTextUtilsProvider,
             private urlUtils: CoreUrlUtilsProvider,
             private utils: CoreUtilsProvider,
-            private translate: TranslateService) {}
+            private translate: TranslateService,
+            private appProvider: CoreAppProvider) {}
 
     /**
      * Delete launcher.
@@ -84,7 +86,11 @@ export class AddonModLtiProvider {
             '</script> \n';
 
         return this.fileProvider.writeFile(this.LAUNCHER_FILE_NAME, text).then((entry) => {
-            return entry.toURL();
+            if (this.appProvider.isDesktop()) {
+                return entry.toInternalURL();
+            } else {
+                return entry.toURL();
+            }
         });
     }
 

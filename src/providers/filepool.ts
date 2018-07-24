@@ -1757,7 +1757,12 @@ export class CoreFilepoolProvider {
         if (this.fileProvider.isAvailable()) {
             return Promise.resolve(this.getFilePath(siteId, fileId)).then((path) => {
                 return this.fileProvider.getFile(path).then((fileEntry) => {
-                    return fileEntry.toURL();
+                    // This URL is usually used to launch files or put them in HTML. In desktop we need the internal URL.
+                    if (this.appProvider.isDesktop()) {
+                        return fileEntry.toInternalURL();
+                    } else {
+                        return fileEntry.toURL();
+                    }
                 });
             });
         }

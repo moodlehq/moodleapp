@@ -16,21 +16,20 @@ import { CoreAppProvider } from '@providers/app';
 import { CoreFileProvider } from '@providers/file';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { Observable, Observer } from 'rxjs';
-import { InAppBrowserObject, InAppBrowserEvent } from '@ionic-native/in-app-browser';
+import { InAppBrowserEvent } from '@ionic-native/in-app-browser';
 
 /**
  * Emulates the Cordova InAppBrowserObject in desktop apps.
+ * We aren't extending InAppBrowserObject because its constructor also opens a window, so we'd end up with 2 windows.
  */
-export class InAppBrowserObjectMock extends InAppBrowserObject {
+export class InAppBrowserObjectMock {
     protected window;
     protected browserWindow;
     protected screen;
     protected isSSO: boolean;
-    protected isLinux: boolean;
 
     constructor(appProvider: CoreAppProvider, private fileProvider: CoreFileProvider, private urlUtils: CoreUrlUtilsProvider,
-            private url: string, target?: string, options: string = '') {
-        super(url, target, options);
+            private url: string, target?: string, options: string = 'location=yes') {
 
         if (!appProvider.isDesktop()) {
             // This plugin is only supported in desktop.
@@ -40,12 +39,21 @@ export class InAppBrowserObjectMock extends InAppBrowserObject {
         this.browserWindow = require('electron').remote.BrowserWindow;
         this.screen = require('electron').screen;
         this.isSSO = !!(url && url.match(/\/launch\.php\?service=.+&passport=/));
-        this.isLinux = appProvider.isLinux();
 
         let width = 800,
             height = 600,
             display;
-        const bwOptions: any = {};
+
+        const bwOptions: any = {
+                webPreferences: {}
+            };
+
+        try {
+            // Create a separate session for inappbrowser so we can clear its data without affecting the app.
+            bwOptions.webPreferences.session = require('electron').remote.session.fromPartition('inappbrowsersession');
+        } catch (ex) {
+            // Ignore errors.
+        }
 
         if (screen) {
             display = this.screen.getPrimaryDisplay();
@@ -67,11 +75,14 @@ export class InAppBrowserObjectMock extends InAppBrowserObject {
         if (options.indexOf('fullscreen=yes') != -1) {
             bwOptions.fullscreen = true;
         }
+        if (options.indexOf('clearsessioncache=yes') != -1 && bwOptions.webPreferences.session) {
+            bwOptions.webPreferences.session.clearStorageData({storages: 'cookies'});
+        }
 
         this.window = new this.browserWindow(bwOptions);
         this.window.loadURL(url);
 
-        if (this.isLinux && this.isSSO) {
+        if (this.isSSO) {
             // SSO in Linux. Simulate it's an iOS device so we can retrieve the launch URL.
             // This is needed because custom URL scheme is not supported in Linux.
             const userAgent = 'Mozilla/5.0 (iPad) AppleWebKit/603.3.8 (KHTML, like Gecko) Mobile/14G60';
@@ -83,7 +94,16 @@ export class InAppBrowserObjectMock extends InAppBrowserObject {
      * Close the window.
      */
     close(): void {
-        this.window.close();
+        if (this.window.isDestroyed()) {
+            // Window already closed, nothing to do.
+            return;
+        }
+
+        try {
+            this.window.close();
+        } catch (ex) {
+            // Ignore errors.
+        }
     }
 
     /**
@@ -113,11 +133,16 @@ export class InAppBrowserObjectMock extends InAppBrowserObject {
      * @return {Promise<string>} Promise resolved with the launch URL.
      */
     protected getLaunchUrl(retry: number = 0): Promise<string> {
+
+        if (this.window.isDestroyed()) {
+            // Window is destroyed, stop.
+            return Promise.reject(null);
+        }
+
         return new Promise((resolve, reject): void => {
             // Execute Javascript to retrieve the launch link.
             const jsCode = 'var el = document.querySelector("#launchapp"); el && el.href;';
             let found = false;
-
             this.window.webContents.executeJavaScript(jsCode).then((launchUrl) => {
                 found = true;
                 resolve(launchUrl);
@@ -179,7 +204,7 @@ export class InAppBrowserObjectMock extends InAppBrowserObject {
             // Helper functions to handle events.
             const received = (event, url): void => {
                     try {
-                        event.url = url || this.window.getURL();
+                        event.url = url || (this.window.isDestroyed() ? '' : this.window.getURL());
                         event.type = name;
                         observer.next(event);
                     } catch (ex) {
@@ -203,7 +228,7 @@ export class InAppBrowserObjectMock extends InAppBrowserObject {
                 case 'loadstart':
                     this.window.webContents.on('did-start-loading', received);
 
-                    if (this.isLinux && this.isSSO) {
+                    if (this.isSSO) {
                         // Linux doesn't support custom URL Schemes. Check if launch page is loaded.
                         this.window.webContents.on('did-finish-load', finishLoad);
                     }

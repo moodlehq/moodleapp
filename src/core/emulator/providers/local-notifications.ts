@@ -148,6 +148,10 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @return {Void}
      */
     protected cancelNotification(id: number, omitEvent: boolean, eventName: string): void {
+        if (!this.scheduled[id]) {
+            return;
+        }
+
         const notification = this.scheduled[id].notification;
 
         clearTimeout(this.scheduled[id].timeout);
@@ -698,7 +702,7 @@ export class LocalNotificationsMock extends LocalNotifications {
             id : notification.id,
             title: notification.title,
             text: notification.text,
-            at: notification.at ? notification.at.getTime() : 0,
+            at: notification.at ? (typeof notification.at == 'object' ? notification.at.getTime() : notification.at) : 0,
             data: notification.data ? JSON.stringify(notification.data) : '{}',
             triggered: triggered ? 1 : 0
         };

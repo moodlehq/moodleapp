@@ -20,7 +20,7 @@
             <p>{{ 'core.settings.total' | translate }}</p>
             <p item-end>{{ totalUsage | coreBytesToSize }}</p>
         </ion-item-divider>
-        <ion-item-divider color="light">
+        <ion-item-divider color="light" *ngIf="showFreeSpace">
             <p>{{ 'core.settings.estimatedfreespace' | translate }}</p>
             <p item-end>{{ freeSpace | coreBytesToSize }}</p>
         </ion-item-divider>

@@ -15,6 +15,7 @@
 import { Component, } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
 import { CoreFileProvider } from '@providers/file';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
@@ -36,11 +37,13 @@ export class CoreSettingsSpaceUsagePage {
     currentSiteId = '';
     totalUsage = 0;
     freeSpace = 0;
+    showFreeSpace = true;
 
     constructor(private fileProvider: CoreFileProvider, private filePoolProvider: CoreFilepoolProvider,
             private sitesProvider: CoreSitesProvider, private textUtils: CoreTextUtilsProvider,
-            private translate: TranslateService, private domUtils: CoreDomUtilsProvider) {
+            private translate: TranslateService, private domUtils: CoreDomUtilsProvider, appProvider: CoreAppProvider) {
         this.currentSiteId = this.sitesProvider.getCurrentSiteId();
+        this.showFreeSpace = !appProvider.isDesktop();
     }
 
     /**
@@ -112,10 +115,15 @@ export class CoreSettingsSpaceUsagePage {
      * @return {Promise<any>} Resolved when done.
      */
     protected fetchData(): Promise<any> {
-        return Promise.all([
+        const promises = [
             this.calculateSizeUsage().then(() => this.calculateTotalUsage()),
-            this.calculateFreeSpace(),
-        ]);
+        ];
+
+        if (this.showFreeSpace) {
+            promises.push(this.calculateFreeSpace());
+        }
+
+        return Promise.all(promises);
     }
 
     /**

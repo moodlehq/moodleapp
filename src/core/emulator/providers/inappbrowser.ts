@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { InAppBrowser, InAppBrowserObject } from '@ionic-native/in-app-browser';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFileProvider } from '@providers/file';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
@@ -36,9 +36,16 @@ export class InAppBrowserMock extends InAppBrowser {
      * @param {string} url The URL to load.
      * @param {string} [target] The target in which to load the URL, an optional parameter that defaults to _self.
      * @param {string} [options] Options for the InAppBrowser.
-     * @return {InAppBrowserObject} The new instance.
+     * @return {any} The new instance.
      */
-    create(url: string, target?: string, options: string = ''): InAppBrowserObject {
+    create(url: string, target?: string, options: string = 'location=yes'): any {
+        if (options && typeof options !== 'string') {
+            // Convert to string.
+            options = Object.keys(options).map((key) => {
+                return key + '=' + options[key];
+            }).join(',');
+        }
+
         if (!this.appProvider.isDesktop()) {
             return super.create(url, target, options);
         }

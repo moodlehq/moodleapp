@@ -91,8 +91,11 @@ export class CoreMainMenuPage implements OnDestroy {
                     for (let i = 0; i < this.tabs.length; i++) {
                         const tab = this.tabs[i];
                         if (tab.page == this.redirectPage) {
+                            // Tab found. Set the params and unset the redirect page.
                             this.initialTab = i + 1;
                             tab.pageParams = Object.assign(tab.pageParams || {}, this.redirectParams);
+                            this.redirectPage = null;
+                            this.redirectParams = null;
                             break;
                         }
                     }
