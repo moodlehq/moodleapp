@@ -832,3 +832,20 @@ body.keyboard-is-open core-ion-tabs .tabbar {
     pointer-events: none;
   }
 }
+
+// Fix iframes in fullscreen mode.
+//
+// Ionic sets "contain: strict" to some elements. This enables paint containment,
+// which changes behaviour of fixed positioned elements and seems to break iframes
+// in fullscreen mode. See https://www.w3.org/TR/css-contain-1/#containment-paint
+ion-app,
+ion-nav,
+ion-tab,
+ion-tabs,
+.app-root,
+.ion-page,
+ion-modal,
+.modal-wrapper,
+.split-pane {
+  contain: size layout style;
+}
