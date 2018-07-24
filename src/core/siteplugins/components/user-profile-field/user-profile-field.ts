@@ -15,6 +15,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { CoreSitePluginsCompileInitComponent } from '../../classes/compile-init-component';
+import { FormGroup } from '@angular/forms';
 
 /**
  * Component that displays a user profile field created using a site plugin.
@@ -25,9 +26,10 @@ import { CoreSitePluginsCompileInitComponent } from '../../classes/compile-init-
 })
 export class CoreSitePluginsUserProfileFieldComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
     @Input() field: any; // The profile field to be rendered.
-    @Input() signup = false; // True if editing the field in signup. Defaults to false.
     @Input() edit = false; // True if editing the field. Defaults to false.
-    @Input() form?: any; // Form where to add the form control. Required if edit=true or signup=true.
+    @Input() disabled = false; // True if disabled. Defaults to false.
+    @Input() form?: FormGroup; // Form where to add the form control.
+    @Input() signup = false; // True if editing the field in signup. Defaults to false.
     @Input() registerAuth?: string; // Register auth method. E.g. 'email'.
 
     constructor(sitePluginsProvider: CoreSitePluginsProvider) {
@@ -44,6 +46,7 @@ export class CoreSitePluginsUserProfileFieldComponent extends CoreSitePluginsCom
             field: this.field,
             signup: this.signup,
             edit: this.edit,
+            disabled: this.disabled,
             form: this.form,
             registerAuth: this.registerAuth
         };

@@ -186,6 +186,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         this.data.initialSectionId = this.initialSectionId;
         this.data.initialSectionNumber = this.initialSectionNumber;
         this.data.downloadEnabled = this.downloadEnabled;
+        this.data.moduleId = this.moduleId;
+        this.data.completionChanged = this.completionChanged;
     }
 
     /**

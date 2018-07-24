@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnChanges, Input, ViewChild } from '@angular/core';
+import { Component, OnChanges, Input, ViewChild, Output, EventEmitter } from '@angular/core';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-content';
 
@@ -29,6 +29,8 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
     @Input() downloadEnabled?: boolean; // Whether the download of sections and modules is enabled.
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).
+    @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
+    @Output() completionChanged?: EventEmitter<void>; // Will emit an event when any module completion changes.
 
     @ViewChild(CoreSitePluginsPluginContentComponent) content: CoreSitePluginsPluginContentComponent;
 
@@ -65,7 +67,9 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
                 sections: this.sections,
                 downloadEnabled: this.downloadEnabled,
                 initialSectionId: this.initialSectionId,
-                initialSectionNumber: this.initialSectionNumber
+                initialSectionNumber: this.initialSectionNumber,
+                moduleId: this.moduleId,
+                completionChanged: this.completionChanged
             };
         }
     }
