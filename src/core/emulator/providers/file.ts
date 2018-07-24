@@ -747,7 +747,7 @@ export class FileMock extends File {
 
         return new Promise<any>((resolve, reject): void => {
             writer.onerror = reject;
-            writer.onwrite = (): void => {
+            writer.onwriteend = (): void => {
                 if (writtenSize < data.size) {
                     writeNextChunk();
                 } else {
