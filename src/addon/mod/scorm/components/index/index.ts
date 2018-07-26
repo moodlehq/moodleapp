@@ -61,6 +61,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     protected lastAttempt: number; // Last attempt.
     protected lastIsOffline: boolean; // Whether the last attempt is offline.
     protected hasPlayed = false; // Whether the user has opened the player page.
+    protected syncDueToPlayerLeft = false; // Whether a sync was due to the user leaving the player.
 
     constructor(injector: Injector, protected scormProvider: AddonModScormProvider, @Optional() protected content: Content,
             protected scormHelper: AddonModScormHelperProvider, protected scormOffline: AddonModScormOfflineProvider,
@@ -327,10 +328,13 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * @return {boolean}        If suceed or not.
      */
     protected hasSyncSucceed(result: any): boolean {
-        if (result.updated) {
-            // Check completion status.
+        if (result.updated || this.syncDueToPlayerLeft) {
+            // Check completion status if something was sent or the user just left the player.
+            // If the user plays the SCORM in online we don't know if he sent data or not, so always check completion.
             this.checkCompletion();
         }
+
+        this.syncDueToPlayerLeft = false;
 
         return true;
     }
@@ -343,6 +347,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
 
         if (this.hasPlayed) {
             this.hasPlayed = false;
+            this.syncDueToPlayerLeft = true;
             this.scormOptions.newAttempt = false; // Uncheck new attempt.
 
             // Add a delay to make sure the player has started the last writing calls so we can detect conflicts.
