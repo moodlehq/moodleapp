@@ -162,6 +162,7 @@ $loading-md-spinner-color: $core-loading-spinner-color;
 $spinner-md-crescent-color: $core-spinner-color;
 $tabs-md-tab-color-inactive: $tabs-tab-color-inactive;
 $button-md-outline-background-color: $core-button-outline-background-color;
+$font-family-md-base: "Roboto", "Noto Sans", "Helvetica Neue", sans-serif !default;
 
 
 // App Windows Variables
@@ -198,8 +199,7 @@ $button-wp-outline-background-color: $core-button-outline-background-color;
 // Fonts
 // --------------------------------------------------
 
-@import "roboto";
-@import "noto-sans";
+@import "./fonts";
 
 // Moodle Mobile variables
 // --------------------------------------------------
