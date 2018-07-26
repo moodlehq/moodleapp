@@ -66,9 +66,15 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
      *
      * @param {any} [refresher] Refresher.
      * @param {Function} [done] Function to call when done.
+     * @param {boolean} [afterCompletionChange] Whether the refresh is due to a completion change.
      * @return {Promise<any>} Promise resolved when done.
      */
-    doRefresh(refresher?: any, done?: () => void): Promise<any> {
+    doRefresh(refresher?: any, done?: () => void, afterCompletionChange?: boolean): Promise<any> {
+        if (afterCompletionChange) {
+            // Don't refresh the view after a completion change since completion isn't displayed.
+            return Promise.resolve();
+        }
+
         return Promise.resolve(this.dynamicComponent.callComponentFunction('doRefresh', [refresher, done]));
     }
 

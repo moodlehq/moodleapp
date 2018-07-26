@@ -307,7 +307,9 @@ export class CoreCourseSectionPage implements OnDestroy {
         this.dataLoaded = false;
         this.content.scrollToTop(); // Scroll top so the spinner is seen.
 
-        this.loadData().finally(() => {
+        this.loadData().then(() => {
+            return this.formatComponent.doRefresh(undefined, undefined, true);
+        }).finally(() => {
             this.dataLoaded = true;
 
             // Wait for new content height to be calculated and scroll without animation.
