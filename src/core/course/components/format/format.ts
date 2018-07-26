@@ -77,6 +77,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         this.selectOptions.title = translate.instant('core.course.sections');
         this.completionChanged = new EventEmitter();
 
+        // Pass this instance to all components so they can use its methods and properties.
+        this.data.coreCourseFormatComponent = this;
+
         // Listen for section status changes.
         this.sectionStatusObserver = eventsProvider.on(CoreEventsProvider.SECTION_STATUS_CHANGED, (data) => {
             if (this.downloadEnabled && this.sections && this.sections.length && this.course && data.sectionId &&

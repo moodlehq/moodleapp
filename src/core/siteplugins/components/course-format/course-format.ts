@@ -15,6 +15,7 @@
 import { Component, OnChanges, Input, ViewChild, Output, EventEmitter } from '@angular/core';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-content';
+import { CoreCourseFormatComponent } from '@core/course/components/format/format';
 
 /**
  * Component that displays the index of a course format site plugin.
@@ -31,6 +32,11 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
     @Output() completionChanged?: EventEmitter<void>; // Will emit an event when any module completion changes.
+
+    // Special input, allows access to the parent instance properties and methods.
+    // Please notice that all the other inputs/outputs are also accessible through this instance, so they could be removed.
+    // However, we decided to keep them to support ngOnChanges and to make templates easier to read.
+    @Input() coreCourseFormatComponent: CoreCourseFormatComponent;
 
     @ViewChild(CoreSitePluginsPluginContentComponent) content: CoreSitePluginsPluginContentComponent;
 
@@ -69,7 +75,8 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
                 initialSectionId: this.initialSectionId,
                 initialSectionNumber: this.initialSectionNumber,
                 moduleId: this.moduleId,
-                completionChanged: this.completionChanged
+                completionChanged: this.completionChanged,
+                coreCourseFormatComponent: this.coreCourseFormatComponent
             };
         }
     }
