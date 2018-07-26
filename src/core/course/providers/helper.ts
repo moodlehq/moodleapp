@@ -719,8 +719,8 @@ export class CoreCourseHelperProvider {
                 }
             }
 
-            if (typeof instance.statusObserver == 'undefined' && component) {
-                instance.statusObserver = this.eventsProvider.on(CoreEventsProvider.PACKAGE_STATUS_CHANGED, (data) => {
+            if (typeof instance.contextMenuStatusObserver == 'undefined' && component) {
+                instance.contextMenuStatusObserver = this.eventsProvider.on(CoreEventsProvider.PACKAGE_STATUS_CHANGED, (data) => {
                     if (data.componentId == module.id && data.component == component) {
                         this.fillContextMenu(instance, module, courseId, false, component);
                     }
