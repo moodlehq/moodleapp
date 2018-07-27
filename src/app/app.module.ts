@@ -36,6 +36,7 @@ import { CoreConfigProvider } from '@providers/config';
 import { CoreLangProvider } from '@providers/lang';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreIframeUtilsProvider } from '@providers/utils/iframe';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -127,6 +128,7 @@ export const CORE_PROVIDERS: any[] = [
     CoreLangProvider,
     CoreTextUtilsProvider,
     CoreDomUtilsProvider,
+    CoreIframeUtilsProvider,
     CoreTimeUtilsProvider,
     CoreUrlUtilsProvider,
     CoreUtilsProvider,
@@ -233,6 +235,7 @@ export const CORE_PROVIDERS: any[] = [
         CoreLangProvider,
         CoreTextUtilsProvider,
         CoreDomUtilsProvider,
+        CoreIframeUtilsProvider,
         CoreTimeUtilsProvider,
         CoreUrlUtilsProvider,
         CoreUtilsProvider,
