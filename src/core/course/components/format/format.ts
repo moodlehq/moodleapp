@@ -68,6 +68,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     loaded: boolean;
 
     protected sectionStatusObserver;
+    protected lastCourseFormat: string;
 
     constructor(private cfDelegate: CoreCourseFormatDelegate, translate: TranslateService, private injector: Injector,
             private courseHelper: CoreCourseHelperProvider, private domUtils: CoreDomUtilsProvider,
@@ -192,32 +193,29 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * Get the components classes.
      */
     protected getComponents(): void {
-        if (this.course) {
-            if (!this.courseFormatComponent) {
-                this.cfDelegate.getCourseFormatComponent(this.injector, this.course).then((component) => {
-                    this.courseFormatComponent = component;
-                });
-            }
-            if (!this.courseSummaryComponent) {
-                this.cfDelegate.getCourseSummaryComponent(this.injector, this.course).then((component) => {
-                    this.courseSummaryComponent = component;
-                });
-            }
-            if (!this.sectionSelectorComponent) {
-                this.cfDelegate.getSectionSelectorComponent(this.injector, this.course).then((component) => {
-                    this.sectionSelectorComponent = component;
-                });
-            }
-            if (!this.singleSectionComponent) {
-                this.cfDelegate.getSingleSectionComponent(this.injector, this.course).then((component) => {
-                    this.singleSectionComponent = component;
-                });
-            }
-            if (!this.allSectionsComponent) {
-                this.cfDelegate.getAllSectionsComponent(this.injector, this.course).then((component) => {
-                    this.allSectionsComponent = component;
-                });
-            }
+        if (this.course && this.course.format != this.lastCourseFormat) {
+            this.lastCourseFormat = this.course.format;
+
+            // Format has changed or it's the first time, load all the components.
+            this.cfDelegate.getCourseFormatComponent(this.injector, this.course).then((component) => {
+                this.courseFormatComponent = component;
+            });
+
+            this.cfDelegate.getCourseSummaryComponent(this.injector, this.course).then((component) => {
+                this.courseSummaryComponent = component;
+            });
+
+            this.cfDelegate.getSectionSelectorComponent(this.injector, this.course).then((component) => {
+                this.sectionSelectorComponent = component;
+            });
+
+            this.cfDelegate.getSingleSectionComponent(this.injector, this.course).then((component) => {
+                this.singleSectionComponent = component;
+            });
+
+            this.cfDelegate.getAllSectionsComponent(this.injector, this.course).then((component) => {
+                this.allSectionsComponent = component;
+            });
         }
     }
 

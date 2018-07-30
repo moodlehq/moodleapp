@@ -50,8 +50,8 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     protected eventsProvider: CoreEventsProvider;
     protected modulePrefetchDelegate: CoreCourseModulePrefetchDelegate;
 
-    constructor(injector: Injector, protected content?: Content) {
-        super(injector);
+    constructor(injector: Injector, protected content?: Content, loggerName: string = 'CoreCourseModuleMainResourceComponent') {
+        super(injector, loggerName);
 
         this.sitesProvider = injector.get(CoreSitesProvider);
         this.courseProvider = injector.get(CoreCourseProvider);
@@ -120,10 +120,28 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * @return {Promise<any>} Resolved when done.
      */
     protected refreshContent(sync: boolean = false, showErrors: boolean = false): Promise<any> {
+        if (!this.module) {
+            // This can happen if course format changes from single activity to weekly/topics.
+            return Promise.resolve();
+        }
+
         this.refreshIcon = 'spinner';
         this.syncIcon = 'spinner';
 
-        return this.invalidateContent().catch(() => {
+        // Wrap the call in a try/catch so the workflow isn't interrupted if an error occurs.
+        // E.g. when changing course format we cannot know when will this.module become undefined, so it could cause errors.
+        let promise;
+
+        try {
+            promise = this.invalidateContent();
+        } catch (ex) {
+            // An error ocurred in the function, log the error and just resolve the promise so the workflow continues.
+            this.logger.error(ex);
+
+            promise = Promise.resolve();
+        }
+
+        return promise.catch(() => {
             // Ignore errors.
         }).then(() => {
             return this.loadContent(true, sync, showErrors);
@@ -191,7 +209,25 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     protected loadContent(refresh?: boolean, sync: boolean = false, showErrors: boolean = false): Promise<any> {
         this.isOnline = this.appProvider.isOnline();
 
-        return this.fetchContent(refresh, sync, showErrors).catch((error) => {
+        if (!this.module) {
+            // This can happen if course format changes from single activity to weekly/topics.
+            return Promise.resolve();
+        }
+
+        // Wrap the call in a try/catch so the workflow isn't interrupted if an error occurs.
+        // E.g. when changing course format we cannot know when will this.module become undefined, so it could cause errors.
+        let promise;
+
+        try {
+            promise = this.fetchContent(refresh, sync, showErrors);
+        } catch (ex) {
+            // An error ocurred in the function, log the error and just resolve the promise so the workflow continues.
+            this.logger.error(ex);
+
+            promise = Promise.resolve();
+        }
+
+        return promise.catch((error) => {
             if (!refresh) {
                 // Some call failed, retry without using cache since it might be a new activity.
                 return this.refreshContent(sync);
