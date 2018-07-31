@@ -200,6 +200,14 @@ ion-datetime {
   position: relative;
 }
 
+input {
+  @include rtl() {
+    text-align: right;
+  }
+}
+
+
+
 /** Format Text */
 core-format-text[maxHeight],
 core-format-text[ng-reflect-max-height] {
@@ -238,11 +246,10 @@ core-format-text[ng-reflect-max-height] {
         font-size: 14px;
         display: block;
         position: absolute;
-        bottom: 0;
-        right: 0;
+        @include position(null, 0, 0, null);
         z-index: 1001;
         background-color: $white;
-        padding-left: 10px;
+        @include padding(null, null, null, 10px);
       }
 
       &:before {
@@ -308,8 +315,7 @@ audio.core-media-adapt-width {
 
 .core-image-viewer-icon {
   position: absolute;
-  right: 10px;
-  bottom: 10px;
+  @include position(null, 10px, 10px, null);
   color: $black;
   border-radius: 5px;
   background: rgba(255, 255, 255, .5);
@@ -348,7 +354,7 @@ core-format-text {
     }
     ul, ol {
       list-style-position: inside;
-      margin-left: 15px;
+      @include margin(null, null, null, 15px);
     }
   }
 
@@ -411,7 +417,7 @@ ion-col ion-select {
 
 .core-button-select {
   ion-icon:last-child {
-    margin-left: 5px;
+    @include margin(null, null, null, 5px);
   }
 }
 
@@ -423,8 +429,7 @@ ion-col ion-select {
 
     input {
         position: absolute;
-        top: 0;
-        right: 0;
+        @include position(null, 0, 0, null);
         min-width: 100%;
         min-height: 100%;
         opacity: 0;
@@ -490,7 +495,7 @@ ion-col ion-select {
 }
 
 .core-question-feedback-padding {
-  padding: 8px 35px 8px 14px;
+  @include padding(8px, 35px, 8px, 14px);
 }
 
 .core-question-correct {
@@ -579,13 +584,13 @@ ion-col ion-select {
 /*rtl:begin:ignore*/
 .atto_image_button_left {
     float: left;
-    margin: 0 0.5em 0 0;
+    @include margin(0, 0.5em, 0, 0);
     max-width: calc(100% - 1em);
 }
 
 .atto_image_button_right {
     float: right;
-    margin: 0 0 0 0.5em;
+    @include margin(0, 0, 0, 0.5em);
     max-width: calc(100% - 1em);
 }
 /*rtl:end:ignore*/
@@ -657,8 +662,7 @@ canvas[core-chart] {
       ion-icon {
         color: $color-base;
         position: absolute;
-        top: 0;
-        left: 16px;
+        @include position(0, null, null, 16px)
         height: 100%;
         font-size: 24px;
         display: flex;
@@ -716,8 +720,7 @@ canvas[core-chart] {
 .core-modal-fullscreen {
   .modal-wrapper {
     position: absolute;
-    top: 0 !important;
-    left: 0 !important;
+    @include position(0 !important, null, null, 0 !important);
     display: block;
     width: 100% !important;
     height: 100% !important;
@@ -759,9 +762,7 @@ canvas[core-chart] {
   object,
   video {
     position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
+    @include position(0, null, 0, 0);
     width: 100%;
     height: 100%;
     border: 0;
@@ -848,6 +849,7 @@ ion-alert.core-inapp-notification {
     position: absolute;
     top: -18px;
     right: -8px;
+    @include position(-18px, -8px, null, null);
     color: red;
     font-size: 16px;
   }
