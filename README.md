@@ -13,3 +13,8 @@ License
 -------
 
 [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+Big Thanks
+-----------
+
+Cross-browser Testing Platform and Open Source <3 Provided by [Sauce Labs](https://saucelabs.com)
