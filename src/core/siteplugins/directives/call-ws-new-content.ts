@@ -62,8 +62,8 @@ export class CoreSitePluginsCallWSNewContentDirective extends CoreSitePluginsCal
 
     constructor(element: ElementRef, translate: TranslateService, domUtils: CoreDomUtilsProvider,
             sitePluginsProvider: CoreSitePluginsProvider, @Optional() parentContent: CoreSitePluginsPluginContentComponent,
-            protected utils: CoreUtilsProvider, @Optional() protected navCtrl: NavController) {
-        super(element, translate, domUtils, sitePluginsProvider, parentContent);
+            utils: CoreUtilsProvider, @Optional() protected navCtrl: NavController) {
+        super(element, translate, domUtils, sitePluginsProvider, parentContent, utils);
     }
 
     /**
