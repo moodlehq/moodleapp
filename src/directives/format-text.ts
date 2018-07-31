@@ -27,6 +27,7 @@ import { CoreSite } from '@classes/site';
 import { CoreLinkDirective } from '../directives/link';
 import { CoreExternalContentDirective } from '../directives/external-content';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -64,7 +65,7 @@ export class CoreFormatTextDirective implements OnChanges {
             private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider, private loggerProvider: CoreLoggerProvider,
             private filepoolProvider: CoreFilepoolProvider, private appProvider: CoreAppProvider,
             private contentLinksHelper: CoreContentLinksHelperProvider, @Optional() private navCtrl: NavController,
-            @Optional() private content: Content) {
+            @Optional() private content: Content, @Optional() private svComponent: CoreSplitViewComponent) {
         this.element = element.nativeElement;
         this.element.classList.add('opacity-hide'); // Hide contents until they're treated.
         this.afterRender = new EventEmitter();
@@ -328,7 +329,7 @@ export class CoreFormatTextDirective implements OnChanges {
             anchors.forEach((anchor) => {
                 // Angular 2 doesn't let adding directives dynamically. Create the CoreLinkDirective manually.
                 const linkDir = new CoreLinkDirective(anchor, this.domUtils, this.utils, this.sitesProvider, this.urlUtils,
-                    this.contentLinksHelper, this.navCtrl, this.content);
+                    this.contentLinksHelper, this.navCtrl, this.content, this.svComponent);
                 linkDir.capture = true;
                 linkDir.ngOnInit();
 
