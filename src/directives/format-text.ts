@@ -536,10 +536,12 @@ export class CoreFormatTextDirective implements OnChanges {
                 // Do the iframe responsive.
                 if (iframe.parentElement.classList.contains('embed-responsive')) {
                     iframe.addEventListener('load', () => {
-                        const css = document.createElement('style');
-                        css.setAttribute('type', 'text/css');
-                        css.innerHTML = 'iframe {width: 100%;height: 100%;}';
-                        iframe.contentDocument.head.appendChild(css);
+                        if (iframe.contentDocument) {
+                            const css = document.createElement('style');
+                            css.setAttribute('type', 'text/css');
+                            css.innerHTML = 'iframe {width: 100%;height: 100%;}';
+                            iframe.contentDocument.head.appendChild(css);
+                        }
                     });
                 }
             }
