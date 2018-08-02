@@ -136,8 +136,8 @@ export class MoodleMobileApp implements OnInit {
             loadCustomStrings();
         });
 
-        this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, (siteId) => {
-            if (siteId == this.sitesProvider.getCurrentSiteId()) {
+        this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, (data) => {
+            if (data.siteId == this.sitesProvider.getCurrentSiteId()) {
                 loadCustomStrings();
             }
         });
