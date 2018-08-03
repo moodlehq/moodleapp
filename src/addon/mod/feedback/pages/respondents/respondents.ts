@@ -165,7 +165,8 @@ export class AddonModFeedbackRespondentsPage {
             attemptId: attempt.id,
             attempt: attempt,
             feedbackId: this.feedbackId,
-            moduleId: this.moduleId
+            moduleId: this.moduleId,
+            courseId: this.courseId
         });
     }
 

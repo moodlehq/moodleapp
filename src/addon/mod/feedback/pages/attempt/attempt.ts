@@ -30,7 +30,9 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 export class AddonModFeedbackAttemptPage {
 
     protected feedbackId: number;
+    protected courseId: number;
 
+    feedback: any;
     attempt: any;
     items: any;
     componentId: number;
@@ -41,6 +43,7 @@ export class AddonModFeedbackAttemptPage {
             protected domUtils: CoreDomUtilsProvider, protected feedbackHelper: AddonModFeedbackHelperProvider,
             protected textUtils: CoreTextUtilsProvider) {
         this.feedbackId = navParams.get('feedbackId') || 0;
+        this.courseId = navParams.get('courseId');
         this.attempt = navParams.get('attempt') || false;
         this.componentId = navParams.get('moduleId');
     }
@@ -58,7 +61,12 @@ export class AddonModFeedbackAttemptPage {
      * @return {Promise<any>} Promise resolved when done.
      */
     fetchData(): Promise<any> {
-        return this.feedbackProvider.getItems(this.feedbackId).then((items) => {
+        // Get the feedback to be able to now if questions should be autonumbered.
+        return this.feedbackProvider.getFeedbackById(this.courseId, this.feedbackId).then((feedback) => {
+            this.feedback = feedback;
+
+            return this.feedbackProvider.getItems(this.feedbackId);
+        }).then((items) => {
             // Add responses and format items.
             this.items = items.items.map((item) => {
                 if (item.typ == 'label') {
