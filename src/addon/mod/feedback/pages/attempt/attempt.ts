@@ -75,7 +75,6 @@ export class AddonModFeedbackAttemptPage {
                     for (const x in this.attempt.responses) {
                         if (this.attempt.responses[x].id == item.id) {
                             item.submittedValue = this.attempt.responses[x].printval;
-                            delete this.attempt.responses[x];
                             break;
                         }
                     }
