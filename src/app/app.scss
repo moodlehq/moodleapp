@@ -824,12 +824,27 @@ body.keyboard-is-open core-ion-tabs .tabbar {
     display: none;
 }
 
-// Fix links and videos in ion-radio and ion-checkbox.
 .item.item-radio, .item.item-checkbox {
+  // Fix links and videos in ion-radio and ion-checkbox.
   .input-wrapper {
     position: relative;
     z-index: 5;
     pointer-events: none;
+  }
+
+  // Show whole text on options.
+  ion-label {
+    white-space: normal;
+  }
+}
+
+.core-no-text-wrap {
+  white-space: nowrap;
+
+  &.item.item-radio, &.item.item-checkbox {
+    ion-label {
+      white-space: nowrap;
+    }
   }
 }
 
