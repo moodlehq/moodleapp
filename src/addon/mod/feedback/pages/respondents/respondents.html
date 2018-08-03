@@ -38,7 +38,7 @@
                     <ion-item-divider color="light">
                         {{ 'addon.mod_feedback.anonymous_entries' |translate : {$a: anonResponses.total } }}
                     </ion-item-divider>
-                    <a *ngFor="let attempt of anonResponses.attempts" ion-item text-wrap (click)="gotoAttempt(attempt)">
+                    <a *ngFor="let attempt of anonResponses.attempts" ion-item text-wrap (click)="gotoAttempt(attempt)" [class.core-split-item-selected]="attempt.id == attemptId">
                         <h2>{{ 'addon.mod_feedback.response_nr' |translate }}: {{attempt.number}}</h2>
                     </a>
                     <ion-item padding text-center *ngIf="anonResponses.canLoadMore">
