@@ -69,6 +69,29 @@
   }
 }
 
+@mixin core-headings() {
+  h1 {
+    font-size: 3rem;
+  }
+  h2 {
+    font-size: 2.8rem;
+  }
+  h3 {
+    font-size: 2.6rem;
+  }
+  h4 {
+    font-size: 2.2rem;
+  }
+  h5 {
+    font-size: 1.8rem;
+  }
+  h6 {
+    font-size: 1.4rem;
+  }
+}
+
+
+
 // Define an alternative way to set a heading in an item without using a heading tag.
 // This is done for accessibility reasons when a heading is semantically incorrect.
 .item .item-heading {
@@ -340,6 +363,12 @@ core-format-text {
     height: initial !important;
     display: inline-block !important;
   }
+
+  @include core-headings();
+}
+
+.item core-format-text {
+  @include core-headings();
 }
 
 // Images in ion-card have width 100% and display block. Remove that when the image is in core-format-text.
