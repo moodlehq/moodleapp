@@ -43,3 +43,12 @@ core-split-view {
         padding-top: 0 !important;
     }
 }
+
+.ios .split-pane {
+    .core-avoid-header ion-content.statusbar-padding,
+    .core-avoid-header .menu-inner > ion-content {
+         top: $navbar-ios-height;
+         height: calc(100% - #{($navbar-ios-height)});
+    }
+
+}
