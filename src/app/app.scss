@@ -32,7 +32,6 @@
 .img-responsive {
   display: block;
   max-width: 100%;
-  height: auto;
 }
 
 .opacity-hide { opacity: 0; }
@@ -270,6 +269,7 @@ core-format-text[ng-reflect-single-line="true"] {
 }
 
 img.core-media-adapt-width {
+  width: 100%;
   height: auto;
 }
 
@@ -280,6 +280,7 @@ audio.core-media-adapt-width {
 .core-adapted-img-container {
   position: relative;
   display: inline-block;
+  width: 100%;
 }
 
 .core-image-viewer-icon {

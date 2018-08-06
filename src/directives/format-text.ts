@@ -117,6 +117,11 @@ export class CoreFormatTextDirective implements OnChanges {
             // Element to wrap the image.
             container = document.createElement('span');
 
+        const forcedWidth = parseInt(img.attributes.getNamedItem('width').value);
+        if (!isNaN(forcedWidth) && img.attributes.getNamedItem('width').value.indexOf('%') < 0) {
+            img.style.width = forcedWidth  + 'px';
+        }
+
         container.classList.add('core-adapted-img-container');
         container.style.cssFloat = img.style.cssFloat; // Copy the float to correctly position the search icon.
         if (img.classList.contains('atto_image_button_right')) {
