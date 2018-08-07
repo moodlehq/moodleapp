@@ -46,8 +46,8 @@ export class CoreGradesHelperProvider {
     protected formatGradeRow(tableRow: any): any {
         const row = {};
         for (const name in tableRow) {
-            if (typeof(tableRow[name].content) != 'undefined') {
-                let content = tableRow[name].content;
+            if (typeof tableRow[name].content != 'undefined' && tableRow[name].content !== null) {
+                let content = String(tableRow[name].content);
 
                 if (name == 'itemname') {
                     this.setRowIcon(row, content);
@@ -81,8 +81,8 @@ export class CoreGradesHelperProvider {
     protected formatGradeRowForTable(tableRow: any): any {
         const row = {};
         for (let name in tableRow) {
-            if (typeof(tableRow[name].content) != 'undefined') {
-                let content = tableRow[name].content;
+            if (typeof tableRow[name].content != 'undefined' && tableRow[name].content !== null) {
+                let content = String(tableRow[name].content);
 
                 if (name == 'itemname') {
                     this.setRowIcon(row, content);
