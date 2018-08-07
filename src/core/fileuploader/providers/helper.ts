@@ -458,12 +458,17 @@ export class CoreFileUploaderHelperProvider {
         // The mimetypes param is only for desktop apps, the Cordova plugin doesn't support it.
         return promise.then((medias) => {
             // We used limit 1, we only want 1 media.
-            const media: MediaFile = medias[0],
-                path = media.fullPath,
-                error = this.fileUploaderProvider.isInvalidMimetype(mimetypes, path); // Verify that the mimetype is supported.
+            const media: MediaFile = medias[0];
+            let path = media.fullPath;
+            const error = this.fileUploaderProvider.isInvalidMimetype(mimetypes, path); // Verify that the mimetype is supported.
 
             if (error) {
                 return Promise.reject(error);
+            }
+
+            // Make sure the path has the protocol. In iOS it doesn't.
+            if (path.indexOf('file://') == -1) {
+                path = 'file://' + path;
             }
 
             if (upload) {
