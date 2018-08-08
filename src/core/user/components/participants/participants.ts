@@ -54,6 +54,9 @@ export class CoreUserParticipantsComponent implements OnInit {
             });
         }).finally(() => {
             this.participantsLoaded = true;
+
+            // Call resize to make infinite loading work, in some cases the content dimensions aren't read.
+            this.content && this.content.resize();
         });
     }
 
