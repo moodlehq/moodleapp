@@ -416,7 +416,7 @@ ion-col ion-select {
 }
 
 
-:not(.item) ion-select,
+:not(.item) > * > * > ion-select,
 .core-button-select {
   background-color: white;
   color: $core-color;
@@ -447,7 +447,7 @@ ion-col ion-select {
   }
 
   .button-inner {
-    justify-content: space-between;
+    justify-content: start;
   }
 
   .select-icon .select-icon-inner {
@@ -456,6 +456,8 @@ ion-col ion-select {
 
   ion-icon:last-child {
     @include margin(null, null, null, 5px);
+    text-align: right;
+    flex-grow: 2;
   }
 }
 

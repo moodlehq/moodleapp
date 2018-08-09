@@ -63,6 +63,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
     displaySectionSelector: boolean;
     selectedSection: any;
+    previousSection: any;
+    nextSection: any;
     allSectionsId: number = CoreCourseProvider.ALL_SECTIONS_ID;
     selectOptions: any = {};
     loaded: boolean;
@@ -247,6 +249,26 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         const previousValue = this.selectedSection;
         this.selectedSection = newSection;
         this.data.section = this.selectedSection;
+
+        // Select next and previous sections to show the arrows.
+        const i = this.sections.findIndex((value, index) => {
+            return this.compareSections(value, this.selectedSection);
+        });
+
+        let j;
+        for (j = i - 1; j >= 1; j--) {
+            if (!(this.sections[j].visible === 0 || this.sections[j].uservisible === false) && this.sections[j].hasContent) {
+                break;
+            }
+        }
+        this.previousSection = j >= 1 ? this.sections[j] : null;
+
+        for (j = i + 1; j < this.sections.length; j++) {
+            if (!(this.sections[j].visible === 0 || this.sections[j].uservisible === false) && this.sections[j].hasContent) {
+                break;
+            }
+        }
+        this.nextSection = j < this.sections.length ? this.sections[j] : null;
 
         if (this.moduleId && typeof previousValue == 'undefined') {
             setTimeout(() => {

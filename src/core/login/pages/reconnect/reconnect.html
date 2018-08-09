@@ -5,7 +5,7 @@
 </ion-header>
 <ion-content padding class="core-center-view">
     <div class="box">
-        <div *ngIf="site" text-wrap text-center [ngClass]="{'item-avatar-center': site.avatar}">
+        <div *ngIf="site" text-wrap text-center margin-bottom [ngClass]="{'item-avatar-center': site.avatar}">
             <ion-avatar *ngIf="site.avatar">
                 <!-- Show user avatar. -->
                 <img [src]="site.avatar" class="avatar" core-external-content [siteId]="site.id" alt="{{ 'core.pictureof' | translate:{$a: site.fullname} }}" role="presentation" onError="this.src='assets/img/user-avatar.png'">

@@ -67,7 +67,7 @@
         <ion-grid text-wrap *ngIf="questions && questions.length && !quizAborted && !showSummary">
             <ion-row>
                 <ion-col *ngIf="previousPage >= 0" >
-                    <button ion-button block icon-start (click)="changePage(previousPage)">
+                    <button ion-button block icon-start color="light" (click)="changePage(previousPage)">
                         <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
                         {{ 'core.previous' | translate }}
                     </button>
