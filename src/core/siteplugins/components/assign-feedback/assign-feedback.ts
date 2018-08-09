@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, Input } from '@angular/core';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { CoreSitePluginsCompileInitComponent } from '../../classes/compile-init-component';
 
@@ -32,8 +33,8 @@ export class CoreSitePluginsAssignFeedbackComponent extends CoreSitePluginsCompi
     @Input() canEdit: boolean; // Whether the user can edit.
     @Input() edit: boolean; // Whether the user is editing.
 
-    constructor(sitePluginsProvider: CoreSitePluginsProvider) {
-        super(sitePluginsProvider);
+    constructor(sitePluginsProvider: CoreSitePluginsProvider, utils: CoreUtilsProvider) {
+        super(sitePluginsProvider, utils);
     }
 
     /**
@@ -41,15 +42,13 @@ export class CoreSitePluginsAssignFeedbackComponent extends CoreSitePluginsCompi
      */
     ngOnInit(): void {
         // Pass the input and output data to the component.
-        this.jsData = {
-            assign: this.assign,
-            submission: this.submission,
-            plugin: this.plugin,
-            userId: this.userId,
-            configs: this.configs,
-            edit: this.edit,
-            canEdit: this.canEdit
-        };
+        this.jsData.assign = this.assign;
+        this.jsData.submission = this.submission;
+        this.jsData.plugin = this.plugin;
+        this.jsData.userId = this.userId;
+        this.jsData.configs = this.configs;
+        this.jsData.edit = this.edit;
+        this.jsData.canEdit = this.canEdit;
 
         if (this.plugin) {
             this.getHandlerData('assignfeedback_' + this.plugin.type);

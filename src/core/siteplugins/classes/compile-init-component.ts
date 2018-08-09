@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from '../providers/siteplugins';
 
 /**
@@ -20,10 +21,10 @@ import { CoreSitePluginsProvider } from '../providers/siteplugins';
  */
 export class CoreSitePluginsCompileInitComponent {
     content = ''; // Content.
-    jsData: any; // Data to pass to the component.
+    jsData: any = {}; // Data to pass to the component.
     protected handlerSchema: any; // The handler data.
 
-    constructor(protected sitePluginsProvider: CoreSitePluginsProvider) { }
+    constructor(protected sitePluginsProvider: CoreSitePluginsProvider, protected utils: CoreUtilsProvider) { }
 
     /**
      * Function called when the component is created.
@@ -53,6 +54,16 @@ export class CoreSitePluginsCompileInitComponent {
             // Load first template.
             if (this.handlerSchema.methodTemplates && this.handlerSchema.methodTemplates.length) {
                 this.content = handler.handlerSchema.methodTemplates[0].html;
+                this.jsData.CONTENT_TEMPLATES = this.utils.objectToKeyValueMap(handler.handlerSchema.methodTemplates, 'id', 'html');
+            }
+
+            // Pass data from the method result to the component.
+            if (this.handlerSchema.methodOtherdata) {
+                this.jsData.CONTENT_OTHERDATA = this.handlerSchema.methodOtherdata;
+            }
+
+            if (this.handlerSchema.methodJSResult) {
+                this.jsData.CONTENT_JS_RESULT = this.handlerSchema.methodJSResult;
             }
         }
     }

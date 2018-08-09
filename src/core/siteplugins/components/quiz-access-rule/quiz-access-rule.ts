@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, Input } from '@angular/core';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { CoreSitePluginsCompileInitComponent } from '../../classes/compile-init-component';
 import { FormGroup } from '@angular/forms';
@@ -32,8 +33,8 @@ export class CoreSitePluginsQuizAccessRuleComponent extends CoreSitePluginsCompi
     @Input() siteId: string; // Site ID.
     @Input() form: FormGroup; // Form where to add the form control.
 
-    constructor(sitePluginsProvider: CoreSitePluginsProvider) {
-        super(sitePluginsProvider);
+    constructor(sitePluginsProvider: CoreSitePluginsProvider, utils: CoreUtilsProvider) {
+        super(sitePluginsProvider, utils);
     }
 
     /**
@@ -41,14 +42,12 @@ export class CoreSitePluginsQuizAccessRuleComponent extends CoreSitePluginsCompi
      */
     ngOnInit(): void {
         // Pass the input and output data to the component.
-        this.jsData = {
-            rule: this.rule,
-            quiz: this.quiz,
-            attempt: this.attempt,
-            prefetch: this.prefetch,
-            siteId: this.siteId,
-            form: this.form
-        };
+        this.jsData.rule = this.rule;
+        this.jsData.quiz = this.quiz;
+        this.jsData.attempt = this.attempt;
+        this.jsData.prefetch = this.prefetch;
+        this.jsData.siteId = this.siteId;
+        this.jsData.form = this.form;
 
         if (this.rule) {
             this.getHandlerData(this.rule);

@@ -547,6 +547,7 @@ export class CoreSitePluginsHelperProvider {
             // Store in handlerSchema some data required by the component.
             handlerSchema.methodTemplates = result.templates;
             handlerSchema.methodJSResult = result.jsResult;
+            handlerSchema.methodOtherdata = result.otherdata;
 
             if (result && result.jsResult) {
                 // Override default handler functions with the result of the method JS.

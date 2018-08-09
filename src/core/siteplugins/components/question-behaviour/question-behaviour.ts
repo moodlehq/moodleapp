@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { CoreSitePluginsCompileInitComponent } from '../../classes/compile-init-component';
 
@@ -32,8 +33,8 @@ export class CoreSitePluginsQuestionBehaviourComponent extends CoreSitePluginsCo
     @Output() buttonClicked: EventEmitter<any>; // Should emit an event when a behaviour button is clicked.
     @Output() onAbort: EventEmitter<void>; // Should emit an event if the question should be aborted.
 
-    constructor(sitePluginsProvider: CoreSitePluginsProvider) {
-        super(sitePluginsProvider);
+    constructor(sitePluginsProvider: CoreSitePluginsProvider, utils: CoreUtilsProvider) {
+        super(sitePluginsProvider, utils);
     }
 
     /**
@@ -41,15 +42,13 @@ export class CoreSitePluginsQuestionBehaviourComponent extends CoreSitePluginsCo
      */
     ngOnInit(): void {
         // Pass the input and output data to the component.
-        this.jsData = {
-            question: this.question,
-            component: this.component,
-            componentId: this.componentId,
-            attemptId: this.attemptId,
-            offlineEnabled: this.offlineEnabled,
-            buttonClicked: this.buttonClicked,
-            onAbort: this.onAbort
-        };
+        this.jsData.question = this.question;
+        this.jsData.component = this.component;
+        this.jsData.componentId = this.componentId;
+        this.jsData.attemptId = this.attemptId;
+        this.jsData.offlineEnabled = this.offlineEnabled;
+        this.jsData.buttonClicked = this.buttonClicked;
+        this.jsData.onAbort = this.onAbort;
 
         if (this.question) {
             this.getHandlerData('qbehaviour_' + this.question.preferredBehaviour);
