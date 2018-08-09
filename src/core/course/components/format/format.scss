@@ -9,6 +9,22 @@ core-course-format {
 
     .core-format-progress-list {
         margin-bottom: 0;
+
+        .item {
+            background: transparent;
+
+            .label {
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+
+            progress {
+                .progress-bar-fallback,
+                &[value]::-webkit-progress-bar {
+                    background-color: $white;
+                }
+            }
+        }
     }
 
     .core-course-thumb {
@@ -39,8 +55,4 @@ core-course-format {
             line-height: 44px;
         }
     }
-}
-
-.core-section-select {
-    width: 100%;
 }

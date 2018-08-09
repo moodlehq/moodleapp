@@ -402,7 +402,7 @@ ion-card core-format-text img {
 
 // Ionic fix. Button can occupy all page if not.
 ion-select {
-  position: relative
+  position: relative;
 }
 
 ion-col ion-select {
@@ -415,11 +415,51 @@ ion-col ion-select {
     }
 }
 
+
+:not(.item) ion-select,
 .core-button-select {
+  background-color: white;
+  color: $core-color;
+  white-space: normal;
+  align-self: start;
+  max-width: none;
+
+  &.select-md,
+  &.button-md {
+    background: $card-md-background-color;
+    box-shadow: $card-md-box-shadow;
+  }
+
+  &.select-ios,
+  &.button-ios {
+    background: $card-ios-background-color;
+    box-shadow: $card-ios-box-shadow;
+  }
+
+  &.select-wp,
+  &.button-wp {
+    background: $card-wp-background-color;
+    box-shadow: $card-wp-box-shadow;
+  }
+
+  .select-text {
+      white-space: normal;
+  }
+
+  .button-inner {
+    justify-content: space-between;
+  }
+
+  .select-icon .select-icon-inner {
+    color: $core-color;
+  }
+
   ion-icon:last-child {
     @include margin(null, null, null, 5px);
   }
 }
+
+
 
 // File uploader.
 // -------------------------
