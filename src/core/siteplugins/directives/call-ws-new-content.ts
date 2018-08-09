@@ -59,6 +59,8 @@ export class CoreSitePluginsCallWSNewContentDirective extends CoreSitePluginsCal
     @Input() title: string; // The title to display with the new content. Only if samePage=false.
     @Input() samePage: boolean | string; // Whether to display the content in same page or open a new one. Defaults to new page.
     @Input() useOtherData: any[]; // Whether to include other data in the args. @see CoreSitePluginsProvider.loadOtherDataInArgs.
+    @Input() jsData: any; // JS variables to pass to the new page so they can be used in the template or JS.
+                          // If true is supplied instead of an object, all initial variables from current page will be copied.
 
     constructor(element: ElementRef, translate: TranslateService, domUtils: CoreDomUtilsProvider,
             sitePluginsProvider: CoreSitePluginsProvider, @Optional() parentContent: CoreSitePluginsPluginContentComponent,
@@ -84,15 +86,21 @@ export class CoreSitePluginsCallWSNewContentDirective extends CoreSitePluginsCal
         if (this.utils.isTrueOrOne(this.samePage)) {
             // Update the parent content (if it exists).
             if (this.parentContent) {
-                this.parentContent.updateContent(args, this.component, this.method);
+                this.parentContent.updateContent(args, this.component, this.method, this.jsData);
             }
         } else {
+            let jsData = this.jsData;
+            if (jsData === true && this.parentContent) {
+                jsData = this.parentContent.data;
+            }
+
             this.navCtrl.push('CoreSitePluginsPluginPage', {
                 title: this.title,
                 component: this.component || (this.parentContent && this.parentContent.component),
                 method: this.method || (this.parentContent && this.parentContent.method),
                 args: args,
-                initResult: this.parentContent && this.parentContent.initResult
+                initResult: this.parentContent && this.parentContent.initResult,
+                jsData: jsData
             });
         }
     }

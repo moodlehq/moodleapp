@@ -51,6 +51,8 @@ export class CoreSitePluginsNewContentDirective implements OnInit {
     @Input() useOtherData: any[]; // Whether to include other data in the args. @see CoreSitePluginsProvider.loadOtherDataInArgs.
     @Input() form: string; // ID or name to identify a form. The form will be obtained from document.forms.
                            // If supplied and form is found, the form data will be retrieved and sent to the new content.
+    @Input() jsData: any; // JS variables to pass to the new page so they can be used in the template or JS.
+                          // If true is supplied instead of an object, all initial variables from current page will be copied.
 
     protected element: HTMLElement;
 
@@ -81,15 +83,21 @@ export class CoreSitePluginsNewContentDirective implements OnInit {
             if (this.utils.isTrueOrOne(this.samePage)) {
                 // Update the parent content (if it exists).
                 if (this.parentContent) {
-                    this.parentContent.updateContent(args, this.component, this.method);
+                    this.parentContent.updateContent(args, this.component, this.method, this.jsData);
                 }
             } else {
+                let jsData = this.jsData;
+                if (jsData === true) {
+                    jsData = this.parentContent && this.parentContent.data || {};
+                }
+
                 this.navCtrl.push('CoreSitePluginsPluginPage', {
                     title: this.title,
                     component: this.component || (this.parentContent && this.parentContent.component),
                     method: this.method || (this.parentContent && this.parentContent.method),
                     args: args,
-                    initResult: this.parentContent && this.parentContent.initResult
+                    initResult: this.parentContent && this.parentContent.initResult,
+                    jsData: jsData
                 });
             }
         });
