@@ -36,6 +36,7 @@ export class CoreSettingsAboutPage {
     appName: string;
     versionName: string;
     versionCode: number;
+    compilationTime: number;
     privacyPolicy: string;
     navigator: Navigator;
     locationHref: string;
@@ -61,6 +62,7 @@ export class CoreSettingsAboutPage {
         this.appName = appProvider.isDesktop() ? CoreConfigConstants.desktopappname : CoreConfigConstants.appname;
         this.versionName = CoreConfigConstants.versionname;
         this.versionCode = CoreConfigConstants.versioncode;
+        this.compilationTime = CoreConfigConstants.compilationtime;
 
         // Calculate the privacy policy to use.
         this.privacyPolicy = currentSite.getStoredConfig('tool_mobile_apppolicy') || currentSite.getStoredConfig('sitepolicy') ||
