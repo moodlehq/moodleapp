@@ -32,6 +32,11 @@ core-grades-course {
     .core-grades-table-gradeitem {
       padding-left: 5px;
       font-weight: bold;
+
+      &.column-itemname {
+        padding-left: 0;
+      }
+
       img {
         width: 16px;
         height: 16px;
