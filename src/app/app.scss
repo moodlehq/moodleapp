@@ -849,3 +849,8 @@ ion-modal,
 .split-pane {
   contain: size layout style;
 }
+
+// Fix modals displayed over action sheet.
+.disable-scroll ion-modal .ion-page {
+  pointer-events: initial;
+}
