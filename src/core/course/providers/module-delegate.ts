@@ -86,6 +86,12 @@ export interface CoreCourseModuleHandlerData {
     class?: string;
 
     /**
+     * The text to show in an extra badge.
+     * @type {string}
+     */
+    extraBadge?: string;
+
+    /**
      * Whether to display a button to download/refresh the module if it's downloadable.
      * If it's set to true, the app will show a download/refresh button when needed and will handle the download of the
      * module using CoreCourseModulePrefetchDelegate.

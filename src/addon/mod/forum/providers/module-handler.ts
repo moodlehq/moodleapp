@@ -14,9 +14,11 @@
 
 import { Injectable } from '@angular/core';
 import { NavController, NavOptions } from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
 import { AddonModForumIndexComponent } from '../components/index/index';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { AddonModForumProvider } from './forum';
 
 /**
  * Handler to support forum modules.
@@ -26,7 +28,8 @@ export class AddonModForumModuleHandler implements CoreCourseModuleHandler {
     name = 'AddonModForum';
     modName = 'forum';
 
-    constructor(private courseProvider: CoreCourseProvider) { }
+    constructor(private courseProvider: CoreCourseProvider, private forumProvider: AddonModForumProvider,
+        private translate: TranslateService) { }
 
     /**
      * Check if the handler is enabled on a site level.
@@ -46,7 +49,7 @@ export class AddonModForumModuleHandler implements CoreCourseModuleHandler {
      * @return {CoreCourseModuleHandlerData} Data to render the module.
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
-        return {
+       const data: CoreCourseModuleHandlerData = {
             icon: this.courseProvider.getModuleIconSrc('forum'),
             title: module.name,
             class: 'addon-mod_forum-handler',
@@ -55,6 +58,16 @@ export class AddonModForumModuleHandler implements CoreCourseModuleHandler {
                 navCtrl.push('AddonModForumIndexPage', {module: module, courseId: courseId}, options);
             }
         };
+
+        // Handle unread posts.
+        this.forumProvider.getForum(courseId, module.id).then((forumData) => {
+            data.extraBadge = forumData.unreadpostscount ? this.translate.instant('addon.mod_forum.unreadpostsnumber',
+                {$a : forumData.unreadpostscount }) : '';
+        }).catch(() => {
+            // Ignore errors.
+        });
+
+        return data;
     }
 
     /**
