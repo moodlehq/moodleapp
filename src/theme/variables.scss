@@ -250,6 +250,10 @@ $core-question-state-incorrect-color: $red-light !default;
     transition: $where $time ease-in-out;
 }
 
+@mixin push-arrow-color($color) {
+  background-image: url("data:image/svg+xml;charset=utf-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 20'><path d='M2,20l-2-2l8-8L0,2l2-2l10,10L2,20z' fill='#{$color}'/></svg>") !important;
+}
+
 // Font Awesome
 $fa-font-path: $font-path;
 @import "font-awesome";

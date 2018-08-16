@@ -69,7 +69,6 @@
   }
 }
 
-
 // Define an alternative way to set a heading in an item without using a heading tag.
 // This is done for accessibility reasons when a heading is semantically incorrect.
 .item .item-heading {
@@ -475,6 +474,7 @@ ion-col ion-select {
   background-color: $core-question-state-incorrect-color;
 }
 .core-question-answersaved {
+  color: $text-color;
   background-color: $core-question-saved-color-bg;
 }
 
@@ -671,7 +671,7 @@ canvas[core-chart] {
 
 
 .core-white-push-arrow .item-inner{
-    background-image: url("data:image/svg+xml;charset=utf-8,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2012%2020'><path%20d='M2,20l-2-2l8-8L0,2l2-2l10,10L2,20z'%20fill='%23FFFFFF'/></svg>") !important;
+    @include push-arrow-color($white);
 }
 
 // For list where some items have detail icon and some others don't.
