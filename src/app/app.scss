@@ -474,6 +474,9 @@ ion-col ion-select {
 .core-question-incorrect {
   background-color: $core-question-state-incorrect-color;
 }
+.core-question-answersaved {
+  background-color: $core-question-saved-color-bg;
+}
 
 .core-question-warning {
   color: $core-question-warning-color;

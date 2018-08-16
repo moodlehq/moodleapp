@@ -1,5 +1,28 @@
 page-addon-mod-quiz-navigation-modal {
     .addon-mod_quiz-selected, .item.addon-mod_quiz-selected {
-        background: $blue-light;
+        border-left: 5px solid $core-splitview-selected;
+        font-weight: bold;
+
+        &.item-md {
+            padding-left: $item-md-padding-start - 5px;
+        }
+        &.item-ios {
+            padding-left: $item-ios-padding-start - 5px;
+        }
+        &.item-wp {
+            padding-left: $item-wp-padding-start - 5px;
+        }
+    }
+
+    .item.core-question-correct .item-inner {
+        background-image: url("data:image/svg+xml;charset=utf-8,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2012%2020'><path%20d='M2,20l-2-2l8-8L0,2l2-2l10,10L2,20z'%20fill='%23394e00'/></svg>") !important;
+    }
+
+    .item.core-question-incorrect .item-inner {
+        background-image: url("data:image/svg+xml;charset=utf-8,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2012%2020'><path%20d='M2,20l-2-2l8-8L0,2l2-2l10,10L2,20z'%20fill='%23cb3d4d'/></svg>") !important;
+    }
+
+    .item.core-question-answersaved .item-inner {
+        background-image: url("data:image/svg+xml;charset=utf-8,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2012%2020'><path%20d='M2,20l-2-2l8-8L0,2l2-2l10,10L2,20z'%20fill='%233a3a3a'/></svg>") !important;
     }
 }
