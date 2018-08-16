@@ -14,6 +14,7 @@
 
 import { NgModule } from '@angular/core';
 import { CoreCoursesProvider } from './providers/courses';
+import { CoreCoursesHelperProvider } from './providers/helper';
 import { CoreCoursesMainMenuHandler } from './providers/mainmenu-handler';
 import { CoreCoursesMyOverviewProvider } from './providers/my-overview';
 import { CoreCoursesCourseLinkHandler } from './providers/course-link-handler';
@@ -25,7 +26,8 @@ import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate'
 // List of providers (without handlers).
 export const CORE_COURSES_PROVIDERS: any[] = [
     CoreCoursesProvider,
-    CoreCoursesMyOverviewProvider
+    CoreCoursesMyOverviewProvider,
+    CoreCoursesHelperProvider
 ];
 
 @NgModule({
@@ -35,6 +37,7 @@ export const CORE_COURSES_PROVIDERS: any[] = [
     providers: [
         CoreCoursesProvider,
         CoreCoursesMyOverviewProvider,
+        CoreCoursesHelperProvider,
         CoreCoursesMainMenuHandler,
         CoreCoursesCourseLinkHandler,
         CoreCoursesIndexLinkHandler,
