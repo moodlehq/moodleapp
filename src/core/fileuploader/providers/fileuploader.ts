@@ -14,7 +14,8 @@
 
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
-import { MediaFile } from '@ionic-native/media-capture';
+import { Camera, CameraOptions } from '@ionic-native/camera';
+import { MediaCapture, MediaFile, CaptureError, CaptureAudioOptions, CaptureVideoOptions } from '@ionic-native/media-capture';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreFileProvider } from '@providers/file';
 import { CoreFilepoolProvider } from '@providers/filepool';
@@ -25,6 +26,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreWSFileUploadOptions } from '@providers/ws';
+import { Subject } from 'rxjs';
 
 /**
  * File upload options.
@@ -47,10 +49,16 @@ export class CoreFileUploaderProvider {
 
     protected logger;
 
+    // Observers to notify when a media file starts/stops being recorded/selected.
+    onGetPicture: Subject<boolean> = new Subject<boolean>();
+    onAudioCapture: Subject<boolean> = new Subject<boolean>();
+    onVideoCapture: Subject<boolean> = new Subject<boolean>();
+
     constructor(logger: CoreLoggerProvider, private fileProvider: CoreFileProvider, private textUtils: CoreTextUtilsProvider,
             private utils: CoreUtilsProvider, private sitesProvider: CoreSitesProvider, private timeUtils: CoreTimeUtilsProvider,
             private mimeUtils: CoreMimetypeUtilsProvider, private filepoolProvider: CoreFilepoolProvider,
-            private platform: Platform, private translate: TranslateService) {
+            private platform: Platform, private translate: TranslateService, private mediaCapture: MediaCapture,
+            private camera: Camera) {
         this.logger = logger.getInstance('CoreFileUploaderProvider');
     }
 
@@ -87,6 +95,34 @@ export class CoreFileUploaderProvider {
         }
 
         return false;
+    }
+
+    /**
+     * Start the audio recorder application and return information about captured audio clip files.
+     *
+     * @param {CaptureAudioOptions} options Options.
+     * @return {Promise<MediaFile[] | CaptureError>} Promise resolved with the result.
+     */
+    captureAudio(options: CaptureAudioOptions): Promise<MediaFile[] | CaptureError> {
+        this.onAudioCapture.next(true);
+
+        return this.mediaCapture.captureAudio(options).finally(() => {
+            this.onAudioCapture.next(false);
+        });
+    }
+
+    /**
+     * Start the video recorder application and return information about captured video clip files.
+     *
+     * @param {CaptureVideoOptions} options Options.
+     * @return {Promise<MediaFile[] | CaptureError>} Promise resolved with the result.
+     */
+    captureVideo(options: CaptureVideoOptions): Promise<MediaFile[] | CaptureError> {
+        this.onVideoCapture.next(true);
+
+        return this.mediaCapture.captureVideo(options).finally(() => {
+            this.onVideoCapture.next(false);
+        });
     }
 
     /**
@@ -192,6 +228,20 @@ export class CoreFileUploaderProvider {
         }
 
         return options;
+    }
+
+    /**
+     * Take a picture or video, or load one from the library.
+     *
+     * @param {CameraOptions} options Options.
+     * @return {Promise<any>} Promise resolved with the result.
+     */
+    getPicture(options: CameraOptions): Promise<any> {
+        this.onGetPicture.next(true);
+
+        return this.camera.getPicture(options).finally(() => {
+            this.onGetPicture.next(false);
+        });
     }
 
     /**

@@ -16,6 +16,7 @@
 
 import { Component, ViewChild, Input, ElementRef, OnInit, Optional, OnDestroy } from '@angular/core';
 import { NavController, Nav, ViewController } from 'ionic-angular';
+import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { Subscription } from 'rxjs';
 
 /**
@@ -53,12 +54,18 @@ export class CoreSplitViewComponent implements OnInit, OnDestroy {
     protected detailsDidEnterSubscription: Subscription;
     protected masterCanLeaveOverridden = false;
     protected originalMasterCanLeave: Function;
+    protected ignoreSplitChanged = false;
+    protected audioCaptureSubscription: Subscription;
 
     // Empty placeholder for the 'detail' page.
     detailPage: any = null;
 
-    constructor(@Optional() private masterNav: NavController, element: ElementRef) {
+    constructor(@Optional() private masterNav: NavController, element: ElementRef, fileUploaderProvider: CoreFileUploaderProvider) {
         this.element = element.nativeElement;
+
+        this.audioCaptureSubscription = fileUploaderProvider.onAudioCapture.subscribe((starting) => {
+            this.ignoreSplitChanged = starting;
+        });
     }
 
     /**
@@ -184,6 +191,10 @@ export class CoreSplitViewComponent implements OnInit, OnDestroy {
      * @param {Boolean} isOn If it fits both panels at the same time.
      */
     onSplitPaneChanged(isOn: boolean): void {
+        if (this.ignoreSplitChanged) {
+            return;
+        }
+
         this.isEnabled = isOn;
         if (this.masterNav && this.detailNav) {
             (isOn) ? this.activateSplitView() : this.deactivateSplitView();
@@ -228,5 +239,6 @@ export class CoreSplitViewComponent implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.detailsDidEnterSubscription && this.detailsDidEnterSubscription.unsubscribe();
+        this.audioCaptureSubscription.unsubscribe();
     }
 }
