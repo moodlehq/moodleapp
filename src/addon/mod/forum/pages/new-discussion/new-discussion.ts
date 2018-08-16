@@ -117,7 +117,7 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
         // Trigger view event, to highlight the current opened discussion in the split view.
         this.eventsProvider.trigger(AddonModForumProvider.VIEW_DISCUSSION_EVENT, {
             forumId: this.forumId,
-            discussion: -this.timeCreated,
+            discussion: -this.timeCreated
         }, this.sitesProvider.getCurrentSiteId());
     }
 
@@ -378,7 +378,7 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
             // Trigger view event, to highlight the current opened discussion in the split view.
             this.eventsProvider.trigger(AddonModForumProvider.VIEW_DISCUSSION_EVENT, {
                 forumId: this.forumId,
-                discussion: 0,
+                discussion: 0
             }, this.sitesProvider.getCurrentSiteId());
         } else {
             this.originalData = null; // Avoid asking for confirmation.

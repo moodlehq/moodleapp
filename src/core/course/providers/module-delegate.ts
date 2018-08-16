@@ -92,6 +92,12 @@ export interface CoreCourseModuleHandlerData {
     extraBadge?: string;
 
     /**
+     * The color of the extra badge. Default: primary.
+     * @type {string}
+     */
+    extraBadgeColor?: string;
+
+    /**
      * Whether to display a button to download/refresh the module if it's downloadable.
      * If it's set to true, the app will show a download/refresh button when needed and will handle the download of the
      * module using CoreCourseModulePrefetchDelegate.
@@ -128,6 +134,11 @@ export interface CoreCourseModuleHandlerData {
      * @param {string} status Module status.
      */
     updateStatus?(status: string): void;
+
+    /**
+     * On Destroy function in case it's needed.
+     */
+    onDestroy?(): void;
 }
 
 /**

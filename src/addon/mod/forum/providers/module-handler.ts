@@ -15,10 +15,12 @@
 import { Injectable } from '@angular/core';
 import { NavController, NavOptions } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { AddonModForumIndexComponent } from '../components/index/index';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { AddonModForumProvider } from './forum';
+import { AddonModForumIndexComponent } from '../components/index/index';
 
 /**
  * Handler to support forum modules.
@@ -29,7 +31,8 @@ export class AddonModForumModuleHandler implements CoreCourseModuleHandler {
     modName = 'forum';
 
     constructor(private courseProvider: CoreCourseProvider, private forumProvider: AddonModForumProvider,
-        private translate: TranslateService) { }
+            private translate: TranslateService, private eventsProvider: CoreEventsProvider,
+            private sitesProvider: CoreSitesProvider) {}
 
     /**
      * Check if the handler is enabled on a site level.
@@ -49,7 +52,7 @@ export class AddonModForumModuleHandler implements CoreCourseModuleHandler {
      * @return {CoreCourseModuleHandlerData} Data to render the module.
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
-       const data: CoreCourseModuleHandlerData = {
+        const data: CoreCourseModuleHandlerData = {
             icon: this.courseProvider.getModuleIconSrc('forum'),
             title: module.name,
             class: 'addon-mod_forum-handler',
@@ -59,13 +62,17 @@ export class AddonModForumModuleHandler implements CoreCourseModuleHandler {
             }
         };
 
-        // Handle unread posts.
-        this.forumProvider.getForum(courseId, module.id).then((forumData) => {
-            data.extraBadge = forumData.unreadpostscount ? this.translate.instant('addon.mod_forum.unreadpostsnumber',
-                {$a : forumData.unreadpostscount }) : '';
-        }).catch(() => {
-            // Ignore errors.
-        });
+        this.updateExtraBadge(data, courseId, module.id);
+
+        const event = this.eventsProvider.on(AddonModForumProvider.MARK_READ_EVENT, (eventData) => {
+            if (eventData.courseId == courseId && eventData.moduleId == module.id) {
+                this.updateExtraBadge(data, eventData.courseId, eventData.moduleId, eventData.siteId);
+            }
+        }, this.sitesProvider.getCurrentSiteId());
+
+        data.onDestroy = (): void => {
+            event && event.off();
+        };
 
         return data;
     }
@@ -90,5 +97,36 @@ export class AddonModForumModuleHandler implements CoreCourseModuleHandler {
      */
     displayRefresherInSingleActivity(): boolean {
         return false;
+    }
+
+    /**
+     * Triggers an update for the extra badge text.
+     *
+     * @param  {CoreCourseModuleHandlerData} data Course Module Handler data.
+     * @param  {number} courseId Course ID.
+     * @param  {number} moduleId Course module ID.
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     */
+    updateExtraBadge(data: CoreCourseModuleHandlerData, courseId: number, moduleId: number, siteId?: string): void {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+        if (!siteId) {
+            return;
+        }
+
+        data.extraBadge =  this.translate.instant('core.loading');
+        data.extraBadgeColor = 'light';
+
+        this.forumProvider.invalidateForumData(courseId).finally(() => {
+            // Handle unread posts.
+            this.forumProvider.getForum(courseId, moduleId, siteId).then((forumData) => {
+                data.extraBadgeColor = '';
+                data.extraBadge = forumData.unreadpostscount ? this.translate.instant('addon.mod_forum.unreadpostsnumber',
+                    {$a : forumData.unreadpostscount }) : '';
+            }).catch(() => {
+                data.extraBadgeColor = '';
+                data.extraBadge = '';
+                // Ignore errors.
+            });
+        });
     }
 }

@@ -31,7 +31,9 @@
         </div>
     </div>
     <div *ngIf="module.visible === 0 || module.availabilityinfo || module.handlerData.extraBadge">
-        <ion-badge item-end *ngIf="module.handlerData.extraBadge"><core-format-text [text]="module.handlerData.extraBadge"></core-format-text></ion-badge>
+        <ion-badge item-end *ngIf="module.handlerData.extraBadge" [color]="module.handlerData.extraBadgeColor">
+            <core-format-text [text]="module.handlerData.extraBadge"></core-format-text>
+        </ion-badge>
         <ion-badge item-end *ngIf="module.visible === 0">{{ 'core.course.hiddenfromstudents' | translate }}</ion-badge>
         <ion-badge item-end *ngIf="module.availabilityinfo"><core-format-text [text]="module.availabilityinfo"></core-format-text></ion-badge>
     </div>
