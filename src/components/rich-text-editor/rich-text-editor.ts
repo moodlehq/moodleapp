@@ -61,6 +61,8 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     protected element: HTMLDivElement;
     protected editorElement: HTMLDivElement;
     protected resizeFunction;
+    protected kbHeight = 0; // Last known keyboard height.
+    protected minHeight = 200; // Minimum height of the editor.
 
     protected valueChangeSubscription: Subscription;
     protected keyboardObs: any;
@@ -121,7 +123,8 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
             });
         }, 750);
 
-        this.keyboardObs = this.events.on(CoreEventsProvider.KEYBOARD_CHANGE, (isOn) => {
+        this.keyboardObs = this.events.on(CoreEventsProvider.KEYBOARD_CHANGE, (kbHeight) => {
+            this.kbHeight = kbHeight;
             this.maximizeEditorSize();
         });
     }
@@ -137,7 +140,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         const deferred = this.utils.promiseDefer();
 
         setTimeout(() => {
-            const contentVisibleHeight = this.content.contentHeight;
+            const contentVisibleHeight = this.content.contentHeight - this.kbHeight;
 
             if (contentVisibleHeight <= 0) {
                 deferred.resolve(0);
@@ -147,16 +150,16 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
 
             setTimeout(() => {
                 // Editor is ready, adjust Height if needed.
-                const height = this.getSurroundingHeight(this.element);
-                if (contentVisibleHeight > height) {
-                    this.element.style.height = this.domUtils.formatPixelsSize(contentVisibleHeight - height);
+                const height = this.content.contentHeight - this.kbHeight - this.getSurroundingHeight(this.element);
+                if (height > this.minHeight) {
+                    this.element.style.height = this.domUtils.formatPixelsSize(height);
                 } else {
                     this.element.style.height = '';
                 }
 
-                deferred.resolve(contentVisibleHeight - height);
+                deferred.resolve(height);
             }, 100);
-        });
+        }, 100);
 
         return deferred.promise;
     }

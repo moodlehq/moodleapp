@@ -192,7 +192,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
             promise = Promise.resolve();
         }
 
-        return this.fetchContent(refresh).catch((error) => {
+        return promise.catch((error) => {
             // Error getting data, fail.
             this.domUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
         }).finally(() => {

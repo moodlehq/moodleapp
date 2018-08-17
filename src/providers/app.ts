@@ -79,7 +79,9 @@ export class CoreAppProvider {
             zone.run(() => {
                 document.body.classList.add('keyboard-is-open');
                 this.isKeyboardShown = true;
-                events.trigger(CoreEventsProvider.KEYBOARD_CHANGE, this.isKeyboardShown);
+                // Error on iOS calculating size.
+                // More info: https://github.com/ionic-team/ionic-plugin-keyboard/issues/276 .
+                events.trigger(CoreEventsProvider.KEYBOARD_CHANGE, data.keyboardHeight);
             });
         });
         this.keyboard.onKeyboardHide().subscribe((data) => {
@@ -87,7 +89,7 @@ export class CoreAppProvider {
             zone.run(() => {
                 document.body.classList.remove('keyboard-is-open');
                 this.isKeyboardShown = false;
-                events.trigger(CoreEventsProvider.KEYBOARD_CHANGE, this.isKeyboardShown);
+                events.trigger(CoreEventsProvider.KEYBOARD_CHANGE, 0);
             });
         });
     }

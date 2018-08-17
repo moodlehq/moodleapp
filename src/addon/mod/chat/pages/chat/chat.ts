@@ -92,7 +92,7 @@ export class AddonModChatChatPage {
         });
 
         // Recalculate footer position when keyboard is shown or hidden.
-        this.keyboardObserver = this.eventsProvider.on(CoreEventsProvider.KEYBOARD_CHANGE, (isOn) => {
+        this.keyboardObserver = this.eventsProvider.on(CoreEventsProvider.KEYBOARD_CHANGE, (kbHeight) => {
             this.content.resize();
         });
     }
