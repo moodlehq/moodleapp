@@ -234,6 +234,7 @@ $core-question-incorrect-color-bg:    $red-light !default;
 $core-question-feedback-color:        $yellow-dark !default;
 $core-question-feedback-color-bg:     $yellow-light !default;
 $core-question-warning-color:         $red !default;
+$core-question-saved-color-bg:        $gray-light !default;
 
 $core-question-state-correct-color:   $green-light !default;
 $core-question-state-partial-color:   $yellow-light !default;
@@ -247,6 +248,10 @@ $core-question-state-incorrect-color: $red-light !default;
     -ms-transition: $where $time ease-in-out;
     -o-transition: $where $time ease-in-out;
     transition: $where $time ease-in-out;
+}
+
+@mixin push-arrow-color($color) {
+  background-image: url("data:image/svg+xml;charset=utf-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 20'><path d='M2,20l-2-2l8-8L0,2l2-2l10,10L2,20z' fill='#{$color}'/></svg>") !important;
 }
 
 // Font Awesome

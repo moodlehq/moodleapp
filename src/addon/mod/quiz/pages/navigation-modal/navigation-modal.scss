@@ -1,5 +1,28 @@
 page-addon-mod-quiz-navigation-modal {
     .addon-mod_quiz-selected, .item.addon-mod_quiz-selected {
-        background: $blue-light;
+        border-left: 5px solid $core-splitview-selected;
+        font-weight: bold;
+
+        &.item-md {
+            padding-left: $item-md-padding-start - 5px;
+        }
+        &.item-ios {
+            padding-left: $item-ios-padding-start - 5px;
+        }
+        &.item-wp {
+            padding-left: $item-wp-padding-start - 5px;
+        }
+    }
+
+    .item.core-question-correct .item-inner {
+        @include push-arrow-color($core-question-correct-color);
+    }
+
+    .item.core-question-incorrect .item-inner {
+        @include push-arrow-color($core-question-incorrect-color);
+    }
+
+    .item.core-question-answersaved .item-inner {
+        @include push-arrow-color($text-color);
     }
 }

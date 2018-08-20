@@ -70,6 +70,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     protected autoSave: AddonModQuizAutoSave; // Class to auto-save answers every certain time.
     protected autoSaveErrorSubscription: Subscription; // To be notified when an error happens in auto-save.
     protected forceLeave = false; // If true, don't perform any check when leaving the view.
+    protected reloadNavigaton = false; // Whether navigation needs to be reloaded because some data was sent to server.
 
     constructor(navParams: NavParams, logger: CoreLoggerProvider, protected translate: TranslateService,
             protected eventsProvider: CoreEventsProvider, protected sitesProvider: CoreSitesProvider,
@@ -173,6 +174,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
 
             // Behaviour checks are always in online.
             return this.quizProvider.processAttempt(this.quiz, this.attempt, answers, this.preflightData).then(() => {
+                this.reloadNavigaton = true; // Data sent to server, navigation should be reloaded.
+
                 // Reload the current page.
                 const scrollElement = this.content.getScrollElement(),
                     scrollTop = scrollElement.scrollTop || 0,
@@ -224,7 +227,9 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
         // First try to save the attempt data. We only save it if we're not seeing the summary.
         const promise = this.showSummary ? Promise.resolve() : this.processAttempt(false, false);
         promise.then(() => {
-            // Attempt data successfully saved, load the page or summary.
+            if (!this.showSummary) {
+                this.reloadNavigaton = true; // Data sent to server, navigation should be reloaded.
+            }
 
             // Attempt data successfully saved, load the page or summary.
             let subPromise;
@@ -460,8 +465,41 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
      */
     protected loadNavigation(): Promise<void> {
         // We use the attempt summary to build the navigation because it contains all the questions.
-        return this.quizProvider.getAttemptSummary(this.attempt.id, this.preflightData, this.offline).then((questions) => {
+        return this.quizProvider.getAttemptSummary(this.attempt.id, this.preflightData, this.offline, true, true)
+                .then((questions) => {
+
+            questions.forEach((question) => {
+                question.stateClass = this.questionHelper.getQuestionStateClass(question.state);
+            });
+
             this.navigation = questions;
+        });
+    }
+
+    /**
+     * Open the navigation modal.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    openNavigation(): Promise<any> {
+        let promise;
+
+        if (this.reloadNavigaton) {
+            // Some data has changed, reload the navigation.
+            const modal = this.domUtils.showModalLoading();
+
+            promise = this.loadNavigation().catch(() => {
+                // Ignore errors.
+            }).then(() => {
+                modal.dismiss();
+                this.reloadNavigaton = false;
+            });
+        } else {
+            promise = Promise.resolve();
+        }
+
+        return promise.finally(() => {
+            this.navigationModal.present();
         });
     }
 
