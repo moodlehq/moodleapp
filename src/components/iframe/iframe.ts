@@ -265,10 +265,10 @@ export class CoreIframeComponent implements OnInit, OnChanges {
                         if (!e.defaultPrevented) {
                             if (element.tagName.toLowerCase() == 'object') {
                                 e.preventDefault();
-                                element.attr('data', href);
+                                element.setAttribute('data', href);
                             } else {
                                 e.preventDefault();
-                                element.attr('src', href);
+                                element.setAttribute('src', href);
                             }
                         }
                     });
