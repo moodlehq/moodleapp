@@ -15,6 +15,7 @@
 import { Input, OnInit, ElementRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from '../providers/siteplugins';
 import { CoreSitePluginsPluginContentComponent } from '../components/plugin-content/plugin-content';
 import { CoreSitePluginsCallWSBaseDirective } from './call-ws-directive';
@@ -28,10 +29,11 @@ import { CoreSitePluginsCallWSBaseDirective } from './call-ws-directive';
  */
 export class CoreSitePluginsCallWSOnClickBaseDirective extends CoreSitePluginsCallWSBaseDirective implements OnInit {
     @Input() confirmMessage: string; // Message to confirm the action. If not supplied, no confirmation. If empty, default message.
+    @Input() showError: boolean | string; // Whether to show an error message if the WS call fails. Defaults to true.
 
     constructor(element: ElementRef, protected translate: TranslateService, protected domUtils: CoreDomUtilsProvider,
             protected sitePluginsProvider: CoreSitePluginsProvider,
-            protected parentContent: CoreSitePluginsPluginContentComponent) {
+            protected parentContent: CoreSitePluginsPluginContentComponent, protected utils: CoreUtilsProvider) {
         super(element, translate, domUtils, sitePluginsProvider, parentContent);
     }
 
@@ -66,7 +68,11 @@ export class CoreSitePluginsCallWSOnClickBaseDirective extends CoreSitePluginsCa
     protected callWS(): Promise<any> {
         const modal = this.domUtils.showModalLoading();
 
-        return super.callWS().finally(() => {
+        return super.callWS().catch((error) => {
+            if (typeof this.showError == 'undefined' || this.utils.isTrueOrOne(this.showError)) {
+                this.domUtils.showErrorModalDefault(error, 'core.serverconnection', true);
+            }
+        }).finally(() => {
             modal.dismiss();
         });
     }

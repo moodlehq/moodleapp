@@ -56,8 +56,8 @@ export class CoreSitePluginsCallWSDirective extends CoreSitePluginsCallWSOnClick
 
     constructor(element: ElementRef, translate: TranslateService, domUtils: CoreDomUtilsProvider,
             sitePluginsProvider: CoreSitePluginsProvider, @Optional() parentContent: CoreSitePluginsPluginContentComponent,
-            protected utils: CoreUtilsProvider, protected navCtrl: NavController) {
-        super(element, translate, domUtils, sitePluginsProvider, parentContent);
+            utils: CoreUtilsProvider, protected navCtrl: NavController) {
+        super(element, translate, domUtils, sitePluginsProvider, parentContent, utils);
     }
 
     /**

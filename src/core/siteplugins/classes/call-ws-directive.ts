@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
+import { Input, OnInit, OnDestroy, ElementRef, Output, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSitePluginsProvider } from '../providers/siteplugins';
@@ -30,6 +30,9 @@ export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
                                        // @see CoreSitePluginsProvider.loadOtherDataInArgs.
     @Input() form: string; // ID or name to identify a form. The form will be obtained from document.forms.
                            // If supplied and form is found, the form data will be retrieved and sent to the WS.
+    @Output() onSuccess: EventEmitter<any> = new EventEmitter<any>(); // Sends the result when the WS call succeeds.
+    @Output() onError: EventEmitter<any> = new EventEmitter<any>(); // Sends the error when the WS call fails.
+    @Output() onDone: EventEmitter<void> = new EventEmitter<void>(); // Notifies when the WS call is done (either success or fail).
 
     protected element: HTMLElement;
     protected invalidateObserver: Subscription;
@@ -60,9 +63,15 @@ export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
         const params = this.getParamsForWS();
 
         return this.sitePluginsProvider.callWS(this.name, params, this.preSets).then((result) => {
+            this.onSuccess.emit(result);
+
             return this.wsCallSuccess(result);
         }).catch((error) => {
-            this.domUtils.showErrorModalDefault(error, 'core.serverconnection', true);
+            this.onError.emit(error);
+
+            return Promise.reject(error);
+        }).finally(() => {
+            this.onDone.emit();
         });
     }
 
