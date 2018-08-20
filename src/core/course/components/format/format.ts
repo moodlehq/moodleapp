@@ -325,13 +325,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      *
      * @param {any} [refresher] Refresher.
      * @param {Function} [done] Function to call when done.
+     * @param {boolean} [afterCompletionChange] Whether the refresh is due to a completion change.
      * @return {Promise<any>} Promise resolved when done.
      */
-    doRefresh(refresher?: any, done?: () => void): Promise<any> {
+    doRefresh(refresher?: any, done?: () => void, afterCompletionChange?: boolean): Promise<any> {
         const promises = [];
 
         this.dynamicComponents.forEach((component) => {
-            promises.push(Promise.resolve(component.callComponentFunction('doRefresh', [refresher, done])));
+            promises.push(Promise.resolve(component.callComponentFunction('doRefresh', [refresher, done, afterCompletionChange])));
         });
 
         return Promise.all(promises);
