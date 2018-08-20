@@ -46,7 +46,13 @@ export class CoreIframeUtilsProvider {
      */
     getContentWindowAndDocument(element: any): { window: Window, document: Document } {
         let contentWindow: Window = element.contentWindow,
-            contentDocument: Document = element.contentDocument || (contentWindow && contentWindow.document);
+            contentDocument: Document;
+
+        try {
+            contentDocument = element.contentDocument || (contentWindow && contentWindow.document);
+        } catch (ex) {
+            // Ignore errors.
+        }
 
         if (!contentWindow && contentDocument) {
             // It's probably an <object>. Try to get the window.

@@ -42,7 +42,7 @@ export class CoreViewerIframePage {
 
         if (currentSite && (this.autoLogin == 'yes' || (this.autoLogin == 'check' && currentSite.containsUrl(url)))) {
             // Format the URL to add auto-login.
-            currentSite.getAutoLoginUrl(url).then((url) => {
+            currentSite.getAutoLoginUrl(url, false).then((url) => {
                 this.url = url;
             });
         } else {
