@@ -63,10 +63,11 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
      * @return {Promise<any>} Promise resolved when done.
      */
     protected fetchContent(refresh?: boolean): Promise<any> {
-        let canGetUrl = this.canGetUrl;
+        let canGetUrl = this.canGetUrl,
+            mod,
+            promise;
 
         // Fetch the module data.
-        let promise;
         if (canGetUrl) {
             promise = this.urlProvider.getUrl(this.courseId, this.module.id);
         } else {
@@ -76,21 +77,30 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
         return promise.catch(() => {
             canGetUrl = false;
 
-            // Fallback in case is not prefetch or not avalaible.
+            // Fallback in case is not prefetched or not available.
             return this.courseProvider.getModule(this.module.id, this.courseId);
         }).then((url) => {
+            this.description = url.intro || url.description;
+            this.dataRetrieved.emit(url);
+
             if (!canGetUrl) {
+                mod = url;
+
                 if (!url.contents.length) {
                     // If the data was cached maybe we don't have contents. Reject.
                     return Promise.reject(null);
                 }
+            } else {
+                mod = this.module;
+
+                if (!mod.contents || !mod.contents.length) {
+                    // Try to load module contents, it's needed to get the URL with parameters.
+                    return this.courseProvider.loadModuleContents(mod, this.courseId);
+                }
             }
-
-            this.description = url.intro || url.description;
-            this.dataRetrieved.emit(url);
-
-            this.url = canGetUrl ? url.externalurl :
-                            ((url.contents[0] && url.contents[0].fileurl) ? url.contents[0].fileurl : undefined);
+        }).then(() => {
+            // Always use the URL from the module because it already includes the parameters.
+            this.url = mod.contents && mod.contents[0] && mod.contents[0].fileurl ? mod.contents[0].fileurl : undefined;
         });
     }
 
