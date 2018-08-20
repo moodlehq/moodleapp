@@ -50,6 +50,7 @@ export class CoreUserProfileFieldComponent implements OnInit {
             this.data.signup = this.utilsProvider.isTrueOrOne(this.signup);
             this.data.disabled = this.utilsProvider.isTrueOrOne(this.field.locked);
             this.data.form = this.form;
+            this.data.registerAuth = this.registerAuth;
         }
     }
 }
