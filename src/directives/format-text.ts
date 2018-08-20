@@ -87,7 +87,7 @@ export class CoreFormatTextDirective implements OnChanges {
     protected addExternalContent(element: HTMLElement): void {
         // Angular 2 doesn't let adding directives dynamically. Create the CoreExternalContentDirective manually.
         const extContent = new CoreExternalContentDirective(<any> element, this.loggerProvider, this.filepoolProvider,
-            this.platform, this.sitesProvider, this.domUtils, this.urlUtils, this.appProvider);
+            this.platform, this.sitesProvider, this.domUtils, this.urlUtils, this.appProvider, this.utils);
 
         extContent.component = this.component;
         extContent.componentId = this.componentId;
@@ -313,7 +313,8 @@ export class CoreFormatTextDirective implements OnChanges {
                 audios,
                 videos,
                 iframes,
-                buttons;
+                buttons,
+                elementsWithInlineStyles;
 
             div.innerHTML = formatted;
             images = Array.from(div.querySelectorAll('img'));
@@ -322,6 +323,7 @@ export class CoreFormatTextDirective implements OnChanges {
             videos = Array.from(div.querySelectorAll('video'));
             iframes = Array.from(div.querySelectorAll('iframe'));
             buttons = Array.from(div.querySelectorAll('.button'));
+            elementsWithInlineStyles = Array.from(div.querySelectorAll('*[style]'));
 
             // Walk through the content to find the links and add our directive to it.
             // Important: We need to look for links first because in 'img' we add new links without core-link.
@@ -367,6 +369,15 @@ export class CoreFormatTextDirective implements OnChanges {
                 // Check if it has a link inside.
                 if (button.querySelector('a')) {
                     button.classList.add('core-button-with-inner-link');
+                }
+            });
+
+            // Handle inline styles.
+            elementsWithInlineStyles.forEach((el: HTMLElement) => {
+                // Only add external content for tags that haven't been treated already.
+                if (el.tagName != 'A' && el.tagName != 'IMG' && el.tagName != 'AUDIO' && el.tagName != 'VIDEO'
+                        && el.tagName != 'SOURCE' && el.tagName != 'TRACK') {
+                    this.addExternalContent(el);
                 }
             });
 

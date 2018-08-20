@@ -20,6 +20,7 @@ import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
  * Directive to handle external content.
@@ -28,6 +29,8 @@ import { CoreUrlUtilsProvider } from '@providers/utils/url';
  * which we want to have available when the app is offline. Typically media and links.
  *
  * If a file is downloaded, its URL will be replaced by the local file URL.
+ *
+ * From v3.5.2 this directive will also download inline styles, so it can be used in any element as long as it has inline styles.
  */
 @Directive({
     selector: '[core-external-content]'
@@ -42,7 +45,7 @@ export class CoreExternalContentDirective implements AfterViewInit {
 
     constructor(element: ElementRef, logger: CoreLoggerProvider, private filepoolProvider: CoreFilepoolProvider,
             private platform: Platform, private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
-            private urlUtils: CoreUrlUtilsProvider, private appProvider: CoreAppProvider) {
+            private urlUtils: CoreUrlUtilsProvider, private appProvider: CoreAppProvider, private utils: CoreUtilsProvider) {
         // This directive can be added dynamically. In that case, the first param is the HTMLElement.
         this.element = element.nativeElement || element;
         this.logger = logger.getInstance('CoreExternalContentDirective');
@@ -57,6 +60,11 @@ export class CoreExternalContentDirective implements AfterViewInit {
             tagName = this.element.tagName;
         let targetAttr,
             sourceAttr;
+
+        // Always handle inline styles (if any).
+        this.handleInlineStyles(siteId).catch((error) => {
+            this.logger.error('Error treating inline styles.', this.element);
+        });
 
         if (tagName === 'A') {
             targetAttr = 'href';
@@ -81,9 +89,6 @@ export class CoreExternalContentDirective implements AfterViewInit {
             }
 
         } else {
-            // Unsupported tag.
-            this.logger.warn('Directive attached to non-supported tag: ' + tagName);
-
             return;
         }
 
@@ -215,6 +220,41 @@ export class CoreExternalContentDirective implements AfterViewInit {
                     });
                 }
             });
+        });
+    }
+
+    /**
+     * Handle inline styles, trying to download referenced files.
+     *
+     * @param {string} siteId Site ID.
+     * @return {Promise<any>} Promise resolved if the element is successfully treated.
+     */
+    protected handleInlineStyles(siteId: string): Promise<any> {
+        let inlineStyles = this.element.getAttribute('style');
+
+        if (!inlineStyles) {
+            return Promise.resolve();
+        }
+
+        let urls = inlineStyles.match(/https?:\/\/[^"'\) ;]*/g);
+        if (!urls || !urls.length) {
+            return Promise.resolve();
+        }
+
+        const promises = [];
+        urls = this.utils.uniqueArray(urls); // Remove duplicates.
+
+        urls.forEach((url) => {
+            promises.push(this.filepoolProvider.getUrlByUrl(siteId, url, this.component, this.componentId, 0, true, true)
+                    .then((finalUrl) => {
+
+                this.logger.debug('Using URL ' + finalUrl + ' for ' + url + ' in inline styles');
+                inlineStyles = inlineStyles.replace(new RegExp(url, 'gi'), finalUrl);
+            }));
+        });
+
+        return this.utils.allPromises(promises).then(() => {
+            this.element.setAttribute('style', inlineStyles);
         });
     }
 }
