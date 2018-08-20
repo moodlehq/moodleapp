@@ -97,13 +97,13 @@
     <plugin name="cordova-plugin-file" spec="^6.0.1" />
     <plugin name="cordova-plugin-file-transfer" spec="^1.7.1" />
     <plugin name="cordova-plugin-camera" spec="^4.0.3">
-        <variable name="CAMERA_USAGE_DESCRIPTION" value="We'd like to access your camera to let you take a photo" />
-        <variable name="PHOTOLIBRARY_USAGE_DESCRIPTION" value="We'd like like to open your photo library to let you pick a photo" />
+        <variable name="CAMERA_USAGE_DESCRIPTION" value="We need camera access to take pictures so you can attach them as part of your submissions." />
+        <variable name="PHOTOLIBRARY_USAGE_DESCRIPTION" value="We need photo library access to get pictures from there so you can attach them as part of your submissions." />
     </plugin>
     <plugin name="cordova-plugin-media-capture" spec="^3.0.2">
-        <variable name="CAMERA_USAGE_DESCRIPTION" value="We'd like to access your camera to let you take a photo" />
-        <variable name="PHOTOLIBRARY_USAGE_DESCRIPTION" value="We'd like like to open your photo library to let you pick a photo" />
-        <variable name="MICROPHONE_USAGE_DESCRIPTION" value="We'd like to access your microphone to let you record an audio" />
+        <variable name="CAMERA_USAGE_DESCRIPTION" value="We need camera access to take pictures so you can attach them as part of your submissions." />
+        <variable name="PHOTOLIBRARY_USAGE_DESCRIPTION" value="We need photo library access to get pictures from there so you can attach them as part of your submissions." />
+        <variable name="MICROPHONE_USAGE_DESCRIPTION" value="We need microphone access to record sounds so you can attach them as part of your submissions." />
     </plugin>
     <plugin name="cordova-plugin-device" spec="^2.0.2" />
     <plugin name="cordova-plugin-globalization" spec="^1.11.0" />
