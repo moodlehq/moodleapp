@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, Input } from '@angular/core';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { CoreSitePluginsCompileInitComponent } from '../../classes/compile-init-component';
 import { FormGroup } from '@angular/forms';
@@ -32,8 +33,8 @@ export class CoreSitePluginsUserProfileFieldComponent extends CoreSitePluginsCom
     @Input() signup = false; // True if editing the field in signup. Defaults to false.
     @Input() registerAuth?: string; // Register auth method. E.g. 'email'.
 
-    constructor(sitePluginsProvider: CoreSitePluginsProvider) {
-        super(sitePluginsProvider);
+    constructor(sitePluginsProvider: CoreSitePluginsProvider, utils: CoreUtilsProvider) {
+        super(sitePluginsProvider, utils);
     }
 
     /**
@@ -42,14 +43,12 @@ export class CoreSitePluginsUserProfileFieldComponent extends CoreSitePluginsCom
     ngOnInit(): void {
 
         // Pass the input data to the component.
-        this.jsData = {
-            field: this.field,
-            signup: this.signup,
-            edit: this.edit,
-            disabled: this.disabled,
-            form: this.form,
-            registerAuth: this.registerAuth
-        };
+        this.jsData.field = this.field;
+        this.jsData.signup = this.signup;
+        this.jsData.edit = this.edit;
+        this.jsData.disabled = this.disabled;
+        this.jsData.form = this.form;
+        this.jsData.registerAuth = this.registerAuth;
 
         if (this.field) {
             this.getHandlerData('profilefield_' + (this.field.type || this.field.datatype));

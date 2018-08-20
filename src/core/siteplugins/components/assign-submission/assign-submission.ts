@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, Input } from '@angular/core';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { CoreSitePluginsCompileInitComponent } from '../../classes/compile-init-component';
 
@@ -31,8 +32,8 @@ export class CoreSitePluginsAssignSubmissionComponent extends CoreSitePluginsCom
     @Input() edit: boolean; // Whether the user is editing.
     @Input() allowOffline: boolean; // Whether to allow offline.
 
-    constructor(sitePluginsProvider: CoreSitePluginsProvider) {
-        super(sitePluginsProvider);
+    constructor(sitePluginsProvider: CoreSitePluginsProvider, utils: CoreUtilsProvider) {
+        super(sitePluginsProvider, utils);
     }
 
     /**
@@ -40,14 +41,12 @@ export class CoreSitePluginsAssignSubmissionComponent extends CoreSitePluginsCom
      */
     ngOnInit(): void {
         // Pass the input and output data to the component.
-        this.jsData = {
-            assign: this.assign,
-            submission: this.submission,
-            plugin: this.plugin,
-            configs: this.configs,
-            edit: this.edit,
-            allowOffline: this.allowOffline
-        };
+        this.jsData.assign = this.assign;
+        this.jsData.submission = this.submission;
+        this.jsData.plugin = this.plugin;
+        this.jsData.configs = this.configs;
+        this.jsData.edit = this.edit;
+        this.jsData.allowOffline = this.allowOffline;
 
         if (this.plugin) {
             this.getHandlerData('assignsubmission_' + this.plugin.type);

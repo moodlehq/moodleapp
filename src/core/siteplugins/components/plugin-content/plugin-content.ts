@@ -110,14 +110,21 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
      * @param {any} args New params.
      * @param {string} [component] New component. If not provided, current component
      * @param {string} [method] New method. If not provided, current method
+     * @param {any} [jsData] JS variables to pass to the new view so they can be used in the template or JS.
+     *                       If true is supplied instead of an object, all initial variables from current page will be copied.
      */
-    openContent(title: string, args: any, component?: string, method?: string): void {
+    openContent(title: string, args: any, component?: string, method?: string, jsData?: any): void {
+        if (jsData === true) {
+            jsData = this.data;
+        }
+
         this.navCtrl.push('CoreSitePluginsPluginPage', {
             title: title,
             component: component || this.component,
             method: method || this.method,
             args: args,
-            initResult: this.initResult
+            initResult: this.initResult,
+            jsData: jsData
         });
     }
 
@@ -144,12 +151,16 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
      * @param {any} args New params.
      * @param {string} [component] New component. If not provided, current component
      * @param {string} [method] New method. If not provided, current method
+     * @param {string} [jsData] JS variables to pass to the new view so they can be used in the template or JS.
      */
-    updateContent(args: any, component?: string, method?: string): void {
+    updateContent(args: any, component?: string, method?: string, jsData?: any): void {
         this.component = component || this.component;
         this.method = method || this.method;
         this.args = args;
         this.dataLoaded = false;
+        if (jsData) {
+            Object.assign(this.data, jsData);
+        }
 
         this.fetchContent();
     }

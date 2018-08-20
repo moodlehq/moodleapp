@@ -33,6 +33,7 @@ export class CoreSitePluginsPluginPage {
     method: string;
     args: any;
     initResult: any;
+    jsData: any; // JS variables to pass to the plugin so they can be used in the template or JS.
 
     constructor(params: NavParams) {
         this.title = params.get('title');
@@ -40,6 +41,7 @@ export class CoreSitePluginsPluginPage {
         this.method = params.get('method');
         this.args = params.get('args');
         this.initResult = params.get('initResult');
+        this.jsData = params.get('jsData');
     }
 
     /**

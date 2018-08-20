@@ -46,6 +46,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     prefetchStatusIcon: string;
     prefetchText: string;
     size: string;
+    jsData: any; // Data to pass to the component.
 
     protected isDestroyed = false;
     protected statusObserver;
@@ -70,6 +71,10 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
                     cmid: this.module.id
                 };
                 this.initResult = handler.initResult;
+                this.jsData = {
+                    module: this.module,
+                    courseId: this.courseId
+                };
             }
 
             // Get the data for the context menu.
