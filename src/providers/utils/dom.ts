@@ -682,7 +682,7 @@ export class CoreDomUtilsProvider {
         const element = this.convertToElement(html);
 
         // Treat elements with src (img, audio, video, ...).
-        media = element.querySelectorAll('img, video, audio, source, track');
+        media = Array.from(element.querySelectorAll('img, video, audio, source, track'));
         media.forEach((media: HTMLElement) => {
             let newSrc = paths[this.textUtils.decodeURIComponent(media.getAttribute('src'))];
 
@@ -700,7 +700,7 @@ export class CoreDomUtilsProvider {
         });
 
         // Now treat links.
-        anchors = element.querySelectorAll('a');
+        anchors = Array.from(element.querySelectorAll('a'));
         anchors.forEach((anchor: HTMLElement) => {
             const href = this.textUtils.decodeURIComponent(anchor.getAttribute('href')),
                 newUrl = paths[href];
