@@ -58,6 +58,14 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
                 sectionId: sectionId || null
             };
 
+        if (!sectionId && !sectionNumber) {
+            // Check if the URL has a hash to navigate to the section.
+            const matches = url.match(/#section-(\d+)/);
+            if (matches && matches[1]) {
+                sectionNumber = parseInt(matches[1], 10);
+            }
+        }
+
         if (!isNaN(sectionNumber)) {
             pageParams.sectionNumber = sectionNumber;
         }
