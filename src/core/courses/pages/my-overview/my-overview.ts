@@ -17,8 +17,8 @@ import { IonicPage, Searchbar, NavController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCoursesProvider } from '../../providers/courses';
+import { CoreCoursesHelperProvider } from '../../providers/helper';
 import { CoreCoursesMyOverviewProvider } from '../../providers/my-overview';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
@@ -84,7 +84,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
             private domUtils: CoreDomUtilsProvider, private myOverviewProvider: CoreCoursesMyOverviewProvider,
             private courseHelper: CoreCourseHelperProvider, private sitesProvider: CoreSitesProvider,
             private siteHomeProvider: CoreSiteHomeProvider, private courseOptionsDelegate: CoreCourseOptionsDelegate,
-            private eventsProvider: CoreEventsProvider, private utils: CoreUtilsProvider) {
+            private eventsProvider: CoreEventsProvider, private coursesHelper: CoreCoursesHelperProvider) {
         this.loadSiteName();
     }
 
@@ -241,20 +241,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
 
             this.courseIds = courseIds.join(',');
 
-            if (this.courseIds && this.coursesProvider.isGetCoursesByFieldAvailable()) {
-                // Load course image of all the courses.
-                promises.push(this.coursesProvider.getCoursesByField('ids', this.courseIds).then((coursesInfo) => {
-                    coursesInfo = this.utils.arrayToObject(coursesInfo, 'id');
-                    courses.forEach((course) => {
-                        if (coursesInfo[course.id] && coursesInfo[course.id].overviewfiles &&
-                                coursesInfo[course.id].overviewfiles[0]) {
-                            course.imageThumb = coursesInfo[course.id].overviewfiles[0].fileurl;
-                        } else {
-                            course.imageThumb = false;
-                        }
-                    });
-                }));
-            }
+            promises.push(this.coursesHelper.loadCoursesExtraInfo(courses));
 
             return Promise.all(promises).then(() => {
                 return courses.sort((a, b) => {
