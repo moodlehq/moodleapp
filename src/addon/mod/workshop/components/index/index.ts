@@ -41,7 +41,6 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     assessments: any;
     userGrades: any;
     publishedSubmissions: any;
-    selectedPhase: number;
     submission: any;
     groupInfo: CoreGroupInfo = {
         groups: [],
@@ -61,9 +60,6 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     };
 
     protected offlineSubmissions = [];
-    protected supportedTasks = { // Add here native supported tasks.
-        submit: true
-    };
     protected obsSubmissionChanged: any;
     protected obsAssessmentSaved: any;
     protected appResumeSubscription: any;
@@ -189,8 +185,6 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         return this.workshopProvider.getWorkshop(this.courseId, this.module.id).then((workshop) => {
             this.workshop = workshop;
 
-            this.selectedPhase = workshop.phase;
-
             this.description = workshop.intro || workshop.description;
             this.dataRetrieved.emit(workshop);
 
@@ -225,21 +219,12 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         }).then((phases) => {
             this.phases = phases;
 
-            // Treat phases.
-            for (const x in phases) {
-                phases[x].tasks.forEach((task) => {
-                    if (!task.link && (task.code == 'examples' || task.code == 'prepareexamples')) {
-                        // Add links to manage examples.
-                        task.link = this.externalUrl;
-                    } else if (task.link && typeof this.supportedTasks[task.code] !== 'undefined') {
-                        task.support = true;
-                    }
-                });
-                const action = phases[x].actions.find((action) => {
-                    return action.url && action.type == 'switchphase';
-                });
-                phases[x].switchUrl = action ? action.url : '';
-            }
+            phases[this.workshop.phase].tasks.forEach((task) => {
+                if (!task.link && (task.code == 'examples' || task.code == 'prepareexamples')) {
+                    // Add links to manage examples.
+                    task.link = this.externalUrl;
+                }
+            });
 
             // Check if there are info stored in offline.
             return this.workshopOffline.hasWorkshopOfflineData(this.workshop.id).then((hasOffline) => {
@@ -295,47 +280,42 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
      * @param {any} task Task to be done.
      */
     runTask(task: any): void {
-        if (task.support) {
-            if (task.code == 'submit' && this.canSubmit && ((this.access.creatingsubmissionallowed && !this.submission) ||
-                    (this.access.modifyingsubmissionallowed && this.submission))) {
-                const params = {
-                    module: this.module,
-                    access: this.access,
-                    courseId: this.courseId,
-                    submissionId: this.submission && this.submission.id
-                };
-
-                this.navCtrl.push('AddonModWorkshopEditSubmissionPage', params);
-            }
+        if (task.code == 'submit') {
+            this.gotoSubmit();
         } else if (task.link) {
             this.utils.openInBrowser(task.link);
         }
     }
 
     /**
-     * Run task link on current phase.
-     *
-     * @param {string} taskCode Code related to the task to run.
+     * Go to submit page.
      */
-    runTaskByCode(taskCode: string): void {
-        const task = this.workshopHelper.getTask(this.phases[this.workshop.phase].tasks, taskCode);
+    gotoSubmit(): void {
+        if (this.canSubmit && ((this.access.creatingsubmissionallowed && !this.submission) ||
+                (this.access.modifyingsubmissionallowed && this.submission))) {
+            const params = {
+                module: this.module,
+                access: this.access,
+                courseId: this.courseId,
+                submissionId: this.submission && this.submission.id
+            };
 
-        return task ? this.runTask(task) : null;
+            this.navCtrl.push('AddonModWorkshopEditSubmissionPage', params);
+        }
     }
 
     /**
-     * Select Phase to be shown.
+     * View Phase info.
      */
-    selectPhase(): void {
+    viewPhaseInfo(): void {
         if (this.phases) {
-            const modal = this.modalCtrl.create('AddonModWorkshopPhaseSelectorPage', {
+            const modal = this.modalCtrl.create('AddonModWorkshopPhaseInfoPage', {
                     phases: this.utils.objectToArray(this.phases),
-                    selected: this.selectedPhase,
-                    workshopPhase: this.workshop.phase
+                    workshopPhase: this.workshop.phase,
+                    externalUrl: this.externalUrl
                 });
-            modal.onDidDismiss((phase) => {
-                // Add data to search object.
-                typeof phase != 'undefined' && this.switchPhase(phase);
+            modal.onDidDismiss((goSubmit) => {
+                goSubmit && this.gotoSubmit();
             });
             modal.present();
         }
@@ -440,16 +420,6 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         }
 
         return Promise.all(promises);
-    }
-
-    /**
-     * Switch shown phase.
-     *
-     * @param {number} phase Selected phase.
-     */
-    switchPhase(phase: number): void {
-        this.selectedPhase = phase;
-        this.page = 0;
     }
 
     /**

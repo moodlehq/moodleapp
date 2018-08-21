@@ -52,11 +52,11 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
         courseId = parseInt(params.id, 10);
 
         const sectionId = params.sectionid ? parseInt(params.sectionid, 10) : null,
-            sectionNumber = typeof params.section != 'undefined' ? parseInt(params.section, 10) : NaN,
             pageParams: any = {
                 course: { id: courseId },
                 sectionId: sectionId || null
             };
+        let sectionNumber = typeof params.section != 'undefined' ? parseInt(params.section, 10) : NaN;
 
         if (!sectionId && !sectionNumber) {
             // Check if the URL has a hash to navigate to the section.

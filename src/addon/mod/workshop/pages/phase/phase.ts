@@ -14,26 +14,38 @@
 
 import { Component } from '@angular/core';
 import { IonicPage, NavParams, ViewController } from 'ionic-angular';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
- * Page that displays the phase selector modal.
+ * Page that displays the phase info modal.
  */
-@IonicPage({ segment: 'addon-mod-workshop-phase-selector' })
+@IonicPage({ segment: 'addon-mod-workshop-phase-info' })
 @Component({
-    selector: 'page-addon-mod-workshop-phase-selector',
+    selector: 'page-addon-mod-workshop-phase-info',
     templateUrl: 'phase.html',
 })
-export class AddonModWorkshopPhaseSelectorPage {
-    selected: number;
+export class AddonModWorkshopPhaseInfoPage {
     phases: any;
     workshopPhase: number;
-    protected original: number;
 
-    constructor(params: NavParams, private viewCtrl: ViewController) {
-        this.selected = params.get('selected');
-        this.original = this.selected;
+    constructor(params: NavParams, private viewCtrl: ViewController, private utils: CoreUtilsProvider) {
         this.phases = params.get('phases');
         this.workshopPhase = params.get('workshopPhase');
+        const externalUrl = params.get('externalUrl');
+
+        // Treat phases.
+        for (const x in this.phases) {
+            this.phases[x].tasks.forEach((task) => {
+                if (!task.link && (task.code == 'examples' || task.code == 'prepareexamples')) {
+                    // Add links to manage examples.
+                    task.link = externalUrl;
+                }
+            });
+            const action = this.phases[x].actions.find((action) => {
+                return action.url && action.type == 'switchphase';
+            });
+            this.phases[x].switchUrl = action ? action.url : '';
+        }
     }
 
     /**
@@ -44,13 +56,16 @@ export class AddonModWorkshopPhaseSelectorPage {
     }
 
     /**
-     * Select phase.
+     * Open task.
+     *
+     * @param {any} task Task to be done.
      */
-    switchPhase(): void {
-        // This is a quick hack to avoid the first switch phase call done just when opening the modal.
-        if (this.original != this.selected) {
-            this.viewCtrl.dismiss(this.selected);
+    runTask(task: any): void {
+        if (task.code == 'submit') {
+            // This will close the modal and go to the submit.
+            this.viewCtrl.dismiss(true);
+        } else if (task.link) {
+            this.utils.openInBrowser(task.link);
         }
-        this.original = null;
     }
 }

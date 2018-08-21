@@ -38,14 +38,14 @@
             <ion-row align-items-center>
                 <ion-col *ngIf="previousId">
                     <button ion-button block outline icon-start (click)="gotoEntry(previousId)">
-                        <ion-icon name="arrow-back"></ion-icon>
+                        <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
                         {{ 'core.previous' | translate }}
                     </button>
                 </ion-col>
                 <ion-col *ngIf="nextId">
                     <button ion-button block icon-end (click)="gotoEntry(nextId)">
                         {{ 'core.next' | translate }}
-                        <ion-icon name="arrow-forward"></ion-icon>
+                        <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
                     </button>
                 </ion-col>
             </ion-row>
