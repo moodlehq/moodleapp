@@ -21,6 +21,7 @@ import { CoreLangProvider } from '@providers/lang';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
+import { Keyboard } from '@ionic-native/keyboard';
 
 @Component({
     templateUrl: 'app.html'
@@ -32,7 +33,7 @@ export class MoodleMobileApp implements OnInit {
     protected logger;
     protected lastUrls = {};
 
-    constructor(private platform: Platform, statusBar: StatusBar, logger: CoreLoggerProvider,
+    constructor(private platform: Platform, statusBar: StatusBar, logger: CoreLoggerProvider, keyboard: Keyboard,
         private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider, private zone: NgZone,
         private appProvider: CoreAppProvider, private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider) {
         this.logger = logger.getInstance('AppComponent');
@@ -45,6 +46,8 @@ export class MoodleMobileApp implements OnInit {
             } else {
                 statusBar.styleDefault();
             }
+
+            keyboard.hideKeyboardAccessoryBar(false);
         });
 
     }
