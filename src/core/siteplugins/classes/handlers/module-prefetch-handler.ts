@@ -52,18 +52,15 @@ export class CoreSitePluginsModulePrefetchHandler extends CoreCourseActivityPref
     }
 
     /**
-     * Download or prefetch the content.
+     * Download the module.
      *
      * @param {any} module The module object returned by WS.
      * @param {number} courseId Course ID.
-     * @param {boolean} [prefetch] True to prefetch, false to download right away.
-     * @param {string} [dirPath] Path of the directory where to store all the content files. This is to keep the files
-     *                           relative paths and make the package work in an iframe. Undefined to download the files
-     *                           in the filepool root folder.
-     * @return {Promise<any>} Promise resolved when all content is downloaded. Data returned is not reliable.
+     * @param {string} [dirPath] Path of the directory where to store all the content files.
+     * @return {Promise<any>} Promise resolved when all content is downloaded.
      */
-    downloadOrPrefetch(module: any, courseId: number, prefetch?: boolean, dirPath?: string): Promise<any> {
-        return this.prefetchPackage(module, courseId, false, this.downloadPrefetchPlugin.bind(this), undefined, prefetch, dirPath);
+    download(module: any, courseId: number, dirPath?: string): Promise<any> {
+        return this.prefetchPackage(module, courseId, false, this.downloadPrefetchPlugin.bind(this), undefined, false, dirPath);
     }
 
     /**
@@ -138,6 +135,20 @@ export class CoreSitePluginsModulePrefetchHandler extends CoreCourseActivityPref
     }
 
     /**
+     * Get the download size of a module.
+     *
+     * @param {any} module Module.
+     * @param {Number} courseId Course ID the module belongs to.
+     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
+     * @return {Promise<{size: number, total: boolean}>} Promise resolved with the size and a boolean indicating if it was able
+     *                                                   to calculate the total size.
+     */
+    getDownloadSize(module: any, courseId: number, single?: boolean): Promise<{ size: number, total: boolean }> {
+        // In most cases, to calculate the size we'll have to do all the WS calls. Just return unknown size.
+        return Promise.resolve({ size: -1, total: false });
+    }
+
+    /**
      * Invalidate the prefetched content.
      *
      * @param {number} moduleId The module ID.
@@ -195,5 +206,18 @@ export class CoreSitePluginsModulePrefetchHandler extends CoreCourseActivityPref
         }
 
         return Promise.resolve();
+    }
+
+    /**
+     * Prefetch a module.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to.
+     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
+     * @param {string} [dirPath] Path of the directory where to store all the content files.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string): Promise<any> {
+        return this.prefetchPackage(module, courseId, false, this.downloadPrefetchPlugin.bind(this), undefined, true, dirPath);
     }
 }
