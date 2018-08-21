@@ -20,6 +20,7 @@ import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreConfigConstants } from '../configconstants';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
  * Directive to open a link in external browser.
@@ -40,7 +41,7 @@ export class CoreLinkDirective implements OnInit {
     constructor(element: ElementRef, private domUtils: CoreDomUtilsProvider, private utils: CoreUtilsProvider,
             private sitesProvider: CoreSitesProvider, private urlUtils: CoreUrlUtilsProvider,
             private contentLinksHelper: CoreContentLinksHelperProvider, @Optional() private navCtrl: NavController,
-            @Optional() private content: Content) {
+            @Optional() private content: Content, @Optional() private svComponent: CoreSplitViewComponent) {
         // This directive can be added dynamically. In that case, the first param is the anchor HTMLElement.
         this.element = element.nativeElement || element;
     }
@@ -51,6 +52,13 @@ export class CoreLinkDirective implements OnInit {
     ngOnInit(): void {
         this.inApp = this.utils.isTrueOrOne(this.inApp);
 
+        let navCtrl = this.navCtrl;
+
+        if (this.svComponent && (!this.navCtrl || this.navCtrl === this.svComponent.getDetailsNav())) {
+            // The link is in the right side of a split view. Always open them with the left side NavController.
+            navCtrl = this.svComponent.getMasterNav();
+        }
+
         this.element.addEventListener('click', (event) => {
             // If the event prevented default action, do nothing.
             if (!event.defaultPrevented) {
@@ -60,7 +68,7 @@ export class CoreLinkDirective implements OnInit {
                     event.stopPropagation();
 
                     if (this.utils.isTrueOrOne(this.capture)) {
-                        this.contentLinksHelper.handleLink(href, undefined, this.navCtrl).then((treated) => {
+                        this.contentLinksHelper.handleLink(href, undefined, navCtrl).then((treated) => {
                             if (!treated) {
                                 this.navigate(href);
                             }
