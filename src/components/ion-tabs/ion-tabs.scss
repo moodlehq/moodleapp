@@ -83,7 +83,9 @@ core-ion-tab.show-tab {
 }
 
 .ios {
-    @include core-ion-tabs-statusbar-padding($toolbar-ios-height, $toolbar-ios-padding, $content-ios-padding, $cordova-ios-statusbar-padding, $cordova-ios-statusbar-padding-modal-max-width, true);
+    core-ion-tab > .ion-page > ion-header .toolbar-ios {
+      padding-top: 4px;
+    }
 }
 
 .md {

@@ -67,6 +67,10 @@
     color: $tabs-ios-tab-text-color;
 }
 
+.ios .tabs:not(.tabs-ios[tabsPlacement=top]) .tabbar {
+    padding-bottom: 0;
+}
+
 .wp .core-tabs-bar a.tab-slide {
     //@extend .tabs-wp .tab-button;
     @include border-radius(0);
