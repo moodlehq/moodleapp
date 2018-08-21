@@ -16,7 +16,7 @@
                     <ion-item-divider *ngIf="item.typ == 'pagebreak'" color="light"></ion-item-divider>
                     <ion-item text-wrap *ngIf="item.typ != 'pagebreak'" [color]="item.dependitem > 0 ? 'light' : ''" [class.core-danger-item]="item.isEmpty || item.hasError">
                         <ion-label *ngIf="item.name" [core-mark-required]="item.required" stacked>
-                            <span *ngIf="item.itemnumber">{{item.itemnumber}}. </span>
+                            <span *ngIf="feedback.autonumbering && item.itemnumber">{{item.itemnumber}}. </span>
                             <core-format-text  [component]="component" [componentId]="componentId" [text]="item.name"></core-format-text>
                         </ion-label>
                         <div item-content class="addon-mod_feedback-form-content" *ngIf="item.template">

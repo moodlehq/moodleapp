@@ -70,7 +70,8 @@ export class AddonModFeedbackShowEntriesLinkHandler extends CoreContentLinksHand
                             moduleId: module.id,
                             attempt: attempt,
                             attemptId: attempt.id,
-                            feedbackId: module.instance
+                            feedbackId: module.instance,
+                            courseId: module.course
                         };
 
                         return this.linkHelper.goInSite(navCtrl, 'AddonModFeedbackAttemptPage', stateParams, siteId);
