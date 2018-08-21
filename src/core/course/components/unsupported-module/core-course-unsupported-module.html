@@ -1,5 +1,5 @@
 <div padding>
-    <core-course-module-description [description]="module.description"></core-course-module-description>
+    <core-course-module-description [description]="module && module.description"></core-course-module-description>
     <h2 *ngIf="!isDisabledInSite && isSupportedByTheApp">{{ 'core.whoops' | translate }}</h2>
     <h2 *ngIf="isDisabledInSite || !isSupportedByTheApp">{{ 'core.uhoh' | translate }}</h2>
 
@@ -8,7 +8,7 @@
     <p class="core-big" *ngIf="!isDisabledInSite && !isSupportedByTheApp">{{ 'core.course.activitynotyetviewableremoteaddon' | translate }}</p>
     <p *ngIf="isDisabledInSite || !isSupportedByTheApp"><strong>{{ 'core.course.askadmintosupport' | translate }}</strong></p>
 
-    <div *ngIf="module.url">
+    <div *ngIf="module && module.url">
         <p><strong>{{ 'core.course.useactivityonbrowser' | translate }}</strong></p>
         <a ion-button block icon-end [href]="module.url" core-link>
             {{ 'core.openinbrowser' | translate }}

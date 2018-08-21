@@ -67,6 +67,7 @@ export class CoreDynamicComponent implements OnInit, OnChanges, DoCheck {
     container: ViewContainerRef;
     protected logger: any;
     protected differ: any; // To detect changes in the data input.
+    protected lastComponent: any;
 
     constructor(logger: CoreLoggerProvider, protected factoryResolver: ComponentFactoryResolver, differs: KeyValueDiffers,
             @Optional() protected navCtrl: NavController, protected cdr: ChangeDetectorRef, protected element: ElementRef,
@@ -87,7 +88,13 @@ export class CoreDynamicComponent implements OnInit, OnChanges, DoCheck {
      * Detect changes on input properties.
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
-        if (!this.instance && changes.component) {
+
+        if (changes.component && !this.component) {
+            // Component not set, destroy the instance if any.
+            this.lastComponent = undefined;
+            this.instance = undefined;
+            this.container && this.container.clear();
+        } else if (changes.component && (!this.instance || this.component != this.lastComponent)) {
             this.createComponent();
         }
     }
@@ -127,6 +134,8 @@ export class CoreDynamicComponent implements OnInit, OnChanges, DoCheck {
      * @return {boolean} Whether the component was successfully created.
      */
     protected createComponent(): boolean {
+        this.lastComponent = this.component;
+
         if (!this.component || !this.container) {
             // No component to instantiate or container doesn't exist right now.
             return false;

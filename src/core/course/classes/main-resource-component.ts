@@ -14,6 +14,7 @@
 
 import { OnInit, OnDestroy, Input, Output, EventEmitter, Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
@@ -54,7 +55,9 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     protected moduleDelegate: CoreCourseModuleDelegate;
     protected courseSectionPage: CoreCourseSectionPage;
 
-    constructor(injector: Injector) {
+    protected logger;
+
+    constructor(injector: Injector, loggerName: string = 'CoreCourseModuleMainResourceComponent') {
         this.textUtils = injector.get(CoreTextUtilsProvider);
         this.courseHelper = injector.get(CoreCourseHelperProvider);
         this.translate = injector.get(TranslateService);
@@ -62,6 +65,9 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         this.moduleDelegate = injector.get(CoreCourseModuleDelegate);
         this.courseSectionPage = injector.get(CoreCourseSectionPage, null);
         this.dataRetrieved = new EventEmitter();
+
+        const loggerProvider = injector.get(CoreLoggerProvider);
+        this.logger = loggerProvider.getInstance(loggerName);
     }
 
     /**
@@ -84,7 +90,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @return {Promise<any>} Promise resolved when done.
      */
     doRefresh(refresher?: any, done?: () => void, showErrors: boolean = false): Promise<any> {
-        if (this.loaded) {
+        if (this.loaded && this.module) {
             /* If it's a single activity course and the refresher is displayed within the component,
                call doRefresh on the section page to refresh the course data. */
             let promise;
@@ -113,9 +119,27 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @return {Promise<any>} Resolved when done.
      */
      protected refreshContent(sync: boolean = false, showErrors: boolean = false): Promise<any> {
+        if (!this.module) {
+            // This can happen if course format changes from single activity to weekly/topics.
+            return Promise.resolve();
+        }
+
         this.refreshIcon = 'spinner';
 
-        return this.invalidateContent().catch(() => {
+        // Wrap the call in a try/catch so the workflow isn't interrupted if an error occurs.
+        // E.g. when changing course format we cannot know when will this.module become undefined, so it could cause errors.
+        let promise;
+
+        try {
+            promise = this.invalidateContent();
+        } catch (ex) {
+            // An error ocurred in the function, log the error and just resolve the promise so the workflow continues.
+            this.logger.error(ex);
+
+            promise = Promise.resolve();
+        }
+
+        return promise.catch(() => {
             // Ignore errors.
         }).then(() => {
             return this.loadContent(true);
@@ -150,6 +174,24 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @return {Promise<any>} Promise resolved when done.
      */
     protected loadContent(refresh?: boolean): Promise<any> {
+        if (!this.module) {
+            // This can happen if course format changes from single activity to weekly/topics.
+            return Promise.resolve();
+        }
+
+        // Wrap the call in a try/catch so the workflow isn't interrupted if an error occurs.
+        // E.g. when changing course format we cannot know when will this.module become undefined, so it could cause errors.
+        let promise;
+
+        try {
+            promise = this.fetchContent(refresh);
+        } catch (ex) {
+            // An error ocurred in the function, log the error and just resolve the promise so the workflow continues.
+            this.logger.error(ex);
+
+            promise = Promise.resolve();
+        }
+
         return this.fetchContent(refresh).catch((error) => {
             // Error getting data, fail.
             this.domUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
