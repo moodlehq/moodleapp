@@ -22,7 +22,6 @@ import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreEventsProvider } from '@providers/events';
 import { FormControl } from '@angular/forms';
-import { Keyboard } from '@ionic-native/keyboard';
 import { Subscription } from 'rxjs';
 
 /**
@@ -69,7 +68,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     rteEnabled = false;
     editorSupported = true;
 
-    constructor(private domUtils: CoreDomUtilsProvider, private keyboard: Keyboard, private urlUtils: CoreUrlUtilsProvider,
+    constructor(private domUtils: CoreDomUtilsProvider, private urlUtils: CoreUrlUtilsProvider,
             private sitesProvider: CoreSitesProvider, private filepoolProvider: CoreFilepoolProvider,
             @Optional() private content: Content, elementRef: ElementRef, private events: CoreEventsProvider,
             private utils: CoreUtilsProvider) {
@@ -103,28 +102,6 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
             this.editorElement.innerHTML = param;
             this.textarea.value = param;
         });
-
-        // Setup button actions.
-        const buttons = (this.decorate.nativeElement as HTMLDivElement).getElementsByTagName('button');
-        for (let i = 0; i < buttons.length; i++) {
-            const button = buttons[i];
-            let command = button.getAttribute('data-command');
-
-            if (command) {
-                if (command.includes('|')) {
-                    const parameter = command.split('|')[1];
-                    command = command.split('|')[0];
-
-                    button.addEventListener('click', ($event) => {
-                        this.buttonAction($event, command, parameter);
-                    });
-                } else {
-                    button.addEventListener('click', ($event) => {
-                        this.buttonAction($event, command);
-                    });
-                }
-            }
-        }
 
         // Use paragraph on enter.
         document.execCommand('DefaultParagraphSeparator', false, 'p');
@@ -397,13 +374,9 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         setTimeout(() => {
             if (this.rteEnabled) {
                 this.editorElement.focus();
-                this.setCurrentCursorPosition(this.editorElement.firstChild);
             } else {
                 this.textarea.setFocus();
             }
-            setTimeout(() => {
-                this.keyboard.show();
-            });
         });
     }
 
@@ -472,25 +445,23 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
      * Execute an action over the selected text.
      *  API docs: https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand
      *
-     * @param {any} $event       Event data
-     * @param {string} command   Command to execute.
-     * @param {any} [parameters] Parameters of the command.
+     * @param {any} $event Event data
+     * @param {string} command Command to execute.
      */
-    protected buttonAction($event: any, command: string, parameters: any = null): void {
+    protected buttonAction($event: any, command: string): void {
         $event.preventDefault();
         $event.stopPropagation();
-        document.execCommand(command, false, parameters);
 
-        setTimeout(() => {
-            if (this.rteEnabled) {
-                this.editorElement.focus();
+        if (command) {
+            if (command.includes('|')) {
+                const parameters = command.split('|')[1];
+                command = command.split('|')[0];
+
+                document.execCommand(command, false, parameters);
             } else {
-                this.textarea.setFocus();
+                document.execCommand(command, false);
             }
-            setTimeout(() => {
-                this.keyboard.show();
-            });
-        });
+        }
     }
 
     /**

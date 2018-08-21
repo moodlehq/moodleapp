@@ -17,6 +17,9 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
+ * IMPORTANT: This directive is deprecated because it causes a weird effect (the keyboard closes and opens again).
+ * We recommend using core-suppress-events directive for a better user experience.
+ *
  * Directive to keep the keyboard open when clicking a certain element (usually a button).
  *
  * @description
@@ -39,6 +42,8 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
  *
  * <textarea id="send-message-input"></textarea>
  * <button [core-keep-keyboard]="'#send-message-input'" [inButton]="true">Send</button>
+ *
+ * @deprecated v3.5.2
  */
 @Directive({
     selector: '[core-keep-keyboard]'

@@ -48,19 +48,21 @@ export class CoreSendMessageFormComponent implements OnInit {
 
     /**
      * Form submitted.
-     * @param {any} $event Form submit
+     *
+     * @param {Event} $event Mouse event.
      */
-    submitForm($event: any): void {
-        let value = this.message.trim();
-        $event.target.reset();
+    submitForm($event: Event): void {
+        $event.preventDefault();
+        $event.stopPropagation();
 
-        // Focus again on textarea.
-        $event.target[0].focus();
+        let value = this.message.trim();
 
         if (!value) {
             // Silent error.
             return;
         }
+
+        this.message = ''; // Reset the form.
 
         value = this.textUtils.replaceNewLines(value, '<br>');
         this.onSubmit.emit(value);

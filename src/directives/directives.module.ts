@@ -24,6 +24,7 @@ import { CoreAutoRowsDirective } from './auto-rows';
 import { CoreLongPressDirective } from './long-press';
 import { CoreChartDirective } from './chart';
 import { CoreBackButtonDirective } from './back-button';
+import { CoreSupressEventsDirective } from './supress-events';
 
 @NgModule({
     declarations: [
@@ -37,7 +38,8 @@ import { CoreBackButtonDirective } from './back-button';
         CoreAutoRowsDirective,
         CoreLongPressDirective,
         CoreChartDirective,
-        CoreBackButtonDirective
+        CoreBackButtonDirective,
+        CoreSupressEventsDirective
     ],
     imports: [],
     exports: [
@@ -51,7 +53,8 @@ import { CoreBackButtonDirective } from './back-button';
         CoreAutoRowsDirective,
         CoreLongPressDirective,
         CoreChartDirective,
-        CoreBackButtonDirective
+        CoreBackButtonDirective,
+        CoreSupressEventsDirective
     ]
 })
 export class CoreDirectivesModule {}
