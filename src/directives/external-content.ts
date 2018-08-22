@@ -189,6 +189,12 @@ export class CoreExternalContentDirective implements AfterViewInit {
             }
 
             return promise.then((finalUrl) => {
+                if (finalUrl.match(/^https?:\/\//i)) {
+                    /* In iOS, if we use the same URL in embedded file and background download then the download only
+                       downloads a few bytes (cached ones). Add a hash to the URL so both URLs are different. */
+                    finalUrl = finalUrl + '#moodlemobile-embedded';
+                }
+
                 this.logger.debug('Using URL ' + finalUrl + ' for ' + url);
                 if (tagName === 'SOURCE') {
                     // The browser does not catch changes in SRC, we need to add a new source.
