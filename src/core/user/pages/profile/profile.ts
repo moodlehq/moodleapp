@@ -122,7 +122,7 @@ export class CoreUserProfilePage {
                     }
                 });
 
-                this.isLoadingHandlers = !this.userDelegate.areHandlersLoaded();
+                this.isLoadingHandlers = !this.userDelegate.areHandlersLoaded(user.id);
             });
 
         }).catch((error) => {
@@ -212,6 +212,5 @@ export class CoreUserProfilePage {
     ngOnDestroy(): void {
         this.subscription && this.subscription.unsubscribe();
         this.obsProfileRefreshed && this.obsProfileRefreshed.off();
-        this.userDelegate.clearUserHandlers();
     }
 }

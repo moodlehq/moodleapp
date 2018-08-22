@@ -162,26 +162,32 @@ export class CoreUserDelegate extends CoreDelegate {
      */
     static UPDATE_HANDLER_EVENT = 'CoreUserDelegate_update_handler_event';
 
-    protected observableHandlers: Subject<CoreUserProfileHandlerToDisplay[]> =
-        new BehaviorSubject<CoreUserProfileHandlerToDisplay[]>([]);
-    protected userHandlers: CoreUserProfileHandlerToDisplay[] = [];
     protected featurePrefix = 'CoreUserDelegate_';
-    protected loaded = false;
+
+    // Hold the handlers and the observable to notify them for each user.
+    protected userHandlers: {
+        [userId: number]: {
+            loaded: boolean, // Whether the handlers are loaded.
+            handlers: CoreUserProfileHandlerToDisplay[], // List of handlers.
+            observable: Subject<CoreUserProfileHandlerToDisplay[]> // Observale to notify the handlers.
+        }} = {};
 
     constructor(protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
             private coursesProvider: CoreCoursesProvider, protected eventsProvider: CoreEventsProvider) {
         super('CoreUserDelegate', loggerProvider, sitesProvider, eventsProvider);
 
         eventsProvider.on(CoreUserDelegate.UPDATE_HANDLER_EVENT, (data) => {
-            if (data && data.handler) {
-                const handler = this.userHandlers.find((userHandler) => {
-                    return userHandler.name == data.handler;
-                });
+            if (data && data.handler && this.userHandlers[data.userId]) {
+                const userData = this.userHandlers[data.userId],
+                    handler = userData.handlers.find((userHandler) => {
+                        return userHandler.name == data.handler;
+                    });
+
                 if (handler) {
                     for (const x in data.data) {
                         handler.data[x] = data.data[x];
                     }
-                    this.observableHandlers.next(this.userHandlers);
+                    userData.observable.next(userData.handlers);
                 }
             }
         });
@@ -192,17 +198,23 @@ export class CoreUserDelegate extends CoreDelegate {
      *
      * @return {boolean} True if handlers are loaded, false otherwise.
      */
-    areHandlersLoaded(): boolean {
-        return this.loaded;
+    areHandlersLoaded(userId: number): boolean {
+        return this.userHandlers[userId] && this.userHandlers[userId].loaded;
     }
 
     /**
      * Clear current user handlers.
+     *
+     * @param {number} userId The user to clear.
      */
-    clearUserHandlers(): void {
-        this.loaded = false;
-        this.userHandlers = [];
-        this.observableHandlers.next(this.userHandlers);
+    clearUserHandlers(userId: number): void {
+        const userData = this.userHandlers[userId];
+
+        if (userData) {
+            userData.handlers = [];
+            userData.observable.next([]);
+            userData.loaded = false;
+        }
     }
 
     /**
@@ -236,7 +248,17 @@ export class CoreUserDelegate extends CoreDelegate {
             promise = Promise.resolve();
         }
 
-        this.userHandlers = [];
+        // Initialize the user handlers if it isn't initialized already.
+        if (!this.userHandlers[user.id]) {
+            this.userHandlers[user.id] = {
+                loaded: false,
+                handlers: [],
+                observable: new BehaviorSubject<CoreUserProfileHandlerToDisplay[]>([])
+            };
+        }
+
+        const userData = this.userHandlers[user.id];
+        userData.handlers = [];
 
         promise.then(() => {
             const promises = [];
@@ -247,7 +269,7 @@ export class CoreUserDelegate extends CoreDelegate {
                     isEnabledForUser = handler.isEnabledForUser(user, courseId, navOptions, admOptions),
                     promise = Promise.resolve(isEnabledForUser).then((enabled) => {
                         if (enabled) {
-                            this.userHandlers.push({
+                            userData.handlers.push({
                                 name: name,
                                 data: handler.getDisplayData(user, courseId),
                                 priority: handler.priority,
@@ -264,18 +286,18 @@ export class CoreUserDelegate extends CoreDelegate {
 
             return Promise.all(promises).then(() => {
                 // Sort them by priority.
-                this.userHandlers.sort((a, b) => {
+                userData.handlers.sort((a, b) => {
                     return b.priority - a.priority;
                 });
-                this.loaded = true;
-                this.observableHandlers.next(this.userHandlers);
+                userData.loaded = true;
+                userData.observable.next(userData.handlers);
             });
         }).catch(() => {
             // Never fails.
-            this.loaded = true;
-            this.observableHandlers.next(this.userHandlers);
+            userData.loaded = true;
+            userData.observable.next(userData.handlers);
         });
 
-        return this.observableHandlers;
+        return userData.observable;
     }
 }

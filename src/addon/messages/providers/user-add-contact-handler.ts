@@ -91,7 +91,7 @@ export class AddonMessagesAddContactUserHandler implements CoreUserProfileHandle
                     return;
                 }
                 this.disabled = true;
-                this.updateButton({spinner: true});
+                this.updateButton(user.id, {spinner: true});
 
                 this.messagesProvider.isContact(user.id).then((isContact) => {
                     if (isContact) {
@@ -123,11 +123,11 @@ export class AddonMessagesAddContactUserHandler implements CoreUserProfileHandle
      * @return {Promise<void>}   Promise resolved when done.
      */
     protected checkButton(userId: number): Promise<void> {
-        this.updateButton({spinner: true});
+        this.updateButton(userId, {spinner: true});
 
         return this.messagesProvider.isContact(userId).then((isContact) => {
             if (isContact) {
-                this.updateButton({
+                this.updateButton(userId, {
                     title: 'addon.messages.removecontact',
                     class: 'addon-messages-removecontact-handler',
                     icon: 'remove',
@@ -135,7 +135,7 @@ export class AddonMessagesAddContactUserHandler implements CoreUserProfileHandle
                     spinner: false
                 });
             } else {
-                this.updateButton({
+                this.updateButton(userId, {
                     title: 'addon.messages.addcontact',
                     class: 'addon-messages-addcontact-handler',
                     icon: 'add',
@@ -145,17 +145,19 @@ export class AddonMessagesAddContactUserHandler implements CoreUserProfileHandle
             }
         }).catch(() => {
             // This fails for some reason, let's just hide the button.
-            this.updateButton({hidden: true});
+            this.updateButton(userId, {hidden: true});
         });
     }
 
     /**
      * Triggers the event to update the handler information.
+     *
+     * @param {number} userId The user ID the handler belongs to.
      * @param {any} data Data that should be updated.
      */
-    protected updateButton(data: any): void {
+    protected updateButton(userId: number, data: any): void {
         // This fails for some reason, let's just hide the button.
-        this.eventsProvider.trigger(CoreUserDelegate.UPDATE_HANDLER_EVENT, { handler: this.name, data: data });
+        this.eventsProvider.trigger(CoreUserDelegate.UPDATE_HANDLER_EVENT, { handler: this.name, data: data, userId: userId });
     }
 
     /**
