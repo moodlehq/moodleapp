@@ -84,7 +84,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         this.newDiscObserver = this.eventsProvider.on(AddonModForumProvider.NEW_DISCUSSION_EVENT, this.eventReceived.bind(this));
         this.replyObserver = this.eventsProvider.on(AddonModForumProvider.REPLY_DISCUSSION_EVENT, this.eventReceived.bind(this));
 
-        // Select the curren opened discussion.
+        // Select the current opened discussion.
         this.viewDiscObserver = this.eventsProvider.on(AddonModForumProvider.VIEW_DISCUSSION_EVENT, (data) => {
             if (this.forum && this.forum.id == data.forumId) {
                 this.selectedDiscussion = this.splitviewCtrl.isOn() ? data.discussion : 0;

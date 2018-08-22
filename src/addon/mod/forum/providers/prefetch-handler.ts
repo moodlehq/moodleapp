@@ -133,6 +133,24 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
     }
 
     /**
+     * Invalidate WS calls needed to determine module status (usually, to check if module is downloadable).
+     * It doesn't need to invalidate check updates. It should NOT invalidate files nor all the prefetched data.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to.
+     * @return {Promise<any>} Promise resolved when invalidated.
+     */
+    invalidateModule(module: any, courseId: number): Promise<any> {
+        // Invalidate forum data to recalculate unread message count badge.
+        const promises = [];
+
+        promises.push(this.forumProvider.invalidateForumData(courseId));
+        promises.push(this.courseProvider.invalidateModule(module.id));
+
+        return Promise.all(promises);
+    }
+
+    /**
      * Prefetch a module.
      *
      * @param {any} module Module.

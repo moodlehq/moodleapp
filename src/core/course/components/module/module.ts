@@ -173,6 +173,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.statusObserver && this.statusObserver.off();
+        this.module && this.module.handlerData && this.module.handlerData.onDestroy && this.module.handlerData.onDestroy();
         this.isDestroyed = true;
     }
 }
