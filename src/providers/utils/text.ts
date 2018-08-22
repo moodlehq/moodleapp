@@ -131,7 +131,7 @@ export class CoreTextUtilsProvider {
      * @return {string} Clean text.
      */
     cleanTags(text: string, singleLine?: boolean): string {
-        if (typeof text == 'number') {
+        if (typeof text != 'string') {
             return text;
         }
 
@@ -197,6 +197,10 @@ export class CoreTextUtilsProvider {
      * @return {number} Number of words.
      */
     countWords(text: string): number {
+        if (!text || typeof text != 'string') {
+            return 0;
+        }
+
         // Clean HTML scripts and tags.
         text = text.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, '');
         text = text.replace(/<\/?(?!\!)[^>]*>/gi, '');
@@ -285,7 +289,7 @@ export class CoreTextUtilsProvider {
      * @return {string} Escaped text.
      */
     escapeForRegex(text: string): string {
-        if (!text) {
+        if (!text || typeof text != 'string') {
             return '';
         }
 
@@ -476,6 +480,10 @@ export class CoreTextUtilsProvider {
      * @return {string} Treated text.
      */
     removeSpecialCharactersForFiles(text: string): string {
+        if (!text || typeof text != 'string') {
+            return '';
+        }
+
         return text.replace(/[#:\/\?\\]+/g, '_');
     }
 
@@ -487,6 +495,10 @@ export class CoreTextUtilsProvider {
      * @return {string} Treated text.
      */
     replaceNewLines(text: string, newValue: string): string {
+        if (!text || typeof text != 'string') {
+            return '';
+        }
+
         return text.replace(/(?:\r\n|\r|\n)/g, newValue);
     }
 
@@ -498,7 +510,7 @@ export class CoreTextUtilsProvider {
      * @return {string} Treated text.
      */
     replacePluginfileUrls(text: string, files: any[]): string {
-        if (text) {
+        if (text && typeof text == 'string') {
             const fileURL = this.getTextPluginfileUrl(files);
             if (fileURL) {
                 return text.replace(/@@PLUGINFILE@@/g, fileURL);
@@ -516,7 +528,7 @@ export class CoreTextUtilsProvider {
      * @return {string} Treated text.
      */
     restorePluginfileUrls(text: string, files: any[]): string {
-        if (text) {
+        if (text && typeof text == 'string') {
             const fileURL = this.getTextPluginfileUrl(files);
             if (fileURL) {
                 return text.replace(new RegExp(this.escapeForRegex(fileURL), 'g'), '@@PLUGINFILE@@');
@@ -626,7 +638,7 @@ export class CoreTextUtilsProvider {
      * @return {Promise<string>} Promise resolved with the formatted text.
      */
     treatMultilangTags(text: string): Promise<string> {
-        if (!text) {
+        if (!text || typeof text != 'string') {
             return Promise.resolve('');
         }
 
