@@ -214,6 +214,7 @@
     "tablet": "Tablet",
     "teachers": "Teachers",
     "thereisdatatosync": "There are offline {{$a}} to be synchronized.",
+    "thisdirection": "ltr",
     "time": "Time",
     "timesup": "Time is up!",
     "today": "Today",

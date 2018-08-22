@@ -44,6 +44,11 @@ export class CoreLangProvider {
                 moment.locale(language);
             });
         });
+
+        translate.onLangChange.subscribe((event: any) => {
+            platform.setLang(event.lang, true);
+            platform.setDir(this.translate.instant('core.thisdirection'), true);
+        });
     }
 
     /**
