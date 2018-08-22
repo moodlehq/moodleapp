@@ -14,7 +14,7 @@
 
 import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterContentInit, OnDestroy, Optional }
     from '@angular/core';
-import { TextInput, Content } from 'ionic-angular';
+import { TextInput, Content, Platform } from 'ionic-angular';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -66,6 +66,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
 
     protected valueChangeSubscription: Subscription;
     protected keyboardObs: any;
+    protected initHeightInterval;
 
     rteEnabled = false;
     editorSupported = true;
@@ -73,7 +74,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     constructor(private domUtils: CoreDomUtilsProvider, private urlUtils: CoreUrlUtilsProvider,
             private sitesProvider: CoreSitesProvider, private filepoolProvider: CoreFilepoolProvider,
             @Optional() private content: Content, elementRef: ElementRef, private events: CoreEventsProvider,
-            private utils: CoreUtilsProvider) {
+            private utils: CoreUtilsProvider, private platform: Platform) {
         this.contentChanged = new EventEmitter<string>();
         this.element = elementRef.nativeElement as HTMLDivElement;
     }
@@ -114,10 +115,10 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         window.addEventListener('resize', this.resizeFunction);
 
         let i = 0;
-        const interval = setInterval(() => {
+        this.initHeightInterval = setInterval(() => {
             this.maximizeEditorSize().then((height) => {
                 if (i >= 5 || height != 0) {
-                    clearInterval(interval);
+                    clearInterval(this.initHeightInterval);
                 }
                 i++;
             });
@@ -150,7 +151,22 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
 
             setTimeout(() => {
                 // Editor is ready, adjust Height if needed.
-                const height = this.content.contentHeight - this.kbHeight - this.getSurroundingHeight(this.element);
+                let height;
+
+                if (this.platform.is('ios') && this.kbHeight > 0) {
+                    // Keyboard open in iOS.
+                    // In this case, the header disappears or is scrollable, so we need to adjust the calculations.
+                    height = window.innerHeight - this.getSurroundingHeight(this.element);
+
+                    if (this.element.getBoundingClientRect().top < 40) {
+                        // In iOS sometimes the editor is placed below the status bar. Move the scroll a bit so it doesn't happen.
+                        window.scrollTo(window.scrollX, window.scrollY - 40);
+                    }
+                } else {
+                    // Header is fixed, use the content to calculate the editor height.
+                    height = this.content.contentHeight - this.kbHeight - this.getSurroundingHeight(this.element);
+                }
+
                 if (height > this.minHeight) {
                     this.element.style.height = this.domUtils.formatPixelsSize(height);
                 } else {
@@ -473,5 +489,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     ngOnDestroy(): void {
         this.valueChangeSubscription && this.valueChangeSubscription.unsubscribe();
         window.removeEventListener('resize', this.resizeFunction);
+        clearInterval(this.initHeightInterval);
+        this.keyboardObs && this.keyboardObs.off();
     }
 }
