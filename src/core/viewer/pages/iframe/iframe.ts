@@ -14,6 +14,7 @@
 
 import { Component } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Page to display a URL in an iframe.
@@ -27,8 +28,25 @@ export class CoreViewerIframePage {
     title: string; // Page title.
     url: string; // Iframe URL.
 
-    constructor(params: NavParams) {
+    protected autoLogin; // Whether the URL should be open with auto-login. Accepts the following values:
+                         //   "yes" -> Always auto-login.
+                         //   "no" -> Never auto-login.
+                         //   "check" -> Auto-login only if it points to the current site. Default value.
+
+    constructor(params: NavParams, sitesProvider: CoreSitesProvider) {
         this.title = params.get('title');
-        this.url = params.get('url');
+        this.autoLogin = params.get('autoLogin') || 'check';
+
+        const url = params.get('url'),
+            currentSite = sitesProvider.getCurrentSite();
+
+        if (currentSite && (this.autoLogin == 'yes' || (this.autoLogin == 'check' && currentSite.containsUrl(url)))) {
+            // Format the URL to add auto-login.
+            currentSite.getAutoLoginUrl(url).then((url) => {
+                this.url = url;
+            });
+        } else {
+            this.url = url;
+        }
     }
 }
