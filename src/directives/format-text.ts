@@ -56,7 +56,6 @@ export class CoreFormatTextDirective implements OnChanges {
     @Input() fullTitle?: string; // Title to use in full view. Defaults to "Description".
     @Output() afterRender?: EventEmitter<any>; // Called when the data is rendered.
 
-    protected tagsToIgnore = ['AUDIO', 'VIDEO', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'A'];
     protected element: HTMLElement;
     protected clickListener;
 
@@ -220,21 +219,16 @@ export class CoreFormatTextDirective implements OnChanges {
         e.preventDefault();
         e.stopPropagation();
 
-        const target = <HTMLElement> e.target;
+        if (!expandInFullview) {
+            // Change class.
+            this.element.classList.toggle('core-shortened');
 
-        if (this.tagsToIgnore.indexOf(target.tagName) === -1 || (target.tagName === 'A' &&
-            !target.getAttribute('href'))) {
-            if (!expandInFullview) {
-                // Change class.
-                this.element.classList.toggle('core-shortened');
-
-                return;
-            }
+            return;
+        } else {
+            // Open a new state with the contents.
+            this.textUtils.expandText(this.fullTitle || this.translate.instant('core.description'), this.text,
+                this.component, this.componentId);
         }
-
-        // Open a new state with the contents.
-        this.textUtils.expandText(this.fullTitle || this.translate.instant('core.description'), this.text,
-            this.component, this.componentId);
     }
 
     /**
@@ -320,7 +314,8 @@ export class CoreFormatTextDirective implements OnChanges {
                 videos,
                 iframes,
                 buttons,
-                elementsWithInlineStyles;
+                elementsWithInlineStyles,
+                stopClicksElements;
 
             div.innerHTML = formatted;
             images = Array.from(div.querySelectorAll('img'));
@@ -330,6 +325,7 @@ export class CoreFormatTextDirective implements OnChanges {
             iframes = Array.from(div.querySelectorAll('iframe'));
             buttons = Array.from(div.querySelectorAll('.button'));
             elementsWithInlineStyles = Array.from(div.querySelectorAll('*[style]'));
+            stopClicksElements = Array.from(div.querySelectorAll('button,input,select,textarea'));
 
             // Walk through the content to find the links and add our directive to it.
             // Important: We need to look for links first because in 'img' we add new links without core-link.
@@ -385,6 +381,13 @@ export class CoreFormatTextDirective implements OnChanges {
                         && el.tagName != 'SOURCE' && el.tagName != 'TRACK') {
                     this.addExternalContent(el);
                 }
+            });
+
+            // Stop propagating click events.
+            stopClicksElements.forEach((element: HTMLElement) => {
+                element.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
             });
 
             return div;
@@ -500,6 +503,11 @@ export class CoreFormatTextDirective implements OnChanges {
 
         tracks.forEach((track) => {
             this.addExternalContent(track);
+        });
+
+        // Stop propagating click events.
+        element.addEventListener('click', (e) => {
+            e.stopPropagation();
         });
     }
 
