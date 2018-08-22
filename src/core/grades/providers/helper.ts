@@ -426,13 +426,13 @@ export class CoreGradesHelperProvider {
             row['image'] = 'assets/img/grades/agg_sum.png';
         } else if (text.indexOf('/outcomes') > -1 || text.indexOf('fa-tasks')  > -1) {
             row['itemtype'] = 'outcome';
-            row['image'] = 'assets/img/grades/outcomes.png';
+            row['icon'] = 'fa-tasks';
         } else if (text.indexOf('i/folder') > -1 || text.indexOf('fa-folder')  > -1) {
             row['itemtype'] = 'category';
-            row['icon'] = 'folder';
+            row['icon'] = 'fa-folder';
         } else if (text.indexOf('/manual_item') > -1 || text.indexOf('fa-square-o')  > -1) {
             row['itemtype'] = 'manual';
-            row['icon'] = 'square-outline';
+            row['icon'] = 'fa-square-o';
         } else if (text.indexOf('/mod/') > -1) {
             const module = text.match(/mod\/([^\/]*)\//);
             if (typeof module[1] != 'undefined') {
