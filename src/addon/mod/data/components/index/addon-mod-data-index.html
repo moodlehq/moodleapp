@@ -70,14 +70,14 @@
         <ion-row align-items-center>
             <ion-col *ngIf="search.page > 0">
                 <button ion-button block outline icon-start (click)="searchEntries(search.page - 1)">
-                    <ion-icon name="arrow-back"></ion-icon>
+                    <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
                     {{ 'core.previous' | translate }}
                 </button>
             </ion-col>
             <ion-col *ngIf="hasNextPage">
                 <button ion-button block icon-end (click)="searchEntries(search.page + 1)">
                     {{ 'core.next' | translate }}
-                    <ion-icon name="arrow-forward"></ion-icon>
+                    <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
                 </button>
             </ion-col>
         </ion-row>

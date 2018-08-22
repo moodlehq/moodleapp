@@ -34,7 +34,9 @@
             <core-local-file *ngIf="attachment.name" [file]="attachment"></core-local-file>
         </ion-item>
         <ion-item text-wrap *ngIf="viewDetails && submission.feedbackauthor">
-            <img [src]="evaluateByProfile && evaluateByProfile.profileimageurl" core-external-content core-user-link [courseId]="courseId" [userId]="evaluateByProfile && evaluateByProfile.id" [alt]="'core.pictureof' | translate:{$a: evaluateByProfile && evaluateByProfile.fullname}" role="presentation" onError="this.src='assets/img/user-avatar.png'"/>
+            <ion-avatar item-start *ngIf="evaluateByProfile">
+                <img [src]="evaluateByProfile.profileimageurl" core-external-content core-user-link [courseId]="courseId" [userId]="evaluateByProfile.id" [alt]="'core.pictureof' | translate:{$a: evaluateByProfile.fullname}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
+            </ion-avatar>
 
             <h2 *ngIf="evaluateByProfile && evaluateByProfile.fullname">{{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}</h2>
             <core-format-text [text]="submission.feedbackauthor"></core-format-text>

@@ -16,18 +16,18 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreDirectivesModule } from '@directives/directives.module';
-import { AddonModWorkshopPhaseSelectorPage } from './phase';
+import { AddonModWorkshopPhaseInfoPage } from './phase';
 import { CoreCompileHtmlComponentModule } from '@core/compile/components/compile-html/compile-html.module';
 
 @NgModule({
     declarations: [
-        AddonModWorkshopPhaseSelectorPage,
+        AddonModWorkshopPhaseInfoPage,
     ],
     imports: [
         CoreDirectivesModule,
         CoreCompileHtmlComponentModule,
-        IonicPageModule.forChild(AddonModWorkshopPhaseSelectorPage),
+        IonicPageModule.forChild(AddonModWorkshopPhaseInfoPage),
         TranslateModule.forChild()
     ],
 })
-export class AddonModWorkshopPhaseSelectorPageModule {}
+export class AddonModWorkshopPhaseInfoPageModule {}
