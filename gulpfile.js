@@ -278,6 +278,10 @@ gulp.task('config', function(done) {
                 }
                 contents += '    static ' + key + ' = ' + value + ';\n';
             }
+
+            // Add compilation time.
+            contents += '    static compilationtime = ' + Date.now() + ';\n';
+
             contents += '}\n';
 
             file.contents = new Buffer(contents);

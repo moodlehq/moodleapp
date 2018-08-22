@@ -36,6 +36,10 @@
             <h2>{{ 'core.settings.versioncode' | translate}}</h2>
             <p>{{ versionCode }}</p>
         </ion-item>
+        <ion-item text-wrap *ngIf="compilationTime">
+            <h2>{{ 'core.settings.compilationtime' | translate }}</h2>
+            <p>{{ compilationTime | coreFormatDate: "LLL Z" }}</p>
+        </ion-item>
         <ion-item text-wrap *ngIf="fileSystemRoot">
             <h2>{{ 'core.settings.filesystemroot' | translate}}</h2>
             <p><a *ngIf="fsClickable" [href]="fileSystemRoot" core-link auto-login="no">{{ fileSystemRoot }}</a></p>
