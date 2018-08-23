@@ -47,7 +47,7 @@ export class CoreCourseSectionSelectorPage {
      * @param {any} section Selected section object.
      */
     selectSection(section: any): void {
-        if (!(section.visible === 0 || section.uservisible === false)) {
+        if (section.uservisible !== false) {
             this.viewCtrl.dismiss(section);
         }
     }

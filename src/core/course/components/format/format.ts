@@ -257,14 +257,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         let j;
         for (j = i - 1; j >= 1; j--) {
-            if (!(this.sections[j].visible === 0 || this.sections[j].uservisible === false) && this.sections[j].hasContent) {
+            if (this.sections[j].uservisible !== false && this.sections[j].hasContent) {
                 break;
             }
         }
         this.previousSection = j >= 1 ? this.sections[j] : null;
 
         for (j = i + 1; j < this.sections.length; j++) {
-            if (!(this.sections[j].visible === 0 || this.sections[j].uservisible === false) && this.sections[j].hasContent) {
+            if (this.sections[j].uservisible !== false && this.sections[j].hasContent) {
                 break;
             }
         }
