@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { ActionSheetController, ActionSheet, Platform } from 'ionic-angular';
-import { MediaCapture, MediaFile } from '@ionic-native/media-capture';
+import { MediaFile } from '@ionic-native/media-capture';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
@@ -40,7 +40,7 @@ export class CoreFileUploaderHelperProvider {
             private fileUploaderProvider: CoreFileUploaderProvider, private domUtils: CoreDomUtilsProvider,
             private textUtils: CoreTextUtilsProvider, private fileProvider: CoreFileProvider, private utils: CoreUtilsProvider,
             private actionSheetCtrl: ActionSheetController, private uploaderDelegate: CoreFileUploaderDelegate,
-            private mediaCapture: MediaCapture, private camera: Camera, private platform: Platform) {
+            private camera: Camera, private platform: Platform) {
         this.logger = logger.getInstance('CoreFileUploaderProvider');
     }
 
@@ -450,10 +450,10 @@ export class CoreFileUploaderHelperProvider {
      * @return {Promise<any>} Promise resolved when done.
      */
     uploadAudioOrVideo(isAudio: boolean, maxSize: number, upload?: boolean, mimetypes?: string[]): Promise<any> {
-        this.logger.debug('Trying to record a video file');
+        this.logger.debug('Trying to record a ' + (isAudio ? 'audio' : 'video') + ' file');
 
         const options = { limit: 1, mimetypes: mimetypes },
-            promise = isAudio ? this.mediaCapture.captureAudio(options) : this.mediaCapture.captureVideo(options);
+            promise = isAudio ? this.fileUploaderProvider.captureAudio(options) : this.fileUploaderProvider.captureVideo(options);
 
         // The mimetypes param is only for desktop apps, the Cordova plugin doesn't support it.
         return promise.then((medias) => {
@@ -549,7 +549,7 @@ export class CoreFileUploaderHelperProvider {
             }
         }
 
-        return this.camera.getPicture(options).then((path) => {
+        return this.fileUploaderProvider.getPicture(options).then((path) => {
             const error = this.fileUploaderProvider.isInvalidMimetype(mimetypes, path); // Verify that the mimetype is supported.
             if (error) {
                 return Promise.reject(error);
