@@ -141,7 +141,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         const deferred = this.utils.promiseDefer();
 
         setTimeout(() => {
-            const contentVisibleHeight = this.content.contentHeight - this.kbHeight;
+            const contentVisibleHeight = this.domUtils.getContentHeight(this.content) - this.kbHeight;
 
             if (contentVisibleHeight <= 0) {
                 deferred.resolve(0);
@@ -164,7 +164,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
                     }
                 } else {
                     // Header is fixed, use the content to calculate the editor height.
-                    height = this.content.contentHeight - this.kbHeight - this.getSurroundingHeight(this.element);
+                    height = this.domUtils.getContentHeight(this.content) - this.kbHeight - this.getSurroundingHeight(this.element);
                 }
 
                 if (height > this.minHeight) {

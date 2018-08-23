@@ -718,6 +718,77 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Scroll to somehere in the content.
+     * Checks hidden property _scroll to avoid errors if view is not active.
+     *
+     * @param {Content} content Content where to execute the function.
+     * @param {number} x  The x-value to scroll to.
+     * @param {number} y  The y-value to scroll to.
+     * @param {number} [duration]  Duration of the scroll animation in milliseconds. Defaults to `300`.
+     * @returns {Promise} Returns a promise which is resolved when the scroll has completed.
+     */
+    scrollTo(content: Content, x: number, y: number, duration?: number, done?: Function): Promise<any> {
+        return content && content._scroll && content.scrollTo(x, y, duration, done);
+    }
+
+    /**
+     * Scroll to Bottom of the content.
+     * Checks hidden property _scroll to avoid errors if view is not active.
+     *
+     * @param {Content} content Content where to execute the function.
+     * @param {number} [duration]  Duration of the scroll animation in milliseconds. Defaults to `300`.
+     * @returns {Promise} Returns a promise which is resolved when the scroll has completed.
+     */
+    scrollToBottom(content: Content, duration?: number): Promise<any> {
+        return content && content._scroll && content.scrollToBottom(duration);
+    }
+
+    /**
+     * Scroll to Top of the content.
+     * Checks hidden property _scroll to avoid errors if view is not active.
+     *
+     * @param {Content} content Content where to execute the function.
+     * @param {number} [duration]  Duration of the scroll animation in milliseconds. Defaults to `300`.
+     * @returns {Promise} Returns a promise which is resolved when the scroll has completed.
+     */
+    scrollToTop(content: Content, duration?: number): Promise<any> {
+        return content && content._scroll && content.scrollToTop(duration);
+    }
+
+    /**
+     * Returns contentHeight of the content.
+     * Checks hidden property _scroll to avoid errors if view is not active.
+     *
+     * @param {Content} content Content where to execute the function.
+     * @return {number}         Content contentHeight or 0.
+     */
+    getContentHeight(content: Content): number {
+        return (content && content._scroll && content.contentHeight) || 0;
+    }
+
+    /**
+     * Returns scrollHeight of the content.
+     * Checks hidden property _scroll to avoid errors if view is not active.
+     *
+     * @param {Content} content Content where to execute the function.
+     * @return {number}         Content scrollHeight or 0.
+     */
+    getScrollHeight(content: Content): number {
+        return (content && content._scroll && content.scrollHeight) || 0;
+    }
+
+    /**
+     * Returns scrollTop of the content.
+     * Checks hidden property _scroll to avoid errors if view is not active.
+     *
+     * @param {Content} content Content where to execute the function.
+     * @return {number}         Content scrollTop or 0.
+     */
+    getScrollTop(content: Content): number {
+        return (content && content._scroll && content.scrollTop) || 0;
+    }
+
+    /**
      * Scroll to a certain element.
      *
      * @param {Content} content The content that must be scrolled.
@@ -731,7 +802,7 @@ export class CoreDomUtilsProvider {
             return false;
         }
 
-        content.scrollTo(position[0], position[1]);
+        this.scrollTo(content, position[0], position[1]);
 
         return true;
     }
@@ -750,7 +821,7 @@ export class CoreDomUtilsProvider {
             return false;
         }
 
-        content.scrollTo(position[0], position[1]);
+        this.scrollTo(content, position[0], position[1]);
 
         return true;
     }

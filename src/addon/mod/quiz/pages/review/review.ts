@@ -104,7 +104,7 @@ export class AddonModQuizReviewPage implements OnInit {
         }
 
         this.loaded = false;
-        this.content.scrollToTop();
+        this.domUtils.scrollToTop(this.content);
 
         this.loadPage(page).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorgetquestions', true);

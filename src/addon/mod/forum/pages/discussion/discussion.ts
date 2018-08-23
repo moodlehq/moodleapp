@@ -366,7 +366,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
      * @return {Promise<any>} Promise resolved when done.
      */
     refreshPosts(sync?: boolean, showErrors?: boolean): Promise<any> {
-        this.content && this.content.scrollToTop();
+        this.domUtils.scrollToTop(this.content);
         this.refreshIcon = 'spinner';
         this.syncIcon = 'spinner';
 
@@ -386,7 +386,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     changeSort(type: SortType): Promise<any> {
         this.discussionLoaded = false;
         this.sort = type;
-        this.content && this.content.scrollToTop();
+        this.domUtils.scrollToTop(this.content);
 
         return this.fetchPosts();
     }

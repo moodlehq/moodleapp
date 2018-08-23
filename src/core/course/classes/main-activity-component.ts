@@ -162,7 +162,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
         this.refreshIcon = 'spinner';
         this.syncIcon = 'spinner';
         this.loaded = false;
-        this.content && this.content.scrollToTop();
+        this.domUtils.scrollToTop(this.content);
 
         return this.loadContent(false, sync, showErrors).finally(() => {
             this.refreshIcon = 'refresh';
@@ -181,7 +181,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
         this.refreshIcon = 'spinner';
         this.syncIcon = 'spinner';
         this.loaded = false;
-        this.content && this.content.scrollToTop();
+        this.domUtils.scrollToTop(this.content);
 
         return this.refreshContent(sync, showErrors);
     }

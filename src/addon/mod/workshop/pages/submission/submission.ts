@@ -172,7 +172,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
      */
     protected eventReceived(data: any): void {
         if (this.workshopId === data.workshopId) {
-            this.content && this.content.scrollToTop();
+            this.domUtils.scrollToTop(this.content);
 
             this.loaded = false;
             this.refreshAllData();

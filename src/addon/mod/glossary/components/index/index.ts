@@ -314,7 +314,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
             }
 
             this.loadingMessage = this.translate.instant('core.loading');
-            this.content.scrollToTop();
+            this.domUtils.scrollToTop(this.content);
             this.switchMode(newMode);
 
             if (this.fetchMode === 'search') {

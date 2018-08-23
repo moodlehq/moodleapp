@@ -359,7 +359,7 @@ export class AddonModDataEditPage {
      */
     protected scrollToFirstError(): void {
         if (!this.domUtils.scrollToElementBySelector(this.content, '.addon-data-error')) {
-            this.content.scrollToTop();
+            this.domUtils.scrollToTop(this.content);
         }
     }
 }

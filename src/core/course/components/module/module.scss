@@ -27,7 +27,8 @@ core-course-module {
         core-format-text {
             flex-grow: 2;
         }
-        .core-module-buttons {
+        .core-module-buttons,
+        .buttons.core-module-buttons {
             margin: 0;
         }
 

@@ -100,7 +100,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
      */
     protected isRefreshSyncNeeded(syncEventData: any): boolean {
         if (this.choice && syncEventData.choiceId == this.choice.id && syncEventData.userId == this.userId) {
-            this.content.scrollToTop();
+            this.domUtils.scrollToTop(this.content);
 
             return true;
         }
@@ -355,7 +355,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
                 // Success!
                 // Check completion since it could be configured to complete once the user answers the choice.
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
-                this.content.scrollToTop();
+                this.domUtils.scrollToTop(this.content);
 
                 // Let's refresh the data.
                 return this.refreshContent(false);
@@ -374,7 +374,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
         this.domUtils.showConfirm(this.translate.instant('core.areyousure')).then(() => {
             const modal = this.domUtils.showModalLoading('core.sending', true);
             this.choiceProvider.deleteResponses(this.choice.id, this.choice.name, this.courseId).then(() => {
-                this.content.scrollToTop();
+                this.domUtils.scrollToTop(this.content);
 
                 // Success! Let's refresh the data.
                 return this.refreshContent(false);

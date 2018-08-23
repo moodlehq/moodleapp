@@ -142,7 +142,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         if (this.data && syncEventData.dataId == this.data.id && typeof syncEventData.entryId == 'undefined') {
             this.loaded = false;
             // Refresh the data.
-            this.content.scrollToTop();
+            this.domUtils.scrollToTop(this.content);
 
             return true;
         }
