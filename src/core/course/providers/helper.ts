@@ -151,6 +151,9 @@ export class CoreCourseHelperProvider {
                     module.completionstatus = completionStatus[module.id];
                     module.completionstatus.courseId = courseId;
                 }
+
+                // Check if the module is stealth.
+                module.isStealth = !module.visibleoncoursepage || (module.visible && !section.visible);
             });
         });
 
