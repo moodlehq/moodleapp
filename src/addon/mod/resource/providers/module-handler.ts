@@ -14,14 +14,17 @@
 
 import { Injectable } from '@angular/core';
 import { NavController, NavOptions } from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
 import { AddonModResourceProvider } from './resource';
 import { AddonModResourceHelperProvider } from './helper';
 import { AddonModResourceIndexComponent } from '../components/index/index';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreConstants } from '@core/constants';
+import * as moment from 'moment';
 
 /**
  * Handler to support resource modules.
@@ -35,7 +38,8 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
 
     constructor(protected resourceProvider: AddonModResourceProvider, private courseProvider: CoreCourseProvider,
             protected mimetypeUtils: CoreMimetypeUtilsProvider, private resourceHelper: AddonModResourceHelperProvider,
-            protected prefetchDelegate: CoreCourseModulePrefetchDelegate) {
+            protected prefetchDelegate: CoreCourseModulePrefetchDelegate, protected textUtils: CoreTextUtilsProvider,
+            protected translate: TranslateService) {
     }
 
     /**
@@ -61,7 +65,7 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
                 this.resourceHelper.isDisplayedInIframe(module);
         };
 
-        const handlerData = {
+        const handlerData: CoreCourseModuleHandlerData = {
             icon: this.courseProvider.getModuleIconSrc('resource'),
             title: module.name,
             class: 'addon-mod_resource-handler',
@@ -84,8 +88,10 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
             } ]
         };
 
-        this.getIcon(module, courseId).then((icon) => {
-            handlerData.icon = icon;
+        this.getResourceData(module, courseId).then((data) => {
+            handlerData.icon = data.icon;
+            handlerData.extraBadge = data.extra;
+            handlerData.extraBadgeColor = 'light';
         });
 
         this.hideOpenButton(module, courseId).then((hideOpenButton) => {
@@ -111,23 +117,61 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
     }
 
     /**
-     * Returns the activity icon.
+     * Returns the activity icon and data.
      *
      * @param {any} module        The module object.
      * @param {number} courseId   The course ID.
-     * @return {Promise<string>}  Icon URL.
+     * @return {Promise<any>}     Resource data.
      */
-    protected getIcon(module: any, courseId: number): Promise<string> {
-        return this.courseProvider.loadModuleContents(module, courseId).then(() => {
-            if (module.contents.length) {
-                const filename = module.contents[0].filename,
-                    extension = this.mimetypeUtils.getFileExtension(filename);
-                if (module.contents.length == 1 || (extension != 'html' && extension != 'htm')) {
-                    return this.mimetypeUtils.getFileIcon(filename);
-                }
+    protected getResourceData(module: any, courseId: number): Promise<any> {
+        return this.resourceProvider.getResourceData(courseId, module.id).then((info) => {
+            let promise;
+
+            if (info.contentfiles && info.contentfiles.length == 1) {
+                promise = Promise.resolve(info.contentfiles);
+            } else {
+                promise = this.courseProvider.loadModuleContents(module, courseId).then(() => {
+                    if (module.contents.length) {
+                        return module.contents;
+                    }
+                });
             }
 
-            return this.courseProvider.getModuleIconSrc('resource');
+            return promise.then((files) => {
+                const resourceData = {
+                        icon: '',
+                        extra: ''
+                    },
+                    options = this.textUtils.unserialize(info.displayoptions),
+                    extra = [];
+
+                if (files && files.length) {
+                    const file = files[0];
+                    resourceData.icon = this.mimetypeUtils.getFileIcon(file.filename);
+
+                    if (options.showsize) {
+                        const size = files.reduce((result, file) => {
+                            return result + file.filesize;
+                        }, 0);
+                        extra.push(this.textUtils.bytesToSize(size, 1));
+                    }
+                    if (options.showtype) {
+                        extra.push(this.mimetypeUtils.getMimetypeDescription(file));
+                    }
+                }
+
+                if (resourceData.icon == '') {
+                    resourceData.icon = this.courseProvider.getModuleIconSrc('resource');
+                }
+
+                if (options.showdate) {
+                    extra.push(this.translate.instant('addon.mod_resource.uploadeddate',
+                        {$a: moment(info.timemodified * 1000).format('LLL')}));
+                }
+                resourceData.extra += extra.join(' ');
+
+                return resourceData;
+            });
         });
     }
 

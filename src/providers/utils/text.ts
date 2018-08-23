@@ -690,4 +690,223 @@ export class CoreTextUtilsProvider {
     ucFirst(text: string): string {
         return text.charAt(0).toUpperCase() + text.slice(1);
     }
+
+    /**
+     * Unserialize Array from PHP.
+     * Taken from: https://github.com/kvz/locutus/blob/master/src/php/var/unserialize.js
+     *
+     * @param  {string} data String to unserialize.
+     * @param {Function} [logErrorFn] An error to call with the exception to log the error. If not supplied, no error.
+     * @return {any}         Unserialized data.
+     */
+    unserialize (data: string, logErrorFn?: Function): any {
+        //  Discuss at: http://locutus.io/php/unserialize/
+        // Original by: Arpad Ray (mailto:arpad@php.net)
+        // Improved by: Pedro Tainha (http://www.pedrotainha.com)
+        // Improved by: Kevin van Zonneveld (http://kvz.io)
+        // Improved by: Kevin van Zonneveld (http://kvz.io)
+        // Improved by: Chris
+        // Improved by: James
+        // Improved by: Le Torbi
+        // Improved by: Eli Skeggs
+        // Bugfixed by: dptr1988
+        // Bugfixed by: Kevin van Zonneveld (http://kvz.io)
+        // Bugfixed by: Brett Zamir (http://brett-zamir.me)
+        // Bugfixed by: philippsimon (https://github.com/philippsimon/)
+        //  Revised by: d3x
+        //    Input by: Brett Zamir (http://brett-zamir.me)
+        //    Input by: Martin (http://www.erlenwiese.de/)
+        //    Input by: kilops
+        //    Input by: Jaroslaw Czarniak
+        //    Input by: lovasoa (https://github.com/lovasoa/)
+        //      Note 1: We feel the main purpose of this function should be
+        //      Note 1: to ease the transport of data between php & js
+        //      Note 1: Aiming for PHP-compatibility, we have to translate objects to arrays
+        //   Example 1: unserialize('a:3:{i:0;s:5:"Kevin";i:1;s:3:"van";i:2;s:9:"Zonneveld";}')
+        //   Returns 1: ['Kevin', 'van', 'Zonneveld']
+        //   Example 2: unserialize('a:2:{s:9:"firstName";s:5:"Kevin";s:7:"midName";s:3:"van";}')
+        //   Returns 2: {firstName: 'Kevin', midName: 'van'}
+        //   Example 3: unserialize('a:3:{s:2:"ü";s:2:"ü";s:3:"四";s:3:"四";s:4:"𠜎";s:4:"𠜎";}')
+        //   Returns 3: {'ü': 'ü', '四': '四', '𠜎': '𠜎'}
+
+        const utf8Overhead = (str: string): number => {
+            let s = str.length;
+
+            for (let i = str.length - 1; i >= 0; i--) {
+                const code = str.charCodeAt(i);
+                if (code > 0x7f && code <= 0x7ff) {
+                    s++;
+                } else if (code > 0x7ff && code <= 0xffff) {
+                    s += 2;
+                }
+                // Trail surrogate.
+                if (code >= 0xDC00 && code <= 0xDFFF) {
+                    i--;
+                }
+            }
+
+            return s - 1;
+        };
+
+        const error = (type: string, msg: string): void => {
+            if (logErrorFn) {
+                logErrorFn(type + msg);
+            }
+        };
+
+        const readUntil = (data: string, offset: number, stopchr: string): Array<any> => {
+            let i = 2;
+            const buf = [];
+            let chr = data.slice(offset, offset + 1);
+
+            while (chr !== stopchr) {
+                if ((i + offset) > data.length) {
+                    error('Error', 'Invalid');
+                }
+                buf.push(chr);
+                chr = data.slice(offset + (i - 1), offset + i);
+                i += 1;
+            }
+
+            return [buf.length, buf.join('')];
+        };
+
+        const readChrs = (data: string, offset: number, length: number): Array<any> => {
+            let chr;
+            const buf = [];
+
+            for (let i = 0; i < length; i++) {
+                chr = data.slice(offset + (i - 1), offset + i);
+                buf.push(chr);
+                length -= utf8Overhead(chr);
+            }
+
+            return [buf.length, buf.join('')];
+        };
+
+        const _unserialize = (data: string, offset: number): any => {
+            let dtype,
+                dataoffset,
+                keyandchrs,
+                keys,
+                contig,
+                length,
+                array,
+                readdata,
+                readData,
+                ccount,
+                stringlength,
+                i,
+                key,
+                kprops,
+                kchrs,
+                vprops,
+                vchrs,
+                value,
+                chrs = 0,
+                typeconvert = (x: any): any => {
+                    return x;
+                };
+
+            if (!offset) {
+                offset = 0;
+            }
+            dtype = (data.slice(offset, offset + 1)).toLowerCase();
+
+            dataoffset = offset + 2;
+
+            switch (dtype) {
+                case 'i':
+                    typeconvert = (x: any): number => {
+                        return parseInt(x, 10);
+                    };
+                    readData = readUntil(data, dataoffset, ';');
+                    chrs = readData[0];
+                    readdata = readData[1];
+                    dataoffset += chrs + 1;
+                    break;
+                case 'b':
+                    typeconvert = (x: any): boolean => {
+                        return parseInt(x, 10) !== 0;
+                    };
+                    readData = readUntil(data, dataoffset, ';');
+                    chrs = readData[0];
+                    readdata = readData[1];
+                    dataoffset += chrs + 1;
+                    break;
+                case 'd':
+                    typeconvert = (x: any): number => {
+                        return parseFloat(x);
+                    };
+                    readData = readUntil(data, dataoffset, ';');
+                    chrs = readData[0];
+                    readdata = readData[1];
+                    dataoffset += chrs + 1;
+                    break;
+                case 'n':
+                    readdata = null;
+                    break;
+                case 's':
+                    ccount = readUntil(data, dataoffset, ':');
+                    chrs = ccount[0];
+                    stringlength = ccount[1];
+                    dataoffset += chrs + 2;
+
+                    readData = readChrs(data, dataoffset + 1, parseInt(stringlength, 10));
+                    chrs = readData[0];
+                    readdata = readData[1];
+                    dataoffset += chrs + 2;
+                    if (chrs !== parseInt(stringlength, 10) && chrs !== readdata.length) {
+                        error('SyntaxError', 'String length mismatch');
+                    }
+                    break;
+                case 'a':
+                    readdata = {};
+
+                    keyandchrs = readUntil(data, dataoffset, ':');
+                    chrs = keyandchrs[0];
+                    keys = keyandchrs[1];
+                    dataoffset += chrs + 2;
+
+                    length = parseInt(keys, 10);
+                    contig = true;
+
+                    for (let i = 0; i < length; i++) {
+                        kprops = _unserialize(data, dataoffset);
+                        kchrs = kprops[1];
+                        key = kprops[2];
+                        dataoffset += kchrs;
+
+                        vprops = _unserialize(data, dataoffset);
+                        vchrs = vprops[1];
+                        value = vprops[2];
+                        dataoffset += vchrs;
+
+                        if (key !== i) {
+                            contig = false;
+                        }
+
+                        readdata[key] = value;
+                    }
+
+                    if (contig) {
+                        array = new Array(length);
+                        for (i = 0; i < length; i++) {
+                            array[i] = readdata[i];
+                        }
+                        readdata = array;
+                    }
+
+                    dataoffset += 1;
+                    break;
+                default:
+                    error('SyntaxError', 'Unknown / Unhandled data type(s): ' + dtype);
+                    break;
+            }
+
+            return [dtype, dataoffset - offset, typeconvert(readdata)];
+        };
+
+        return _unserialize((data + ''), 0)[2];
+    }
 }
