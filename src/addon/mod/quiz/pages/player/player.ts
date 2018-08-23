@@ -182,11 +182,11 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
                     scrollLeft = scrollElement.scrollLeft || 0;
 
                 this.loaded = false;
-                this.content.scrollToTop(); // Scroll top so the spinner is seen.
+                this.domUtils.scrollToTop(this.content); // Scroll top so the spinner is seen.
 
                 return this.loadPage(this.attempt.currentpage).finally(() => {
                     this.loaded = true;
-                    this.content.scrollTo(scrollLeft, scrollTop);
+                    this.domUtils.scrollTo(this.content, scrollLeft, scrollTop);
                 });
             }).finally(() => {
                 modal.dismiss();
@@ -222,7 +222,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
         }
 
         this.loaded = false;
-        this.content.scrollToTop();
+        this.domUtils.scrollToTop(this.content);
 
         // First try to save the attempt data. We only save it if we're not seeing the summary.
         const promise = this.showSummary ? Promise.resolve() : this.processAttempt(false, false);

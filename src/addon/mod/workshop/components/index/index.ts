@@ -165,7 +165,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     protected isRefreshSyncNeeded(syncEventData: any): boolean {
         if (this.workshop && syncEventData.workshopId == this.workshop.id) {
             // Refresh the data.
-            this.content.scrollToTop();
+            this.domUtils.scrollToTop(this.content);
 
             return true;
         }

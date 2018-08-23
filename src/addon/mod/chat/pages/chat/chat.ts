@@ -288,7 +288,7 @@ export class AddonModChatChatPage {
         // Need a timeout to leave time to the view to be rendered.
         setTimeout(() => {
             if (!this.viewDestroyed) {
-                this.content.scrollToBottom(0);
+                this.domUtils.scrollToBottom(this.content, 0);
             }
         });
     }
@@ -303,13 +303,13 @@ export class AddonModChatChatPage {
         // Wait for new content height to be calculated.
         setTimeout(() => {
             // Visible content size changed, maintain the bottom position.
-            if (!this.viewDestroyed && this.content && this.content.contentHeight != this.oldContentHeight) {
+            if (!this.viewDestroyed && this.content && this.domUtils.getContentHeight(this.content) != this.oldContentHeight) {
                 if (!top) {
                     top = this.content.getContentDimensions().scrollTop;
                 }
 
-                top += this.oldContentHeight - this.content.contentHeight;
-                this.oldContentHeight = this.content.contentHeight;
+                top += this.oldContentHeight - this.domUtils.getContentHeight(this.content);
+                this.oldContentHeight = this.domUtils.getContentHeight(this.content);
 
                 this.content.scrollTo(0, top, 0);
             }

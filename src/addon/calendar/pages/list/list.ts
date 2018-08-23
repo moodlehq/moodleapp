@@ -306,7 +306,8 @@ export class AddonCalendarListPage implements OnDestroy {
         popover.onDidDismiss((course) => {
             if (course) {
                 this.filter.course = course;
-                this.content.scrollToTop();
+                this.domUtils.scrollToTop(this.content);
+
                 this.filteredEvents = this.getFilteredEvents();
             }
         });

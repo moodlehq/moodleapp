@@ -426,7 +426,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             this.loaded = false;
             this.refreshIcon = 'spinner';
             this.syncIcon = 'spinner';
-            this.content.scrollToTop();
+            this.domUtils.scrollToTop(this.content);
 
             promise.then(() => {
                 this.refreshContent().finally(() => {
@@ -488,7 +488,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         if (this.quizData && syncEventData.quizId == this.quizData.id) {
-            this.content.scrollToTop();
+            this.domUtils.scrollToTop(this.content);
 
             return true;
         }

@@ -135,7 +135,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     protected isRefreshSyncNeeded(syncEventData: any): boolean {
         if (this.feedback && syncEventData.feedbackId == this.feedback.id) {
             // Refresh the data.
-            this.content.scrollToTop();
+            this.domUtils.scrollToTop(this.content);
 
             return true;
         }

@@ -247,7 +247,7 @@ export class AddonModFeedbackFormPage implements OnDestroy {
      * @return {Promise<void>}            Resolved when done.
      */
     gotoPage(goPrevious: boolean): Promise<void> {
-        this.content && this.content.scrollToTop();
+        this.domUtils.scrollToTop(this.content);
         this.feedbackLoaded = false;
 
         const responses = this.feedbackHelper.getPageItemsResponses(this.items),

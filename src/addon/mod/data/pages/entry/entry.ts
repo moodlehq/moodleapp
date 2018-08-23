@@ -202,7 +202,7 @@ export class AddonModDataEntryPage implements OnDestroy {
 
             this.domUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);
         }).finally(() => {
-            this.content && this.content.scrollToTop();
+            this.domUtils.scrollToTop(this.content);
             this.entryLoaded = true;
         });
     }
