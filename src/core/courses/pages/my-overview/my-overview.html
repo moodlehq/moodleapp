@@ -36,14 +36,14 @@
 
                     <core-loading [hideUntil]="courses.loaded" class="core-loading-center">
                         <!-- "Time" selector. -->
-                        <div no-padding class="clearfix" [hidden]="showFilter">
-                            <ion-select [title]="'core.show' | translate" [(ngModel)]="courses.selected" float-start (ngModelChange)="selectedChanged()" interface="popover">
+                        <div padding class="clearfix" [hidden]="showFilter" ion-row justify-content-between>
+                            <ion-select float-start [title]="'core.show' | translate" [(ngModel)]="courses.selected"  ion-col (ngModelChange)="selectedChanged()" interface="popover">
                                 <ion-option value="inprogress">{{ 'core.courses.inprogress' | translate }}</ion-option>
                                 <ion-option value="future">{{ 'core.courses.future' | translate }}</ion-option>
                                 <ion-option value="past">{{ 'core.courses.past' | translate }}</ion-option>
                             </ion-select>
                             <!-- Download all courses. -->
-                            <div *ngIf="downloadAllCoursesEnabled && courses[courses.selected] && courses[courses.selected].length > 1" class="core-button-spinner" float-end>
+                            <div *ngIf="downloadAllCoursesEnabled && courses[courses.selected] && courses[courses.selected].length > 1" class="core-button-spinner">
                                 <button *ngIf="prefetchCoursesData[courses.selected].icon && prefetchCoursesData[courses.selected].icon != 'spinner'" ion-button icon-only clear color="dark" (click)="prefetchCourses()">
                                     <core-icon [name]="prefetchCoursesData[courses.selected].icon"></core-icon>
                                 </button>
@@ -81,7 +81,7 @@
                         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
                     </ion-refresher>
 
-                    <div no-padding [hidden]="!(timeline.loaded || timelineCourses.loaded)">
+                    <div padding [hidden]="!(timeline.loaded || timelineCourses.loaded)">
                         <ion-select [(ngModel)]="timeline.sort" (ngModelChange)="switchSort()" interface="popover">
                             <ion-option value="sortbydates">{{ 'core.courses.sortbydates' | translate }}</ion-option>
                             <ion-option value="sortbycourses">{{ 'core.courses.sortbycourses' | translate }}</ion-option>
