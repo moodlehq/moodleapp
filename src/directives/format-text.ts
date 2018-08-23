@@ -20,6 +20,7 @@ import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreIframeUtilsProvider } from '@providers/utils/iframe';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -64,7 +65,8 @@ export class CoreFormatTextDirective implements OnChanges {
             private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider, private loggerProvider: CoreLoggerProvider,
             private filepoolProvider: CoreFilepoolProvider, private appProvider: CoreAppProvider,
             private contentLinksHelper: CoreContentLinksHelperProvider, @Optional() private navCtrl: NavController,
-            @Optional() private content: Content, @Optional() private svComponent: CoreSplitViewComponent) {
+            @Optional() private content: Content, @Optional() private svComponent: CoreSplitViewComponent,
+            private iframeUtils: CoreIframeUtilsProvider) {
         this.element = element.nativeElement;
         this.element.classList.add('opacity-hide'); // Hide contents until they're treated.
         this.afterRender = new EventEmitter();
@@ -315,7 +317,8 @@ export class CoreFormatTextDirective implements OnChanges {
                 iframes,
                 buttons,
                 elementsWithInlineStyles,
-                stopClicksElements;
+                stopClicksElements,
+                frames;
 
             div.innerHTML = formatted;
             images = Array.from(div.querySelectorAll('img'));
@@ -326,6 +329,7 @@ export class CoreFormatTextDirective implements OnChanges {
             buttons = Array.from(div.querySelectorAll('.button'));
             elementsWithInlineStyles = Array.from(div.querySelectorAll('*[style]'));
             stopClicksElements = Array.from(div.querySelectorAll('button,input,select,textarea'));
+            frames = Array.from(div.querySelectorAll(CoreIframeUtilsProvider.FRAME_TAGS.join(',')));
 
             // Walk through the content to find the links and add our directive to it.
             // Important: We need to look for links first because in 'img' we add new links without core-link.
@@ -388,6 +392,11 @@ export class CoreFormatTextDirective implements OnChanges {
                 element.addEventListener('click', (e) => {
                     e.stopPropagation();
                 });
+            });
+
+            // Handle all kind of frames.
+            frames.forEach((frame: any) => {
+                this.iframeUtils.treatFrame(frame);
             });
 
             return div;
