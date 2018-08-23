@@ -40,7 +40,7 @@
                         <ion-note text-right *ngIf="discussion.groupname">
                             <ion-icon name="people"></ion-icon> {{ discussion.groupname }}
                         </ion-note>
-                        <p><core-format-text [clean]="true" [maxHeight]="60" [component]="component" [componentId]="componentId" [text]="discussion.message"></core-format-text></p>
+                        <p><core-format-text [maxHeight]="60" [component]="component" [componentId]="componentId" [text]="discussion.message"></core-format-text></p>
                     </ion-card-content>
                 </ion-card>
                 <ion-card *ngFor="let discussion of discussions" (click)="openDiscussion(discussion)" [class.addon-forum-discussion-selected]="discussion.discussion == selectedDiscussion">
@@ -58,7 +58,7 @@
                         </p>
                     </ion-item>
                     <ion-card-content>
-                        <core-format-text [clean]="true" [maxHeight]="60" [component]="component" [componentId]="componentId" [text]="discussion.message"></core-format-text>
+                        <core-format-text [maxHeight]="60" [component]="component" [componentId]="componentId" [text]="discussion.message"></core-format-text>
                     </ion-card-content>
                     <ion-row text-center>
                         <ion-col *ngIf="discussion.groupname">

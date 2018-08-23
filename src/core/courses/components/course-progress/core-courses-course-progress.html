@@ -17,7 +17,7 @@
     <ion-item text-wrap *ngIf="course.summary && course.summary.length">
         <p>
             <summary>
-                <core-format-text [text]="course.summary" singleLine="true" clean="true"></core-format-text>
+                <core-format-text [text]="course.summary" [singleLine]="true" [clean]="true" [fullOnClick]="true"></core-format-text>
             </summary>
         </p>
     </ion-item>

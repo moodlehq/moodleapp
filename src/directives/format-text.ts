@@ -53,12 +53,11 @@ export class CoreFormatTextDirective implements OnChanges {
                                  // Using this parameter will force display: block to calculate height better.
                                  // If you want to avoid this use class="inline" at the same time to use display: inline-block.
     @Input() fullOnClick?: boolean | string; // Whether it should open a new page with the full contents on click.
-                                             // Only if "max-height" is set and the content has been collapsed.
     @Input() fullTitle?: string; // Title to use in full view. Defaults to "Description".
     @Output() afterRender?: EventEmitter<any>; // Called when the data is rendered.
 
     protected element: HTMLElement;
-    protected clickListener;
+    protected showMoreDisplayed: boolean;
 
     constructor(element: ElementRef, private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
             private textUtils: CoreTextUtilsProvider, private translate: TranslateService, private platform: Platform,
@@ -70,6 +69,8 @@ export class CoreFormatTextDirective implements OnChanges {
         this.element = element.nativeElement;
         this.element.classList.add('opacity-hide'); // Hide contents until they're treated.
         this.afterRender = new EventEmitter();
+
+        this.element.addEventListener('click', this.elementClicked.bind(this));
     }
 
     /**
@@ -175,10 +176,10 @@ export class CoreFormatTextDirective implements OnChanges {
 
         // If cannot calculate height, shorten always.
         if (!height || height > this.maxHeight) {
-            if (!this.clickListener) {
+            if (!this.showMoreDisplayed) {
                 this.displayShowMore();
             }
-        } else if (this.clickListener) {
+        } else if (this.showMoreDisplayed) {
             this.hideShowMore();
         }
     }
@@ -201,20 +202,24 @@ export class CoreFormatTextDirective implements OnChanges {
         this.element.classList.add('core-shortened');
         this.element.style.maxHeight = this.maxHeight + 'px';
 
-        this.clickListener = this.elementClicked.bind(this, expandInFullview);
-
-        this.element.addEventListener('click', this.clickListener);
+        this.showMoreDisplayed = true;
     }
 
     /**
      * Listener to call when the element is clicked.
      *
-     * @param {boolean}  expandInFullview Whether to expand the text in a new view.
      * @param {MouseEvent} e Click event.
      */
-    protected elementClicked(expandInFullview: boolean, e: MouseEvent): void {
+    protected elementClicked(e: MouseEvent): void {
         if (e.defaultPrevented) {
             // Ignore it if the event was prevented by some other listener.
+            return;
+        }
+
+        const expandInFullview = this.utils.isTrueOrOne(this.fullOnClick) || false;
+
+        if (!expandInFullview && !this.showMoreDisplayed) {
+            // Nothing to do on click, just stop.
             return;
         }
 
@@ -456,9 +461,7 @@ export class CoreFormatTextDirective implements OnChanges {
         this.element.classList.remove('core-text-formatted');
         this.element.classList.remove('core-shortened');
         this.element.style.maxHeight = null;
-
-        this.element.removeEventListener('click', this.clickListener);
-        this.clickListener = null;
+        this.showMoreDisplayed = false;
     }
 
     /**
