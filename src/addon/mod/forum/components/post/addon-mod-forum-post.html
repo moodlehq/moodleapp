@@ -2,7 +2,7 @@
     <ion-avatar item-start (click)="openUserProfile(post.userid)">
         <img [src]="post.userpictureurl" onError="this.src='assets/img/user-avatar.png'" core-external-content [alt]="'core.pictureof' | translate:{$a: post.userfullname}" role="presentation">
     </ion-avatar>
-    <h2><span [class.core-bold]="post.parent == 0">{{post.subject}}</span></h2>
+    <h2><span [class.core-bold]="post.parent == 0"><core-format-text [text]="post.subject"></core-format-text></span></h2>
     <p>
         <ion-note float-right padding-left *ngIf="!post.modified"><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ion-note>
         <ion-note float-right padding-left *ngIf="post.modified">
