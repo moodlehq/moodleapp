@@ -1434,24 +1434,31 @@ export class CoreSite {
      * Given a URL, convert it to a URL that will auto-login if supported.
      *
      * @param {string} url The URL to convert.
+     * @param {boolean} [showModal=true] Whether to show a loading modal.
      * @return {Promise<string>} Promise resolved with the converted URL.
      */
-    getAutoLoginUrl(url: string): Promise<string> {
+    getAutoLoginUrl(url: string, showModal: boolean = true): Promise<string> {
 
         if (!this.privateToken || !this.wsAvailable('tool_mobile_get_autologin_key') ||
                 (this.lastAutoLogin && this.timeUtils.timestamp() - this.lastAutoLogin < CoreConstants.SECONDS_MINUTE * 6)) {
             // No private token, WS not available or last auto-login was less than 6 minutes ago. Don't change the URL.
+
             return Promise.resolve(url);
         }
 
         const userId = this.getUserId(),
             params = {
                 privatetoken: this.privateToken
-            },
+            };
+        let modal;
+
+        if (showModal) {
             modal = this.domUtils.showModalLoading();
+        }
 
         // Use write to not use cache.
         return this.write('tool_mobile_get_autologin_key', params).then((data) => {
+
             if (!data.autologinurl || !data.key) {
                 // Not valid data, return the same URL.
                 return url;
@@ -1461,10 +1468,11 @@ export class CoreSite {
 
             return data.autologinurl + '?userid=' + userId + '&key=' + data.key + '&urltogo=' + url;
         }).catch(() => {
+
             // Couldn't get autologin key, return the same URL.
             return url;
         }).finally(() => {
-            modal.dismiss();
+            modal && modal.dismiss();
         });
     }
 

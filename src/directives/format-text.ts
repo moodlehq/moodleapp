@@ -334,7 +334,7 @@ export class CoreFormatTextDirective implements OnChanges {
             buttons = Array.from(div.querySelectorAll('.button'));
             elementsWithInlineStyles = Array.from(div.querySelectorAll('*[style]'));
             stopClicksElements = Array.from(div.querySelectorAll('button,input,select,textarea'));
-            frames = Array.from(div.querySelectorAll(CoreIframeUtilsProvider.FRAME_TAGS.join(',')));
+            frames = Array.from(div.querySelectorAll(CoreIframeUtilsProvider.FRAME_TAGS.join(',').replace(/iframe,?/, '')));
 
             // Walk through the content to find the links and add our directive to it.
             // Important: We need to look for links first because in 'img' we add new links without core-link.
@@ -531,9 +531,22 @@ export class CoreFormatTextDirective implements OnChanges {
      * @param  {Boolean} canTreatVimeo Whether Vimeo videos can be treated in the site.
      */
     protected treatIframe(iframe: HTMLIFrameElement, site: CoreSite, canTreatVimeo: boolean): void {
+        const src = iframe.src,
+            currentSite = this.sitesProvider.getCurrentSite();
+
         this.addMediaAdaptClass(iframe);
 
-        if (iframe.src && canTreatVimeo) {
+        if (currentSite && currentSite.containsUrl(src)) {
+            // URL points to current site, try to use auto-login.
+            currentSite.getAutoLoginUrl(src, false).then((finalUrl) => {
+                iframe.src = finalUrl;
+
+                this.iframeUtils.treatFrame(iframe);
+            });
+
+            return;
+
+        } else if (src && canTreatVimeo) {
             // Check if it's a Vimeo video. If it is, use the wsplayer script instead to make restricted videos work.
             const matches = iframe.src.match(/https?:\/\/player\.vimeo\.com\/video\/([0-9]+)/);
             if (matches && matches[1]) {
@@ -581,8 +594,12 @@ export class CoreFormatTextDirective implements OnChanges {
                         }
                     });
                 }
+
+                return;
             }
         }
+
+        this.iframeUtils.treatFrame(iframe);
     }
 
     /**
