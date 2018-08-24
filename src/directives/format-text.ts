@@ -117,11 +117,16 @@ export class CoreFormatTextDirective implements OnChanges {
     protected adaptImage(elWidth: number, img: HTMLElement): void {
         const imgWidth = this.getElementWidth(img),
             // Element to wrap the image.
-            container = document.createElement('span');
+            container = document.createElement('span'),
+            originalWidth = img.attributes.getNamedItem('width');
 
-        const forcedWidth = parseInt(img.attributes.getNamedItem('width').value);
-        if (!isNaN(forcedWidth) && img.attributes.getNamedItem('width').value.indexOf('%') < 0) {
-            img.style.width = forcedWidth  + 'px';
+        const forcedWidth = parseInt(originalWidth && originalWidth.value);
+        if (!isNaN(forcedWidth)) {
+            if (originalWidth.value.indexOf('%') < 0) {
+                img.style.width = forcedWidth  + 'px';
+            } else {
+                img.style.width = forcedWidth  + '%';
+            }
         }
 
         container.classList.add('core-adapted-img-container');
