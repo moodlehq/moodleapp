@@ -78,7 +78,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
             canGetUrl = false;
 
             // Fallback in case is not prefetched or not available.
-            return this.courseProvider.getModule(this.module.id, this.courseId);
+            return this.courseProvider.getModule(this.module.id, this.courseId, undefined, false, false, undefined, 'url');
         }).then((url) => {
             this.description = url.intro || url.description;
             this.dataRetrieved.emit(url);
@@ -95,7 +95,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
 
                 if (!mod.contents || !mod.contents.length) {
                     // Try to load module contents, it's needed to get the URL with parameters.
-                    return this.courseProvider.loadModuleContents(mod, this.courseId);
+                    return this.courseProvider.loadModuleContents(mod, this.courseId, undefined, false, false, undefined, 'url');
                 }
             }
         }).then(() => {

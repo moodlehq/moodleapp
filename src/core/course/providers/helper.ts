@@ -887,9 +887,11 @@ export class CoreCourseHelperProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @param {number} [courseId] Course ID. If not defined we'll try to retrieve it from the site.
      * @param {number} [sectionId] Section the module belongs to. If not defined we'll try to retrieve it from the site.
+     * @param {string} [modName] If set, the app will retrieve all modules of this type with a single WS call. This reduces the
+     *                           number of WS calls, but it isn't recommended for modules that can return a lot of contents.
      * @return {Promise<void>} Promise resolved when done.
      */
-    navigateToModule(moduleId: number, siteId?: string, courseId?: number, sectionId?: number): Promise<void> {
+    navigateToModule(moduleId: number, siteId?: string, courseId?: number, sectionId?: number, modName?: string): Promise<void> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const modal = this.domUtils.showModalLoading();
@@ -923,7 +925,7 @@ export class CoreCourseHelperProvider {
             site = s;
 
             // Get the module.
-            return this.courseProvider.getModule(moduleId, courseId, sectionId, false, false, siteId);
+            return this.courseProvider.getModule(moduleId, courseId, sectionId, false, false, siteId, modName);
         }).then((module) => {
             const params = {
                 course: { id: courseId },

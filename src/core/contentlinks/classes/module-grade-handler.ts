@@ -31,6 +31,13 @@ export class CoreContentLinksModuleGradeHandler extends CoreContentLinksHandlerB
     canReview: boolean;
 
     /**
+     * If this boolean is set to true, the app will retrieve all modules with this modName with a single WS call.
+     * This reduces the number of WS calls, but it isn't recommended for modules that can return a lot of contents.
+     * @type {boolean}
+     */
+    protected useModNameToGetModule = false;
+
+    /**
      * Construct the handler.
      *
      * @param {CoreCourseHelperProvider} courseHelper The CoreCourseHelperProvider instance.
@@ -69,7 +76,8 @@ export class CoreContentLinksModuleGradeHandler extends CoreContentLinksHandlerB
                 this.sitesProvider.getSite(siteId).then((site) => {
                     if (!params.userid || params.userid == site.getUserId()) {
                         // No user specified or current user. Navigate to module.
-                        this.courseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId);
+                        this.courseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId, undefined,
+                                this.useModNameToGetModule ? this.modName : undefined);
                     } else if (this.canReview) {
                         // Use the goToReview function.
                         this.goToReview(url, params, courseId, siteId, navCtrl);

@@ -22,6 +22,7 @@ import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 @Injectable()
 export class AddonModUrlLinkHandler extends CoreContentLinksModuleIndexHandler {
     name = 'AddonModUrlLinkHandler';
+    useModNameToGetModule = true;
 
     constructor(courseHelper: CoreCourseHelperProvider) {
         super(courseHelper, 'AddonModUrl', 'url');

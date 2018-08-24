@@ -104,7 +104,7 @@ export class AddonModResourceProvider {
 
         promises.push(this.invalidateResourceData(courseId, siteId));
         promises.push(this.filepoolProvider.invalidateFilesByComponent(siteId, AddonModResourceProvider.COMPONENT, moduleId));
-        promises.push(this.courseProvider.invalidateModule(moduleId, siteId));
+        promises.push(this.courseProvider.invalidateModule(moduleId, siteId, 'resource'));
 
         return this.utils.allPromises(promises);
     }

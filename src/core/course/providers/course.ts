@@ -198,10 +198,12 @@ export class CoreCourseProvider {
      * @param {boolean} [preferCache] True if shouldn't call WS if data is cached, false otherwise.
      * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {string} [modName] If set, the app will retrieve all modules of this type with a single WS call. This reduces the
+     *                           number of WS calls, but it isn't recommended for modules that can return a lot of contents.
      * @return {Promise<any>} Promise resolved with the module.
      */
     getModule(moduleId: number, courseId?: number, sectionId?: number, preferCache?: boolean, ignoreCache?: boolean,
-            siteId?: string): Promise<any> {
+            siteId?: string, modName?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         let promise;
@@ -226,17 +228,26 @@ export class CoreCourseProvider {
 
             const params = {
                     courseid: courseId,
-                    options: [
-                        {
-                            name: 'cmid',
-                            value: moduleId
-                        }
-                    ]
+                    options: []
                 },
                 preSets: any = {
-                    cacheKey: this.getModuleCacheKey(moduleId),
                     omitExpires: preferCache
                 };
+
+            // If modName is set, retrieve all modules of that type. Otherwise get only the module.
+            if (modName) {
+                params.options.push({
+                    name: 'modname',
+                    value: modName
+                });
+                preSets.cacheKey = this.getModuleByModNameCacheKey(modName);
+            } else {
+                params.options.push({
+                    name: 'cmid',
+                    value: moduleId
+                });
+                preSets.cacheKey = this.getModuleCacheKey(moduleId);
+            }
 
             if (!preferCache && ignoreCache) {
                 preSets.getFromCache = 0;
@@ -374,6 +385,16 @@ export class CoreCourseProvider {
      */
     protected getModuleCacheKey(moduleId: number): string {
         return this.ROOT_CACHE_KEY + 'module:' + moduleId;
+    }
+
+    /**
+     * Get cache key for module by modname WS calls.
+     *
+     * @param {string} modName Name of the module.
+     * @return {string} Cache key.
+     */
+    protected getModuleByModNameCacheKey(modName: string): string {
+        return this.ROOT_CACHE_KEY + 'module:modName:' + modName;
     }
 
     /**
@@ -518,11 +539,20 @@ export class CoreCourseProvider {
      *
      * @param {number} moduleId Module ID.
      * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {string} [modName] Module name. E.g. 'label', 'url', ...
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
-    invalidateModule(moduleId: number, siteId?: string): Promise<any> {
+    invalidateModule(moduleId: number, siteId?: string, modName?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.invalidateWsCacheForKey(this.getModuleCacheKey(moduleId));
+            const promises = [];
+
+            if (modName) {
+                promises.push(site.invalidateWsCacheForKey(this.getModuleByModNameCacheKey(modName)));
+            }
+
+            promises.push(site.invalidateWsCacheForKey(this.getModuleCacheKey(moduleId)));
+
+            return Promise.all(promises);
         });
     }
 
@@ -574,16 +604,19 @@ export class CoreCourseProvider {
      * @param {boolean} [preferCache] True if shouldn't call WS if data is cached, false otherwise.
      * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {string} [modName] If set, the app will retrieve all modules of this type with a single WS call. This reduces the
+     *                           number of WS calls, but it isn't recommended for modules that can return a lot of contents.
      * @return {Promise<void>} Promise resolved when loaded.
      */
     loadModuleContents(module: any, courseId?: number, sectionId?: number, preferCache?: boolean, ignoreCache?: boolean,
-        siteId?: string): Promise<void> {
+            siteId?: string, modName?: string): Promise<void> {
+
         if (!ignoreCache && module.contents && module.contents.length) {
             // Already loaded.
             return Promise.resolve();
         }
 
-        return this.getModule(module.id, courseId, sectionId, preferCache, ignoreCache, siteId).then((mod) => {
+        return this.getModule(module.id, courseId, sectionId, preferCache, ignoreCache, siteId, modName).then((mod) => {
             module.contents = mod.contents;
         });
     }

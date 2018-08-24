@@ -22,6 +22,13 @@ import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerBase {
 
     /**
+     * If this boolean is set to true, the app will retrieve all modules with this modName with a single WS call.
+     * This reduces the number of WS calls, but it isn't recommended for modules that can return a lot of contents.
+     * @type {boolean}
+     */
+    protected useModNameToGetModule = false;
+
+    /**
      * Construct the handler.
      *
      * @param {CoreCourseHelperProvider} courseHelper The CoreCourseHelperProvider instance.
@@ -52,7 +59,8 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
 
         return [{
             action: (siteId, navCtrl?): void => {
-                this.courseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId);
+                this.courseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId, undefined,
+                    this.useModNameToGetModule ? this.modName : undefined);
             }
         }];
     }
