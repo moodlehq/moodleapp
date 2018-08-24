@@ -1,0 +1,16 @@
+sudo: required
+dist: trusty
+group: edge
+
+language: node_js
+node_js:
+  - '8.10'
+
+before_script:
+  - npm install -g @angular/cli
+  - npm i npm@latest -g
+  - gulp
+  - rm -Rf node_modules/electron-builder-squirrel-windows node_modules/electron-windows-notifications #Avoid electron fail
+
+script:
+- npm run build
