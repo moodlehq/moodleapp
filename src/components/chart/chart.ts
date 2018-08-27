@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, OnDestroy, OnInit, ElementRef, OnChanges } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ElementRef, OnChanges, ViewChild } from '@angular/core';
 import { Chart } from 'chart.js';
 
 /**
@@ -21,12 +21,13 @@ import { Chart } from 'chart.js';
  * It only supports changes on these properties: data and labels.
  *
  * Example usage:
- * <canvas core-chart [data]="data" [labels]="labels" [type]="type" [legend]="legend"></canvas>
+ * <core-chart [data]="data" [labels]="labels" [type]="type" [legend]="legend"></core-chart>
  */
-@Directive({
-    selector: 'canvas[core-chart]'
+@Component({
+    selector: 'core-chart',
+    templateUrl: 'core-chart.html'
 })
-export class CoreChartDirective implements OnDestroy, OnInit, OnChanges {
+export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
     // The first 6 colors will be the app colors, the following will be randomly generated.
     // It will use the same colors in the whole session.
     protected static backgroundColors = [
@@ -42,12 +43,13 @@ export class CoreChartDirective implements OnDestroy, OnInit, OnChanges {
     @Input() labels = []; // Labels of the data.
     @Input() type: string; // Type of chart.
     @Input() legend: any; // Legend options.
+    @Input() height = 300; // Height of the chart element.
+    @ViewChild('canvas') canvas: ElementRef;
 
     chart: any;
-    protected element: ElementRef;
 
-    constructor(element: ElementRef) {
-        this.element = element;
+    constructor() {
+        // Nothing to do.
     }
 
     /**
@@ -57,8 +59,7 @@ export class CoreChartDirective implements OnDestroy, OnInit, OnChanges {
         let legend = {};
         if (typeof this.legend == 'undefined') {
             legend = {
-                display: true,
-                position: 'bottom',
+                display: false,
                 labels: {
                     generateLabels: (chart): any => {
                         const  data = chart.data;
@@ -85,7 +86,7 @@ export class CoreChartDirective implements OnDestroy, OnInit, OnChanges {
             this.type = 'horizontalBar';
         }
 
-        const context = this.element.nativeElement.getContext('2d');
+        const context = this.canvas.nativeElement.getContext('2d');
         this.chart = new Chart(context, {
             type: this.type,
             data: {
@@ -120,14 +121,14 @@ export class CoreChartDirective implements OnDestroy, OnInit, OnChanges {
      * @return {any[]}    Array with the number of background colors requested.
      */
     protected getRandomColors(n: number): any[] {
-        while (CoreChartDirective.backgroundColors.length < n) {
+        while (CoreChartComponent.backgroundColors.length < n) {
             const red = Math.floor(Math.random() * 255),
                 green = Math.floor(Math.random() * 255),
                 blue = Math.floor(Math.random() * 255);
-            CoreChartDirective.backgroundColors.push('rgba(' + red + ', ' + green + ', ' + blue + ', 0.6)');
+            CoreChartComponent.backgroundColors.push('rgba(' + red + ', ' + green + ', ' + blue + ', 0.6)');
         }
 
-        return CoreChartDirective.backgroundColors.slice(0, n);
+        return CoreChartComponent.backgroundColors.slice(0, n);
     }
 
     /**

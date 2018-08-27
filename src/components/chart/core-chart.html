@@ -1,0 +1,8 @@
+<canvas #canvas [attr.height]="height"></canvas>
+
+<ion-list *ngIf="chart" inset>
+    <ion-item *ngFor="let data of chart.legend.legendItems">
+        <ion-icon name="square" item-start [style.color]="data.fillStyle"></ion-icon>
+        {{data.text}}
+    </ion-item>
+</ion-list>

@@ -163,7 +163,7 @@
                             </ul>
                         </ng-container>
                         <ng-container *ngSwitchCase="'chart'">
-                            <canvas core-chart [type]="item.chartType" [data]="item.chartData" [labels]="item.labels" height="300"></canvas>
+                            <core-chart [type]="item.chartType" [data]="item.chartData" [labels]="item.labels" height="300"></core-chart>
                             <p *ngIf="item.average">{{ 'addon.mod_feedback.average' | translate }}: {{item.average | number : '1.2-2'}}</p>
                         </ng-container>
                     </ng-container>
