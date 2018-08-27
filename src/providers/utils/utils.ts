@@ -59,6 +59,7 @@ export interface PromiseDefer {
 export class CoreUtilsProvider {
     protected logger;
     protected iabInstance: InAppBrowserObject;
+    protected uniqueIds: {[name: string]: number} = {};
 
     constructor(private iab: InAppBrowser, private appProvider: CoreAppProvider, private clipboard: Clipboard,
             private domUtils: CoreDomUtilsProvider, logger: CoreLoggerProvider, private translate: TranslateService,
@@ -569,6 +570,20 @@ export class CoreUtilsProvider {
         return this.wsProvider.getRemoteFileMimeType(url).then((mimetype) => {
             return mimetype || '';
         });
+    }
+
+    /**
+     * Get a unique ID for a certain name.
+     *
+     * @param {string} name The name to get the ID for.
+     * @return {number} Unique ID.
+     */
+    getUniqueId(name: string): number {
+        if (!this.uniqueIds[name]) {
+            this.uniqueIds[name] = 0;
+        }
+
+        return ++this.uniqueIds[name];
     }
 
     /**
