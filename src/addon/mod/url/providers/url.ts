@@ -102,7 +102,7 @@ export class AddonModUrlProvider {
         const promises = [];
 
         promises.push(this.invalidateUrlData(courseId, siteId));
-        promises.push(this.courseProvider.invalidateModule(moduleId, siteId));
+        promises.push(this.courseProvider.invalidateModule(moduleId, siteId, 'url'));
 
         return this.utils.allPromises(promises);
     }

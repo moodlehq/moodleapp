@@ -70,6 +70,11 @@ export class AddonModResourcePrefetchHandler extends CoreCourseResourcePrefetchH
                 promises.push(this.resourceProvider.getResourceData(courseId, module.id));
             }
 
+            /* When prefetching we usually use ignoreCache=true. However, this WS call can return a lot of data, so if
+               a user downloads resources 1 by 1 we would be downloading the same data over and over again. Since
+               this data won't change often it's probably better to use ignoreCache=false. */
+            promises.push(this.courseProvider.getModule(module.id, courseId, undefined, false, false, undefined, this.modName));
+
             return Promise.all(promises);
         });
     }
@@ -96,7 +101,7 @@ export class AddonModResourcePrefetchHandler extends CoreCourseResourcePrefetchH
         const promises = [];
 
         promises.push(this.resourceProvider.invalidateResourceData(courseId));
-        promises.push(this.courseProvider.invalidateModule(module.id));
+        promises.push(this.courseProvider.invalidateModule(module.id, undefined, this.modName));
 
         return Promise.all(promises);
     }

@@ -50,7 +50,7 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
         const handlerData = {
-            icon: this.courseProvider.getModuleIconSrc('url'),
+            icon: this.courseProvider.getModuleIconSrc(this.modName),
             title: module.name,
             class: 'addon-mod_url-handler',
             showDownloadButton: false,
@@ -89,7 +89,8 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
      * @return {Promise<boolean>} Resolved when done.
      */
     protected hideLinkButton(module: any, courseId: number): Promise<boolean> {
-        return this.courseProvider.loadModuleContents(module, courseId).then(() => {
+        return this.courseProvider.loadModuleContents(module, courseId, undefined, false, false, undefined, this.modName)
+                .then(() => {
             return !(module.contents && module.contents[0] && module.contents[0].fileurl);
         });
     }
