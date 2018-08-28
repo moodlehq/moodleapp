@@ -14,11 +14,13 @@
 
 import { Injectable } from '@angular/core';
 import { NavController, NavOptions } from 'ionic-angular';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { AddonModUrlIndexComponent } from '../components/index/index';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { AddonModUrlProvider } from './url';
 import { AddonModUrlHelperProvider } from './helper';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Handler to support url modules.
@@ -29,7 +31,7 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
     modName = 'url';
 
     constructor(private courseProvider: CoreCourseProvider, private urlProvider: AddonModUrlProvider,
-        private urlHelper: AddonModUrlHelperProvider) { }
+        private urlHelper: AddonModUrlHelperProvider, private domUtils: CoreDomUtilsProvider) { }
 
     /**
      * Check if the handler is enabled on a site level.
@@ -49,33 +51,60 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
      * @return {CoreCourseModuleHandlerData} Data to render the module.
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
+        // tslint:disable: no-this-assignment
+        const handler = this;
         const handlerData = {
             icon: this.courseProvider.getModuleIconSrc(this.modName),
             title: module.name,
             class: 'addon-mod_url-handler',
             showDownloadButton: false,
             action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void {
-                navCtrl.push('AddonModUrlIndexPage', {module: module, courseId: courseId}, options);
+                // Check if we need to open the URL directly.
+                let promise;
+
+                if (handler.urlProvider.isGetUrlWSAvailable()) {
+                    const modal = handler.domUtils.showModalLoading();
+
+                    promise = handler.urlProvider.getUrl(courseId, module.id).catch(() => {
+                        // Ignore errors.
+                    }).then((url) => {
+                        modal.dismiss();
+
+                        const displayType = handler.urlProvider.getFinalDisplayType(url);
+
+                        return displayType == CoreConstants.RESOURCELIB_DISPLAY_OPEN ||
+                               displayType == CoreConstants.RESOURCELIB_DISPLAY_POPUP;
+                    });
+                } else {
+                    promise = Promise.resolve(false);
+                }
+
+                return promise.then((shouldOpen) => {
+                    if (shouldOpen) {
+                        handler.openUrl(module, courseId);
+                    } else {
+                        navCtrl.push('AddonModUrlIndexPage', {module: module, courseId: courseId}, options);
+                    }
+                });
             },
             buttons: [ {
-                hidden: !(module.contents && module.contents[0] && module.contents[0].fileurl),
+                hidden: true, // Hide it until we calculate if it should be displayed or not.
                 icon: 'link',
                 label: 'core.openinbrowser',
                 action: (event: Event, navCtrl: NavController, module: any, courseId: number): void => {
-                    this.hideLinkButton(module, courseId).then((hide) => {
-                        if (!hide) {
-                            this.urlProvider.logView(module.instance).then(() => {
-                                this.courseProvider.checkModuleCompletion(courseId, module.completionstatus);
-                            });
-                            this.urlHelper.open(module.contents[0].fileurl);
-                        }
-                    });
+                    handler.openUrl(module, courseId);
                 }
             } ]
         };
 
         this.hideLinkButton(module, courseId).then((hideButton) => {
             handlerData.buttons[0].hidden = hideButton;
+
+            if (module.contents && module.contents[0]) {
+                // Calculate the icon to use.
+                handlerData.icon = this.urlProvider.guessIcon(module.contents[0].fileurl) ||
+                        this.courseProvider.getModuleIconSrc(this.modName);
+            }
         });
 
         return handlerData;
@@ -91,7 +120,24 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
     protected hideLinkButton(module: any, courseId: number): Promise<boolean> {
         return this.courseProvider.loadModuleContents(module, courseId, undefined, false, false, undefined, this.modName)
                 .then(() => {
-            return !(module.contents && module.contents[0] && module.contents[0].fileurl);
+
+            if (!module.contents || !module.contents[0] || !module.contents[0].fileurl) {
+                // No module contents, hide the button.
+                return true;
+            }
+
+            if (!this.urlProvider.isGetUrlWSAvailable()) {
+                return false;
+            }
+
+            // Get the URL data.
+            return this.urlProvider.getUrl(courseId, module.id).then((url) => {
+                const displayType = this.urlProvider.getFinalDisplayType(url);
+
+                // Don't display the button if the URL should be embedded.
+                return displayType == CoreConstants.RESOURCELIB_DISPLAY_EMBED ||
+                        displayType == CoreConstants.RESOURCELIB_DISPLAY_FRAME;
+            });
         });
     }
 
@@ -105,5 +151,18 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
      */
     getMainComponent(course: any, module: any): any {
         return AddonModUrlIndexComponent;
+    }
+
+    /**
+     * Open the URL.
+     *
+     * @param {any} module The module object.
+     * @param {number} courseId The course ID.
+     */
+    protected openUrl(module: any, courseId: number): void {
+        this.urlProvider.logView(module.instance).then(() => {
+            this.courseProvider.checkModuleCompletion(courseId, module.completionstatus);
+        });
+        this.urlHelper.open(module.contents[0].fileurl);
     }
 }

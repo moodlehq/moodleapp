@@ -12,14 +12,29 @@
 
     <core-course-module-description *ngIf="mode != 'iframe'" [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
 
-    <ion-item text-wrap>
-        <h2>{{ 'addon.mod_url.pointingtourl' | translate }}</h2>
-        <p>{{ url }}</p>
-    </ion-item>
-    <div padding>
-        <a ion-button block (click)="go()" icon-start>
-            <ion-icon name="link" start></ion-icon>
-            {{ 'addon.mod_url.accessurl' | translate }}
-        </a>
+    <div *ngIf="shouldEmbed" class="addon-mod_url-embedded-url">
+        <img *ngIf="isImage" title="{{name}}" [src]="url">
+        <video *ngIf="isVideo" title="{{name}}" controls>
+            <source [src]="url" [type]="mimetype">
+        </video>
+        <audio *ngIf="isAudio" title="{{name}}" controls>
+            <source [src]="url" [type]="mimetype">
+        </audio>
+        <core-iframe *ngIf="!isImage && !isVideo && !isAudio" [src]="url"></core-iframe>
     </div>
+
+    <core-iframe *ngIf="shouldIframe" [src]="url"></core-iframe>
+
+    <ion-list *ngIf="!shouldEmbed && !shouldIframe">
+        <ion-item text-wrap>
+            <h2>{{ 'addon.mod_url.pointingtourl' | translate }}</h2>
+            <p>{{ url }}</p>
+        </ion-item>
+        <div padding>
+            <a ion-button block (click)="go()" icon-start>
+                <ion-icon name="link" start></ion-icon>
+                {{ 'addon.mod_url.accessurl' | translate }}
+            </a>
+        </div>
+    </ion-list>
 </core-loading>

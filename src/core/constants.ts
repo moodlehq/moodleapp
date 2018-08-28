@@ -47,4 +47,13 @@ export class CoreConstants {
     static NOT_DOWNLOADED = 'notdownloaded';
     static OUTDATED = 'outdated';
     static NOT_DOWNLOADABLE = 'notdownloadable';
+
+    // Constants from Moodle's resourcelib.
+    static RESOURCELIB_DISPLAY_AUTO = 0; // Try the best way.
+    static RESOURCELIB_DISPLAY_EMBED = 1; // Display using object tag.
+    static RESOURCELIB_DISPLAY_FRAME = 2; // Display inside frame.
+    static RESOURCELIB_DISPLAY_NEW = 3; // Display normal link in new window.
+    static RESOURCELIB_DISPLAY_DOWNLOAD = 4; // Force download of file instead of display.
+    static RESOURCELIB_DISPLAY_OPEN = 5; // Open directly.
+    static RESOURCELIB_DISPLAY_POPUP = 6; // Open in "emulated" pop-up without navigation.
 }
