@@ -203,7 +203,7 @@ export class CoreLoginHelperProvider {
         return this.requestPasswordReset(siteUrl).then(() => {
             return true;
         }).catch((error) => {
-            return error.available == 1 || error.errorcode != 'invalidrecord';
+            return error.available == 1 || (error.errorcode != 'invalidrecord' && error.errorcode != '');
         });
     }
 
