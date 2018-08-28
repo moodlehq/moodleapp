@@ -22,7 +22,6 @@ import { CoreKeepKeyboardDirective } from './keep-keyboard';
 import { CoreUserLinkDirective } from './user-link';
 import { CoreAutoRowsDirective } from './auto-rows';
 import { CoreLongPressDirective } from './long-press';
-import { CoreChartDirective } from './chart';
 import { CoreBackButtonDirective } from './back-button';
 import { CoreSupressEventsDirective } from './supress-events';
 
@@ -37,7 +36,6 @@ import { CoreSupressEventsDirective } from './supress-events';
         CoreUserLinkDirective,
         CoreAutoRowsDirective,
         CoreLongPressDirective,
-        CoreChartDirective,
         CoreBackButtonDirective,
         CoreSupressEventsDirective
     ],
@@ -52,7 +50,6 @@ import { CoreSupressEventsDirective } from './supress-events';
         CoreUserLinkDirective,
         CoreAutoRowsDirective,
         CoreLongPressDirective,
-        CoreChartDirective,
         CoreBackButtonDirective,
         CoreSupressEventsDirective
     ]

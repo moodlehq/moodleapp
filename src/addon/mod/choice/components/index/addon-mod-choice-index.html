@@ -61,35 +61,37 @@
     </ion-card>
 
     <!-- Choice results -->
-    <ion-card *ngIf="canSeeResults">
+    <div *ngIf="canSeeResults">
         <ion-item-divider color="light" text-center>
             {{ 'addon.mod_choice.responses' | translate }}
         </ion-item-divider>
         <ion-grid no-padding>
             <ion-row>
-                <ion-col col-12 col-lg-4>
+                <ion-col col-12 col-lg-5>
                     <ion-item text-wrap class="core-warning-item" *ngIf="hasOffline">
                         <ion-icon item-start name="warning" color="warning"></ion-icon> {{ 'addon.mod_choice.resultsnotsynced' | translate }}
                     </ion-item>
                     <ion-item>
-                        <canvas core-chart type="pie" [data]="data" [labels]="labels" height="300"></canvas>
+                        <core-chart type="pie" [data]="data" [labels]="labels" height="300"></core-chart>
                     </ion-item>
                 </ion-col>
-                <ion-col *ngIf="choice.publish && results" col-12 col-lg-8>
-                    <ion-item text-wrap *ngFor="let result of results">
-                        <h2><core-format-text [text]="result.text"></core-format-text></h2>
-                        <p>{{ 'addon.mod_choice.numberofuser' | translate }}: {{ result.numberofuser }} ({{ 'core.percentagenumber' | translate: {$a: result.percentageamount} }})</p>
-                        <a ion-item *ngFor="let user of result.userresponses" core-user-link [courseId]="courseid" [userId]="user.userid" [title]="user.fullname">
+                <ion-col *ngIf="choice.publish && results" col-12 col-lg-7>
+                    <ion-item-group *ngFor="let result of results">
+                        <ion-item-divider text-wrap color="light">
+                            <h2><core-format-text [text]="result.text"></core-format-text></h2>
+                            <p>{{ 'addon.mod_choice.numberofuser' | translate }}: {{ result.numberofuser }} ({{ 'core.percentagenumber' | translate: {$a: result.percentageamount} }})</p>
+                        </ion-item-divider>
+                        <a ion-item *ngFor="let user of result.userresponses" core-user-link [courseId]="courseid" [userId]="user.userid" [title]="user.fullname" text-wrap>
                             <ion-avatar item-start>
                                 <img [src]="user.profileimageurl" [alt]="'core.pictureof' | translate:{$a: user.fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'">
                             </ion-avatar>
                             <p>{{user.fullname}}</p>
                         </a>
-                    </ion-item>
+                    </ion-item-group>
                 </ion-col>
             </ion-row>
         </ion-grid>
-    </ion-card>
+    </div>
     <ion-card class="core-info-card" *ngIf="!canSeeResults && !choiceNotOpenYet">
         <p>{{ 'addon.mod_choice.noresultsviewable' | translate }}</p>
     </ion-card>

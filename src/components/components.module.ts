@@ -32,6 +32,7 @@ import { CoreContextMenuComponent } from './context-menu/context-menu';
 import { CoreContextMenuItemComponent } from './context-menu/context-menu-item';
 import { CoreContextMenuPopoverComponent } from './context-menu/context-menu-popover';
 import { CoreCoursePickerMenuPopoverComponent } from './course-picker-menu/course-picker-menu-popover';
+import { CoreChartComponent } from './chart/chart';
 import { CoreChronoComponent } from './chrono/chrono';
 import { CoreLocalFileComponent } from './local-file/local-file';
 import { CoreSitePickerComponent } from './site-picker/site-picker';
@@ -66,6 +67,7 @@ import { CoreIonTabComponent } from './ion-tabs/ion-tab';
         CoreContextMenuItemComponent,
         CoreContextMenuPopoverComponent,
         CoreCoursePickerMenuPopoverComponent,
+        CoreChartComponent,
         CoreChronoComponent,
         CoreLocalFileComponent,
         CoreSitePickerComponent,
@@ -108,6 +110,7 @@ import { CoreIonTabComponent } from './ion-tabs/ion-tab';
         CoreIconComponent,
         CoreContextMenuComponent,
         CoreContextMenuItemComponent,
+        CoreChartComponent,
         CoreChronoComponent,
         CoreLocalFileComponent,
         CoreSitePickerComponent,

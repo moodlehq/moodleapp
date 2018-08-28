@@ -1,0 +1,6 @@
+This files describes API changes in the Moodle Mobile app,
+information provided here is intended especially for developers.
+
+=== 3.5.2 ===
+
+- CoreChartDirective changed from directive to component (CoreChartComponent) and the selector to use it changed from canvas[core-chart] to core-chart.
