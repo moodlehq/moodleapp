@@ -87,7 +87,7 @@
             </ion-item>
             <ion-item text-wrap>
                 <ion-label stacked core-mark-required="true">{{ 'core.user.emailagain' | translate }}</ion-label>
-                <ion-input type="email" name="email2" placeholder="{{ 'core.user.emailagain' | translate }}" formControlName="email2" autocapitalize="none" autocorrect="off" pattern="{{signupForm.controls.email.value}}"></ion-input>
+                <ion-input type="email" name="email2" placeholder="{{ 'core.user.emailagain' | translate }}" formControlName="email2" autocapitalize="none" autocorrect="off" [pattern]="escapeMail(signupForm.controls.email.value)"></ion-input>
                 <core-input-errors item-content [control]="signupForm.controls.email2" [errorMessages]="email2Errors"></core-input-errors>
             </ion-item>
             <ion-item *ngFor="let nameField of settings.namefields" text-wrap>

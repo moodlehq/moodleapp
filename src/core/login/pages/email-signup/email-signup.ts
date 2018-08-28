@@ -284,6 +284,16 @@ export class CoreLoginEmailSignupPage {
     }
 
     /**
+     * Escape mail to avoid special characters to be treated as a RegExp.
+     *
+     * @param  {string} text Initial mail.
+     * @return {string}      Escaped mail.
+     */
+    escapeMail(text: string): string {
+        return this.textUtils.escapeForRegex(text);
+    }
+
+    /**
      * Show authentication instructions.
      */
     protected showAuthInstructions(): void {
