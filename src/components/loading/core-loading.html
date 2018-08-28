@@ -4,7 +4,7 @@
         <p class="core-loading-message" *ngIf="message">{{message}}</p>
     </span>
 </div>
-<div #content class="core-loading-content">
+<div #content class="core-loading-content" [id]="uniqueId">
     <ng-content [@coreShowHideAnimation] *ngIf="hideUntil">
     </ng-content>
 </div>

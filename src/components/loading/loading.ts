@@ -15,6 +15,8 @@
 import { Component, Input, OnInit, OnChanges, SimpleChange, ViewChild, ElementRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { coreShowHideAnimation } from '@classes/animations';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
  * Component to show a loading spinner and message while data is being loaded.
@@ -45,10 +47,16 @@ export class CoreLoadingComponent implements OnInit, OnChanges {
     @Input() hideUntil: boolean; // Determine when should the contents be shown.
     @Input() message?: string; // Message to show while loading.
     @ViewChild('content') content: ElementRef;
+
+    protected uniqueId: string;
     protected element: HTMLElement; // Current element.
 
-    constructor(private translate: TranslateService, element: ElementRef) {
+    constructor(private translate: TranslateService, element: ElementRef, private eventsProvider: CoreEventsProvider,
+            utils: CoreUtilsProvider) {
         this.element = element.nativeElement;
+
+        // Calculate the unique ID.
+        this.uniqueId = 'core-loading-content-' + utils.getUniqueId('CoreLoadingComponent');
     }
 
     /**
@@ -62,14 +70,27 @@ export class CoreLoadingComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
-        if (changes.hideUntil.currentValue === true) {
-            setTimeout(() => {
-                // Content is loaded so, center the spinner on the content itself.
-                this.element.classList.add('core-loading-loaded');
+        if (changes.hideUntil) {
+            if (changes.hideUntil.currentValue === true) {
                 setTimeout(() => {
-                    // Change CSS to force calculate height.
-                    this.content.nativeElement.classList.add('core-loading-content');
-                }, 500);
+                    // Content is loaded so, center the spinner on the content itself.
+                    this.element.classList.add('core-loading-loaded');
+                    setTimeout(() => {
+                        // Change CSS to force calculate height.
+                        this.content.nativeElement.classList.add('core-loading-content');
+                    }, 500);
+                });
+            } else {
+                this.element.classList.remove('core-loading-loaded');
+                this.content.nativeElement.classList.remove('core-loading-content');
+            }
+
+            // Trigger the event after a timeout since the elements inside ngIf haven't been added to DOM yet.
+            setTimeout(() => {
+                this.eventsProvider.trigger(CoreEventsProvider.CORE_LOADING_CHANGED, {
+                    loaded: changes.hideUntil.currentValue,
+                    uniqueId: this.uniqueId
+                });
             });
         }
     }

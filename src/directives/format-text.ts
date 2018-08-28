@@ -16,6 +16,7 @@ import { Directive, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleCh
 import { Platform, NavController, Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
+import { CoreEventsProvider } from '@providers/events';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
@@ -58,6 +59,7 @@ export class CoreFormatTextDirective implements OnChanges {
 
     protected element: HTMLElement;
     protected showMoreDisplayed: boolean;
+    protected loadingChangedListener;
 
     constructor(element: ElementRef, private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
             private textUtils: CoreTextUtilsProvider, private translate: TranslateService, private platform: Platform,
@@ -65,7 +67,7 @@ export class CoreFormatTextDirective implements OnChanges {
             private filepoolProvider: CoreFilepoolProvider, private appProvider: CoreAppProvider,
             private contentLinksHelper: CoreContentLinksHelperProvider, @Optional() private navCtrl: NavController,
             @Optional() private content: Content, @Optional() private svComponent: CoreSplitViewComponent,
-            private iframeUtils: CoreIframeUtilsProvider) {
+            private iframeUtils: CoreIframeUtilsProvider, private eventsProvider: CoreEventsProvider) {
         this.element = element.nativeElement;
         this.element.classList.add('opacity-hide'); // Hide contents until they're treated.
         this.afterRender = new EventEmitter();
@@ -174,10 +176,16 @@ export class CoreFormatTextDirective implements OnChanges {
      * Calculate the height and check if we need to display show more or not.
      */
     protected calculateHeight(): void {
-        // Height cannot be calculated if the element is not shown while calculating.
-        // Force shorten if it was previously shortened.
         // @todo: Work on calculate this height better.
-        const height = this.element.style.maxHeight ? 0 : this.getElementHeight(this.element);
+
+        // Remove max-height (if any) to calculate the real height.
+        const initialMaxHeight = this.element.style.maxHeight;
+        this.element.style.maxHeight = null;
+
+        const height = this.getElementHeight(this.element);
+
+        // Restore the max height now.
+        this.element.style.maxHeight = initialMaxHeight;
 
         // If cannot calculate height, shorten always.
         if (!height || height > this.maxHeight) {
@@ -290,6 +298,16 @@ export class CoreFormatTextDirective implements OnChanges {
                         this.calculateHeight();
                     }
                 });
+
+                if (!this.loadingChangedListener) {
+                    // Recalculate the height if a parent core-loading displays the content.
+                    this.loadingChangedListener = this.eventsProvider.on(CoreEventsProvider.CORE_LOADING_CHANGED, (data) => {
+                        if (data.loaded && this.domUtils.closest(this.element.parentElement, '#' + data.uniqueId)) {
+                            // The format-text is inside the loading, re-calculate the height.
+                            this.calculateHeight();
+                        }
+                    });
+                }
             } else {
                 this.domUtils.moveChildren(div, this.element);
             }
