@@ -272,6 +272,14 @@ export class CoreFormatTextDirective implements OnChanges {
             return;
         }
 
+        // In AOT the inputs and ng-reflect aren't in the DOM sometimes. Add them so styles are applied.
+        if (this.maxHeight && !this.element.getAttribute('maxHeight')) {
+            this.element.setAttribute('maxHeight', String(this.maxHeight));
+        }
+        if (!this.element.getAttribute('singleLine')) {
+            this.element.setAttribute('singleLine', String(this.utils.isTrueOrOne(this.singleLine)));
+        }
+
         this.text = this.text ? this.text.trim() : '';
 
         this.formatContents().then((div: HTMLElement) => {
@@ -280,11 +288,6 @@ export class CoreFormatTextDirective implements OnChanges {
 
             this.element.innerHTML = ''; // Remove current contents.
             if (this.maxHeight && div.innerHTML != '') {
-
-                // For some reason, in iOS the inputs and ng-reflect aren't in the DOM sometimes. Add it so styles are applied.
-                if (!this.element.getAttribute('maxHeight')) {
-                    this.element.setAttribute('maxHeight', String(this.maxHeight));
-                }
 
                 // Move the children to the current element to be able to calculate the height.
                 this.domUtils.moveChildren(div, this.element);
