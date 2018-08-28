@@ -17,11 +17,13 @@ import { IonicPage, Searchbar, NavController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCoursesProvider } from '../../providers/courses';
 import { CoreCoursesHelperProvider } from '../../providers/helper';
 import { CoreCoursesMyOverviewProvider } from '../../providers/my-overview';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
+import { AddonCourseCompletionProvider } from '@addon/coursecompletion/providers/coursecompletion';
 import { CoreSiteHomeProvider } from '@core/sitehome/providers/sitehome';
 import * as moment from 'moment';
 import { CoreTabsComponent } from '@components/tabs/tabs';
@@ -84,7 +86,8 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
             private domUtils: CoreDomUtilsProvider, private myOverviewProvider: CoreCoursesMyOverviewProvider,
             private courseHelper: CoreCourseHelperProvider, private sitesProvider: CoreSitesProvider,
             private siteHomeProvider: CoreSiteHomeProvider, private courseOptionsDelegate: CoreCourseOptionsDelegate,
-            private eventsProvider: CoreEventsProvider, private coursesHelper: CoreCoursesHelperProvider) {
+            private eventsProvider: CoreEventsProvider, private coursesHelper: CoreCoursesHelperProvider,
+            private utils: CoreUtilsProvider, private courseCompletionProvider: AddonCourseCompletionProvider) {
         this.loadSiteName();
     }
 
@@ -188,6 +191,22 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
      */
     protected fetchMyOverviewCourses(): Promise<any> {
         return this.fetchUserCourses().then((courses) => {
+            // Fetch course completion status.
+            return Promise.all(courses.map((course) => {
+                if (typeof course.enablecompletion != 'undefined' && course.enablecompletion == 0) {
+                    // Completion is disabled for this course, there is no need to fetch the completion status.
+                    return Promise.resolve(course);
+                }
+
+                return this.courseCompletionProvider.getCompletion(course.id).catch(() => {
+                    // Ignore error, maybe course compleiton is disabled or user ha no permission.
+                }).then((completion) => {
+                    course.completed = completion && completion.completed;
+
+                    return course;
+                });
+            }));
+        }).then((courses) => {
             const today = moment().unix();
 
             this.courses.past = [];
@@ -195,12 +214,12 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
             this.courses.future = [];
 
             courses.forEach((course) => {
-                if (course.startdate > today) {
-                    // Courses that have not started yet.
-                    this.courses.future.push(course);
-                } else if (course.enddate && course.enddate < today) {
+                if ((course.enddate && course.enddate < today) || course.completed) {
                     // Courses that have already ended.
                     this.courses.past.push(course);
+                } else if (course.startdate > today) {
+                    // Courses that have not started yet.
+                    this.courses.future.push(course);
                 } else {
                     // Courses still in progress.
                     this.courses.inprogress.push(course);
@@ -220,9 +239,9 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
     /**
      * Fetch user courses.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return {Promise<any[]>} Promise resolved when done.
      */
-    protected fetchUserCourses(): Promise<any> {
+    protected fetchUserCourses(): Promise<any[]> {
         return this.coursesProvider.getUserCourses().then((courses) => {
             const promises = [],
                 courseIds = courses.map((course) => {
@@ -298,13 +317,21 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
             promises.push(this.myOverviewProvider.invalidateActionEventsByCourses());
         }
 
-        promises.push(this.coursesProvider.invalidateUserCourses());
+        promises.push(this.coursesProvider.invalidateUserCourses().finally(() => {
+            // Invalidate course completion data.
+            return this.coursesProvider.getUserCourses().then((courses) => {
+                return this.utils.allPromises(courses.map((course) => {
+                    return this.courseCompletionProvider.invalidateCourseCompletion(course.id);
+                 }));
+            });
+        }));
+
         promises.push(this.courseOptionsDelegate.clearAndInvalidateCoursesOptions());
         if (this.courseIds) {
             promises.push(this.coursesProvider.invalidateCoursesByField('ids', this.courseIds));
         }
 
-        return Promise.all(promises).finally(() => {
+        return this.utils.allPromises(promises).finally(() => {
             switch (this.tabShown) {
                 case 'timeline':
                     switch (this.timeline.sort) {
