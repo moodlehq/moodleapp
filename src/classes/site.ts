@@ -960,9 +960,10 @@ export class CoreSite {
 
         this.logger.debug('Invalidate cache for key starting with: ' + key);
 
-        const sql = 'UPDATE ' + this.WS_CACHE_TABLE + ' SET expirationTime=0 WHERE key LIKE ?';
+        const sql = 'UPDATE ' + this.WS_CACHE_TABLE + ' SET expirationTime=0 WHERE key LIKE ? ESCAPE ?';
+        const params = [this.db.encodeValue(key).replace(/%/g, '\\%') + '%', '\\'];
 
-        return this.db.execute(sql, [key + '%']);
+        return this.db.execute(sql, params);
     }
 
     /**
