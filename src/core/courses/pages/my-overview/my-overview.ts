@@ -283,7 +283,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
         if (this.showFilter) {
             setTimeout(() => {
                 this.searchbar.setFocus();
-            });
+            }, 500);
         }
     }
 
