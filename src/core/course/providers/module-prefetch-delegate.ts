@@ -1087,7 +1087,7 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
                     }
 
                     return handler.prefetch(module, courseId).then(() => {
-                        const index = moduleIds.indexOf(id);
+                        const index = moduleIds.indexOf(module.id);
                         if (index > -1) {
                             // It's one of the modules we were expecting to download.
                             moduleIds.splice(index, 1);
