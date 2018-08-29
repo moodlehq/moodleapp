@@ -33,7 +33,7 @@ core-courses-course-progress {
             padding-top: 8px;
             padding-bottom: 8px;
             .item-inner {
-                padding-right: 0;
+                @include padding(null, 0, null, null);
             }
             .label {
                 display: flex;
@@ -46,9 +46,7 @@ core-courses-course-progress {
             }
         }
         .label {
-            margin-top: 0;
-            margin-right: 0;
-            margin-bottom: 0;
+            @include margin(0, 0, 0, null);
         }
     }
 

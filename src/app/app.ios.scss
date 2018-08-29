@@ -27,10 +27,10 @@
     @extend .card-content-ios;
 
     &[icon-start] {
-      padding-left: $card-ios-padding-left * 2 + 20;
+      @include padding(null, null, null, $card-ios-padding-left * 2 + 20);
 
       ion-icon {
-        left: $card-ios-padding-left;
+        @include position(null, null, null, $card-ios-padding-left);
       }
     }
   }
@@ -121,7 +121,7 @@
 // Different levels of padding.
 @for $i from 0 through 15 {
   .ios .core-padding-#{$i} {
-    padding-left: 15px * $i + $item-ios-padding-start;
+    @include padding(null, null, null, 15px * $i + $item-ios-padding-start);
   }
 }
 

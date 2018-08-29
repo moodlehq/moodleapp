@@ -1,18 +1,17 @@
 $core-progress-bar-height: 5px !default;
 
 core-progress-bar {
-    padding-right: 55px;
+    @include padding(null, 55px, null, null);
     position: relative;
     display: block;
     @extend .clearfix;
 
     .core-progress-text {
-        margin-left: 10px;
+        @include margin(null, null, null, 10px);
         line-height: normal;
         font-size: 1.4rem;
         color: $gray-darker;
-        right: 0;
-        top: -6px;
+        @include position(-6px, 0, null, null);
         position: absolute;
     }
 

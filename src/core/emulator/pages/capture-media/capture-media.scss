@@ -2,10 +2,7 @@ page-core-emulator-capture-media {
     ion-content {
         .core-av-wrapper {
             position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            @include position(0, 0, 0, 0);
             margin: 0;
             padding: 0;
             clear: both;

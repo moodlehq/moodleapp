@@ -51,7 +51,7 @@
             <ion-card>
                 <addon-mod-forum-post [post]="post" [courseId]="courseId" [discussionId]="discussionId" [component]="component" [componentId]="cmId" [replyData]="replyData" [originalData]="originalData" [defaultSubject]="defaultSubject" [forum]="forum" [trackPosts]="trackPosts" (onPostChange)="postListChanged()"></addon-mod-forum-post>
             </ion-card>
-            <div padding-left *ngIf="post.children.length && post.children[0].subject">
+            <div padding-start *ngIf="post.children.length && post.children[0].subject">
                 <ng-container *ngFor="let child of post.children">
                     <ng-container *ngTemplateOutlet="nestedPosts; context: {post: child}"></ng-container>
                 </ng-container>

@@ -1,8 +1,7 @@
 page-core-user-profile {
     .core-icon-foreground {
         position: relative;
-        left: 60px;
-        bottom: 30px;
+        @include position(null, null, 30px, 60px);
         font-size: 24px;
     }
     .core-user-communication-handlers {
@@ -34,7 +33,7 @@ page-core-user-profile {
 
     .core-user-profile-handler {
         ion-spinner {
-            margin-left: 0.3em;
+            @include margin(null, null, null, 0.3em);
         }
     }
 }

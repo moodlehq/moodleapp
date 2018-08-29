@@ -10,6 +10,11 @@ page-addon-mod-lesson-player {
         padding-left: 0;
     }
 
+    ion-input[padding-start] input[padding-start] {
+        // Applying padding-start to the ion-input applies it twice since it's replicated in the inner input.
+        @include padding(null, null, null, 0);
+    }
+
     .addon-mod_lesson-pagebuttons .button-block {
         contain: content;
         height: 100%;

@@ -122,7 +122,7 @@
     max-width: 32px;
   }
   .label {
-    margin-left: 5px;
+    @include margin(null, null, null, 5px);
     color: $gray-darker;
   }
 }
@@ -153,7 +153,7 @@
 
     &.item-complex .item-content {
         text-align: center;
-        padding-left: 49px;
+        @include padding(null, null, null, 49px);
     }
 
     > img:first-child,
@@ -256,9 +256,7 @@ core-format-text[ng-reflect-max-height] {
         content: '';
         height: 100%;
         position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        @include position(null, 0, 0, 0);
         background: -moz-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
         background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba(255, 255, 255, 0)), color-stop(calc(100% - 15px), white));
         background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
@@ -405,7 +403,7 @@ ion-select {
 }
 
 ion-col ion-select {
-    float: right;
+    @include float(end);
     max-width: none;
     width: 100%;
     .select-text {
@@ -587,8 +585,7 @@ ion-col ion-select {
 }
 
 .atto_image_size input[type=checkbox] {
-    margin-left: 1em;
-    margin-right: 1em;
+    @include margin(null, 1em, null, 1em);
 }
 
 .atto_image_size input[type=text] {
@@ -624,13 +621,13 @@ ion-col ion-select {
 
 /*rtl:begin:ignore*/
 .atto_image_button_left {
-    float: left;
+    @include float(start);
     @include margin(0, 0.5em, 0, 0);
     max-width: calc(100% - 1em);
 }
 
 .atto_image_button_right {
-    float: right;
+    @include float(end);
     @include margin(0, 0, 0, 0.5em);
     max-width: calc(100% - 1em);
 }
@@ -692,7 +689,7 @@ textarea {
     border-bottom: 3px solid $color-base;
 
     &[icon-start] {
-      padding-left: 52px;
+      @include padding(null, null, null, 52px);
       position: relative;
 
       ion-icon {
@@ -730,7 +727,7 @@ textarea {
 
 .accesshide {
   position: absolute;
-  left: -10000px;
+  @include position(null, null, null, -10000px);
   font-weight: normal;
   font-size: 1em;
 }
@@ -883,8 +880,6 @@ ion-alert.core-inapp-notification {
     height: auto;
     margin: 0;
     position: absolute;
-    top: -18px;
-    right: -8px;
     @include position(-18px, -8px, null, null);
     color: red;
     font-size: 16px;

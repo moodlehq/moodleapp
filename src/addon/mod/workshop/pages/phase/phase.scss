@@ -1,14 +1,7 @@
 page-addon-mod-workshop-phase-info {
     .core-workshop-phase-selected {
         background-color: $white;
-        @include ltr() {
-            border-left: 5px solid $core-splitview-selected;
-        }
-
-        @include rtl() {
-            border-right: 5px solid $core-splitview-selected;
-        }
-
+        @include border-start(5px, solid, $core-splitview-selected);
         &.item-md {
             @include padding(null, null, null, $item-md-padding-start - 5px);
         }

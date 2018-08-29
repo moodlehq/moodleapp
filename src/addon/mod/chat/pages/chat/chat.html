@@ -42,7 +42,7 @@
                         <img [src]="message.userprofileimageurl" onError="this.src='assets/img/user-avatar.png'" core-external-content [alt]="'core.pictureof' | translate:{$a: message.userfullname}" role="presentation">
                     </ion-avatar>
                     <h2>
-                        <p float-right>{{ message.timestamp * 1000 | coreFormatDate:"dftimedate" }}</p>
+                        <p float-end>{{ message.timestamp * 1000 | coreFormatDate:"dftimedate" }}</p>
                         <core-format-text [text]="message.userfullname"></core-format-text>
                     </h2>
                     <core-format-text [text]="message.message" (afterRender)="last && scrollToBottom()"></core-format-text>

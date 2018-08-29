@@ -5,7 +5,7 @@
         <p>{{event.timesort * 1000 | coreFormatDate:"dfmediumdate" }} <core-format-text *ngIf="showCourse" [text]="event.course.fullnamedisplay"></core-format-text></p>
         <button ion-button clear item-end class="hidden-phone" (click)="action($event, event.action.url)" [title]="event.action.name" [disabled]="!event.action.actionable" *ngIf="event.action">
             {{event.action.name}}
-            <ion-badge item-end margin-left *ngIf="event.action.showitemcount">{{event.action.itemcount}}</ion-badge>
+            <ion-badge item-end margin-end *ngIf="event.action.showitemcount">{{event.action.itemcount}}</ion-badge>
         </button>
         <ion-badge class="hidden-tablet" item-end *ngIf="event.action.showitemcount">{{event.action.itemcount}}</ion-badge>
     </a>

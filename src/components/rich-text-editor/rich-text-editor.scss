@@ -33,7 +33,7 @@ core-rich-text-editor {
         overflow-y: auto;
         cursor: text;
         img {
-            padding-left: 2px;
+            @include padding(null, null, null, 2px);
             max-width: 95%;
         }
         &:empty:before {
@@ -66,7 +66,7 @@ core-rich-text-editor {
             }
             ul, ol {
                 list-style-position: inside;
-                margin-left: 15px;
+                @include margin(null, null, null, 15px);
             }
         }
     }
@@ -89,7 +89,7 @@ core-rich-text-editor {
 
     div.core-rte-toolbar {
         background: $gray-darker;
-        margin: 0px 1px 15px 1px;
+        @include margin(0px, 1px, 15px, 1px);
         text-align: center;
         flex-grow: 0;
         width: 100%;
@@ -108,10 +108,10 @@ core-rich-text-editor {
                 font-size: 1.1em;
                 height: 35px;
                 min-width: 30px;
-                padding-left: 3px;
-                padding-right: 3px;
-                border-right: 1px solid $gray-dark;
+                @include padding(null, 3px, null, 3px);
+                @include border-end(qpx, solid, $gray-dark);
                 border-bottom: 1px solid $gray-dark;
+                @include position(-6px, 0, null, null);
                 flex-grow: 1;
                 margin: 0;
             }

@@ -37,7 +37,6 @@ addon-qtype-multianswer {
     }
 
     input[type="radio"], input[type="checkbox"] {
-        margin-top: -4px;
-        margin-right: 7px;
+        @include margin(-4px, 7px, null, null);
     }
 }
