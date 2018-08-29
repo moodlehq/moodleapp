@@ -50,11 +50,11 @@ page-addon-mod-data-edit {
         }
 
         .core-mark-required {
-          float: right;
+          @include float(end);
 
           + ion-input,
           + ion-select {
-            padding-right: 20px;
+            @include padding(null, 20px, null, null);
           }
         }
 
@@ -91,12 +91,12 @@ page-addon-mod-data-edit {
 
         ion-select {
             width: 100%;
-            left: 0;
+            @include position(null, null, null, 0);
             max-width: none;
         }
 
         .core-item-has-rich-text-editor {
-            margin-right: 1px;
+            @include margin(null, 1px, null, null);
         }
     }
 }

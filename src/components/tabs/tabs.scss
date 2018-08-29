@@ -1,5 +1,5 @@
 .core-tabs-bar {
-    left: 0;
+    @include position(null, null, null, 0);
     position: relative;
     z-index: $z-index-toolbar;
     display: flex;

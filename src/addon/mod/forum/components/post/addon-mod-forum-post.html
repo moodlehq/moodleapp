@@ -4,8 +4,8 @@
     </ion-avatar>
     <h2><span [class.core-bold]="post.parent == 0"><core-format-text [text]="post.subject"></core-format-text></span></h2>
     <p>
-        <ion-note float-right padding-left *ngIf="!post.modified"><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ion-note>
-        <ion-note float-right padding-left *ngIf="post.modified">
+        <ion-note float-end padding-start *ngIf="!post.modified"><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ion-note>
+        <ion-note float-end padding-start *ngIf="post.modified">
             {{post.modified | coreDateDayOrTime}}
             <div *ngIf="unread"><ion-icon name="record"></ion-icon> {{ 'addon.mod_forum.unread' | translate }}</div>
         </ion-note>

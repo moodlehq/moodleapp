@@ -10,9 +10,7 @@ core-grades-course {
       border-bottom: 1px solid $list-border-color;
     }
     th, td {
-      padding-top: 10px;
-      padding-bottom: 10px;
-      padding-right: 10px;
+      @include padding(10px, 10px, 10px, null);
       vertical-align: top;
       white-space: normal;
       text-align: left;
@@ -26,15 +24,15 @@ core-grades-course {
       font-weight: normal;
     }
     #gradeitem {
-      padding-left: 5px;
+      @include padding(null, null, null, 5px);
     }
 
     .core-grades-table-gradeitem {
-      padding-left: 5px;
+      @include padding(null, null, null, 5px);
       font-weight: bold;
 
       &.column-itemname {
-        padding-left: 0;
+        @include padding(null, null, null, 0);
       }
 
       img {
@@ -46,7 +44,7 @@ core-grades-course {
       }
     }
     .core-grades-table-feedback {
-      padding-left: 5px;
+      @include padding(null, null, null, 5px);
       .no-overflow {
         overflow: auto;
       }

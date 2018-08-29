@@ -32,11 +32,11 @@ addon-mod-wiki-index {
     }
 
     .wiki-toc-section-2 {
-        padding-left: $addon-mod-wiki-toc-level-padding;
+        @include padding(null, null, null, $addon-mod-wiki-toc-level-padding);
     }
 
     .wiki-toc-section-3 {
-        padding-left: $addon-mod-wiki-toc-level-padding * 2;
+        @include padding(null, null, null, $addon-mod-wiki-toc-level-padding * 2);
     }
 
     .wiki_newentry {

@@ -32,7 +32,7 @@
                         </ion-avatar>
                         <h2><core-format-text [text]="discussion.subject"></core-format-text></h2>
                         <p *ngIf="discussion.userfullname">
-                            <ion-note float-right padding-left><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ion-note>
+                            <ion-note float-end padding-start><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ion-note>
                             {{discussion.userfullname}}
                         </p>
                     </ion-item>
@@ -50,7 +50,7 @@
                         </ion-avatar>
                         <h2><ion-icon name="pin" *ngIf="discussion.pinned"></ion-icon> <core-format-text [text]="discussion.subject"></core-format-text></h2>
                         <p>
-                            <ion-note float-right padding-left>
+                            <ion-note float-end padding-start>
                                 {{discussion.created | coreDateDayOrTime}}
                                 <div *ngIf="discussion.numunread"><ion-icon name="record"></ion-icon> {{ 'addon.mod_forum.unreadpostsnumber' | translate:{ '$a' : discussion.numunread} }}</div>
                             </ion-note>

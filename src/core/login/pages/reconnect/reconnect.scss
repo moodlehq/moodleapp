@@ -42,17 +42,17 @@ page-core-login-reconnect {
 
     .list .core-username {
         &.item-md {
-            @include padding-horizontal($item-md-padding-left, $content-padding);
+            @include padding-horizontal($item-md-padding-start, $content-padding);
         }
         &.item-ios {
-            @include padding-horizontal($item-ios-padding-left, $content-padding);
+            @include padding-horizontal($item-ios-padding-start, $content-padding);
         }
         &.item-wp {
-            @include padding-horizontal($item-wp-padding-left, $content-padding);
+            @include padding-horizontal($item-wp-padding-start, $content-padding);
         }
 
         .item-inner {
-            padding-left: 8px;
+            @include padding(null, null, null, 8px);
         }
     }
 

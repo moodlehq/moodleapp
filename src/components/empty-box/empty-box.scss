@@ -1,10 +1,7 @@
 core-empty-box {
   .core-empty-box {
     position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    @include position(0, 0, 0, 0);
     display: table;
     height: 100%;
     width: 100%;
@@ -25,10 +22,8 @@ core-empty-box {
 
     &.core-empty-box-inline {
       position: relative;
-      top: initial;
-      left: initial;
-      right: initial;
       z-index: initial;
+      @include position(initial, initial, null, initial);
       height: auto;
     }
 

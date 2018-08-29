@@ -50,7 +50,7 @@
 
                         <!-- Short answer. -->
                         <ng-container *ngSwitchCase="'shortanswer'">
-                            <ion-input padding-left [type]="question.input.type" placeholder="{{ 'addon.mod_lesson.youranswer' | translate }}" [id]="question.input.id" [formControlName]="question.input.name" autocorrect="off" [maxlength]="question.input.maxlength">
+                            <ion-input padding-start [type]="question.input.type" placeholder="{{ 'addon.mod_lesson.youranswer' | translate }}" [id]="question.input.id" [formControlName]="question.input.name" autocorrect="off" [maxlength]="question.input.maxlength">
                             </ion-input>
                         </ng-container>
 
