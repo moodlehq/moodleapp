@@ -235,6 +235,20 @@ export class AddonNotificationsProvider {
     }
 
     /**
+     * Mark all message notification as read.
+     *
+     * @returns {Promise<any>} Resolved when done.
+     * @since 3.2
+     */
+    markAllNotificationsAsRead(): Promise<any> {
+        const params = {
+            useridto: this.sitesProvider.getCurrentSiteUserId()
+        };
+        return this.sitesProvider.getCurrentSite().write('core_message_mark_all_notifications_as_read', params);
+    }
+
+
+    /**
      * Mark message notification as read.
      *
      * @param {number} notificationId ID of notification to mark as read
@@ -271,6 +285,16 @@ export class AddonNotificationsProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKey(this.getNotificationsCacheKey());
         });
+    }
+
+    /**
+     * Returns whether or not we can mark all notifications as read.
+     *
+     * @return {boolean} True if enabled, false otherwise.
+     * @since 3.2
+     */
+    isMarkAllNotificationsAsReadEnabled(): boolean {
+        return this.sitesProvider.wsAvailableInCurrentSite('core_message_mark_all_notifications_as_read');
     }
 
     /**
