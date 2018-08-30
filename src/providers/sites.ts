@@ -494,8 +494,16 @@ export class CoreSitesProvider {
                     return siteId;
                 });
             } else if (result == this.LEGACY_APP_VERSION) {
+                let errorKey = 'core.login.legacymoodleversion',
+                    params;
+
+                if (this.appProvider.isDesktop()) {
+                    errorKey += 'desktop';
+                    params = {$a: siteUrl};
+                }
+
                 return Promise.reject({
-                    error: this.translate.instant('core.login.legacymoodleversion'),
+                    error: this.translate.instant(errorKey, params),
                     errorcode: 'legacymoodleversion'
                 });
             } else {

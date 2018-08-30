@@ -1205,7 +1205,7 @@ export class CoreDomUtilsProvider {
      *
      * @param {HTMLElement} container The HTMLElement that can contain anchors.
      */
-    protected treatAnchors(container: HTMLElement): void {
+    treatAnchors(container: HTMLElement): void {
         const anchors = Array.from(container.querySelectorAll('a'));
 
         anchors.forEach((anchor) => {

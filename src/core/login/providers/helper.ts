@@ -956,7 +956,13 @@ export class CoreLoginHelperProvider {
                 buttons: buttons
             });
 
-        alert.present();
+        alert.present().then(() => {
+            if (!isAndroid && !isIOS) {
+                // Treat all anchors so they don't override the app.
+                const alertMessageEl: HTMLElement = alert.pageRef().nativeElement.querySelector('.alert-message');
+                this.domUtils.treatAnchors(alertMessageEl);
+            }
+        });
     }
 
     /**
