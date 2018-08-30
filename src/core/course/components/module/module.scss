@@ -45,7 +45,7 @@ core-course-module {
         }
 
         .core-module-buttons-more .spinner {
-            right: 13px;
+            @include position(null, 13px, null, null);
             position: absolute;
         }
     }
