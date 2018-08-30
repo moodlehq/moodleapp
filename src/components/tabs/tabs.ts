@@ -311,7 +311,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             const width = this.domUtils.getElementWidth(this.slides.getNativeElement()) || this.slides.renderedWidth;
 
             if (width) {
-                this.maxSlides = Math.floor(width / 120);
+                this.maxSlides = Math.floor(width / 100);
 
                 return;
             }
