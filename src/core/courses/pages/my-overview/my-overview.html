@@ -47,8 +47,8 @@
                                 <button *ngIf="prefetchCoursesData[courses.selected].icon && prefetchCoursesData[courses.selected].icon != 'spinner'" ion-button icon-only clear color="dark" (click)="prefetchCourses()">
                                     <core-icon [name]="prefetchCoursesData[courses.selected].icon"></core-icon>
                                 </button>
+                                <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData[courses.selected].badge">{{prefetchCoursesData[courses.selected].badge}}</ion-badge>
                                 <ion-spinner *ngIf="!prefetchCoursesData[courses.selected].icon || prefetchCoursesData[courses.selected].icon == 'spinner'"></ion-spinner>
-                                <span float-end *ngIf="prefetchCoursesData[courses.selected].badge">{{prefetchCoursesData[courses.selected].badge}}</span>
                             </div>
                         </div>
                         <core-empty-box *ngIf="courses[courses.selected].length == 0 && courses.selected == 'inprogress'" image="assets/img/icons/courses.svg" [message]="'core.courses.nocoursesinprogress' | translate"></core-empty-box>

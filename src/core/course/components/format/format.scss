@@ -1,7 +1,7 @@
 ion-badge.core-course-download-section-progress {
     display: block;
     @include float(start);
-    @include margin(12px, 12px, null, null);
+    @include margin(12px, 12px, null, 12px);
 }
 
 core-course-format {
