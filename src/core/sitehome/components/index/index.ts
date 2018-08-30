@@ -146,7 +146,7 @@ export class CoreSiteHomeIndexComponent implements OnInit {
 
             if (hasNewsItem && this.block && this.block.modules) {
                 // Remove forum activity (news one only) to prevent duplicates.
-                this.siteHomeProvider.getNewsForum(this.siteHomeId).then((forum) => {
+                return this.siteHomeProvider.getNewsForum(this.siteHomeId).then((forum) => {
                     // Search the module that belongs to site news.
                     for (let i = 0; i < this.block.modules.length; i++) {
                         const module = this.block.modules[i];
