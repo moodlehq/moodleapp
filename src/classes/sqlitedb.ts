@@ -260,6 +260,24 @@ export class SQLiteDB {
     }
 
     /**
+     * Decode a value returned from the database if it's a string.
+     *
+     * @param {any} value The value.
+     * @return {any} The decoded string or the original value if it's not a string.
+     */
+    decodeValue(value: any): any {
+        if (typeof value === 'string') {
+            try {
+                value = decodeURI(value);
+            } catch (ex) {
+                // Error, use the original value.
+            }
+        }
+
+        return value;
+    }
+
+    /**
      * Delete the records from a table where all the given conditions met.
      * If conditions not specified, table is truncated.
      *
@@ -309,6 +327,16 @@ export class SQLiteDB {
     }
 
     /**
+     * Encode a value that will be inserted into the database or compared to values in the database.
+     *
+     * @param {any} value The value.
+     * @return {any} The encoded string or the original value if it's not a string.
+     */
+    encodeValue(value: any): any {
+        return (typeof value === 'string') ? encodeURI(value) : value;
+    }
+
+    /**
      * Execute a SQL query.
      * IMPORTANT: Use this function only if you cannot use any of the other functions in this API. Please take into account that
      * these query will be run in SQLite (Mobile) and Web SQL (desktop), so your query should work in both environments.
@@ -352,6 +380,8 @@ export class SQLiteDB {
             const value = data[name];
             if (typeof value == 'undefined') {
                 delete data[name];
+            } else {
+                data[name] = this.encodeValue(value);
             }
         }
     }
@@ -456,7 +486,7 @@ export class SQLiteDB {
             params = items;
         }
 
-        return [sql, params];
+        return [sql, params.map(this.encodeValue)];
     }
 
     /**
@@ -607,7 +637,11 @@ export class SQLiteDB {
             // Retrieve the records.
             const records = [];
             for (let i = 0; i < result.rows.length; i++) {
-                records.push(result.rows.item(i));
+                const record = result.rows.item(i);
+                for (const key in record) {
+                    record[key] = this.decodeValue(record[key]);
+                }
+                records.push(record);
             }
 
             return records;
@@ -819,6 +853,8 @@ export class SQLiteDB {
      * @return {Promise<any>} Promise resolved when updated.
      */
     updateRecordsWhere(table: string, data: any, where?: string, whereParams?: any[]): Promise<any> {
+        this.formatDataToInsert(data);
+
         if (!data || !Object.keys(data).length) {
             // No fields to update, consider it's done.
             return Promise.resolve();
@@ -850,9 +886,10 @@ export class SQLiteDB {
      * Returns the SQL WHERE conditions.
      *
      * @param {object} [conditions] The conditions to build the where clause. Must not contain numeric indexes.
+     * @param {boolean} [encodeValues=true] Encode condiiton values. True by default.
      * @return {any[]} An array list containing sql 'where' part and 'params'.
      */
-    whereClause(conditions: any = {}): any[] {
+    whereClause(conditions: any = {}, encodeValues: boolean = true): any[] {
         if (!conditions || !Object.keys(conditions).length) {
             return ['1 = 1', []];
         }
@@ -861,7 +898,11 @@ export class SQLiteDB {
             params = [];
 
         for (const key in conditions) {
-            const value = conditions[key];
+            let value = conditions[key];
+
+            if (encodeValues) {
+                value = this.encodeValue(value);
+            }
 
             if (typeof value == 'undefined' || value === null) {
                 where.push(key + ' IS NULL');
@@ -897,7 +938,7 @@ export class SQLiteDB {
             if (typeof value == 'undefined' || value === null) {
                 select = field + ' IS NULL';
             } else {
-                params.push(value);
+                params.push(this.encodeValue(value));
             }
         });
 
