@@ -3,6 +3,9 @@ page-core-mainmenu-more {
     $core-more-background-ios: $list-ios-background-color !default;
     $core-more-background-md: $list-md-background-color !default;
     $core-more-background-wp: $item-wp-body-background-color !default;
+    $core-more-activated-background-ios: color-shade($core-more-background-ios) !default;
+    $core-more-activated-background-md: color-shade($core-more-background-md) !default;
+    $core-more-activated-background-wp: color-shade($core-more-background-wp) !default;
     $core-more-divider-ios: $item-ios-divider-background !default;
     $core-more-divider-md: $item-md-divider-background !default;
     $core-more-divider-wp: $item-wp-divider-background !default;
@@ -14,7 +17,7 @@ page-core-mainmenu-more {
     $core-more-color-wp: $item-wp-body-text-color !default;
 
     .item-block {
-        &.item-ios, &.item-ios p {
+        &.item-ios {
             background-color: $core-more-background-ios;
             color: $core-more-color-ios;
 
@@ -22,7 +25,7 @@ page-core-mainmenu-more {
                 border-bottom: $hairlines-width solid $core-more-border-ios;
             }
         }
-        &.item-md, &.item-md p {
+        &.item-md {
             background-color: $core-more-background-md;
             color: $core-more-color-md;
 
@@ -30,12 +33,24 @@ page-core-mainmenu-more {
                 border-bottom: 1px solid $core-more-border-md;
             }
         }
-        &.item-wp, &.item-wp p {
+        &.item-wp {
             background-color: $core-more-background-wp;
             color: $core-more-color-wp;
 
             .item-inner {
                 border-bottom: 1px solid $core-more-border-wp;
+            }
+        }
+
+        &.activated {
+            &.item-ios {
+                background-color: $core-more-activated-background-ios;
+            }
+            &.item-md {
+                background-color: $core-more-activated-background-md;
+            }
+            &.item-wp {
+                background-color: $core-more-activated-background-wp;
             }
         }
     }

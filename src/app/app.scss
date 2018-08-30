@@ -886,8 +886,14 @@ ion-alert.core-inapp-notification {
   }
 }
 
-body.keyboard-is-open core-ion-tabs .tabbar {
-    display: none;
+body.keyboard-is-open {
+    .scroll-content, .fixed-content {
+        margin-bottom: 0 !important;
+    }
+
+    core-ion-tabs .tabbar {
+        display: none;
+    }
 }
 
 .item.item-radio, .item.item-checkbox {

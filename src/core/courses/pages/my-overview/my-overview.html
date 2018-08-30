@@ -37,7 +37,7 @@
                     <core-loading [hideUntil]="courses.loaded" class="core-loading-center">
                         <!-- "Time" selector. -->
                         <div padding class="clearfix" [hidden]="showFilter" ion-row justify-content-between>
-                            <ion-select float-start [title]="'core.show' | translate" [(ngModel)]="courses.selected"  ion-col (ngModelChange)="selectedChanged()" interface="popover">
+                            <ion-select float-start [title]="'core.show' | translate" [(ngModel)]="courses.selected" ion-col (ngModelChange)="selectedChanged()" interface="popover">
                                 <ion-option value="inprogress">{{ 'core.courses.inprogress' | translate }}</ion-option>
                                 <ion-option value="future">{{ 'core.courses.future' | translate }}</ion-option>
                                 <ion-option value="past">{{ 'core.courses.past' | translate }}</ion-option>
