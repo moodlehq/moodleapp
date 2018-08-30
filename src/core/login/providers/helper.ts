@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
-import { Platform } from 'ionic-angular';
+import { Platform, AlertController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreConfigProvider } from '@providers/config';
@@ -83,7 +83,7 @@ export class CoreLoginHelperProvider {
             private eventsProvider: CoreEventsProvider, private appProvider: CoreAppProvider, private utils: CoreUtilsProvider,
             private urlUtils: CoreUrlUtilsProvider, private configProvider: CoreConfigProvider, private platform: Platform,
             private initDelegate: CoreInitDelegate, private sitePluginsProvider: CoreSitePluginsProvider,
-            private location: Location) {
+            private location: Location, private alertCtrl: AlertController) {
         this.logger = logger.getInstance('CoreLoginHelper');
     }
 
@@ -925,6 +925,47 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Show a modal warning the user that he should use the Classic app.
+     *
+     * @param {string} message The warning message.
+     */
+    protected showLegacyNoticeModal(message: string): void {
+        const isAndroid = this.platform.is('android'),
+            isIOS = this.platform.is('ios'),
+            buttons: any[] = [
+                {
+                    text: this.translate.instant('core.ok'),
+                    role: 'cancel'
+                }
+            ];
+
+        if (isAndroid || isIOS) {
+            buttons.push({
+                text: this.translate.instant('core.download'),
+                handler: (): void => {
+                    const link = isAndroid ? 'market://details?id=com.moodle.classic' :
+                            'itms-apps://itunes.apple.com/app/id1403448117';
+
+                    this.utils.openInBrowser(link);
+                }
+            });
+        }
+
+        const alert = this.alertCtrl.create({
+                message: message,
+                buttons: buttons
+            });
+
+        alert.present().then(() => {
+            if (!isAndroid && !isIOS) {
+                // Treat all anchors so they don't override the app.
+                const alertMessageEl: HTMLElement = alert.pageRef().nativeElement.querySelector('.alert-message');
+                this.domUtils.treatAnchors(alertMessageEl);
+            }
+        });
+    }
+
+    /**
      * Function called when site policy is not agreed. Reserved for core use.
      *
      * @param {string} [siteId] Site ID. If not defined, current site.
@@ -961,6 +1002,8 @@ export class CoreLoginHelperProvider {
     treatUserTokenError(siteUrl: string, error: any): void {
         if (error.errorcode == 'forcepasswordchangenotice') {
             this.openChangePassword(siteUrl, error.error || error.message || error.body || error.content);
+        } else if (error.errorcode == 'legacymoodleversion') {
+            this.showLegacyNoticeModal(error.error);
         } else {
             this.domUtils.showErrorModal(error);
         }

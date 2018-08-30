@@ -33,6 +33,7 @@
     "invalidvaluemax": "The maximum value is {{$a}}",
     "invalidvaluemin": "The minimum value is {{$a}}",
     "legacymoodleversion": "You are trying to connect to an unsupported Moodle version. Please, download the Moodle Classic app to access this Moodle site.",
+    "legacymoodleversiondesktop": "You are trying to connect to <b>{{$a}}</b>.<br><br>This site is running an outdated unsupported version of Moodle which will not work with this Moodle Desktop App.<br><br>If this is your site please contact your local moodle partner to get assistance to update it.<br><br>See <a href=\"https://moodle.com/contact\">our contact page</a> to submit a request for assistance.",
     "localmobileunexpectedresponse": "Moodle Mobile Additional Features check returned an unexpected response, you will be authenticated using the standard Mobile service.",
     "login": "Log in",
     "loginbutton": "Log in",

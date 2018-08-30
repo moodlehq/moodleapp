@@ -494,9 +494,23 @@ export class CoreSitesProvider {
                     return siteId;
                 });
             } else if (result == this.LEGACY_APP_VERSION) {
-                return Promise.reject(this.translate.instant('core.login.legacymoodleversion'));
+                let errorKey = 'core.login.legacymoodleversion',
+                    params;
+
+                if (this.appProvider.isDesktop()) {
+                    errorKey += 'desktop';
+                    params = {$a: siteUrl};
+                }
+
+                return Promise.reject({
+                    error: this.translate.instant(errorKey, params),
+                    errorcode: 'legacymoodleversion'
+                });
             } else {
-                return Promise.reject(this.translate.instant('core.login.invalidmoodleversion'));
+                return Promise.reject({
+                    error: this.translate.instant('core.login.invalidmoodleversion'),
+                    errorcode: 'invalidmoodleversion'
+                });
             }
         });
     }
