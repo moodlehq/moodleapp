@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { IonicPage, NavParams, Platform } from 'ionic-angular';
 import { CoreUserProvider } from '../../providers/user';
 import { CoreUserHelperProvider } from '../../providers/helper';
@@ -41,7 +42,7 @@ export class CoreUserAboutPage {
     title: string;
 
     constructor(navParams: NavParams, private userProvider: CoreUserProvider, private userHelper: CoreUserHelperProvider,
-            private domUtils: CoreDomUtilsProvider, private eventsProvider: CoreEventsProvider,
+            private domUtils: CoreDomUtilsProvider, private eventsProvider: CoreEventsProvider, private sanitizer: DomSanitizer,
             private sitesProvider: CoreSitesProvider, private platform: Platform) {
 
         this.userId = navParams.get('userId');
@@ -68,7 +69,8 @@ export class CoreUserAboutPage {
 
             if (user.address) {
                 user.address = this.userHelper.formatAddress(user.address, user.city, user.country);
-                user.encodedAddress = encodeURIComponent(user.address);
+                user.encodedAddress = this.sanitizer.bypassSecurityTrustUrl(
+                        (this.isAndroid ? 'geo:0,0?q=' : 'http://maps.google.com?q=') + encodeURIComponent(user.address));
             }
 
             this.hasContact = user.email || user.phone1 || user.phone2 || user.city || user.country || user.address;
