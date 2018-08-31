@@ -147,7 +147,7 @@ $loading-ios-spinner-color: $core-loading-spinner-color;
 $spinner-ios-ios-color: $core-spinner-color;
 $tabs-ios-tab-color-inactive: $tabs-tab-color-inactive;
 $button-ios-outline-background-color: $core-button-outline-background-color;
-$toolbar-ios-height: 44px + 15; // Avoid toolbar with different heights.
+$toolbar-ios-height: 44px + 8; // Avoid toolbar with different heights.
 $checkbox-ios-icon-border-radius: 0px !default;
 
 // App Material Design Variables
@@ -273,16 +273,6 @@ $core-question-state-incorrect-color: $red-light !default;
       border-left: $px $type $color;
   }
 }
-
-@mixin app-root() {
-  $root: #{&};
-  @at-root ion-app.app-root {
-    #{$root} {
-      @content;
-    }
-  }
-}
-
 
 // Font Awesome
 $fa-font-path: $font-path;

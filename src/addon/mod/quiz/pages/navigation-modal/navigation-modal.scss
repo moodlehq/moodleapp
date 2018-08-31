@@ -1,4 +1,4 @@
-page-addon-mod-quiz-navigation-modal {
+ion-app.app-root page-addon-mod-quiz-navigation-modal {
     .addon-mod_quiz-selected, .item.addon-mod_quiz-selected {
         @include border-start(5px, solid, $core-splitview-selected);
         font-weight: bold;

@@ -1,4 +1,4 @@
-.core-tabs-bar {
+ion-app.app-root .core-tabs-bar {
     @include position(null, null, null, 0);
     position: relative;
     z-index: $z-index-toolbar;
@@ -49,7 +49,7 @@
     }
 }
 
-.md .core-tabs-bar a.tab-slide {
+ion-app.app-root.md .core-tabs-bar a.tab-slide {
     // @extend .tabs-md .tab-button;
     min-height: $tabs-md-tab-min-height;
 
@@ -57,7 +57,7 @@
     color: $tabs-md-tab-text-color;
 }
 
-.ios .core-tabs-bar a.tab-slide {
+ion-app.app-root.ios .core-tabs-bar a.tab-slide {
     // @extend .tabs-ios .tab-button;
     max-width: $tabs-ios-tab-max-width;
     min-height: $tabs-ios-tab-min-height;
@@ -67,11 +67,7 @@
     color: $tabs-ios-tab-text-color;
 }
 
-.ios .tabs:not(.tabs-ios[tabsPlacement=top]) .tabbar {
-    padding-bottom: 0;
-}
-
-.wp .core-tabs-bar a.tab-slide {
+ion-app.app-root.wp .core-tabs-bar a.tab-slide {
     //@extend .tabs-wp .tab-button;
     @include border-radius(0);
 
@@ -84,7 +80,7 @@
     box-shadow: none;
 }
 
-core-tabs {
+ion-app.app-root core-tabs {
     .core-tabs-content-container {
         height: 100%;
 
@@ -129,11 +125,11 @@ core-tabs {
     }
 }
 
-:not(.has-refresher) > .scroll-content.no-scroll {
+ion-app.app-root :not(.has-refresher) > .scroll-content.no-scroll {
     overflow: hidden !important;
 }
 
-.ios .core-tabs-bar {
+ion-app.app-root.ios .core-tabs-bar {
     -webkit-box-pack: center;
     -webkit-justify-content: center;
     -ms-flex-pack: center;
@@ -143,11 +139,11 @@ core-tabs {
     }
 }
 
-.md .core-tabs-bar::after {
+ion-app.app-root.md .core-tabs-bar::after {
     @extend .header-md::after;
 }
 
-.ios, .md, .wp {
+ion-app.app-root.ios, ion-app.app-root.md, ion-app.app-root.wp {
     .core-avoid-header ion-content core-tabs core-tab ion-content {
         top: 0 !important;
         height: 100% !important;

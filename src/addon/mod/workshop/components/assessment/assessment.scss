@@ -1,4 +1,4 @@
-addon-mod-workshop-assessment {
+ion-app.app-root addon-mod-workshop-assessment {
     .item-md.item-block .item-inner {
       border-bottom: 1px solid $list-md-border-color;
     }
@@ -16,7 +16,7 @@ addon-mod-workshop-assessment {
     }
 }
 
-.card.with-borders addon-mod-workshop-assessment {
+ion-app.app-root .card.with-borders addon-mod-workshop-assessment {
     .item-md.item-block .item-inner {
       border-bottom: 1px solid $list-md-border-color;
     }
