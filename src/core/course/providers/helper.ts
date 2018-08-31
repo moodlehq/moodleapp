@@ -153,7 +153,7 @@ export class CoreCourseHelperProvider {
                 }
 
                 // Check if the module is stealth.
-                module.isStealth = !module.visibleoncoursepage || (module.visible && !section.visible);
+                module.isStealth = module.visibleoncoursepage === 0 || (module.visible && !section.visible);
             });
         });
 
