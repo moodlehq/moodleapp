@@ -121,10 +121,10 @@ export class CoreSharedFilesListPage implements OnInit, OnDestroy {
      * Called when a file is renamed. Update the list.
      *
      * @param {number} index Position of the file.
-     * @param {any} file New FileEntry.
+     * @param {any} data Data containing the new FileEntry.
      */
-    fileRenamed(index: number, file: any): void {
-        this.files[index] = file;
+    fileRenamed(index: number, data: any): void {
+        this.files[index] = data.file;
     }
 
     /**
