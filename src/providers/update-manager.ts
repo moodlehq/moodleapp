@@ -346,13 +346,6 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
                     // DBs migrated, get the version applied again.
                     return this.configProvider.get(this.VERSION_APPLIED, 0);
                 });
-            } else if (versionCode >= 3520 && versionApplied < 3520 && versionApplied > 0) {
-                // Encode special characters in the contents of all DBs to work around Unicode bugs in the Cordova plugin.
-                // This is not needed if the DBs are created from scratch, because all content is already encoded.
-                // We do this before any other update because SQLiteDB methods expect the content to be encoded.
-                return this.encodeAllDBs().then(() => {
-                    return versionApplied;
-                });
             } else {
                 return versionApplied;
             }
@@ -709,70 +702,6 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
                     }
                 }));
             });
-
-            return this.utils.allPromises(promises);
-        });
-    }
-
-    /**
-     * Encode all DBs to escape special characters.
-     *
-     * @return {Promise<any>} Promise resolved when done.
-     */
-    protected encodeAllDBs(): Promise<any> {
-        // First encode the app DB.
-        return this.encodeDB(this.appProvider.getDB()).then(() => {
-            // Now encode all site DBs.
-            return this.sitesProvider.getSitesIds();
-        }).then((ids) => {
-            return this.utils.allPromises(ids.map((siteId) => {
-                return this.sitesProvider.getSiteDb(siteId).then((db) => {
-                    return this.encodeDB(db);
-                });
-            }));
-        });
-    }
-
-    /**
-     * Encode content of a certain DB to escape special characters.
-     *
-     * @param {SQLiteDB} db The DB.
-     * @return {Promise<any>} Promise resolved when done.
-     */
-    protected encodeDB(db: SQLiteDB): Promise<any> {
-        const sql = 'SELECT tbl_name FROM sqlite_master WHERE type = ?';
-        const params = ['table'];
-
-        return db.execute(sql, params).then((result) => {
-            const promises = [];
-
-            for (let i = 0; i < result.rows.length; i++) {
-                const table = result.rows.item(i).tbl_name;
-                promises.push(this.encodeTable(db, table));
-            }
-
-            return this.utils.allPromises(promises);
-        });
-    }
-
-    /**
-     * Encode content of a certain table to escape special characters.
-     *
-     * @param {SQLiteDB} db The DB.
-     * @param {string} table Name of the table.
-     * @return {Promise<any>} Promise resolved when done.
-     */
-    protected encodeTable(db: SQLiteDB, table: string): Promise<any> {
-        const sql = 'SELECT * FROM ' + table;
-
-        return db.execute(sql).then((result) => {
-            const promises = [];
-
-            for (let i = 0; i < result.rows.length; i++) {
-                const record = result.rows.item(i);
-                const selectAndParams = db.whereClause(record, false);
-                promises.push(db.updateRecordsWhere(table, record, selectAndParams[0], selectAndParams[1]));
-            }
 
             return this.utils.allPromises(promises);
         });
