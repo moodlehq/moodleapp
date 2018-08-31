@@ -16,7 +16,6 @@ import { Component, } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
-import { CoreFileProvider } from '@providers/file';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -36,14 +35,11 @@ export class CoreSettingsSpaceUsagePage {
     sites = [];
     currentSiteId = '';
     totalUsage = 0;
-    freeSpace = 0;
-    showFreeSpace = true;
 
-    constructor(private fileProvider: CoreFileProvider, private filePoolProvider: CoreFilepoolProvider,
+    constructor(private filePoolProvider: CoreFilepoolProvider,
             private sitesProvider: CoreSitesProvider, private textUtils: CoreTextUtilsProvider,
             private translate: TranslateService, private domUtils: CoreDomUtilsProvider, appProvider: CoreAppProvider) {
         this.currentSiteId = this.sitesProvider.getCurrentSiteId();
-        this.showFreeSpace = !appProvider.isDesktop();
     }
 
     /**
@@ -91,26 +87,7 @@ export class CoreSettingsSpaceUsagePage {
     }
 
     /**
-     * Convenience function to calculate free space in the device.
-     *
-     * @return {Promise<any>} Resolved when done.
-     */
-    protected calculateFreeSpace(): Promise<any> {
-        if (this.fileProvider.isAvailable()) {
-            return this.fileProvider.calculateFreeSpace().then((freeSpace) => {
-                this.freeSpace = freeSpace;
-            }).catch(() => {
-                this.freeSpace = 0;
-            });
-        } else {
-            this.freeSpace = 0;
-
-            return Promise.resolve(null);
-        }
-    }
-
-    /**
-     * Convenience function to calculate space usage and free space in the device.
+     * Convenience function to calculate space usage.
      *
      * @return {Promise<any>} Resolved when done.
      */
@@ -118,10 +95,6 @@ export class CoreSettingsSpaceUsagePage {
         const promises = [
             this.calculateSizeUsage().then(() => this.calculateTotalUsage()),
         ];
-
-        if (this.showFreeSpace) {
-            promises.push(this.calculateFreeSpace());
-        }
 
         return Promise.all(promises);
     }
@@ -138,7 +111,7 @@ export class CoreSettingsSpaceUsagePage {
     }
 
     /**
-     * Convenience function to update site size, along with total usage and free space.
+     * Convenience function to update site size, along with total usage.
      *
      * @param {any} site Site object with space usage.
      * @param {number} newUsage New space usage of the site in bytes.
@@ -147,7 +120,6 @@ export class CoreSettingsSpaceUsagePage {
         const oldUsage = site.spaceUsage;
         site.spaceUsage = newUsage;
         this.totalUsage -= oldUsage - newUsage;
-        this.freeSpace += oldUsage - newUsage;
     }
 
     /**

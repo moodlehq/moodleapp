@@ -360,12 +360,19 @@ export class CoreFileProvider {
 
     /**
      * Calculate the free space in the disk.
+     * Please notice that this function isn't reliable and it's not documented in the Cordova File plugin.
      *
      * @return {Promise<number>} Promise resolved with the estimated free space in bytes.
      */
     calculateFreeSpace(): Promise<number> {
         return this.file.getFreeDiskSpace().then((size) => {
-            return size; // GetFreeDiskSpace returns KB.
+            if (this.platform.is('ios')) {
+                // In iOS the size is in bytes.
+                return Number(size);
+            }
+
+            // The size is in KB, convert it to bytes.
+            return Number(size) * 1024;
         });
     }
 
