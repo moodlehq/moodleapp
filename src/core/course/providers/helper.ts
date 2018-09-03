@@ -539,6 +539,10 @@ export class CoreCourseHelperProvider {
             return this.downloadModuleWithMainFileIfNeeded(module, courseId, component, componentId, files, siteId)
                     .then((result) => {
                 if (result.path.indexOf('http') === 0) {
+                    /* In iOS, if we use the same URL in embedded browser and background download then the download only
+                       downloads a few bytes (cached ones). Add a hash to the URL so both URLs are different. */
+                    result.path = result.path + '#moodlemobile-embedded';
+
                     return this.utils.openOnlineFile(result.path).catch((error) => {
                         // Error opening the file, some apps don't allow opening online files.
                         if (!this.fileProvider.isAvailable()) {
