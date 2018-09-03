@@ -919,8 +919,10 @@ ion-app.app-root {
 }
 
 body.keyboard-is-open {
-  .scroll-content, .fixed-content {
+  ion-content:not(.has-footer) {
+    > .scroll-content, > .fixed-content {
       margin-bottom: 0 !important;
+    }
   }
 
   core-ion-tabs .tabbar {
