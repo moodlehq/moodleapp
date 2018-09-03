@@ -21,13 +21,11 @@ import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreCourseComponentsModule } from '@core/course/components/components.module';
 import { AddonModBookIndexComponent } from './index/index';
 import { AddonModBookTocPopoverComponent } from './toc-popover/toc-popover';
-import { AddonModBookNavigationArrowsComponent } from './navigation-arrows/navigation-arrows';
 
 @NgModule({
     declarations: [
         AddonModBookIndexComponent,
-        AddonModBookTocPopoverComponent,
-        AddonModBookNavigationArrowsComponent
+        AddonModBookTocPopoverComponent
     ],
     imports: [
         CommonModule,
@@ -41,8 +39,7 @@ import { AddonModBookNavigationArrowsComponent } from './navigation-arrows/navig
     ],
     exports: [
         AddonModBookIndexComponent,
-        AddonModBookTocPopoverComponent,
-        AddonModBookNavigationArrowsComponent
+        AddonModBookTocPopoverComponent
     ],
     entryComponents: [
         AddonModBookIndexComponent,
