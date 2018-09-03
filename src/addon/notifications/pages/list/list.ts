@@ -121,7 +121,7 @@ export class AddonNotificationsListPage {
             // Check if mark all notifications as read is enabled and there are some to read.
             if (this.notificationsProvider.isMarkAllNotificationsAsReadEnabled()) {
                 promises.push(this.notificationsProvider.getUnreadNotificationsCount().then((unread) => {
-                    this.canMarkAllNotificationsAsRead = unread > 0
+                    this.canMarkAllNotificationsAsRead = unread > 0;
                 }));
             } else {
                 this.canMarkAllNotificationsAsRead = false;
