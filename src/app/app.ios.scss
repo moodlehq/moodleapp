@@ -138,4 +138,22 @@ ion-app.app-root.ios {
   .card-ios.with-borders .item-ios:last-child .item-inner {
     border-bottom: 0;
   }
+
+
+  .radio-ios .radio-icon {
+    @include position(0, null, null, 0);
+    @include margin(0);
+    @include border-radius($radio-md-icon-border-radius);
+
+    position: relative;
+    display: block;
+
+    width: $checkbox-ios-icon-size;
+    height: $checkbox-ios-icon-size;
+
+    border-width: $checkbox-ios-icon-border-width;
+    border-style: $checkbox-ios-icon-border-style;
+    border-color: $checkbox-ios-icon-border-color-off;
+    background-color: $checkbox-ios-background-color-off;
+  }
 }
