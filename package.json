@@ -32,6 +32,7 @@
     "ionic:build:before": "gulp",
     "ionic:watch:before": "gulp",
     "ionic:build:after": "gulp copy-component-templates",
+    "preionic:build": "gulp",
     "postionic:build": "gulp copy-component-templates",
     "desktop.pack": "electron-builder --dir",
     "desktop.dist": "electron-builder",
