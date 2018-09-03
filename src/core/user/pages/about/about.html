@@ -31,10 +31,7 @@
                 </ion-item>
                 <ion-item text-wrap *ngIf="user.address">
                     <h2>{{ 'core.user.address' | translate}}</h2>
-                    <p><a *ngIf="isAndroid" href="geo:0,0?q={{user.encodedAddress}}" core-link auto-login="no">
-                            <core-format-text [text]="user.address"></core-format-text>
-                        </a>
-                        <a *ngIf="!isAndroid" href="http://maps.google.com?q={{user.encodedAddress}}" core-link auto-login="no">
+                    <p><a [href]="user.encodedAddress" core-link auto-login="no">
                             <core-format-text [text]="user.address"></core-format-text>
                         </a>
                     </p>

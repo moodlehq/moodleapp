@@ -56,6 +56,10 @@ export class CoreFileHelperProvider {
             }
 
             if (url.indexOf('http') === 0) {
+                /* In iOS, if we use the same URL in embedded browser and background download then the download only
+                   downloads a few bytes (cached ones). Add a hash to the URL so both URLs are different. */
+                url = url + '#moodlemobile-embedded';
+
                 return this.utils.openOnlineFile(url).catch((error) => {
                     // Error opening the file, some apps don't allow opening online files.
                     if (!this.fileProvider.isAvailable()) {

@@ -250,25 +250,30 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         this.selectedSection = newSection;
         this.data.section = this.selectedSection;
 
-        // Select next and previous sections to show the arrows.
-        const i = this.sections.findIndex((value, index) => {
-            return this.compareSections(value, this.selectedSection);
-        });
+        if (newSection.id != this.allSectionsId) {
+            // Select next and previous sections to show the arrows.
+            const i = this.sections.findIndex((value, index) => {
+                return this.compareSections(value, this.selectedSection);
+            });
 
-        let j;
-        for (j = i - 1; j >= 1; j--) {
-            if (this.sections[j].uservisible !== false && this.sections[j].hasContent) {
-                break;
+            let j;
+            for (j = i - 1; j >= 1; j--) {
+                if (this.sections[j].uservisible !== false && this.sections[j].hasContent) {
+                    break;
+                }
             }
-        }
-        this.previousSection = j >= 1 ? this.sections[j] : null;
+            this.previousSection = j >= 1 ? this.sections[j] : null;
 
-        for (j = i + 1; j < this.sections.length; j++) {
-            if (this.sections[j].uservisible !== false && this.sections[j].hasContent) {
-                break;
+            for (j = i + 1; j < this.sections.length; j++) {
+                if (this.sections[j].uservisible !== false && this.sections[j].hasContent) {
+                    break;
+                }
             }
+            this.nextSection = j < this.sections.length ? this.sections[j] : null;
+        } else {
+            this.previousSection = null;
+            this.nextSection = null;
         }
-        this.nextSection = j < this.sections.length ? this.sections[j] : null;
 
         if (this.moduleId && typeof previousValue == 'undefined') {
             setTimeout(() => {
