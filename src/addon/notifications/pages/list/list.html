@@ -8,6 +8,12 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="notificationsLoaded">
+        <div padding *ngIf="canMarkAllNotificationsAsRead">
+            <button ion-button block (click)="markAllNotificationsAsRead()" color="light" icon-start>
+                <core-icon name="fa-check"></core-icon>
+                {{ 'addon.notifications.markallread' | translate }}
+            </button>
+        </div>
         <ion-card *ngFor="let notification of notifications">
             <ion-item>
                 <ion-avatar item-start core-user-link [userId]="notification.useridfrom" [courseId]="notification.courseid">

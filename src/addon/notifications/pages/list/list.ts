@@ -36,6 +36,7 @@ export class AddonNotificationsListPage {
     notifications = [];
     notificationsLoaded = false;
     canLoadMore = false;
+    canMarkAllNotificationsAsRead = false;
 
     protected readCount = 0;
     protected unreadCount = 0;
@@ -82,7 +83,7 @@ export class AddonNotificationsListPage {
         const limit = AddonNotificationsProvider.LIST_LIMIT;
 
         return this.notificationsProvider.getUnreadNotifications(this.unreadCount, limit).then((unread) => {
-            let promise;
+            const promises = [];
 
             unread.forEach(this.formatText.bind(this));
 
@@ -93,7 +94,7 @@ export class AddonNotificationsListPage {
             if (unread.length < limit) {
                 // Limit not reached. Get read notifications until reach the limit.
                 const readLimit = limit - unread.length;
-                promise = this.notificationsProvider.getReadNotifications(this.readCount, readLimit).then((read) => {
+                promises.push(this.notificationsProvider.getReadNotifications(this.readCount, readLimit).then((read) => {
                     read.forEach(this.formatText.bind(this));
                     this.readCount += read.length;
                     if (refresh) {
@@ -107,9 +108,8 @@ export class AddonNotificationsListPage {
                         this.domUtils.showErrorModalDefault(error, 'addon.notifications.errorgetnotifications', true);
                         this.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
                     }
-                });
+                }));
             } else {
-                promise = Promise.resolve();
                 if (refresh) {
                     this.notifications = unread;
                 } else {
@@ -118,13 +118,38 @@ export class AddonNotificationsListPage {
                 this.canLoadMore = true;
             }
 
-            return promise.then(() => {
+            // Check if mark all notifications as read is enabled and there are some to read.
+            if (this.notificationsProvider.isMarkAllNotificationsAsReadEnabled()) {
+                promises.push(this.notificationsProvider.getUnreadNotificationsCount().then((unread) => {
+                    this.canMarkAllNotificationsAsRead = unread > 0
+                }));
+            } else {
+                this.canMarkAllNotificationsAsRead = false;
+            }
+
+            return Promise.all(promises).then(() => {
                 // Mark retrieved notifications as read if they are not.
                 this.markNotificationsAsRead(unread);
             });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.notifications.errorgetnotifications', true);
             this.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
+        });
+    }
+
+    /**
+     * Mark all notifications as read.
+     */
+    markAllNotificationsAsRead(): void {
+        this.notificationsProvider.markAllNotificationsAsRead().then(() => {
+            const siteId = this.sitesProvider.getCurrentSiteId();
+            this.eventsProvider.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, null, siteId);
+
+            this.notificationsProvider.getUnreadNotificationsCount().then((unread) => {
+                this.canMarkAllNotificationsAsRead = unread > 0;
+            });
+        }).catch(() => {
+            // Omit failure.
         });
     }
 
@@ -139,7 +164,9 @@ export class AddonNotificationsListPage {
                 return this.notificationsProvider.markNotificationRead(notification.id);
             });
 
-            Promise.all(promises).finally(() => {
+            Promise.all(promises).catch(() => {
+                // Ignore errors.
+            }).finally(() => {
                 this.notificationsProvider.invalidateNotificationsList().finally(() => {
                     const siteId = this.sitesProvider.getCurrentSiteId();
                     this.eventsProvider.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, null, siteId);
