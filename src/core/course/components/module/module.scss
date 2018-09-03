@@ -1,4 +1,4 @@
-core-course-module {
+ion-app.app-root core-course-module {
     background: white;
     display: block;
 
@@ -51,7 +51,7 @@ core-course-module {
     }
 }
 
-.md core-course-module {
+ion-app.app-root.md core-course-module {
     .core-module-description {
         @include padding(null, $label-md-margin-end, null, null);
         margin-bottom: $label-md-margin-bottom;
@@ -81,7 +81,7 @@ core-course-module {
     }
 }
 
-.ios core-course-module {
+ion-app.app-root.ios core-course-module {
     .core-module-description {
         @include padding(null, $label-ios-margin-end, null, null);
         margin-bottom: $label-md-margin-bottom;
@@ -106,7 +106,7 @@ core-course-module {
     }
 }
 
-.wp core-course-module {
+ion-app.app-root.wp core-course-module {
     .core-module-description {
         @include padding(null, $item-wp-padding-end / 2, null, null);
         margin-bottom: $label-md-margin-bottom;

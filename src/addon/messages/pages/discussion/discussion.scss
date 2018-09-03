@@ -4,8 +4,7 @@ $item-message-note-text: $gray-dark !default;
 $item-message-note-font-size: 75% !default;
 $item-message-mine-bg: $blue-light !default;
 
-
-page-addon-messages-discussion {
+ion-app.app-root page-addon-messages-discussion {
     .addon-messages-discussion-container {
         display: flex;
         flex-direction: column;
@@ -99,8 +98,13 @@ page-addon-messages-discussion {
     }
 
     .addon-message .item-content,
-    .addon-message-mine .item-content{
+    .addon-message-mine .item-content {
         background-color: transparent;
         padding: 0;
     }
+}
+
+ion-app.app-root.ios page-addon-messages-discussion ion-footer .toolbar:last-child {
+    padding-bottom: 4px;
+    min-height: 0;
 }

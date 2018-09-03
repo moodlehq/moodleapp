@@ -1,4 +1,4 @@
-addon-mod-workshop-submission {
+ion-app.app-root addon-mod-workshop-submission {
     .item-md.item-block .item-inner {
       border-bottom: 1px solid $list-md-border-color;
     }
@@ -16,7 +16,7 @@ addon-mod-workshop-submission {
     }
 }
 
-.card.with-borders addon-mod-workshop-submission {
+ion-app.app-root .card.with-borders addon-mod-workshop-submission {
     .item-md.item-block .item-inner {
       border-bottom: 1px solid $list-md-border-color;
     }

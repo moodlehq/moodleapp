@@ -1,6 +1,6 @@
 $core-progress-bar-height: 5px !default;
 
-core-progress-bar {
+ion-app.app-root core-progress-bar {
     @include padding(null, 55px, null, null);
     position: relative;
     display: block;

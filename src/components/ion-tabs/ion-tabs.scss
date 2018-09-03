@@ -1,4 +1,4 @@
-core-ion-tabs {
+ion-app.app-root core-ion-tabs {
     .tabbar {
         z-index: 101; // For some reason, the regular z-index isn't enough with our tabs, use a higher one.
 
@@ -20,15 +20,15 @@ core-ion-tabs {
     }
 }
 
-.ios core-ion-tabs .core-ion-tabs-loading {
+ion-app.app-root.ios core-ion-tabs .core-ion-tabs-loading {
     min-height: $tabs-ios-tab-min-height;
 }
 
-.md core-ion-tabs .core-ion-tabs-loading {
+ion-app.app-root.md core-ion-tabs .core-ion-tabs-loading {
     min-height: $tabs-md-tab-min-height;
 }
 
-.wp core-ion-tabs .core-ion-tabs-loading {
+ion-app.app-root.wp core-ion-tabs .core-ion-tabs-loading {
     min-height: $tabs-wp-tab-min-height;
 }
 
@@ -82,16 +82,14 @@ core-ion-tab.show-tab {
 
 }
 
-.ios {
-    core-ion-tab > .ion-page > ion-header .toolbar-ios {
-      padding-top: 4px;
-    }
+ion-app.app-root.ios {
+    @include core-ion-tabs-statusbar-padding($toolbar-ios-height, $toolbar-ios-padding, $content-ios-padding, $cordova-ios-statusbar-padding, $cordova-ios-statusbar-padding-modal-max-width, true);
 }
 
-.md {
+ion-app.app-root.md {
    @include core-ion-tabs-statusbar-padding($toolbar-md-height, $toolbar-md-padding, $content-md-padding, $cordova-md-statusbar-padding, $cordova-md-statusbar-padding-modal-max-width);
 }
 
-.wp {
+ion-app.app-root.wp {
     @include core-ion-tabs-statusbar-padding($toolbar-wp-height, $toolbar-wp-padding, $content-wp-padding, $cordova-wp-statusbar-padding, $cordova-wp-statusbar-padding-modal-max-width);
 }

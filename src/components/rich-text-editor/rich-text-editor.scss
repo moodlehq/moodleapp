@@ -1,4 +1,4 @@
-core-rich-text-editor {
+ion-app.app-root core-rich-text-editor {
     height: 40vh;
     overflow: hidden;
     min-height: 200px; /* Just in case vh is not supported */
@@ -121,6 +121,6 @@ core-rich-text-editor {
 
 }
 
-.keyboard-is-open core-rich-text-editor {
+body.keyboard-is-open ion-app.app-root core-rich-text-editor {
     min-height: 200px;
 }

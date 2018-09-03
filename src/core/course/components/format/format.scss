@@ -1,10 +1,10 @@
-ion-badge.core-course-download-section-progress {
+ion-app.app-root ion-badge.core-course-download-section-progress {
     display: block;
     @include float(start);
     @include margin(12px, 12px, null, 12px);
 }
 
-core-course-format {
+ion-app.app-root core-course-format {
 
     .core-format-progress-list {
         margin-bottom: 0;

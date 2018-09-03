@@ -1,4 +1,4 @@
-core-grades-course {
+ion-app.app-root core-grades-course {
   .core-grades-table {
     border-collapse: collapse;
     line-height: 20px;
@@ -74,7 +74,7 @@ core-grades-course {
   }
 }
 
-.split-pane-side, .split-pane-main {
+ion-app.app-root .split-pane-side, ion-app.app-root .split-pane-main {
   core-grades-course .core-grades-table .hidden-phone {
     display: none;
     opacity: 0;

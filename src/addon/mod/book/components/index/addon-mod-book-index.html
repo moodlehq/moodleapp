@@ -18,9 +18,9 @@
     <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
 
     <div padding>
-        <addon-mod-book-navigation-arrows [previous]="previousChapter" [next]="nextChapter" (action)="changeChapter($event)"></addon-mod-book-navigation-arrows>
+        <core-navigation-bar [previous]="previousChapter > 0 && previousChapter" [next]="nextChapter > 0 && nextChapter" (action)="changeChapter($event)"></core-navigation-bar>
         <core-format-text [component]="component" [componentId]="componentId" [text]="chapterContent"></core-format-text>
-        <addon-mod-book-navigation-arrows [previous]="previousChapter" [next]="nextChapter" (action)="changeChapter($event)"></addon-mod-book-navigation-arrows>
+        <core-navigation-bar [previous]="previousChapter > 0 && previousChapter" [next]="nextChapter > 0 && nextChapter" (action)="changeChapter($event)"></core-navigation-bar>
     </div>
 
 </core-loading>
