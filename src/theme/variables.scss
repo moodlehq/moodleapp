@@ -142,7 +142,6 @@ $core-select-placeholder-color: $core-color;
 // iOS only Sass variables can go here
 
 $text-input-ios-show-focus-highlight: false;
-$core-text-input-ios-show-highlight: false;
 $item-ios-avatar-size: 54px;
 $loading-ios-spinner-color: $core-loading-spinner-color;
 $spinner-ios-ios-color: $core-spinner-color;
@@ -159,8 +158,7 @@ $toggle-ios-disabled-opacity: .5 !default;
 // --------------------------------------------------
 // Material Design only Sass variables can go here
 
-$text-input-md-show-focus-highlight: false;
-$core-text-input-md-show-highlight: true;
+$text-input-md-show-focus-highlight: true;
 $item-md-detail-push-show: true;
 $item-md-avatar-size: 54px;
 $loading-md-spinner-color: $core-loading-spinner-color;
