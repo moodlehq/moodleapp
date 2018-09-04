@@ -1,0 +1,9 @@
+ion-app.app-root page-addon-mod-forum-discussion {
+    .card.highlight .card-header .item {
+        background-color: $gray-lighter;
+    }
+
+    .addon-forum-reply-button .label {
+        margin: 0;
+    }
+}

@@ -32,12 +32,12 @@
                         </ion-avatar>
                         <h2><core-format-text [text]="discussion.subject"></core-format-text></h2>
                         <p *ngIf="discussion.userfullname">
-                            <ion-note float-end padding-start><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ion-note>
+                            <ion-note float-end padding-left><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ion-note>
                             {{discussion.userfullname}}
                         </p>
                     </ion-item>
                     <ion-card-content>
-                        <ion-note text-right *ngIf="discussion.groupname">
+                        <ion-note text-end *ngIf="discussion.groupname">
                             <ion-icon name="people"></ion-icon> {{ discussion.groupname }}
                         </ion-note>
                         <p><core-format-text [maxHeight]="60" [component]="component" [componentId]="componentId" [text]="discussion.message"></core-format-text></p>
@@ -50,9 +50,9 @@
                         </ion-avatar>
                         <h2><ion-icon name="pin" *ngIf="discussion.pinned"></ion-icon> <core-format-text [text]="discussion.subject"></core-format-text></h2>
                         <p>
-                            <ion-note float-end padding-start>
+                            <ion-note float-end padding-left text-end>
                                 {{discussion.created | coreDateDayOrTime}}
-                                <div *ngIf="discussion.numunread"><ion-icon name="record"></ion-icon> {{ 'addon.mod_forum.unreadpostsnumber' | translate:{ '$a' : discussion.numunread} }}</div>
+                                <div *ngIf="discussion.numunread"><core-icon name="fa-circle" color="primary"></core-icon> {{ 'addon.mod_forum.unreadpostsnumber' | translate:{ '$a' : discussion.numunread} }}</div>
                             </ion-note>
                             {{discussion.userfullname}}
                         </p>
@@ -93,7 +93,7 @@
             </ion-infinite-scroll>
         </core-loading>
 
-        <ion-fab bottom right *ngIf="forum && forum.cancreatediscussions">
+        <ion-fab bottom end *ngIf="forum && forum.cancreatediscussions">
             <button ion-fab (click)="openNewDiscussion()" [attr.aria-label]="addDiscussionText">
                 <ion-icon name="add"></ion-icon>
             </button>
