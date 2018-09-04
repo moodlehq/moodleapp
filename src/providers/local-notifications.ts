@@ -125,17 +125,19 @@ export class CoreLocalNotificationsProvider {
         this.appDB = appProvider.getDB();
         this.appDB.createTablesFromSchema(this.tablesSchema);
 
-        localNotifications.on('trigger', (notification, state) => {
-            this.trigger(notification);
-        });
+        platform.ready().then(() => {
+            localNotifications.on('trigger', (notification, state) => {
+                this.trigger(notification);
+            });
 
-        localNotifications.on('click', (notification, state) => {
-            if (notification && notification.data) {
-                this.logger.debug('Notification clicked: ', notification.data);
+            localNotifications.on('click', (notification, state) => {
+                if (notification && notification.data) {
+                    this.logger.debug('Notification clicked: ', notification.data);
 
-                const data = textUtils.parseJSON(notification.data);
-                this.notifyClick(data);
-            }
+                    const data = textUtils.parseJSON(notification.data);
+                    this.notifyClick(data);
+                }
+            });
         });
 
         eventsProvider.on(CoreEventsProvider.SITE_DELETED, (site) => {
