@@ -7,11 +7,6 @@ ion-app.app-root page-addon-mod-lesson-player {
 
     ion-input[padding-left] input[padding-left] {
         // Applying padding-left to the ion-input applies it twice since it's replicated in the inner input.
-        padding-left: 0;
-    }
-
-    ion-input[padding-start] input[padding-start] {
-        // Applying padding-start to the ion-input applies it twice since it's replicated in the inner input.
         @include padding(null, null, null, 0);
     }
 

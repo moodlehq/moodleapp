@@ -88,12 +88,12 @@
 <!-- Arrows to go to next/previous. -->
 <ng-template #navArrows>
     <ion-row align-items-center>
-        <ion-col>
+        <ion-col text-start>
             <a ion-button icon-only color="light" *ngIf="previousPage >= 0" (click)="changePage(previousPage)" [title]="'core.previous' | translate">
                 <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
             </a>
         </ion-col>
-        <ion-col text-right>
+        <ion-col text-end>
             <a ion-button icon-only color="light" *ngIf="nextPage >= -1" (click)="changePage(nextPage)" [title]="'core.next' | translate">
                 <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
             </a>

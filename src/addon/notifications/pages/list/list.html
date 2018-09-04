@@ -20,7 +20,7 @@
                     <img [src]="notification.profileimageurlfrom || 'assets/img/user-avatar.png'" core-external-content [alt]="'core.pictureof' | translate:{$a: notification.userfromfullname}" role="presentation">
                 </ion-avatar>
                 <h2>{{notification.userfromfullname}}</h2>
-                <div item-end *ngIf="!notification.timeread"><ion-icon name="record" color="primary"></ion-icon></div>
+                <div item-end *ngIf="!notification.timeread"><core-icon name="fa-circle" color="primary"></core-icon></div>
                 <p>{{notification.timecreated | coreDateDayOrTime}}</p>
             </ion-item>
             <ion-item text-wrap>
