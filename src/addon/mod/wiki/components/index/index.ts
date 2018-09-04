@@ -84,7 +84,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             protected userProvider: CoreUserProvider, private popoverCtrl: PopoverController) {
         super(injector, content);
 
-        this.pageStr = this.translate.instant('addon.mod_wiki.page');
+        this.pageStr = this.translate.instant('addon.mod_wiki.wikipage');
     }
 
     /**
