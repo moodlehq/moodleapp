@@ -412,7 +412,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             forumId: this.forum.id,
             discussionId: discussion.discussion,
             trackPosts: this.trackPosts,
-            locked: discussion.locked && !discussion.canreply
+            locked: discussion.locked
         };
         this.splitviewCtrl.push('AddonModForumDiscussionPage', params);
     }
