@@ -8,7 +8,7 @@
             <ion-note float-end padding-left *ngIf="!post.modified"><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ion-note>
             <ion-note float-end padding-left text-end *ngIf="post.modified">
                 {{post.modified | coreDateDayOrTime}}
-                <div *ngIf="unread"><core-icon name="fa-circle" color="primary"></core-icon> {{ 'addon.mod_forum.unread' | translate }}</div>
+                <div *ngIf="trackPosts && !post.postread"><core-icon name="fa-circle" color="primary"></core-icon> {{ 'addon.mod_forum.unread' | translate }}</div>
             </ion-note>
             {{post.userfullname}}
         </p>
