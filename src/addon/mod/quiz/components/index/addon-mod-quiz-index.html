@@ -33,7 +33,7 @@
     </ion-card>
 
     <!-- List of user attempts. -->
-    <ion-card class="addon-mod_quiz-table" *ngIf="attempts && attempts.length">
+    <ion-card class="addon-mod_quiz-table" *ngIf="quiz && attempts && attempts.length">
         <ion-card-header text-wrap>
             <h2>{{ 'addon.mod_quiz.summaryofattempts' | translate }}</h2>
         </ion-card-header>
@@ -64,7 +64,7 @@
     </ion-card>
 
     <!-- Result info. -->
-    <ion-card *ngIf="showResults && (gradeResult || gradeOverridden || gradebookFeedback || (quiz.showFeedbackColumn && overallFeedback))">
+    <ion-card *ngIf="quiz && showResults && (gradeResult || gradeOverridden || gradebookFeedback || (quiz.showFeedbackColumn && overallFeedback))">
         <ion-list>
             <ion-item text-wrap *ngIf="gradeResult">{{ gradeResult }}</ion-item>
             <ion-item text-wrap *ngIf="gradeOverridden">{{ 'core.course.overriddennotice' | translate }}</ion-item>
