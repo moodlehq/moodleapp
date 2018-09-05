@@ -9,6 +9,7 @@
     "assessmentstrategynotsupported": "Assessment strategy {{$a}} not supported",
     "assessmentweight": "Assessment weight",
     "assignedassessments": "Assigned submissions to assess",
+    "assignedassessmentsnone": "You have no assigned submission to assess",
     "conclusion": "Conclusion",
     "createsubmission": "Start preparing your submission",
     "deletesubmission": "Delete submission",
