@@ -497,6 +497,8 @@ export class CoreLocalNotificationsProvider {
 
     /**
      * Show an in app notification popover.
+     * This function was used because local notifications weren't displayed when the app was in foreground in iOS10+,
+     * but the issue was fixed in the plugin and this function is no longer used.
      *
      * @param {CoreILocalNotification} notification Notification.
      */
@@ -594,11 +596,6 @@ export class CoreLocalNotificationsProvider {
      * @return {Promise<any>} Promise resolved when stored, rejected otherwise.
      */
     trigger(notification: CoreILocalNotification): Promise<any> {
-        if (this.platform.is('ios') && this.platform.version().num >= 10) {
-            // In iOS10 show in app notification.
-            this.showNotificationPopover(notification);
-        }
-
         const entry = {
             id: notification.id,
             at: parseInt(notification.at, 10)
