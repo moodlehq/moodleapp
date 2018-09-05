@@ -50,9 +50,10 @@ export class AddonModDataFieldNumberHandler extends AddonModDataFieldTextHandler
      */
     hasFieldDataChanged(field: any, inputData: any, originalFieldData: any): Promise<boolean> | boolean {
         const fieldName = 'f_' + field.id,
-            input = typeof inputData[fieldName] != 'undefined' ? parseFloat(inputData[fieldName]) : '';
+            input = typeof inputData[fieldName] != 'undefined' && inputData[fieldName] !== null ?
+                parseFloat(inputData[fieldName]) : '';
 
-        originalFieldData = (originalFieldData && typeof originalFieldData.content != 'undefined') ?
+        originalFieldData = (originalFieldData && typeof originalFieldData.content != 'undefined' && originalFieldData !== null) ?
             parseFloat(originalFieldData.content) : '';
 
         return input != originalFieldData;
