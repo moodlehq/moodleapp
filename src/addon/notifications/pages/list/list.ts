@@ -37,6 +37,7 @@ export class AddonNotificationsListPage {
     notificationsLoaded = false;
     canLoadMore = false;
     canMarkAllNotificationsAsRead = false;
+    loadingMarkAllNotificationsAsRead = false;
 
     protected readCount = 0;
     protected unreadCount = 0;
@@ -118,15 +119,6 @@ export class AddonNotificationsListPage {
                 this.canLoadMore = true;
             }
 
-            // Check if mark all notifications as read is enabled and there are some to read.
-            if (this.notificationsProvider.isMarkAllNotificationsAsReadEnabled()) {
-                promises.push(this.notificationsProvider.getUnreadNotificationsCount().then((unread) => {
-                    this.canMarkAllNotificationsAsRead = unread > 0;
-                }));
-            } else {
-                this.canMarkAllNotificationsAsRead = false;
-            }
-
             return Promise.all(promises).then(() => {
                 // Mark retrieved notifications as read if they are not.
                 this.markNotificationsAsRead(unread);
@@ -141,15 +133,17 @@ export class AddonNotificationsListPage {
      * Mark all notifications as read.
      */
     markAllNotificationsAsRead(): void {
-        this.notificationsProvider.markAllNotificationsAsRead().then(() => {
+        this.loadingMarkAllNotificationsAsRead = true;
+        this.notificationsProvider.markAllNotificationsAsRead().catch(() => {
+            // Omit failure.
+        }).finally(() => {
             const siteId = this.sitesProvider.getCurrentSiteId();
             this.eventsProvider.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, null, siteId);
 
             this.notificationsProvider.getUnreadNotificationsCount().then((unread) => {
                 this.canMarkAllNotificationsAsRead = unread > 0;
+                this.loadingMarkAllNotificationsAsRead = false;
             });
-        }).catch(() => {
-            // Omit failure.
         });
     }
 
@@ -159,12 +153,14 @@ export class AddonNotificationsListPage {
      * @param {any[]} notifications Array of notification objects.
      */
     protected markNotificationsAsRead(notifications: any[]): void {
+        let promise;
+
         if (notifications.length > 0) {
             const promises = notifications.map((notification) => {
                 return this.notificationsProvider.markNotificationRead(notification.id);
             });
 
-            Promise.all(promises).catch(() => {
+            promise = Promise.all(promises).catch(() => {
                 // Ignore errors.
             }).finally(() => {
                 this.notificationsProvider.invalidateNotificationsList().finally(() => {
@@ -172,7 +168,21 @@ export class AddonNotificationsListPage {
                     this.eventsProvider.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, null, siteId);
                 });
             });
+        } else {
+            promise = Promise.resolve();
         }
+
+        promise.finally(() => {
+            // Check if mark all notifications as read is enabled and there are some to read.
+            if (this.notificationsProvider.isMarkAllNotificationsAsReadEnabled()) {
+                this.loadingMarkAllNotificationsAsRead = true;
+                return this.notificationsProvider.getUnreadNotificationsCount().then((unread) => {
+                    this.canMarkAllNotificationsAsRead = unread > 0;
+                    this.loadingMarkAllNotificationsAsRead = false;
+                });
+            }
+            this.canMarkAllNotificationsAsRead = false;
+        });
     }
 
     /**
