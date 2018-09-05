@@ -1,18 +1,20 @@
-<ion-item text-wrap>
-    <ion-avatar item-start (click)="openUserProfile(post.userid)">
-        <img [src]="post.userpictureurl" onError="this.src='assets/img/user-avatar.png'" core-external-content [alt]="'core.pictureof' | translate:{$a: post.userfullname}" role="presentation">
-    </ion-avatar>
-    <h2><span [class.core-bold]="post.parent == 0"><core-format-text [text]="post.subject"></core-format-text></span></h2>
-    <p>
-        <ion-note float-end padding-start *ngIf="!post.modified"><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ion-note>
-        <ion-note float-end padding-start *ngIf="post.modified">
-            {{post.modified | coreDateDayOrTime}}
-            <div *ngIf="unread"><ion-icon name="record"></ion-icon> {{ 'addon.mod_forum.unread' | translate }}</div>
-        </ion-note>
-        {{post.userfullname}}
-    </p>
-</ion-item>
-<ion-card-content>
+<ion-card-header text-wrap no-padding >
+    <ion-item text-wrap>
+        <ion-avatar item-start (click)="openUserProfile(post.userid)">
+            <img [src]="post.userpictureurl" onError="this.src='assets/img/user-avatar.png'" core-external-content [alt]="'core.pictureof' | translate:{$a: post.userfullname}" role="presentation">
+        </ion-avatar>
+        <h2><span [class.core-bold]="post.parent == 0"><core-format-text [text]="post.subject"></core-format-text></span></h2>
+        <p>
+            <ion-note float-end padding-left *ngIf="!post.modified"><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ion-note>
+            <ion-note float-end padding-left text-end *ngIf="post.modified">
+                {{post.modified | coreDateDayOrTime}}
+                <div *ngIf="trackPosts && !post.postread"><core-icon name="fa-circle" color="primary"></core-icon> {{ 'addon.mod_forum.unread' | translate }}</div>
+            </ion-note>
+            {{post.userfullname}}
+        </p>
+    </ion-item>
+</ion-card-header>
+<ion-card-content padding-top>
     <core-format-text [component]="component" [componentId]="componentId" [text]="post.message"></core-format-text>
     <div *ngFor="let attachment of post.attachments">
         <!-- Files already attached to the submission. -->
@@ -21,12 +23,12 @@
         <core-local-file *ngIf="attachment.name" [file]="attachment"></core-local-file>
     </div>
 </ion-card-content>
-<ion-item text-right *ngIf="post.id && post.canreply">
+<ion-item no-padding text-end *ngIf="post.id && post.canreply" class="addon-forum-reply-button">
     <button ion-button icon-left clear small (click)="showReply()" [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId" [attr.aria-expanded]="replyData.replyingTo === post.id">
         <ion-icon name="undo"></ion-icon> {{ 'addon.mod_forum.reply' | translate }}
     </button>
 </ion-item>
-<ion-item text-right *ngIf="!post.id && (!replyData.isEditing || replyData.replyingTo != post.parent)">
+<ion-item text-end *ngIf="!post.id && (!replyData.isEditing || replyData.replyingTo != post.parent)">
     <button ion-button icon-left clear small (click)="editReply()" [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId" [attr.aria-expanded]="replyData.replyingTo === post.parent">
         <ion-icon name="create"></ion-icon> {{ 'addon.mod_forum.edit' | translate }}
     </button>

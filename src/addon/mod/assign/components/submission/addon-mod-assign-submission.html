@@ -112,15 +112,15 @@
                 <ion-item text-wrap *ngIf="membersToSubmit && membersToSubmit.length > 0">
                     <h2>{{ 'addon.mod_assign.userswhoneedtosubmit' | translate: {$a: ''} }}</h2>
                     <div *ngFor="let user of membersToSubmit">
-                        <a *ngIf="user.fullname" (click)="openUserProfile(user.id)" [title]="user.fullname">
+                        <a ion-item text-wrap *ngIf="user.fullname" (click)="openUserProfile(user.id)" [title]="user.fullname">
                             <ion-avatar item-start>
                                 <img [src]="user.profileimageurl" core-external-content [alt]="'core.pictureof' | translate:{$a: user.fullname}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
                             </ion-avatar>
                             <h2>{{ user.fullname }}</h2>
                         </a>
-                        <p *ngIf="!user.fullname">
+                        <ion-item text-wrap *ngIf="!user.fullname">
                             {{ 'addon.mod_assign.hiddenuser' | translate }} <core-format-text [text]="user"></core-format-text>
-                        </p>
+                        </ion-item>
                     </div>
                 </ion-item>
 

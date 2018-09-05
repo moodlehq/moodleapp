@@ -119,10 +119,13 @@
                 </ion-item>
             </ion-card>
 
-            <ion-card class="with-borders" *ngIf="canAssess && assessments && assessments.length">
+            <ion-card class="with-borders" *ngIf="canAssess">
                 <ion-item-divider color="light" text-wrap>
                     <h2>{{ 'addon.mod_workshop.assignedassessments' | translate }}</h2>
                 </ion-item-divider>
+                <ion-item text-wrap *ngIf="!assessments || !assessments.length">
+                    <p>{{ 'addon.mod_workshop.assignedassessmentsnone' | translate }}</p>
+                </ion-item>
                 <ng-container *ngFor="let assessment of assessments">
                     <addon-mod-workshop-submission [submission]="assessment.submission" [assessment]="assessment" [courseId]="workshop.course" [module]="module" [workshop]="workshop" [access]="access" summary="true"></addon-mod-workshop-submission>
                 </ng-container>
@@ -130,7 +133,7 @@
         </ng-container>
 
         <!-- MULTIPLE PHASES SUBMISSION OR GREATER only teachers -->
-        <ion-card class="with-borders" *ngIf="access.canviewallsubmissions && workshop.phase >= workshopPhases.PHASE_SUBMISSION && grades && grades.length">
+        <ion-card class="with-borders" *ngIf="access.canviewallsubmissions && workshop.phase >= workshopPhases.PHASE_SUBMISSION && ((grades && grades.length) || (groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)))">
             <ion-item-divider color="light" text-wrap *ngIf="workshop.phase == workshopPhases.PHASE_SUBMISSION">
                 <h2>{{ 'addon.mod_workshop.submissionsreport' | translate }}</h2>
             </ion-item-divider>

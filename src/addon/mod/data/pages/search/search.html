@@ -47,9 +47,11 @@
                 <core-compile-html [text]="advancedSearch" [jsData]="jsData" [extraImports]="extraImports"></core-compile-html>
             </div>
         </ion-list>
-        <button ion-button block margin type="submit" icon-start>
-            <ion-icon name="search"></ion-icon>
-            {{ 'addon.mod_data.search' | translate }}
-        </button>
+        <div padding>
+            <button ion-button block type="submit" icon-start>
+                <ion-icon name="search"></ion-icon>
+                {{ 'addon.mod_data.search' | translate }}
+            </button>
+        </div>
     </form>
 </ion-content>

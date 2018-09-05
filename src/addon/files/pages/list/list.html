@@ -36,7 +36,7 @@
     </core-loading>
 
     <!-- Upload a private file. -->
-    <ion-fab bottom right *ngIf="showUpload && root != 'site' && !path">
+    <ion-fab bottom end *ngIf="showUpload && root != 'site' && !path">
         <button ion-fab (click)="uploadFile()" [attr.aria-label]="'core.fileuploader.uploadafile' | translate">
             <ion-icon name="add"></ion-icon>
         </button>

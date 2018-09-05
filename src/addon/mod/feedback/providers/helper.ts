@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, ViewController } from 'ionic-angular';
 import { AddonModFeedbackProvider } from './feedback';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -35,17 +35,17 @@ export class AddonModFeedbackHelperProvider {
     }
 
     /**
-     * Check if the page we are going to open is in the history and returns the number of pages in the stack to go back.
+     * Check if the page we are going to open is in the history and returns the view controller in the stack to go back.
      *
      * @param {string} pageName       Name of the page we want to navigate.
      * @param {number} instance       Activity instance Id. I.e FeedbackId.
      * @param {string} paramName      Param name where to find the instance number.
      * @param {string} prefix         Prefix to check if we are out of the activity context.
      * @param {NavController} navCtrl Nav Controller of the view.
-     * @return {number}   Returns the number of times the history needs to go back to find the specified page.
+     * @return {ViewController}   Returns view controller found or null.
      */
-    protected getActivityHistoryBackCounter(pageName: string, instance: number, paramName: string, prefix: string,
-            navCtrl: NavController): number {
+    protected getPageView(pageName: string, instance: number, paramName: string, prefix: string,
+            navCtrl: NavController): ViewController {
         let historyInstance, params,
             view = navCtrl.getActive();
 
@@ -65,13 +65,13 @@ export class AddonModFeedbackHelperProvider {
 
             // Page found.
             if (view.name == pageName) {
-                return view.index;
+                return view;
             }
 
             view = navCtrl.getPrevious(view);
         }
 
-        return 0;
+        return null;
     }
 
     /**
@@ -223,26 +223,24 @@ export class AddonModFeedbackHelperProvider {
      * @return {Promise<void>}    Resolved when navigation animation is done.
      */
     openFeature(feature: string, navCtrl: NavController, module: any, courseId: number, group: number = 0): Promise<void> {
-        const pageName = feature && feature != 'analysis' ? 'AddonModFeedback' + feature + 'Page' : 'AddonModFeedbackIndexPage';
-        let backTimes = 0;
-
-        const stateParams = {
-            module: module,
-            moduleId: module.id,
-            courseId: courseId,
-            feedbackId: module.instance,
-            group: group
-        };
+        const pageName = feature && feature != 'analysis' ? 'AddonModFeedback' + feature + 'Page' : 'AddonModFeedbackIndexPage',
+            stateParams = {
+                module: module,
+                moduleId: module.id,
+                courseId: courseId,
+                feedbackId: module.instance,
+                group: group
+            };
 
         // Only check history if navigating through tabs.
         if (pageName == 'AddonModFeedbackIndexPage') {
             stateParams['tab'] = feature == 'analysis' ? 'analysis' : 'overview';
-            backTimes = this.getActivityHistoryBackCounter(pageName, module.instance, 'feedbackId', 'AddonModFeedback', navCtrl);
-        }
+            const view = this.getPageView(pageName, module.instance, 'feedbackId', 'AddonModFeedback', navCtrl);
 
-        if (backTimes > 0) {
-            // Go back X times until the the page we want to reach.
-            return navCtrl.remove(navCtrl.getActive().index, backTimes);
+            if (view) {
+                // Go back to the found page.
+                return navCtrl.popTo(view);
+            }
         }
 
         // Not found, open new state.

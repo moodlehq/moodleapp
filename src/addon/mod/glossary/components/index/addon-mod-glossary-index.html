@@ -61,7 +61,7 @@
             </ion-infinite-scroll>
         </core-loading>
 
-        <ion-fab bottom right *ngIf="canAdd">
+        <ion-fab bottom end *ngIf="canAdd">
             <button ion-fab (click)="openNewEntry()" [attr.aria-label]="'addon.mod_glossary.addentry' | translate">
                 <ion-icon name="add"></ion-icon>
             </button>

@@ -88,6 +88,12 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         this.viewDiscObserver = this.eventsProvider.on(AddonModForumProvider.VIEW_DISCUSSION_EVENT, (data) => {
             if (this.forum && this.forum.id == data.forumId) {
                 this.selectedDiscussion = this.splitviewCtrl.isOn() ? data.discussion : 0;
+
+                // Invalidate discussion list if it was not read.
+                const discussion = this.discussions.find((disc) => disc.discussion == data.discussion);
+                if (discussion && discussion.numunread > 0) {
+                    this.forumProvider.invalidateDiscussionsList(this.forum.id);
+                }
             }
         }, this.sitesProvider.getCurrentSiteId());
 
@@ -406,7 +412,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             forumId: this.forum.id,
             discussionId: discussion.discussion,
             trackPosts: this.trackPosts,
-            locked: discussion.locked && !discussion.canreply
+            locked: discussion.locked
         };
         this.splitviewCtrl.push('AddonModForumDiscussionPage', params);
     }

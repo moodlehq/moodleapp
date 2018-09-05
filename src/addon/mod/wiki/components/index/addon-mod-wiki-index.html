@@ -73,7 +73,7 @@
 
 </core-loading>
 
-<ion-fab bottom right *ngIf="canEdit">
+<ion-fab bottom end *ngIf="canEdit">
     <button ion-fab (click)="goToNewPage()" [attr.aria-label]="'addon.mod_wiki.createpage' | translate">
         <ion-icon name="add"></ion-icon>
     </button>

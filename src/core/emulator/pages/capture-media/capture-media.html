@@ -11,7 +11,7 @@
         </ion-buttons>
     </ion-navbar>
 </ion-header>
-<ion-content>
+<ion-content  class="has-footer">
     <core-loading [hideUntil]="readyToCapture">
         <div class="core-av-wrapper">
             <!-- Video stream for image and video. -->
@@ -47,7 +47,7 @@
                 <ion-icon name="trash"></ion-icon>
             </button>
         </ion-col>
-        <ion-col padding text-right class="chrono-container">
+        <ion-col padding text-end class="chrono-container">
             <core-chrono *ngIf="!isImage" [hidden]="hasCaptured" [running]="isCapturing" [reset]="resetChrono" [endTime]="maxTime" (onEnd)="stopCapturing()"></core-chrono>
         </ion-col>
     </ion-row>

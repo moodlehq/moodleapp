@@ -374,6 +374,13 @@ ion-app.app-root {
     @include core-headings();
   }
 
+  .item core-format-text,
+  core-format-text {
+    p {
+      margin-bottom: 1rem;
+    }
+  }
+
   // Images in ion-card have width 100% and display block. Remove that when the image is in core-format-text.
   ion-card core-format-text img {
     width: min-content;
@@ -396,6 +403,12 @@ ion-app.app-root {
     }
   }
 
+  .item .item-button[icon-only] {
+      height: 2.8em;
+      font-size: 1.6rem;
+      padding: 0 3px;
+  }
+
   // Ionic fix. Button can occupy all page if not.
   ion-select {
     position: relative;
@@ -411,10 +424,19 @@ ion-app.app-root {
       }
   }
 
-  :not(.item) > * > * > ion-select,
+  ion-select {
+    color: $core-select-placeholder-color;
+    align-self: start;
+
+    .select-icon .select-icon-inner {
+      color: $core-select-placeholder-color;
+    }
+  }
+
+  ion-select.core-button-select,
   .core-button-select {
     background-color: white;
-    color: $core-color;
+    color: $core-select-placeholder-color;
     white-space: normal;
     align-self: start;
     max-width: none;
@@ -446,7 +468,7 @@ ion-app.app-root {
     }
 
     .select-icon .select-icon-inner {
-      color: $core-color;
+      color: $core-select-placeholder-color;
     }
 
     ion-icon:last-child {
@@ -919,8 +941,10 @@ ion-app.app-root {
 }
 
 body.keyboard-is-open {
-  .scroll-content, .fixed-content {
+  ion-content:not(.has-footer) {
+    > .scroll-content, > .fixed-content {
       margin-bottom: 0 !important;
+    }
   }
 
   core-ion-tabs .tabbar {

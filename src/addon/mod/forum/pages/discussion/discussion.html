@@ -30,7 +30,7 @@
             <ion-icon name="warning"></ion-icon> {{ 'addon.mod_forum.discussionlocked' | translate }}
         </ion-card>
 
-        <ion-card *ngIf="discussion" margin-bottom>
+        <ion-card *ngIf="discussion" margin-bottom class="highlight">
             <addon-mod-forum-post [post]="discussion" [courseId]="courseId" [discussionId]="discussionId" [component]="component" [componentId]="cmId" [replyData]="replyData" [originalData]="originalData" [defaultSubject]="defaultSubject" [forum]="forum" [trackPosts]="trackPosts" (onPostChange)="postListChanged()"></addon-mod-forum-post>
         </ion-card>
 
@@ -51,7 +51,7 @@
             <ion-card>
                 <addon-mod-forum-post [post]="post" [courseId]="courseId" [discussionId]="discussionId" [component]="component" [componentId]="cmId" [replyData]="replyData" [originalData]="originalData" [defaultSubject]="defaultSubject" [forum]="forum" [trackPosts]="trackPosts" (onPostChange)="postListChanged()"></addon-mod-forum-post>
             </ion-card>
-            <div padding-start *ngIf="post.children.length && post.children[0].subject">
+            <div padding-left *ngIf="post.children.length && post.children[0].subject">
                 <ng-container *ngFor="let child of post.children">
                     <ng-container *ngTemplateOutlet="nestedPosts; context: {post: child}"></ng-container>
                 </ng-container>
