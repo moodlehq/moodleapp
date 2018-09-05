@@ -93,23 +93,6 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Check if we can leave the page or not.
-     *
-     * @return {boolean|Promise<void>} Resolved if we can leave it, rejected if not.
-     */
-    ionViewCanLeave(): boolean | Promise<void> {
-        // If split view is enabled, check if we can leave the details page.
-        if (this.splitviewCtrl.isOn()) {
-            const detailsPage = this.splitviewCtrl.getDetailsNav().getActive().instance;
-            if (detailsPage && detailsPage.ionViewCanLeave) {
-                return detailsPage.ionViewCanLeave();
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * Fetch assignment data.
      *
      * @return {Promise<any>} Promise resolved when done.

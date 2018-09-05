@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
 import { AddonModDataProvider } from './data';
@@ -31,7 +32,8 @@ export class AddonModDataDeleteLinkHandler extends CoreContentLinksHandlerBase {
     pattern = /\/mod\/data\/view\.php.*([\?\&](d|delete)=\d+)/;
 
     constructor(private dataProvider: AddonModDataProvider, private courseProvider: CoreCourseProvider,
-            private domUtils: CoreDomUtilsProvider, private eventsProvider: CoreEventsProvider) {
+            private domUtils: CoreDomUtilsProvider, private eventsProvider: CoreEventsProvider,
+            private translate: TranslateService) {
         super();
     }
 
@@ -66,32 +68,37 @@ export class AddonModDataDeleteLinkHandler extends CoreContentLinksHandlerBase {
             CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: (siteId, navCtrl?): void => {
-                const modal = this.domUtils.showModalLoading(),
-                    dataId = parseInt(params.d, 10),
-                    entryId = parseInt(params.delete, 10);
 
-                this.getActivityCourseIdIfNotSet(dataId, siteId, courseId).then((cId) => {
-                    courseId = cId;
+                this.domUtils.showConfirm(this.translate.instant('addon.mod_data.confirmdeleterecord')).then(() => {
+                    const modal = this.domUtils.showModalLoading(),
+                        dataId = parseInt(params.d, 10),
+                        entryId = parseInt(params.delete, 10);
 
-                    // Delete entry.
-                    return this.dataProvider.deleteEntry(dataId, entryId, courseId, siteId).catch((message) => {
-                        this.domUtils.showErrorModalDefault(message, 'addon.mod_data.errordeleting', true);
+                    return this.getActivityCourseIdIfNotSet(dataId, siteId, courseId).then((cId) => {
+                        courseId = cId;
 
-                        return Promise.reject(null);
+                        // Delete entry.
+                        return this.dataProvider.deleteEntry(dataId, entryId, courseId, siteId).catch((message) => {
+                            this.domUtils.showErrorModalDefault(message, 'addon.mod_data.errordeleting', true);
+
+                            return Promise.reject(null);
+                        });
+                    }).then(() => {
+                        const promises = [];
+                        promises.push(this.dataProvider.invalidateEntryData(dataId, entryId, siteId));
+                        promises.push(this.dataProvider.invalidateEntriesData(dataId, siteId));
+
+                        return Promise.all(promises);
+                    }).then(() => {
+                        this.eventsProvider.trigger(AddonModDataProvider.ENTRY_CHANGED, {dataId: dataId, entryId: entryId,
+                            deleted: true}, siteId);
+
+                        this.domUtils.showToast('addon.mod_data.recorddeleted', true, 3000);
+                    }).finally(() => {
+                        modal.dismiss();
                     });
-                }).then(() => {
-                    const promises = [];
-                    promises.push(this.dataProvider.invalidateEntryData(dataId, entryId, siteId));
-                    promises.push(this.dataProvider.invalidateEntriesData(dataId, siteId));
-
-                    return Promise.all(promises);
-                }).then(() => {
-                    this.eventsProvider.trigger(AddonModDataProvider.ENTRY_CHANGED, {dataId: dataId, entryId: entryId,
-                        deleted: true}, siteId);
-
-                    this.domUtils.showToast('addon.mod_data.recorddeleted', true, 3000);
-                }).finally(() => {
-                    modal.dismiss();
+                }).catch(() => {
+                    // Nothing to do.
                 });
             }
         }];

@@ -244,9 +244,9 @@ export class AddonNotificationsProvider {
         const params = {
             useridto: this.sitesProvider.getCurrentSiteUserId()
         };
+
         return this.sitesProvider.getCurrentSite().write('core_message_mark_all_notifications_as_read', params);
     }
-
 
     /**
      * Mark message notification as read.

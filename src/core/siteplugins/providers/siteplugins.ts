@@ -149,15 +149,19 @@ export class CoreSitePluginsProvider {
      * @return {any} An object with the data to pass to the JS.
      */
     createDataForJS(initResult: any, contentResult?: any): any {
-        // First of all, add the data returned by the init JS (if any).
-        let data = this.utils.clone(initResult.jsResult || {});
-        if (typeof data == 'boolean') {
-            data = {};
-        }
+        let data;
 
-        // Now add some data returned by the init WS call.
-        data.INIT_TEMPLATES = this.utils.objectToKeyValueMap(initResult.templates, 'id', 'html');
-        data.INIT_OTHERDATA = initResult.otherdata;
+        if (initResult) {
+            // First of all, add the data returned by the init JS (if any).
+            data = this.utils.clone(initResult.jsResult || {});
+            if (typeof data == 'boolean') {
+                data = {};
+            }
+
+            // Now add some data returned by the init WS call.
+            data.INIT_TEMPLATES = this.utils.objectToKeyValueMap(initResult.templates, 'id', 'html');
+            data.INIT_OTHERDATA = initResult.otherdata;
+        }
 
         if (contentResult) {
             // Now add the data returned by the content WS call.

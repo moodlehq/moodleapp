@@ -14,6 +14,7 @@
 
 import { Injectable, Injector } from '@angular/core';
 import { NavController, NavOptions } from 'ionic-angular';
+import { SafeUrl } from '@angular/platform-browser';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
@@ -77,7 +78,7 @@ export interface CoreCourseModuleHandlerData {
      * The image to use as icon (path to the image).
      * @type {string}
      */
-    icon?: string;
+    icon?: string | SafeUrl;
 
     /**
      * The class to assign to the item.

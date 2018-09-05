@@ -109,6 +109,10 @@ export class CoreSplitViewComponent implements OnInit, OnDestroy {
     handleCanLeave(): void {
         // Listen for the didEnter event on the details nav to detect everytime a page is loaded.
         this.detailsDidEnterSubscription = this.detailNav.viewDidEnter.subscribe((detailsViewController: ViewController) => {
+            if (!this.isOn()) {
+                return;
+            }
+
             const masterViewController = this.masterNav.getActive();
 
             if (this.masterCanLeaveOverridden) {
@@ -133,7 +137,7 @@ export class CoreSplitViewComponent implements OnInit, OnDestroy {
                     return Promise.resolve().then(() => {
                         if (this.originalMasterCanLeave) {
                             // First call the master canLeave.
-                            const result = this.originalMasterCanLeave();
+                            const result = this.originalMasterCanLeave.apply(masterViewController.instance);
                             if (typeof result == 'boolean' && !result) {
                                 // User cannot leave, return a rejected promise so the details canLeave isn't executed.
                                 return Promise.reject(null);
