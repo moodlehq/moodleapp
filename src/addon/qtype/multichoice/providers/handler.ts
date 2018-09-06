@@ -151,4 +151,22 @@ export class AddonQtypeMultichoiceHandler implements CoreQuestionHandler {
     isSameResponseSingle(prevAnswers: any, newAnswers: any): boolean {
         return this.utils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
     }
+
+    /**
+     * Prepare and add to answers the data to send to server based in the input. Return promise if async.
+     *
+     * @param {any} question Question.
+     * @param {any} answers The answers retrieved from the form. Prepared answers must be stored in this object.
+     * @param {boolean} [offline] Whether the data should be saved in offline.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {void|Promise<any>} Return a promise resolved when done if async, void if sync.
+     */
+    prepareAnswers(question: any, answers: any, offline: boolean, siteId?: string): void | Promise<any> {
+        if (question && !question.multi && typeof answers[question.optionsName] != 'undefined' && !answers[question.optionsName]) {
+            /* It's a single choice and the user hasn't answered. Delete the answer and its sequencecheck because
+               sending an empty string (default value) will mark the first option as selected. */
+            delete answers[question.optionsName];
+            delete answers[question.optionsName.replace('answer', ':sequencecheck')];
+        }
+    }
 }
