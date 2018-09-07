@@ -9,9 +9,12 @@
     </ion-refresher>
     <core-loading [hideUntil]="notificationsLoaded">
         <div padding *ngIf="canMarkAllNotificationsAsRead">
-            <button ion-button block (click)="markAllNotificationsAsRead()" color="light" icon-start>
+            <button ion-button block (click)="markAllNotificationsAsRead()" color="light" icon-start *ngIf="!loadingMarkAllNotificationsAsRead">
                 <core-icon name="fa-check"></core-icon>
                 {{ 'addon.notifications.markallread' | translate }}
+            </button>
+            <button ion-button block color="light" icon-start *ngIf="loadingMarkAllNotificationsAsRead">
+                <ion-spinner></ion-spinner>
             </button>
         </div>
         <ion-card *ngFor="let notification of notifications">

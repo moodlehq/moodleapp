@@ -70,16 +70,16 @@
                 <ion-item text-wrap *ngIf="canEdit">
                     <div *ngIf="!unsupportedEditPlugins.length && !showErrorStatementEdit">
                         <!-- If has offline data, show edit. -->
-                        <a ion-button block color="primary" *ngIf="hasOffline" (click)="goToEdit()">{{ 'addon.mod_assign.editsubmission' | translate }}</a>
+                        <a ion-button block text-wrap color="primary" *ngIf="hasOffline" (click)="goToEdit()">{{ 'addon.mod_assign.editsubmission' | translate }}</a>
                         <!-- If no submission or is new, show add submission. -->
-                        <a ion-button block color="primary" *ngIf="!hasOffline && (!userSubmission || !userSubmission.status || userSubmission.status == statusNew)" (click)="goToEdit()">{{ 'addon.mod_assign.addsubmission' | translate }}</a>
+                        <a ion-button block text-wrap color="primary" *ngIf="!hasOffline && (!userSubmission || !userSubmission.status || userSubmission.status == statusNew)" (click)="goToEdit()">{{ 'addon.mod_assign.addsubmission' | translate }}</a>
                         <!-- If reopened, show addfromprevious and addnewattempt. -->
                         <ng-container *ngIf="!hasOffline && userSubmission && userSubmission.status == statusReopened">
-                            <a ion-button block color="primary" (click)="copyPrevious()">{{ 'addon.mod_assign.addnewattemptfromprevious' | translate }}</a>
-                            <a ion-button block color="primary" (click)="goToEdit()">{{ 'addon.mod_assign.addnewattempt' | translate }}</a>
+                            <a ion-button block text-wrap color="primary" (click)="copyPrevious()">{{ 'addon.mod_assign.addnewattemptfromprevious' | translate }}</a>
+                            <a ion-button block text-wrap color="primary" (click)="goToEdit()">{{ 'addon.mod_assign.addnewattempt' | translate }}</a>
                         </ng-container>
                         <!-- Else show editsubmission. -->
-                        <a ion-button block color="primary" *ngIf="!hasOffline && userSubmission && userSubmission.status && userSubmission.status != statusNew && userSubmission.status != statusReopened" (click)="goToEdit()">{{ 'addon.mod_assign.editsubmission' | translate }}</a>
+                        <a ion-button block text-wrap color="primary" *ngIf="!hasOffline && userSubmission && userSubmission.status && userSubmission.status != statusNew && userSubmission.status != statusReopened" (click)="goToEdit()">{{ 'addon.mod_assign.editsubmission' | translate }}</a>
                     </div>
                     <div *ngIf="unsupportedEditPlugins && unsupportedEditPlugins.length && !showErrorStatementEdit">
                         <p class="core-danger-item">{{ 'addon.mod_assign.erroreditpluginsnotsupported' | translate }}</p>
@@ -99,7 +99,7 @@
                     </ion-item>
                     <!-- Submit button. -->
                     <ion-item text-wrap *ngIf="!showErrorStatementSubmit">
-                        <a ion-button block (click)="submitForGrading(submitModel.submissionStatement)">{{ 'addon.mod_assign.submitassignment' | translate }}</a>
+                        <a ion-button block text-wrap (click)="submitForGrading(submitModel.submissionStatement)">{{ 'addon.mod_assign.submitassignment' | translate }}</a>
                         <p>{{ 'addon.mod_assign.submitassignment_help' | translate }}</p>
                     </ion-item>
                     <!-- Error because we lack submissions statement. -->
