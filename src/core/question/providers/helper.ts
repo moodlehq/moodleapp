@@ -465,10 +465,19 @@ export class CoreQuestionHelperProvider {
                     if (selected) {
                         selected.setAttribute('selected', 'selected');
                     }
-                } else if (element.type == 'radio' || element.type == 'checkbox') {
-                    // Check if this radio or checkbox is selected.
+                } else if (element.type == 'radio') {
+                    // Check if this radio is selected.
                     if (element.value == question.localAnswers[name]) {
                         element.setAttribute('checked', 'checked');
+                    } else {
+                        element.removeAttribute('checked');
+                    }
+                } else if (element.type == 'checkbox') {
+                    // Check if this checkbox is checked.
+                    if (this.utils.isTrueOrOne(question.localAnswers[name])) {
+                        element.setAttribute('checked', 'checked');
+                    } else {
+                        element.removeAttribute('checked');
                     }
                 } else {
                     // Put the answer in the value.

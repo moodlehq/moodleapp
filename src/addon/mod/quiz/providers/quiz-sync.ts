@@ -285,7 +285,8 @@ export class AddonModQuizSyncProvider extends CoreSyncBaseProvider {
                     // Attempt not found or it's finished in online. Discard it.
                     warnings.push(this.translate.instant('addon.mod_quiz.warningattemptfinished'));
 
-                    return this.finishSync(siteId, quiz, courseId, warnings, lastAttemptId, offlineAttempt, onlineAttempt, true);
+                    return this.finishSync(siteId, quiz, courseId, warnings, offlineAttempt.id, offlineAttempt, onlineAttempt,
+                            true);
                 }
 
                 // Get the data stored in offline.

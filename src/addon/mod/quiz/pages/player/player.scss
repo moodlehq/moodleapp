@@ -7,4 +7,8 @@ ion-app.app-root page-addon-mod-quiz-player {
     .core-has-fixed-timer form {
         padding-top: 56px;
     }
+
+    .toolbar-ios .bar-buttons-ios .bar-button {
+        @include padding-horizontal($content-padding);
+    }
 }
