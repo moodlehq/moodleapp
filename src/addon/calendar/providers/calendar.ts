@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSite } from '@classes/site';
@@ -131,7 +132,8 @@ export class AddonCalendarProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private groupsProvider: CoreGroupsProvider,
             private coursesProvider: CoreCoursesProvider, private timeUtils: CoreTimeUtilsProvider,
-            private localNotificationsProvider: CoreLocalNotificationsProvider, private configProvider: CoreConfigProvider) {
+            private localNotificationsProvider: CoreLocalNotificationsProvider, private configProvider: CoreConfigProvider,
+            private translate: TranslateService) {
         this.logger = logger.getInstance('AddonCalendarProvider');
         this.sitesProvider.createTablesFromSchema(this.tablesSchema);
     }
@@ -460,6 +462,11 @@ export class AddonCalendarProvider {
                         title: event.name,
                         text: startDate.toLocaleString(),
                         at: dateTriggered,
+                        channelParams: {
+                            channelID: 'notifications',
+                            channelName: this.translate.instant('addon.notifications.notifications'),
+                            importance: 4 // IMPORTANCE_HIGH
+                        },
                         data: {
                             eventid: event.id,
                             siteid: siteId
