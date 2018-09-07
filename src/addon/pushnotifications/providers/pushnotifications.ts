@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable, NgZone } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { Platform } from 'ionic-angular';
 import { Badge } from '@ionic-native/badge';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
@@ -65,7 +66,8 @@ export class AddonPushNotificationsProvider {
             protected pushNotificationsDelegate: AddonPushNotificationsDelegate, protected sitesProvider: CoreSitesProvider,
             private badge: Badge, private localNotificationsProvider: CoreLocalNotificationsProvider,
             private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider, private push: Push,
-            private configProvider: CoreConfigProvider, private device: Device, private zone: NgZone) {
+            private configProvider: CoreConfigProvider, private device: Device, private zone: NgZone,
+            private translate: TranslateService) {
         this.logger = logger.getInstance('AddonPushNotificationsProvider');
         this.appDB = appProvider.getDB();
         this.appDB.createTablesFromSchema(this.tablesSchema);
@@ -154,6 +156,11 @@ export class AddonPushNotificationsProvider {
                     const localNotif = {
                             id: 1,
                             at: new Date(),
+                            channelParams: {
+                                channelID: 'notifications',
+                                channelName: this.translate.instant('addon.notifications.notifications'),
+                                importance: 4 // IMPORTANCE_HIGH
+                            },
                             data: {
                                 notif: data.notif,
                                 site: data.site

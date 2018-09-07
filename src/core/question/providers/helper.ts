@@ -539,6 +539,7 @@ export class CoreQuestionHelperProvider {
     prepareAnswers(questions: any[], answers: any, offline?: boolean, siteId?: string): Promise<any> {
         const promises = [];
 
+        questions = questions || [];
         questions.forEach((question) => {
             promises.push(this.questionDelegate.prepareAnswersForQuestion(question, answers, offline, siteId));
         });
