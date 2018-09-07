@@ -156,16 +156,24 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
                 if (options.showtype) {
                     extra.push(this.mimetypeUtils.getMimetypeDescription(file));
                 }
+
+                if (options.showdate) {
+                    /* Modified date may be up to several minutes later than uploaded date just because
+                       teacher did not submit the form promptly. Give teacher up to 5 minutes to do it. */
+                    if (file.timemodified > file.timecreated + CoreConstants.SECONDS_MINUTE * 5) {
+                        extra.push(this.translate.instant('addon.mod_resource.modifieddate',
+                            {$a: moment(file.timemodified * 1000).format('LLL')}));
+                    } else {
+                        extra.push(this.translate.instant('addon.mod_resource.uploadeddate',
+                            {$a: moment(file.timecreated * 1000).format('LLL')}));
+                    }
+                }
             }
 
             if (resourceData.icon == '') {
                 resourceData.icon = this.courseProvider.getModuleIconSrc(this.modName);
             }
 
-            if (options.showdate) {
-                extra.push(this.translate.instant('addon.mod_resource.uploadeddate',
-                    {$a: moment(resourceInfo.timemodified * 1000).format('LLL')}));
-            }
             resourceData.extra += extra.join(' ');
 
             return resourceData;
