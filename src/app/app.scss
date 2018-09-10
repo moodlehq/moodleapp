@@ -406,7 +406,8 @@ ion-app.app-root {
   .item .item-button[icon-only] {
       height: 2.8em;
       font-size: 1.6rem;
-      padding: 0 3px;
+      padding: 8px 11px;
+      margin: 0;
   }
 
   // Ionic fix. Button can occupy all page if not.
