@@ -102,7 +102,7 @@ export class AddonMessagesModule {
                         return;
                     }
 
-                    messagesProvider.invalidateDiscussionsCache().finally(() => {
+                    messagesProvider.invalidateDiscussionsCache(notification.site).finally(() => {
                         linkHelper.goInSite(undefined, 'AddonMessagesIndexPage', undefined, notification.site);
                     });
                 });
