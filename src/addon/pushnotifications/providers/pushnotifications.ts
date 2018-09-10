@@ -344,9 +344,11 @@ export class AddonPushNotificationsProvider {
                     // Execute the callback in the Angular zone, so change detection doesn't stop working.
                     this.zone.run(() => {
                         this.pushID = data.registrationId;
-                        this.registerDeviceOnMoodle().catch((error) => {
-                            this.logger.warn('Can\'t register device', error);
-                        });
+                        if (this.sitesProvider.isLoggedIn()) {
+                            this.registerDeviceOnMoodle().catch((error) => {
+                                this.logger.warn('Can\'t register device', error);
+                            });
+                        }
                     });
                 });
 
