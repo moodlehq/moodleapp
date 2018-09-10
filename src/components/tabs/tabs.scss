@@ -48,6 +48,18 @@ ion-app.app-root .core-tabs-bar {
 
         }
     }
+
+    @include rtl() {
+        .swiper-container-horizontal {
+            transform: scaleX(-1);
+            .swiper-wrapper {
+                flex-direction: row-reverse;
+                ion-slide {
+                    transform: scaleX(-1);
+                }
+            }
+        }
+    }
 }
 
 ion-app.app-root.md .core-tabs-bar a.tab-slide {

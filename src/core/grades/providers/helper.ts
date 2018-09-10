@@ -156,8 +156,6 @@ export class CoreGradesHelperProvider {
             };
         formatted.rows = table.tabledata.map((row: any) => {
             return this.formatGradeRowForTable(row);
-        }).filter((row: any) => {
-            return typeof row.gradeitem !== 'undefined';
         });
 
         // Get a row with some info.
