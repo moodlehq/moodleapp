@@ -378,7 +378,7 @@ export class CoreSitesProvider {
     siteExists(siteUrl: string): Promise<void> {
         const data: any = {};
 
-        if (!this.appProvider.isMobile()) {
+        if (!this.appProvider.isMobile() && !this.appProvider.isDesktop()) {
             // Send fake parameters for CORS. This is only needed in browser.
             data.username = 'a';
             data.password = 'b';
