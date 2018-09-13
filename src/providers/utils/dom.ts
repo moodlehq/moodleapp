@@ -1259,6 +1259,40 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Wait for images to load.
+     *
+     * @param {HTMLElement} element The element to search in.
+     * @return {Promise<boolean>} Promise resolved with a boolean: whether there was any image to load.
+     */
+    waitForImages(element: HTMLElement): Promise<boolean> {
+        const imgs = Array.from(element.querySelectorAll('img')),
+            promises = [];
+        let hasImgToLoad = false;
+
+        imgs.forEach((img) => {
+            if (img && !img.complete) {
+                hasImgToLoad = true;
+
+                // Wait for image to load or fail.
+                promises.push(new Promise((resolve, reject): void => {
+                    const imgLoaded = (): void => {
+                        resolve();
+                        img.removeEventListener('load', imgLoaded);
+                        img.removeEventListener('error', imgLoaded);
+                    };
+
+                    img.addEventListener('load', imgLoaded);
+                    img.addEventListener('error', imgLoaded);
+                }));
+            }
+        });
+
+        return Promise.all(promises).then(() => {
+            return hasImgToLoad;
+        });
+    }
+
+    /**
      * Wrap an HTMLElement with another element.
      *
      * @param {HTMLElement} el The element to wrap.

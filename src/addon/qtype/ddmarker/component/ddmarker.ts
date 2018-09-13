@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Injector, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Injector, ElementRef, ViewChild } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-component';
 import { AddonQtypeDdMarkerQuestion } from '../classes/ddmarker';
@@ -25,6 +25,7 @@ import { AddonQtypeDdMarkerQuestion } from '../classes/ddmarker';
     templateUrl: 'addon-qtype-ddmarker.html'
 })
 export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent implements OnInit, OnDestroy {
+    @ViewChild('questiontext') questionTextEl: ElementRef;
 
     protected element: HTMLElement;
     protected questionInstance: AddonQtypeDdMarkerQuestion;
@@ -87,9 +88,11 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
      */
     questionRendered(): void {
         if (!this.destroyed) {
-            // Create the instance.
-            this.questionInstance = new AddonQtypeDdMarkerQuestion(this.loggerProvider, this.domUtils, this.textUtils, this.element,
-                    this.question, this.question.readOnly, this.dropZones);
+            this.domUtils.waitForImages(this.questionTextEl.nativeElement).then(() => {
+                // Create the instance.
+                this.questionInstance = new AddonQtypeDdMarkerQuestion(this.loggerProvider, this.domUtils, this.textUtils,
+                        this.element, this.question, this.question.readOnly, this.dropZones);
+            });
         }
     }
 

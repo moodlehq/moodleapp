@@ -296,7 +296,7 @@ export class CoreFormatTextDirective implements OnChanges {
                 this.calculateHeight();
 
                 // Wait for images to load and calculate the height again if needed.
-                this.waitForImages().then((hasImgToLoad) => {
+                this.domUtils.waitForImages(this.element).then((hasImgToLoad) => {
                     if (hasImgToLoad) {
                         this.calculateHeight();
                     }
@@ -626,39 +626,6 @@ export class CoreFormatTextDirective implements OnChanges {
         }
 
         this.iframeUtils.treatFrame(iframe);
-    }
-
-    /**
-     * Wait for images to load.
-     *
-     * @return {Promise<boolean>} Promise resolved with a boolean: whether there was any image to load.
-     */
-    protected waitForImages(): Promise<boolean> {
-        const imgs = Array.from(this.element.querySelectorAll('img')),
-            promises = [];
-        let hasImgToLoad = false;
-
-        imgs.forEach((img) => {
-            if (img && !img.complete) {
-                hasImgToLoad = true;
-
-                // Wait for image to load or fail.
-                promises.push(new Promise((resolve, reject): void => {
-                    const imgLoaded = (): void => {
-                        resolve();
-                        img.removeEventListener('loaded', imgLoaded);
-                        img.removeEventListener('error', imgLoaded);
-                    };
-
-                    img.addEventListener('load', imgLoaded);
-                    img.addEventListener('error', imgLoaded);
-                }));
-            }
-        });
-
-        return Promise.all(promises).then(() => {
-            return hasImgToLoad;
-        });
     }
 
     /**
