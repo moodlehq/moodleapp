@@ -15,9 +15,6 @@ before_script:
 script:
   - npm run build
 
-deploy:
-  provider: script
-  script: bash aot.sh
-  on:
-    all_branches: true
-    condition: $TRAVIS_BRANCH =~ ^master|integration$
+after_success:
+  - chmod +x aot.sh
+  - ./aot.sh
