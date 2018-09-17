@@ -13,4 +13,11 @@ before_script:
   - rm -Rf node_modules/electron-builder-squirrel-windows node_modules/electron-windows-notifications #Avoid electron fail
 
 script:
-- npm run build
+  - npm run build
+
+deploy:
+  provider: script
+  script: bash aot.sh
+  on:
+    all_branches: true
+    condition: $TRAVIS_BRANCH =~ ^master|integration$
