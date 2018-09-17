@@ -157,7 +157,7 @@ function buildLangs(filenames, langPaths, buildDest, done) {
             return path + language + '.json';
         });
 
-        gulp.src(paths)
+        gulp.src(paths, { allowEmpty: true })
             .pipe(slash())
             .pipe(clipEmptyFiles())
             .pipe(through(function(file) {
@@ -219,16 +219,6 @@ var appLangFiles = ['ar.json', 'bg.json', 'ca.json', 'cs.json', 'da.json', 'de.j
         ],
         config: './src/config.json',
     };
-
-gulp.task('default', ['lang', 'config']);
-
-gulp.task('watch', function() {
-    var langsPaths = paths.lang.map(function(path) {
-        return path + '*.json';
-    });
-    gulp.watch(langsPaths, { interval: 500 }, ['lang']);
-    gulp.watch(paths.config, { interval: 500 }, ['config']);
-});
 
 // Build the language files into a single file per language.
 gulp.task('lang', function(done) {
@@ -292,6 +282,16 @@ gulp.task('config', function(done) {
         .on('end', done);
 });
 
+gulp.task('default', gulp.parallel('lang', 'config'));
+
+gulp.task('watch', function() {
+    var langsPaths = paths.lang.map(function(path) {
+        return path + '*.json';
+    });
+    gulp.watch(langsPaths, { interval: 500 }, gulp.parallel('lang'));
+    gulp.watch(paths.config, { interval: 500 }, gulp.parallel('config'));
+});
+
 var templatesSrc = [
         './src/components/**/*.html',
         './src/core/**/components/**/*.html',
@@ -306,7 +306,7 @@ var templatesSrc = [
 gulp.task('copy-component-templates', function(done) {
     deleteFolderRecursive(templatesDest);
 
-    gulp.src(templatesSrc)
+    gulp.src(templatesSrc, { allowEmpty: true })
         .pipe(flatten())
         .pipe(gulp.dest(templatesDest))
         .on('end', done);
