@@ -88,6 +88,7 @@
     "rxjs": "5.5.11",
     "sw-toolbox": "3.6.0",
     "ts-md5": "^1.2.2",
+    "web-animations-js": "^2.3.1",
     "zone.js": "0.8.26"
   },
   "devDependencies": {

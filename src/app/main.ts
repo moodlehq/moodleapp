@@ -18,6 +18,8 @@ import { AppModule } from './app.module';
 
 import { shim } from 'promise.prototype.finally';
 
+import 'web-animations-js'; // This is needed to make animations work in Android 5.0.
+
 shim(); // Support promise.finally.
 
 platformBrowserDynamic().bootstrapModule(AppModule);
