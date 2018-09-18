@@ -465,6 +465,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
         this.grade = {
             method: false,
             grade: false,
+            gradebookGrade: false,
             modified: 0,
             gradingStatus: false,
             addAttempt : false,
@@ -504,6 +505,8 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             if (feedback.grade && feedback.grade.grade && !this.grade.grade) {
                 const parsedGrade = parseFloat(feedback.grade.grade);
                 this.grade.grade = parsedGrade || parsedGrade == 0 ? parsedGrade : null;
+                this.grade.gradebookGrade = this.grade.grade;
+                this.originalGrades.grade = this.grade.grade;
             }
         } else {
             // If no feedback, always show Submission.
@@ -813,14 +816,14 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
                     // Not using outcomes or scale, get the numeric grade.
                     if (this.grade.scale) {
-                        this.grade.grade = this.gradesHelper.getGradeValueFromLabel(this.grade.scale, grade.gradeformatted);
+                        this.grade.gradebookGrade = this.gradesHelper.getGradeValueFromLabel(
+                                this.grade.scale, grade.gradeformatted);
                     } else {
                         const parsedGrade = parseFloat(grade.gradeformatted);
-                        this.grade.grade = parsedGrade || parsedGrade == 0 ? parsedGrade : null;
+                        this.grade.gradebookGrade = parsedGrade || parsedGrade == 0 ? parsedGrade : null;
                     }
 
                     this.grade.modified = grade.gradedategraded;
-                    this.originalGrades.grade = this.grade.grade;
                 } else if (grade.outcomeid) {
 
                     // Only show outcomes with info on it, outcomeid could be null if outcomes are disabled on site.

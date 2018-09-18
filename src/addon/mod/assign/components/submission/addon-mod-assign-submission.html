@@ -173,6 +173,13 @@
                     <p item-content *ngIf="!canSaveGrades || !outcome.itemNumber">{{ outcome.selected }}</p>
                 </ion-item>
 
+                <!-- Gradebook grade for simple grading. -->
+                <ion-item text-wrap *ngIf="grade.method == 'simple'">
+                    <h2>{{ 'addon.mod_assign.currentgrade' | translate }}</h2>
+                    <p *ngIf="grade.gradebookGrade !== false && grade.gradebookGrade !== null">{{ grade.gradebookGrade }}</p>
+                    <p *ngIf="grade.gradebookGrade === false || grade.gradebookGrade === null">-</p>
+                </ion-item>
+
                 <addon-mod-assign-feedback-plugin *ngFor="let plugin of feedback.plugins" [assign]="assign" [submission]="userSubmission" [userId]="submitId" [plugin]="plugin" [canEdit]="canSaveGrades"></addon-mod-assign-feedback-plugin>
 
                 <!-- Workflow status. -->
