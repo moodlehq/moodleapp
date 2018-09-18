@@ -17,7 +17,6 @@ import { NavController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreCourseProvider } from './course';
 import { CoreCourseFormatDefaultHandler } from './default-format';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 
@@ -285,14 +284,11 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
      * @return {Promise<any>} Promise resolved with current section.
      */
     getCurrentSection(course: any, sections: any[]): Promise<any> {
+
         // Convert the result to a Promise if it isn't.
         return Promise.resolve(this.executeFunctionOnEnabled(course.format, 'getCurrentSection', [course, sections])).catch(() => {
-            // This function should never fail. Just return the first section.
-            if (sections[0].id != CoreCourseProvider.ALL_SECTIONS_ID) {
-                return sections[0];
-            }
-
-            return sections[1];
+            // This function should never fail. Just return all the sections.
+            return sections[0];
         });
     }
 
