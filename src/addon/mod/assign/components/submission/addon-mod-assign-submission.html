@@ -197,7 +197,7 @@
 
                 <!-- Attempt status. -->
                 <ng-container *ngIf="isGrading && assign.attemptreopenmethod != attemptReopenMethodNone">
-                    <ion-item text-wrap >
+                    <ion-item text-wrap>
                         <h2>{{ 'addon.mod_assign.attemptsettings' | translate }}</h2>
                         <p *ngIf="assign.maxattempts == unlimitedAttempts">{{ 'addon.mod_assign.outof' | translate : {'$a': {'current': currentAttempt, 'total': maxAttemptsText} } }}</p>
                         <p *ngIf="assign.maxattempts != unlimitedAttempts">{{ 'addon.mod_assign.outof' | translate : {'$a': {'current': currentAttempt, 'total': assign.maxattempts} } }}</p>
