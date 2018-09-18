@@ -17,9 +17,12 @@
                 </a>
             </ion-list>
 
-            <ion-infinite-scroll [enabled]="canLoadMore" (ionInfinite)="$event.waitFor(fetchData())">
-               <ion-infinite-scroll-content></ion-infinite-scroll-content>
-            </ion-infinite-scroll>
+            <div *ngIf="canLoadMore" padding>
+                <button ion-button block (click)="fetchData()" color="light">{{'core.loadmore' | translate }}</button>
+                <ion-infinite-scroll [enabled]="canLoadMore" (ionInfinite)="$event.waitFor(fetchData())">
+                   <ion-infinite-scroll-content></ion-infinite-scroll-content>
+                </ion-infinite-scroll>
+            </div>
         </core-loading>
     </ion-content>
 </core-split-view>

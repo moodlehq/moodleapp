@@ -32,8 +32,11 @@
             <addon-notifications-actions [contextUrl]="notification.contexturl" [courseId]="notification.courseid"></addon-notifications-actions>
         </ion-card>
         <core-empty-box *ngIf="!notifications || notifications.length <= 0" icon="notifications" [message]="'addon.notifications.therearentnotificationsyet' | translate"></core-empty-box>
-        <ion-infinite-scroll [enabled]="canLoadMore" (ionInfinite)="loadMoreNotifications($event)">
-            <ion-infinite-scroll-content></ion-infinite-scroll-content>
-        </ion-infinite-scroll>
+        <div *ngIf="canLoadMore" padding>
+            <button ion-button block (click)="loadMoreNotifications()" color="light">{{'core.loadmore' | translate }}</button>
+            <ion-infinite-scroll [enabled]="canLoadMore" (ionInfinite)="loadMoreNotifications($event)">
+                <ion-infinite-scroll-content></ion-infinite-scroll-content>
+            </ion-infinite-scroll>
+        </div>
     </core-loading>
 </ion-content>
