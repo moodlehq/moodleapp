@@ -54,11 +54,11 @@ export class CoreCoursesSearchPage {
     /**
      * Load more results.
      *
-     * @param {any} infiniteScroll The infinit scroll instance.
+     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
      */
-    loadMoreResults(infiniteScroll: any): void {
+    loadMoreResults(infiniteComplete?: any): void {
         this.searchCourses().finally(() => {
-            infiniteScroll.complete();
+            infiniteComplete && infiniteComplete();
         });
     }
 

@@ -289,11 +289,14 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Convenience function to load more forum discussions.
      *
+     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
      * @return {Promise<any>} Promise resolved when done.
      */
-    loadMoreEntries(): Promise<any> {
+    loadMoreEntries(infiniteComplete?: any): Promise<any> {
         return this.fetchEntries(true).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingentries', true);
+        }).finally(() => {
+            infiniteComplete && infiniteComplete();
         });
     }
 

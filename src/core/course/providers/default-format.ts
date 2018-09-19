@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCourseFormatHandler } from './format-delegate';
-import { CoreCourseProvider } from './course';
 
 /**
  * Default handler used when the course format doesn't have a specific implementation.

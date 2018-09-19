@@ -373,9 +373,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Show more activities (only used when showing all the sections at the same time).
      *
-     * @return {Promise<void>} Resolved when done to change infinite loading status.
+     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
      */
-    showMoreActivities(): Promise<void> {
+    showMoreActivities(infiniteComplete?: any): void {
         this.canLoadMore = false;
 
         let modulesLoaded = 0,
@@ -399,7 +399,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             // Check if any of the following sections have any content.
             let thereAreMore = false;
             for (i++; i < this.sections.length; i++) {
-                if (this.sections[i].hasContent && this.sections[i].modules) {
+                if (this.sections[i].hasContent && this.sections[i].modules && this.sections[i].modules.length > 0) {
                     thereAreMore = true;
                     break;
                 }
@@ -407,7 +407,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.canLoadMore = thereAreMore;
         }
 
-        return Promise.resolve();
+        infiniteComplete && infiniteComplete();
     }
 
     /**

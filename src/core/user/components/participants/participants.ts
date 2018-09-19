@@ -83,6 +83,18 @@ export class CoreUserParticipantsComponent implements OnInit {
     }
 
     /**
+     * Function to load more data.
+     *
+     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
+     * @return {Promise<any>} Resolved when done.
+     */
+    loadMoreData(infiniteComplete?: any): Promise<any> {
+        return this.fetchData().finally(() => {
+            infiniteComplete && infiniteComplete();
+        });
+    }
+
+    /**
      * Refresh data.
      *
      * @param {any} refresher Refresher.

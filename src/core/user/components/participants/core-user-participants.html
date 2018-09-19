@@ -16,13 +16,7 @@
                     <p *ngIf="participant.lastaccess"><strong>{{ 'core.lastaccess' | translate }}: </strong>{{ participant.lastaccess * 1000 | coreFormatDate:"dfmediumdate"}}</p>
                 </a>
             </ion-list>
-
-            <div *ngIf="canLoadMore" padding>
-                <button ion-button block (click)="fetchData()" color="light">{{'core.loadmore' | translate }}</button>
-                <ion-infinite-scroll [enabled]="canLoadMore" (ionInfinite)="$event.waitFor(fetchData())">
-                   <ion-infinite-scroll-content></ion-infinite-scroll-content>
-                </ion-infinite-scroll>
-            </div>
+            <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreData($event)"></core-infinite-loading>
         </core-loading>
     </ion-content>
 </core-split-view>

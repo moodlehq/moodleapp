@@ -56,12 +56,7 @@
 
             <core-empty-box *ngIf="!entries.length && !offlineEntries.length" icon="list" [message]="'addon.mod_glossary.noentriesfound' | translate"></core-empty-box>
 
-            <div *ngIf="canLoadMore" padding>
-                <button ion-button block (click)="loadMoreEntries()" color="light">{{'core.loadmore' | translate }}</button>
-                <ion-infinite-scroll [enabled]="canLoadMore" (ionInfinite)="$event.waitFor(loadMoreEntries())">
-                    <ion-infinite-scroll-content></ion-infinite-scroll-content>
-                </ion-infinite-scroll>
-            </div>
+            <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreEntries($event)"></core-infinite-loading>
         </core-loading>
 
         <ion-fab bottom end *ngIf="canAdd">

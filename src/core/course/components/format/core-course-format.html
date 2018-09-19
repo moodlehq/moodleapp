@@ -51,12 +51,7 @@
                 </ng-container>
             </core-dynamic-component>
 
-            <div *ngIf="canLoadMore" padding>
-                <button ion-button block (click)="showMoreActivities()" color="light">{{'core.loadmore' | translate }}</button>
-                <ion-infinite-scroll [enabled]="canLoadMore" (ionInfinite)="$event.waitFor(showMoreActivities())">
-                   <ion-infinite-scroll-content></ion-infinite-scroll-content>
-                </ion-infinite-scroll>
-            </div>
+            <core-infinite-loading [enabled]="canLoadMore" (action)="showMoreActivities($event)"></core-infinite-loading>
         </div>
     </core-loading>
     <ion-buttons padding end class="core-course-section-nav-buttons" *ngIf="displaySectionSelector && sections && sections.length">
