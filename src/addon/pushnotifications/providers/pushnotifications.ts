@@ -14,11 +14,11 @@
 
 import { Injectable, NgZone } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Platform } from 'ionic-angular';
 import { Badge } from '@ionic-native/badge';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
 import { Device } from '@ionic-native/device';
 import { CoreAppProvider } from '@providers/app';
+import { CoreInitDelegate } from '@providers/init';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { AddonPushNotificationsDelegate } from './delegate';
@@ -62,7 +62,7 @@ export class AddonPushNotificationsProvider {
         }
     ];
 
-    constructor(logger: CoreLoggerProvider, protected appProvider: CoreAppProvider, private platform: Platform,
+    constructor(logger: CoreLoggerProvider, protected appProvider: CoreAppProvider, private initDelegate: CoreInitDelegate,
             protected pushNotificationsDelegate: AddonPushNotificationsDelegate, protected sitesProvider: CoreSitesProvider,
             private badge: Badge, private localNotificationsProvider: CoreLocalNotificationsProvider,
             private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider, private push: Push,
@@ -134,7 +134,7 @@ export class AddonPushNotificationsProvider {
      * @param {any} notification Notification.
      */
     notificationClicked(notification: any): void {
-        this.platform.ready().then(() => {
+        this.initDelegate.ready().then(() => {
             this.pushNotificationsDelegate.clicked(notification);
         });
     }
@@ -189,7 +189,7 @@ export class AddonPushNotificationsProvider {
                 }
 
                 // Trigger a notification received event.
-                this.platform.ready().then(() => {
+                this.initDelegate.ready().then(() => {
                     data.title = notification.title;
                     data.message = notification.message;
                     this.pushNotificationsDelegate.received(data);
