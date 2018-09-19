@@ -9,6 +9,7 @@ var gulp = require('gulp'),
     flatten = require('gulp-flatten'),
     npmPath = require('path'),
     File = gutil.File,
+    exec = require('child_process').exec,
     license = '' +
         '// (C) Copyright 2015 Martin Dougiamas\n' +
         '//\n' +
@@ -75,7 +76,8 @@ function treatMergedData(data) {
     var mergedOrdered = {};
 
     for (var filepath in data) {
-        var pathSplit = filepath.split('/');
+        var pathSplit = filepath.split('/'),
+            prefix;
 
         pathSplit.pop();
 
@@ -230,56 +232,67 @@ gulp.task('lang', function(done) {
 
 // Convert config.json into a TypeScript class.
 gulp.task('config', function(done) {
-    gulp.src(paths.config)
-        .pipe(through(function(file) {
-            // Convert the contents of the file into a TypeScript class.
-            // Disable the rule variable-name in the file.
-            var config = JSON.parse(file.contents.toString()),
-                contents = license + '// tslint:disable: variable-name\n' + 'export class CoreConfigConstants {\n';
+    // Get the last commit.
+    exec('git log -1 --pretty=format:"%H"', function (err, commit, stderr) {
+        if (err) {
+            console.error('An error occurred while getting the last commit: ' + err);
+        } else if (stderr) {
+            console.error('An error occurred while getting the last commit: ' + stderr);
+        }
 
-            for (var key in config) {
-                var value = config[key];
-                if (typeof value == 'string') {
-                    // Wrap the string in ' .
-                    value = "'" + value + "'";
-                } else if (typeof value != 'number' && typeof value != 'boolean') {
-                    // Stringify with 4 spaces of indentation, and then add 4 more spaces in each line.
-                    value = JSON.stringify(value, null, 4).replace(/^(?:    )/gm, '        ').replace(/^(?:})/gm, '    }');
-                    // Replace " by ' in values.
-                    value = value.replace(/: "([^"]*)"/g, ": '$1'");
+        gulp.src(paths.config)
+            .pipe(through(function(file) {
+                // Convert the contents of the file into a TypeScript class.
+                // Disable the rule variable-name in the file.
+                var config = JSON.parse(file.contents.toString()),
+                    contents = license + '// tslint:disable: variable-name\n' + 'export class CoreConfigConstants {\n',
+                    that = this;
 
-                    // Check if the keys have "-" in it.
-                    var matches = value.match(/"([^"]*\-[^"]*)":/g);
-                    if (matches) {
-                        // Replace " by ' in keys. We cannot remove them because keys have chars like '-'.
-                        value = value.replace(/"([^"]*)":/g, "'$1':");
-                    } else {
-                        // Remove ' in keys.
-                        value = value.replace(/"([^"]*)":/g, "$1:");
+                for (var key in config) {
+                    var value = config[key];
+                    if (typeof value == 'string') {
+                        // Wrap the string in ' .
+                        value = "'" + value + "'";
+                    } else if (typeof value != 'number' && typeof value != 'boolean') {
+                        // Stringify with 4 spaces of indentation, and then add 4 more spaces in each line.
+                        value = JSON.stringify(value, null, 4).replace(/^(?:    )/gm, '        ').replace(/^(?:})/gm, '    }');
+                        // Replace " by ' in values.
+                        value = value.replace(/: "([^"]*)"/g, ": '$1'");
+
+                        // Check if the keys have "-" in it.
+                        var matches = value.match(/"([^"]*\-[^"]*)":/g);
+                        if (matches) {
+                            // Replace " by ' in keys. We cannot remove them because keys have chars like '-'.
+                            value = value.replace(/"([^"]*)":/g, "'$1':");
+                        } else {
+                            // Remove ' in keys.
+                            value = value.replace(/"([^"]*)":/g, "$1:");
+                        }
+
+                        // Add type any to the key.
+                        key = key + ': any';
                     }
 
-                    // Add type any to the key.
-                    key = key + ': any';
+                    // If key has quotation marks, remove them.
+                    if (key[0] == '"') {
+                        key = key.substr(1, key.length - 2);
+                    }
+                    contents += '    static ' + key + ' = ' + value + ';\n';
                 }
 
-                // If key has quotation marks, remove them.
-                if (key[0] == '"') {
-                    key = key.substr(1, key.length - 2);
-                }
-                contents += '    static ' + key + ' = ' + value + ';\n';
-            }
+                // Add compilation info.
+                contents += '    static compilationtime = ' + Date.now() + ';\n';
+                contents += '    static lastcommit = \'' + commit + '\';\n';
 
-            // Add compilation time.
-            contents += '    static compilationtime = ' + Date.now() + ';\n';
+                contents += '}\n';
 
-            contents += '}\n';
-
-            file.contents = new Buffer(contents);
-            this.emit('data', file);
-        }))
-        .pipe(rename('configconstants.ts'))
-        .pipe(gulp.dest(paths.src))
-        .on('end', done);
+                file.contents = new Buffer(contents);
+                this.emit('data', file);
+            }))
+            .pipe(rename('configconstants.ts'))
+            .pipe(gulp.dest(paths.src))
+            .on('end', done);
+    });
 });
 
 gulp.task('default', gulp.parallel('lang', 'config'));
