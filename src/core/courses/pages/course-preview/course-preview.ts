@@ -48,6 +48,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
         title: 'core.course.downloadcourse'
     };
     downloadCourseEnabled: boolean;
+    courseUrl: string;
 
     protected guestWSAvailable: boolean;
     protected isGuestEnabled = false;
@@ -55,7 +56,6 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     protected enrollmentMethods: any[];
     protected waitStart = 0;
     protected enrolUrl: string;
-    protected courseUrl: string;
     protected paypalReturnUrl: string;
     protected isMobile: boolean;
     protected isDesktop: boolean;

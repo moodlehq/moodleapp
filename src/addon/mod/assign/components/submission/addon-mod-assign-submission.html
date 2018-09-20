@@ -226,12 +226,20 @@
 
 <!-- Template to render some data regarding the submission status. -->
 <ng-template #submissionStatus>
-    <p *ngIf="assign && assign.teamsubmission && lastAttempt">
-        <span *ngIf="lastAttempt.submissiongroup && lastAttempt.submissiongroupname">{{lastAttempt.submissiongroupname}}</span>
-        <span *ngIf="assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup && !lastAttempt.usergroups">{{ 'addon.mod_assign.noteam' | translate }}</span>
-        <span *ngIf="assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup && lastAttempt.usergroups">{{ 'addon.mod_assign.multipleteams' | translate }}</span>
-        <span *ngIf="!assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup">{{ 'addon.mod_assign.defaultteam' | translate }}</span>
-    </p>
+    <ng-container *ngIf="assign && assign.teamsubmission && lastAttempt">
+        <p *ngIf="lastAttempt.submissiongroup && lastAttempt.submissiongroupname">{{lastAttempt.submissiongroupname}}</p>
+        <ng-container *ngIf="assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup && (!lastAttempt.usergroups || lastAttempt.usergroups.length <= 0)">
+            <p class="text-danger"><strong>{{ 'addon.mod_assign.noteam' | translate }}</strong></p>
+            <p class="text-danger">{{ 'addon.mod_assign.noteam_desc' | translate }}</p>
+        </ng-container>
+        <ng-container *ngIf="assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup && lastAttempt.usergroups && lastAttempt.usergroups.length > 0">
+            <p class="text-danger"><strong>{{ 'addon.mod_assign.multipleteams' | translate }}</strong></p>
+            <p class="text-danger">{{ 'addon.mod_assign.multipleteams_desc' | translate }}</p>
+        </ng-container>
+        <p *ngIf="!assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup">
+            {{ 'addon.mod_assign.defaultteam' | translate }}
+        </p>
+    </ng-container>
     <ion-badge item-end *ngIf="statusTranslated" [color]="statusColor">
         {{ statusTranslated }}
     </ion-badge>
