@@ -74,7 +74,7 @@ export class CoreUrlUtilsProvider {
      * @return {string} Fixed URL.
      */
     fixPluginfileURL(url: string, token: string, siteUrl: string): string {
-        if (!url || !token) {
+        if (!url) {
             return '';
         }
 

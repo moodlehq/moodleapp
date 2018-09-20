@@ -418,7 +418,7 @@ export class CoreFilepoolProvider {
 
     protected logger;
     protected appDB: SQLiteDB;
-    protected tokenRegex = new RegExp('(\\?|&)token=([A-Za-z0-9]+)');
+    protected tokenRegex = new RegExp('(\\?|&)token=([A-Za-z0-9]*)');
     protected queueState: string;
     protected urlAttributes = [
         this.tokenRegex,
