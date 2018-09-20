@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Injector, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Injector, ElementRef, ViewChild } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-component';
 import { AddonQtypeDdwtosQuestion } from '../classes/ddwtos';
@@ -25,6 +25,7 @@ import { AddonQtypeDdwtosQuestion } from '../classes/ddwtos';
     templateUrl: 'addon-qtype-ddwtos.html'
 })
 export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent implements OnInit, OnDestroy {
+    @ViewChild('questiontext') questionTextEl: ElementRef;
 
     protected element: HTMLElement;
     protected questionInstance: AddonQtypeDdwtosQuestion;
@@ -80,6 +81,8 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
             this.question.text += inputEl.outerHTML;
             this.inputIds.push(inputEl.getAttribute('id'));
         });
+
+        this.question.loaded = false;
     }
 
     /**
@@ -87,11 +90,15 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
      */
     questionRendered(): void {
         if (!this.destroyed) {
-            // Create the instance.
-            this.questionInstance = new AddonQtypeDdwtosQuestion(this.loggerProvider, this.domUtils, this.element, this.question,
-                    this.question.readOnly, this.inputIds);
+            this.domUtils.waitForImages(this.questionTextEl.nativeElement).then(() => {
+                // Create the instance.
+                this.questionInstance = new AddonQtypeDdwtosQuestion(this.loggerProvider, this.domUtils, this.element,
+                        this.question, this.question.readOnly, this.inputIds);
 
-            this.questionHelper.treatCorrectnessIconsClicks(this.element, this.component, this.componentId);
+                this.questionHelper.treatCorrectnessIconsClicks(this.element, this.component, this.componentId);
+
+                this.question.loaded = true;
+            });
         }
     }
 
