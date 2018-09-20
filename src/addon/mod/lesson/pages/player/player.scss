@@ -20,4 +20,30 @@ ion-app.app-root page-addon-mod-lesson-player {
             flex-grow: 1;
         }
     }
+
+    table {
+        width: 100%;
+        margin-top: 1.5rem;
+
+        tr:nth-child(odd) {
+            background-color: $gray-lighter;
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+
+        td {
+            padding: 5px;
+            line-height: 1.5;
+        }
+    }
+
+    .item-ios table td {
+        border-bottom: $hairlines-width solid $list-ios-border-color;
+    }
+
+    .item-md table td {
+        border-bottom: 1px solid $list-md-border-color;
+    }
 }
