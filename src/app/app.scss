@@ -101,6 +101,11 @@ ion-app.app-root {
     opacity: 0.71;
   }
 
+  // Simulate item[disabled] but keeping pointer-events.
+  .item-disabled {
+    opacity: .4;
+  }
+
   .item-radio-checked {
     background-color: $gray-lighter;
   }
