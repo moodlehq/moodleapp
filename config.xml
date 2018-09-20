@@ -94,9 +94,10 @@
         <icon height="1024" src="resources/ios/icon/icon-1024.png" width="1024" />
         <splash height="2732" src="resources/ios/splash/Default@2x~universal~anyany.png" width="2732" />
     </platform>
-    <plugin name="cordova-plugin-file" spec="^6.0.1" />
-    <plugin name="cordova-plugin-file-transfer" spec="^1.7.1" />
-    <plugin name="cordova-plugin-camera" spec="^4.0.3">
+    <plugin name="cordova-plugin-file" source="npm" spec="6.0.1" />
+    <plugin name="cordova-plugin-file-transfer" source="npm" spec="1.7.1" />
+    <plugin name="cordova-plugin-camera" source="npm" spec="4.0.3">
+
         <variable name="CAMERA_USAGE_DESCRIPTION" value="We need camera access to take pictures so you can attach them as part of your submissions." />
         <variable name="PHOTOLIBRARY_USAGE_DESCRIPTION" value="We need photo library access to get pictures from there so you can attach them as part of your submissions." />
     </plugin>
