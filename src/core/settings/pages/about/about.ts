@@ -37,6 +37,7 @@ export class CoreSettingsAboutPage {
     versionName: string;
     versionCode: number;
     compilationTime: number;
+    lastCommit: string;
     privacyPolicy: string;
     navigator: Navigator;
     locationHref: string;
@@ -63,6 +64,7 @@ export class CoreSettingsAboutPage {
         this.versionName = CoreConfigConstants.versionname;
         this.versionCode = CoreConfigConstants.versioncode;
         this.compilationTime = CoreConfigConstants.compilationtime;
+        this.lastCommit = CoreConfigConstants.lastcommit;
 
         // Calculate the privacy policy to use.
         this.privacyPolicy = currentSite.getStoredConfig('tool_mobile_apppolicy') || currentSite.getStoredConfig('sitepolicy') ||
