@@ -19,6 +19,7 @@ import { AddonCalendarProvider } from '../../providers/calendar';
 import { AddonCalendarHelperProvider } from '../../providers/helper';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreCourseProvider } from '@core/course/providers/course';
@@ -43,12 +44,16 @@ export class AddonCalendarEventPage {
     event: any = {};
     title: string;
     courseName: string;
+    courseUrl = '';
     notificationsEnabled = false;
+    moduleUrl = '';
+    categoryPath = '';
 
     constructor(private translate: TranslateService, private calendarProvider: AddonCalendarProvider, navParams: NavParams,
             private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider, timeUtils: CoreTimeUtilsProvider,
-            private calendarHelper: AddonCalendarHelperProvider, sitesProvider: CoreSitesProvider,
-            localNotificationsProvider: CoreLocalNotificationsProvider, private courseProvider: CoreCourseProvider) {
+            private calendarHelper: AddonCalendarHelperProvider, private sitesProvider: CoreSitesProvider,
+            localNotificationsProvider: CoreLocalNotificationsProvider, private courseProvider: CoreCourseProvider,
+            private textUtils: CoreTextUtilsProvider) {
 
         this.eventId = navParams.get('id');
         this.notificationsEnabled = localNotificationsProvider.isAvailable();
@@ -90,9 +95,27 @@ export class AddonCalendarEventPage {
      * @return {Promise<any>} Promise resolved when done.
      */
     fetchEvent(): Promise<any> {
-        return this.calendarProvider.getEvent(this.eventId).then((event) => {
+        const currentSite = this.sitesProvider.getCurrentSite(),
+            canGetById = this.calendarProvider.isGetEventByIdAvailable();
+        let promise;
+
+        if (canGetById) {
+            promise = this.calendarProvider.getEventById(this.eventId);
+        } else {
+            promise = this.calendarProvider.getEvent(this.eventId);
+        }
+
+        return promise.then((event) => {
+            const promises = [];
+
             this.calendarHelper.formatEventData(event);
             this.event = event;
+
+            // Reset some of the calculated data.
+            this.categoryPath = '';
+            this.courseName = '';
+            this.courseUrl = '';
+            this.moduleUrl = '';
 
             // Guess event title.
             let title = this.translate.instant('addon.calendar.type' + event.eventtype);
@@ -102,6 +125,8 @@ export class AddonCalendarEventPage {
                 if (name.indexOf('core.mod_') === -1) {
                     event.moduleName = name;
                 }
+
+                // Calculate the title of the page;
                 if (title == 'addon.calendar.type' + event.eventtype) {
                     title = this.translate.instant('core.mod_' + event.modulename + '.' + event.eventtype);
 
@@ -109,19 +134,39 @@ export class AddonCalendarEventPage {
                         title = name;
                     }
                 }
+
+                // Get the module URL.
+                if (canGetById) {
+                    this.moduleUrl = event.url;
+                }
             } else {
                 if (title == 'addon.calendar.type' + event.eventtype) {
                     title = event.name;
                 }
             }
+
             this.title = title;
 
-            if (event.courseid && event.courseid != this.siteHomeId) {
-                // It's a course event, retrieve the course name.
-                return this.coursesProvider.getUserCourse(event.courseid, true).then((course) => {
+            // If the event belongs to a course, get the course name and the URL to view it.
+            if (canGetById && event.course) {
+                this.courseName = event.course.fullname;
+                this.courseUrl = event.course.viewurl;
+            } else if (event.courseid && event.courseid != this.siteHomeId) {
+                // Retrieve the course.
+                promises.push(this.coursesProvider.getUserCourse(event.courseid, true).then((course) => {
                     this.courseName = course.fullname;
-                });
+                    this.courseUrl = currentSite ? this.textUtils.concatenatePaths(currentSite.siteUrl,
+                            '/course/view.php?id=' + event.courseid) : '';
+                }).catch(() => {
+                    // Error getting course, just don't show the course name.
+                }));
             }
+
+            if (canGetById && event.iscategoryevent) {
+                this.categoryPath = event.category.nestedname;
+            }
+
+            return Promise.all(promises);
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevent', true);
         });

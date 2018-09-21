@@ -201,6 +201,30 @@ export class AddonCalendarProvider {
     }
 
     /**
+     * Get a calendar event by ID. This function returns more data than getEvent, but it isn't available in all Moodles.
+     *
+     * @param {number} id Event ID.
+     * @param {boolean} [refresh] True when we should update the event data.
+     * @param {string} [siteId] ID of the site. If not defined, use current site.
+     * @return {Promise<any>} Promise resolved when the event data is retrieved.
+     * @since 3.4
+     */
+    getEventById(id: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const preSets = {
+                    cacheKey: this.getEventCacheKey(id)
+                },
+                data = {
+                    eventid: id
+                };
+
+            return site.read('core_calendar_get_calendar_event_by_id', data, preSets).then((response) => {
+                return response.event;
+            });
+        });
+    }
+
+    /**
      * Get cache key for a single event WS call.
      *
      * @param {number} id Event ID.
@@ -394,6 +418,16 @@ export class AddonCalendarProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return this.isCalendarDisabledInSite(site);
         });
+    }
+
+    /**
+     * Check if the get event by ID WS is available.
+     *
+     * @return {boolean} Whether it's available.
+     * @since 3.4
+     */
+    isGetEventByIdAvailable(): boolean {
+        return this.sitesProvider.wsAvailableInCurrentSite('core_calendar_get_calendar_event_by_id');
     }
 
     /**
