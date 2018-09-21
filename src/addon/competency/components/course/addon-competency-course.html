@@ -61,7 +61,7 @@
                         <span *ngIf="competency.coursemodules.length == 0">
                             {{ 'addon.competency.noactivities' | translate }}
                         </span>
-                        <a ion-item text-wrap *ngFor="let activity of competency.coursemodules" [href]="activity.url" [title]="activity.name">
+                        <a ion-item text-wrap *ngFor="let activity of competency.coursemodules" [href]="activity.url" [title]="activity.name" core-link capture="true">
                             <img item-start [src]="activity.iconurl" core-external-content alt="" role="presentation" *ngIf="activity.iconurl" class="core-module-icon">
                             <core-format-text [text]="activity.name"></core-format-text>
                         </a>
