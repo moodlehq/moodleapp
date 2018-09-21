@@ -173,6 +173,13 @@
                     <p item-content *ngIf="!canSaveGrades || !outcome.itemNumber">{{ outcome.selected }}</p>
                 </ion-item>
 
+                <!-- Gradebook grade for simple grading. -->
+                <ion-item text-wrap *ngIf="grade.method == 'simple'">
+                    <h2>{{ 'addon.mod_assign.currentgrade' | translate }}</h2>
+                    <p *ngIf="grade.gradebookGrade !== false && grade.gradebookGrade !== null">{{ grade.gradebookGrade }}</p>
+                    <p *ngIf="grade.gradebookGrade === false || grade.gradebookGrade === null">-</p>
+                </ion-item>
+
                 <addon-mod-assign-feedback-plugin *ngFor="let plugin of feedback.plugins" [assign]="assign" [submission]="userSubmission" [userId]="submitId" [plugin]="plugin" [canEdit]="canSaveGrades"></addon-mod-assign-feedback-plugin>
 
                 <!-- Workflow status. -->
@@ -189,16 +196,18 @@
                 </ion-item>
 
                 <!-- Attempt status. -->
-                <ion-item text-wrap *ngIf="isGrading && assign.attemptreopenmethod != attemptReopenMethodNone">
-                    <h2>{{ 'addon.mod_assign.attemptsettings' | translate }}</h2>
-                    <p *ngIf="assign.maxattempts == unlimitedAttempts">{{ 'addon.mod_assign.outof' | translate : {'$a': {'current': currentAttempt, 'total': maxAttemptsText} } }}</p>
-                    <p *ngIf="assign.maxattempts != unlimitedAttempts">{{ 'addon.mod_assign.outof' | translate : {'$a': {'current': currentAttempt, 'total': assign.maxattempts} } }}</p>
-                    <p>{{ 'addon.mod_assign.attemptreopenmethod' | translate }}: {{ 'addon.mod_assign.attemptreopenmethod_' + assign.attemptreopenmethod | translate }}</p>
-                    <ng-container *ngIf="canSaveGrades && allowAddAttempt" >
+                <ng-container *ngIf="isGrading && assign.attemptreopenmethod != attemptReopenMethodNone">
+                    <ion-item text-wrap>
+                        <h2>{{ 'addon.mod_assign.attemptsettings' | translate }}</h2>
+                        <p *ngIf="assign.maxattempts == unlimitedAttempts">{{ 'addon.mod_assign.outof' | translate : {'$a': {'current': currentAttempt, 'total': maxAttemptsText} } }}</p>
+                        <p *ngIf="assign.maxattempts != unlimitedAttempts">{{ 'addon.mod_assign.outof' | translate : {'$a': {'current': currentAttempt, 'total': assign.maxattempts} } }}</p>
+                        <p>{{ 'addon.mod_assign.attemptreopenmethod' | translate }}: {{ 'addon.mod_assign.attemptreopenmethod_' + assign.attemptreopenmethod | translate }}</p>
+                    </ion-item>
+                    <ion-item *ngIf="canSaveGrades && allowAddAttempt" >
                         <ion-label>{{ 'addon.mod_assign.addattempt' | translate }}</ion-label>
                         <ion-toggle [(ngModel)]="grade.addAttempt"></ion-toggle>
-                    </ng-container>
-                </ion-item>
+                    </ion-item>
+                </ng-container>
 
                 <!-- Data about the grader (teacher who graded). -->
                 <a ion-item text-wrap *ngIf="grader" (click)="openUserProfile(grader.id)" [title]="grader.fullname" detail-push>
