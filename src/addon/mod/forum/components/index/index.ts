@@ -81,8 +81,10 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         }, this.siteId);
 
         // Listen for discussions added. When a discussion is added, we reload the data.
-        this.newDiscObserver = this.eventsProvider.on(AddonModForumProvider.NEW_DISCUSSION_EVENT, this.eventReceived.bind(this));
-        this.replyObserver = this.eventsProvider.on(AddonModForumProvider.REPLY_DISCUSSION_EVENT, this.eventReceived.bind(this));
+        this.newDiscObserver = this.eventsProvider.on(AddonModForumProvider.NEW_DISCUSSION_EVENT,
+                this.eventReceived.bind(this, true));
+        this.replyObserver = this.eventsProvider.on(AddonModForumProvider.REPLY_DISCUSSION_EVENT,
+                this.eventReceived.bind(this, false));
 
         // Select the current opened discussion.
         this.viewDiscObserver = this.eventsProvider.on(AddonModForumProvider.VIEW_DISCUSSION_EVENT, (data) => {
@@ -389,11 +391,33 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Function called when we receive an event of new discussion or reply to discussion.
      *
+     * @param {boolean} isNewDiscussion Whether it's a new discussion event.
      * @param {any} data Event data.
      */
-    protected eventReceived(data: any): void {
+    protected eventReceived(isNewDiscussion: boolean, data: any): void {
         if ((this.forum && this.forum.id === data.forumId) || data.cmId === this.module.id) {
-            this.showLoadingAndRefresh(false);
+            if (isNewDiscussion && this.splitviewCtrl.isOn()) {
+                // Discussion added, clear details page.
+                this.splitviewCtrl.emptyDetails();
+            }
+
+            this.showLoadingAndRefresh(false).finally(() => {
+                // If it's a new discussion in tablet mode, try to open it.
+                if (isNewDiscussion && this.splitviewCtrl.isOn()) {
+
+                    if (data.discussionId) {
+                        // Discussion sent to server, search it in the list of discussions.
+                        const discussion = this.discussions.find((disc) => { return disc.discussion == data.discussionId; });
+                        if (discussion) {
+                            this.openDiscussion(discussion);
+                        }
+
+                    } else if (data.discTimecreated) {
+                        // It's an offline discussion, open it.
+                        this.openNewDiscussion(data.discTimecreated);
+                    }
+                }
+            });
 
             // Check completion since it could be configured to complete once the user adds a new discussion or replies.
             this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
@@ -430,6 +454,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             timeCreated: timeCreated,
         };
         this.splitviewCtrl.push('AddonModForumNewDiscussionPage', params);
+
+        this.selectedDiscussion = 0;
     }
 
     /**
