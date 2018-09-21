@@ -543,10 +543,10 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Function to load previous messages.
      *
-     * @param {any} [infiniteScroll] Infinite scroll object.
+     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
      * @return {Promise<any>} Resolved when done.
      */
-    loadPrevious(infiniteScroll: any): Promise<any> {
+    loadPrevious(infiniteComplete?: any): Promise<any> {
         // If there is an ongoing fetch, wait for it to finish.
         return this.waitForFetch().finally(() => {
             this.pagesLoaded++;
@@ -555,7 +555,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                 this.pagesLoaded--;
                 this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingmessages', true);
             }).finally(() => {
-                infiniteScroll.complete();
+                infiniteComplete && infiniteComplete();
             });
         });
     }

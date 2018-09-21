@@ -1,0 +1,19 @@
+<div *ngIf="enabled && !loadingMore && position != 'top'" padding-horizontal>
+    <button ion-button block (click)="loadMore()" color="light">
+        {{'core.loadmore' | translate }}
+    </button>
+</div>
+
+<ion-infinite-scroll [enabled]="enabled && !loadingMore" (ionInfinite)="loadMore($event)" [position]="position">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+</ion-infinite-scroll>
+
+<div *ngIf="enabled && !loadingMore && position == 'top'" padding-horizontal>
+    <button ion-button block (click)="loadMore()" color="light">
+        {{'core.loadmore' | translate }}
+    </button>
+</div>
+
+<div *ngIf="loadingMore" padding text-center>
+    <ion-spinner></ion-spinner>
+</div>

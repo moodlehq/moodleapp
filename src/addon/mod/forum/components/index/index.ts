@@ -305,13 +305,16 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Convenience function to load more forum discussions.
      *
+     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected fetchMoreDiscussions(): Promise<any> {
+    fetchMoreDiscussions(infiniteComplete?: any): Promise<any> {
         return this.fetchDiscussions(false).catch((message) => {
             this.domUtils.showErrorModalDefault(message, 'addon.mod_forum.errorgetforum', true);
 
             this.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
+        }).finally(() => {
+            infiniteComplete && infiniteComplete();
         });
     }
 

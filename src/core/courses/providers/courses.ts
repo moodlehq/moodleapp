@@ -390,6 +390,7 @@ export class CoreCoursesProvider {
      * @param {any} [value] The value to match.
      * @param {string} [siteId] Site ID. If not defined, use current site.
      * @return {Promise<any[]>} Promise resolved with the courses.
+     * @since 3.2
      */
     getCoursesByField(field?: string, value?: any, siteId?: string): Promise<any[]> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -473,6 +474,7 @@ export class CoreCoursesProvider {
      * Check if get courses by field WS is available.
      *
      * @return {boolean} Whether get courses by field is available.
+     * @since 3.2
      */
     isGetCoursesByFieldAvailable(): boolean {
         return this.sitesProvider.wsAvailableInCurrentSite('core_course_get_courses_by_field');

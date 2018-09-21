@@ -47,8 +47,8 @@ export class CoreCourseFormatWeeksHandler implements CoreCourseFormatHandler {
         const now = this.timeUtils.timestamp();
 
         if (now < course.startdate || (course.enddate && now > course.enddate)) {
-            // Course hasn't started yet or it has ended already. Return the first section.
-            return sections[1];
+            // Course hasn't started yet or it has ended already. Return all sections.
+            return sections[0];
         }
 
         for (let i = 0; i < sections.length; i++) {
@@ -63,8 +63,8 @@ export class CoreCourseFormatWeeksHandler implements CoreCourseFormatHandler {
             }
         }
 
-        // The section wasn't found, return the first section.
-        return sections[1];
+        // The section wasn't found, return all sections.
+        return sections[0];
     }
 
     /**

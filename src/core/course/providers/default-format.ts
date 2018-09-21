@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCourseFormatHandler } from './format-delegate';
-import { CoreCourseProvider } from './course';
 
 /**
  * Default handler used when the course format doesn't have a specific implementation.
@@ -98,38 +97,28 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      */
     getCurrentSection(course: any, sections: any[]): any | Promise<any> {
         if (!this.coursesProvider.isGetCoursesByFieldAvailable()) {
-            // Cannot get the current section, return the first one.
-            if (sections[0].id != CoreCourseProvider.ALL_SECTIONS_ID) {
-                return sections[0];
-            }
-
-            return sections[1];
+            // Cannot get the current section, return all of them.
+            return sections[0];
         }
 
         // We need the "marker" to determine the current section.
         return this.coursesProvider.getCoursesByField('id', course.id).catch(() => {
             // Ignore errors.
         }).then((courses) => {
-            if (courses && courses[0]) {
+            if (courses && courses[0] && courses[0].marker > 0) {
                 // Find the marked section.
-                const course = courses[0];
-                for (let i = 0; i < sections.length; i++) {
-                    const section = sections[i];
-                    if (section.section == course.marker) {
-                        return section;
-                    }
-                }
-            }
+                const course = courses[0],
+                    section = sections.find((sect) => {
+                        return sect.section == course.marker;
+                    });
 
-            // Marked section not found or we couldn't retrieve the marker. Return the first section.
-            for (let i = 0; i < sections.length; i++) {
-                const section = sections[i];
-                if (section.id != CoreCourseProvider.ALL_SECTIONS_ID) {
+                if (section) {
                     return section;
                 }
             }
 
-            return Promise.reject(null);
+            // Marked section not found or we couldn't retrieve the marker. Return all sections.
+            return sections[0];
         });
     }
 

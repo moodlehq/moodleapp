@@ -41,6 +41,8 @@ import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-comp
     templateUrl: 'core-course-format.html'
 })
 export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
+    static LOAD_MORE_ACTIVITIES = 20; // How many activities should load each time showMoreActivities is called.
+
     @Input() course: any; // The course to render.
     @Input() sections: any[]; // List of course sections.
     @Input() downloadEnabled?: boolean; // Whether the download of sections and modules is enabled.
@@ -57,6 +59,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     sectionSelectorComponent: any;
     singleSectionComponent: any;
     allSectionsComponent: any;
+    canLoadMore = false;
+    showSectionId = 0;
 
     // Data to pass to the components.
     data: any = {};
@@ -273,6 +277,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         } else {
             this.previousSection = null;
             this.nextSection = null;
+            this.canLoadMore = false;
+            this.showSectionId = 0;
+            this.showMoreActivities();
         }
 
         if (this.moduleId && typeof previousValue == 'undefined') {
@@ -361,6 +368,46 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         });
 
         return Promise.all(promises);
+    }
+
+    /**
+     * Show more activities (only used when showing all the sections at the same time).
+     *
+     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
+     */
+    showMoreActivities(infiniteComplete?: any): void {
+        this.canLoadMore = false;
+
+        let modulesLoaded = 0,
+            i;
+        for (i = this.showSectionId + 1; i < this.sections.length; i++) {
+            if (this.sections[i].hasContent && this.sections[i].modules) {
+                modulesLoaded += this.sections[i].modules.reduce((total, module) => {
+                    return module.visibleoncoursepage !== 0 ? total + 1 : total;
+                }, 0);
+
+                if (modulesLoaded >= CoreCourseFormatComponent.LOAD_MORE_ACTIVITIES) {
+                    this.showSectionId = i;
+                    break;
+                }
+            }
+        }
+
+        this.canLoadMore = i < this.sections.length;
+
+        if (this.canLoadMore) {
+            // Check if any of the following sections have any content.
+            let thereAreMore = false;
+            for (i++; i < this.sections.length; i++) {
+                if (this.sections[i].hasContent && this.sections[i].modules && this.sections[i].modules.length > 0) {
+                    thereAreMore = true;
+                    break;
+                }
+            }
+            this.canLoadMore = thereAreMore;
+        }
+
+        infiniteComplete && infiniteComplete();
     }
 
     /**

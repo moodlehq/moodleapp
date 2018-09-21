@@ -29,9 +29,7 @@
                 </a>
             </ion-list>
 
-            <ion-infinite-scroll [enabled]="canLoadMore" (ionInfinite)="$event.waitFor(fetchEvents())">
-               <ion-infinite-scroll-content></ion-infinite-scroll-content>
-            </ion-infinite-scroll>
+            <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreEvents($event)"></core-infinite-loading>
         </core-loading>
     </ion-content>
 </core-split-view>

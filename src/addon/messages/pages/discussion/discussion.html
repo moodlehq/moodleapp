@@ -15,9 +15,7 @@
 <ion-content class="has-footer">
     <core-loading [hideUntil]="loaded">
         <!-- Load previous messages. -->
-        <ion-infinite-scroll [enabled]="canLoadMore" (ionInfinite)="loadPrevious($event)" position="top">
-           <ion-infinite-scroll-content></ion-infinite-scroll-content>
-        </ion-infinite-scroll>
+        <core-infinite-loading [enabled]="canLoadMore" (action)="loadPrevious($event)" position="top"></core-infinite-loading>
         <ion-list class="addon-messages-discussion-container" [attr.aria-live]="polite">
             <ng-container *ngFor="let message of messages; index as index; last as last">
                 <ion-chip *ngIf="showDate(message, messages[index - 1])" class="addon-messages-date" color="light">

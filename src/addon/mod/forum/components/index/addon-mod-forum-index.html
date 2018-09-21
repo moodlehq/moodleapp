@@ -88,9 +88,7 @@
                 </div>
             </core-empty-box>
 
-            <ion-infinite-scroll [enabled]="canLoadMore" (ionInfinite)="$event.waitFor(fetchMoreDiscussions())">
-                <ion-infinite-scroll-content></ion-infinite-scroll-content>
-            </ion-infinite-scroll>
+            <core-infinite-loading [enabled]="canLoadMore" (action)="fetchMoreDiscussions($event)"></core-infinite-loading>
         </core-loading>
 
         <ion-fab bottom end *ngIf="forum && forum.cancreatediscussions">

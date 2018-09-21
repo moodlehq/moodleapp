@@ -44,10 +44,14 @@
         <!-- Multiple sections. -->
         <div *ngIf="selectedSection && selectedSection.id == allSectionsId">
             <core-dynamic-component [component]="allSectionsComponent" [data]="data">
-                <ng-container *ngFor="let section of sections">
-                    <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: section}"></ng-container>
+                <ng-container *ngFor="let section of sections; index as i">
+                    <ng-container *ngIf="i <= showSectionId">
+                        <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: section}"></ng-container>
+                    </ng-container>
                 </ng-container>
             </core-dynamic-component>
+
+            <core-infinite-loading [enabled]="canLoadMore" (action)="showMoreActivities($event)"></core-infinite-loading>
         </div>
     </core-loading>
     <ion-buttons padding end class="core-course-section-nav-buttons" *ngIf="displaySectionSelector && sections && sections.length">

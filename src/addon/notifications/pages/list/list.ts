@@ -204,11 +204,11 @@ export class AddonNotificationsListPage {
     /**
      * Load more results.
      *
-     * @param {any} infiniteScroll The infinit scroll instance.
+     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
      */
-    loadMoreNotifications(infiniteScroll: any): void {
+    loadMoreNotifications(infiniteComplete?: any): void {
         this.fetchNotifications().finally(() => {
-            infiniteScroll.complete();
+            infiniteComplete && infiniteComplete();
         });
     }
 
