@@ -28,6 +28,7 @@ platforms/
 /plugins/android.json
 /plugins/ios.json
 www/
+!www/README.md
 $RECYCLE.BIN/
 
 .DS_Store
