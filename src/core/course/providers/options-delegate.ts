@@ -277,7 +277,7 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
                     handlersToDisplay.push({
                         data: data,
                         priority: handler.priority,
-                        prefetch: handler.prefetch
+                        prefetch: handler.prefetch && handler.prefetch.bind(handler)
                     });
                 }).catch((err) => {
                     this.logger.error('Error getting data for handler', handler.name, err);
