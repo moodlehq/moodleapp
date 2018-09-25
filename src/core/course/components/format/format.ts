@@ -387,11 +387,12 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 }, 0);
 
                 if (modulesLoaded >= CoreCourseFormatComponent.LOAD_MORE_ACTIVITIES) {
-                    this.showSectionId = i;
                     break;
                 }
             }
         }
+
+        this.showSectionId = i;
 
         this.canLoadMore = i < this.sections.length;
 
