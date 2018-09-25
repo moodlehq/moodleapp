@@ -46,4 +46,20 @@ ion-app.app-root page-addon-mod-lesson-player {
     .item-md table td {
         border-bottom: 1px solid $list-md-border-color;
     }
+
+    .item-wp table td {
+        border-bottom: 1px solid $list-wp-border-color;
+    }
+
+    .item-ios table {
+        @extend .card-ios;
+    }
+
+    .item-md table {
+        @extend .card-md;
+    }
+
+    .item-wp table {
+        @extend .card-wp;
+    }
 }
