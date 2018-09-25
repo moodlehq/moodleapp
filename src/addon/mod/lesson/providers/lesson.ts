@@ -148,6 +148,11 @@ export class AddonModLessonProvider {
     static LESSON_PAGE_CLUSTER =      30;
     static LESSON_PAGE_ENDOFCLUSTER = 31;
 
+    /**
+     * Constant used as a delimiter when parsing multianswer questions
+     */
+    static MULTIANSWER_DELIMITER = '@^#|';
+
     // Variables for database.
     static PASSWORD_TABLE = 'addon_mod_lesson_password';
     protected tablesSchema = {
@@ -178,6 +183,35 @@ export class AddonModLessonProvider {
         this.logger = logger.getInstance('AddonModLessonProvider');
 
         this.sitesProvider.createTableFromSchema(this.tablesSchema);
+    }
+
+    /**
+     * Add an answer and its response to a feedback string (HTML).
+     *
+     * @param {string} feedback The current feedback.
+     * @param {string} answer Student answer.
+     * @param {number} answerFormat Answer format.
+     * @param {string} response Response.
+     * @param {string} className Class to add to the response.
+     * @return {string} New feedback.
+     */
+    protected addAnswerAndResponseToFeedback(feedback: string, answer: string, answerFormat: number, response: string,
+            className: string): string {
+
+        // Add a table row containing the answer.
+        feedback += '<tr><td class="cell c0 lastcol">' + (answerFormat ? answer : this.textUtils.cleanTags(answer)) +
+                '</td></tr>';
+
+        // If the response exists, add a table row containing the response. If not, add en empty row.
+        if (response && response.trim()) {
+            feedback += '<tr><td class="cell c0 lastcol ' + className + '"><em>' +
+                this.translate.instant('addon.mod_lesson.response') + '</em>: <br/>' +
+                response + '</td></tr>';
+        } else {
+            feedback += '<tr><td class="cell c0 lastcol"></td></tr>';
+        }
+
+        return feedback;
     }
 
     /**
@@ -601,7 +635,8 @@ export class AddonModLessonProvider {
             result.userresponse = studentAnswers.join(',');
 
             // Get the answers in a set order, the id order.
-            const responses = [];
+            const studentAswersArray = [],
+                responses = [];
             let nHits = 0,
                 nCorrect = 0,
                 correctAnswerId = 0,
@@ -617,14 +652,13 @@ export class AddonModLessonProvider {
                     const answerId = studentAnswers[i];
 
                     if (answerId == answer.id) {
-                        result.studentanswer += '<br />' + answer.answer;
-                        if (this.textUtils.cleanTags(answer.response).trim()) {
-                            responses.push(answer.response);
-                        }
+                        studentAswersArray.push(answer.answer);
+                        responses.push(answer.response);
                         break;
                     }
                 }
             });
+            result.studentanswer = studentAswersArray.join(AddonModLessonProvider.MULTIANSWER_DELIMITER);
 
             // Iterate over all the possible answers.
             answers.forEach((answer) => {
@@ -664,12 +698,12 @@ export class AddonModLessonProvider {
 
             if (studentAnswers.length == nCorrect && nHits == nCorrect) {
                 result.correctanswer = true;
-                result.response = responses.join('<br />');
+                result.response = responses.join(AddonModLessonProvider.MULTIANSWER_DELIMITER);
                 result.newpageid = correctPageId;
                 result.answerid = correctAnswerId;
             } else {
                 result.correctanswer = false;
-                result.response = responses.join('<br />');
+                result.response = responses.join(AddonModLessonProvider.MULTIANSWER_DELIMITER);
                 result.newpageid = wrongPageId;
                 result.answerid = wrongAnswerId;
             }
@@ -3143,11 +3177,31 @@ export class AddonModLessonProvider {
                     }
 
                     return subPromise.then(() => {
-                        result.feedback += '<div class="box generalbox boxaligncenter">' + pageData.page.contents + '</div>';
+                        result.feedback += '<div class="box generalbox boxaligncenter p-y-1">' + pageData.page.contents + '</div>';
                         result.feedback += '<div class="correctanswer generalbox"><em>' +
                             this.translate.instant('addon.mod_lesson.youranswer') + '</em> : ' +
-                            (result.studentanswerformat ? result.studentanswer : this.textUtils.cleanTags(result.studentanswer)) +
-                            '<div class="box ' + className + '">' + result.response + '</div></div>';
+                            '<div class="studentanswer m-t-2 m-b-2"><table class="generaltable"><tbody>';
+
+                        // Create a table containing the answers and responses.
+                        if (pageData.page.qoption) {
+                            // Multianswer allowed.
+                            const studentAnswerArray = result.studentanswer ?
+                                        result.studentanswer.split(AddonModLessonProvider.MULTIANSWER_DELIMITER) : [],
+                                responseArray = result.response ?
+                                        result.response.split(AddonModLessonProvider.MULTIANSWER_DELIMITER) : [];
+
+                            // Add answers and responses to the table.
+                            for (let i = 0; i < studentAnswerArray.length; i++) {
+                                result.feedback = this.addAnswerAndResponseToFeedback(result.feedback, studentAnswerArray[i],
+                                        result.studentanswerformat, responseArray[i], className);
+                            }
+                        } else {
+                            // Only 1 answer, add it to the table.
+                            result.feedback = this.addAnswerAndResponseToFeedback(result.feedback, result.studentanswer,
+                                    result.studentanswerformat, result.response, className);
+                        }
+
+                        result.feedback += '</tbody></table></div></div>';
                     });
                 }
             });
