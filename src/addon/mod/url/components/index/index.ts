@@ -40,6 +40,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     isAudio = false;
     isVideo = false;
     mimetype: string;
+    displayDescription = true;
 
     constructor(injector: Injector, private urlProvider: AddonModUrlProvider, private courseProvider: CoreCourseProvider,
             private urlHelper: AddonModUrlHelperProvider, private mimeUtils: CoreMimetypeUtilsProvider,
@@ -97,6 +98,11 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
             this.name = url.name || this.module.name;
             this.description = url.intro || url.description;
             this.dataRetrieved.emit(url);
+
+            if (canGetUrl && url.displayoptions) {
+                const unserialized = this.textUtils.unserialize(url.displayoptions);
+                this.displayDescription = typeof unserialized.printintro == 'undefined' || !!unserialized.printintro;
+            }
 
             if (!canGetUrl) {
                 mod = url;

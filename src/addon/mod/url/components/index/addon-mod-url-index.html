@@ -10,7 +10,7 @@
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
-    <core-course-module-description *ngIf="mode != 'iframe'" [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+    <core-course-module-description *ngIf="displayDescription" [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
 
     <div *ngIf="shouldEmbed" class="addon-mod_url-embedded-url">
         <img *ngIf="isImage" title="{{name}}" [src]="url">
