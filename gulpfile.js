@@ -251,8 +251,8 @@ gulp.task('config', function(done) {
                 for (var key in config) {
                     var value = config[key];
                     if (typeof value == 'string') {
-                        // Wrap the string in ' .
-                        value = "'" + value + "'";
+                        // Wrap the string in ' and scape them.
+                        value = "'" + value.replace(/([^\\])'/g, "$1\\'") + "'";
                     } else if (typeof value != 'number' && typeof value != 'boolean') {
                         // Stringify with 4 spaces of indentation, and then add 4 more spaces in each line.
                         value = JSON.stringify(value, null, 4).replace(/^(?:    )/gm, '        ').replace(/^(?:})/gm, '    }');
