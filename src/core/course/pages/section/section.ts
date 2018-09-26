@@ -62,6 +62,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     protected module: any;
     protected completionObserver;
     protected courseStatusObserver;
+    protected firstTabName: string;
     protected isDestroyed = false;
 
     constructor(navParams: NavParams, private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
@@ -74,6 +75,7 @@ export class CoreCourseSectionPage implements OnDestroy {
         this.sectionId = navParams.get('sectionId');
         this.sectionNumber = navParams.get('sectionNumber');
         this.module = navParams.get('module');
+        this.firstTabName = navParams.get('selectedTab');
 
         // Get the title to display. We dont't have sections yet.
         this.title = courseFormatDelegate.getCourseTitle(this.course);
@@ -228,13 +230,28 @@ export class CoreCourseSectionPage implements OnDestroy {
             // Load the course handlers.
             promises.push(this.courseOptionsDelegate.getHandlersToDisplay(this.injector, this.course, refresh, false)
                     .then((handlers) => {
+                let tabToLoad;
+
                 // Add the courseId to the handler component data.
-                handlers.forEach((handler) => {
+                handlers.forEach((handler, index) => {
                     handler.data.componentData = handler.data.componentData || {};
                     handler.data.componentData.courseId = this.course.id;
+
+                    // Check if this handler should be the first selected tab.
+                    if (this.firstTabName && handler.name == this.firstTabName) {
+                        tabToLoad = index + 1;
+                    }
                 });
 
                 this.courseHandlers = handlers;
+
+                // Select the tab if needed.
+                this.firstTabName = undefined;
+                if (tabToLoad) {
+                    setTimeout(() => {
+                        this.tabsComponent.selectTab(tabToLoad);
+                    });
+                }
             }));
 
             return Promise.all(promises).catch((error) => {
