@@ -91,9 +91,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
 
         // Setup the editor.
         this.editorElement = this.editor.nativeElement as HTMLDivElement;
-        this.editorElement.innerHTML = this.control.value;
-        this.textarea.value = this.control.value;
-
+        this.setContent(this.control.value);
         this.editorElement.onchange = this.onChange.bind(this);
         this.editorElement.onkeyup = this.onChange.bind(this);
         this.editorElement.onpaste = this.onChange.bind(this);
@@ -102,8 +100,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
 
         // Listen for changes on the control to update the editor (if it is updated from outside of this component).
         this.valueChangeSubscription = this.control.valueChanges.subscribe((param) => {
-            this.editorElement.innerHTML = param;
-            this.textarea.value = param;
+            this.setContent(param);
         });
 
         // Use paragraph on enter.
@@ -379,13 +376,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         $event.preventDefault();
         $event.stopPropagation();
 
-        const isNull = this.isNullOrWhiteSpace(this.control.value);
-        if (isNull) {
-            this.clearText();
-        } else {
-            this.editorElement.innerHTML = this.control.value;
-            this.textarea.value = this.control.value;
-        }
+        this.setContent(this.control.value);
 
         this.rteEnabled = !this.rteEnabled;
 
@@ -444,11 +435,25 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     }
 
     /**
+     * Set the content of the textarea and the editor element.
+     *
+     * @param {string} value New content.
+     */
+    protected setContent(value: string): void {
+        if (this.isNullOrWhiteSpace(value)) {
+            this.editorElement.innerHTML = '<p></p>';
+            this.textarea.value = '';
+        } else {
+            this.editorElement.innerHTML = value;
+            this.textarea.value = value;
+        }
+    }
+
+    /**
      * Clear the text.
      */
     clearText(): void {
-        this.editorElement.innerHTML = '<p></p>';
-        this.textarea.value = '';
+        this.setContent(null);
 
         // Don't emit event so our valueChanges doesn't get notified by this change.
         this.control.setValue(null, {emitEvent: false});
