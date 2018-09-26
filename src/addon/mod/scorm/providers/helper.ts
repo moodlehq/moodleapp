@@ -193,12 +193,11 @@ export class AddonModScormHelperProvider {
     }
 
     /**
-     * Get the first SCO to load in a SCORM. If a non-empty TOC is provided, it will be the first valid SCO in the TOC.
-     * Otherwise, it will be the first valid SCO returned by $mmaModScorm#getScos.
+     * Get the first SCO to load in a SCORM: the first valid and incomplete SCO.
      *
      * @param {number} scormId Scorm ID.
      * @param {number} attempt Attempt number.
-     * @param {any[]} [toc] SCORM's TOC.
+     * @param {any[]} [toc] SCORM's TOC. If not provided, it will be calculated.
      * @param {string} [organization] Organization to use.
      * @param {boolean} [offline] Whether the attempt is offline.
      * @param {string} [siteId] Site ID. If not defined, current site.
@@ -220,7 +219,8 @@ export class AddonModScormHelperProvider {
             for (let i = 0; i < scos.length; i++) {
                 const sco = scos[i];
 
-                if (sco.isvisible && sco.prereq && sco.launch) {
+                // Return the first valid and incomplete SCO.
+                if (sco.isvisible && sco.prereq && sco.launch && this.scormProvider.isStatusIncomplete(sco.status)) {
                     return sco;
                 }
             }
