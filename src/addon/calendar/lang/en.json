@@ -6,6 +6,7 @@
     "errorloadevents": "Error loading events.",
     "eventendtime": "End time",
     "eventstarttime": "Start time",
+    "gotoactivity": "Go to activity",
     "noevents": "There are no events",
     "notifications": "Notifications",
     "typeclose": "Close event",
