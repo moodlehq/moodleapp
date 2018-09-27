@@ -35,6 +35,8 @@
     </ion-item>
 
     <ion-item *ngIf="!question.textarea && question.attachments && question.attachments.length">
-        <core-file *ngFor="let attachment of question.attachments" [file]="attachment" [component]="component" [componentId]="componentId"></core-file>
+        <div no-lines>
+            <core-file *ngFor="let attachment of question.attachments" [file]="attachment" [component]="component" [componentId]="componentId"></core-file>
+        </div>
     </ion-item>
 </section>
