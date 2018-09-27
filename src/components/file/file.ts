@@ -21,6 +21,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreConstants } from '@core/constants';
 
 /**
@@ -39,6 +40,8 @@ export class CoreFileComponent implements OnInit, OnDestroy {
     @Input() alwaysDownload?: boolean | string; // Whether it should always display the refresh button when the file is downloaded.
                                                 // Use it for files that you cannot determine if they're outdated or not.
     @Input() canDownload?: boolean | string = true; // Whether file can be downloaded.
+    @Input() showSize?: boolean | string = true; // Whether show filesize.
+    @Input() showTime?: boolean | string = true; // Whether show file time modified.
     @Output() onDelete?: EventEmitter<void>; // Will notify when the delete button is clicked.
 
     isDownloaded: boolean;
@@ -46,6 +49,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
     showDownload: boolean;
     fileIcon: string;
     fileName: string;
+    fileSizeReadable: string;
 
     protected fileUrl: string;
     protected siteId: string;
@@ -57,7 +61,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
     constructor(private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider, private domUtils: CoreDomUtilsProvider,
             private filepoolProvider: CoreFilepoolProvider, private appProvider: CoreAppProvider,
             private fileHelper: CoreFileHelperProvider, private mimeUtils: CoreMimetypeUtilsProvider,
-            private eventsProvider: CoreEventsProvider) {
+            private eventsProvider: CoreEventsProvider, private textUtils: CoreTextUtilsProvider) {
         this.onDelete = new EventEmitter();
     }
 
@@ -74,6 +78,12 @@ export class CoreFileComponent implements OnInit, OnDestroy {
         this.siteId = this.sitesProvider.getCurrentSiteId();
         this.fileSize = this.file.filesize;
         this.fileName = this.file.filename;
+
+        if (this.utils.isTrueOrOne(this.showSize) && this.fileSize >= 0) {
+            this.fileSizeReadable = this.textUtils.bytesToSize(this.fileSize, 2);
+        }
+
+        this.showTime = this.utils.isTrueOrOne(this.showTime) && this.timemodified > 0;
 
         if (this.file.isexternalfile) {
             this.alwaysDownload = true; // Always show the download button in external files.

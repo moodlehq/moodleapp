@@ -322,19 +322,12 @@ export class AddonModAssignProvider {
                 }
 
                 filearea.files.forEach((file) => {
-                    let filename;
-
-                    if (file.filename) {
-                        filename = file.filename;
-                    } else {
+                    if (!file.filename) {
                         // We don't have filename, extract it from the path.
-                        filename = file.filepath[0] == '/' ? file.filepath.substr(1) : file.filepath;
+                        file.filename = file.filepath[0] == '/' ? file.filepath.substr(1) : file.filepath;
                     }
 
-                    files.push({
-                        filename: filename,
-                        fileurl: file.fileurl
-                    });
+                    files.push(file);
                 });
             });
         }
