@@ -13,13 +13,13 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { IonicPage, NavParams, Platform } from 'ionic-angular';
+import { IonicPage, NavParams } from 'ionic-angular';
 import { CoreUserProvider } from '../../providers/user';
 import { CoreUserHelperProvider } from '../../providers/helper';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 
 /**
  * Page that displays an user about page.
@@ -37,17 +37,15 @@ export class CoreUserAboutPage {
     userLoaded = false;
     hasContact = false;
     hasDetails = false;
-    isAndroid = false;
     user: any = {};
     title: string;
 
     constructor(navParams: NavParams, private userProvider: CoreUserProvider, private userHelper: CoreUserHelperProvider,
-            private domUtils: CoreDomUtilsProvider, private eventsProvider: CoreEventsProvider, private sanitizer: DomSanitizer,
-            private sitesProvider: CoreSitesProvider, private platform: Platform) {
+            private domUtils: CoreDomUtilsProvider, private eventsProvider: CoreEventsProvider,
+            private sitesProvider: CoreSitesProvider, private textUtils: CoreTextUtilsProvider) {
 
         this.userId = navParams.get('userId');
         this.courseId = navParams.get('courseId');
-        this.isAndroid = this.platform.is('android');
 
         this.siteId = this.sitesProvider.getCurrentSite().getId();
     }
@@ -69,8 +67,7 @@ export class CoreUserAboutPage {
 
             if (user.address) {
                 user.address = this.userHelper.formatAddress(user.address, user.city, user.country);
-                user.encodedAddress = this.sanitizer.bypassSecurityTrustUrl(
-                        (this.isAndroid ? 'geo:0,0?q=' : 'http://maps.google.com?q=') + encodeURIComponent(user.address));
+                user.encodedAddress = this.textUtils.buildAddressURL(user.address);
             }
 
             this.hasContact = user.email || user.phone1 || user.phone2 || user.city || user.country || user.address;

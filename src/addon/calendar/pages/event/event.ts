@@ -166,6 +166,12 @@ export class AddonCalendarEventPage {
                 this.categoryPath = event.category.nestedname;
             }
 
+            if (event.location) {
+                // Build a link to open the address in maps.
+                event.location = this.textUtils.decodeHTML(event.location);
+                event.encodedLocation = this.textUtils.buildAddressURL(event.location);
+            }
+
             return Promise.all(promises);
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevent', true);
