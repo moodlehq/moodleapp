@@ -16,5 +16,5 @@ script:
   - npm run build
 
 after_success:
-  - chmod +x aot.sh
-  - ./aot.sh
+  - chmod +x scripts/aot.sh
+  - scripts/aot.sh
