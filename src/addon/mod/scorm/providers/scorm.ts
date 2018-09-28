@@ -77,6 +77,10 @@ export class AddonModScormProvider {
     static MODENORMAL = 'normal';
     static MODEREVIEW = 'review';
 
+    static SCORM_FORCEATTEMPT_NO         = 0;
+    static SCORM_FORCEATTEMPT_ONCOMPLETE = 1;
+    static SCORM_FORCEATTEMPT_ALWAYS     = 2;
+
     // Events.
     static LAUNCH_NEXT_SCO_EVENT = 'addon_mod_scorm_launch_next_sco';
     static LAUNCH_PREV_SCO_EVENT = 'addon_mod_scorm_launch_prev_sco';
@@ -231,6 +235,15 @@ export class AddonModScormProvider {
                     newAttempt: newAttempt
                 };
             }
+        }
+
+        if (scorm.forcenewattempt == AddonModScormProvider.SCORM_FORCEATTEMPT_ALWAYS) {
+            // This SCORM is configured to force a new attempt on every re-entry.
+            return {
+                mode: AddonModScormProvider.MODENORMAL,
+                attempt: attempt + 1,
+                newAttempt: true
+            };
         }
 
         // Validate user request to start a new attempt.

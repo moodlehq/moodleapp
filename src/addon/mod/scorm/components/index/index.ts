@@ -207,7 +207,9 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
                 this.scorm.numAttempts = this.attempts.total;
                 this.scorm.gradeMethodReadable = this.scormProvider.getScormGradeMethod(this.scorm);
                 this.scorm.attemptsLeft = this.scormProvider.countAttemptsLeft(this.scorm, this.attempts.lastAttempt.number);
-                if (this.scorm.forceattempt && this.scorm.incomplete) {
+
+                if (this.scorm.forcenewattempt == AddonModScormProvider.SCORM_FORCEATTEMPT_ALWAYS ||
+                        (this.scorm.forcenewattempt && !this.scorm.incomplete)) {
                     this.scormOptions.newAttempt = true;
                 }
 
