@@ -53,6 +53,7 @@ export class CoreSitePluginsNewContentDirective implements OnInit {
                            // If supplied and form is found, the form data will be retrieved and sent to the new content.
     @Input() jsData: any; // JS variables to pass to the new page so they can be used in the template or JS.
                           // If true is supplied instead of an object, all initial variables from current page will be copied.
+    @Input() preSets: any; // The preSets for the WS call of the new content.
 
     protected element: HTMLElement;
 
@@ -97,7 +98,8 @@ export class CoreSitePluginsNewContentDirective implements OnInit {
                     method: this.method || (this.parentContent && this.parentContent.method),
                     args: args,
                     initResult: this.parentContent && this.parentContent.initResult,
-                    jsData: jsData
+                    jsData: jsData,
+                    preSets: this.preSets
                 });
             }
         });
