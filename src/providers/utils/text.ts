@@ -13,7 +13,8 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { ModalController } from 'ionic-angular';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { ModalController, Platform } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
 
@@ -70,7 +71,19 @@ export class CoreTextUtilsProvider {
 
     protected template = document.createElement('template'); // A template element to convert HTML to element.
 
-    constructor(private translate: TranslateService, private langProvider: CoreLangProvider, private modalCtrl: ModalController) { }
+    constructor(private translate: TranslateService, private langProvider: CoreLangProvider, private modalCtrl: ModalController,
+            private sanitizer: DomSanitizer, private platform: Platform) { }
+
+    /**
+     * Given an address as a string, return a URL to open the address in maps.
+     *
+     * @param {string} address The address.
+     * @return {SafeUrl} URL to view the address.
+     */
+    buildAddressURL(address: string): SafeUrl {
+        return this.sanitizer.bypassSecurityTrustUrl((this.platform.is('android') ? 'geo:0,0?q=' : 'http://maps.google.com?q=') +
+                encodeURIComponent(address));
+    }
 
     /**
      * Given a list of sentences, build a message with all of them wrapped in <p>.
@@ -231,7 +244,7 @@ export class CoreTextUtilsProvider {
             .replace(/&lt;/g, '<')
             .replace(/&gt;/g, '>')
             .replace(/&quot;/g, '"')
-            .replace(/&#039;/g, '')
+            .replace(/&#039;/g, '\'')
             .replace(/&nbsp;/g, ' ');
     }
 
