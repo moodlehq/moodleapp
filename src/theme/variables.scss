@@ -22,7 +22,7 @@ $gray-light:      #eeeeee; // Background.
 $gray-lighter:    #f5f5f5;
 $white:           #ffffff; // Background, reversed text.
 
-$blue:            #0064d2; // Link, background.
+$blue:            #4397e6; // Link, background.
 $turquoise:       #007982; // Accent.
 $green:           #5e8100; // Accent.
 $red:             #cb3d4d;
@@ -64,7 +64,7 @@ $core-course-image-background: #81ecec, #74b9ff, #a29bfe, #dfe6e9, #00b894, #098
 // To view all the possible Ionic variables, see:
 // http://ionicframework.com/docs/theming/overriding-ionic-variables/
 
-$toolbar-background: $core-color !default;
+$toolbar-background: $blue !default;
 $content-padding: 10px;
 
 // Named Color Variables
@@ -76,7 +76,7 @@ $content-padding: 10px;
 // The "primary" color is the only required color in the map.
 
 $colors: (
-  primary:    $core-color,
+  primary:    $blue,
   secondary:  $turquoise,
   danger:     $red,
   light:      $gray-lighter,
@@ -101,7 +101,7 @@ $list-background-color:      $white !default;
 
 $tabs-background:            $gray-darker !default;
 $tabs-border-color:          #b2b2b2 !default;
-$tabs-tab-color-active:      $core-color !default;
+$tabs-tab-color-active:      $blue !default;
 $tabs-tab-color-inactive:    $white !default;
 
 $text-input-highlight-color-valid: $green !default;
@@ -125,7 +125,7 @@ $core-init-screen-logo-max-width: 300px !default;
 $core-fixed-url:                  false !default;
 
 $core-loading-spinner-color: $core-color !default;
-$core-spinner-color: $core-color !default;
+$core-spinner-color: $blue !default;
 $core-button-outline-background-color: $white !default;
 
 // Login.
@@ -135,7 +135,7 @@ $core-login-box-background-border: $gray !default;
 $core-login-box-text-color: $text-color !default;
 $core-login-button-outline: false !default;
 $core-login-loading-color: false !default;
-$core-select-placeholder-color: $core-color;
+$core-select-placeholder-color: $blue;
 
 // App iOS Variables
 // --------------------------------------------------
@@ -222,7 +222,7 @@ $item-media-height: 32px !default;
 $core-top-tabs-background: $white !default;
 $core-top-tabs-color: $gray-dark !default;
 $core-top-tabs-border: $gray !default;
-$core-top-tabs-color-active: $core-color !default;
+$core-top-tabs-color-active: $blue !default;
 
 $core-splitview-selected: $core-color-light !default;
 $core-progressbar-color: $core-color-light !default;
