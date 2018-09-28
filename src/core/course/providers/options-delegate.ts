@@ -110,6 +110,12 @@ export interface CoreCourseOptionsHandlerToDisplay {
     data: CoreCourseOptionsHandlerData;
 
     /**
+     * Name of the handler, or name and sub context (AddonMessages, AddonMessages:blockContact, ...).
+     * @type {string}
+     */
+    name: string;
+
+    /**
      * The highest priority is displayed first.
      * @type {number}
      */
@@ -277,7 +283,8 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
                     handlersToDisplay.push({
                         data: data,
                         priority: handler.priority,
-                        prefetch: handler.prefetch && handler.prefetch.bind(handler)
+                        prefetch: handler.prefetch && handler.prefetch.bind(handler),
+                        name: handler.name
                     });
                 }).catch((err) => {
                     this.logger.error('Error getting data for handler', handler.name, err);
