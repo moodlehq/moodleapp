@@ -1467,6 +1467,8 @@
   "core.settings.cordovadeviceuuid": "local_moodlemobileapp",
   "core.settings.cordovaversion": "local_moodlemobileapp",
   "core.settings.currentlanguage": "moodle",
+  "core.settings.debugdisplay": "admin",
+  "core.settings.debugdisplaydescription": "local_moodlemobileapp",
   "core.settings.deletesitefiles": "local_moodlemobileapp",
   "core.settings.deletesitefilestitle": "local_moodlemobileapp",
   "core.settings.deviceinfo": "local_moodlemobileapp",
