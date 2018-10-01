@@ -318,6 +318,10 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
                     }
 
                     return fileProm.then((attachmentsId) => {
+                        if (workshop.submissiontypefile == AddonModWorkshopProvider.SUBMISSION_TYPE_DISABLED) {
+                            attachmentsId = null;
+                        }
+
                         // Perform the action.
                         switch (action.action) {
                             case 'add':
