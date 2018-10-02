@@ -2,6 +2,18 @@
 
 # Compile AOT.
 if [ $TRAVIS_BRANCH == 'integration' ] || [ $TRAVIS_BRANCH == 'master' ] || [ -z $TRAVIS_BRANCH ] ; then
+    cd scripts
+    ./build_lang.sh
+    cd ..
+
+    if [ $TRAVIS_BRANCH == 'master' ] && [ ! -z $GIT_TOKEN ] ; then
+        git remote set-url origin https://$GIT_TOKEN@github.com/$TRAVIS_REPO_SLUG.git
+        git fetch -q origin
+        git add src/assets/lang
+        git commit -m 'Update lang files [ci skip]'
+        git push origin HEAD:$TRAVIS_BRANCH
+    fi
+
     sed -ie $'s~throw new Error("No ResourceLoader.*~url = "templates/" + url;\\\nvar resolve;\\\nvar reject;\\\nvar promise = new Promise(function (res, rej) {\\\nresolve = res;\\\nreject = rej;\\\n});\\\nvar xhr = new XMLHttpRequest();\\\nxhr.open("GET", url, true);\\\nxhr.responseType = "text";\\\nxhr.onload = function () {\\\nvar response = xhr.response || xhr.responseText;\\\nvar status = xhr.status === 1223 ? 204 : xhr.status;\\\nif (status === 0) {\\\nstatus = response ? 200 : 0;\\\n}\\\nif (200 <= status \&\& status <= 300) {\\\nresolve(response);\\\n}\\\nelse {\\\nreject("Failed to load " + url);\\\n}\\\n};\\\nxhr.onerror = function () { reject("Failed to load " + url); };\\\nxhr.send();\\\nreturn promise;\\\n~g' node_modules/@angular/platform-browser-dynamic/esm5/platform-browser-dynamic.js
     sed -ie "s/context\.isProd || hasArg('--minifyJs')/hasArg('--minifyJs')/g" node_modules/@ionic/app-scripts/dist/util/config.js
     sed -ie "s/context\.isProd || hasArg('--optimizeJs')/hasArg('--optimizeJs')/g" node_modules/@ionic/app-scripts/dist/util/config.js
@@ -17,6 +29,7 @@ if [ ! -z $GIT_ORG ] && [ ! -z $GIT_TOKEN ] ; then
     git checkout $TRAVIS_BRANCH
     rm -Rf assets build index.html templates
     cp -Rf ../$gitfolder/www/* ./
+    rm -Rf assets/countries assets/mimetypes
     git add .
     git commit -m "Travis build: $TRAVIS_BUILD_NUMBER"
     git push https://$GIT_TOKEN@github.com/$GIT_ORG/moodlemobile-phonegapbuild.git

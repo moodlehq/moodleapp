@@ -5,7 +5,9 @@ forceLang=$1
 print_title 'Getting languages'
 git clone https://git.in.moodle.com/moodle/moodle-langpacks.git $LANGPACKSFOLDER
 pushd $LANGPACKSFOLDER
-git checkout MOODLE_36_STABLE
+BRANCHES=($(git br -r --format="%(refname:lstrip=3)" --sort="refname" | grep MOODLE_))
+BRANCH=${BRANCHES[${#BRANCHES[@]}-1]}
+git checkout $BRANCH
 git pull
 popd
 

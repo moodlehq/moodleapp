@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Script for getting an specific string
+ * Script for converting moodle strings to json.
  */
 
 // Check we are in CLI.
