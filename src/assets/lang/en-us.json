@@ -1,0 +1,16 @@
+{
+    "addon.mod_assign.markingworkflowstate": "Grading workflow state",
+    "addon.mod_assign.markingworkflowstateinmarking": "In grading",
+    "addon.mod_assign.markingworkflowstatenotmarked": "Not graded",
+    "addon.mod_assign.markingworkflowstatereadyforreview": "Grading completed",
+    "addon.mod_quiz.marks": "Points",
+    "core.courses.notenroled": "You are not enrolled in this course",
+    "core.decsep": ".",
+    "core.labelsep": ":",
+    "core.listsep": ",",
+    "core.login.loginsteps": "For full access to this site, you first need to create an account.",
+    "core.paymentinstant": "Use the button below to pay and be enrolled within minutes!",
+    "core.settings.license": "License",
+    "core.thisdirection": "ltr",
+    "core.user.lastname": "Last name"
+}
