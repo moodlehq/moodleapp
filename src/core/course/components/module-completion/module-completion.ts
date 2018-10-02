@@ -72,7 +72,7 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
             const modal = this.domUtils.showModalLoading();
 
             this.courseProvider.markCompletedManually(this.completion.cmid, this.completion.state === 1 ? 0 : 1,
-                    this.completion.courseId).then((response) => {
+                    this.completion.courseId, this.completion.courseName).then((response) => {
 
                 if (!response.status) {
                     return Promise.reject(null);

@@ -41,6 +41,10 @@ export class CoreCourseOfflineProvider {
                     type: 'INTEGER'
                 },
                 {
+                    name: 'coursename',
+                    type: 'TEXT'
+                },
+                {
                     name: 'timecreated',
                     type: 'INTEGER'
                 }
@@ -63,6 +67,19 @@ export class CoreCourseOfflineProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
 
             return site.getDb().deleteRecords(CoreCourseOfflineProvider.MANUAL_COMPLETION_TABLE, {cmid: cmId});
+        });
+    }
+
+    /**
+     * Get all offline manual completions for a certain course.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any[]>} Promise resolved with the list of completions.
+     */
+    getAllManualCompletions(siteId?: string): Promise<any[]> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+
+            return site.getDb().getRecords(CoreCourseOfflineProvider.MANUAL_COMPLETION_TABLE);
         });
     }
 
@@ -100,10 +117,11 @@ export class CoreCourseOfflineProvider {
      * @param {number} cmId The module ID to store the completion.
      * @param {number} completed Whether the module is completed or not.
      * @param {number} courseId Course ID the module belongs to.
+     * @param {string} [courseName] Course name. Recommended, it is used to display a better warning message.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<{status: boolean, offline: boolean}>} Promise resolved when completion is successfully stored.
      */
-    markCompletedManually(cmId: number, completed: number, courseId: number, siteId?: string)
+    markCompletedManually(cmId: number, completed: number, courseId: number, courseName?: string, siteId?: string)
             : Promise<{status: boolean, offline: boolean}> {
 
         // Store the offline data.
@@ -112,6 +130,7 @@ export class CoreCourseOfflineProvider {
                 cmid: cmId,
                 completed: completed,
                 courseid: courseId,
+                coursename: courseName || '',
                 timecreated: Date.now()
             };
 

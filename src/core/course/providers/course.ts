@@ -677,15 +677,18 @@ export class CoreCourseProvider {
      * @param {number} cmId The module ID.
      * @param {number} completed Whether the module is completed or not.
      * @param {number} courseId Course ID the module belongs to.
+     * @param {string} [courseName] Course name. Recommended, it is used to display a better warning message.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when completion is successfully sent or stored.
      */
-    markCompletedManually(cmId: number, completed: number, courseId: number, siteId?: string): Promise<any> {
+    markCompletedManually(cmId: number, completed: number, courseId: number, courseName?: string, siteId?: string)
+            : Promise<any> {
+
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         // Convenience function to store a message to be synchronized later.
         const storeOffline = (): Promise<any> => {
-            return this.courseOffline.markCompletedManually(cmId, completed, courseId, siteId);
+            return this.courseOffline.markCompletedManually(cmId, completed, courseId, courseName, siteId);
         };
 
         // Check if we already have a completion stored.
@@ -703,7 +706,7 @@ export class CoreCourseProvider {
                 });
             }
 
-            if (!this.appProvider.isOnline()) {
+            if (!this.appProvider.isOnline() && courseId) {
                 // App is offline, store the action.
                 return storeOffline();
             }
@@ -720,7 +723,7 @@ export class CoreCourseProvider {
 
                 return result;
             }).catch((error) => {
-                if (this.utils.isWebServiceError(error)) {
+                if (this.utils.isWebServiceError(error) || !courseId) {
                     // The WebService has thrown an error, this means that responses cannot be submitted.
                     return Promise.reject(error);
                 } else {

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CoreCronDelegate } from '@providers/cron';
 import { CoreCourseProvider } from './providers/course';
 import { CoreCourseHelperProvider } from './providers/helper';
 import { CoreCourseFormatDelegate } from './providers/format-delegate';
@@ -26,6 +27,8 @@ import { CoreCourseFormatSingleActivityModule } from './formats/singleactivity/s
 import { CoreCourseFormatSocialModule } from './formats/social/social.module';
 import { CoreCourseFormatTopicsModule } from './formats/topics/topics.module';
 import { CoreCourseFormatWeeksModule } from './formats/weeks/weeks.module';
+import { CoreCourseSyncProvider } from './providers/sync';
+import { CoreCourseSyncCronHandler } from './providers/sync-cron-handler';
 
 // List of providers (without handlers).
 export const CORE_COURSE_PROVIDERS: any[] = [
@@ -35,7 +38,8 @@ export const CORE_COURSE_PROVIDERS: any[] = [
     CoreCourseModuleDelegate,
     CoreCourseModulePrefetchDelegate,
     CoreCourseOptionsDelegate,
-    CoreCourseOfflineProvider
+    CoreCourseOfflineProvider,
+    CoreCourseSyncProvider
 ];
 
 @NgModule({
@@ -54,9 +58,15 @@ export const CORE_COURSE_PROVIDERS: any[] = [
         CoreCourseModulePrefetchDelegate,
         CoreCourseOptionsDelegate,
         CoreCourseOfflineProvider,
+        CoreCourseSyncProvider,
         CoreCourseFormatDefaultHandler,
-        CoreCourseModuleDefaultHandler
+        CoreCourseModuleDefaultHandler,
+        CoreCourseSyncCronHandler
     ],
     exports: []
 })
-export class CoreCourseModule {}
+export class CoreCourseModule {
+    constructor(cronDelegate: CoreCronDelegate, syncHandler: CoreCourseSyncCronHandler) {
+        cronDelegate.register(syncHandler);
+    }
+}

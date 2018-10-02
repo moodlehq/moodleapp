@@ -131,9 +131,10 @@ export class CoreCourseHelperProvider {
      * @param {any[]} sections List of sections to treat modules.
      * @param {number} courseId Course ID of the modules.
      * @param {any[]} [completionStatus] List of completion status.
+     * @param {string} [courseName] Course name. Recommended if completionStatus is supplied.
      * @return {boolean} Whether the sections have content.
      */
-    addHandlerDataForModules(sections: any[], courseId: number, completionStatus?: any): boolean {
+    addHandlerDataForModules(sections: any[], courseId: number, completionStatus?: any, courseName?: string): boolean {
         let hasContent = false;
 
         sections.forEach((section) => {
@@ -150,6 +151,7 @@ export class CoreCourseHelperProvider {
                     // Check if activity has completions and if it's marked.
                     module.completionstatus = completionStatus[module.id];
                     module.completionstatus.courseId = courseId;
+                    module.completionstatus.courseName = courseName;
                 }
 
                 // Check if the module is stealth.
