@@ -8,9 +8,9 @@
     Publisher="CN=33CDCDF6-1EB5-4827-9897-ED25C91A32F6"
     Version="3.5.1.0" />
   <Properties>
-    <DisplayName>Moodle Desktop</DisplayName>
-    <PublisherDisplayName>Moodle Pty Ltd.</PublisherDisplayName>
-    <Description>The official app for Moodle.</Description>
+    <DisplayName>eCPD Desktop</DisplayName>
+    <PublisherDisplayName>eCPD Pty Ltd.</PublisherDisplayName>
+    <Description>The official app for eCPD.</Description>
     <Logo>assets\StoreLogo.png</Logo>
   </Properties>
   <Resources>
