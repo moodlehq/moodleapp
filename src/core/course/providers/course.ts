@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
@@ -21,6 +22,7 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSiteWSPreSets } from '@classes/site';
 import { CoreConstants } from '../../constants';
+import { CoreCourseOfflineProvider } from './course-offline';
 
 /**
  * Service that provides some features regarding a course.
@@ -75,7 +77,8 @@ export class CoreCourseProvider {
     ];
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private eventsProvider: CoreEventsProvider,
-            private utils: CoreUtilsProvider, private timeUtils: CoreTimeUtilsProvider, private translate: TranslateService) {
+            private utils: CoreUtilsProvider, private timeUtils: CoreTimeUtilsProvider, private translate: TranslateService,
+            private courseOffline: CoreCourseOfflineProvider, private appProvider: CoreAppProvider) {
         this.logger = logger.getInstance('CoreCourseProvider');
 
         this.sitesProvider.createTableFromSchema(this.courseStatusTableSchema);
@@ -140,6 +143,27 @@ export class CoreCourseProvider {
                 }
 
                 return Promise.reject(null);
+            }).then((completionStatus) => {
+                // Now get the offline completion (if any).
+                return this.courseOffline.getCourseManualCompletions(courseId, site.id).then((offlineCompletions) => {
+                    offlineCompletions.forEach((offlineCompletion) => {
+
+                        if (offlineCompletion && typeof completionStatus[offlineCompletion.cmid] != 'undefined') {
+                            const onlineCompletion = completionStatus[offlineCompletion.cmid];
+
+                            // If the activity uses manual completion, override the value with the offline one.
+                            if (onlineCompletion.tracking === 1) {
+                                onlineCompletion.state = offlineCompletion.completed;
+                                onlineCompletion.offline = true;
+                            }
+                        }
+                    });
+
+                    return completionStatus;
+                }).catch(() => {
+                    // Ignore errors.
+                    return completionStatus;
+                });
             });
         });
     }
@@ -644,6 +668,85 @@ export class CoreCourseProvider {
                     return Promise.reject(null);
                 }
             });
+        });
+    }
+
+    /**
+     * Offline version for manually marking a module as completed.
+     *
+     * @param {number} cmId The module ID.
+     * @param {number} completed Whether the module is completed or not.
+     * @param {number} courseId Course ID the module belongs to.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when completion is successfully sent or stored.
+     */
+    markCompletedManually(cmId: number, completed: number, courseId: number, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        // Convenience function to store a message to be synchronized later.
+        const storeOffline = (): Promise<any> => {
+            return this.courseOffline.markCompletedManually(cmId, completed, courseId, siteId);
+        };
+
+        // Check if we already have a completion stored.
+        return this.courseOffline.getManualCompletion(cmId, siteId).catch(() => {
+            // No completion stored.
+        }).then((entry) => {
+
+            if (entry && completed != entry.completed) {
+                // It has changed, this means that the offline data can be deleted because the action was undone.
+                return this.courseOffline.deleteManualCompletion(cmId, siteId).then(() => {
+                    return {
+                        status: true,
+                        offline: true
+                    };
+                });
+            }
+
+            if (!this.appProvider.isOnline()) {
+                // App is offline, store the action.
+                return storeOffline();
+            }
+
+            return this.markCompletedManuallyOnline(cmId, completed, siteId).then((result) => {
+                // Data sent to server, if there is some offline data delete it now.
+                if (entry) {
+                    return this.courseOffline.deleteManualCompletion(cmId, siteId).catch(() => {
+                        // Ignore errors, shouldn't happen.
+                    }).then(() => {
+                        return result;
+                    });
+                }
+
+                return result;
+            }).catch((error) => {
+                if (this.utils.isWebServiceError(error)) {
+                    // The WebService has thrown an error, this means that responses cannot be submitted.
+                    return Promise.reject(error);
+                } else {
+                    // Couldn't connect to server, store it offline.
+                    return storeOffline();
+                }
+            });
+        });
+    }
+
+    /**
+     * Offline version for manually marking a module as completed.
+     *
+     * @param {number} cmId The module ID.
+     * @param {number} completed Whether the module is completed or not.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when completion is successfully sent.
+     */
+    markCompletedManuallyOnline(cmId: number, completed: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                    cmid: cmId,
+                    completed: completed
+                };
+
+            return site.write('core_completion_update_activity_completion_status_manually', params);
         });
     }
 

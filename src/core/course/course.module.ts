@@ -17,6 +17,7 @@ import { CoreCourseProvider } from './providers/course';
 import { CoreCourseHelperProvider } from './providers/helper';
 import { CoreCourseFormatDelegate } from './providers/format-delegate';
 import { CoreCourseModuleDelegate } from './providers/module-delegate';
+import { CoreCourseOfflineProvider } from './providers/course-offline';
 import { CoreCourseModulePrefetchDelegate } from './providers/module-prefetch-delegate';
 import { CoreCourseOptionsDelegate } from './providers/options-delegate';
 import { CoreCourseFormatDefaultHandler } from './providers/default-format';
@@ -33,7 +34,8 @@ export const CORE_COURSE_PROVIDERS: any[] = [
     CoreCourseFormatDelegate,
     CoreCourseModuleDelegate,
     CoreCourseModulePrefetchDelegate,
-    CoreCourseOptionsDelegate
+    CoreCourseOptionsDelegate,
+    CoreCourseOfflineProvider
 ];
 
 @NgModule({
@@ -51,6 +53,7 @@ export const CORE_COURSE_PROVIDERS: any[] = [
         CoreCourseModuleDelegate,
         CoreCourseModulePrefetchDelegate,
         CoreCourseOptionsDelegate,
+        CoreCourseOfflineProvider,
         CoreCourseFormatDefaultHandler,
         CoreCourseModuleDefaultHandler
     ],
