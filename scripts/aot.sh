@@ -17,6 +17,7 @@ if [ ! -z $GIT_ORG ] && [ ! -z $GIT_TOKEN ] ; then
     git checkout $TRAVIS_BRANCH
     rm -Rf assets build index.html templates
     cp -Rf ../$gitfolder/www/* ./
+    rm -Rf assets/countries assets/mimetypes
     git add .
     git commit -m "Travis build: $TRAVIS_BUILD_NUMBER"
     git push https://$GIT_TOKEN@github.com/$GIT_ORG/moodlemobile-phonegapbuild.git

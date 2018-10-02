@@ -13,7 +13,8 @@ before_script:
   - rm -Rf node_modules/electron-builder-squirrel-windows node_modules/electron-windows-notifications #Avoid electron fail
 
 script:
-  - npm run build
+  - cd scripts && ./build_lang.sh && cd ..
+  - if [ $TRAVIS_BRANCH == 'MOBILE-2639' ] && [ ! -z $GIT_TOKEN ] ; then git remote set-url origin https://$GIT_TOKEN@github.com/$TRAVIS_REPO_SLUG.git && git fetch -q origin && git add src/assets/lang && git commit -m 'Update lang files [ci skip]' && git push origin $TRAVIS_BRANCH ; fi
 
 after_success:
   - chmod +x scripts/aot.sh
