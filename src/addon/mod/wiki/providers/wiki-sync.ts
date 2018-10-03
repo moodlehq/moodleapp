@@ -291,7 +291,7 @@ export class AddonModWikiSyncProvider extends CoreSyncBaseProvider {
                             const warning = this.translate.instant('core.warningofflinedatadeleted', {
                                 component: this.translate.instant('addon.mod_wiki.wikipage'),
                                 name: page.title,
-                                error: error
+                                error: this.textUtils.getErrorMessageFromError(error)
                             });
 
                             result.discarded.push({

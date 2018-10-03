@@ -145,7 +145,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider {
                             // Responses deleted, add a warning.
                             result.warnings.push(this.translate.instant('core.course.warningofflinemanualcompletiondeleted', {
                                 name: entry.coursename || courseId,
-                                error: error.error
+                                error: this.textUtils.getErrorMessageFromError(error)
                             }));
                         });
                     }

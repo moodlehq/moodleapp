@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
@@ -34,7 +35,8 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
 
     constructor(private sitesProvider: CoreSitesProvider, private coursesProvider: CoreCoursesProvider,
             private loginHelper: CoreLoginHelperProvider, private domUtils: CoreDomUtilsProvider,
-            private translate: TranslateService, private courseProvider: CoreCourseProvider) {
+            private translate: TranslateService, private courseProvider: CoreCourseProvider,
+            private textUtils: CoreTextUtilsProvider) {
         super();
     }
 
@@ -150,7 +152,7 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
                     modal.dismiss();
 
                     if (error) {
-                        error = error.message || error.error || error.content || error.body || error;
+                        error = this.textUtils.getErrorMessageFromError(error) || error;
                     }
                     if (!error) {
                         error = this.translate.instant('core.courses.notenroled');
@@ -232,7 +234,7 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
 
                 if (typeof password != 'undefined') {
                     // The user attempted a password. Show an error message.
-                    this.domUtils.showErrorModal(error.message);
+                    this.domUtils.showErrorModal(error);
                 }
 
                 return this.domUtils.showPrompt(body, title, placeholder).then((password) => {

@@ -401,6 +401,16 @@ export class CoreTextUtilsProvider {
     }
 
     /**
+     * Get the error message from an error object.
+     *
+     * @param {any} error Error object.
+     * @return {string} Error message, undefined if not found.
+     */
+    getErrorMessageFromError(error: any): string {
+        return error && (error.message || error.error || error.content || error.body);
+    }
+
+    /**
      * Get the pluginfile URL to replace @@PLUGINFILE@@ wildcards.
      *
      * @param {any[]} files Files to extract the URL from. They need to have the URL in a 'url' or 'fileurl' attribute.

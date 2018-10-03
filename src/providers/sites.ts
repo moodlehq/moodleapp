@@ -388,7 +388,7 @@ export class CoreSitesProvider {
         const promise = this.http.post(siteUrl + '/login/token.php', data).timeout(CoreConstants.WS_TIMEOUT).toPromise();
 
         return promise.catch((error) => {
-            return Promise.reject(error.message);
+            return Promise.reject(error);
         }).then((data: any) => {
             if (data.errorcode && (data.errorcode == 'enablewsdescription' || data.errorcode == 'requirecorrectaccess')) {
                 return Promise.reject({ errorcode: data.errorcode, error: data.error });

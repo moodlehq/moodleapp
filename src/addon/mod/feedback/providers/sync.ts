@@ -251,12 +251,12 @@ export class AddonModFeedbackSyncProvider extends CoreSyncBaseProvider {
                     result.warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
                         component: this.componentTranslate,
                         name: feedback.name,
-                        error: error.error
+                        error: this.textUtils.getErrorMessageFromError(error)
                     }));
                 });
             } else {
                 // Couldn't connect to server, reject.
-                return Promise.reject(error && error.error);
+                return Promise.reject(error);
             }
         });
     }

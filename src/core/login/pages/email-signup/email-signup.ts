@@ -276,7 +276,7 @@ export class CoreLoginEmailSignupPage {
                         }
                     });
                 }).catch((error) => {
-                    this.domUtils.showErrorModalDefault(error && error.error, 'core.login.usernotaddederror', true);
+                    this.domUtils.showErrorModalDefault(error, 'core.login.usernotaddederror', true);
                 }).finally(() => {
                     modal.dismiss();
                 });

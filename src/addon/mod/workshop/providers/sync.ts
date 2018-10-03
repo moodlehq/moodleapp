@@ -340,7 +340,7 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
                     }).catch((error) => {
                         if (error && this.utils.isWebServiceError(error)) {
                             // The WebService has thrown an error, this means it cannot be performed. Discard.
-                            discardError = error.message || error.error;
+                            discardError = this.textUtils.getErrorMessageFromError(error);
                         } else {
                             // Couldn't connect to server, reject.
                             return Promise.reject(error);
@@ -421,7 +421,7 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
             }).catch((error) => {
                 if (error && this.utils.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means it cannot be performed. Discard.
-                    discardError = error.message || error.error;
+                    discardError = this.textUtils.getErrorMessageFromError(error);
                 } else {
                     // Couldn't connect to server, reject.
                     return Promise.reject(error);
@@ -480,10 +480,10 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
                 evaluate.gradeover, siteId).catch((error) => {
                 if (error && this.utils.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means it cannot be performed. Discard.
-                    discardError = error.message || error.error;
+                    discardError = this.textUtils.getErrorMessageFromError(error);
                 } else {
                     // Couldn't connect to server, reject.
-                    return Promise.reject(error && error.error);
+                    return Promise.reject(error);
                 }
             }).then(() => {
                 // Delete the offline data.
@@ -539,10 +539,10 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
                 evaluate.gradinggradeover, siteId).catch((error) => {
                 if (error && this.utils.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means it cannot be performed. Discard.
-                    discardError = error.message || error.error;
+                    discardError = this.textUtils.getErrorMessageFromError(error);
                 } else {
                     // Couldn't connect to server, reject.
-                    return Promise.reject(error && error.error);
+                    return Promise.reject(error);
                 }
             }).then(() => {
                 // Delete the offline data.

@@ -308,7 +308,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
             }).catch((error) => {
                 if (error && this.utils.isWebServiceError(error)) {
                     // A WebService has thrown an error, this means it cannot be submitted. Discard the submission.
-                    discardError = error.message || error.error || error.content || error.body;
+                    discardError = this.textUtils.getErrorMessageFromError(error);
                 } else {
                     // Couldn't connect to server, reject.
                     return Promise.reject(error);
@@ -402,7 +402,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
                 }).catch((error) => {
                     if (error && this.utils.isWebServiceError(error)) {
                         // The WebService has thrown an error, this means it cannot be submitted. Discard the offline data.
-                        discardError = error.message || error.error || error.content || error.body;
+                        discardError = this.textUtils.getErrorMessageFromError(error);
                     } else {
                         // Couldn't connect to server, reject.
                     return Promise.reject(error);

@@ -1001,9 +1001,9 @@ export class CoreLoginHelperProvider {
      */
     treatUserTokenError(siteUrl: string, error: any): void {
         if (error.errorcode == 'forcepasswordchangenotice') {
-            this.openChangePassword(siteUrl, error.error || error.message || error.body || error.content);
+            this.openChangePassword(siteUrl, this.textUtils.getErrorMessageFromError(error));
         } else if (error.errorcode == 'legacymoodleversion') {
-            this.showLegacyNoticeModal(error.error);
+            this.showLegacyNoticeModal(this.textUtils.getErrorMessageFromError(error));
         } else {
             this.domUtils.showErrorModal(error);
         }
