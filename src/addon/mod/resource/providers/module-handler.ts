@@ -129,18 +129,20 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
             handlerData.buttons[0].hidden = hideOpenButton;
         }));
 
-        // Get the resource data.
-        promises.push(this.resourceProvider.getResourceData(courseId, module.id).then((info) => {
-            resourceInfo = info;
-        }));
+        if (this.resourceProvider.isGetResourceWSAvailable()) {
+            // Get the resource data.
+            promises.push(this.resourceProvider.getResourceData(courseId, module.id).then((info) => {
+                resourceInfo = info;
+            }));
+        }
 
         return Promise.all(promises).then(() => {
-            const files = module.contents && module.contents.length ? module.contents : resourceInfo.contentfiles,
+            const files = module.contents && module.contents.length ? module.contents : resourceInfo && resourceInfo.contentfiles,
                 resourceData = {
                     icon: '',
                     extra: ''
                 },
-                options = this.textUtils.unserialize(resourceInfo.displayoptions),
+                options = (resourceInfo && this.textUtils.unserialize(resourceInfo.displayoptions)) || {},
                 extra = [];
 
             if (files && files.length) {
