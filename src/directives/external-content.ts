@@ -219,7 +219,7 @@ export class CoreExternalContentDirective implements AfterViewInit {
                     clickableEl.addEventListener(eventName, () => {
                         // User played media or opened a downloadable link.
                         // Download the file if in wifi and it hasn't been downloaded already (for big files).
-                        if (!this.appProvider.isNetworkAccessLimited()) {
+                        if (this.appProvider.isWifi()) {
                             // We aren't using the result, so it doesn't matter which of the 2 functions we call.
                             this.filepoolProvider.getUrlByUrl(siteId, url, this.component, this.componentId, 0, false);
                         }
