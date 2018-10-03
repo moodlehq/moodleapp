@@ -428,6 +428,23 @@ export class CoreTextUtilsProvider {
     }
 
     /**
+     * Check if HTML content is blank.
+     *
+     * @param {string} content HTML content.
+     * @return {boolean} True if the string does not contain actual content: text, images, etc.
+     */
+    htmlIsBlank(content: string): boolean {
+        if (!content) {
+            return true;
+        }
+
+        const div = document.createElement('div');
+        div.innerHTML = content;
+
+        return div.textContent === '' && div.querySelector('img, object, hr') === null;
+    }
+
+    /**
      * Check if a text contains Unicode long chars.
      * Using as threshold Hex value D800
      *
