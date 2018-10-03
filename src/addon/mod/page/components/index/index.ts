@@ -14,6 +14,7 @@
 
 import { Component, Injector } from '@angular/core';
 import { CoreAppProvider } from '@providers/app';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
 import { AddonModPageProvider } from '../../providers/page';
@@ -31,11 +32,15 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
     component = AddonModPageProvider.COMPONENT;
     canGetPage: boolean;
     contents: any;
+    displayDescription = true;
+    displayTimemodified = true;
+    page: any;
+
     protected fetchContentDefaultError = 'addon.mod_page.errorwhileloadingthepage';
 
     constructor(injector: Injector, private pageProvider: AddonModPageProvider, private courseProvider: CoreCourseProvider,
             private appProvider: CoreAppProvider, private pageHelper: AddonModPageHelperProvider,
-            private pagePrefetch: AddonModPagePrefetchHandler) {
+            private pagePrefetch: AddonModPagePrefetchHandler, private utils: CoreUtilsProvider) {
         super(injector);
     }
 
@@ -97,6 +102,22 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
                 if (page) {
                     this.description = page.intro || page.description;
                     this.dataRetrieved.emit(page);
+
+                    if (this.canGetPage) {
+                        this.page = page;
+
+                        // Check if description and timemodified should be displayed.
+                        if (page.displayoptions) {
+                            const options = this.textUtils.unserialize(page.displayoptions) || {};
+                            this.displayDescription = typeof options.printintro == 'undefined' ||
+                                    this.utils.isTrueOrOne(options.printintro);
+                            this.displayTimemodified = typeof options.printlastmodified == 'undefined' ||
+                                    this.utils.isTrueOrOne(options.printlastmodified);
+                        } else {
+                            this.displayDescription = true;
+                            this.displayTimemodified = true;
+                        }
+                    }
                 }
             }).catch(() => {
                 // Ignore errors.
