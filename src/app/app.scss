@@ -210,9 +210,11 @@ ion-app.app-root {
     }
   }
 
-
-
   /** Format Text */
+  core-format-text {
+    user-select: text;
+  }
+
   core-format-text[maxHeight],
   core-format-text[ng-reflect-max-height] {
     display: block;
