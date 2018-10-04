@@ -67,8 +67,8 @@ export class CoreSettingsAboutPage {
         this.lastCommit = CoreConfigConstants.lastcommit;
 
         // Calculate the privacy policy to use.
-        this.privacyPolicy = currentSite.getStoredConfig('tool_mobile_apppolicy') || currentSite.getStoredConfig('sitepolicy') ||
-                CoreConfigConstants.privacypolicy;
+        this.privacyPolicy = (currentSite && (currentSite.getStoredConfig('tool_mobile_apppolicy') ||
+                currentSite.getStoredConfig('sitepolicy'))) || CoreConfigConstants.privacypolicy;
 
         this.navigator = window.navigator;
         if (window.location && window.location.href) {
