@@ -40,8 +40,7 @@ export class CoreLangProvider {
 
         platform.ready().then(() => {
             this.getCurrentLanguage().then((language) => {
-                translate.use(language);
-                moment.locale(language);
+                this.changeCurrentLanguage(language);
             });
         });
 
@@ -97,7 +96,30 @@ export class CoreLangProvider {
         // Change the language, resolving the promise when we receive the first value.
         promises.push(new Promise((resolve, reject): void => {
             const subscription = this.translate.use(language).subscribe((data) => {
-                resolve(data);
+                // It's a language override, load the original one first.
+                const fallbackLang = this.translate.instant('core.parentlanguage');
+
+                if (fallbackLang != '' && fallbackLang != language) {
+                    const fallbackSubs = this.translate.use(fallbackLang).subscribe((fallbackData) => {
+                        data = Object.assign(fallbackData, data);
+                        resolve(data);
+
+                        // Data received, unsubscribe. Use a timeout because we can receive a value immediately.
+                        setTimeout(() => {
+                            fallbackSubs.unsubscribe();
+                        });
+                    }, (error) => {
+                        // Resolve with the original language.
+                        resolve(data);
+
+                        // Error received, unsubscribe. Use a timeout because we can receive a value immediately.
+                        setTimeout(() => {
+                            fallbackSubs.unsubscribe();
+                        });
+                    });
+                } else {
+                    resolve(data);
+                }
 
                 // Data received, unsubscribe. Use a timeout because we can receive a value immediately.
                 setTimeout(() => {

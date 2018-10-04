@@ -1412,6 +1412,7 @@
   "core.openinbrowser": "local_moodlemobileapp",
   "core.othergroups": "group",
   "core.pagea": "moodle",
+  "core.parentlanguage": "langconfig",
   "core.paymentinstant": "moodle",
   "core.percentagenumber": "local_moodlemobileapp",
   "core.phone": "moodle",
