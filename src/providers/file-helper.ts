@@ -132,7 +132,7 @@ export class CoreFileHelperProvider {
 
                 return promise.then((state) => {
                     // The file system is available.
-                    const isWifi = !this.appProvider.isNetworkAccessLimited(),
+                    const isWifi = this.appProvider.isWifi(),
                         isOnline = this.appProvider.isOnline();
 
                     if (state == CoreConstants.DOWNLOADED) {
@@ -160,7 +160,7 @@ export class CoreFileHelperProvider {
                             return this.downloadFile(fileUrl, component, componentId, timemodified, onProgress, file, siteId);
                         }, () => {
                             // Start the download if in wifi, but return the URL right away so the file is opened.
-                            if (isWifi && isOnline) {
+                            if (isWifi) {
                                 this.downloadFile(fileUrl, component, componentId, timemodified, onProgress, file, siteId);
                             }
 

@@ -775,7 +775,7 @@ export class CoreFilepoolProvider {
 
             // Calculate the size of the file.
             return promise.then((size) => {
-                const isWifi = !this.appProvider.isNetworkAccessLimited(),
+                const isWifi = this.appProvider.isWifi(),
                     sizeUnknown = size <= 0;
 
                 if (!sizeUnknown) {

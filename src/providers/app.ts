@@ -245,6 +245,15 @@ export class CoreAppProvider {
     }
 
     /**
+     * Check if device uses a wifi connection.
+     *
+     * @return {boolean} Whether the device uses a wifi connection.
+     */
+    isWifi(): boolean {
+        return this.isOnline() && !this.isNetworkAccessLimited();
+    }
+
+    /**
      * Check if the app is running in a Windows environment.
      *
      * @return {boolean} Whether it's running in a Windows environment.

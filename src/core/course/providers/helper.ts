@@ -613,7 +613,7 @@ export class CoreCourseHelperProvider {
                 return this.filepoolProvider.getPackageStatus(siteId, component, componentId).then((status) => {
                     result.status = status;
 
-                    const isWifi = !this.appProvider.isNetworkAccessLimited(),
+                    const isWifi = this.appProvider.isWifi(),
                         isOnline = this.appProvider.isOnline();
 
                     if (status === CoreConstants.DOWNLOADED) {
@@ -642,7 +642,7 @@ export class CoreCourseHelperProvider {
                             });
                         }, () => {
                             // Start the download if in wifi, but return the URL right away so the file is opened.
-                            if (isWifi && isOnline) {
+                            if (isWifi) {
                                 this.downloadModule(module, courseId, component, componentId, files, siteId);
                             }
 

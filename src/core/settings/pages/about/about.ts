@@ -99,7 +99,7 @@ export class CoreSettingsAboutPage {
         });
 
         this.networkStatus = appProvider.isOnline() ? 'core.online' : 'core.offline';
-        this.wifiConnection = appProvider.isNetworkAccessLimited() ? 'core.no' : 'core.yes';
+        this.wifiConnection = appProvider.isWifi() ? 'core.yes' : 'core.no';
         this.deviceWebWorkers = !!window['Worker'] && !!window['URL'] ? 'core.yes' : 'core.no';
         this.device = device;
 
