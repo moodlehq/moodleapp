@@ -1442,7 +1442,7 @@
   "core.question.questionmessage": "local_moodlemobileapp",
   "core.question.questionno": "question",
   "core.question.requiresgrading": "question",
-  "core.question.unknown": "local_moodlemobileapp",
+  "core.question.unknown": "question",
   "core.quotausage": "moodle",
   "core.redirectingtosite": "local_moodlemobileapp",
   "core.refresh": "moodle",

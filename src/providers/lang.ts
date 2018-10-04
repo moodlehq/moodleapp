@@ -99,7 +99,7 @@ export class CoreLangProvider {
                 // It's a language override, load the original one first.
                 const fallbackLang = this.translate.instant('core.parentlanguage');
 
-                if (fallbackLang != '' && fallbackLang != language) {
+                if (fallbackLang != '' && fallbackLang != 'core.parentlanguage' && fallbackLang != language) {
                     const fallbackSubs = this.translate.use(fallbackLang).subscribe((fallbackData) => {
                         data = Object.assign(fallbackData, data);
                         resolve(data);
