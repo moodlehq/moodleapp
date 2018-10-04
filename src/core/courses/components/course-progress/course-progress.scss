@@ -3,6 +3,19 @@ ion-app.app-root core-courses-course-progress {
         display: flex;
         flex-direction: column;
 
+        @for $i from 0 to length($core-course-image-background) {
+            &[course-color="#{$i}"] {
+                .core-course-thumb {
+                    background: nth($core-course-image-background, $i + 1);
+                }
+
+                progress .progress-bar-fallback span,
+                progress[value]::-webkit-progress-value {
+                    background-color: nth($core-course-image-background, $i + 1);
+                }
+            }
+        }
+
         .core-course-thumb {
             height: 150px;
             width: 100%;
@@ -10,12 +23,6 @@ ion-app.app-root core-courses-course-progress {
             cursor: pointer;
             pointer-events: auto;
             position: relative;
-
-            @for $i from 0 to length($core-course-image-background) {
-                &.core-course-color-#{$i} {
-                    background: nth($core-course-image-background, $i + 1);
-                }
-            }
 
             &.core-course-color-img {
                 background: white;
