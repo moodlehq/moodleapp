@@ -39,4 +39,4 @@ e2e/build
 !/desktop/assets/
 !/desktop/electron.js
 src/configconstants.ts
-src/assets/lang
+scripts/local_moodlemobileapp.php
