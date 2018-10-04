@@ -41,7 +41,48 @@ if (isset($argv[1]) && !empty($argv[1])) {
 }
 
 if (empty($languages)) {
-    $languages = array('ar', 'bg', 'ca', 'cs', 'da', 'de', 'en', 'es-mx', 'es', 'eu', 'fa', 'fr', 'he', 'hu', 'it', 'ja', 'nl', 'pl', 'pt-br', 'pt', 'ro', 'ru', 'sv', 'tr', 'zh-cn', 'zh-tw');
+    $languages = array(
+        'ar',
+        'bg',
+        'ca',
+        'cs',
+        'da',
+        'de-du',
+        'de',
+        'el',
+        'en-us',
+        'en',
+        'es-mx',
+        'es',
+        'eu',
+        'fa',
+        'fi',
+        'fr',
+        'he',
+        'hr',
+        'hu',
+        'it',
+        'ja',
+        'kn',
+        'ko',
+        'lt',
+        'mr',
+        'nl',
+        'no',
+        'pl',
+        'pt-br',
+        'pt',
+        'ro',
+        'ru',
+        'sr-cr',
+        'sr-lt',
+        'sv',
+        'tg',
+        'tr',
+        'uk',
+        'zh-cn',
+        'zh-tw'
+    );
 }
 
 // Process the index file, just once.
