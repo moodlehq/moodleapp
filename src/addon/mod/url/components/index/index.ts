@@ -39,6 +39,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     isImage = false;
     isAudio = false;
     isVideo = false;
+    isOther = false;
     mimetype: string;
     displayDescription = true;
 
@@ -148,6 +149,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
             this.isImage = this.mimeUtils.isExtensionInGroup(extension, ['web_image']);
             this.isAudio = this.mimeUtils.isExtensionInGroup(extension, ['web_audio']);
             this.isVideo = this.mimeUtils.isExtensionInGroup(extension, ['web_video']);
+            this.isOther = !this.isImage && !this.isAudio && !this.isVideo;
         }
 
         if (this.shouldIframe || (this.shouldEmbed && !this.isImage && !this.isAudio && !this.isVideo)) {

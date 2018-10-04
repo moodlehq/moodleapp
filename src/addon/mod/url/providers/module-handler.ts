@@ -18,6 +18,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { AddonModUrlIndexComponent } from '../components/index/index';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { AddonModUrlProvider } from './url';
 import { AddonModUrlHelperProvider } from './helper';
 import { CoreConstants } from '@core/constants';
@@ -31,7 +32,8 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
     modName = 'url';
 
     constructor(private courseProvider: CoreCourseProvider, private urlProvider: AddonModUrlProvider,
-        private urlHelper: AddonModUrlHelperProvider, private domUtils: CoreDomUtilsProvider) { }
+        private urlHelper: AddonModUrlHelperProvider, private domUtils: CoreDomUtilsProvider,
+        private contentLinksHelper: CoreContentLinksHelperProvider) { }
 
     /**
      * Check if the handler is enabled on a site level.
@@ -59,32 +61,37 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
             class: 'addon-mod_url-handler',
             showDownloadButton: false,
             action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void {
-                // Check if we need to open the URL directly.
-                let promise;
+                const modal = handler.domUtils.showModalLoading();
 
-                if (handler.urlProvider.isGetUrlWSAvailable()) {
-                    const modal = handler.domUtils.showModalLoading();
+                // First of all, check if the URL can be handled by the app. If so, always open it directly.
+                handler.contentLinksHelper.canHandleLink(module.contents[0].fileurl, courseId).then((canHandle) => {
+                    if (canHandle) {
+                        // URL handled by the app, open it directly.
+                        return true;
+                    }
 
-                    promise = handler.urlProvider.getUrl(courseId, module.id).catch(() => {
-                        // Ignore errors.
-                    }).then((url) => {
-                        modal.dismiss();
+                    // Not handled by the app, check the display type.
+                    if (handler.urlProvider.isGetUrlWSAvailable()) {
+                        return handler.urlProvider.getUrl(courseId, module.id).catch(() => {
+                            // Ignore errors.
+                        }).then((url) => {
+                            const displayType = handler.urlProvider.getFinalDisplayType(url);
 
-                        const displayType = handler.urlProvider.getFinalDisplayType(url);
+                            return displayType == CoreConstants.RESOURCELIB_DISPLAY_OPEN ||
+                                   displayType == CoreConstants.RESOURCELIB_DISPLAY_POPUP;
+                        });
+                    } else {
+                        return false;
+                    }
 
-                        return displayType == CoreConstants.RESOURCELIB_DISPLAY_OPEN ||
-                               displayType == CoreConstants.RESOURCELIB_DISPLAY_POPUP;
-                    });
-                } else {
-                    promise = Promise.resolve(false);
-                }
-
-                return promise.then((shouldOpen) => {
+                }).then((shouldOpen) => {
                     if (shouldOpen) {
                         handler.openUrl(module, courseId);
                     } else {
                         navCtrl.push('AddonModUrlIndexPage', {module: module, courseId: courseId}, options);
                     }
+                }).finally(() => {
+                    modal.dismiss();
                 });
             },
             buttons: [ {
@@ -120,24 +127,7 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
     protected hideLinkButton(module: any, courseId: number): Promise<boolean> {
         return this.courseProvider.loadModuleContents(module, courseId, undefined, false, false, undefined, this.modName)
                 .then(() => {
-
-            if (!module.contents || !module.contents[0] || !module.contents[0].fileurl) {
-                // No module contents, hide the button.
-                return true;
-            }
-
-            if (!this.urlProvider.isGetUrlWSAvailable()) {
-                return false;
-            }
-
-            // Get the URL data.
-            return this.urlProvider.getUrl(courseId, module.id).then((url) => {
-                const displayType = this.urlProvider.getFinalDisplayType(url);
-
-                // Don't display the button if the URL should be embedded.
-                return displayType == CoreConstants.RESOURCELIB_DISPLAY_EMBED ||
-                        displayType == CoreConstants.RESOURCELIB_DISPLAY_FRAME;
-            });
+            return !(module.contents && module.contents[0] && module.contents[0].fileurl);
         });
     }
 
