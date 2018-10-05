@@ -25,64 +25,19 @@ if (isset($_SERVER['REMOTE_ADDR'])) {
 define('MOODLE_INTERNAL', 1);
 define('LANGPACKSFOLDER', '../../moodle-langpacks');
 define('ASSETSPATH', '../src/assets/lang/');
+define('CONFIG', '../src/config.json');
+
+$config = file_get_contents(CONFIG);
+$config = (array) json_decode($config);
+$config_langs = array_keys(get_object_vars($config['languages']));
 
 // Set languages to do. If script is called using a language it will be used as unique.
 if (isset($argv[1]) && !empty($argv[1])) {
+    $forcedetect = false;
     $languages = explode(',', $argv[1]);
 } else {
-    $languages = array();
-    $files = scandir(ASSETSPATH);
-    foreach ($files as $f) {
-        if (strpos($f, ".json")) {
-            $languages[] = str_replace(".json", "", $f);
-        }
-    }
-    $languages = array_unique($languages);
-}
-
-if (empty($languages)) {
-    $languages = array(
-        'ar',
-        'bg',
-        'ca',
-        'cs',
-        'da',
-        'de-du',
-        'de',
-        'el',
-        'en-us',
-        'en',
-        'es-mx',
-        'es',
-        'eu',
-        'fa',
-        'fi',
-        'fr',
-        'he',
-        'hr',
-        'hu',
-        'it',
-        'ja',
-        'kn',
-        'ko',
-        'lt',
-        'mr',
-        'nl',
-        'no',
-        'pl',
-        'pt-br',
-        'pt',
-        'ro',
-        'ru',
-        'sr-cr',
-        'sr-lt',
-        'sv',
-        'tg',
-        'tr',
-        'uk',
-        'zh-cn',
-        'zh-tw'
-    );
+    $forcedetect = true;
+    $languages = $config_langs;
 }
 
 // Process the index file, just once.
@@ -139,18 +94,89 @@ foreach ($keys as $key => $value) {
 }
 $total = count ($keys);
 
+echo "Total strings to translate $total\n";
+
+$add_langs = array();
 // Process the languages.
 foreach ($languages as $lang) {
-    $translations = [];
-    $success = 0;
-    $langfoldername = str_replace('-', '_', $lang);
+    $ok = build_lang($lang, $keys, $total);
+    if ($ok) {
+        $add_langs[$lang] = $lang;
+    }
+}
 
-    if (!is_dir(LANGPACKSFOLDER.'/'.$langfoldername)) {
-        echo "Cannot translate $langfoldername, folder not found";
-        continue;
+if ($forcedetect) {
+    echo "\n\n\n";
+
+    $all_languages = glob(LANGPACKSFOLDER.'/*' , GLOB_ONLYDIR);
+    function get_lang_from_dir($dir) {
+        return str_replace('_', '-', explode('/', $dir)[3]);
+    }
+    $all_languages = array_map('get_lang_from_dir', $all_languages);
+    $detect_lang = array_diff($all_languages, $languages);
+    $new_langs = array();
+    foreach ($detect_lang as $lang) {
+        $new = detect_lang($lang, $keys, $total);
+        if ($new) {
+            $new_langs[$lang] = $lang;
+        }
     }
 
-    echo "Processing language $lang";
+    if (!empty($new_langs)) {
+        echo "\n\n\nThe following languages are going to be added\n\n\n";
+        foreach ($new_langs as $lang) {
+            $ok = build_lang($lang, $keys, $total);
+            if ($ok) {
+                $add_langs[$lang] = $lang;
+            }
+        }
+        add_langs_to_config($add_langs, $config);
+    }
+} else {
+    add_langs_to_config($add_langs, $config);
+}
+
+function add_langs_to_config($langs, $config) {
+    $changed = false;
+    $config_langs = get_object_vars($config['languages']);
+    foreach ($langs as $lang) {
+        if (!isset($config_langs[$lang])) {
+            $langfoldername = str_replace('-', '_', $lang);
+
+            $string = [];
+            include(LANGPACKSFOLDER.'/'.$langfoldername.'/langconfig.php');
+            $config['languages']->$lang = $string['thislanguage'];
+            $changed = true;
+        }
+    }
+
+    if ($changed) {
+        $config['languages'] = json_decode( json_encode( $config['languages'] ), true );
+        ksort($config['languages']);
+        $config['languages'] = json_decode( json_encode( $config['languages'] ), false );
+        file_put_contents(CONFIG, json_encode($config, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+    }
+}
+
+function build_lang($lang, $keys, $total) {
+    $local = 0;
+    $translations = [];
+    $langfoldername = str_replace('-', '_', $lang);
+
+    if (!is_dir(LANGPACKSFOLDER.'/'.$langfoldername) || !is_file(LANGPACKSFOLDER.'/'.$langfoldername.'/langconfig.php')) {
+        echo "Cannot translate $langfoldername, folder not found";
+        return false;
+    }
+
+    $string = [];
+    include(LANGPACKSFOLDER.'/'.$langfoldername.'/langconfig.php');
+    $parent = isset($string['parentlanguage']) ? $string['parentlanguage'] : "";
+
+    echo "Processing $lang";
+    if ($parent != "" && $parent != $lang) {
+        echo "($parent)";
+    }
+
 
     // Add the translation to the array.
     foreach ($keys as $key => $value) {
@@ -178,16 +204,84 @@ foreach ($languages as $lang) {
             $text = str_replace('}', '}}', $text);
             // Prevent double.
             $text = str_replace(array('{{{', '}}}'), array('{{', '}}'), $text);
+        } else {
+            $local++;
         }
 
         $translations[$key] = $text;
-        $success++;
     }
 
     // Sort and save.
     ksort($translations);
     file_put_contents(ASSETSPATH.$lang.'.json', str_replace('\/', '/', json_encode($translations, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)));
 
+    $success = count($translations);
     $percentage = floor($success/$total *100);
-    echo " -> Processed $success of $total -> $percentage%\n";
+    echo "\t\t$success of $total -> $percentage% ($local local)\n";
+
+    return true;
 }
+
+function detect_lang($lang, $keys, $total) {
+    $success = 0;
+    $local = 0;
+    $langfoldername = str_replace('-', '_', $lang);
+
+    if (!is_dir(LANGPACKSFOLDER.'/'.$langfoldername) || !is_file(LANGPACKSFOLDER.'/'.$langfoldername.'/langconfig.php')) {
+        echo "Cannot translate $langfoldername, folder not found";
+        return false;
+    }
+
+    $string = [];
+    include(LANGPACKSFOLDER.'/'.$langfoldername.'/langconfig.php');
+    $parent = isset($string['parentlanguage']) ? $string['parentlanguage'] : "";
+    if (!isset($string['thislanguage'])) {
+        echo "Cannot translate $langfoldername, name not found";
+        return false;
+    }
+
+    echo "Checking $lang";
+    if ($parent != "" && $parent != $lang) {
+        echo "($parent)";
+    }
+    $langname = $string['thislanguage'];
+    echo " ".$langname." -D";
+
+    // Add the translation to the array.
+    foreach ($keys as $key => $value) {
+        $file = LANGPACKSFOLDER.'/'.$langfoldername.'/'.$value->file.'.php';
+        // Apply translations.
+        if (!file_exists($file)) {
+            continue;
+        }
+
+        $string = [];
+        include($file);
+
+        if (!isset($string[$value->string])) {
+            if ($value->file != 'local_moodlemobileapp' || !isset($string[$value->string_local])) {
+                continue;
+            }
+            $text = $string[$value->string_local];
+        } else {
+            $text = $string[$value->string];
+        }
+
+        if ($value->file == 'local_moodlemobileapp') {
+            $local++;
+        }
+
+        $success++;
+    }
+
+    $percentage = floor($success/$total *100);
+    echo "\t\t$success of $total -> $percentage% ($local local)";
+    if (($percentage > 75 && $local > 50) || ($percentage > 50 && $local > 75)) {
+        echo " \t DETECTED\n";
+        return true;
+    }
+    echo "\n";
+
+    return false;
+}
+
