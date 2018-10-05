@@ -45,7 +45,7 @@ export class CoreCourseOfflineProvider {
                     type: 'TEXT'
                 },
                 {
-                    name: 'timecreated',
+                    name: 'timecompleted',
                     type: 'INTEGER'
                 }
             ]
@@ -131,7 +131,7 @@ export class CoreCourseOfflineProvider {
                 completed: completed,
                 courseid: courseId,
                 coursename: courseName || '',
-                timecreated: Date.now()
+                timecompleted: Date.now()
             };
 
             return site.getDb().insertRecord(CoreCourseOfflineProvider.MANUAL_COMPLETION_TABLE, entry);

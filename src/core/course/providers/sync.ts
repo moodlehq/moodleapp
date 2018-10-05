@@ -128,34 +128,57 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider {
                 return Promise.reject(null);
             }
 
-            const promises = [];
+            // Get the current completion status to check if any completion was modified in web.
+            return this.courseProvider.getActivitiesCompletionStatus(courseId, siteId, undefined, false, true, false)
+                    .then((onlineCompletions) => {
 
-            // Send all the completions.
-            completions.forEach((entry) => {
-                promises.push(this.courseProvider.markCompletedManuallyOnline(entry.cmid, entry.completed, siteId).then(() => {
-                    result.updated = true;
+                const promises = [];
 
-                    return this.courseOffline.deleteManualCompletion(entry.cmid, siteId);
-                }).catch((error) => {
-                    if (this.utils.isWebServiceError(error)) {
-                        // The WebService has thrown an error, this means that the completion cannot be submitted. Delete it.
-                        result.updated = true;
+                // Send all the completions.
+                completions.forEach((entry) => {
+                    const onlineComp = onlineCompletions[entry.cmid];
 
-                        return this.courseOffline.deleteManualCompletion(entry.cmid, siteId).then(() => {
-                            // Responses deleted, add a warning.
-                            result.warnings.push(this.translate.instant('core.course.warningofflinemanualcompletiondeleted', {
-                                name: entry.coursename || courseId,
-                                error: this.textUtils.getErrorMessageFromError(error)
-                            }));
-                        });
+                    // Check if the completion was modified in online. If so, discard it.
+                    if (onlineComp && onlineComp.timecompleted * 1000 > entry.timecompleted) {
+                        promises.push(this.courseOffline.deleteManualCompletion(entry.cmid, siteId).then(() => {
+
+                            // Completion deleted, add a warning if the completion status doesn't match.
+                            if (onlineComp.state != entry.completed) {
+                                result.warnings.push(this.translate.instant('core.course.warningofflinemanualcompletiondeleted', {
+                                    name: entry.coursename || courseId,
+                                    error: this.translate.instant('core.course.warningmanualcompletionmodified')
+                                }));
+                            }
+                        }));
+
+                        return;
                     }
 
-                    // Couldn't connect to server, reject.
-                    return Promise.reject(error);
-                }));
-            });
+                    promises.push(this.courseProvider.markCompletedManuallyOnline(entry.cmid, entry.completed, siteId).then(() => {
+                        result.updated = true;
 
-            return Promise.all(promises);
+                        return this.courseOffline.deleteManualCompletion(entry.cmid, siteId);
+                    }).catch((error) => {
+                        if (this.utils.isWebServiceError(error)) {
+                            // The WebService has thrown an error, this means that the completion cannot be submitted. Delete it.
+                            result.updated = true;
+
+                            return this.courseOffline.deleteManualCompletion(entry.cmid, siteId).then(() => {
+                                // Completion deleted, add a warning.
+                                result.warnings.push(this.translate.instant('core.course.warningofflinemanualcompletiondeleted', {
+                                    name: entry.coursename || courseId,
+                                    error: this.textUtils.getErrorMessageFromError(error)
+                                }));
+                            });
+                        }
+
+                        // Couldn't connect to server, reject.
+                        return Promise.reject(error);
+                    }));
+                });
+
+                return Promise.all(promises);
+            });
         }).then(() => {
             if (result.updated) {
                 // Update data.

@@ -121,9 +121,14 @@ export class CoreCourseProvider {
      * @param {number} courseId Course ID.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @param {number} [userId] User ID. If not defined, current user.
+     * @param {boolean} [forceCache] True if it should return cached data. Has priority over ignoreCache.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param {boolean} [includeOffline=true] True if it should load offline data in the completion status.
      * @return {Promise<any>} Promise resolved with the completion statuses: object where the key is module ID.
      */
-    getActivitiesCompletionStatus(courseId: number, siteId?: string, userId?: number): Promise<any> {
+    getActivitiesCompletionStatus(courseId: number, siteId?: string, userId?: number, forceCache: boolean = false,
+            ignoreCache: boolean = false, includeOffline: boolean = true): Promise<any> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
@@ -133,9 +138,16 @@ export class CoreCourseProvider {
                     courseid: courseId,
                     userid: userId
                 },
-                preSets = {
+                preSets: CoreSiteWSPreSets = {
                     cacheKey: this.getActivitiesCompletionCacheKey(courseId, userId)
                 };
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
+            }
 
             return site.read('core_completion_get_activities_completion_status', params, preSets).then((data) => {
                 if (data && data.statuses) {
@@ -144,6 +156,10 @@ export class CoreCourseProvider {
 
                 return Promise.reject(null);
             }).then((completionStatus) => {
+                if (!includeOffline) {
+                    return completionStatus;
+                }
+
                 // Now get the offline completion (if any).
                 return this.courseOffline.getCourseManualCompletions(courseId, site.id).then((offlineCompletions) => {
                     offlineCompletions.forEach((offlineCompletion) => {
@@ -686,51 +702,33 @@ export class CoreCourseProvider {
 
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        // Convenience function to store a message to be synchronized later.
+        // Convenience function to store a completion to be synchronized later.
         const storeOffline = (): Promise<any> => {
             return this.courseOffline.markCompletedManually(cmId, completed, courseId, courseName, siteId);
         };
 
-        // Check if we already have a completion stored.
-        return this.courseOffline.getManualCompletion(cmId, siteId).catch(() => {
-            // No completion stored.
-        }).then((entry) => {
+        // The offline function requires a courseId and it could be missing because it's a calculated field.
+        if (!this.appProvider.isOnline() && courseId) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
 
-            if (entry && completed != entry.completed) {
-                // It has changed, this means that the offline data can be deleted because the action was undone.
-                return this.courseOffline.deleteManualCompletion(cmId, siteId).then(() => {
-                    return {
-                        status: true,
-                        offline: true
-                    };
-                });
-            }
-
-            if (!this.appProvider.isOnline() && courseId) {
-                // App is offline, store the action.
+        // Try to send it to server.
+        return this.markCompletedManuallyOnline(cmId, completed, siteId).then((result) => {
+            // Data sent to server, if there is some offline data delete it now.
+            return this.courseOffline.deleteManualCompletion(cmId, siteId).catch(() => {
+                // Ignore errors, shouldn't happen.
+            }).then(() => {
+                return result;
+            });
+        }).catch((error) => {
+            if (this.utils.isWebServiceError(error) || !courseId) {
+                // The WebService has thrown an error, this means that responses cannot be submitted.
+                return Promise.reject(error);
+            } else {
+                // Couldn't connect to server, store it offline.
                 return storeOffline();
             }
-
-            return this.markCompletedManuallyOnline(cmId, completed, siteId).then((result) => {
-                // Data sent to server, if there is some offline data delete it now.
-                if (entry) {
-                    return this.courseOffline.deleteManualCompletion(cmId, siteId).catch(() => {
-                        // Ignore errors, shouldn't happen.
-                    }).then(() => {
-                        return result;
-                    });
-                }
-
-                return result;
-            }).catch((error) => {
-                if (this.utils.isWebServiceError(error) || !courseId) {
-                    // The WebService has thrown an error, this means that responses cannot be submitted.
-                    return Promise.reject(error);
-                } else {
-                    // Couldn't connect to server, store it offline.
-                    return storeOffline();
-                }
-            });
         });
     }
 

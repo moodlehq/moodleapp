@@ -1113,6 +1113,7 @@
   "core.course.overriddennotice": "grades",
   "core.course.sections": "moodle",
   "core.course.useactivityonbrowser": "local_moodlemobileapp",
+  "core.course.warningmanualcompletionmodified": "local_moodlemobileapp",
   "core.course.warningofflinemanualcompletiondeleted": "local_moodlemobileapp",
   "core.coursedetails": "moodle",
   "core.courses.allowguests": "enrol_guest",
