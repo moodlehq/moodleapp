@@ -40,11 +40,18 @@ export class CoreDomUtilsProvider {
     protected matchesFn: string; // Name of the "matches" function to use when simulating a closest call.
     protected instances: {[id: string]: any} = {}; // Store component/directive instances by id.
     protected lastInstanceId = 0;
+    protected debugDisplay = false; // Whether to display debug messages. Store it in a variable to make it synchronous.
 
     constructor(private translate: TranslateService, private loadingCtrl: LoadingController, private toastCtrl: ToastController,
             private alertCtrl: AlertController, private textUtils: CoreTextUtilsProvider, private appProvider: CoreAppProvider,
             private platform: Platform, private configProvider: CoreConfigProvider, private urlUtils: CoreUrlUtilsProvider,
-            private modalCtrl: ModalController, private sanitizer: DomSanitizer) { }
+            private modalCtrl: ModalController, private sanitizer: DomSanitizer) {
+
+        // Check if debug messages should be displayed.
+        configProvider.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false).then((debugDisplay) => {
+            this.debugDisplay = !!debugDisplay;
+        });
+    }
 
     /**
      * Equivalent to element.closest(). If the browser doesn't support element.closest, it will
@@ -842,6 +849,15 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Set whether debug messages should be displayed.
+     *
+     * @param {boolean} value Whether to display or not.
+     */
+    setDebugDisplay(value: boolean): void {
+        this.debugDisplay = value;
+    }
+
+    /**
      * Show an alert modal with a button to close it.
      *
      * @param {string} title Title to show.
@@ -972,7 +988,19 @@ export class CoreDomUtilsProvider {
      * @return {Promise<Alert>} Promise resolved with the alert modal.
      */
     showErrorModal(error: any, needsTranslate?: boolean, autocloseTime?: number): Promise<Alert> {
+        let extraInfo = '';
+
         if (typeof error == 'object') {
+            if (this.debugDisplay) {
+                // Get the debug info. Escape the HTML so it is displayed as it is in the view.
+                if (error.debuginfo) {
+                    extraInfo = '<br><br>' + this.textUtils.escapeHTML(error.debuginfo);
+                }
+                if (error.backtrace) {
+                    extraInfo += '<br><br>' + this.textUtils.replaceNewLines(this.textUtils.escapeHTML(error.backtrace), '<br>');
+                }
+            }
+
             // We received an object instead of a string. Search for common properties.
             if (error.coreCanceled) {
                 // It's a canceled error, don't display an error.
@@ -988,6 +1016,7 @@ export class CoreDomUtilsProvider {
             } else {
                 // No common properties found, just stringify it.
                 error = JSON.stringify(error);
+                extraInfo = ''; // No need to add extra info because it's already in the error.
             }
 
             // Try to remove tokens from the contents.
@@ -1002,7 +1031,11 @@ export class CoreDomUtilsProvider {
             return;
         }
 
-        const message = this.textUtils.decodeHTML(needsTranslate ? this.translate.instant(error) : error);
+        let message = this.textUtils.decodeHTML(needsTranslate ? this.translate.instant(error) : error);
+
+        if (extraInfo) {
+            message += extraInfo;
+        }
 
         return this.showAlert(this.getErrorTitle(message), message, undefined, autocloseTime);
     }
@@ -1022,13 +1055,13 @@ export class CoreDomUtilsProvider {
             return;
         }
 
+        let errorMessage = error;
+
         if (error && typeof error != 'string') {
-            error = error.message || error.error || error.content || error.body;
+            errorMessage = error.message || error.error || error.content || error.body;
         }
 
-        error = typeof error == 'string' ? error : defaultError;
-
-        return this.showErrorModal(error, needsTranslate, autocloseTime);
+        return this.showErrorModal(typeof errorMessage == 'string' ? error : defaultError, needsTranslate, autocloseTime);
     }
 
     /**

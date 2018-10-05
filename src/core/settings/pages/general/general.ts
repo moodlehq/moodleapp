@@ -39,8 +39,7 @@ export class CoreSettingsGeneralPage {
     selectedLanguage: string;
     rteSupported: boolean;
     richTextEditor: boolean;
-    showReport: boolean;
-    reportInBackground: boolean;
+    debugDisplay: boolean;
 
     constructor(appProvider: CoreAppProvider, private configProvider: CoreConfigProvider, fileProvider: CoreFileProvider,
             private eventsProvider: CoreEventsProvider, private langProvider: CoreLangProvider,
@@ -60,12 +59,9 @@ export class CoreSettingsGeneralPage {
             });
         }
 
-        if (localStorage && localStorage.getItem && localStorage.setItem) {
-            this.showReport = true;
-            this.reportInBackground = parseInt(localStorage.getItem(CoreConstants.SETTINGS_REPORT_IN_BACKGROUND), 10) === 1;
-        } else {
-            this.showReport = false;
-        }
+        this.configProvider.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false).then((debugDisplay) => {
+            this.debugDisplay = !!debugDisplay;
+        });
     }
 
     /**
@@ -85,9 +81,10 @@ export class CoreSettingsGeneralPage {
     }
 
     /**
-     * Called when the report in background setting is enabled or disabled.
+     * Called when the debug display setting is enabled or disabled.
      */
-    reportInBackgroundChanged(): void {
-        localStorage.setItem(CoreConstants.SETTINGS_REPORT_IN_BACKGROUND, this.reportInBackground ? '1' : '0');
+    debugDisplayChanged(): void {
+        this.configProvider.set(CoreConstants.SETTINGS_DEBUG_DISPLAY, this.debugDisplay ? 1 : 0);
+        this.domUtils.setDebugDisplay(this.debugDisplay);
     }
 }

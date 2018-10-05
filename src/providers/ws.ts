@@ -224,9 +224,9 @@ export class CoreWSProvider {
             ajaxData;
 
         if (typeof preSets.siteUrl == 'undefined') {
-            return rejectWithError(this.translate.instant('core.unexpectederror'));
+            return rejectWithError(this.createFakeWSError('core.unexpectederror', true));
         } else if (!this.appProvider.isOnline()) {
-            return rejectWithError(this.translate.instant('core.networkerrormsg'));
+            return rejectWithError(this.createFakeWSError('core.networkerrormsg', true));
         }
 
         if (typeof preSets.responseExpected == 'undefined') {
@@ -252,40 +252,38 @@ export class CoreWSProvider {
 
             // Check if error. Ajax layer should always return an object (if error) or an array (if success).
             if (!data || typeof data != 'object') {
-                return rejectWithError(this.translate.instant('core.serverconnection'));
+                return rejectWithError(this.createFakeWSError('core.serverconnection', true));
             } else if (data.error) {
-                return rejectWithError(data.error, data.errorcode);
+                return rejectWithError(data.error);
             }
 
             // Get the first response since only one request was done.
             data = data[0];
 
             if (data.error) {
-                return rejectWithError(data.exception.message, data.exception.errorcode);
+                return rejectWithError(data.exception);
             }
 
             return data.data;
         }, (data) => {
             const available = data.status == 404 ? -1 : 0;
 
-            return rejectWithError(this.translate.instant('core.serverconnection'), '', available);
+            return rejectWithError(this.createFakeWSError('core.serverconnection', true), available);
         });
 
         // Convenience function to return an error.
-        function rejectWithError(message: string, code?: string, available?: number): Promise<never> {
+        function rejectWithError(exception: any, available?: number): Promise<never> {
             if (typeof available == 'undefined') {
-                if (code) {
-                    available = code == 'invalidrecord' ? -1 : 1;
+                if (exception.errorcode) {
+                    available = exception.errorcode == 'invalidrecord' ? -1 : 1;
                 } else {
                     available = 0;
                 }
             }
 
-            return Promise.reject({
-                error: message,
-                errorcode: code,
-                available: available
-            });
+            exception.available = available;
+
+            return Promise.reject(exception);
         }
     }
 
