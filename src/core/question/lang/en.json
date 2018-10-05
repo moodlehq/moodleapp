@@ -18,5 +18,5 @@
     "questionmessage": "Question {{$a}}: {{$b}}",
     "questionno": "Question {{$a}}",
     "requiresgrading": "Requires grading",
-    "unknown": "Cannot determine status"
+    "unknown": "Unknown"
 }

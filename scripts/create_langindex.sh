@@ -1,12 +1,6 @@
 #!/bin/bash
 source "functions.sh"
 
-#Saves the key and value on a temporary local_moodlemobileapp.php
-function save_local {
-    val=`echo $value | sed "s/\'/\\\\\'/g"`
-    echo "\$string['$key'] = '$val';" >> local_moodlemobileapp.php
-}
-
 #Saves or updates a key on langindex_old.json
 function save_key {
     key=$1
@@ -53,30 +47,6 @@ function exists_in_file {
 function exists_in_mobile {
     file='local_moodlemobileapp'
     exists_in_file $file $key
-    if [ $found == 0 ]; then
-        case $type in
-            'addon')
-                mobileid="mma.$component.$plainid"
-                exists_in_file $file $mobileid
-              ;;
-            'core')
-                if [ "$component" == 'moodle' ]; then
-                    mobileid="mm.core.$plainid"
-                elif [ "$component" == 'mainmenu' ]; then
-                    mobileid="mm.sidemenu.$plainid"
-                else
-                    mobileid="mm.$component.$plainid"
-                fi
-                exists_in_file $file $mobileid
-              ;;
-            *)
-                return
-        esac
-    fi
-
-    if [ $found != 0 ]; then
-        save_local
-    fi
 }
 
 function do_match {
@@ -114,8 +84,8 @@ function find_matches {
         return
     fi
 
-    print_error "No match found for $key adding to local_moodlemobileapp"
-    save_local
+    print_message "No match found for $key add it to local_moodlemobileapp"
+    save_key $key "local_moodlemobileapp"
 }
 
 function find_single_matches {
@@ -239,6 +209,11 @@ function find_better_file {
 
     if [ $found == 0 ]; then
         print_error "Indexed string '$key' not found on current place '$current'"
+        if [ $currentFile != 'local_moodlemobileapp' ]; then
+            print_error "Execute this on AMOS
+            CPY [$currentStr,$currentFile],[$key,local_moodlemobileapp]"
+            save_key $key "local_moodlemobileapp"
+        fi
     fi
 }
 
@@ -266,7 +241,7 @@ gulp lang
 print_title 'Getting languages'
 git clone https://git.in.moodle.com/moodle/moodle-langpacks.git $LANGPACKSFOLDER
 pushd $LANGPACKSFOLDER
-BRANCHES=($(git br -r --format="%(refname:lstrip=3)" --sort="refname" | grep MOODLE_))
+BRANCHES=($(git branch -r --format="%(refname:lstrip=3)" --sort="refname" | grep MOODLE_))
 BRANCH=${BRANCHES[${#BRANCHES[@]}-1]}
 git checkout $BRANCH
 git pull
@@ -277,13 +252,12 @@ print_title 'Processing file'
 if [ ! -f 'langindex.json' ]; then
     echo "{}" > langindex.json
 fi
-echo "<?php" > local_moodlemobileapp.php
 
 parse_file '../src/assets/lang/en.json'
 
 echo
 
-jq -S --indent 4 -s '.[0]' langindex.json > langindex_new.json
+jq -S --indent 2 -s '.[0]' langindex.json > langindex_new.json
 mv langindex_new.json langindex.json
 rm langindex_old.json
 

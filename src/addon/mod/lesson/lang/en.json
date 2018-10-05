@@ -17,7 +17,7 @@
     "detailedstats": "Detailed statistics",
     "didnotanswerquestion": "Did not answer this question.",
     "displayofgrade": "Display of grade (for students only)",
-    "displayscorewithessays": "<p>You earned {{$a.score}} out of {{$a.tempmaxgrade}} for the automatically graded questions.</p><p>Your {{$a.essayquestions}} essay question(s) will be graded and added into your final score at a later date.</p><p>Your current grade without the essay question(s) is {{$a.score}} out of {{$a.grade}}.</p>",
+    "displayscorewithessays": "<p>You earned {{$a.score}} out of {{$a.tempmaxgrade}} for the automatically graded questions.</p>\n<p>Your {{$a.essayquestions}} essay question(s) will be graded and added into your final score at a later date.</p>\n<p>Your current grade without the essay question(s) is {{$a.score}} out of {{$a.grade}}.</p>",
     "displayscorewithoutessays": "Your score is {{$a.score}} (out of {{$a.grade}}).",
     "emptypassword": "Password cannot be empty",
     "enterpassword": "Please enter the password:",
