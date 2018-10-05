@@ -988,12 +988,17 @@ export class CoreDomUtilsProvider {
      * @return {Promise<Alert>} Promise resolved with the alert modal.
      */
     showErrorModal(error: any, needsTranslate?: boolean, autocloseTime?: number): Promise<Alert> {
-        let extraInfo;
+        let extraInfo = '';
 
         if (typeof error == 'object') {
-            if (this.debugDisplay && error.debuginfo) {
+            if (this.debugDisplay) {
                 // Get the debug info. Escape the HTML so it is displayed as it is in the view.
-                extraInfo = this.textUtils.escapeHTML(error.debuginfo);
+                if (error.debuginfo) {
+                    extraInfo = '<br><br>' + this.textUtils.escapeHTML(error.debuginfo);
+                }
+                if (error.backtrace) {
+                    extraInfo += '<br><br>' + this.textUtils.replaceNewLines(this.textUtils.escapeHTML(error.backtrace), '<br>');
+                }
             }
 
             // We received an object instead of a string. Search for common properties.
@@ -1029,7 +1034,7 @@ export class CoreDomUtilsProvider {
         let message = this.textUtils.decodeHTML(needsTranslate ? this.translate.instant(error) : error);
 
         if (extraInfo) {
-            message += '<br><br>' + extraInfo;
+            message += extraInfo;
         }
 
         return this.showAlert(this.getErrorTitle(message), message, undefined, autocloseTime);
