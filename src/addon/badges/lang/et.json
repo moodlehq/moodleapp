@@ -1,0 +1,13 @@
+{
+    "badgedetails": "Detalles de la insignia",
+    "badges": "Insignias",
+    "contact": "Contacto",
+    "dateawarded": "Fecha de la emisión",
+    "expired": "Lo sentimos, esta actividad se cerró el {{$a}} y ya no está disponible",
+    "expirydate": "Fecha de expiración",
+    "issuancedetails": "Caducidad de la insignia",
+    "issuerdetails": "Detalles del emisor",
+    "issuername": "Nombre del emisor",
+    "nobadges": "No hay insignias disponibles",
+    "recipientdetails": "Detalles del destinatario"
+}
