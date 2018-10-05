@@ -106,7 +106,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * Get the lesson data.
      *
      * @param {boolean} [refresh=false] If it's refreshing content.
-     * @param {boolean} [sync=false] If the refresh is needs syncing.
+     * @param {boolean} [sync=false] If it should try to sync.
      * @param {boolean} [showErrors=false] If show errors to the user of hide them.
      * @return {Promise<any>} Promise resolved when done.
      */

@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
@@ -21,6 +22,7 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSiteWSPreSets } from '@classes/site';
 import { CoreConstants } from '../../constants';
+import { CoreCourseOfflineProvider } from './course-offline';
 
 /**
  * Service that provides some features regarding a course.
@@ -75,7 +77,8 @@ export class CoreCourseProvider {
     ];
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private eventsProvider: CoreEventsProvider,
-            private utils: CoreUtilsProvider, private timeUtils: CoreTimeUtilsProvider, private translate: TranslateService) {
+            private utils: CoreUtilsProvider, private timeUtils: CoreTimeUtilsProvider, private translate: TranslateService,
+            private courseOffline: CoreCourseOfflineProvider, private appProvider: CoreAppProvider) {
         this.logger = logger.getInstance('CoreCourseProvider');
 
         this.sitesProvider.createTableFromSchema(this.courseStatusTableSchema);
@@ -118,9 +121,14 @@ export class CoreCourseProvider {
      * @param {number} courseId Course ID.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @param {number} [userId] User ID. If not defined, current user.
+     * @param {boolean} [forceCache] True if it should return cached data. Has priority over ignoreCache.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param {boolean} [includeOffline=true] True if it should load offline data in the completion status.
      * @return {Promise<any>} Promise resolved with the completion statuses: object where the key is module ID.
      */
-    getActivitiesCompletionStatus(courseId: number, siteId?: string, userId?: number): Promise<any> {
+    getActivitiesCompletionStatus(courseId: number, siteId?: string, userId?: number, forceCache: boolean = false,
+            ignoreCache: boolean = false, includeOffline: boolean = true): Promise<any> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
@@ -130,9 +138,16 @@ export class CoreCourseProvider {
                     courseid: courseId,
                     userid: userId
                 },
-                preSets = {
+                preSets: CoreSiteWSPreSets = {
                     cacheKey: this.getActivitiesCompletionCacheKey(courseId, userId)
                 };
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
+            }
 
             return site.read('core_completion_get_activities_completion_status', params, preSets).then((data) => {
                 if (data && data.statuses) {
@@ -140,6 +155,31 @@ export class CoreCourseProvider {
                 }
 
                 return Promise.reject(null);
+            }).then((completionStatus) => {
+                if (!includeOffline) {
+                    return completionStatus;
+                }
+
+                // Now get the offline completion (if any).
+                return this.courseOffline.getCourseManualCompletions(courseId, site.id).then((offlineCompletions) => {
+                    offlineCompletions.forEach((offlineCompletion) => {
+
+                        if (offlineCompletion && typeof completionStatus[offlineCompletion.cmid] != 'undefined') {
+                            const onlineCompletion = completionStatus[offlineCompletion.cmid];
+
+                            // If the activity uses manual completion, override the value with the offline one.
+                            if (onlineCompletion.tracking === 1) {
+                                onlineCompletion.state = offlineCompletion.completed;
+                                onlineCompletion.offline = true;
+                            }
+                        }
+                    });
+
+                    return completionStatus;
+                }).catch(() => {
+                    // Ignore errors.
+                    return completionStatus;
+                });
             });
         });
     }
@@ -644,6 +684,70 @@ export class CoreCourseProvider {
                     return Promise.reject(null);
                 }
             });
+        });
+    }
+
+    /**
+     * Offline version for manually marking a module as completed.
+     *
+     * @param {number} cmId The module ID.
+     * @param {number} completed Whether the module is completed or not.
+     * @param {number} courseId Course ID the module belongs to.
+     * @param {string} [courseName] Course name. Recommended, it is used to display a better warning message.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when completion is successfully sent or stored.
+     */
+    markCompletedManually(cmId: number, completed: number, courseId: number, courseName?: string, siteId?: string)
+            : Promise<any> {
+
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        // Convenience function to store a completion to be synchronized later.
+        const storeOffline = (): Promise<any> => {
+            return this.courseOffline.markCompletedManually(cmId, completed, courseId, courseName, siteId);
+        };
+
+        // The offline function requires a courseId and it could be missing because it's a calculated field.
+        if (!this.appProvider.isOnline() && courseId) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
+
+        // Try to send it to server.
+        return this.markCompletedManuallyOnline(cmId, completed, siteId).then((result) => {
+            // Data sent to server, if there is some offline data delete it now.
+            return this.courseOffline.deleteManualCompletion(cmId, siteId).catch(() => {
+                // Ignore errors, shouldn't happen.
+            }).then(() => {
+                return result;
+            });
+        }).catch((error) => {
+            if (this.utils.isWebServiceError(error) || !courseId) {
+                // The WebService has thrown an error, this means that responses cannot be submitted.
+                return Promise.reject(error);
+            } else {
+                // Couldn't connect to server, store it offline.
+                return storeOffline();
+            }
+        });
+    }
+
+    /**
+     * Offline version for manually marking a module as completed.
+     *
+     * @param {number} cmId The module ID.
+     * @param {number} completed Whether the module is completed or not.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when completion is successfully sent.
+     */
+    markCompletedManuallyOnline(cmId: number, completed: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                    cmid: cmId,
+                    completed: completed
+                };
+
+            return site.write('core_completion_update_activity_completion_status_manually', params);
         });
     }
 

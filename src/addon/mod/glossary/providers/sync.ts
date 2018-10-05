@@ -198,7 +198,7 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
                             result.warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
                                 component: this.componentTranslate,
                                 name: data.concept,
-                                error: error.error
+                                error: this.textUtils.getErrorMessageFromError(error)
                             }));
                         });
                     } else {

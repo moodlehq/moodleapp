@@ -173,13 +173,13 @@ export class AddonModSurveySyncProvider extends CoreSyncBaseProvider {
                         result.warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
                             component: this.componentTranslate,
                             name: data.name,
-                            error: error.error
+                            error: this.textUtils.getErrorMessageFromError(error)
                         }));
                     });
                 }
 
                 // Couldn't connect to server, reject.
-                return Promise.reject(error && error.error);
+                return Promise.reject(error);
             });
         }).then(() => {
             if (courseId) {

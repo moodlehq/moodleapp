@@ -295,10 +295,10 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
                 promises.push(actionPromise.catch((error) => {
                     if (error && error.wserror) {
                         // The WebService has thrown an error, this means it cannot be performed. Discard.
-                        discardError = error.error;
+                        discardError = this.textUtils.getErrorMessageFromError(error);
                     } else {
                         // Couldn't connect to server, reject.
-                        return Promise.reject(error && error.error);
+                        return Promise.reject(error);
                     }
                 }).then(() => {
                     // Delete the offline data.

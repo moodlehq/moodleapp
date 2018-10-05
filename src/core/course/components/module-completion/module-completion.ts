@@ -14,10 +14,10 @@
 
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUserProvider } from '@core/user/providers/user';
+import { CoreCourseProvider } from '../../providers/course';
 
 /**
  * Component to handle activity completion. It shows a checkbox with the current status, and allows manually changing
@@ -41,7 +41,8 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
     completionDescription: string;
 
     constructor(private textUtils: CoreTextUtilsProvider, private domUtils: CoreDomUtilsProvider,
-            private translate: TranslateService, private sitesProvider: CoreSitesProvider, private userProvider: CoreUserProvider) {
+            private translate: TranslateService, private courseProvider: CoreCourseProvider,
+            private userProvider: CoreUserProvider) {
         this.completionChanged = new EventEmitter();
     }
 
@@ -68,14 +69,11 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
             e.preventDefault();
             e.stopPropagation();
 
-            const modal = this.domUtils.showModalLoading(),
-                params = {
-                    cmid: this.completion.cmid,
-                    completed: this.completion.state === 1 ? 0 : 1
-                },
-                currentSite = this.sitesProvider.getCurrentSite();
+            const modal = this.domUtils.showModalLoading();
 
-            currentSite.write('core_completion_update_activity_completion_status_manually', params).then((response) => {
+            this.courseProvider.markCompletedManually(this.completion.cmid, this.completion.state === 1 ? 0 : 1,
+                    this.completion.courseId, this.completion.courseName).then((response) => {
+
                 if (!response.status) {
                     return Promise.reject(null);
                 }

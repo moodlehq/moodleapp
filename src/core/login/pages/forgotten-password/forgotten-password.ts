@@ -70,7 +70,7 @@ export class CoreLoginForgottenPasswordPage {
                 this.navCtrl.pop();
             }
         }).catch((error) => {
-            this.domUtils.showErrorModal(error.error);
+            this.domUtils.showErrorModal(error);
         }).finally(() => {
             modal.dismiss();
         });

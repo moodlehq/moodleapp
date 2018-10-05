@@ -1005,15 +1005,10 @@ export class CoreDomUtilsProvider {
             if (error.coreCanceled) {
                 // It's a canceled error, don't display an error.
                 return;
-            } else if (typeof error.content != 'undefined') {
-                error = error.content;
-            } else if (typeof error.body != 'undefined') {
-                error = error.body;
-            } else if (typeof error.message != 'undefined') {
-                error = error.message;
-            } else if (typeof error.error != 'undefined') {
-                error = error.error;
-            } else {
+            }
+
+            error = this.textUtils.getErrorMessageFromError(error);
+            if (!error) {
                 // No common properties found, just stringify it.
                 error = JSON.stringify(error);
                 extraInfo = ''; // No need to add extra info because it's already in the error.
@@ -1058,7 +1053,7 @@ export class CoreDomUtilsProvider {
         let errorMessage = error;
 
         if (error && typeof error != 'string') {
-            errorMessage = error.message || error.error || error.content || error.body;
+            errorMessage = this.textUtils.getErrorMessageFromError(error);
         }
 
         return this.showErrorModal(typeof errorMessage == 'string' ? error : defaultError, needsTranslate, autocloseTime);
