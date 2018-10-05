@@ -13,10 +13,13 @@
 // limitations under the License.
 
 import { Component, Injector } from '@angular/core';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
 import { AddonModUrlProvider } from '../../providers/url';
 import { AddonModUrlHelperProvider } from '../../providers/helper';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Component that displays a url.
@@ -30,9 +33,19 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
 
     canGetUrl: boolean;
     url: string;
+    name: string;
+    shouldEmbed = false;
+    shouldIframe = false;
+    isImage = false;
+    isAudio = false;
+    isVideo = false;
+    isOther = false;
+    mimetype: string;
+    displayDescription = true;
 
     constructor(injector: Injector, private urlProvider: AddonModUrlProvider, private courseProvider: CoreCourseProvider,
-            private urlHelper: AddonModUrlHelperProvider) {
+            private urlHelper: AddonModUrlHelperProvider, private mimeUtils: CoreMimetypeUtilsProvider,
+            private sitesProvider: CoreSitesProvider) {
         super(injector);
     }
 
@@ -65,6 +78,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     protected fetchContent(refresh?: boolean): Promise<any> {
         let canGetUrl = this.canGetUrl,
             mod,
+            url,
             promise;
 
         // Fetch the module data.
@@ -79,9 +93,17 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
 
             // Fallback in case is not prefetched or not available.
             return this.courseProvider.getModule(this.module.id, this.courseId, undefined, false, false, undefined, 'url');
-        }).then((url) => {
+        }).then((urlData) => {
+            url = urlData;
+
+            this.name = url.name || this.module.name;
             this.description = url.intro || url.description;
             this.dataRetrieved.emit(url);
+
+            if (canGetUrl && url.displayoptions) {
+                const unserialized = this.textUtils.unserialize(url.displayoptions);
+                this.displayDescription = typeof unserialized.printintro == 'undefined' || !!unserialized.printintro;
+            }
 
             if (!canGetUrl) {
                 mod = url;
@@ -101,7 +123,48 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
         }).then(() => {
             // Always use the URL from the module because it already includes the parameters.
             this.url = mod.contents && mod.contents[0] && mod.contents[0].fileurl ? mod.contents[0].fileurl : undefined;
+
+            if (canGetUrl) {
+                return this.calculateDisplayOptions(url);
+            }
         });
+    }
+
+    /**
+     * Calculate the display options to determine how the URL should be rendered.
+     *
+     * @param {any} url Object with the URL data.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected calculateDisplayOptions(url: any): Promise<any> {
+        const displayType = this.urlProvider.getFinalDisplayType(url);
+
+        this.shouldEmbed = displayType == CoreConstants.RESOURCELIB_DISPLAY_EMBED;
+        this.shouldIframe = displayType == CoreConstants.RESOURCELIB_DISPLAY_FRAME;
+
+        if (this.shouldEmbed) {
+            const extension = this.mimeUtils.guessExtensionFromUrl(url.externalurl);
+
+            this.mimetype = this.mimeUtils.getMimeType(extension);
+            this.isImage = this.mimeUtils.isExtensionInGroup(extension, ['web_image']);
+            this.isAudio = this.mimeUtils.isExtensionInGroup(extension, ['web_audio']);
+            this.isVideo = this.mimeUtils.isExtensionInGroup(extension, ['web_video']);
+            this.isOther = !this.isImage && !this.isAudio && !this.isVideo;
+        }
+
+        if (this.shouldIframe || (this.shouldEmbed && !this.isImage && !this.isAudio && !this.isVideo)) {
+            // Will be displayed in an iframe. Check if we need to auto-login.
+            const currentSite = this.sitesProvider.getCurrentSite();
+
+            if (currentSite && currentSite.containsUrl(this.url)) {
+                // Format the URL to add auto-login.
+                return currentSite.getAutoLoginUrl(this.url, false).then((url) => {
+                    this.url = url;
+                });
+            }
+        }
+
+        return Promise.resolve();
     }
 
     /**

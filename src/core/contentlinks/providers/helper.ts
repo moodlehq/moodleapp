@@ -48,6 +48,22 @@ export class CoreContentLinksHelperProvider {
     }
 
     /**
+     * Check whether a link can be handled by the app.
+     *
+     * @param {string} url URL to handle.
+     * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
+     * @param {string} [username] Username to use to filter sites.
+     * @return {Promise<boolean>} Promise resolved with a boolean: whether the URL can be handled.
+     */
+    canHandleLink(url: string, courseId?: number, username?: string): Promise<boolean> {
+        return this.contentLinksDelegate.getActionsFor(url, undefined, username).then((actions) => {
+            return !!this.getFirstValidAction(actions);
+        }).catch(() => {
+            return false;
+        });
+    }
+
+    /**
      * Get the first valid action in a list of actions.
      *
      * @param {CoreContentLinksAction[]} actions List of actions.
