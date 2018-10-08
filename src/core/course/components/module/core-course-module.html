@@ -30,11 +30,11 @@
             </div>
         </div>
     </div>
-    <div *ngIf="module.visible === 0 || module.availabilityinfo || module.handlerData.extraBadge || module.isStealth || (module.completionstatus && module.completionstatus.offline)">
+    <div>
         <ion-badge item-end *ngIf="module.handlerData.extraBadge" [color]="module.handlerData.extraBadgeColor" text-wrap text-start>
             <core-format-text [text]="module.handlerData.extraBadge"></core-format-text>
         </ion-badge>
-        <ion-badge item-end *ngIf="module.visible === 0" text-wrap>{{ 'core.course.hiddenfromstudents' | translate }}</ion-badge>
+        <ion-badge item-end *ngIf="module.visible === 0 && (!section || section.visible)" text-wrap>{{ 'core.course.hiddenfromstudents' | translate }}</ion-badge>
         <ion-badge item-end *ngIf="module.visible !== 0 && module.isStealth" text-wrap>{{ 'core.course.hiddenoncoursepage' | translate }}</ion-badge>
         <ion-badge item-end *ngIf="module.availabilityinfo" text-wrap><core-format-text [text]="module.availabilityinfo"></core-format-text></ion-badge>
         <ion-badge item-end *ngIf="module.completionstatus && module.completionstatus.offline" color="warning" text-wrap>{{ 'core.course.manualcompletionnotsynced' | translate }}</ion-badge>
