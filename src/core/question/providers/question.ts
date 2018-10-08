@@ -230,10 +230,10 @@ export class CoreQuestionProvider {
             active: false,
             finished: true
         },
-        unknown: { // Special state for Mobile, sometimes we won't have enough data to detemrine the state.
-            name: 'unknown',
+        cannotdeterminestatus: { // Special state for Mobile, sometimes we won't have enough data to detemrine the state.
+            name: 'cannotdeterminestatus',
             class: 'core-question-unknown',
-            status: 'unknown',
+            status: 'cannotdeterminestatus',
             active: true,
             finished: false
         }
@@ -438,7 +438,7 @@ export class CoreQuestionProvider {
      * @return {CoreQuestionState} State.
      */
     getState(name: string): CoreQuestionState {
-        return this.STATES[name || 'unknown'];
+        return this.STATES[name || 'cannotdeterminestatus'];
     }
 
     /**

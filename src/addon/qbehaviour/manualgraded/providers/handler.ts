@@ -124,7 +124,7 @@ export class AddonQbehaviourManualGradedHandler implements CoreQuestionBehaviour
                 }
 
                 if (complete < 0) {
-                    newState = 'unknown';
+                    newState = 'cannotdeterminestatus';
                 } else if (complete > 0) {
                     newState = 'complete';
                 } else {
