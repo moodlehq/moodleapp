@@ -124,13 +124,13 @@ export class AddonQbehaviourDeferredFeedbackHandler implements CoreQuestionBehav
                 }
 
                 if (complete < 0) {
-                    newState = 'unknown';
+                    newState = 'cannotdeterminestatus';
                 } else if (complete > 0) {
                     newState = 'complete';
                 } else {
                     const gradable = this.questionDelegate.isGradableResponse(question, newBasicAnswers);
                     if (gradable < 0) {
-                        newState = 'unknown';
+                        newState = 'cannotdeterminestatus';
                     } else if (gradable > 0) {
                         newState = 'invalid';
                     } else {
