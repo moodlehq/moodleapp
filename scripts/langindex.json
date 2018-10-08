@@ -1153,7 +1153,7 @@
   "core.course.couldnotloadsectioncontent": "local_moodlemobileapp",
   "core.course.couldnotloadsections": "local_moodlemobileapp",
   "core.course.coursesummary": "moodle",
-  "core.course.downloadcourse": "local_moodlemobileapp",
+  "core.course.downloadcourse": "tool_mobile",
   "core.course.errordownloadingcourse": "local_moodlemobileapp",
   "core.course.errordownloadingsection": "local_moodlemobileapp",
   "core.course.errorgetmodule": "local_moodlemobileapp",
