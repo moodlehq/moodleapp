@@ -102,12 +102,12 @@ export class CoreIframeUtilsProvider {
                         } else {
                             this.logger.warn('Cannot get iframe dir path to open relative url', url, element);
 
-                            return new Window(); // Return new Window object.
+                            return null;
                         }
                     } else {
                         this.logger.warn('Cannot get iframe src to open relative url', url, element);
 
-                        return new Window(); // Return new Window object.
+                        return null;
                     }
                 }
 
@@ -126,7 +126,8 @@ export class CoreIframeUtilsProvider {
                     }
                 }
 
-                return new Window(); // Return new Window object.
+                 // We cannot create new Window objects directly, return null which is a valid return value for Window.open().
+                return null;
             };
         }
 
