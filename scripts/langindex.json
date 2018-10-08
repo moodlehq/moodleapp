@@ -1269,6 +1269,7 @@
   "core.fileuploader.uploading": "local_moodlemobileapp",
   "core.fileuploader.uploadingperc": "local_moodlemobileapp",
   "core.fileuploader.video": "local_moodlemobileapp",
+  "core.login.findyoursite": "local_moodlemobileapp",
   "core.folder": "moodle",
   "core.forcepasswordchangenotice": "moodle",
   "core.fulllistofcourses": "moodle",
