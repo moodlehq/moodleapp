@@ -106,8 +106,6 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         // Use paragraph on enter.
         document.execCommand('DefaultParagraphSeparator', false, 'p');
 
-        this.treatExternalContent();
-
         this.resizeFunction = this.maximizeEditorSize.bind(this);
         window.addEventListener('resize', this.resizeFunction);
 
@@ -223,10 +221,14 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
             if (this.isNullOrWhiteSpace(this.editorElement.innerText)) {
                 this.clearText();
             } else {
+                // The textarea and the form control must receive the original URLs.
+                this.restoreExternalContent();
                 // Don't emit event so our valueChanges doesn't get notified by this change.
                 this.control.setValue(this.editorElement.innerHTML, {emitEvent: false});
                 this.control.markAsDirty();
                 this.textarea.value = this.editorElement.innerHTML;
+                // Treat URLs again for the editor.
+                this.treatExternalContent();
             }
         } else {
             if (this.isNullOrWhiteSpace(this.textarea.value)) {
@@ -405,6 +407,11 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
             siteId = this.sitesProvider.getCurrentSiteId(),
             canDownloadFiles = this.sitesProvider.getCurrentSite().canDownloadFiles();
         elements.forEach((el) => {
+            if (el.getAttribute('data-original-src')) {
+                // Already treated.
+                return;
+            }
+
             const url = el.src;
 
             if (!url || !this.urlUtils.isDownloadableUrl(url) || (!canDownloadFiles && this.urlUtils.isPluginFileUrl(url))) {
@@ -414,8 +421,26 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
 
             // Check if it's downloaded.
             return this.filepoolProvider.getSrcByUrl(siteId, url, this.component, this.componentId).then((finalUrl) => {
-                el.setAttribute('src', finalUrl);
+                // Check again if it's already treated, this function can be called concurrently more than once.
+                if (!el.getAttribute('data-original-src')) {
+                    el.setAttribute('data-original-src', el.src);
+                    el.setAttribute('src', finalUrl);
+                }
             });
+        });
+    }
+
+    /**
+     * Reverts changes made by treatExternalContent.
+     */
+    protected restoreExternalContent(): void {
+        const elements = Array.from(this.editorElement.querySelectorAll('img'));
+        elements.forEach((el) => {
+            const originalUrl = el.getAttribute('data-original-src');
+            if (originalUrl) {
+                el.setAttribute('src', originalUrl);
+                el.removeAttribute('data-original-src');
+            }
         });
     }
 
@@ -446,6 +471,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         } else {
             this.editorElement.innerHTML = value;
             this.textarea.value = value;
+            this.treatExternalContent();
         }
     }
 
