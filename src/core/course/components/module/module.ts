@@ -36,6 +36,7 @@ import { CoreConstants } from '../../../constants';
 export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     @Input() module: any; // The module to render.
     @Input() courseId: number; // The course the module belongs to.
+    @Input() section: any; // The section the module belongs to.
     @Input('downloadEnabled') set enabled(value: boolean) {
         this.downloadEnabled = value;
 

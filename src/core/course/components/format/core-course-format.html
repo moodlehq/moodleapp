@@ -69,7 +69,7 @@
 
 <!-- Template to render a section. -->
 <ng-template #sectionTemplate let-section="section">
-    <section ion-list *ngIf="section.hasContent && section.id != allSectionsId">
+    <section ion-list *ngIf="!section.hiddenbynumsections && section.id != allSectionsId">
         <!-- Title is only displayed when viewing all sections. -->
         <ion-item-divider text-wrap color="light" *ngIf="selectedSection.id == allSectionsId && section.name">
             <core-format-text [text]="section.name"></core-format-text>
@@ -82,7 +82,7 @@
         </ion-item>
 
         <ng-container *ngFor="let module of section.modules">
-            <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [courseId]="course.id" [downloadEnabled]="downloadEnabled" (completionChanged)="completionChanged.emit()"></core-course-module>
+            <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [courseId]="course.id" [downloadEnabled]="downloadEnabled" [section]="section" (completionChanged)="completionChanged.emit()"></core-course-module>
         </ng-container>
     </section>
 </ng-template>

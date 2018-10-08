@@ -7,7 +7,7 @@
                 <core-format-text [text]="section.summary"></core-format-text>
             </ion-item>
 
-            <core-course-module *ngFor="let module of section.modules" [module]="module" [courseId]="siteHomeId" [downloadEnabled]="true"></core-course-module>
+            <core-course-module *ngFor="let module of section.modules" [module]="module" [courseId]="siteHomeId" [downloadEnabled]="true" [section]="section"></core-course-module>
         </ng-container>
 
         <!-- Site home items: news, categories, courses, etc. -->
@@ -29,7 +29,7 @@
                 <core-format-text [text]="block.summary"></core-format-text>
             </ion-item>
 
-            <core-course-module *ngFor="let module of block.modules" [module]="module" [courseId]="siteHomeId" [downloadEnabled]="true"></core-course-module>
+            <core-course-module *ngFor="let module of block.modules" [module]="module" [courseId]="siteHomeId" [downloadEnabled]="true" [section]="block"></core-course-module>
         </ng-container>
     </ion-list>
 
