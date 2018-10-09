@@ -69,7 +69,7 @@
 
 <!-- Template to render a section. -->
 <ng-template #sectionTemplate let-section="section">
-    <section ion-list *ngIf="!section.hiddenbynumsections && section.id != allSectionsId">
+    <section ion-list *ngIf="!section.hiddenbynumsections && section.id != allSectionsId && section.id != stealthModulesSectionId">
         <!-- Title is only displayed when viewing all sections. -->
         <ion-item-divider text-wrap color="light" *ngIf="selectedSection.id == allSectionsId && section.name">
             <core-format-text [text]="section.name"></core-format-text>
