@@ -1,10 +1,10 @@
 {
-  "name": "moodlemobile",
-  "version": "3.5.1",
-  "description": "The official app for Moodle.",
+  "name": "eCPD",
+  "version": "3.5.2",
+  "description": "The official app for eCPD.",
   "author": {
-    "name": "Moodle Pty Ltd.",
-    "email": "mobile@moodle.com"
+    "name": "eCPD Pty Ltd.",
+    "email": "alematgebru@gmail.com"
   },
   "config": {
     "ionic_webpack": "./config/webpack.config.js",
