@@ -116,8 +116,8 @@ $refresher-icon-color: $core-color !default;
 // --------------------------------------------------
 
 // Init screen.
-$core-color-init-screen:          #ff5c00 !default;
-$core-color-init-screen-alt:      #ff7600 !default;
+$core-color-init-screen:          $blue !default;
+$core-color-init-screen-alt:      #blue !default;
 $core-init-screen-spinner-color:  $white !default;
 $core-init-screen-logo-width:     60% !default;
 $core-init-screen-logo-max-width: 300px !default;
