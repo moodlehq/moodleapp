@@ -519,6 +519,8 @@ export class CoreFormatTextDirective implements OnChanges {
 
         // Replace video tag by the iframe.
         video.parentNode.replaceChild(iframe, video);
+
+        this.iframeUtils.treatFrame(iframe);
     }
 
     /**
@@ -554,7 +556,7 @@ export class CoreFormatTextDirective implements OnChanges {
      *
      * @param {HTMLIFrameElement} iframe Iframe to treat.
      * @param {CoreSite} site Site instance.
-     * @param  {Boolean} canTreatVimeo Whether Vimeo videos can be treated in the site.
+     * @param {boolean} canTreatVimeo Whether Vimeo videos can be treated in the site.
      */
     protected treatIframe(iframe: HTMLIFrameElement, site: CoreSite, canTreatVimeo: boolean): void {
         const src = iframe.src,
@@ -571,8 +573,9 @@ export class CoreFormatTextDirective implements OnChanges {
             });
 
             return;
+        }
 
-        } else if (src && canTreatVimeo) {
+        if (src && canTreatVimeo) {
             // Check if it's a Vimeo video. If it is, use the wsplayer script instead to make restricted videos work.
             const matches = iframe.src.match(/https?:\/\/player\.vimeo\.com\/video\/([0-9]+)/);
             if (matches && matches[1]) {
@@ -620,8 +623,6 @@ export class CoreFormatTextDirective implements OnChanges {
                         }
                     });
                 }
-
-                return;
             }
         }
 
