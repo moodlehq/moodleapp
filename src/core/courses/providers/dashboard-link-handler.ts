@@ -21,7 +21,7 @@ import { CoreLoginHelperProvider } from '@core/login/providers/helper';
  * Handler to treat links to my overview.
  */
 @Injectable()
-export class CoreCoursesMyOverviewLinkHandler extends CoreContentLinksHandlerBase {
+export class CoreCoursesDashboardLinkHandler extends CoreContentLinksHandlerBase {
     name = 'CoreCoursesMyOverviewLinkHandler';
     featureName = 'CoreMainMenuDelegate_CoreCourses';
     pattern = /\/my\/?$/;
@@ -44,7 +44,7 @@ export class CoreCoursesMyOverviewLinkHandler extends CoreContentLinksHandlerBas
         return [{
             action: (siteId, navCtrl?): void => {
                 // Always use redirect to make it the new history root (to avoid "loops" in history).
-                this.loginHelper.redirect('CoreCoursesMyOverviewPage', undefined, siteId);
+                this.loginHelper.redirect('CoreCoursesDashboardPage', undefined, siteId);
             }
         }];
     }

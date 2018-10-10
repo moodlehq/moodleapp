@@ -72,4 +72,39 @@ export class CoreCoursesHelperProvider {
             });
         });
     }
+
+    /**
+     * Get user courses with admin and nav options.
+     *
+     * @return {Promise<any[]>} Promise resolved when done.
+     */
+    getUserCoursesWithOptions(): Promise<any[]> {
+        return this.coursesProvider.getUserCourses().then((courses) => {
+            const promises = [],
+                courseIds = courses.map((course) => {
+                    return course.id;
+                });
+
+            if (this.coursesProvider.canGetAdminAndNavOptions()) {
+                // Load course options of the course.
+                promises.push(this.coursesProvider.getCoursesAdminAndNavOptions(courseIds).then((options) => {
+                    courses.forEach((course) => {
+                        course.navOptions = options.navOptions[course.id];
+                        course.admOptions = options.admOptions[course.id];
+                    });
+                }));
+            }
+
+            promises.push(this.loadCoursesExtraInfo(courses));
+
+            return Promise.all(promises).then(() => {
+                return courses.sort((a, b) => {
+                    const compareA = a.fullname.toLowerCase(),
+                        compareB = b.fullname.toLowerCase();
+
+                    return compareA.localeCompare(compareB);
+                });
+            });
+        });
+    }
 }

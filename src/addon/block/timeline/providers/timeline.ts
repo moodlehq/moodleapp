@@ -14,16 +14,16 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreSite } from '@classes/site';
 import * as moment from 'moment';
 
 /**
  * Service that provides some features regarding course overview.
  */
 @Injectable()
-export class CoreCoursesMyOverviewProvider {
+export class AddonBlockTimelineProvider {
     static EVENTS_LIMIT = 20;
     static EVENTS_LIMIT_PER_COURSE = 10;
+    // Cache key was maintained when moving the functions to this file. It comes from core myoverview.
     protected ROOT_CACHE_KEY = 'myoverview:';
 
     constructor(private sitesProvider: CoreSitesProvider) { }
@@ -44,7 +44,7 @@ export class CoreCoursesMyOverviewProvider {
                 data: any = {
                     timesortfrom: time,
                     courseid: courseId,
-                    limitnum: CoreCoursesMyOverviewProvider.EVENTS_LIMIT_PER_COURSE
+                    limitnum: AddonBlockTimelineProvider.EVENTS_LIMIT_PER_COURSE
                 },
                 preSets = {
                     cacheKey: this.getActionEventsByCourseCacheKey(courseId)
@@ -88,7 +88,7 @@ export class CoreCoursesMyOverviewProvider {
                 data = {
                     timesortfrom: time,
                     courseids: courseIds,
-                    limitnum: CoreCoursesMyOverviewProvider.EVENTS_LIMIT_PER_COURSE
+                    limitnum: AddonBlockTimelineProvider.EVENTS_LIMIT_PER_COURSE
                 },
                 preSets = {
                     cacheKey: this.getActionEventsByCoursesCacheKey()
@@ -131,7 +131,7 @@ export class CoreCoursesMyOverviewProvider {
             const time = moment().subtract(14, 'days').unix(), // Check two weeks ago.
                 data: any = {
                     timesortfrom: time,
-                    limitnum: CoreCoursesMyOverviewProvider.EVENTS_LIMIT
+                    limitnum: AddonBlockTimelineProvider.EVENTS_LIMIT
                 },
                 preSets = {
                     cacheKey: this.getActionEventsByTimesortCacheKey(afterEventId, data.limitnum),
@@ -223,33 +223,6 @@ export class CoreCoursesMyOverviewProvider {
     }
 
     /**
-     * Check if My Overview is disabled in a certain site.
-     *
-     * @param {CoreSite} [site] Site. If not defined, use current site.
-     * @return {boolean} Whether it's disabled.
-     */
-    isDisabledInSite(site?: CoreSite): boolean {
-        site = site || this.sitesProvider.getCurrentSite();
-
-        return site.isFeatureDisabled('CoreMainMenuDelegate_CoreCourses');
-    }
-
-    /**
-     * Check if My Overview is available and not disabled.
-     *
-     * @return {Promise<boolean>} Promise resolved with true if enabled, resolved with false otherwise.
-     */
-    isEnabled(): Promise<boolean> {
-        if (!this.isDisabledInSite()) {
-            return this.isAvailable().catch(() => {
-                return false;
-            });
-        }
-
-        return Promise.resolve(false);
-    }
-
-    /**
      * Handles course events, filtering and treating if more can be loaded.
      *
      * @param {any} course Object containing response course events info.
@@ -258,7 +231,7 @@ export class CoreCoursesMyOverviewProvider {
      */
     protected treatCourseEvents(course: any, timeFrom: number): { events: any[], canLoadMore: number } {
         const canLoadMore: number =
-            course.events.length >= CoreCoursesMyOverviewProvider.EVENTS_LIMIT_PER_COURSE ? course.lastid : undefined;
+            course.events.length >= AddonBlockTimelineProvider.EVENTS_LIMIT_PER_COURSE ? course.lastid : undefined;
 
         // Filter events by time in case it uses cache.
         course.events = course.events.filter((element) => {

@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreCoursesProvider } from './courses';
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@core/mainmenu/providers/delegate';
-import { CoreCoursesMyOverviewProvider } from '../providers/my-overview';
+import { CoreCoursesDashboardProvider } from '../providers/dashboard';
 
 /**
  * Handler to add My Courses or My Overview into main menu.
@@ -24,9 +24,9 @@ import { CoreCoursesMyOverviewProvider } from '../providers/my-overview';
 export class CoreCoursesMainMenuHandler implements CoreMainMenuHandler {
     name = 'CoreCourses';
     priority = 1100;
-    isOverviewEnabled: boolean;
+    isDashboardEnabled: boolean;
 
-    constructor(private coursesProvider: CoreCoursesProvider, private myOverviewProvider: CoreCoursesMyOverviewProvider) { }
+    constructor(private coursesProvider: CoreCoursesProvider, private dashboardProvider: CoreCoursesDashboardProvider) { }
 
     /**
      * Check if the handler is enabled on a site level.
@@ -35,8 +35,8 @@ export class CoreCoursesMainMenuHandler implements CoreMainMenuHandler {
      */
     isEnabled(): boolean | Promise<boolean> {
         // Check if my overview is enabled.
-        return this.myOverviewProvider.isEnabled().then((enabled) => {
-            this.isOverviewEnabled = enabled;
+        return this.dashboardProvider.isEnabled().then((enabled) => {
+            this.isDashboardEnabled = enabled;
             if (enabled) {
                 return true;
             }
@@ -52,11 +52,11 @@ export class CoreCoursesMainMenuHandler implements CoreMainMenuHandler {
      * @return {CoreMainMenuHandlerData} Data needed to render the handler.
      */
     getDisplayData(): CoreMainMenuHandlerData {
-        if (this.isOverviewEnabled) {
+        if (this.isDashboardEnabled) {
             return {
                 icon: 'home',
                 title: 'core.courses.courseoverview',
-                page: 'CoreCoursesMyOverviewPage',
+                page: 'CoreCoursesDashboardPage',
                 class: 'core-courseoverview-handler'
             };
         } else {

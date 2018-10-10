@@ -26,10 +26,10 @@ import * as moment from 'moment';
  * Directive to render a list of events in course overview.
  */
 @Component({
-    selector: 'core-courses-overview-events',
-    templateUrl: 'core-courses-overview-events.html'
+    selector: 'addon-block-timeline-events',
+    templateUrl: 'addon-block-timeline-events.html'
 })
-export class CoreCoursesOverviewEventsComponent implements OnChanges {
+export class AddonBlockTimelineEventsComponent implements OnChanges {
     @Input() events: any[]; // The events to render.
     @Input() showCourse?: boolean | string; // Whether to show the course name.
     @Input() canLoadMore?: boolean; // Whether more events can be loaded.

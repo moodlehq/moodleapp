@@ -13,33 +13,29 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from 'ionic-angular';
+import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { CoreCoursesDashboardPage } from './dashboard';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
-import { CorePipesModule } from '@pipes/pipes.module';
-import { CoreCoursesCourseProgressComponent } from '../components/course-progress/course-progress';
-import { CoreCoursesCourseListItemComponent } from '../components/course-list-item/course-list-item';
+import { CoreCoursesComponentsModule } from '../../components/components.module';
+import { AddonBlockMyOverviewModule } from '@addon/block/myoverview/myoverview.module';
+import { AddonBlockTimelineModule } from '@addon/block/timeline/timeline.module';
+import { CoreSiteHomeComponentsModule } from '@core/sitehome/components/components.module';
 
 @NgModule({
     declarations: [
-        CoreCoursesCourseProgressComponent,
-        CoreCoursesCourseListItemComponent
+        CoreCoursesDashboardPage,
     ],
     imports: [
-        CommonModule,
-        IonicModule,
-        TranslateModule.forChild(),
         CoreComponentsModule,
         CoreDirectivesModule,
-        CorePipesModule
+        CoreCoursesComponentsModule,
+        CoreSiteHomeComponentsModule,
+        AddonBlockMyOverviewModule,
+        AddonBlockTimelineModule,
+        IonicPageModule.forChild(CoreCoursesDashboardPage),
+        TranslateModule.forChild()
     ],
-    providers: [
-    ],
-    exports: [
-        CoreCoursesCourseProgressComponent,
-        CoreCoursesCourseListItemComponent
-    ]
 })
-export class CoreCoursesComponentsModule {}
+export class CoreCoursesDashboardPageModule {}

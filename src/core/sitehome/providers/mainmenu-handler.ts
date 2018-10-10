@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreSiteHomeProvider } from './sitehome';
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@core/mainmenu/providers/delegate';
-import { CoreCoursesMyOverviewProvider } from '@core/courses/providers/my-overview';
+import { CoreCoursesDashboardProvider } from '@core/courses/providers/dashboard';
 
 /**
  * Handler to add Site Home into main menu.
@@ -24,9 +24,8 @@ import { CoreCoursesMyOverviewProvider } from '@core/courses/providers/my-overvi
 export class CoreSiteHomeMainMenuHandler implements CoreMainMenuHandler {
     name = 'CoreSiteHome';
     priority = 1200;
-    isOverviewEnabled: boolean;
 
-    constructor(private siteHomeProvider: CoreSiteHomeProvider, private myOverviewProvider: CoreCoursesMyOverviewProvider) { }
+    constructor(private siteHomeProvider: CoreSiteHomeProvider, private dashboardProvider: CoreCoursesDashboardProvider) { }
 
     /**
      * Check if the handler is enabled on a site level.
@@ -35,7 +34,7 @@ export class CoreSiteHomeMainMenuHandler implements CoreMainMenuHandler {
      */
     isEnabled(): boolean | Promise<boolean> {
         // Check if my overview is enabled.
-        return this.myOverviewProvider.isEnabled().then((enabled) => {
+        return this.dashboardProvider.isEnabled().then((enabled) => {
             if (enabled) {
                 // My overview is enabled, Site Home will be inside the overview page.
                 return false;
