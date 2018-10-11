@@ -417,12 +417,7 @@ ion-app.app-root {
       margin: 0;
   }
 
-  // Ionic fix. Button can occupy all page if not.
-  ion-select {
-    position: relative;
-  }
-
-  ion-col ion-select {
+  ion-col ion-select:not([text-start]) {
       @include float(end);
       max-width: none;
       width: 100%;
@@ -432,7 +427,12 @@ ion-app.app-root {
       }
   }
 
+  .item-radio-disabled ion-radio[ng-reflect-value="disabled"]{
+    display: none;
+  }
+
   ion-select {
+    position: relative; // Ionic fix. Button can occupy all page if not.
     color: $core-select-placeholder-color;
     align-self: start;
 

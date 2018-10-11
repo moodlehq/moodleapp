@@ -1,9 +1,12 @@
 {
-    "next30days": "Next 30 days",
-    "next7days": "Next 7 days",
+    "duedate": "Due date",
     "nocoursesinprogress": "No in progress courses",
     "noevents": "No upcoming activities due",
-    "recentlyoverdue": "Recently overdue",
+    "next30days": "Next 30 days",
+    "next7days": "Next 7 days",
+    "next3months": "Next 3 months",
+    "next6months": "Next 6 months",
+    "overdue": "Overdue",
     "sortbycourses": "Sort by courses",
     "sortbydates": "Sort by dates"
 }

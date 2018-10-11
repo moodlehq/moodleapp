@@ -28,6 +28,8 @@ export class CoreEmptyBoxComponent {
     @Input() message: string; // Message to display.
     @Input() icon?: string; // Name of the icon to use.
     @Input() image?: string; // Image source. If an icon is provided, image won't be used.
+    @Input() inline?: boolean; // If this has to be shown inline instead of occupying whole page.
+                               // If image or icon is not supplied, it's true by default.
 
     constructor() {
         // Nothing to do.

@@ -17,6 +17,7 @@ import { NavController } from 'ionic-angular';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
@@ -30,23 +31,21 @@ import * as moment from 'moment';
     templateUrl: 'addon-block-timeline-events.html'
 })
 export class AddonBlockTimelineEventsComponent implements OnChanges {
-    @Input() events: any[]; // The events to render.
+    @Input() events = []; // The events to render.
     @Input() showCourse?: boolean | string; // Whether to show the course name.
+    @Input() from: number; // Number of days from today to offset the events.
+    @Input() to?: number; // Number of days from today to limit the events to. If not defined, no limit.
     @Input() canLoadMore?: boolean; // Whether more events can be loaded.
     @Output() loadMore: EventEmitter<void>; // Notify that more events should be loaded.
 
     empty: boolean;
     loadingMore: boolean;
-    recentlyOverdue: any[] = [];
-    today: any[] = [];
-    next7Days: any[] = [];
-    next30Days: any[] = [];
-    future: any[] = [];
+    filteredEvents = [];
 
     constructor(@Optional() private navCtrl: NavController, private utils: CoreUtilsProvider,
             private textUtils: CoreTextUtilsProvider, private domUtils: CoreDomUtilsProvider,
             private sitesProvider: CoreSitesProvider, private courseProvider: CoreCourseProvider,
-            private contentLinksHelper: CoreContentLinksHelperProvider) {
+            private contentLinksHelper: CoreContentLinksHelperProvider, private timeUtils: CoreTimeUtilsProvider) {
         this.loadMore = new EventEmitter();
     }
 
@@ -56,8 +55,34 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
         this.showCourse = this.utils.isTrueOrOne(this.showCourse);
 
-        if (changes.events) {
-            this.updateEvents();
+        if (changes.events || changes.from || changes.to) {
+            if (this.events && this.events.length > 0) {
+                const filteredEvents = this.filterEventsByTime(this.from, this.to);
+                this.empty = !filteredEvents || filteredEvents.length <= 0;
+
+                const eventsByDay = {};
+                filteredEvents.forEach((event) => {
+                    const dayTimestamp = this.timeUtils.getMidnightForTimestamp(event.timesort);
+                    if (eventsByDay[dayTimestamp]) {
+                        eventsByDay[dayTimestamp].push(event);
+                    } else {
+                        eventsByDay[dayTimestamp] = [event];
+                    }
+                });
+
+                const todaysMidnight = this.timeUtils.getMidnightForTimestamp();
+                this.filteredEvents = [];
+                Object.keys(eventsByDay).forEach((key) => {
+                    const dayTimestamp = parseInt(key);
+                    this.filteredEvents.push({
+                        color: dayTimestamp < todaysMidnight ? 'danger' : 'light',
+                        dayTimestamp: dayTimestamp,
+                        events: eventsByDay[dayTimestamp]
+                    });
+                });
+            } else {
+                this.empty = true;
+            }
         }
     }
 
@@ -69,8 +94,8 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
      * @return {any[]} Filtered events.
      */
     protected filterEventsByTime(start: number, end?: number): any[] {
-        start = moment().add(start, 'days').unix();
-        end = typeof end != 'undefined' ? moment().add(end, 'days').unix() : end;
+        start = moment().add(start, 'days').startOf('day').unix();
+        end = typeof end != 'undefined' ? moment().add(end, 'days').startOf('day').unix() : end;
 
         return this.events.filter((event) => {
             if (end) {
@@ -86,20 +111,6 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
     }
 
     /**
-     * Update the events displayed.
-     */
-    protected updateEvents(): void {
-        this.empty = !this.events || this.events.length <= 0;
-        if (!this.empty) {
-            this.recentlyOverdue = this.filterEventsByTime(-14, 0);
-            this.today = this.filterEventsByTime(0, 1);
-            this.next7Days = this.filterEventsByTime(1, 7);
-            this.next30Days = this.filterEventsByTime(7, 30);
-            this.future = this.filterEventsByTime(30);
-        }
-    }
-
-    /**
      * Load more events clicked.
      */
     loadMoreEvents(): void {
@@ -110,15 +121,20 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
     /**
      * Action clicked.
      *
-     * @param {Event} e Click event.
-     * @param {string} url Url of the action.
+     * @param {Event} e     Click event.
+     * @param {any} event   Calendar event info.
      */
-    action(e: Event, url: string): void {
+    action(e: Event, event: any): void {
         e.preventDefault();
         e.stopPropagation();
+        let url;
 
-        // Fix URL format.
-        url = this.textUtils.decodeHTMLEntities(url);
+        if (event.action.actionable) {
+            // Fix URL format.
+            url = this.textUtils.decodeHTMLEntities(event.action.url);
+        } else {
+            url = this.textUtils.decodeHTMLEntities(event.url);
+        }
 
         const modal = this.domUtils.showModalLoading();
         this.contentLinksHelper.handleLink(url, undefined, this.navCtrl).then((treated) => {
