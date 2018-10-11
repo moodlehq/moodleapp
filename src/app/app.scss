@@ -941,6 +941,10 @@ ion-app.app-root {
   &.disable-scroll ion-modal .ion-page {
     pointer-events: initial;
   }
+
+  .core-iframe-offline-disabled {
+    display: none !important;
+  }
 }
 
 @each $color-name, $color-base, $color-contrast in get-colors($colors) {

@@ -153,6 +153,7 @@
     "mygroups": "My groups",
     "name": "Name",
     "nograde": "No grade",
+    "networkerroriframemsg": "This content is not available offline. Please connect to the internet and try again.",
     "networkerrormsg": "There was a problem connecting to the site. Please check your connection and try again.",
     "never": "Never",
     "next": "Next",

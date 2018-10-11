@@ -66,7 +66,20 @@ export class CoreIconComponent implements OnInit {
 
         const attrs = this.element.attributes;
         for (let i = attrs.length - 1; i >= 0; i--) {
-            newElement.setAttribute(attrs[i].name, attrs[i].value);
+            if (attrs[i].name == 'class') {
+                // We don't want to override the classes we already added. Add them one by one.
+                if (attrs[i].value) {
+                    const classes = attrs[i].value.split(' ');
+                    for (let j = 0; j < classes.length; j++) {
+                        if (classes[j]) {
+                            newElement.classList.add(classes[j]);
+                        }
+                    }
+                }
+
+            } else {
+                newElement.setAttribute(attrs[i].name, attrs[i].value);
+            }
         }
 
         this.element.parentElement.replaceChild(newElement, this.element);
@@ -79,12 +92,12 @@ export class CoreIconComponent implements OnInit {
      * @return {boolean}     If has a value equivalent to true.
      */
     isTrueProperty(val: any): boolean {
-      if (typeof val === 'string') {
-          val = val.toLowerCase().trim();
+        if (typeof val === 'string') {
+            val = val.toLowerCase().trim();
 
-          return (val === 'true' || val === 'on' || val === '');
-      }
+            return (val === 'true' || val === 'on' || val === '');
+        }
 
-      return !!val;
+        return !!val;
   }
 }
