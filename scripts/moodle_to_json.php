@@ -192,7 +192,7 @@ function build_lang($lang, $keys, $total) {
             $local++;
         }
 
-        $translations[$key] = $text;
+        $translations[$key] = html_entity_decode($text);
     }
 
     // Sort and save.
@@ -276,6 +276,7 @@ function save_key($key, $value, $path) {
 
     $file = file_get_contents($filePath);
     $file = (array) json_decode($file);
+    $value = html_entity_decode($value);
     if ($file[$key] != $value) {
         $file[$key] = $value;
         file_put_contents($filePath, str_replace('\/', '/', json_encode($file, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)));
