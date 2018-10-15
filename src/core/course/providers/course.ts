@@ -29,7 +29,8 @@ import { CoreCourseOfflineProvider } from './course-offline';
  */
 @Injectable()
 export class CoreCourseProvider {
-    static ALL_SECTIONS_ID = -1;
+    static ALL_SECTIONS_ID = -2;
+    static STEALTH_MODULES_SECTION_ID = -1;
     static ACCESS_GUEST = 'courses_access_guest';
     static ACCESS_DEFAULT = 'courses_access_default';
 
@@ -266,9 +267,14 @@ export class CoreCourseProvider {
             // We have courseId, we can use core_course_get_contents for compatibility.
             this.logger.debug(`Getting module ${moduleId} in course ${courseId}`);
 
-            const params = {
+            const params: any = {
                     courseid: courseId,
-                    options: []
+                    options: [
+                        {
+                            name: 'includestealthmodules',
+                            value: 1
+                        }
+                    ]
                 },
                 preSets: any = {
                     omitExpires: preferCache
@@ -501,15 +507,15 @@ export class CoreCourseProvider {
      * @param {boolean} [excludeContents] Do not return module contents (i.e: files inside a resource).
      * @param {CoreSiteWSPreSets} [preSets] Presets to use.
      * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {boolean} [includeStealthModules] Whether to include stealth modules. Defaults to true.
      * @return {Promise}                The reject contains the error message, else contains the sections.
      */
     getSections(courseId?: number, excludeModules?: boolean, excludeContents?: boolean, preSets?: CoreSiteWSPreSets,
-        siteId?: string): Promise<any[]> {
+        siteId?: string, includeStealthModules: boolean = true): Promise<any[]> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             preSets = preSets || {};
             preSets.cacheKey = this.getSectionsCacheKey(courseId);
-            preSets.getCacheUsingCacheKey = true; // This is to make sure users don't lose offline access when updating.
 
             const params = {
                 courseid: courseId,
@@ -521,11 +527,22 @@ export class CoreCourseProvider {
                     {
                         name: 'excludecontents',
                         value: excludeContents ? 1 : 0
+                    },
+                    {
+                        name: 'includestealthmodules',
+                        value: includeStealthModules ? 1 : 0
                     }
                 ]
             };
 
-            return site.read('core_course_get_contents', params, preSets).then((sections) => {
+            return site.read('core_course_get_contents', params, preSets).catch(() => {
+                // Error getting the data, it could fail because we added a new parameter and the call isn't cached.
+                // Retry without the new parameter and forcing cache.
+                preSets.omitExpires = true;
+                params.options.splice(-1, 1);
+
+                return site.read('core_course_get_contents', params, preSets);
+            }).then((sections) => {
                 const siteHomeId = site.getSiteHomeId();
                 let showSections = true;
 
