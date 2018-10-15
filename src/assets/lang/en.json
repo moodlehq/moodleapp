@@ -10,6 +10,7 @@
     "addon.badges.issuername": "Issuer name",
     "addon.badges.nobadges": "There are no badges available.",
     "addon.badges.recipientdetails": "Recipient details",
+    "addon.block_myoverview.all": "All",
     "addon.block_myoverview.future": "Future",
     "addon.block_myoverview.inprogress": "In progress",
     "addon.block_myoverview.morecourses": "More courses",

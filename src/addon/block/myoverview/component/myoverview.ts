@@ -36,6 +36,7 @@ export class AddonBlockMyOverviewComponent extends AddonBlockComponent implement
 
     courses = {
         filter: '',
+        all: [],
         past: [],
         inprogress: [],
         future: []
@@ -44,6 +45,7 @@ export class AddonBlockMyOverviewComponent extends AddonBlockComponent implement
     downloadAllCoursesEnabled: boolean;
     filteredCourses: any[];
     prefetchCoursesData = {
+        all: {},
         inprogress: {},
         past: {},
         future: {}
@@ -139,6 +141,7 @@ export class AddonBlockMyOverviewComponent extends AddonBlockComponent implement
         }).then((courses) => {
             const today = moment().unix();
 
+            this.courses.all = courses;
             this.courses.past = [];
             this.courses.inprogress = [];
             this.courses.future = [];
