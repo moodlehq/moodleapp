@@ -102,12 +102,12 @@ export class CoreIframeUtilsProvider {
                         } else {
                             this.logger.warn('Cannot get iframe dir path to open relative url', url, element);
 
-                            return new Window(); // Return new Window object.
+                            return null;
                         }
                     } else {
                         this.logger.warn('Cannot get iframe src to open relative url', url, element);
 
-                        return new Window(); // Return new Window object.
+                        return null;
                     }
                 }
 
@@ -126,7 +126,8 @@ export class CoreIframeUtilsProvider {
                     }
                 }
 
-                return new Window(); // Return new Window object.
+                 // We cannot create new Window objects directly, return null which is a valid return value for Window.open().
+                return null;
             };
         }
 
@@ -183,55 +184,49 @@ export class CoreIframeUtilsProvider {
             return;
         }
 
-        const links = Array.from(contentDocument.querySelectorAll('a'));
-        links.forEach((el: HTMLAnchorElement) => {
-            const href = el.href;
+        contentDocument.addEventListener('click', (event) => {
+            if (event.defaultPrevented) {
+                // Event already prevented by some other code.
+                return;
+            }
 
-            // Check that href is not null.
-            if (href) {
-                const scheme = this.urlUtils.getUrlScheme(href);
-                if (scheme && scheme == 'javascript') {
-                    // Javascript links should be treated by the iframe's Javascript.
-                    // There's nothing to be done with these links, so they'll be ignored.
-                    return;
-                } else if (scheme && scheme != 'file' && scheme != 'filesystem') {
-                    // Scheme suggests it's an external resource, open it in browser.
-                    el.addEventListener('click', (e) => {
-                        // If the link's already prevented by SCORM JS then we won't open it in browser.
-                        if (!e.defaultPrevented) {
-                            e.preventDefault();
-                            if (!this.sitesProvider.isLoggedIn()) {
-                                this.utils.openInBrowser(href);
-                            } else {
-                                this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(href);
-                            }
-                        }
-                    });
-                } else if (el.target == '_parent' || el.target == '_top' || el.target == '_blank') {
-                    // Opening links with _parent, _top or _blank can break the app. We'll open it in InAppBrowser.
-                    el.addEventListener('click', (e) => {
-                        // If the link's already prevented by SCORM JS then we won't open it in InAppBrowser.
-                        if (!e.defaultPrevented) {
-                            e.preventDefault();
-                            this.utils.openFile(href).catch((error) => {
-                                this.domUtils.showErrorModal(error);
-                            });
-                        }
-                    });
-                } else if (this.platform.is('ios') && (!el.target || el.target == '_self')) {
-                    // In cordova ios 4.1.0 links inside iframes stopped working. We'll manually treat them.
-                    el.addEventListener('click', (e) => {
-                        // If the link's already prevented by SCORM JS then we won't treat it.
-                        if (!e.defaultPrevented) {
-                            if (element.tagName.toLowerCase() == 'object') {
-                                e.preventDefault();
-                                element.setAttribute('data', href);
-                            } else {
-                                e.preventDefault();
-                                element.setAttribute('src', href);
-                            }
-                        }
-                    });
+            // Find the link being clicked.
+            let el = <Element> event.target;
+            while (el && el.tagName !== 'A') {
+                el = el.parentElement;
+            }
+            if (!el || el.tagName !== 'A') {
+                return;
+            }
+            const link = <HTMLAnchorElement> el;
+
+            const scheme = this.urlUtils.getUrlScheme(link.href);
+            if (!link.href || (scheme && scheme == 'javascript')) {
+                // Links with no URL and Javascript links are ignored.
+                return;
+            }
+
+            if (scheme && scheme != 'file' && scheme != 'filesystem') {
+                // Scheme suggests it's an external resource, open it in browser.
+                event.preventDefault();
+                if (!this.sitesProvider.isLoggedIn()) {
+                    this.utils.openInBrowser(link.href);
+                } else {
+                    this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(link.href);
+                }
+            } else if (link.target == '_parent' || link.target == '_top' || link.target == '_blank') {
+                // Opening links with _parent, _top or _blank can break the app. We'll open it in InAppBrowser.
+                event.preventDefault();
+                this.utils.openFile(link.href).catch((error) => {
+                    this.domUtils.showErrorModal(error);
+                });
+            } else if (this.platform.is('ios') && (!link.target || link.target == '_self')) {
+                // In cordova ios 4.1.0 links inside iframes stopped working. We'll manually treat them.
+                event.preventDefault();
+                if (element.tagName.toLowerCase() == 'object') {
+                    element.setAttribute('data', link.href);
+                } else {
+                    element.setAttribute('src', link.href);
                 }
             }
         });
