@@ -55,9 +55,6 @@ export class CoreMainMenuPage implements OnDestroy {
 
         this.showTabs = true;
 
-        const site = this.sitesProvider.getCurrentSite(),
-            displaySiteHome = site.getInfo() && site.getInfo().userhomepage === 0;
-
         this.subscription = this.menuDelegate.getHandlers().subscribe((handlers) => {
             handlers = handlers.slice(0, CoreMainMenuProvider.NUM_MAIN_HANDLERS); // Get main handlers.
 
@@ -83,31 +80,28 @@ export class CoreMainMenuPage implements OnDestroy {
             });
 
             if (typeof this.initialTab == 'undefined' && !this.loaded) {
+                this.initialTab = 0;
+
                 // Calculate the tab to load.
                 if (this.redirectPage) {
                     // Check if the redirect page is the root page of any of the tabs.
-                    this.initialTab = 0;
-
-                    for (let i = 0; i < this.tabs.length; i++) {
-                        const tab = this.tabs[i];
-                        if (tab.page == this.redirectPage) {
-                            // Tab found. Set the params and unset the redirect page.
-                            this.initialTab = i + 1;
-                            tab.pageParams = Object.assign(tab.pageParams || {}, this.redirectParams);
-                            this.redirectPage = null;
-                            this.redirectParams = null;
-                            break;
-                        }
+                    const i = this.tabs.findIndex((tab, i) => {
+                        return tab.page == this.redirectPage;
+                    });
+                    if (i >= 0) {
+                        // Tab found. Set the params and unset the redirect page.
+                        this.initialTab = i + 1;
+                        this.tabs[i].pageParams = Object.assign(this.tabs[i].pageParams || {}, this.redirectParams);
+                        this.redirectPage = null;
+                        this.redirectParams = null;
                     }
                 } else {
-                    // By default, course overview will be loaded (3.3+). Check if we need to select Site Home or My Courses.
-                    for (let i = 0; i < this.tabs.length; i++) {
-                        const handler = handlers[i];
-                        if ((displaySiteHome && handler.name == 'CoreSiteHome') ||
-                                (!displaySiteHome && handler.name == 'CoreCourses')) {
-                            this.initialTab = i;
-                            break;
-                        }
+                    const i = handlers.findIndex((handler, i) => {
+                        return handler.name == 'CoreDashboard';
+                    });
+
+                    if (i >= 0) {
+                        this.initialTab = i;
                     }
                 }
             }

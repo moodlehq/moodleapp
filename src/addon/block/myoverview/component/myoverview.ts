@@ -49,6 +49,7 @@ export class AddonBlockMyOverviewComponent extends AddonBlockComponent implement
         future: {}
     };
     showFilter = false;
+    showSelectorFilter = false;
 
     protected prefetchIconsInitialized = false;
     protected isDestroyed;
@@ -157,6 +158,7 @@ export class AddonBlockMyOverviewComponent extends AddonBlockComponent implement
 
             this.courses.filter = '';
             this.showFilter = false;
+            this.showSelectorFilter = (this.courses.past.length + this.courses.future.length) > 0;
             this.filteredCourses = this.courses[this.selectedFilter];
 
             this.initPrefetchCoursesIcons();

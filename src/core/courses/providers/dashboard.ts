@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSitesProvider } from '@providers/sites';
-import { CoreSite } from '@classes/site';
+import { CoreCoursesProvider } from './courses';
 import { AddonBlockTimelineProvider } from '@addon/block/timeline/providers/timeline';
 
 /**
@@ -23,7 +22,7 @@ import { AddonBlockTimelineProvider } from '@addon/block/timeline/providers/time
 @Injectable()
 export class CoreCoursesDashboardProvider {
 
-    constructor(private sitesProvider: CoreSitesProvider, private timelineProvider: AddonBlockTimelineProvider) { }
+    constructor(private coursesProvider: CoreCoursesProvider, private timelineProvider: AddonBlockTimelineProvider) { }
 
     /**
      * Returns whether or not My Overview is available for a certain site.
@@ -36,24 +35,12 @@ export class CoreCoursesDashboardProvider {
     }
 
     /**
-     * Check if My Overview is disabled in a certain site.
-     *
-     * @param {CoreSite} [site] Site. If not defined, use current site.
-     * @return {boolean} Whether it's disabled.
-     */
-    isDisabledInSite(site?: CoreSite): boolean {
-        site = site || this.sitesProvider.getCurrentSite();
-
-        return site.isFeatureDisabled('CoreMainMenuDelegate_CoreCourses');
-    }
-
-    /**
      * Check if My Overview is available and not disabled.
      *
      * @return {Promise<boolean>} Promise resolved with true if enabled, resolved with false otherwise.
      */
     isEnabled(): Promise<boolean> {
-        if (!this.isDisabledInSite()) {
+        if (!this.coursesProvider.isMyCoursesDisabledInSite()) {
             return this.isAvailable().catch(() => {
                 return false;
             });

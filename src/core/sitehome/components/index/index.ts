@@ -28,7 +28,7 @@ import { CoreSiteHomeProvider } from '../../providers/sitehome';
     templateUrl: 'core-sitehome-index.html',
 })
 export class CoreSiteHomeIndexComponent implements OnInit {
-    dataLoaded: boolean;
+    dataLoaded = false;
     section: any;
     block: any;
     hasContent: boolean;
