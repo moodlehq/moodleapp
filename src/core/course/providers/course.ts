@@ -516,7 +516,6 @@ export class CoreCourseProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             preSets = preSets || {};
             preSets.cacheKey = this.getSectionsCacheKey(courseId);
-            preSets.getCacheUsingCacheKey = true; // This is to make sure users don't lose offline access when updating.
 
             const params = {
                 courseid: courseId,
@@ -536,7 +535,14 @@ export class CoreCourseProvider {
                 ]
             };
 
-            return site.read('core_course_get_contents', params, preSets).then((sections) => {
+            return site.read('core_course_get_contents', params, preSets).catch(() => {
+                // Error getting the data, it could fail because we added a new parameter and the call isn't cached.
+                // Retry without the new parameter and forcing cache.
+                preSets.omitExpires = true;
+                params.options.splice(-1, 1);
+
+                return site.read('core_course_get_contents', params, preSets);
+            }).then((sections) => {
                 const siteHomeId = site.getSiteHomeId();
                 let showSections = true;
 
