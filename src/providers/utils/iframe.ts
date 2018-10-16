@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Platform } from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
+import { Network } from '@ionic-native/network';
+import { CoreAppProvider } from '../app';
 import { CoreFileProvider } from '../file';
 import { CoreLoggerProvider } from '../logger';
 import { CoreSitesProvider } from '../sites';
@@ -33,8 +36,73 @@ export class CoreIframeUtilsProvider {
 
     constructor(logger: CoreLoggerProvider, private fileProvider: CoreFileProvider, private sitesProvider: CoreSitesProvider,
             private urlUtils: CoreUrlUtilsProvider, private textUtils: CoreTextUtilsProvider, private utils: CoreUtilsProvider,
-            private domUtils: CoreDomUtilsProvider, private platform: Platform) {
+            private domUtils: CoreDomUtilsProvider, private platform: Platform, private appProvider: CoreAppProvider,
+            private translate: TranslateService, private network: Network, private zone: NgZone) {
         this.logger = logger.getInstance('CoreUtilsProvider');
+    }
+
+    /**
+     * Check if a frame uses an online URL but the app is offline. If it does, the iframe is hidden and a warning is shown.
+     *
+     * @param {any} element The frame to check (iframe, embed, ...).
+     * @param {boolean} [isSubframe] Whether it's a frame inside another frame.
+     * @return {boolean} True if frame is online and the app is offline, false otherwise.
+     */
+    checkOnlineFrameInOffline(element: any, isSubframe?: boolean): boolean {
+        const src = element.src || element.data;
+
+        if (src && src.match(/^https?:\/\//i) && !this.appProvider.isOnline()) {
+            if (element.classList.contains('core-iframe-offline-disabled')) {
+                // Iframe already hidden, stop.
+                return true;
+            }
+
+            // The frame has an online URL but the app is offline. Show a warning.
+            const div = document.createElement('div');
+
+            div.setAttribute('text-center', '');
+            div.setAttribute('padding', '');
+            div.classList.add('core-iframe-offline-warning');
+            div.innerHTML = (isSubframe ?  '' : this.domUtils.getConnectionWarningIconHtml()) +
+                    '<p>' + this.translate.instant('core.networkerroriframemsg') + '</p>';
+
+            element.parentElement.insertBefore(div, element);
+
+            // Add a class to specify that the iframe is hidden.
+            element.classList.add('core-iframe-offline-disabled');
+
+            if (isSubframe) {
+                // We cannot apply CSS styles in subframes, just hide the iframe.
+                element.style.display = 'none';
+            }
+
+            // If the network changes, check it again.
+            const subscription = this.network.onConnect().subscribe(() => {
+                // Execute the callback in the Angular zone, so change detection doesn't stop working.
+                this.zone.run(() => {
+                    if (!this.checkOnlineFrameInOffline(element, isSubframe)) {
+                        // Now the app is online, no need to check connection again.
+                        subscription.unsubscribe();
+                    }
+                });
+            });
+
+            return true;
+        } else if (element.classList.contains('core-iframe-offline-disabled')) {
+            // Reload the frame.
+            element.src = element.src;
+            element.data = element.data;
+
+            // Remove the warning and show the iframe
+            this.domUtils.removeElement(element.parentElement, 'div.core-iframe-offline-warning');
+            element.classList.remove('core-iframe-offline-disabled');
+
+            if (isSubframe) {
+                element.style.display = '';
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -136,7 +204,7 @@ export class CoreIframeUtilsProvider {
             CoreIframeUtilsProvider.FRAME_TAGS.forEach((tag) => {
                 const elements = Array.from(contentDocument.querySelectorAll(tag));
                 elements.forEach((subElement) => {
-                    this.treatFrame(subElement);
+                    this.treatFrame(subElement, true);
                 });
             });
         }
@@ -147,9 +215,12 @@ export class CoreIframeUtilsProvider {
      * Search links (<a>) and open them in browser or InAppBrowser if needed.
      *
      * @param {any} element Element to treat (iframe, embed, ...).
+     * @param {boolean} [isSubframe] Whether it's a frame inside another frame.
      */
-    treatFrame(element: any): void {
+    treatFrame(element: any, isSubframe?: boolean): void {
         if (element) {
+            this.checkOnlineFrameInOffline(element, isSubframe);
+
             let winAndDoc = this.getContentWindowAndDocument(element);
             // Redefine window.open in this element and sub frames, it might have been loaded already.
             this.redefineWindowOpen(element, winAndDoc.window, winAndDoc.document);
@@ -157,6 +228,8 @@ export class CoreIframeUtilsProvider {
             this.treatFrameLinks(element, winAndDoc.document);
 
             element.addEventListener('load', () => {
+                this.checkOnlineFrameInOffline(element, isSubframe);
+
                 // Element loaded, redefine window.open and treat links again.
                 winAndDoc = this.getContentWindowAndDocument(element);
                 this.redefineWindowOpen(element, winAndDoc.window, winAndDoc.document);

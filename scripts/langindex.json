@@ -1403,6 +1403,7 @@
   "core.more": "moodle",
   "core.mygroups": "group",
   "core.name": "moodle",
+  "core.networkerroriframemsg": "local_moodlemobileapp",
   "core.networkerrormsg": "local_moodlemobileapp",
   "core.never": "moodle",
   "core.next": "moodle",

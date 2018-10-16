@@ -430,6 +430,18 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Get the HTML code to render a connection warning icon.
+     *
+     * @return {string} HTML Code.
+     */
+    getConnectionWarningIconHtml(): string {
+        return '<div text-center><span class="core-icon-with-badge">' +
+                '<ion-icon role="img" class="icon fa fa-wifi" aria-label="wifi"></ion-icon>' +
+                '<ion-icon class="icon fa fa-exclamation-triangle core-icon-badge"></ion-icon>' +
+            '</span></div>';
+    }
+
+    /**
      * Returns width of an element.
      *
      * @param {any} element DOM element to measure.
@@ -500,12 +512,9 @@ export class CoreDomUtilsProvider {
      */
     private getErrorTitle(message: string): any {
         if (message == this.translate.instant('core.networkerrormsg') ||
-            message == this.translate.instant('core.fileuploader.errormustbeonlinetoupload')) {
-            return this.sanitizer.bypassSecurityTrustHtml('<div text-center><span class="core-icon-with-badge">' +
-                    '<ion-icon role="img" class="icon fa fa-wifi" aria-label="wifi"></ion-icon>' +
-                    '<ion-icon class="icon fa fa-exclamation-triangle core-icon-badge"></ion-icon>' +
-                '</span></div>');
+                message == this.translate.instant('core.fileuploader.errormustbeonlinetoupload')) {
 
+            return this.sanitizer.bypassSecurityTrustHtml(this.getConnectionWarningIconHtml());
         }
 
         return this.textUtils.decodeHTML(this.translate.instant('core.error'));
