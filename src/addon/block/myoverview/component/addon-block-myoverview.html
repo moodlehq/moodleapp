@@ -1,0 +1,42 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons end>
+     <button [hidden]="!showFilterSwitchButton()" ion-button icon-only [attr.aria-label]="'core.courses.filtermycourses' | translate" (click)="switchFilter()">
+        <ion-icon name="funnel"></ion-icon>
+    </button>
+</core-navbar-buttons>
+
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+    <!-- "Time" selector. -->
+    <div padding class="clearfix" [hidden]="showFilter" ion-row justify-content-between>
+        <ion-select float-start [title]="'core.show' | translate" [(ngModel)]="selectedFilter" ion-col (ngModelChange)="selectedChanged()" interface="popover" class="core-button-select">
+            <ion-option value="inprogress">{{ 'addon.block_myoverview.inprogress' | translate }}</ion-option>
+            <ion-option value="future">{{ 'addon.block_myoverview.future' | translate }}</ion-option>
+            <ion-option value="past">{{ 'addon.block_myoverview.past' | translate }}</ion-option>
+        </ion-select>
+        <!-- Download all courses. -->
+        <div *ngIf="downloadAllCoursesEnabled && courses[selectedFilter] && courses[selectedFilter].length > 1" class="core-button-spinner">
+            <button *ngIf="prefetchCoursesData[selectedFilter].icon && prefetchCoursesData[selectedFilter].icon != 'spinner'" ion-button icon-only clear color="dark" (click)="prefetchCourses()">
+                <core-icon [name]="prefetchCoursesData[selectedFilter].icon"></core-icon>
+            </button>
+            <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData[selectedFilter].badge">{{prefetchCoursesData[selectedFilter].badge}}</ion-badge>
+            <ion-spinner *ngIf="!prefetchCoursesData[selectedFilter].icon || prefetchCoursesData[selectedFilter].icon == 'spinner'"></ion-spinner>
+        </div>
+    </div>
+    <core-empty-box *ngIf="courses[selectedFilter].length == 0 && selectedFilter == 'inprogress'" image="assets/img/icons/courses.svg" [message]="'addon.block_myoverview.nocoursesinprogress' | translate"></core-empty-box>
+    <core-empty-box *ngIf="courses[selectedFilter].length == 0 && selectedFilter == 'future'" image="assets/img/icons/courses.svg" [message]="'addon.block_myoverview.nocoursesfuture' | translate"></core-empty-box>
+    <core-empty-box *ngIf="courses[selectedFilter].length == 0 && selectedFilter == 'past'" image="assets/img/icons/courses.svg" [message]="'addon.block_myoverview.nocoursespast' | translate"></core-empty-box>
+
+    <!-- Filter courses. -->
+    <ion-searchbar #searchbar *ngIf="showFilter" [(ngModel)]="courses.filter" (ionInput)="filterChanged($event)" (ionCancel)="filterChanged()" [placeholder]="'core.courses.filtermycourses' | translate">
+    </ion-searchbar>
+    <!-- List of courses. -->
+    <div>
+        <ion-grid no-padding>
+            <ion-row no-padding>
+                <ion-col *ngFor="let course of filteredCourses" no-padding col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 align-self-stretch>
+                    <core-courses-course-progress [course]="course" class="core-courseoverview"></core-courses-course-progress>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+</core-loading>

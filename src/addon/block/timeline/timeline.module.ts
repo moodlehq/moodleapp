@@ -13,25 +13,35 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
+import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreCoursesMyOverviewPage } from './my-overview';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
-import { CoreCoursesComponentsModule } from '../../components/components.module';
-import { CoreSiteHomeComponentsModule } from '@core/sitehome/components/components.module';
+import { CorePipesModule } from '@pipes/pipes.module';
+import { CoreCoursesComponentsModule } from '@core/courses/components/components.module';
+import { AddonBlockTimelineComponent } from './components/timeline/timeline';
+import { AddonBlockTimelineEventsComponent } from './components/events/events';
+import { AddonBlockTimelineProvider } from './providers/timeline';
 
 @NgModule({
     declarations: [
-        CoreCoursesMyOverviewPage,
+        AddonBlockTimelineComponent,
+        AddonBlockTimelineEventsComponent
     ],
     imports: [
+        IonicModule,
         CoreComponentsModule,
         CoreDirectivesModule,
+        CorePipesModule,
         CoreCoursesComponentsModule,
-        CoreSiteHomeComponentsModule,
-        IonicPageModule.forChild(CoreCoursesMyOverviewPage),
         TranslateModule.forChild()
     ],
+    exports: [
+        AddonBlockTimelineComponent,
+        AddonBlockTimelineEventsComponent
+    ],
+    providers: [
+        AddonBlockTimelineProvider
+    ]
 })
-export class CoreCoursesMyOverviewPageModule {}
+export class AddonBlockTimelineModule {}

@@ -1,0 +1,9 @@
+{
+    "future": "Future",
+    "inprogress": "In progress",
+    "past": "Past",
+    "morecourses": "More courses",
+    "nocoursesfuture": "No future courses",
+    "nocoursesinprogress": "No in progress courses",
+    "nocoursespast": "No past courses"
+}

@@ -13,33 +13,24 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-import { CorePipesModule } from '@pipes/pipes.module';
-import { CoreCoursesCourseProgressComponent } from '../components/course-progress/course-progress';
-import { CoreCoursesCourseListItemComponent } from '../components/course-list-item/course-list-item';
+import { CoreCoursesComponentsModule } from '@core/courses/components/components.module';
+import { AddonBlockMyOverviewComponent } from './component/myoverview';
 
 @NgModule({
     declarations: [
-        CoreCoursesCourseProgressComponent,
-        CoreCoursesCourseListItemComponent
+        AddonBlockMyOverviewComponent
     ],
     imports: [
-        CommonModule,
         IonicModule,
-        TranslateModule.forChild(),
         CoreComponentsModule,
-        CoreDirectivesModule,
-        CorePipesModule
-    ],
-    providers: [
+        CoreCoursesComponentsModule,
+        TranslateModule.forChild()
     ],
     exports: [
-        CoreCoursesCourseProgressComponent,
-        CoreCoursesCourseListItemComponent
+        AddonBlockMyOverviewComponent
     ]
 })
-export class CoreCoursesComponentsModule {}
+export class AddonBlockMyOverviewModule {}

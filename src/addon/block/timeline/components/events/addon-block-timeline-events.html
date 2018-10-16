@@ -12,28 +12,28 @@
 </ng-template>
 
 <ion-item-group *ngIf="recentlyOverdue.length > 0">
-    <ion-item-divider color="danger">{{ 'core.courses.recentlyoverdue' | translate }}</ion-item-divider>
+    <ion-item-divider color="danger">{{ 'addon.block_timeline.recentlyoverdue' | translate }}</ion-item-divider>
     <ng-container *ngFor="let event of recentlyOverdue">
         <ng-container *ngTemplateOutlet="eventTemplate; context: {event: event}"></ng-container>
     </ng-container>
 </ion-item-group>
 
 <ion-item-group *ngIf="next7Days.length > 0">
-    <ion-item-divider color="light">{{ 'core.courses.next7days' | translate }}</ion-item-divider>
+    <ion-item-divider color="light">{{ 'addon.block_timeline.next7days' | translate }}</ion-item-divider>
     <ng-container *ngFor="let event of next7Days">
         <ng-container *ngTemplateOutlet="eventTemplate; context: {event: event}"></ng-container>
     </ng-container>
 </ion-item-group>
 
 <ion-item-group *ngIf="next30Days.length > 0">
-    <ion-item-divider color="light">{{ 'core.courses.next30days' | translate }}</ion-item-divider>
+    <ion-item-divider color="light">{{ 'addon.block_timeline.next30days' | translate }}</ion-item-divider>
     <ng-container *ngFor="let event of next30Days">
         <ng-container *ngTemplateOutlet="eventTemplate; context: {event: event}"></ng-container>
     </ng-container>
 </ion-item-group>
 
 <ion-item-group *ngIf="future.length > 0">
-    <ion-item-divider color="light">{{ 'core.courses.future' | translate }}</ion-item-divider>
+    <ion-item-divider color="light">{{ 'addon.block_myoverview.future' | translate }}</ion-item-divider>
     <ng-container *ngFor="let event of future">
         <ng-container *ngTemplateOutlet="eventTemplate; context: {event: event}"></ng-container>
     </ng-container>
@@ -45,5 +45,5 @@
     <ion-spinner *ngIf="loadingMore"></ion-spinner>
 </div>
 
-<core-empty-box *ngIf="empty && showCourse" image="assets/img/icons/activities.svg" [message]="'core.courses.noevents' | translate"></core-empty-box>
-<core-empty-box *ngIf="empty && !showCourse" [message]="'core.courses.noevents' | translate"></core-empty-box>
+<core-empty-box *ngIf="empty && showCourse" image="assets/img/icons/activities.svg" [message]="'addon.block_timeline.noevents' | translate"></core-empty-box>
+<core-empty-box *ngIf="empty && !showCourse" [message]="'addon.block_timeline.noevents' | translate"></core-empty-box>

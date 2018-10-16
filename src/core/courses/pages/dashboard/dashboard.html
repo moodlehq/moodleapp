@@ -1,0 +1,50 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title><core-format-text [text]="siteName"></core-format-text></ion-title>
+
+        <ion-buttons end>
+            <button *ngIf="searchEnabled" ion-button icon-only (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
+                <ion-icon name="search"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <core-tabs [selectedIndex]="firstSelectedTab" [hideUntil]="tabsReady">
+        <!-- Site home tab. -->
+        <core-tab [show]="siteHomeEnabled" [title]="'core.sitehome.sitehome' | translate" (ionSelect)="tabChanged('sitehome')">
+            <ng-template>
+                <ion-content>
+                    <ion-refresher [enabled]="!!siteHomeComponent && siteHomeComponent.dataLoaded" (ionRefresh)="siteHomeComponent.doRefresh($event)">
+                        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+                    </ion-refresher>
+                    <core-sitehome-index></core-sitehome-index>
+                </ion-content>
+            </ng-template>
+        </core-tab>
+
+        <!-- Courses tab. -->
+        <core-tab [title]="'core.courses.courses' | translate" (ionSelect)="tabChanged('courses')">
+            <ng-template>
+                <ion-content>
+                    <ion-refresher [enabled]="!!blockMyOverview && blockMyOverview.loaded" (ionRefresh)="blockMyOverview.doRefresh($event)">
+                        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+                    </ion-refresher>
+                    <addon-block-myoverview></addon-block-myoverview>
+                </ion-content>
+            </ng-template>
+        </core-tab>
+
+        <!-- Timeline tab. -->
+        <core-tab [title]="'core.courses.timeline' | translate" (ionSelect)="tabChanged('timeline')">
+            <ng-template>
+                <ion-content>
+                    <ion-refresher [enabled]="!!blockTimeline && blockTimeline.loaded" (ionRefresh)="blockTimeline.doRefresh($event)">
+                        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+                    </ion-refresher>
+                    <addon-block-timeline></addon-block-timeline>
+                </ion-content>
+            </ng-template>
+        </core-tab>
+    </core-tabs>
+</ion-content>
