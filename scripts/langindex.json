@@ -1349,6 +1349,7 @@
   "core.login.selectsite": "local_moodlemobileapp",
   "core.login.signupplugindisabled": "local_moodlemobileapp",
   "core.login.siteaddress": "local_moodlemobileapp",
+  "core.login.sitehasredirect": "local_moodlemobileapp",
   "core.login.siteinmaintenance": "local_moodlemobileapp",
   "core.login.sitepolicynotagreederror": "local_moodlemobileapp",
   "core.login.siteurl": "local_moodlemobileapp",
