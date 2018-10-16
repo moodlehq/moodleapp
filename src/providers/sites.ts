@@ -422,7 +422,8 @@ export class CoreSitesProvider {
                 password: password,
                 service: service
             },
-            promise = this.http.post(siteUrl + '/login/token.php', params).timeout(CoreConstants.WS_TIMEOUT).toPromise();
+            loginUrl = siteUrl + '/login/token.php',
+            promise = this.http.post(loginUrl, params).timeout(CoreConstants.WS_TIMEOUT).toPromise();
 
         return promise.then((data: any): any => {
             if (typeof data == 'undefined') {
@@ -431,12 +432,22 @@ export class CoreSitesProvider {
                 if (typeof data.token != 'undefined') {
                     return { token: data.token, siteUrl: siteUrl, privateToken: data.privatetoken };
                 } else {
+
                     if (typeof data.error != 'undefined') {
                         // We only allow one retry (to avoid loops).
                         if (!retry && data.errorcode == 'requirecorrectaccess') {
                             siteUrl = this.urlUtils.addOrRemoveWWW(siteUrl);
 
                             return this.getUserToken(siteUrl, username, password, service, true);
+                        } else if (data.errorcode == 'missingparam') {
+                            // It seems the server didn't receive all required params, it could be due to a redirect.
+                            return this.utils.checkRedirect(loginUrl).then((redirect) => {
+                                if (redirect) {
+                                    return Promise.reject({ error: this.translate.instant('core.login.sitehasredirect') });
+                                } else {
+                                    return Promise.reject({ error: data.error, errorcode: data.errorcode });
+                                }
+                            });
                         } else if (typeof data.errorcode != 'undefined') {
                             return Promise.reject({ error: data.error, errorcode: data.errorcode });
                         } else {
