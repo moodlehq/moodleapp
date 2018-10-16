@@ -12,7 +12,7 @@
 <ion-content>
     <core-tabs [selectedIndex]="firstSelectedTab" [hideUntil]="tabsReady">
         <!-- Site home tab. -->
-        <core-tab [show]="siteHomeEnabled" [title]="'core.sitehome.sitehome' | translate" (ionSelect)="tabChanged('sitehome')">
+        <core-tab [show]="siteHomeEnabled" [title]="'core.sitehome.sitehome' | translate">
             <ng-template>
                 <ion-content>
                     <ion-refresher [enabled]="!!siteHomeComponent && siteHomeComponent.dataLoaded" (ionRefresh)="siteHomeComponent.doRefresh($event)">
@@ -24,7 +24,7 @@
         </core-tab>
 
         <!-- Courses tab. -->
-        <core-tab [show]="coursesEnabled" [title]="'core.courses.courses' | translate" (ionSelect)="tabChanged('courses')">
+        <core-tab [show]="coursesEnabled" [title]="'core.courses.courses' | translate">
             <ng-template>
                 <ion-content>
                     <ion-refresher [enabled]="!!blockMyOverview && blockMyOverview.loaded" (ionRefresh)="blockMyOverview.doRefresh($event)">
@@ -36,7 +36,7 @@
         </core-tab>
 
         <!-- Timeline tab. -->
-        <core-tab [show]="timelineEnabled" [title]="'core.courses.timeline' | translate" (ionSelect)="tabChanged('timeline')">
+        <core-tab [show]="timelineEnabled" [title]="'core.courses.timeline' | translate">
             <ng-template>
                 <ion-content>
                     <ion-refresher [enabled]="!!blockTimeline && blockTimeline.loaded" (ionRefresh)="blockTimeline.doRefresh($event)">
