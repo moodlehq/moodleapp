@@ -19,7 +19,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCoursesHelperProvider } from '@core/courses/providers/helper';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
-import { AddonBlockComponent } from '../../../classes/block-component';
+import { CoreBlockBaseComponent } from '@core/block/classes/base-block-component';
 import { AddonBlockTimelineProvider } from '../../providers/timeline';
 
 /**
@@ -29,7 +29,7 @@ import { AddonBlockTimelineProvider } from '../../providers/timeline';
     selector: 'addon-block-timeline',
     templateUrl: 'addon-block-timeline.html'
 })
-export class AddonBlockTimelineComponent extends AddonBlockComponent implements OnInit {
+export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implements OnInit {
     sort = 'sortbydates';
     filter = 'next30days';
     currentSite: any;

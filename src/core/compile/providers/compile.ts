@@ -23,6 +23,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 
 // Import core providers.
 import { CORE_PROVIDERS } from '@app/app.module';
+import { CORE_BLOCK_PROVIDERS } from '@core/block/block.module';
 import { CORE_CONTENTLINKS_PROVIDERS } from '@core/contentlinks/contentlinks.module';
 import { CORE_COURSE_PROVIDERS } from '@core/course/course.module';
 import { CORE_COURSES_PROVIDERS } from '@core/courses/courses.module';
@@ -70,6 +71,7 @@ import { CoreSitePluginsDirectivesModule } from '@core/siteplugins/directives/di
 import { CoreSiteHomeComponentsModule } from '@core/sitehome/components/components.module';
 import { CoreUserComponentsModule } from '@core/user/components/components.module';
 import { CoreQuestionComponentsModule } from '@core/question/components/components.module';
+import { CoreBlockComponentsModule } from '@core/block/components/components.module';
 
 // Import some components listed in entryComponents so they can be injected dynamically.
 import { CoreCourseUnsupportedModuleComponent } from '@core/course/components/unsupported-module/unsupported-module';
@@ -139,7 +141,7 @@ export class CoreCompileProvider {
         IonicModule, TranslateModule.forChild(), CoreComponentsModule, CoreDirectivesModule, CorePipesModule,
         CoreCourseComponentsModule, CoreCoursesComponentsModule, CoreSiteHomeComponentsModule, CoreUserComponentsModule,
         CoreCourseDirectivesModule, CoreSitePluginsDirectivesModule, CoreQuestionComponentsModule, AddonModAssignComponentsModule,
-        AddonModWorkshopComponentsModule
+        AddonModWorkshopComponentsModule, CoreBlockComponentsModule
     ];
 
     constructor(protected injector: Injector, logger: CoreLoggerProvider, compilerFactory: JitCompilerFactory) {
@@ -227,7 +229,7 @@ export class CoreCompileProvider {
                 .concat(ADDON_MOD_QUIZ_PROVIDERS).concat(ADDON_MOD_RESOURCE_PROVIDERS).concat(ADDON_MOD_SCORM_PROVIDERS)
                 .concat(ADDON_MOD_SURVEY_PROVIDERS).concat(ADDON_MOD_URL_PROVIDERS).concat(ADDON_MOD_WIKI_PROVIDERS)
                 .concat(ADDON_MOD_WORKSHOP_PROVIDERS).concat(ADDON_NOTES_PROVIDERS).concat(ADDON_NOTIFICATIONS_PROVIDERS)
-                .concat(ADDON_PUSHNOTIFICATIONS_PROVIDERS).concat(ADDON_REMOTETHEMES_PROVIDERS);
+                .concat(ADDON_PUSHNOTIFICATIONS_PROVIDERS).concat(ADDON_REMOTETHEMES_PROVIDERS).concat(CORE_BLOCK_PROVIDERS);
 
         // We cannot inject anything to this constructor. Use the Injector to inject all the providers into the instance.
         for (const i in providers) {

@@ -75,6 +75,7 @@ import { CoreSitePluginsModule } from '@core/siteplugins/siteplugins.module';
 import { CoreCompileModule } from '@core/compile/compile.module';
 import { CoreQuestionModule } from '@core/question/question.module';
 import { CoreCommentsModule } from '@core/comments/comments.module';
+import { CoreBlockModule } from '@core/block/block.module';
 
 // Addon modules.
 import { AddonBadgesModule } from '@addon/badges/badges.module';
@@ -188,6 +189,7 @@ export const CORE_PROVIDERS: any[] = [
         CoreCompileModule,
         CoreQuestionModule,
         CoreCommentsModule,
+        CoreBlockModule,
         AddonBadgesModule,
         AddonCalendarModule,
         AddonCompetencyModule,

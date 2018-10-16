@@ -17,9 +17,9 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 
 /**
- * Template class to easily create AddonBlockComponent of blocks.
+ * Template class to easily create components for blocks.
  */
-export class AddonBlockComponent implements OnInit {
+export class CoreBlockBaseComponent implements OnInit {
     loaded: boolean; // If the component has been loaded.
     protected fetchContentDefaultError: string; // Default error to show when loading contents.
 
