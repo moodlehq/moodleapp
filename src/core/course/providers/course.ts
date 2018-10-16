@@ -86,10 +86,21 @@ export class CoreCourseProvider {
     }
 
     /**
+     * Check if the get course blocks WS is available in current site.
+     *
+     * @return {boolean} Whether it's available.
+     * @since 3.3
+     */
+    canGetCourseBlocks(): boolean {
+        return this.sitesProvider.wsAvailableInCurrentSite('core_block_get_course_blocks');
+    }
+
+    /**
      * Check whether the site supports requesting stealth modules.
      *
      * @param {CoreSite} [site] Site. If not defined, current site.
      * @return {boolean} Whether the site supports requesting stealth modules.
+     * @since 3.4.6, 3.5.3, 3.6
      */
     canRequestStealthModules(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
@@ -206,6 +217,39 @@ export class CoreCourseProvider {
      */
     protected getActivitiesCompletionCacheKey(courseId: number, userId: number): string {
         return this.ROOT_CACHE_KEY + 'activitiescompletion:' + courseId + ':' + userId;
+    }
+
+    /**
+     * Get course blocks.
+     *
+     * @param {number} courseId Course ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any[]>} Promise resolved with the list of blocks.
+     * @since 3.3
+     */
+    getCourseBlocks(courseId: number, siteId?: string): Promise<any[]> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                    courseid: courseId
+                },
+                preSets: CoreSiteWSPreSets = {
+                    cacheKey: this.getCourseBlocksCacheKey(courseId)
+                };
+
+            return site.read('core_block_get_course_blocks', params, preSets).then((result) => {
+                return result.blocks || [];
+            });
+        });
+    }
+
+    /**
+     * Get cache key for course blocks WS calls.
+     *
+     * @param {number} courseId Course ID.
+     * @return {string} Cache key.
+     */
+    protected getCourseBlocksCacheKey(courseId: number): string {
+        return this.ROOT_CACHE_KEY + 'courseblocks:' + courseId;
     }
 
     /**
@@ -606,6 +650,19 @@ export class CoreCourseProvider {
         });
 
         return modules;
+    }
+
+    /**
+     * Invalidates course blocks WS call.
+     *
+     * @param {number} courseId Course ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateCourseBlocks(courseId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getCourseBlocksCacheKey(courseId));
+        });
     }
 
     /**

@@ -30,7 +30,7 @@ import { CoreSiteHomeProvider } from '../../providers/sitehome';
 export class CoreSiteHomeIndexComponent implements OnInit {
     dataLoaded = false;
     section: any;
-    block: any;
+    mainMenuBlock: any;
     hasContent: boolean;
     items: any[] = [];
     siteHomeId: number;
@@ -73,6 +73,10 @@ export class CoreSiteHomeIndexComponent implements OnInit {
             // Invalidate modules prefetch data.
             const modules = this.courseProvider.getSectionsModules(this.sectionsLoaded);
             promises.push(this.prefetchDelegate.invalidateModules(modules, this.siteHomeId));
+        }
+
+        if (this.courseProvider.canGetCourseBlocks()) {
+            promises.push(this.courseProvider.invalidateCourseBlocks(this.siteHomeId));
         }
 
         Promise.all(promises).finally(() => {
@@ -126,40 +130,70 @@ export class CoreSiteHomeIndexComponent implements OnInit {
         }
 
         return this.courseProvider.getSections(this.siteHomeId, false, true).then((sections) => {
+            const promises = [];
+
             this.sectionsLoaded = Array.from(sections);
 
             // Check "Include a topic section" setting from numsections.
             this.section = config.numsections && sections.length > 0 ? sections.pop() : false;
             if (this.section) {
                 this.section.hasContent = this.courseHelper.sectionHasContent(this.section);
+                this.hasContent = this.courseHelper.addHandlerDataForModules([this.section], this.siteHomeId) || this.hasContent;
             }
 
-            this.block = sections.length > 0 ? sections.pop() : false;
-            if (this.block) {
-                this.block.hasContent = this.courseHelper.sectionHasContent(this.block);
-            }
+            const mainMenuBlock = sections.length > 0 ? sections.pop() : false;
+            this.mainMenuBlock = false;
 
-            this.hasContent = this.courseHelper.addHandlerDataForModules(this.sectionsLoaded, this.siteHomeId) || this.hasContent;
+            if (mainMenuBlock) {
+                // Check if the block can be viewed.
+                let promise;
 
-            // Add log in Moodle.
-            this.courseProvider.logView(this.siteHomeId);
+                if (this.courseProvider.canGetCourseBlocks()) {
+                    promise = this.courseProvider.getCourseBlocks(this.siteHomeId).then((blocks) => {
+                        // Search if the main menu block is enabled.
+                        return !!blocks.find((block) => { return block.name == 'site_main_menu'; });
+                    }).catch(() => {
+                        return true;
+                    });
+                } else {
+                    // We don't know if it can be viewed, so always display it.
+                    promise = Promise.resolve(true);
+                }
 
-            if (hasNewsItem && this.block && this.block.modules) {
-                // Remove forum activity (news one only) to prevent duplicates.
-                return this.siteHomeProvider.getNewsForum(this.siteHomeId).then((forum) => {
-                    // Search the module that belongs to site news.
-                    for (let i = 0; i < this.block.modules.length; i++) {
-                        const module = this.block.modules[i];
+                promises.push(promise.then((canView) => {
+                    if (canView) {
+                        // User can view the block, display it and calculate its data.
+                        this.mainMenuBlock = mainMenuBlock;
+                        this.mainMenuBlock.hasContent = this.courseHelper.sectionHasContent(this.mainMenuBlock);
+                        this.hasContent = this.courseHelper.addHandlerDataForModules([mainMenuBlock], this.siteHomeId) ||
+                                this.hasContent;
 
-                        if (module.modname == 'forum' && module.instance == forum.id) {
-                            this.block.modules.splice(i, 1);
-                            break;
+                        if (hasNewsItem && this.mainMenuBlock.modules) {
+                            // Remove forum activity (news one only) from the main menu block to prevent duplicates.
+                            return this.siteHomeProvider.getNewsForum(this.siteHomeId).then((forum) => {
+                                // Search the module that belongs to site news.
+                                for (let i = 0; i < this.mainMenuBlock.modules.length; i++) {
+                                    const module = this.mainMenuBlock.modules[i];
+
+                                    if (module.modname == 'forum' && module.instance == forum.id) {
+                                        this.mainMenuBlock.modules.splice(i, 1);
+                                        break;
+                                    }
+                                }
+                            }).catch(() => {
+                                // Ignore errors.
+                            });
                         }
                     }
-                }).catch(() => {
-                    // Ignore errors.
-                });
+                }));
             }
+
+            // Add log in Moodle.
+            this.courseProvider.logView(this.siteHomeId).catch(() => {
+                // Ignore errors.
+            });
+
+            return Promise.all(promises);
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.course.couldnotloadsectioncontent', true);
         });
