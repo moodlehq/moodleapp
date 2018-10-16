@@ -1,5 +1,5 @@
 <core-loading [hideUntil]="hideUntil" class="core-loading-center">
-    <div class="core-tabs-bar" #topTabs [hidden]="!tabs || tabs.length < 2">
+    <div class="core-tabs-bar" #topTabs [hidden]="!tabs || numTabsShown < 2">
         <ion-row>
             <ion-col class="col-with-arrow" (click)="slidePrev()" no-padding col-1>
                 <ion-icon *ngIf="showPrevButton" name="arrow-back" md="ios-arrow-back"></ion-icon>

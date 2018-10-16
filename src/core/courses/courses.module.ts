@@ -15,7 +15,7 @@
 import { NgModule } from '@angular/core';
 import { CoreCoursesProvider } from './providers/courses';
 import { CoreCoursesHelperProvider } from './providers/helper';
-import { CoreCoursesMainMenuHandler } from './providers/mainmenu-handler';
+import { CoreDashboardMainMenuHandler } from './providers/mainmenu-handler';
 import { CoreCoursesDashboardProvider } from './providers/dashboard';
 import { CoreCoursesCourseLinkHandler } from './providers/course-link-handler';
 import { CoreCoursesIndexLinkHandler } from './providers/courses-index-link-handler';
@@ -38,7 +38,7 @@ export const CORE_COURSES_PROVIDERS: any[] = [
         CoreCoursesProvider,
         CoreCoursesDashboardProvider,
         CoreCoursesHelperProvider,
-        CoreCoursesMainMenuHandler,
+        CoreDashboardMainMenuHandler,
         CoreCoursesCourseLinkHandler,
         CoreCoursesIndexLinkHandler,
         CoreCoursesDashboardLinkHandler
@@ -47,7 +47,7 @@ export const CORE_COURSES_PROVIDERS: any[] = [
 })
 export class CoreCoursesModule {
     constructor(mainMenuDelegate: CoreMainMenuDelegate, contentLinksDelegate: CoreContentLinksDelegate,
-            mainMenuHandler: CoreCoursesMainMenuHandler, courseLinkHandler: CoreCoursesCourseLinkHandler,
+            mainMenuHandler: CoreDashboardMainMenuHandler, courseLinkHandler: CoreCoursesCourseLinkHandler,
             indexLinkHandler: CoreCoursesIndexLinkHandler, dashboardLinkHandler: CoreCoursesDashboardLinkHandler) {
         mainMenuDelegate.registerHandler(mainMenuHandler);
 

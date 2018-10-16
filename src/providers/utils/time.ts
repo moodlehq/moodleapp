@@ -163,4 +163,21 @@ export class CoreTimeUtilsProvider {
     getLocalizedDateFormat(localizedFormat: any): string {
         return moment.localeData().longDateFormat(localizedFormat);
     }
+
+    /**
+     * For a given timestamp get the midnight value in the user's timezone.
+     *
+     * The calculation is performed relative to the user's midnight timestamp
+     * for today to ensure that timezones are preserved.
+     *
+     * @param {number} [timestamp] The timestamp to calculate from. If not defined, return today's midnight.
+     * @return {number} The midnight value of the user's timestamp.
+     */
+    getMidnightForTimestamp(timestamp?: number): number {
+        if (timestamp) {
+            return moment(timestamp * 1000).startOf('day').unix();
+        } else {
+            return moment().startOf('day').unix();
+        }
+    }
 }

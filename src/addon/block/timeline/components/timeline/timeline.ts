@@ -30,6 +30,7 @@ import { AddonBlockTimelineProvider } from '../../providers/timeline';
 })
 export class AddonBlockTimelineComponent extends AddonBlockComponent implements OnInit {
     sort = 'sortbydates';
+    filter = 'next30days';
     timeline = {
         events: [],
         loaded: false,
@@ -40,6 +41,8 @@ export class AddonBlockTimelineComponent extends AddonBlockComponent implements 
         loaded: false,
         canLoadMore: false
     };
+    dataFrom: number;
+    dataTo: number;
 
     protected courseIds = [];
     protected fetchContentDefaultError = 'Error getting timeline data.';
@@ -55,6 +58,7 @@ export class AddonBlockTimelineComponent extends AddonBlockComponent implements 
      * Component being initialized.
      */
     ngOnInit(): void {
+        this.switchFilter();
         super.ngOnInit();
     }
 
@@ -157,6 +161,39 @@ export class AddonBlockTimelineComponent extends AddonBlockComponent implements 
                 });
             }
         });
+    }
+
+    /**
+     * Change timeline filter being viewed.
+     */
+    switchFilter(): void {
+        switch (this.filter) {
+            case 'overdue':
+                this.dataFrom = -14;
+                this.dataTo = 0;
+                break;
+            case 'next7days':
+                this.dataFrom = 0;
+                this.dataTo = 7;
+                break;
+            case 'next30days':
+                this.dataFrom = 0;
+                this.dataTo = 30;
+                break;
+            case 'next3months':
+                this.dataFrom = 0;
+                this.dataTo = 90;
+                break;
+            case 'next6months':
+                this.dataFrom = 0;
+                this.dataTo = 180;
+                break;
+            default:
+            case 'all':
+                this.dataFrom = -14;
+                this.dataTo = undefined;
+                break;
+        }
     }
 
     /**

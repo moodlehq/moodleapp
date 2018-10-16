@@ -22,6 +22,7 @@ import { AddonBlockMyOverviewComponent } from '@addon/block/myoverview/component
 import { AddonBlockTimelineComponent } from '@addon/block/timeline/components/timeline/timeline';
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreSiteHomeIndexComponent } from '@core/sitehome/components/index/index';
+import { AddonBlockTimelineProvider } from '@addon/block/timeline/providers/timeline';
 
 /**
  * Page that displays the dashboard.
@@ -38,7 +39,9 @@ export class CoreCoursesDashboardPage implements OnDestroy {
     @ViewChild(AddonBlockTimelineComponent) blockTimeline: AddonBlockTimelineComponent;
 
     firstSelectedTab: number;
-    siteHomeEnabled: boolean;
+    siteHomeEnabled = false;
+    timelineEnabled = false;
+    coursesEnabled = false;
     tabsReady = false;
     tabShown = 'courses';
     searchEnabled: boolean;
@@ -51,7 +54,7 @@ export class CoreCoursesDashboardPage implements OnDestroy {
 
     constructor(private navCtrl: NavController, private coursesProvider: CoreCoursesProvider,
             private sitesProvider: CoreSitesProvider, private siteHomeProvider: CoreSiteHomeProvider,
-            private eventsProvider: CoreEventsProvider) {
+            private eventsProvider: CoreEventsProvider,  private timelineProvider: AddonBlockTimelineProvider) {
         this.loadSiteName();
     }
 
@@ -67,13 +70,29 @@ export class CoreCoursesDashboardPage implements OnDestroy {
             this.loadSiteName();
         });
 
-        // Decide which tab to load first.
-        this.siteHomeProvider.isAvailable().then((enabled) => {
-            const site = this.sitesProvider.getCurrentSite(),
-                displaySiteHome = site.getInfo() && site.getInfo().userhomepage === 0;
+        const promises = [];
 
+        // Decide which tab to load first.
+        promises.push(this.siteHomeProvider.isAvailable().then((enabled) => {
             this.siteHomeEnabled = enabled;
-            this.firstSelectedTab = displaySiteHome ? 0 : 1;
+        }));
+
+        promises.push(this.timelineProvider.isAvailable().then((enabled) => {
+            this.timelineEnabled = enabled;
+        }));
+
+        this.coursesEnabled = !this.coursesProvider.isMyCoursesDisabledInSite();
+
+        Promise.all(promises).finally(() => {
+            if (this.siteHomeEnabled && (this.coursesEnabled || this.timelineEnabled)) {
+                const site = this.sitesProvider.getCurrentSite(),
+                    displaySiteHome = site.getInfo() && site.getInfo().userhomepage === 0;
+
+                this.firstSelectedTab = displaySiteHome ? 0 : 1;
+            } else {
+                this.firstSelectedTab = this.siteHomeEnabled ? 1 : 0;
+            }
+
             this.tabsReady = true;
         });
     }

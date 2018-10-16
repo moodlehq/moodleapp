@@ -16,17 +16,18 @@ import { Injectable } from '@angular/core';
 import { CoreCoursesProvider } from './courses';
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@core/mainmenu/providers/delegate';
 import { CoreCoursesDashboardProvider } from '../providers/dashboard';
+import { CoreSiteHomeProvider } from '@core/sitehome/providers/sitehome';
 
 /**
- * Handler to add My Courses or My Overview into main menu.
+ * Handler to add Dashboard into main menu.
  */
 @Injectable()
-export class CoreCoursesMainMenuHandler implements CoreMainMenuHandler {
-    name = 'CoreCourses';
+export class CoreDashboardMainMenuHandler implements CoreMainMenuHandler {
+    name = 'CoreDashboard'; // Old name CoreCourses cannot be used because it would be all disabled by site.
     priority = 1100;
-    isDashboardEnabled: boolean;
 
-    constructor(private coursesProvider: CoreCoursesProvider, private dashboardProvider: CoreCoursesDashboardProvider) { }
+    constructor(private coursesProvider: CoreCoursesProvider, private dashboardProvider: CoreCoursesDashboardProvider,
+        private siteHomeProvider: CoreSiteHomeProvider) { }
 
     /**
      * Check if the handler is enabled on a site level.
@@ -36,13 +37,19 @@ export class CoreCoursesMainMenuHandler implements CoreMainMenuHandler {
     isEnabled(): boolean | Promise<boolean> {
         // Check if my overview is enabled.
         return this.dashboardProvider.isEnabled().then((enabled) => {
-            this.isDashboardEnabled = enabled;
             if (enabled) {
                 return true;
             }
 
-            // My overview not enabled, check if my courses is enabled.
-            return !this.coursesProvider.isMyCoursesDisabledInSite();
+            return this.siteHomeProvider.isAvailable().then((enabled) => {
+                // Show in case siteHome is enabled.
+                if (enabled) {
+                    return true;
+                }
+
+                // My overview not enabled, check if my courses is enabled.
+                return !this.coursesProvider.isMyCoursesDisabledInSite();
+            });
         });
     }
 
@@ -52,20 +59,11 @@ export class CoreCoursesMainMenuHandler implements CoreMainMenuHandler {
      * @return {CoreMainMenuHandlerData} Data needed to render the handler.
      */
     getDisplayData(): CoreMainMenuHandlerData {
-        if (this.isDashboardEnabled) {
-            return {
-                icon: 'home',
-                title: 'core.courses.courseoverview',
-                page: 'CoreCoursesDashboardPage',
-                class: 'core-courseoverview-handler'
-            };
-        } else {
-            return {
-                icon: 'fa-graduation-cap',
-                title: 'core.courses.mycourses',
-                page: 'CoreCoursesMyCoursesPage',
-                class: 'core-mycourses-handler'
-            };
-        }
+        return {
+            icon: 'home',
+            title: 'core.courses.mymoodle',
+            page: 'CoreCoursesDashboardPage',
+            class: 'core-dashboard-handler'
+        };
     }
 }

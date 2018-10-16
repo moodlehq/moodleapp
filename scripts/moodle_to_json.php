@@ -279,6 +279,7 @@ function save_key($key, $value, $path) {
     $value = html_entity_decode($value);
     if ($file[$key] != $value) {
         $file[$key] = $value;
+        ksort($file);
         file_put_contents($filePath, str_replace('\/', '/', json_encode($file, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)));
     }
 }
