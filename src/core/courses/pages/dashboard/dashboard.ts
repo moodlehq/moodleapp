@@ -43,7 +43,6 @@ export class CoreCoursesDashboardPage implements OnDestroy {
     timelineEnabled = false;
     coursesEnabled = false;
     tabsReady = false;
-    tabShown = 'courses';
     searchEnabled: boolean;
     tabs = [];
     siteName: string;
@@ -109,15 +108,6 @@ export class CoreCoursesDashboardPage implements OnDestroy {
      */
     ionViewDidLeave(): void {
         this.tabsComponent && this.tabsComponent.ionViewDidLeave();
-    }
-
-    /**
-     * The tab has changed.
-     *
-     * @param {string} tab Name of the new tab.
-     */
-    tabChanged(tab: string): void {
-        this.tabShown = tab;
     }
 
     /**

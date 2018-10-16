@@ -9,6 +9,7 @@
     <!-- "Time" selector. -->
     <div padding class="clearfix" [hidden]="showFilter" ion-row justify-content-end>
         <ion-select [hidden]="!showSelectorFilter" [title]="'core.show' | translate" [(ngModel)]="selectedFilter" ion-col (ngModelChange)="selectedChanged()" interface="popover" class="core-button-select">
+            <ion-option value="all">{{ 'addon.block_myoverview.all' | translate }}</ion-option>∫
             <ion-option value="inprogress">{{ 'addon.block_myoverview.inprogress' | translate }}</ion-option>
             <ion-option value="future">{{ 'addon.block_myoverview.future' | translate }}</ion-option>
             <ion-option value="past">{{ 'addon.block_myoverview.past' | translate }}</ion-option>
@@ -22,9 +23,11 @@
             <ion-spinner *ngIf="!prefetchCoursesData[selectedFilter].icon || prefetchCoursesData[selectedFilter].icon == 'spinner'"></ion-spinner>
         </div>
     </div>
-    <core-empty-box *ngIf="courses[selectedFilter].length == 0 && selectedFilter == 'inprogress'" image="assets/img/icons/courses.svg" [message]="'addon.block_myoverview.nocoursesinprogress' | translate"></core-empty-box>
-    <core-empty-box *ngIf="courses[selectedFilter].length == 0 && selectedFilter == 'future'" image="assets/img/icons/courses.svg" [message]="'addon.block_myoverview.nocoursesfuture' | translate"></core-empty-box>
-    <core-empty-box *ngIf="courses[selectedFilter].length == 0 && selectedFilter == 'past'" image="assets/img/icons/courses.svg" [message]="'addon.block_myoverview.nocoursespast' | translate"></core-empty-box>
+    <ng-container *ngIf="courses[selectedFilter].length == 0">
+        <core-empty-box *ngIf="selectedFilter == 'inprogress'" image="assets/img/icons/courses.svg" [message]="'addon.block_myoverview.nocoursesinprogress' | translate"></core-empty-box>
+        <core-empty-box *ngIf="selectedFilter == 'future'" image="assets/img/icons/courses.svg" [message]="'addon.block_myoverview.nocoursesfuture' | translate"></core-empty-box>
+        <core-empty-box *ngIf="selectedFilter == 'past'" image="assets/img/icons/courses.svg" [message]="'addon.block_myoverview.nocoursespast' | translate"></core-empty-box>
+    </ng-container>
 
     <!-- Filter courses. -->
     <ion-searchbar #searchbar *ngIf="showFilter" [(ngModel)]="courses.filter" (ionInput)="filterChanged($event)" (ionCancel)="filterChanged()" [placeholder]="'core.courses.filtermycourses' | translate">

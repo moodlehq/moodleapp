@@ -26,7 +26,7 @@ export class AddonBlockComponent implements OnInit {
     protected domUtils: CoreDomUtilsProvider;
     protected logger;
 
-    constructor(injector: Injector, loggerName: string = 'CoreCourseModuleMainResourceComponent') {
+    constructor(injector: Injector, loggerName: string = 'AddonBlockComponent') {
         this.domUtils = injector.get(CoreDomUtilsProvider);
         const loggerProvider = injector.get(CoreLoggerProvider);
         this.logger = loggerProvider.getInstance(loggerName);
