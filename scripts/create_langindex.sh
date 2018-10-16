@@ -219,6 +219,7 @@ function find_better_file {
 
 #Parses the file.
 function parse_file {
+    findbetter=$2
     keys=`jq -r 'keys[]' $1`
     for key in $keys; do
         # Check if already parsed.
@@ -229,7 +230,7 @@ function parse_file {
         value=`$exec`
         if [ -z "$found" ] || [ "$found" == 'null' ]; then
             guess_file $key "$value"
-        else
+        elif [ ! -z "$findbetter" ]; then
             find_better_file "$key" "$value" "$found"
         fi
     done
@@ -253,7 +254,8 @@ if [ ! -f 'langindex.json' ]; then
     echo "{}" > langindex.json
 fi
 
-parse_file '../src/assets/lang/en.json'
+findbetter=$1
+parse_file '../src/assets/lang/en.json' $findbetter
 
 echo
 
