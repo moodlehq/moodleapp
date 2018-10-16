@@ -10,9 +10,9 @@
     <div padding class="clearfix" [hidden]="showFilter" ion-row justify-content-end>
         <ion-select [hidden]="!showSelectorFilter" [title]="'core.show' | translate" [(ngModel)]="selectedFilter" ion-col (ngModelChange)="selectedChanged()" interface="popover" class="core-button-select">
             <ion-option value="all">{{ 'addon.block_myoverview.all' | translate }}</ion-option>∫
-            <ion-option value="inprogress" *ngIf="courses.inprogress.length > 0">{{ 'addon.block_myoverview.inprogress' | translate }}</ion-option>
-            <ion-option value="future" *ngIf="courses.future.length > 0">{{ 'addon.block_myoverview.future' | translate }}</ion-option>
-            <ion-option value="past" *ngIf="courses.past.length > 0">{{ 'addon.block_myoverview.past' | translate }}</ion-option>
+            <ion-option value="inprogress">{{ 'addon.block_myoverview.inprogress' | translate }}</ion-option>
+            <ion-option value="future">{{ 'addon.block_myoverview.future' | translate }}</ion-option>
+            <ion-option value="past">{{ 'addon.block_myoverview.past' | translate }}</ion-option>
         </ion-select>
         <!-- Download all courses. -->
         <div *ngIf="downloadAllCoursesEnabled && courses[selectedFilter] && courses[selectedFilter].length > 1" class="core-button-spinner" ion-col text-end col-1>

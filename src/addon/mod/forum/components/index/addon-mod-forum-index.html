@@ -48,7 +48,7 @@
                         <ion-avatar item-start core-user-link [userId]="discussion.userid" [courseId]="courseId">
                             <img [src]="discussion.userpictureurl" onError="this.src='assets/img/user-avatar.png'" core-external-content [alt]="'core.pictureof' | translate:{$a: discussion.userfullname}" role="presentation">
                         </ion-avatar>
-                        <h2><ion-icon name="pin" *ngIf="discussion.pinned"></ion-icon> <core-format-text [text]="discussion.subject"></core-format-text></h2>
+                        <h2><core-icon name="fa-map-pin" *ngIf="discussion.pinned"></core-icon> <core-format-text [text]="discussion.subject"></core-format-text></h2>
                         <p>
                             <ion-note float-end padding-left text-end>
                                 {{discussion.created | coreDateDayOrTime}}
