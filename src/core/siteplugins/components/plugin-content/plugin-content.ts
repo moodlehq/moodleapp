@@ -41,6 +41,7 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
     dataLoaded: boolean;
     invalidateObservable: Subject<void>; // An observable to notify observers when to invalidate data.
     jsData: any; // Data to pass to the component.
+    forceCompile: boolean; // Force compilation on PTR.
 
     protected differ: any; // To detect changes in the data input.
 
@@ -83,11 +84,14 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
     fetchContent(refresh?: boolean): Promise<any> {
         this.onLoadingContent.emit(refresh);
 
+        this.forceCompile = false;
+
         return this.sitePluginsProvider.getContent(this.component, this.method, this.args, this.preSets).then((result) => {
             this.content = result.templates.length ? result.templates[0].html : ''; // Load first template.
             this.javascript = result.javascript;
             this.otherData = result.otherdata;
             this.data = this.data || {};
+            this.forceCompile = true;
 
             this.jsData = Object.assign(this.data, this.sitePluginsProvider.createDataForJS(this.initResult, result));
 

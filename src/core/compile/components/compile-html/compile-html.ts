@@ -19,6 +19,7 @@ import {
 import { NavController } from 'ionic-angular';
 import { CoreCompileProvider } from '../../providers/compile';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
  * This component has a behaviour similar to $compile for AngularJS. Given an HTML code, it will compile it so all its
@@ -45,6 +46,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     @Input() jsData: any; // Data to pass to the fake component.
     @Input() extraImports: any[] = []; // Extra import modules.
     @Input() extraProviders: any[] = []; // Extra providers.
+    @Input() forceCompile: string | boolean; // Set it to true to force compile even if the text/javascript hasn't changed.
     @Output() created: EventEmitter<any> = new EventEmitter(); // Will emit an event when the component is instantiated.
 
     // Get the container where to put the content.
@@ -58,7 +60,8 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     protected differ: any; // To detect changes in the jsData input.
 
     constructor(protected compileProvider: CoreCompileProvider, protected cdr: ChangeDetectorRef, element: ElementRef,
-            @Optional() protected navCtrl: NavController, differs: KeyValueDiffers, protected domUtils: CoreDomUtilsProvider) {
+            @Optional() protected navCtrl: NavController, differs: KeyValueDiffers, protected domUtils: CoreDomUtilsProvider,
+            protected utils: CoreUtilsProvider) {
         this.element = element.nativeElement;
         this.differ = differs.find([]).create();
     }
@@ -83,7 +86,10 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
      * Detect changes on input properties.
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
-        if ((changes.text || changes.javascript) && this.text) {
+        // Only compile if text/javascript has changed or the forceCompile flag has been set to true.
+        if ((changes.text || changes.javascript || (changes.forceCompile && this.utils.isTrueOrOne(this.forceCompile))) &&
+                this.text) {
+
             // Create a new component and a new module.
             this.compileProvider.createAndCompileComponent(this.text, this.getComponentClass(), this.extraImports)
                     .then((factory) => {
