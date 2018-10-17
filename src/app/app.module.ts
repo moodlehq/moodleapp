@@ -85,6 +85,7 @@ import { AddonCourseCompletionModule } from '@addon/coursecompletion/coursecompl
 import { AddonUserProfileFieldModule } from '@addon/userprofilefield/userprofilefield.module';
 import { AddonFilesModule } from '@addon/files/files.module';
 import { AddonBlockMyOverviewModule } from '@addon/block/myoverview/myoverview.module';
+import { AddonBlockSiteMainMenuModule } from '@addon/block/sitemainmenu/sitemainmenu.module';
 import { AddonBlockTimelineModule } from '@addon/block/timeline/timeline.module';
 import { AddonModAssignModule } from '@addon/mod/assign/assign.module';
 import { AddonModBookModule } from '@addon/mod/book/book.module';
@@ -197,6 +198,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonUserProfileFieldModule,
         AddonFilesModule,
         AddonBlockMyOverviewModule,
+        AddonBlockSiteMainMenuModule,
         AddonBlockTimelineModule,
         AddonModAssignModule,
         AddonModBookModule,

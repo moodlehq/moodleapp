@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
-import { CoreSiteHomeProvider } from '../../providers/sitehome';
+import { CoreBlockDelegate } from '@core/block/providers/delegate';
+import { CoreBlockComponent } from '@core/block/components/block/block';
 
 /**
  * Component that displays site home index.
@@ -28,18 +29,19 @@ import { CoreSiteHomeProvider } from '../../providers/sitehome';
     templateUrl: 'core-sitehome-index.html',
 })
 export class CoreSiteHomeIndexComponent implements OnInit {
+    @ViewChildren(CoreBlockComponent) blocksComponents: QueryList<CoreBlockComponent>;
+
     dataLoaded = false;
     section: any;
-    mainMenuBlock: any;
     hasContent: boolean;
+    hasSupportedBlock: boolean;
     items: any[] = [];
     siteHomeId: number;
-
-    protected sectionsLoaded: any[];
+    blocks: any[];
 
     constructor(private domUtils: CoreDomUtilsProvider, private sitesProvider: CoreSitesProvider,
             private courseProvider: CoreCourseProvider, private courseHelper: CoreCourseHelperProvider,
-            private prefetchDelegate: CoreCourseModulePrefetchDelegate, private siteHomeProvider: CoreSiteHomeProvider) {
+            private prefetchDelegate: CoreCourseModulePrefetchDelegate, private blockDelegate: CoreBlockDelegate) {
         this.siteHomeId = sitesProvider.getCurrentSite().getSiteHomeId();
     }
 
@@ -69,15 +71,21 @@ export class CoreSiteHomeIndexComponent implements OnInit {
             });
         }));
 
-        if (this.sectionsLoaded) {
+        if (this.section && this.section.modules) {
             // Invalidate modules prefetch data.
-            const modules = this.courseProvider.getSectionsModules(this.sectionsLoaded);
-            promises.push(this.prefetchDelegate.invalidateModules(modules, this.siteHomeId));
+            promises.push(this.prefetchDelegate.invalidateModules(this.section.modules, this.siteHomeId));
         }
 
         if (this.courseProvider.canGetCourseBlocks()) {
             promises.push(this.courseProvider.invalidateCourseBlocks(this.siteHomeId));
         }
+
+        // Invalidate the blocks.
+        this.blocksComponents.forEach((blockComponent) => {
+            promises.push(blockComponent.invalidate().catch(() => {
+                // Ignore errors.
+            }));
+        });
 
         Promise.all(promises).finally(() => {
             this.loadContent().finally(() => {
@@ -92,7 +100,6 @@ export class CoreSiteHomeIndexComponent implements OnInit {
      * @return {Promise<any>} Promise resolved when done.
      */
     protected loadContent(): Promise<any> {
-        let hasNewsItem = false;
         this.hasContent = false;
 
         const config = this.sitesProvider.getCurrentSite().getStoredConfig() || { numsections: 1 };
@@ -120,72 +127,18 @@ export class CoreSiteHomeIndexComponent implements OnInit {
                     return;
                 }
 
-                if (item == 'news') {
-                    hasNewsItem = true;
-                }
-
                 this.hasContent = true;
                 this.items.push(item);
             });
         }
 
         return this.courseProvider.getSections(this.siteHomeId, false, true).then((sections) => {
-            const promises = [];
-
-            this.sectionsLoaded = Array.from(sections);
 
             // Check "Include a topic section" setting from numsections.
-            this.section = config.numsections && sections.length > 0 ? sections.pop() : false;
+            this.section = config.numsections ? sections[1] : false;
             if (this.section) {
                 this.section.hasContent = this.courseHelper.sectionHasContent(this.section);
                 this.hasContent = this.courseHelper.addHandlerDataForModules([this.section], this.siteHomeId) || this.hasContent;
-            }
-
-            const mainMenuBlock = sections.length > 0 ? sections.pop() : false;
-            this.mainMenuBlock = false;
-
-            if (mainMenuBlock) {
-                // Check if the block can be viewed.
-                let promise;
-
-                if (this.courseProvider.canGetCourseBlocks()) {
-                    promise = this.courseProvider.getCourseBlocks(this.siteHomeId).then((blocks) => {
-                        // Search if the main menu block is enabled.
-                        return !!blocks.find((block) => { return block.name == 'site_main_menu'; });
-                    }).catch(() => {
-                        return true;
-                    });
-                } else {
-                    // We don't know if it can be viewed, so always display it.
-                    promise = Promise.resolve(true);
-                }
-
-                promises.push(promise.then((canView) => {
-                    if (canView) {
-                        // User can view the block, display it and calculate its data.
-                        this.mainMenuBlock = mainMenuBlock;
-                        this.mainMenuBlock.hasContent = this.courseHelper.sectionHasContent(this.mainMenuBlock);
-                        this.hasContent = this.courseHelper.addHandlerDataForModules([mainMenuBlock], this.siteHomeId) ||
-                                this.hasContent;
-
-                        if (hasNewsItem && this.mainMenuBlock.modules) {
-                            // Remove forum activity (news one only) from the main menu block to prevent duplicates.
-                            return this.siteHomeProvider.getNewsForum(this.siteHomeId).then((forum) => {
-                                // Search the module that belongs to site news.
-                                for (let i = 0; i < this.mainMenuBlock.modules.length; i++) {
-                                    const module = this.mainMenuBlock.modules[i];
-
-                                    if (module.modname == 'forum' && module.instance == forum.id) {
-                                        this.mainMenuBlock.modules.splice(i, 1);
-                                        break;
-                                    }
-                                }
-                            }).catch(() => {
-                                // Ignore errors.
-                            });
-                        }
-                    }
-                }));
             }
 
             // Add log in Moodle.
@@ -193,7 +146,30 @@ export class CoreSiteHomeIndexComponent implements OnInit {
                 // Ignore errors.
             });
 
-            return Promise.all(promises);
+            // Get site home blocks.
+            const canGetBlocks = this.courseProvider.canGetCourseBlocks(),
+                promise = canGetBlocks ? this.courseProvider.getCourseBlocks(this.siteHomeId) : Promise.reject(null);
+
+            return promise.then((blocks) => {
+                this.blocks = blocks;
+                this.hasSupportedBlock = this.blockDelegate.hasSupportedBlock(blocks);
+
+            }).catch((error) => {
+                if (canGetBlocks) {
+                    this.domUtils.showErrorModal(error);
+                }
+
+                // Cannot get the blocks, just show site main menu if needed.
+                if (sections[0] && this.courseHelper.sectionHasContent(sections[0])) {
+                    this.blocks.push({
+                        name: 'site_main_menu'
+                    });
+                    this.hasSupportedBlock = true;
+                } else {
+                    this.blocks = [];
+                    this.hasSupportedBlock = false;
+                }
+            });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.course.couldnotloadsectioncontent', true);
         });

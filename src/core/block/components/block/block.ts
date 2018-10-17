@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, Injector } from '@angular/core';
+import { Component, Input, OnInit, Injector, ViewChild } from '@angular/core';
 import { CoreBlockDelegate } from '../../providers/delegate';
+import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 
 /**
  * Component to render a block.
@@ -23,6 +24,8 @@ import { CoreBlockDelegate } from '../../providers/delegate';
     templateUrl: 'core-block.html'
 })
 export class CoreBlockComponent implements OnInit {
+    @ViewChild(CoreDynamicComponent) dynamicComponent: CoreDynamicComponent;
+
     @Input() block: any; // The block to render.
     @Input() contextLevel: string; // The context where the block will be used.
     @Input() instanceId: number; // The instance ID associated with the context level.
@@ -68,5 +71,34 @@ export class CoreBlockComponent implements OnInit {
         }).finally(() => {
             this.loaded = true;
         });
+    }
+
+    /**
+     * Refresh the data.
+     *
+     * @param {any} [refresher] Refresher. Please pass this only if the refresher should finish when this function finishes.
+     * @param {Function} [done] Function to call when done.
+     * @param {boolean} [showErrors=false] If show errors to the user of hide them.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    doRefresh(refresher?: any, done?: () => void, showErrors: boolean = false): Promise<any> {
+        if (this.dynamicComponent) {
+            return Promise.resolve(this.dynamicComponent.callComponentFunction('doRefresh', [refresher, done, showErrors]));
+        }
+
+        return Promise.resolve();
+    }
+
+    /**
+     * Invalidate some data.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    invalidate(): Promise<any> {
+        if (this.dynamicComponent) {
+            return Promise.resolve(this.dynamicComponent.callComponentFunction('invalidateContent'));
+        }
+
+        return Promise.resolve();
     }
 }
