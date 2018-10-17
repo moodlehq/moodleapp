@@ -68,14 +68,10 @@ export class AddonModDataFieldTextHandler implements AddonModDataFieldHandler {
     getFieldEditData(field: any, inputData: any, originalFieldData: any): any {
         const fieldName = 'f_' + field.id;
 
-        if (inputData[fieldName]) {
-            return [{
-                fieldid: field.id,
-                value: inputData[fieldName]
-            }];
-        }
-
-        return false;
+        return [{
+            fieldid: field.id,
+            value: inputData[fieldName] || ''
+        }];
     }
 
     /**
