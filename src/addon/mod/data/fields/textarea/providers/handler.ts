@@ -55,6 +55,11 @@ export class AddonModDataFieldTextareaHandler extends AddonModDataFieldTextHandl
         // Add some HTML to the text if needed.
         text = this.textUtils.formatHtmlLines(text);
 
+        // WS does not properly check if HTML content is blank when the field is required.
+        if (this.textUtils.htmlIsBlank(text)) {
+            text = '';
+        }
+
         return [
             {
                 fieldid: field.id,
@@ -99,11 +104,7 @@ export class AddonModDataFieldTextareaHandler extends AddonModDataFieldTextHandl
             }
 
             const found = inputData.some((input) => {
-                if (!input.subfield) {
-                    return !!input.value;
-                }
-
-                return false;
+                return !input.subfield && this.textUtils.htmlIsBlank(input.value);
             });
 
             if (!found) {
