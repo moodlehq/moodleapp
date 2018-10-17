@@ -168,7 +168,13 @@ export class AddonBlockMyOverviewComponent extends AddonBlockComponent implement
 
             this.courses.filter = '';
             this.showFilter = false;
-            this.showSelectorFilter = (this.courses.past.length + this.courses.future.length) > 0;
+            this.showSelectorFilter = this.courses.past.length > 0 || this.courses.future.length > 0 || courses.some((course) => {
+                return typeof course.enddate != 'undefined';
+            });
+            if (!this.showSelectorFilter) {
+                // No selector, show all.
+                this.selectedFilter = 'all';
+            }
             this.filteredCourses = this.courses[this.selectedFilter];
 
             this.initPrefetchCoursesIcons();

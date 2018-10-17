@@ -8,11 +8,6 @@ ion-app.app-root core-courses-course-progress {
                 .core-course-thumb {
                     background: nth($core-course-image-background, $i + 1);
                 }
-
-                progress .progress-bar-fallback span,
-                progress[value]::-webkit-progress-value {
-                    background-color: nth($core-course-image-background, $i + 1);
-                }
             }
         }
 
