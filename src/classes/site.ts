@@ -167,28 +167,46 @@ export class CoreSite {
 
     // Variables for the database.
     protected WS_CACHE_TABLE = 'wscache';
-    protected tableSchema = {
-        name: this.WS_CACHE_TABLE,
-        columns: [
-            {
-                name: 'id',
-                type: 'TEXT',
-                primaryKey: true
-            },
-            {
-                name: 'data',
-                type: 'TEXT'
-            },
-            {
-                name: 'key',
-                type: 'TEXT'
-            },
-            {
-                name: 'expirationTime',
-                type: 'INTEGER'
-            }
-        ]
-    };
+    protected CONFIG_TABLE = 'core_site_config';
+    protected tableSchemas = [
+        {
+            name: this.WS_CACHE_TABLE,
+            columns: [
+                {
+                    name: 'id',
+                    type: 'TEXT',
+                    primaryKey: true
+                },
+                {
+                    name: 'data',
+                    type: 'TEXT'
+                },
+                {
+                    name: 'key',
+                    type: 'TEXT'
+                },
+                {
+                    name: 'expirationTime',
+                    type: 'INTEGER'
+                }
+            ]
+        },
+        {
+            name: this.CONFIG_TABLE,
+            columns: [
+                {
+                    name: 'name',
+                    type: 'TEXT',
+                    unique: true,
+                    notNull: true
+                },
+                {
+                    name: 'value'
+                }
+            ]
+        }
+
+    ];
 
     // Versions of Moodle releases.
     protected MOODLE_RELEASES = {
@@ -247,7 +265,7 @@ export class CoreSite {
      */
     initDB(): void {
         this.db = this.dbProvider.getDB('Site-' + this.id);
-        this.db.createTableFromSchema(this.tableSchema);
+        this.db.createTablesFromSchema(this.tableSchemas);
     }
 
     /**
@@ -1542,5 +1560,45 @@ export class CoreSite {
         }
 
         return this.MOODLE_RELEASES[releases[position + 1]];
+    }
+
+    /**
+     * Deletes a site setting.
+     *
+     * @param {string} name The config name.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    deleteSiteConfig(name: string): Promise<any> {
+        return this.db.deleteRecords(this.CONFIG_TABLE, { name: name });
+    }
+
+    /**
+     * Get a site setting.
+     *
+     * @param {string} name The config name.
+     * @param {any} [defaultValue] Default value to use if the entry is not found.
+     * @return {Promise<any>} Resolves upon success along with the config data. Reject on failure.
+     */
+    getSiteConfig(name: string, defaultValue?: any): Promise<any> {
+        return this.db.getRecord(this.CONFIG_TABLE, { name: name }).then((entry) => {
+            return entry.value;
+        }).catch((error) => {
+            if (typeof defaultValue != 'undefined') {
+                return defaultValue;
+            }
+
+            return Promise.reject(error);
+        });
+    }
+
+    /**
+     * Set a site setting.
+     *
+     * @param {string} name The config name.
+     * @param {number|string} value The config value. Can only store number or strings.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    setSiteConfig(name: string, value: number | string): Promise<any> {
+        return this.db.insertRecord(this.CONFIG_TABLE, { name: name, value: value });
     }
 }

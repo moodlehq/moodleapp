@@ -17,6 +17,7 @@ import { Searchbar } from 'ionic-angular';
 import * as moment from 'moment';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCoursesHelperProvider } from '@core/courses/providers/helper';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
@@ -42,6 +43,7 @@ export class AddonBlockMyOverviewComponent extends AddonBlockComponent implement
         future: []
     };
     selectedFilter = 'inprogress';
+    currentSite: any;
     downloadAllCoursesEnabled: boolean;
     filteredCourses: any[];
     prefetchCoursesData = {
@@ -62,7 +64,8 @@ export class AddonBlockMyOverviewComponent extends AddonBlockComponent implement
     constructor(injector: Injector, private coursesProvider: CoreCoursesProvider,
             private courseCompletionProvider: AddonCourseCompletionProvider, private eventsProvider: CoreEventsProvider,
             private courseHelper: CoreCourseHelperProvider, private utils: CoreUtilsProvider,
-            private courseOptionsDelegate: CoreCourseOptionsDelegate, private coursesHelper: CoreCoursesHelperProvider) {
+            private courseOptionsDelegate: CoreCourseOptionsDelegate, private coursesHelper: CoreCoursesHelperProvider,
+            private sitesProvider: CoreSitesProvider) {
 
         super(injector, 'AddonBlockMyOverviewComponent');
     }
@@ -85,7 +88,11 @@ export class AddonBlockMyOverviewComponent extends AddonBlockComponent implement
             }
         });
 
-        super.ngOnInit();
+        this.currentSite = this.sitesProvider.getCurrentSite();
+        this.currentSite.getSiteConfig('AddonBlockMyOverviewFilter', this.selectedFilter).then((value) => {
+            this.selectedFilter = value;
+            super.ngOnInit();
+        });
     }
 
     /**
@@ -246,6 +253,7 @@ export class AddonBlockMyOverviewComponent extends AddonBlockComponent implement
      * The selected courses have changed.
      */
     selectedChanged(): void {
+        this.currentSite.setSiteConfig('AddonBlockMyOverviewFilter', this.selectedFilter);
         this.filteredCourses = this.courses[this.selectedFilter];
     }
 
