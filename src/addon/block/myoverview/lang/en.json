@@ -6,5 +6,7 @@
     "morecourses": "More courses",
     "nocoursesfuture": "No future courses",
     "nocoursesinprogress": "No in progress courses",
-    "nocoursespast": "No past courses"
+    "nocoursespast": "No past courses",
+    "lastaccessed": "Last accessed",
+    "title": "Title"
 }

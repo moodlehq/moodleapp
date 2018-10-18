@@ -43,6 +43,7 @@ export class AddonBlockMyOverviewComponent extends AddonBlockComponent implement
         future: []
     };
     selectedFilter = 'inprogress';
+    sort = 'title';
     currentSite: any;
     downloadAllCoursesEnabled: boolean;
     filteredCourses: any[];
@@ -54,6 +55,7 @@ export class AddonBlockMyOverviewComponent extends AddonBlockComponent implement
     };
     showFilter = false;
     showSelectorFilter = false;
+    showSortFilter = false;
 
     protected prefetchIconsInitialized = false;
     protected isDestroyed;
@@ -89,8 +91,16 @@ export class AddonBlockMyOverviewComponent extends AddonBlockComponent implement
         });
 
         this.currentSite = this.sitesProvider.getCurrentSite();
-        this.currentSite.getSiteConfig('AddonBlockMyOverviewFilter', this.selectedFilter).then((value) => {
+
+        const promises = [];
+        promises.push(this.currentSite.getSiteConfig('AddonBlockMyOverviewSort', this.sort).then((value) => {
+            this.sort = value;
+        }));
+        promises.push(this.currentSite.getSiteConfig('AddonBlockMyOverviewFilter', this.selectedFilter).then((value) => {
             this.selectedFilter = value;
+        }));
+
+        Promise.all(promises).finally(() => {
             super.ngOnInit();
         });
     }
@@ -146,25 +156,11 @@ export class AddonBlockMyOverviewComponent extends AddonBlockComponent implement
                 });
             }));
         }).then((courses) => {
-            const today = moment().unix();
-
-            this.courses.all = courses;
-            this.courses.past = [];
-            this.courses.inprogress = [];
-            this.courses.future = [];
-
-            courses.forEach((course) => {
-                if ((course.enddate && course.enddate < today) || course.completed) {
-                    // Courses that have already ended.
-                    this.courses.past.push(course);
-                } else if (course.startdate > today) {
-                    // Courses that have not started yet.
-                    this.courses.future.push(course);
-                } else {
-                    // Courses still in progress.
-                    this.courses.inprogress.push(course);
-                }
+            this.showSortFilter = courses.some((course) => {
+                return typeof course.lastaccess != 'undefined';
             });
+
+            this.sortCourses(courses);
 
             this.courses.filter = '';
             this.showFilter = false;
@@ -256,11 +252,59 @@ export class AddonBlockMyOverviewComponent extends AddonBlockComponent implement
     }
 
     /**
-     * The selected courses have changed.
+     * The selected courses filter have changed.
      */
     selectedChanged(): void {
         this.currentSite.setSiteConfig('AddonBlockMyOverviewFilter', this.selectedFilter);
         this.filteredCourses = this.courses[this.selectedFilter];
+    }
+
+    /**
+     * Sort and init courses filters.
+     * @param {any[]} courses Courses to sort.
+     */
+    sortCourses(courses: any[]): void {
+        if (this.showSortFilter) {
+            if (this.sort == 'lastaccess') {
+                courses.sort((a, b) => {
+                    return b.lastaccess - a.lastaccess;
+                });
+            } else if (this.sort == 'title') {
+                courses.sort((a, b) => {
+                    const compareA = a.fullname.toLowerCase(),
+                        compareB = b.fullname.toLowerCase();
+
+                    return compareA.localeCompare(compareB);
+                });
+            }
+        }
+
+        this.courses.all = courses;
+        this.courses.past = [];
+        this.courses.inprogress = [];
+        this.courses.future = [];
+
+        const today = moment().unix();
+        courses.forEach((course) => {
+            if ((course.enddate && course.enddate < today) || course.completed) {
+                // Courses that have already ended.
+                this.courses.past.push(course);
+            } else if (course.startdate > today) {
+                // Courses that have not started yet.
+                this.courses.future.push(course);
+            } else {
+                // Courses still in progress.
+                this.courses.inprogress.push(course);
+            }
+        });
+    }
+
+    /**
+     * The selected courses sort filter have changed.
+     */
+    switchSort(): void {
+        this.currentSite.setSiteConfig('AddonBlockMyOverviewSort', this.sort);
+        this.sortCourses(this.courses.all);
     }
 
     /**
