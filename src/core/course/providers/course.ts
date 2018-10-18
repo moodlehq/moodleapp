@@ -843,6 +843,16 @@ export class CoreCourseProvider {
     }
 
     /**
+     * Check if a module has a view page. E.g. labels don't have a view page.
+     *
+     * @param {any} module The module object.
+     * @return {boolean} Whether the module has a view page.
+     */
+    moduleHasView(module: any): boolean {
+        return !!module.url;
+    }
+
+    /**
      * Change the course status, setting it to the previous status.
      *
      * @param {number} courseId Course ID.
