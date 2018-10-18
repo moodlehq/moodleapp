@@ -17,6 +17,7 @@ import { NavController, NavOptions } from 'ionic-angular';
 import { AddonModChatIndexComponent } from '../components/index/index';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Handler to support chat modules.
@@ -25,6 +26,17 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 export class AddonModChatModuleHandler implements CoreCourseModuleHandler {
     name = 'AddonModChat';
     modName = 'chat';
+
+    supportedFeatures = {
+        [CoreConstants.FEATURE_GROUPS]: true,
+        [CoreConstants.FEATURE_GROUPINGS]: true,
+        [CoreConstants.FEATURE_MOD_INTRO]: true,
+        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: true,
+        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: false,
+        [CoreConstants.FEATURE_GRADE_OUTCOMES]: true,
+        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
+        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true
+    };
 
     constructor(private courseProvider: CoreCourseProvider) { }
 

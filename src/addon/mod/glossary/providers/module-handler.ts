@@ -17,6 +17,7 @@ import { NavController, NavOptions } from 'ionic-angular';
 import { AddonModGlossaryIndexComponent } from '../components/index/index';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Handler to support glossary modules.
@@ -25,6 +26,20 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 export class AddonModGlossaryModuleHandler implements CoreCourseModuleHandler {
     name = 'AddonModGlossary';
     modName = 'glossary';
+
+    supportedFeatures = {
+        [CoreConstants.FEATURE_GROUPS]: false,
+        [CoreConstants.FEATURE_GROUPINGS]: false,
+        [CoreConstants.FEATURE_MOD_INTRO]: true,
+        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: true,
+        [CoreConstants.FEATURE_COMPLETION_HAS_RULES]: true,
+        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: true,
+        [CoreConstants.FEATURE_GRADE_OUTCOMES]: true,
+        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
+        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
+        [CoreConstants.FEATURE_RATE]: true,
+        [CoreConstants.FEATURE_PLAGIARISM]: true
+    };
 
     constructor(private courseProvider: CoreCourseProvider) { }
 

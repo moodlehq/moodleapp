@@ -18,6 +18,7 @@ import { AddonModFeedbackIndexComponent } from '../components/index/index';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { AddonModFeedbackProvider } from './feedback';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Handler to support feedback modules.
@@ -26,6 +27,18 @@ import { AddonModFeedbackProvider } from './feedback';
 export class AddonModFeedbackModuleHandler implements CoreCourseModuleHandler {
     name = 'AddonModFeedback';
     modName = 'feedback';
+
+    supportedFeatures = {
+        [CoreConstants.FEATURE_GROUPS]: true,
+        [CoreConstants.FEATURE_GROUPINGS]: true,
+        [CoreConstants.FEATURE_MOD_INTRO]: true,
+        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: true,
+        [CoreConstants.FEATURE_COMPLETION_HAS_RULES]: true,
+        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: false,
+        [CoreConstants.FEATURE_GRADE_OUTCOMES]: false,
+        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
+        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true
+    };
 
     constructor(private courseProvider: CoreCourseProvider, private feedbackProvider: AddonModFeedbackProvider) { }
 

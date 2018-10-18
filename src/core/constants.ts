@@ -57,4 +57,31 @@ export class CoreConstants {
     static RESOURCELIB_DISPLAY_DOWNLOAD = 4; // Force download of file instead of display.
     static RESOURCELIB_DISPLAY_OPEN = 5; // Open directly.
     static RESOURCELIB_DISPLAY_POPUP = 6; // Open in "emulated" pop-up without navigation.
+
+    // Feature constants. Used to report features that are, or are not, supported by a module.
+    static FEATURE_GRADE_HAS_GRADE = 'grade_has_grade'; // True if module can provide a grade.
+    static FEATURE_GRADE_OUTCOMES = 'outcomes'; // True if module supports outcomes.
+    static FEATURE_ADVANCED_GRADING = 'grade_advanced_grading'; // True if module supports advanced grading methods.
+    static FEATURE_CONTROLS_GRADE_VISIBILITY = 'controlsgradevisbility'; // True if module controls grade visibility over gradebook.
+    static FEATURE_PLAGIARISM = 'plagiarism'; // True if module supports plagiarism plugins.
+    static FEATURE_COMPLETION_TRACKS_VIEWS = 'completion_tracks_views'; // True if module tracks whether somebody viewed it.
+    static FEATURE_COMPLETION_HAS_RULES = 'completion_has_rules'; // True if module has custom completion rules.
+    static FEATURE_NO_VIEW_LINK = 'viewlink'; // True if module has no 'view' page (like label).
+    static FEATURE_IDNUMBER = 'idnumber'; // True if module wants support for setting the ID number for grade calculation purposes.
+    static FEATURE_GROUPS = 'groups'; // True if module supports groups.
+    static FEATURE_GROUPINGS = 'groupings'; // True if module supports groupings.
+    static FEATURE_MOD_ARCHETYPE = 'mod_archetype'; // Type of module.
+    static FEATURE_MOD_INTRO = 'mod_intro'; // True if module supports intro editor.
+    static FEATURE_MODEDIT_DEFAULT_COMPLETION = 'modedit_default_completion'; // True if module has default completion.
+    static FEATURE_COMMENT = 'comment';
+    static FEATURE_RATE = 'rate';
+    static FEATURE_BACKUP_MOODLE2 = 'backup_moodle2'; // True if module supports backup/restore of moodle2 format.
+    static FEATURE_SHOW_DESCRIPTION = 'showdescription'; // True if module can show description on course main page.
+    static FEATURE_USES_QUESTIONS = 'usesquestions'; // True if module uses the question bank.
+
+    // Pssobile archetypes for modules.
+    static MOD_ARCHETYPE_OTHER = 0; // Unspecified module archetype.
+    static MOD_ARCHETYPE_RESOURCE = 1; // Resource-like type module.
+    static MOD_ARCHETYPE_ASSIGNMENT = 2; // Assignment module archetype.
+    static MOD_ARCHETYPE_SYSTEM = 3; // System (not user-addable) module archetype.
 }

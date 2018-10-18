@@ -17,6 +17,7 @@ import { NavController, NavOptions } from 'ionic-angular';
 import { AddonModFolderIndexComponent } from '../components/index/index';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Handler to support folder modules.
@@ -25,6 +26,18 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 export class AddonModFolderModuleHandler implements CoreCourseModuleHandler {
     name = 'AddonModFolder';
     modName = 'folder';
+
+    supportedFeatures = {
+        [CoreConstants.FEATURE_MOD_ARCHETYPE]: CoreConstants.MOD_ARCHETYPE_RESOURCE,
+        [CoreConstants.FEATURE_GROUPS]: false,
+        [CoreConstants.FEATURE_GROUPINGS]: false,
+        [CoreConstants.FEATURE_MOD_INTRO]: true,
+        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: true,
+        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: false,
+        [CoreConstants.FEATURE_GRADE_OUTCOMES]: false,
+        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
+        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true
+    };
 
     constructor(private courseProvider: CoreCourseProvider) { }
 
