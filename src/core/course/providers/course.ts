@@ -20,7 +20,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSiteWSPreSets, CoreSite } from '@classes/site';
 import { CoreConstants } from '../../constants';
 import { CoreCourseOfflineProvider } from './course-offline';
 
@@ -83,6 +83,18 @@ export class CoreCourseProvider {
         this.logger = logger.getInstance('CoreCourseProvider');
 
         this.sitesProvider.createTableFromSchema(this.courseStatusTableSchema);
+    }
+
+    /**
+     * Check whether the site supports requesting stealth modules.
+     *
+     * @param {CoreSite} [site] Site. If not defined, current site.
+     * @return {boolean} Whether the site supports requesting stealth modules.
+     */
+    canRequestStealthModules(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.isVersionGreaterEqualThan(['3.4.6', '3.5.3']);
     }
 
     /**
@@ -269,16 +281,18 @@ export class CoreCourseProvider {
 
             const params: any = {
                     courseid: courseId,
-                    options: [
-                        {
-                            name: 'includestealthmodules',
-                            value: 1
-                        }
-                    ]
+                    options: []
                 },
                 preSets: any = {
                     omitExpires: preferCache
                 };
+
+            if (this.canRequestStealthModules(site)) {
+                params.options.push({
+                    name: 'includestealthmodules',
+                    value: 1
+                });
+            }
 
             // If modName is set, retrieve all modules of that type. Otherwise get only the module.
             if (modName) {
@@ -527,13 +541,16 @@ export class CoreCourseProvider {
                     {
                         name: 'excludecontents',
                         value: excludeContents ? 1 : 0
-                    },
-                    {
-                        name: 'includestealthmodules',
-                        value: includeStealthModules ? 1 : 0
                     }
                 ]
             };
+
+            if (this.canRequestStealthModules(site)) {
+                params.options.push({
+                    name: 'includestealthmodules',
+                    value: includeStealthModules ? 1 : 0
+                });
+            }
 
             return site.read('core_course_get_contents', params, preSets).catch(() => {
                 // Error getting the data, it could fail because we added a new parameter and the call isn't cached.
