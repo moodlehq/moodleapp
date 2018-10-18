@@ -739,6 +739,53 @@ export class CoreCourseHelperProvider {
     }
 
     /**
+     * Initialize the prefetch icon for selected courses.
+     *
+     * @param  {any[]}        courses  Courses array to get info from.
+     * @param  {any}          prefetch Prefetch information.
+     * @return {Promise<any>}          Resolved with the prefetch information updated when done.
+     */
+    initPrefetchCoursesIcons(courses: any[], prefetch: any): Promise<any> {
+        if (!courses || courses.length < 2) {
+            // Not enough courses.
+            prefetch.icon = '';
+
+            return Promise.resolve(prefetch);
+        }
+
+        return this.determineCoursesStatus(courses).then((status) => {
+            let icon = this.getCourseStatusIconAndTitleFromStatus(status).icon;
+            if (icon == 'spinner') {
+                // It seems all courses are being downloaded, show a download button instead.
+                icon = 'cloud-download';
+            }
+            prefetch.icon = icon;
+
+            return prefetch;
+        });
+    }
+
+    /**
+     * Prefetch all the courses in the array.
+     *
+     * @param  {any[]}        courses  Courses array to prefetch.
+     * @param  {any}          prefetch Prefetch information to be updated.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetchCourses(courses: any[], prefetch: any): Promise<any> {
+        prefetch.icon = 'spinner';
+        prefetch.badge = '';
+
+        return this.confirmAndPrefetchCourses(courses, (progress) => {
+            prefetch.badge = progress.count + ' / ' + progress.total;
+        }).then(() => {
+            prefetch.icon = 'refresh';
+        }).finally(() => {
+            prefetch.badge = '';
+        });
+    }
+
+    /**
      * Get a course download promise (if any).
      *
      * @param {number} courseId Course ID.

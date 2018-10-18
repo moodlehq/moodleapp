@@ -103,7 +103,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             this.sort = value;
         }));
         promises.push(this.currentSite.getLocalSiteConfig('AddonBlockMyOverviewFilter', this.selectedFilter).then((value) => {
-            this.selectedFilter = value;
+            this.selectedFilter = typeof this.courses[value] == 'undefined' ? 'inprogress' : value;
         }));
 
         Promise.all(promises).finally(() => {
@@ -210,22 +210,9 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         this.prefetchIconsInitialized = true;
 
         Object.keys(this.prefetchCoursesData).forEach((filter) => {
-            if (!this.courses[filter] || this.courses[filter].length < 2) {
-                // Not enough courses.
-                this.prefetchCoursesData[filter].icon = '';
-
-                return;
-            }
-
-            this.courseHelper.determineCoursesStatus(this.courses[filter]).then((status) => {
-                let icon = this.courseHelper.getCourseStatusIconAndTitleFromStatus(status).icon;
-                if (icon == 'spinner') {
-                    // It seems all courses are being downloaded, show a download button instead.
-                    icon = 'cloud-download';
-                }
-                this.prefetchCoursesData[filter].icon = icon;
+            this.courseHelper.initPrefetchCoursesIcons(this.courses[filter], this.prefetchCoursesData[filter]).then((prefetch) => {
+                this.prefetchCoursesData[filter] = prefetch;
             });
-
         });
     }
 
@@ -236,23 +223,13 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      */
     prefetchCourses(): Promise<any> {
         const selected = this.selectedFilter,
-            selectedData = this.prefetchCoursesData[selected],
-            initialIcon = selectedData.icon;
+            initialIcon = this.prefetchCoursesData[selected].icon;
 
-        selectedData.icon = 'spinner';
-        selectedData.badge = '';
-
-        return this.courseHelper.confirmAndPrefetchCourses(this.courses[this.selectedFilter], (progress) => {
-            selectedData.badge = progress.count + ' / ' + progress.total;
-        }).then(() => {
-            selectedData.icon = 'refresh';
-        }).catch((error) => {
+        return this.courseHelper.prefetchCourses(this.courses[selected], this.prefetchCoursesData[selected]).catch((error) => {
             if (!this.isDestroyed) {
                 this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
-                selectedData.icon = initialIcon;
+                this.prefetchCoursesData[selected].icon = initialIcon;
             }
-        }).finally(() => {
-            selectedData.badge = '';
         });
     }
 
