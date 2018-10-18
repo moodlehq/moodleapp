@@ -1,4 +1,7 @@
 <core-loading [hideUntil]="loaded" class="core-loading-center">
+    <ion-item-divider color="light">
+        <h2>{{ 'addon.block_sitemainmenu.pluginname' | translate }}</h2>
+    </ion-item-divider>
     <ion-item text-wrap *ngIf="block.summary">
         <core-format-text [text]="block.summary"></core-format-text>
     </ion-item>
