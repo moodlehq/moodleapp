@@ -66,26 +66,20 @@ export class AddonModDataFieldLatlongHandler implements AddonModDataFieldHandler
      * @return {any}            With name and value of the data to be sent.
      */
     getFieldEditData(field: any, inputData: any, originalFieldData: any): any {
-        const fieldName = 'f_' + field.id,
-            values = [];
+        const fieldName = 'f_' + field.id;
 
-        if (inputData[fieldName + '_0']) {
-            values.push({
+        return [
+            {
                 fieldid: field.id,
                 subfield: '0',
-                value: inputData[fieldName + '_0']
-            });
-        }
-
-        if (inputData[fieldName + '_1']) {
-            values.push({
+                value: inputData[fieldName + '_0'] || ''
+            },
+            {
                 fieldid: field.id,
                 subfield: '1',
-                value: inputData[fieldName + '_1']
-            });
-        }
-
-        return values;
+                value: inputData[fieldName + '_1'] || ''
+            }
+        ];
     }
 
     /**

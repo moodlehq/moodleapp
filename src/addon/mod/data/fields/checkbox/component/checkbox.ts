@@ -40,7 +40,7 @@ export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginC
             return;
         }
 
-        this.options = this.field.param1.split('\n').map((option) => {
+        this.options = this.field.param1.split(/\r?\n/).map((option) => {
             return { key: option, value: option };
         });
 
@@ -67,7 +67,7 @@ export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginC
      * @param {any} value New value to be set.
      */
     protected updateValue(value: any): void {
-        this.value = value;
+        this.value = value || {};
         this.value.content = value && value.content && value.content.split('##').join('<br>');
     }
 }

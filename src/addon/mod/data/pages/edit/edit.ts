@@ -303,7 +303,7 @@ export class AddonModDataEditPage {
 
         this.jsData = {
             fields: this.fields,
-            contents: this.entry.contents,
+            contents: this.utils.clone(this.entry.contents),
             form: this.editForm,
             data: this.data,
             errors: this.errors

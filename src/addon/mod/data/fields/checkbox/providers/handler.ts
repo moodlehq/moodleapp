@@ -80,14 +80,10 @@ export class AddonModDataFieldCheckboxHandler implements AddonModDataFieldHandle
     getFieldEditData(field: any, inputData: any, originalFieldData: any): any {
         const fieldName = 'f_' + field.id;
 
-        if (inputData[fieldName] && inputData[fieldName].length > 0) {
-            return [{
-                fieldid: field.id,
-                value: inputData[fieldName]
-            }];
-        }
-
-        return false;
+        return [{
+            fieldid: field.id,
+            value: inputData[fieldName] || []
+        }];
     }
 
     /**
