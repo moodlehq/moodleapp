@@ -1631,6 +1631,7 @@
   "core.view": "moodle",
   "core.viewcode": "local_moodlemobileapp",
   "core.vieweditor": "local_moodlemobileapp",
+  "core.viewembeddedcontent": "local_moodlemobileapp",
   "core.viewprofile": "moodle",
   "core.warningofflinedatadeleted": "local_moodlemobileapp",
   "core.whatisyourage": "moodle",
