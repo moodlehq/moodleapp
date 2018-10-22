@@ -1,4 +1,4 @@
-$core-progress-bar-height: 10px !default;
+$core-progress-bar-height: 8px !default;
 
 ion-app.app-root core-progress-bar {
     @include padding(null, 55px, null, null);
@@ -11,7 +11,7 @@ ion-app.app-root core-progress-bar {
         line-height: 40px;
         font-size: 1.4rem;
         color: $gray-darker;
-        @include position(-15px, 10px, null, null);
+        @include position(-16px, 10px, null, null);
         position: absolute;
     }
 
@@ -19,7 +19,7 @@ ion-app.app-root core-progress-bar {
         -webkit-appearance: none;
         appearance: none;
         height: $core-progress-bar-height;
-        margin: 15px 0;
+        margin: 16px 0;
         padding: 0;
         display: block;
         width: 100%;
@@ -27,15 +27,15 @@ ion-app.app-root core-progress-bar {
         .progress-bar-fallback,
         &[value]::-webkit-progress-bar {
             background-color: $gray-lighter;
-            border-radius: 999px;
-            border: 1px solid $gray-light;
+            border-radius: 0;
+            border:0;
             box-shadow: none;
         }
 
         .progress-bar-fallback span,
         &[value]::-webkit-progress-value {
             background-color: $core-progressbar-color;
-            border-radius: 999px;
+            border-radius: 0;
         }
 
         .progress-bar-fallback {

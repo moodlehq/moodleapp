@@ -6,22 +6,31 @@
 </core-navbar-buttons>
 
 <core-loading [hideUntil]="loaded" class="core-loading-center">
-    <!-- "Time" selector. -->
-    <div padding class="clearfix" [hidden]="showFilter" ion-row justify-content-end>
-        <ion-select [hidden]="!showSelectorFilter" [title]="'core.show' | translate" [(ngModel)]="selectedFilter" ion-col (ngModelChange)="selectedChanged()" interface="popover" class="core-button-select">
-            <ion-option value="all">{{ 'addon.block_myoverview.all' | translate }}</ion-option>∫
-            <ion-option value="inprogress">{{ 'addon.block_myoverview.inprogress' | translate }}</ion-option>
-            <ion-option value="future">{{ 'addon.block_myoverview.future' | translate }}</ion-option>
-            <ion-option value="past">{{ 'addon.block_myoverview.past' | translate }}</ion-option>
-        </ion-select>
+    <div padding ion-row justify-content-end [hidden]="showFilter">
+        <!-- "Time" selector. -->
+        <ion-col [hidden]="!showSelectorFilter">
+            <ion-select text-start [title]="'core.show' | translate" [(ngModel)]="selectedFilter" ion-col (ngModelChange)="selectedChanged()" interface="popover" class="core-button-select">
+                <ion-option value="all">{{ 'addon.block_myoverview.all' | translate }}</ion-option>∫
+                <ion-option value="inprogress">{{ 'addon.block_myoverview.inprogress' | translate }}</ion-option>
+                <ion-option value="future">{{ 'addon.block_myoverview.future' | translate }}</ion-option>
+                <ion-option value="past">{{ 'addon.block_myoverview.past' | translate }}</ion-option>
+            </ion-select>
+        </ion-col>
+        <!-- "Sort" selector. -->
+        <ion-col [hidden]="!showSortFilter">
+            <ion-select text-start [(ngModel)]="sort" (ngModelChange)="switchSort()" interface="popover" class="core-button-select">
+                <ion-option value="title">{{ 'addon.block_myoverview.title' | translate }}</ion-option>
+                <ion-option value="lastaccess">{{ 'addon.block_myoverview.lastaccessed' | translate }}</ion-option>
+            </ion-select>
+        </ion-col>
         <!-- Download all courses. -->
-        <div *ngIf="downloadAllCoursesEnabled && courses[selectedFilter] && courses[selectedFilter].length > 1" class="core-button-spinner" ion-col text-end col-1>
+        <ion-col *ngIf="downloadAllCoursesEnabled && courses[selectedFilter] && courses[selectedFilter].length > 1" class="core-button-spinner" text-end col-1>
             <button *ngIf="prefetchCoursesData[selectedFilter].icon && prefetchCoursesData[selectedFilter].icon != 'spinner'" ion-button icon-only clear color="dark" (click)="prefetchCourses()">
                 <core-icon [name]="prefetchCoursesData[selectedFilter].icon"></core-icon>
             </button>
             <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData[selectedFilter].badge">{{prefetchCoursesData[selectedFilter].badge}}</ion-badge>
             <ion-spinner *ngIf="!prefetchCoursesData[selectedFilter].icon || prefetchCoursesData[selectedFilter].icon == 'spinner'"></ion-spinner>
-        </div>
+        </ion-col>
     </div>
     <ng-container *ngIf="courses[selectedFilter].length == 0">
         <core-empty-box *ngIf="selectedFilter == 'inprogress'" image="assets/img/icons/courses.svg" [message]="'addon.block_myoverview.nocoursesinprogress' | translate"></core-empty-box>

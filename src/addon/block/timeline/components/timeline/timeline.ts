@@ -15,6 +15,7 @@
 import { Component, OnInit, Injector } from '@angular/core';
 import * as moment from 'moment';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCoursesHelperProvider } from '@core/courses/providers/helper';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
@@ -31,6 +32,7 @@ import { AddonBlockTimelineProvider } from '../../providers/timeline';
 export class AddonBlockTimelineComponent extends AddonBlockComponent implements OnInit {
     sort = 'sortbydates';
     filter = 'next30days';
+    currentSite: any;
     timeline = {
         events: [],
         loaded: false,
@@ -49,7 +51,7 @@ export class AddonBlockTimelineComponent extends AddonBlockComponent implements 
 
     constructor(injector: Injector, private coursesProvider: CoreCoursesProvider, private utils: CoreUtilsProvider,
             private timelineProvider: AddonBlockTimelineProvider, private courseOptionsDelegate: CoreCourseOptionsDelegate,
-            private coursesHelper: CoreCoursesHelperProvider) {
+            private coursesHelper: CoreCoursesHelperProvider, private sitesProvider: CoreSitesProvider) {
 
         super(injector, 'AddonBlockTimelineComponent');
     }
@@ -58,8 +60,15 @@ export class AddonBlockTimelineComponent extends AddonBlockComponent implements 
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.switchFilter();
-        super.ngOnInit();
+        this.currentSite = this.sitesProvider.getCurrentSite();
+        this.currentSite.getLocalSiteConfig('AddonBlockTimelineFilter', this.filter).then((value) => {
+            this.filter = value;
+            this.switchFilter();
+        });
+        this.currentSite.getLocalSiteConfig('AddonBlockTimelineSort', this.sort).then((value) => {
+            this.sort = value;
+            super.ngOnInit();
+        });
     }
 
     /**
@@ -167,6 +176,7 @@ export class AddonBlockTimelineComponent extends AddonBlockComponent implements 
      * Change timeline filter being viewed.
      */
     switchFilter(): void {
+        this.currentSite.setLocalSiteConfig('AddonBlockTimelineFilter', this.filter);
         switch (this.filter) {
             case 'overdue':
                 this.dataFrom = -14;
@@ -200,6 +210,7 @@ export class AddonBlockTimelineComponent extends AddonBlockComponent implements 
      * Change timeline sort being viewed.
      */
     switchSort(): void {
+        this.currentSite.setLocalSiteConfig('AddonBlockTimelineSort', this.sort);
         if (!this.timeline.loaded && this.sort == 'sortbydates') {
             this.fetchContent();
         } else if (!this.timelineCourses.loaded && this.sort == 'sortbycourses') {
