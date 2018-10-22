@@ -93,10 +93,10 @@ export class AddonBlockMyOverviewComponent extends AddonBlockComponent implement
         this.currentSite = this.sitesProvider.getCurrentSite();
 
         const promises = [];
-        promises.push(this.currentSite.getSiteConfig('AddonBlockMyOverviewSort', this.sort).then((value) => {
+        promises.push(this.currentSite.getLocalSiteConfig('AddonBlockMyOverviewSort', this.sort).then((value) => {
             this.sort = value;
         }));
-        promises.push(this.currentSite.getSiteConfig('AddonBlockMyOverviewFilter', this.selectedFilter).then((value) => {
+        promises.push(this.currentSite.getLocalSiteConfig('AddonBlockMyOverviewFilter', this.selectedFilter).then((value) => {
             this.selectedFilter = value;
         }));
 
@@ -156,17 +156,14 @@ export class AddonBlockMyOverviewComponent extends AddonBlockComponent implement
                 });
             }));
         }).then((courses) => {
-            this.showSortFilter = courses.some((course) => {
-                return typeof course.lastaccess != 'undefined';
-            });
+            this.showSortFilter = courses.length > 0 && typeof courses[0].lastaccess != 'undefined';
 
             this.sortCourses(courses);
 
             this.courses.filter = '';
             this.showFilter = false;
-            this.showSelectorFilter = this.courses.past.length > 0 || this.courses.future.length > 0 || courses.some((course) => {
-                return typeof course.enddate != 'undefined';
-            });
+            this.showSelectorFilter = this.courses.past.length > 0 || this.courses.future.length > 0 || (courses.length > 0 &&
+                typeof courses[0].enddate != 'undefined');
             if (!this.showSelectorFilter) {
                 // No selector, show all.
                 this.selectedFilter = 'all';
@@ -255,7 +252,7 @@ export class AddonBlockMyOverviewComponent extends AddonBlockComponent implement
      * The selected courses filter have changed.
      */
     selectedChanged(): void {
-        this.currentSite.setSiteConfig('AddonBlockMyOverviewFilter', this.selectedFilter);
+        this.currentSite.setLocalSiteConfig('AddonBlockMyOverviewFilter', this.selectedFilter);
         this.filteredCourses = this.courses[this.selectedFilter];
     }
 
@@ -303,7 +300,7 @@ export class AddonBlockMyOverviewComponent extends AddonBlockComponent implement
      * The selected courses sort filter have changed.
      */
     switchSort(): void {
-        this.currentSite.setSiteConfig('AddonBlockMyOverviewSort', this.sort);
+        this.currentSite.setLocalSiteConfig('AddonBlockMyOverviewSort', this.sort);
         this.sortCourses(this.courses.all);
     }
 

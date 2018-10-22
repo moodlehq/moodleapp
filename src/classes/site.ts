@@ -1573,13 +1573,13 @@ export class CoreSite {
     }
 
     /**
-     * Get a site setting.
+     * Get a site setting on local device.
      *
      * @param {string} name The config name.
      * @param {any} [defaultValue] Default value to use if the entry is not found.
      * @return {Promise<any>} Resolves upon success along with the config data. Reject on failure.
      */
-    getSiteConfig(name: string, defaultValue?: any): Promise<any> {
+    getLocalSiteConfig(name: string, defaultValue?: any): Promise<any> {
         return this.db.getRecord(this.CONFIG_TABLE, { name: name }).then((entry) => {
             return entry.value;
         }).catch((error) => {
@@ -1592,13 +1592,13 @@ export class CoreSite {
     }
 
     /**
-     * Set a site setting.
+     * Set a site setting on local device.
      *
      * @param {string} name The config name.
      * @param {number|string} value The config value. Can only store number or strings.
      * @return {Promise<any>} Promise resolved when done.
      */
-    setSiteConfig(name: string, value: number | string): Promise<any> {
+    setLocalSiteConfig(name: string, value: number | string): Promise<any> {
         return this.db.insertRecord(this.CONFIG_TABLE, { name: name, value: value });
     }
 }
