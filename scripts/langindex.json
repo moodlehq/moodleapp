@@ -1522,6 +1522,7 @@
   "core.settings.privacypolicy": "local_moodlemobileapp",
   "core.settings.reportinbackground": "local_moodlemobileapp",
   "core.settings.settings": "moodle",
+  "core.settings.showdownloadoptions": "local_moodlemobileapp",
   "core.settings.sites": "moodle",
   "core.settings.spaceusage": "local_moodlemobileapp",
   "core.settings.synchronization": "local_moodlemobileapp",
