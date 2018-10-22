@@ -13,7 +13,9 @@
 // limitations under the License.
 
 import { Component, OnInit, AfterViewInit, Input, ElementRef } from '@angular/core';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { Platform } from 'ionic-angular';
 
 /**
  * Component to allow showing and hiding a password. The affected input MUST have a name to identify it.
@@ -45,7 +47,8 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
     protected input: HTMLInputElement; // Input affected.
     protected element: HTMLElement; // Current element.
 
-    constructor(element: ElementRef, private utils: CoreUtilsProvider) {
+    constructor(element: ElementRef, private utils: CoreUtilsProvider, private domUtils: CoreDomUtilsProvider,
+            private platform: Platform) {
         this.element = element.nativeElement;
     }
 
@@ -106,7 +109,16 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
         event.preventDefault();
         event.stopPropagation();
 
+        const isFocused = document.activeElement === this.input;
+
         this.shown = !this.shown;
         this.setData();
+
+        if (isFocused && this.platform.is('android')) {
+            // In Android, the keyboard is closed when the input type changes. Focus it again.
+            setTimeout(() => {
+                this.domUtils.focusElement(this.input);
+            }, 400);
+        }
     }
 }
