@@ -94,6 +94,8 @@ ion-app.app-root.ios core-course-module {
     a.core-course-module-handler .core-module-icon {
         margin-top: $label-ios-margin-top;
         margin-bottom: $label-ios-margin-bottom;
+        width: 24px;
+        height: 24px;
     }
 
     .core-module-title core-format-text {
@@ -119,6 +121,8 @@ ion-app.app-root.wp core-course-module {
     a.core-course-module-handler .core-module-icon {
         margin-top: $item-wp-padding-top;
         margin-bottom: $item-wp-padding-bottom;
+        width: 24px;
+        height: 24px;
     }
 
     .core-module-title core-format-text {

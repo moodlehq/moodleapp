@@ -110,7 +110,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
                 if (modName === 'resources') {
                     icon = this.courseProvider.getModuleIconSrc('page');
                 } else {
-                    icon = this.courseProvider.getModuleIconSrc(modName);
+                    icon = this.moduleDelegate.getModuleIconSrc(modName);
                 }
 
                 this.entries.push({

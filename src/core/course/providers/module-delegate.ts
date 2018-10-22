@@ -72,6 +72,13 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
     displayRefresherInSingleActivity?(): boolean;
 
     /**
+     * Get the icon src for the module.
+     *
+     * @return {string} The icon src.
+     */
+    getIconSrc?(): string;
+
+    /**
      * Check if this type of module supports a certain feature.
      * If this function is implemented, the supportedFeatures object will be ignored.
      *
@@ -300,6 +307,16 @@ export class CoreCourseModuleDelegate extends CoreDelegate {
      */
     displayRefresherInSingleActivity(modname: string): boolean {
         return this.executeFunctionOnEnabled(modname, 'displayRefresherInSingleActivity');
+    }
+
+    /**
+     * Get the icon src for a certain type of module.
+     *
+     * @param {any} modname The name of the module type.
+     * @return {string} The icon src.
+     */
+    getModuleIconSrc(modname: string): string {
+        return this.executeFunctionOnEnabled(modname, 'getIconSrc') || this.courseProvider.getModuleIconSrc(modname);
     }
 
     /**

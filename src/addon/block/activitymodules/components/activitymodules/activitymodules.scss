@@ -1,0 +1,26 @@
+ion-app.app-root.md addon-block-activitymodules {
+    .core-module-icon {
+        margin-top: $label-md-margin-top;
+        margin-bottom: $label-md-margin-bottom;
+        width: 24px;
+        height: 24px;
+    }
+}
+
+ion-app.app-root.ios addon-block-activitymodules {
+    .core-module-icon {
+        margin-top: $label-ios-margin-top;
+        margin-bottom: $label-ios-margin-bottom;
+        width: 24px;
+        height: 24px;
+    }
+}
+
+ion-app.app-root.wp addon-block-activitymodules {
+    .core-module-icon {
+        margin-top: $item-wp-padding-top;
+        margin-bottom: $item-wp-padding-bottom;
+        width: 24px;
+        height: 24px;
+    }
+}
