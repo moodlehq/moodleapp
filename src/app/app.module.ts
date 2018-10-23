@@ -75,6 +75,7 @@ import { CoreSitePluginsModule } from '@core/siteplugins/siteplugins.module';
 import { CoreCompileModule } from '@core/compile/compile.module';
 import { CoreQuestionModule } from '@core/question/question.module';
 import { CoreCommentsModule } from '@core/comments/comments.module';
+import { CoreBlockModule } from '@core/block/block.module';
 
 // Addon modules.
 import { AddonBadgesModule } from '@addon/badges/badges.module';
@@ -83,7 +84,9 @@ import { AddonCompetencyModule } from '@addon/competency/competency.module';
 import { AddonCourseCompletionModule } from '@addon/coursecompletion/coursecompletion.module';
 import { AddonUserProfileFieldModule } from '@addon/userprofilefield/userprofilefield.module';
 import { AddonFilesModule } from '@addon/files/files.module';
+import { AddonBlockActivityModulesModule } from '@addon/block/activitymodules/activitymodules.module';
 import { AddonBlockMyOverviewModule } from '@addon/block/myoverview/myoverview.module';
+import { AddonBlockSiteMainMenuModule } from '@addon/block/sitemainmenu/sitemainmenu.module';
 import { AddonBlockTimelineModule } from '@addon/block/timeline/timeline.module';
 import { AddonModAssignModule } from '@addon/mod/assign/assign.module';
 import { AddonModBookModule } from '@addon/mod/book/book.module';
@@ -188,13 +191,16 @@ export const CORE_PROVIDERS: any[] = [
         CoreCompileModule,
         CoreQuestionModule,
         CoreCommentsModule,
+        CoreBlockModule,
         AddonBadgesModule,
         AddonCalendarModule,
         AddonCompetencyModule,
         AddonCourseCompletionModule,
         AddonUserProfileFieldModule,
         AddonFilesModule,
+        AddonBlockActivityModulesModule,
         AddonBlockMyOverviewModule,
+        AddonBlockSiteMainMenuModule,
         AddonBlockTimelineModule,
         AddonModAssignModule,
         AddonModBookModule,

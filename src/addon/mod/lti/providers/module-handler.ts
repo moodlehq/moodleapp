@@ -23,6 +23,7 @@ import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
 import { AddonModLtiIndexComponent } from '../components/index/index';
 import { AddonModLtiProvider } from './lti';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Handler to support LTI modules.
@@ -31,6 +32,17 @@ import { AddonModLtiProvider } from './lti';
 export class AddonModLtiModuleHandler implements CoreCourseModuleHandler {
     name = 'AddonModLti';
     modName = 'lti';
+
+    supportedFeatures = {
+        [CoreConstants.FEATURE_GROUPS]: false,
+        [CoreConstants.FEATURE_GROUPINGS]: false,
+        [CoreConstants.FEATURE_MOD_INTRO]: true,
+        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: true,
+        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: true,
+        [CoreConstants.FEATURE_GRADE_OUTCOMES]: true,
+        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
+        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true
+    };
 
     constructor(private appProvider: CoreAppProvider,
             private courseProvider: CoreCourseProvider,

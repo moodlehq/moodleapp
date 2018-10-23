@@ -18,6 +18,7 @@ import { AddonModLessonIndexComponent } from '../components/index/index';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { AddonModLessonProvider } from './lesson';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Handler to support quiz modules.
@@ -26,6 +27,18 @@ import { AddonModLessonProvider } from './lesson';
 export class AddonModLessonModuleHandler implements CoreCourseModuleHandler {
     name = 'AddonModLesson';
     modName = 'lesson';
+
+    supportedFeatures = {
+        [CoreConstants.FEATURE_GROUPS]: true,
+        [CoreConstants.FEATURE_GROUPINGS]: true,
+        [CoreConstants.FEATURE_MOD_INTRO]: true,
+        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: true,
+        [CoreConstants.FEATURE_COMPLETION_HAS_RULES]: true,
+        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: true,
+        [CoreConstants.FEATURE_GRADE_OUTCOMES]: true,
+        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
+        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true
+    };
 
     constructor(private courseProvider: CoreCourseProvider, private lessonProvider: AddonModLessonProvider) { }
 

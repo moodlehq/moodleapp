@@ -25,6 +25,7 @@ import { AddonModDataApproveLinkHandler } from './providers/approve-link-handler
 import { AddonModDataDeleteLinkHandler } from './providers/delete-link-handler';
 import { AddonModDataShowLinkHandler } from './providers/show-link-handler';
 import { AddonModDataEditLinkHandler } from './providers/edit-link-handler';
+import { AddonModDataListLinkHandler } from './providers/list-link-handler';
 import { AddonModDataHelperProvider } from './providers/helper';
 import { AddonModDataPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModDataSyncProvider } from './providers/sync';
@@ -64,6 +65,7 @@ export const ADDON_MOD_DATA_PROVIDERS: any[] = [
         AddonModDataDeleteLinkHandler,
         AddonModDataShowLinkHandler,
         AddonModDataEditLinkHandler,
+        AddonModDataListLinkHandler,
         AddonModDataSyncCronHandler,
         AddonModDataDefaultFieldHandler
     ]
@@ -74,7 +76,9 @@ export class AddonModDataModule {
             contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModDataLinkHandler,
             cronDelegate: CoreCronDelegate, syncHandler: AddonModDataSyncCronHandler, updateManager: CoreUpdateManagerProvider,
             approveLinkHandler: AddonModDataApproveLinkHandler, deleteLinkHandler: AddonModDataDeleteLinkHandler,
-            showLinkHandler: AddonModDataShowLinkHandler, editLinkHandler: AddonModDataEditLinkHandler) {
+            showLinkHandler: AddonModDataShowLinkHandler, editLinkHandler: AddonModDataEditLinkHandler,
+            listLinkHandler: AddonModDataListLinkHandler) {
+
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         contentLinksDelegate.registerHandler(linkHandler);
@@ -82,6 +86,7 @@ export class AddonModDataModule {
         contentLinksDelegate.registerHandler(deleteLinkHandler);
         contentLinksDelegate.registerHandler(showLinkHandler);
         contentLinksDelegate.registerHandler(editLinkHandler);
+        contentLinksDelegate.registerHandler(listLinkHandler);
         cronDelegate.register(syncHandler);
 
         // Allow migrating the tables from the old app to the new schema.

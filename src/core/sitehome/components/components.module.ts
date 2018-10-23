@@ -19,6 +19,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreCourseComponentsModule } from '@core/course/components/components.module';
+import { CoreBlockComponentsModule } from '@core/block/components/components.module';
 import { CoreSiteHomeIndexComponent } from './index/index';
 import { CoreSiteHomeAllCourseListComponent } from './all-course-list/all-course-list';
 import { CoreSiteHomeCategoriesComponent } from './categories/categories';
@@ -41,7 +42,8 @@ import { CoreSiteHomeNewsComponent } from './news/news';
         TranslateModule.forChild(),
         CoreComponentsModule,
         CoreDirectivesModule,
-        CoreCourseComponentsModule
+        CoreCourseComponentsModule,
+        CoreBlockComponentsModule
     ],
     exports: [
         CoreSiteHomeIndexComponent,

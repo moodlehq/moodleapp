@@ -34,6 +34,14 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
     modName: string;
 
     /**
+     * List of supported features. The keys should be the name of the feature.
+     * This is to replicate the "plugin_supports" function of Moodle.
+     * If you need some dynamic checks please implement the supportsFeature function.
+     * @type {{[name: string]: any}}
+     */
+    supportedFeatures?: {[name: string]: any};
+
+    /**
      * Get the data required to display the module in the course contents view.
      *
      * @param {any} module The module object.
@@ -62,6 +70,22 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @return {boolean} Whether the refresher should be displayed.
      */
     displayRefresherInSingleActivity?(): boolean;
+
+    /**
+     * Get the icon src for the module.
+     *
+     * @return {string} The icon src.
+     */
+    getIconSrc?(): string;
+
+    /**
+     * Check if this type of module supports a certain feature.
+     * If this function is implemented, the supportedFeatures object will be ignored.
+     *
+     * @param {string} feature The feature to check.
+     * @return {any} The result of the supports check.
+     */
+    supportsFeature?(feature: string): any;
 }
 
 /**
@@ -283,5 +307,45 @@ export class CoreCourseModuleDelegate extends CoreDelegate {
      */
     displayRefresherInSingleActivity(modname: string): boolean {
         return this.executeFunctionOnEnabled(modname, 'displayRefresherInSingleActivity');
+    }
+
+    /**
+     * Get the icon src for a certain type of module.
+     *
+     * @param {any} modname The name of the module type.
+     * @return {string} The icon src.
+     */
+    getModuleIconSrc(modname: string): string {
+        return this.executeFunctionOnEnabled(modname, 'getIconSrc') || this.courseProvider.getModuleIconSrc(modname);
+    }
+
+    /**
+     * Check if a certain type of module supports a certain feature.
+     *
+     * @param {string} modname The modname.
+     * @param {string} feature The feature to check.
+     * @param {any} defaultValue Value to return if the module is not supported or doesn't know if it's supported.
+     * @return {any} The result of the supports check.
+     */
+    supportsFeature(modname: string, feature: string, defaultValue: any): any {
+        const handler = this.enabledHandlers[modname];
+        let result;
+
+        if (handler) {
+            if (handler['supportsFeature']) {
+                // The handler specified a function to determine the feature, use it.
+                result = handler['supportsFeature'].apply(handler, [feature]);
+            } else if (handler['supportedFeatures']) {
+                // Handler has an object to determine the feature, use it.
+                result = handler['supportedFeatures'][feature];
+            }
+        }
+
+        if (result === null || typeof result == 'undefined') {
+            // Not supported or doesn't know, return defaul.
+            return defaultValue;
+        } else {
+            return result;
+        }
     }
 }

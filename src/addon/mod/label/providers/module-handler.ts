@@ -14,6 +14,7 @@
 
 import { Injectable, Injector } from '@angular/core';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Handler to support label modules.
@@ -22,6 +23,19 @@ import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/cour
 export class AddonModLabelModuleHandler implements CoreCourseModuleHandler {
     name = 'AddonModLabel';
     modName = 'label';
+
+    supportedFeatures = {
+        [CoreConstants.FEATURE_MOD_ARCHETYPE]: CoreConstants.MOD_ARCHETYPE_RESOURCE,
+        [CoreConstants.FEATURE_IDNUMBER]: true,
+        [CoreConstants.FEATURE_GROUPS]: false,
+        [CoreConstants.FEATURE_GROUPINGS]: false,
+        [CoreConstants.FEATURE_MOD_INTRO]: true,
+        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: false,
+        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: false,
+        [CoreConstants.FEATURE_GRADE_OUTCOMES]: false,
+        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
+        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true
+    };
 
     constructor() {
         // Nothing to do.

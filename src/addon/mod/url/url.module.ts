@@ -17,6 +17,7 @@ import { AddonModUrlComponentsModule } from './components/components.module';
 import { AddonModUrlModuleHandler } from './providers/module-handler';
 import { AddonModUrlProvider } from './providers/url';
 import { AddonModUrlLinkHandler } from './providers/link-handler';
+import { AddonModUrlListLinkHandler } from './providers/list-link-handler';
 import { AddonModUrlHelperProvider } from './providers/helper';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
@@ -37,13 +38,17 @@ export const ADDON_MOD_URL_PROVIDERS: any[] = [
         AddonModUrlProvider,
         AddonModUrlHelperProvider,
         AddonModUrlModuleHandler,
-        AddonModUrlLinkHandler
+        AddonModUrlLinkHandler,
+        AddonModUrlListLinkHandler
     ]
 })
 export class AddonModUrlModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModUrlModuleHandler,
-            contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModUrlLinkHandler) {
+            contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModUrlLinkHandler,
+            listLinkHandler: AddonModUrlListLinkHandler) {
+
         moduleDelegate.registerHandler(moduleHandler);
         contentLinksDelegate.registerHandler(linkHandler);
+        contentLinksDelegate.registerHandler(listLinkHandler);
     }
 }

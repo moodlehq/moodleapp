@@ -13,6 +13,7 @@
     "feedback_submitted_offline": "This feedback has been saved to be submitted later.",
     "mapcourses": "Map feedback to courses",
     "mode": "Mode",
+    "modulenameplural": "Feedback",
     "next_page": "Next page",
     "non_anonymous": "User's name will be logged and shown with answers",
     "non_anonymous_entries": "Non anonymous entries ({{$a}})",

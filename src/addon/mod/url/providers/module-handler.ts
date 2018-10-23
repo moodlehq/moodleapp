@@ -31,6 +31,18 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
     name = 'AddonModUrl';
     modName = 'url';
 
+    supportedFeatures = {
+        [CoreConstants.FEATURE_MOD_ARCHETYPE]: CoreConstants.MOD_ARCHETYPE_RESOURCE,
+        [CoreConstants.FEATURE_GROUPS]: false,
+        [CoreConstants.FEATURE_GROUPINGS]: false,
+        [CoreConstants.FEATURE_MOD_INTRO]: true,
+        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: true,
+        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: false,
+        [CoreConstants.FEATURE_GRADE_OUTCOMES]: false,
+        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
+        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true
+    };
+
     constructor(private courseProvider: CoreCourseProvider, private urlProvider: AddonModUrlProvider,
         private urlHelper: AddonModUrlHelperProvider, private domUtils: CoreDomUtilsProvider,
         private contentLinksHelper: CoreContentLinksHelperProvider) { }

@@ -1,0 +1,6 @@
+<!-- Only render the block if it's supported. -->
+<div *ngIf="loaded && componentClass" class="{{class}}">
+    <ion-item-divider color="light" *ngIf="title">{{ title | translate }}</ion-item-divider>
+
+    <core-dynamic-component [component]="componentClass" [data]="data"></core-dynamic-component>
+</div>

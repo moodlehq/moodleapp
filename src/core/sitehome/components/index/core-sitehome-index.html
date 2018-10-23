@@ -22,16 +22,11 @@
             </ng-container>
         </ng-container>
 
-        <!-- Site home block. -->
-        <ng-container *ngIf="block && block.hasContent">
-            <ion-item-divider color="light" *ngIf="(section && section.hasContent) || items.length > 0"></ion-item-divider>
-            <ion-item text-wrap *ngIf="block.summary">
-                <core-format-text [text]="block.summary"></core-format-text>
-            </ion-item>
-
-            <core-course-module *ngFor="let module of block.modules" [module]="module" [courseId]="siteHomeId" [downloadEnabled]="true" [section]="block"></core-course-module>
+        <!-- Site home blocks. -->
+        <ng-container *ngFor="let block of blocks">
+            <core-block [block]="block" contextLevel="course" [instanceId]="siteHomeId"></core-block>
         </ng-container>
     </ion-list>
 
-    <core-empty-box *ngIf="!hasContent" icon="qr-scanner" [message]="'core.course.nocontentavailable' | translate"></core-empty-box>
+    <core-empty-box *ngIf="!hasContent && !hasSupportedBlock" icon="qr-scanner" [message]="'core.course.nocontentavailable' | translate"></core-empty-box>
 </core-loading>

@@ -18,6 +18,7 @@ import { AddonModWorkshopIndexComponent } from '../components/index/index';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { AddonModWorkshopProvider } from './workshop';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Handler to support workshop modules.
@@ -26,6 +27,17 @@ import { AddonModWorkshopProvider } from './workshop';
 export class AddonModWorkshopModuleHandler implements CoreCourseModuleHandler {
     name = 'AddonModWorkshop';
     modName = 'workshop';
+
+    supportedFeatures = {
+        [CoreConstants.FEATURE_GROUPS]: true,
+        [CoreConstants.FEATURE_GROUPINGS]: true,
+        [CoreConstants.FEATURE_MOD_INTRO]: true,
+        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: true,
+        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: true,
+        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
+        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
+        [CoreConstants.FEATURE_PLAGIARISM]: true
+    };
 
     constructor(private courseProvider: CoreCourseProvider, private workshopProvider: AddonModWorkshopProvider) { }
 

@@ -136,13 +136,20 @@ export class AddonModAssignProvider {
     protected getAssignmentByField(courseId: number, key: string, value: any, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
-                    courseids: [courseId]
+                    courseids: [courseId],
+                    includenotenrolledcourses: 1
                 },
                 preSets = {
                     cacheKey: this.getAssignmentCacheKey(courseId)
                 };
 
-            return site.read('mod_assign_get_assignments', params, preSets).then((response) => {
+            return site.read('mod_assign_get_assignments', params, preSets).catch(() => {
+                // In 3.6 we added a new parameter includenotenrolledcourses that could cause offline data not to be found.
+                // Retry again without the param to check if the request is already cached.
+                delete params.includenotenrolledcourses;
+
+                return site.read('mod_assign_get_assignments', params, preSets);
+            }).then((response) => {
                 // Search the assignment to return.
                 if (response.courses && response.courses.length) {
                     const assignments = response.courses[0].assignments;

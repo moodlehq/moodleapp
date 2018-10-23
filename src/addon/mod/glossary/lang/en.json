@@ -24,6 +24,7 @@
     "fillfields": "Concept and definition are mandatory fields.",
     "fullmatch": "Match whole words only",
     "linking": "Auto-linking",
+    "modulenameplural": "Glossaries",
     "noentriesfound": "No entries were found.",
     "searchquery": "Search query"
 }

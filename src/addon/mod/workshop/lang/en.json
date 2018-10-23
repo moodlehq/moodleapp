@@ -26,6 +26,7 @@
     "gradinggradecalculated": "Calculated grade for assessment",
     "gradinggradeof": "Grade for assessment (of {{$a}})",
     "gradinggradeover": "Override grade for assessment",
+    "modulenameplural": "Workshops",
     "nogradeyet": "No grade yet",
     "notassessed": "Not assessed yet",
     "notoverridden": "Not overridden",

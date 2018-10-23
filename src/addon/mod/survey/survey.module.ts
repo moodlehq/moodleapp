@@ -21,6 +21,7 @@ import { AddonModSurveyComponentsModule } from './components/components.module';
 import { AddonModSurveyModuleHandler } from './providers/module-handler';
 import { AddonModSurveyProvider } from './providers/survey';
 import { AddonModSurveyLinkHandler } from './providers/link-handler';
+import { AddonModSurveyListLinkHandler } from './providers/list-link-handler';
 import { AddonModSurveyHelperProvider } from './providers/helper';
 import { AddonModSurveyPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModSurveySyncProvider } from './providers/sync';
@@ -50,6 +51,7 @@ export const ADDON_MOD_SURVEY_PROVIDERS: any[] = [
         AddonModSurveyModuleHandler,
         AddonModSurveyPrefetchHandler,
         AddonModSurveyLinkHandler,
+        AddonModSurveyListLinkHandler,
         AddonModSurveySyncCronHandler
     ]
 })
@@ -57,11 +59,13 @@ export class AddonModSurveyModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModSurveyModuleHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModSurveyPrefetchHandler,
             contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModSurveyLinkHandler,
-            cronDelegate: CoreCronDelegate, syncHandler: AddonModSurveySyncCronHandler, updateManager: CoreUpdateManagerProvider) {
+            cronDelegate: CoreCronDelegate, syncHandler: AddonModSurveySyncCronHandler, updateManager: CoreUpdateManagerProvider,
+            listLinkHandler: AddonModSurveyListLinkHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         contentLinksDelegate.registerHandler(linkHandler);
+        contentLinksDelegate.registerHandler(listLinkHandler);
         cronDelegate.register(syncHandler);
 
         // Allow migrating the tables from the old app to the new schema.

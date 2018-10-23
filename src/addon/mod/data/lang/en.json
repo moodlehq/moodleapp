@@ -20,6 +20,7 @@
     "fields": "Fields",
     "latlongboth": "Both latitude and longitude are required.",
     "menuchoose": "Choose...",
+    "modulenameplural": "Databases",
     "more": "More",
     "nomatch": "No matching entries found!",
     "norecords": "No entries in database",

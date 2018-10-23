@@ -443,7 +443,7 @@ export class CoreSitePluginsHelperProvider {
                     break;
 
                 case 'CoreCourseModuleDelegate':
-                    promise = Promise.resolve(this.registerModuleHandler(plugin, handlerName, handlerSchema));
+                    promise = Promise.resolve(this.registerModuleHandler(plugin, handlerName, handlerSchema, result));
                     break;
 
                 case 'CoreUserDelegate':
@@ -720,9 +720,10 @@ export class CoreSitePluginsHelperProvider {
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
      * @param {any} handlerSchema Data about the handler.
+     * @param {any} initResult Result of the init WS call.
      * @return {string} A string to identify the handler.
      */
-    protected registerModuleHandler(plugin: any, handlerName: string, handlerSchema: any): string {
+    protected registerModuleHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any): string {
         if (!handlerSchema.displaydata) {
             // Required data not provided, stop.
             this.logger.warn('Ignore site plugin because it doesn\'t provide displaydata', plugin, handlerSchema);
@@ -730,13 +731,13 @@ export class CoreSitePluginsHelperProvider {
             return;
         }
 
-        this.logger.debug('Register site plugin in module delegate:', plugin, handlerSchema);
+        this.logger.debug('Register site plugin in module delegate:', plugin, handlerSchema, initResult);
 
         // Create and register the handler.
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
             modName = plugin.component.replace('mod_', '');
 
-        this.moduleDelegate.registerHandler(new CoreSitePluginsModuleHandler(uniqueName, modName, handlerSchema));
+        this.moduleDelegate.registerHandler(new CoreSitePluginsModuleHandler(uniqueName, modName, handlerSchema, initResult));
 
         if (handlerSchema.offlinefunctions && Object.keys(handlerSchema.offlinefunctions).length) {
             // Register the prefetch handler.

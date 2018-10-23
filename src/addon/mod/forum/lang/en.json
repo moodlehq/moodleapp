@@ -21,6 +21,7 @@
     "modeflatnewestfirst": "Display replies flat, with newest first",
     "modeflatoldestfirst": "Display replies flat, with oldest first",
     "modenested": "Display replies in nested form",
+    "modulenameplural": "Forums",
     "numdiscussions": "{{numdiscussions}} discussions",
     "numreplies": "{{numreplies}} replies",
     "posttoforum": "Post to forum",

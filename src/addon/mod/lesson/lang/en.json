@@ -41,6 +41,7 @@
     "lowtime": "Low time",
     "maximumnumberofattemptsreached": "Maximum number of attempts reached - Moving to next page",
     "modattemptsnoteacher": "Student review only works for students.",
+    "modulenameplural": "Lessons",
     "noanswer": "One or more questions have no answer given.  Please go back and submit an answer.",
     "nolessonattempts": "No attempts have been made on this lesson.",
     "nolessonattemptsgroup": "No attempts have been made by {{$a}} group members on this lesson.",

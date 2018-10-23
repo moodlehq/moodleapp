@@ -23,7 +23,7 @@ import { CoreCoursesHelperProvider } from '@core/courses/providers/helper';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
 import { AddonCourseCompletionProvider } from '@addon/coursecompletion/providers/coursecompletion';
-import { AddonBlockComponent } from '../../classes/block-component';
+import { CoreBlockBaseComponent } from '@core/block/classes/base-block-component';
 
 /**
  * Component to render a my overview block.
@@ -32,7 +32,7 @@ import { AddonBlockComponent } from '../../classes/block-component';
     selector: 'addon-block-myoverview',
     templateUrl: 'addon-block-myoverview.html'
 })
-export class AddonBlockMyOverviewComponent extends AddonBlockComponent implements OnInit, OnDestroy {
+export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy {
     @ViewChild('searchbar') searchbar: Searchbar;
 
     courses = {

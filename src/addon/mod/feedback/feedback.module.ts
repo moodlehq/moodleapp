@@ -26,6 +26,7 @@ import { AddonModFeedbackShowEntriesLinkHandler } from './providers/show-entries
 import { AddonModFeedbackShowNonRespondentsLinkHandler } from './providers/show-non-respondents-link-handler';
 import { AddonModFeedbackCompleteLinkHandler } from './providers/complete-link-handler';
 import { AddonModFeedbackPrintLinkHandler } from './providers/print-link-handler';
+import { AddonModFeedbackListLinkHandler } from './providers/list-link-handler';
 import { AddonModFeedbackHelperProvider } from './providers/helper';
 import { AddonModFeedbackPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModFeedbackSyncProvider } from './providers/sync';
@@ -60,6 +61,7 @@ export const ADDON_MOD_FEEDBACK_PROVIDERS: any[] = [
         AddonModFeedbackShowNonRespondentsLinkHandler,
         AddonModFeedbackCompleteLinkHandler,
         AddonModFeedbackPrintLinkHandler,
+        AddonModFeedbackListLinkHandler,
         AddonModFeedbackSyncCronHandler
     ]
 })
@@ -72,7 +74,8 @@ export class AddonModFeedbackModule {
             showEntriesLinkHandler: AddonModFeedbackShowEntriesLinkHandler,
             showNonRespondentsLinkHandler: AddonModFeedbackShowNonRespondentsLinkHandler,
             completeLinkHandler: AddonModFeedbackCompleteLinkHandler,
-            printLinkHandler: AddonModFeedbackPrintLinkHandler) {
+            printLinkHandler: AddonModFeedbackPrintLinkHandler, listLinkHandler: AddonModFeedbackListLinkHandler) {
+
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         contentLinksDelegate.registerHandler(linkHandler);
@@ -81,6 +84,7 @@ export class AddonModFeedbackModule {
         contentLinksDelegate.registerHandler(showNonRespondentsLinkHandler);
         contentLinksDelegate.registerHandler(completeLinkHandler);
         contentLinksDelegate.registerHandler(printLinkHandler);
+        contentLinksDelegate.registerHandler(listLinkHandler);
         cronDelegate.register(syncHandler);
 
         // Allow migrating the tables from the old app to the new schema.

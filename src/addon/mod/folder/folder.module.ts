@@ -20,6 +20,7 @@ import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate
 import { AddonModFolderComponentsModule } from './components/components.module';
 import { AddonModFolderPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModFolderLinkHandler } from './providers/link-handler';
+import { AddonModFolderListLinkHandler } from './providers/list-link-handler';
 import { AddonModFolderPluginFileHandler } from './providers/pluginfile-handler';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
@@ -43,6 +44,7 @@ export const ADDON_MOD_FOLDER_PROVIDERS: any[] = [
         AddonModFolderModuleHandler,
         AddonModFolderPrefetchHandler,
         AddonModFolderLinkHandler,
+        AddonModFolderListLinkHandler,
         AddonModFolderPluginFileHandler
     ]
 })
@@ -50,10 +52,13 @@ export class AddonModFolderModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModFolderModuleHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModFolderPrefetchHandler,
             contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModFolderLinkHandler,
-            pluginfileDelegate: CorePluginFileDelegate, pluginfileHandler: AddonModFolderPluginFileHandler) {
+            pluginfileDelegate: CorePluginFileDelegate, pluginfileHandler: AddonModFolderPluginFileHandler,
+            listLinkHandler: AddonModFolderListLinkHandler) {
+
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         contentLinksDelegate.registerHandler(linkHandler);
+        contentLinksDelegate.registerHandler(listLinkHandler);
         pluginfileDelegate.registerHandler(pluginfileHandler);
     }
 }

@@ -18,6 +18,7 @@ import { AddonModDataIndexComponent } from '../components/index/index';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { AddonModDataProvider } from './data';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Handler to support data modules.
@@ -26,6 +27,20 @@ import { AddonModDataProvider } from './data';
 export class AddonModDataModuleHandler implements CoreCourseModuleHandler {
     name = 'AddonModData';
     modName = 'data';
+
+    supportedFeatures = {
+        [CoreConstants.FEATURE_GROUPS]: true,
+        [CoreConstants.FEATURE_GROUPINGS]: true,
+        [CoreConstants.FEATURE_MOD_INTRO]: true,
+        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: true,
+        [CoreConstants.FEATURE_COMPLETION_HAS_RULES]: true,
+        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: true,
+        [CoreConstants.FEATURE_GRADE_OUTCOMES]: true,
+        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
+        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
+        [CoreConstants.FEATURE_RATE]: true,
+        [CoreConstants.FEATURE_COMMENT]: true
+    };
 
     constructor(private courseProvider: CoreCourseProvider, private dataProvider: AddonModDataProvider) { }
 

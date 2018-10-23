@@ -931,10 +931,11 @@ export class CoreUtilsProvider {
      * @param {object} obj Object to convert.
      * @param {string} keyName Name of the properties where to store the keys.
      * @param {string} valueName Name of the properties where to store the values.
-     * @param {boolean} [sort] True to sort keys alphabetically, false otherwise.
+     * @param {boolean} [sortByKey] True to sort keys alphabetically, false otherwise. Has priority over sortByValue.
+     * @param {boolean} [sortByValue] True to sort values alphabetically, false otherwise.
      * @return {any[]} Array of objects with the name & value of each property.
      */
-    objectToArrayOfObjects(obj: object, keyName: string, valueName: string, sort?: boolean): any[] {
+    objectToArrayOfObjects(obj: object, keyName: string, valueName: string, sortByKey?: boolean, sortByValue?: boolean): any[] {
         // Get the entries from an object or primitive value.
         const getEntries = (elKey, value): any[] | any => {
             if (typeof value == 'object') {
@@ -964,9 +965,13 @@ export class CoreUtilsProvider {
 
         // "obj" will always be an object, so "entries" will always be an array.
         const entries = <any[]> getEntries('', obj);
-        if (sort) {
+        if (sortByKey || sortByValue) {
             return entries.sort((a, b) => {
-                return a.name >= b.name ? 1 : -1;
+                if (sortByKey) {
+                    return a[keyName] >= b[keyName] ? 1 : -1;
+                } else {
+                    return a[valueName] >= b[valueName] ? 1 : -1;
+                }
             });
         }
 
@@ -980,7 +985,7 @@ export class CoreUtilsProvider {
      * @param {object[]} objects List of objects to convert.
      * @param {string} keyName Name of the properties where the keys are stored.
      * @param {string} valueName Name of the properties where the values are stored.
-     * @param [keyPrefix] Key prefix if neededs to delete it.
+     * @param {string} [keyPrefix] Key prefix if neededs to delete it.
      * @return {object} Object.
      */
     objectToKeyValueMap(objects: object[], keyName: string, valueName: string, keyPrefix?: string): object {
@@ -1091,6 +1096,23 @@ export class CoreUtilsProvider {
 
                 return accumulator;
             }, {});
+        } else {
+            return obj;
+        }
+    }
+
+    /**
+     * Given an object, sort its values. Values need to be primitive values, it cannot have subobjects.
+     *
+     * @param {object} obj The object to sort. If it isn't an object, the original value will be returned.
+     * @return {object} Sorted object.
+     */
+    sortValues(obj: object): object {
+        if (typeof obj == 'object' && !Array.isArray(obj)) {
+            // It's an object, sort it. Convert it to an array to be able to sort it and then convert it back to object.
+            const array = this.objectToArrayOfObjects(obj, 'name', 'value', false, true);
+
+            return this.objectToKeyValueMap(array, 'name', 'value');
         } else {
             return obj;
         }

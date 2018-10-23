@@ -50,6 +50,16 @@ export class CoreSiteHomeProvider {
     }
 
     /**
+     * Invalidate the WS call to get the news forum for the Site Home.
+     *
+     * @param {number} siteHomeId Site Home ID.
+     * @return {Promise<any>} Promise resolved when invalidated.
+     */
+    invalidateNewsForum(siteHomeId: number): Promise<any> {
+        return this.forumProvider.invalidateForumData(siteHomeId);
+    }
+
+    /**
      * Returns whether or not the frontpage is available for the current site.
      *
      * @param {string} [siteId] The site ID. If not defined, current site.

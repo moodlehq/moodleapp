@@ -18,6 +18,7 @@ import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/cour
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { AddonModAssignProvider } from './assign';
 import { AddonModAssignIndexComponent } from '../components/index/index';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Handler to support assign modules.
@@ -26,6 +27,21 @@ import { AddonModAssignIndexComponent } from '../components/index/index';
 export class AddonModAssignModuleHandler implements CoreCourseModuleHandler {
     name = 'AddonModAssign';
     modName = 'assign';
+
+    supportedFeatures = {
+        [CoreConstants.FEATURE_GROUPS]: true,
+        [CoreConstants.FEATURE_GROUPINGS]: true,
+        [CoreConstants.FEATURE_MOD_INTRO]: true,
+        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: true,
+        [CoreConstants.FEATURE_COMPLETION_HAS_RULES]: true,
+        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: true,
+        [CoreConstants.FEATURE_GRADE_OUTCOMES]: true,
+        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
+        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
+        [CoreConstants.FEATURE_ADVANCED_GRADING]: true,
+        [CoreConstants.FEATURE_PLAGIARISM]: true,
+        [CoreConstants.FEATURE_COMMENT]: true
+    };
 
     constructor(private courseProvider: CoreCourseProvider, private assignProvider: AddonModAssignProvider) { }
 

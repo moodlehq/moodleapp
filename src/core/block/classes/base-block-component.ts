@@ -17,9 +17,9 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 
 /**
- * Template class to easily create AddonBlockComponent of blocks.
+ * Template class to easily create components for blocks.
  */
-export class AddonBlockComponent implements OnInit {
+export class CoreBlockBaseComponent implements OnInit {
     loaded: boolean; // If the component has been loaded.
     protected fetchContentDefaultError: string; // Default error to show when loading contents.
 
@@ -49,13 +49,9 @@ export class AddonBlockComponent implements OnInit {
      */
     doRefresh(refresher?: any, done?: () => void, showErrors: boolean = false): Promise<any> {
         if (this.loaded) {
-            return this.invalidateContent().catch(() => {
-                // Ignore errors.
-            }).then(() => {
-                return this.refreshContent(showErrors).finally(() => {
-                    refresher && refresher.complete();
-                    done && done();
-                });
+            return this.refreshContent(showErrors).finally(() => {
+                refresher && refresher.complete();
+                done && done();
             });
         }
 

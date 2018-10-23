@@ -23,9 +23,18 @@ import { CoreSitePluginsModuleIndexComponent } from '../../components/module-ind
  */
 export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler implements CoreCourseModuleHandler {
     priority: number;
+    supportedFeatures: {[name: string]: any};
+    supportsFeature: (feature: string) => any;
 
-    constructor(name: string, public modName: string, protected handlerSchema: any) {
+    constructor(name: string, public modName: string, protected handlerSchema: any, protected initResult: any) {
         super(name);
+
+        this.supportedFeatures = handlerSchema.supportedfeatures;
+
+        if (initResult && initResult.jsResult && initResult.jsResult.supportsFeature) {
+            // The init result defines a function to check if a feature is supported, use it.
+            this.supportsFeature = initResult.jsResult.supportsFeature.bind(initResult.jsResult);
+        }
     }
 
     /**
@@ -56,6 +65,15 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
                 }, options);
             }
         };
+    }
+
+    /**
+     * Get the icon src for the module.
+     *
+     * @return {string} The icon src.
+     */
+    getIconSrc(): string {
+        return this.handlerSchema.displaydata.icon;
     }
 
     /**

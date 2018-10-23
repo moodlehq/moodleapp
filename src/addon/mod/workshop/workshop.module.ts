@@ -22,6 +22,7 @@ import { AddonModWorkshopComponentsModule } from './components/components.module
 import { AddonModWorkshopModuleHandler } from './providers/module-handler';
 import { AddonModWorkshopProvider } from './providers/workshop';
 import { AddonModWorkshopLinkHandler } from './providers/link-handler';
+import { AddonModWorkshopListLinkHandler } from './providers/list-link-handler';
 import { AddonModWorkshopOfflineProvider } from './providers/offline';
 import { AddonModWorkshopSyncProvider } from './providers/sync';
 import { AddonModWorkshopHelperProvider } from './providers/helper';
@@ -50,6 +51,7 @@ export const ADDON_MOD_WORKSHOP_PROVIDERS: any[] = [
         AddonModWorkshopProvider,
         AddonModWorkshopModuleHandler,
         AddonModWorkshopLinkHandler,
+        AddonModWorkshopListLinkHandler,
         AddonModWorkshopOfflineProvider,
         AddonModWorkshopSyncProvider,
         AddonModWorkshopHelperProvider,
@@ -63,10 +65,11 @@ export class AddonModWorkshopModule {
             contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModWorkshopLinkHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModWorkshopPrefetchHandler,
             cronDelegate: CoreCronDelegate, syncHandler: AddonModWorkshopSyncCronHandler,
-            updateManager: CoreUpdateManagerProvider) {
+            updateManager: CoreUpdateManagerProvider, listLinkHandler: AddonModWorkshopListLinkHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         contentLinksDelegate.registerHandler(linkHandler);
+        contentLinksDelegate.registerHandler(listLinkHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         cronDelegate.register(syncHandler);
 
