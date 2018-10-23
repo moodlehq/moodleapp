@@ -28,6 +28,7 @@ import { AddonModWikiIndexLinkHandler } from './providers/index-link-handler';
 import { AddonModWikiPageOrMapLinkHandler } from './providers/page-or-map-link-handler';
 import { AddonModWikiCreateLinkHandler } from './providers/create-link-handler';
 import { AddonModWikiEditLinkHandler } from './providers/edit-link-handler';
+import { AddonModWikiListLinkHandler } from './providers/list-link-handler';
 import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 // List of providers (without handlers).
@@ -53,7 +54,8 @@ export const ADDON_MOD_WIKI_PROVIDERS: any[] = [
         AddonModWikiIndexLinkHandler,
         AddonModWikiPageOrMapLinkHandler,
         AddonModWikiCreateLinkHandler,
-        AddonModWikiEditLinkHandler
+        AddonModWikiEditLinkHandler,
+        AddonModWikiListLinkHandler
     ]
 })
 export class AddonModWikiModule {
@@ -62,7 +64,7 @@ export class AddonModWikiModule {
             cronDelegate: CoreCronDelegate, syncHandler: AddonModWikiSyncCronHandler, linksDelegate: CoreContentLinksDelegate,
             indexHandler: AddonModWikiIndexLinkHandler, pageOrMapHandler: AddonModWikiPageOrMapLinkHandler,
             createHandler: AddonModWikiCreateLinkHandler, editHandler: AddonModWikiEditLinkHandler,
-            updateManager: CoreUpdateManagerProvider) {
+            updateManager: CoreUpdateManagerProvider, listLinkHandler: AddonModWikiListLinkHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
@@ -71,6 +73,7 @@ export class AddonModWikiModule {
         linksDelegate.registerHandler(pageOrMapHandler);
         linksDelegate.registerHandler(createHandler);
         linksDelegate.registerHandler(editHandler);
+        linksDelegate.registerHandler(listLinkHandler);
 
         // Allow migrating the tables from the old app to the new schema.
         updateManager.registerSiteTableMigration({

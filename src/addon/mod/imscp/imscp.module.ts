@@ -18,6 +18,7 @@ import { AddonModImscpModuleHandler } from './providers/module-handler';
 import { AddonModImscpProvider } from './providers/imscp';
 import { AddonModImscpPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModImscpLinkHandler } from './providers/link-handler';
+import { AddonModImscpListLinkHandler } from './providers/list-link-handler';
 import { AddonModImscpPluginFileHandler } from './providers/pluginfile-handler';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
@@ -40,6 +41,7 @@ export const ADDON_MOD_IMSCP_PROVIDERS: any[] = [
         AddonModImscpModuleHandler,
         AddonModImscpPrefetchHandler,
         AddonModImscpLinkHandler,
+        AddonModImscpListLinkHandler,
         AddonModImscpPluginFileHandler
     ]
 })
@@ -47,10 +49,13 @@ export class AddonModImscpModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModImscpModuleHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModImscpPrefetchHandler,
             contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModImscpLinkHandler,
-            pluginfileDelegate: CorePluginFileDelegate, pluginfileHandler: AddonModImscpPluginFileHandler) {
+            pluginfileDelegate: CorePluginFileDelegate, pluginfileHandler: AddonModImscpPluginFileHandler,
+            listLinkHandler: AddonModImscpListLinkHandler) {
+
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         contentLinksDelegate.registerHandler(linkHandler);
+        contentLinksDelegate.registerHandler(listLinkHandler);
         pluginfileDelegate.registerHandler(pluginfileHandler);
     }
 }

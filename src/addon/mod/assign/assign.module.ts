@@ -29,6 +29,7 @@ import { AddonModAssignModuleHandler } from './providers/module-handler';
 import { AddonModAssignPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModAssignSyncCronHandler } from './providers/sync-cron-handler';
 import { AddonModAssignIndexLinkHandler } from './providers/index-link-handler';
+import { AddonModAssignListLinkHandler } from './providers/list-link-handler';
 import { AddonModAssignSubmissionModule } from './submission/submission.module';
 import { AddonModAssignFeedbackModule } from './feedback/feedback.module';
 import { CoreUpdateManagerProvider } from '@providers/update-manager';
@@ -62,18 +63,22 @@ export const ADDON_MOD_ASSIGN_PROVIDERS: any[] = [
         AddonModAssignModuleHandler,
         AddonModAssignPrefetchHandler,
         AddonModAssignSyncCronHandler,
-        AddonModAssignIndexLinkHandler
+        AddonModAssignIndexLinkHandler,
+        AddonModAssignListLinkHandler
     ]
 })
 export class AddonModAssignModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModAssignModuleHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModAssignPrefetchHandler,
             cronDelegate: CoreCronDelegate, syncHandler: AddonModAssignSyncCronHandler, updateManager: CoreUpdateManagerProvider,
-            contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModAssignIndexLinkHandler) {
+            contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModAssignIndexLinkHandler,
+            listLinkHandler: AddonModAssignListLinkHandler) {
+
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         cronDelegate.register(syncHandler);
         contentLinksDelegate.registerHandler(linkHandler);
+        contentLinksDelegate.registerHandler(listLinkHandler);
 
         // Allow migrating the tables from the old app to the new schema.
         updateManager.registerSiteTablesMigration([

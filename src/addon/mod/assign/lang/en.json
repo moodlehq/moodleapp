@@ -50,6 +50,7 @@
     "markingworkflowstatereadyforreview": "Marking completed",
     "markingworkflowstatereadyforrelease": "Ready for release",
     "markingworkflowstatereleased": "Released",
+    "modulenameplural": "Assignments",
     "multipleteams": "Member of more than one group",
     "multipleteams_desc": "The assignment requires submission in groups. You are a member of more than one group. To be able to submit you must be a member of only one group. Please contact your teacher to change your group membership.",
     "noattempt": "No attempt",

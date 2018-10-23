@@ -18,6 +18,7 @@ import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate
 import { AddonModChatComponentsModule } from './components/components.module';
 import { AddonModChatProvider } from './providers/chat';
 import { AddonModChatLinkHandler } from './providers/link-handler';
+import { AddonModChatListLinkHandler } from './providers/list-link-handler';
 import { AddonModChatModuleHandler } from './providers/module-handler';
 
 // List of providers (without handlers).
@@ -34,13 +35,17 @@ export const ADDON_MOD_CHAT_PROVIDERS: any[] = [
     providers: [
         AddonModChatProvider,
         AddonModChatLinkHandler,
+        AddonModChatListLinkHandler,
         AddonModChatModuleHandler,
     ]
 })
 export class AddonModChatModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModChatModuleHandler,
-            contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModChatLinkHandler) {
+            contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModChatLinkHandler,
+            listLinkHandler: AddonModChatListLinkHandler) {
+
         moduleDelegate.registerHandler(moduleHandler);
         contentLinksDelegate.registerHandler(linkHandler);
+        contentLinksDelegate.registerHandler(listLinkHandler);
     }
 }

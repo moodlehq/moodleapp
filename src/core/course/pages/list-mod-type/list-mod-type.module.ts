@@ -15,21 +15,21 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { AddonBlockActivityModulesListTypePage } from './list-type';
+import { CoreCourseListModTypePage } from './list-mod-type';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreCourseComponentsModule } from '@core/course/components/components.module';
 
 @NgModule({
     declarations: [
-        AddonBlockActivityModulesListTypePage
+        CoreCourseListModTypePage
     ],
     imports: [
         CoreComponentsModule,
         CoreDirectivesModule,
         CoreCourseComponentsModule,
-        IonicPageModule.forChild(AddonBlockActivityModulesListTypePage),
+        IonicPageModule.forChild(CoreCourseListModTypePage),
         TranslateModule.forChild()
     ],
 })
-export class AddonBlockActivityModulesListTypePageModule {}
+export class CoreCourseListModTypePageModule {}

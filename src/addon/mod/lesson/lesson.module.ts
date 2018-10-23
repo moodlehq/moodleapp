@@ -28,6 +28,7 @@ import { AddonModLessonSyncCronHandler } from './providers/sync-cron-handler';
 import { AddonModLessonIndexLinkHandler } from './providers/index-link-handler';
 import { AddonModLessonGradeLinkHandler } from './providers/grade-link-handler';
 import { AddonModLessonReportLinkHandler } from './providers/report-link-handler';
+import { AddonModLessonListLinkHandler } from './providers/list-link-handler';
 import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 // List of providers (without handlers).
@@ -54,7 +55,8 @@ export const ADDON_MOD_LESSON_PROVIDERS: any[] = [
         AddonModLessonSyncCronHandler,
         AddonModLessonIndexLinkHandler,
         AddonModLessonGradeLinkHandler,
-        AddonModLessonReportLinkHandler
+        AddonModLessonReportLinkHandler,
+        AddonModLessonListLinkHandler
     ]
 })
 export class AddonModLessonModule {
@@ -62,7 +64,8 @@ export class AddonModLessonModule {
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModLessonPrefetchHandler,
             cronDelegate: CoreCronDelegate, syncHandler: AddonModLessonSyncCronHandler, linksDelegate: CoreContentLinksDelegate,
             indexHandler: AddonModLessonIndexLinkHandler, gradeHandler: AddonModLessonGradeLinkHandler,
-            reportHandler: AddonModLessonReportLinkHandler, updateManager: CoreUpdateManagerProvider) {
+            reportHandler: AddonModLessonReportLinkHandler, updateManager: CoreUpdateManagerProvider,
+            listLinkHandler: AddonModLessonListLinkHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
@@ -70,6 +73,7 @@ export class AddonModLessonModule {
         linksDelegate.registerHandler(indexHandler);
         linksDelegate.registerHandler(gradeHandler);
         linksDelegate.registerHandler(reportHandler);
+        linksDelegate.registerHandler(listLinkHandler);
 
         // Allow migrating the tables from the old app to the new schema.
         updateManager.registerSiteTablesMigration([

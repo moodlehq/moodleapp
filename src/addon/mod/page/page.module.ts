@@ -18,6 +18,7 @@ import { AddonModPageModuleHandler } from './providers/module-handler';
 import { AddonModPageProvider } from './providers/page';
 import { AddonModPagePrefetchHandler } from './providers/prefetch-handler';
 import { AddonModPageLinkHandler } from './providers/link-handler';
+import { AddonModPageListLinkHandler } from './providers/list-link-handler';
 import { AddonModPagePluginFileHandler } from './providers/pluginfile-handler';
 import { AddonModPageHelperProvider } from './providers/helper';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
@@ -43,6 +44,7 @@ export const ADDON_MOD_PAGE_PROVIDERS: any[] = [
         AddonModPageModuleHandler,
         AddonModPagePrefetchHandler,
         AddonModPageLinkHandler,
+        AddonModPageListLinkHandler,
         AddonModPagePluginFileHandler
     ]
 })
@@ -50,10 +52,13 @@ export class AddonModPageModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModPageModuleHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModPagePrefetchHandler,
             contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModPageLinkHandler,
-            pluginfileDelegate: CorePluginFileDelegate, pluginfileHandler: AddonModPagePluginFileHandler) {
+            pluginfileDelegate: CorePluginFileDelegate, pluginfileHandler: AddonModPagePluginFileHandler,
+            listLinkHandler: AddonModPageListLinkHandler) {
+
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         contentLinksDelegate.registerHandler(linkHandler);
+        contentLinksDelegate.registerHandler(listLinkHandler);
         pluginfileDelegate.registerHandler(pluginfileHandler);
     }
 }

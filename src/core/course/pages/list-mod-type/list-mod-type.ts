@@ -15,20 +15,20 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreCourseProvider } from '@core/course/providers/course';
-import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
-import { CoreCourseHelperProvider } from '@core/course/providers/helper';
+import { CoreCourseProvider } from '../../providers/course';
+import { CoreCourseModuleDelegate } from '../../providers/module-delegate';
+import { CoreCourseHelperProvider } from '../../providers/helper';
 import { CoreConstants } from '@core/constants';
 
 /**
  * Page that displays comments.
  */
-@IonicPage({ segment: 'addon-block-activity-modules-list-type' })
+@IonicPage({ segment: 'core-course-list-mod-type' })
 @Component({
-    selector: 'page-addon-block-activity-modules-list-type',
-    templateUrl: 'list-type.html',
+    selector: 'page-core-course-list-mod-type',
+    templateUrl: 'list-mod-type.html',
 })
-export class AddonBlockActivityModulesListTypePage {
+export class CoreCourseListModTypePage {
 
     modules = [];
     title: string;
