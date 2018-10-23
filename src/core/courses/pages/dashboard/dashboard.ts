@@ -12,17 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreCoursesProvider } from '../../providers/courses';
-import { CoreSiteHomeProvider } from '@core/sitehome/providers/sitehome';
-import { AddonBlockMyOverviewComponent } from '@addon/block/myoverview/component/myoverview';
-import { AddonBlockTimelineComponent } from '@addon/block/timeline/components/timeline/timeline';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTabsComponent } from '@components/tabs/tabs';
+import { CoreBlockDelegate } from '@core/block/providers/delegate';
+import { CoreBlockComponent } from '@core/block/components/block/block';
+import { CoreSiteHomeProvider } from '@core/sitehome/providers/sitehome';
 import { CoreSiteHomeIndexComponent } from '@core/sitehome/components/index/index';
-import { AddonBlockTimelineProvider } from '@addon/block/timeline/providers/timeline';
+import { CoreCoursesProvider } from '../../providers/courses';
+import { CoreCoursesDashboardProvider } from '../../providers/dashboard';
 
 /**
  * Page that displays the dashboard.
@@ -35,25 +36,26 @@ import { AddonBlockTimelineProvider } from '@addon/block/timeline/providers/time
 export class CoreCoursesDashboardPage implements OnDestroy {
     @ViewChild(CoreTabsComponent) tabsComponent: CoreTabsComponent;
     @ViewChild(CoreSiteHomeIndexComponent) siteHomeComponent: CoreSiteHomeIndexComponent;
-    @ViewChild(AddonBlockMyOverviewComponent) blockMyOverview: AddonBlockMyOverviewComponent;
-    @ViewChild(AddonBlockTimelineComponent) blockTimeline: AddonBlockTimelineComponent;
+    @ViewChildren(CoreBlockComponent) blocksComponents: QueryList<CoreBlockComponent>;
 
     firstSelectedTab: number;
     siteHomeEnabled = false;
-    timelineEnabled = false;
-    coursesEnabled = false;
     tabsReady = false;
     searchEnabled: boolean;
     tabs = [];
     siteName: string;
+    blocks: any[];
+    dashboardEnabled = false;
+    userId: number;
+    dashboardLoaded = false;
 
     protected isDestroyed;
     protected updateSiteObserver;
-    protected courseIds = '';
 
     constructor(private navCtrl: NavController, private coursesProvider: CoreCoursesProvider,
             private sitesProvider: CoreSitesProvider, private siteHomeProvider: CoreSiteHomeProvider,
-            private eventsProvider: CoreEventsProvider,  private timelineProvider: AddonBlockTimelineProvider) {
+            private eventsProvider: CoreEventsProvider, private dashboardProvider: CoreCoursesDashboardProvider,
+            private domUtils: CoreDomUtilsProvider, private blockDelegate: CoreBlockDelegate) {
         this.loadSiteName();
     }
 
@@ -71,25 +73,21 @@ export class CoreCoursesDashboardPage implements OnDestroy {
 
         const promises = [];
 
-        // Decide which tab to load first.
         promises.push(this.siteHomeProvider.isAvailable().then((enabled) => {
             this.siteHomeEnabled = enabled;
         }));
 
-        promises.push(this.timelineProvider.isAvailable().then((enabled) => {
-            this.timelineEnabled = enabled;
-        }));
+        promises.push(this.loadDashboardContent());
 
-        this.coursesEnabled = !this.coursesProvider.isMyCoursesDisabledInSite();
-
+        // Decide which tab to load first.
         Promise.all(promises).finally(() => {
-            if (this.siteHomeEnabled && (this.coursesEnabled || this.timelineEnabled)) {
+            if (this.siteHomeEnabled && this.dashboardEnabled) {
                 const site = this.sitesProvider.getCurrentSite(),
                     displaySiteHome = site.getInfo() && site.getInfo().userhomepage === 0;
 
                 this.firstSelectedTab = displaySiteHome ? 0 : 1;
             } else {
-                this.firstSelectedTab = this.siteHomeEnabled ? 1 : 0;
+                this.firstSelectedTab = 0;
             }
 
             this.tabsReady = true;
@@ -122,6 +120,72 @@ export class CoreCoursesDashboardPage implements OnDestroy {
      */
     protected loadSiteName(): void {
         this.siteName = this.sitesProvider.getCurrentSite().getInfo().sitename;
+    }
+
+    /**
+     * Convenience function to fetch the dashboard data.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected loadDashboardContent(): Promise<any> {
+        return this.dashboardProvider.isAvailable().then((enabled) => {
+            if (enabled) {
+                this.userId = this.sitesProvider.getCurrentSiteUserId();
+
+                return this.dashboardProvider.getDashboardBlocks().then((blocks) => {
+                    this.blocks = blocks;
+                }).catch((error) => {
+                    this.domUtils.showErrorModal(error);
+
+                    // Cannot get the blocks, just show dashboard if needed.
+                    this.loadFallbackBlocks();
+                });
+            }
+
+            // Not enabled, check separated tabs.
+            this.loadFallbackBlocks();
+        }).finally(() => {
+            this.dashboardEnabled = this.blockDelegate.hasSupportedBlock(this.blocks);
+            this.dashboardLoaded = true;
+        });
+    }
+
+    /**
+     * Refresh the dashboard data.
+     *
+     * @param {any} refresher Refresher.
+     */
+    refreshDashboard(refresher: any): void {
+        const promises = [];
+
+        promises.push(this.dashboardProvider.invalidateDashboardBlocks());
+
+        // Invalidate the blocks.
+        this.blocksComponents.forEach((blockComponent) => {
+            promises.push(blockComponent.invalidate().catch(() => {
+                // Ignore errors.
+            }));
+        });
+
+        Promise.all(promises).finally(() => {
+            this.loadDashboardContent().finally(() => {
+                refresher.complete();
+            });
+        });
+    }
+
+    /**
+     * Load fallback blocks to shown before 3.6 when dashboard blocks are not supported.
+     */
+    protected loadFallbackBlocks(): void {
+        this.blocks = [
+            {
+                name: 'myoverview'
+            },
+            {
+                name: 'timeline'
+            }
+        ];
     }
 
     /**

@@ -13,27 +13,41 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreCoursesDashboardPage } from './dashboard';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
-import { CoreCoursesComponentsModule } from '../../components/components.module';
-import { CoreSiteHomeComponentsModule } from '@core/sitehome/components/components.module';
-import { CoreBlockComponentsModule } from '@core/block/components/components.module';
+import { CorePipesModule } from '@pipes/pipes.module';
+import { CoreCoursesComponentsModule } from '@core/courses/components/components.module';
+import { AddonBlockTimelineComponent } from './timeline/timeline';
+import { AddonBlockTimelineEventsComponent } from './events/events';
+import { CoreCourseComponentsModule } from '@core/course/components/components.module';
 
 @NgModule({
     declarations: [
-        CoreCoursesDashboardPage,
+        AddonBlockTimelineComponent,
+        AddonBlockTimelineEventsComponent
     ],
     imports: [
+        CommonModule,
+        IonicModule,
+        TranslateModule.forChild(),
         CoreComponentsModule,
         CoreDirectivesModule,
+        CorePipesModule,
         CoreCoursesComponentsModule,
-        CoreSiteHomeComponentsModule,
-        CoreBlockComponentsModule,
-        IonicPageModule.forChild(CoreCoursesDashboardPage),
-        TranslateModule.forChild()
+        CoreCourseComponentsModule
     ],
+    providers: [
+    ],
+    exports: [
+        AddonBlockTimelineComponent,
+        AddonBlockTimelineEventsComponent
+    ],
+    entryComponents: [
+        AddonBlockTimelineComponent,
+        AddonBlockTimelineEventsComponent
+    ]
 })
-export class CoreCoursesDashboardPageModule {}
+export class AddonBlockTimelineComponentsModule {}

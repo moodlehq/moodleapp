@@ -13,27 +13,35 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreCoursesDashboardPage } from './dashboard';
+import { CoreCoursesComponentsModule } from '@core/courses/components/components.module';
+import { AddonBlockMyOverviewComponent } from './myoverview/myoverview';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
-import { CoreCoursesComponentsModule } from '../../components/components.module';
-import { CoreSiteHomeComponentsModule } from '@core/sitehome/components/components.module';
-import { CoreBlockComponentsModule } from '@core/block/components/components.module';
+import { CoreCourseComponentsModule } from '@core/course/components/components.module';
 
 @NgModule({
     declarations: [
-        CoreCoursesDashboardPage,
+        AddonBlockMyOverviewComponent
     ],
     imports: [
+        CommonModule,
+        IonicModule,
+        TranslateModule.forChild(),
         CoreComponentsModule,
         CoreDirectivesModule,
         CoreCoursesComponentsModule,
-        CoreSiteHomeComponentsModule,
-        CoreBlockComponentsModule,
-        IonicPageModule.forChild(CoreCoursesDashboardPage),
-        TranslateModule.forChild()
+        CoreCourseComponentsModule
     ],
+    providers: [
+    ],
+    exports: [
+        AddonBlockMyOverviewComponent
+    ],
+    entryComponents: [
+        AddonBlockMyOverviewComponent
+    ]
 })
-export class CoreCoursesDashboardPageModule {}
+export class AddonBlockMyOverviewComponentsModule {}

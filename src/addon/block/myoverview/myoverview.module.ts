@@ -15,22 +15,26 @@
 import { NgModule } from '@angular/core';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreCoursesComponentsModule } from '@core/courses/components/components.module';
-import { AddonBlockMyOverviewComponent } from './component/myoverview';
+import { CoreBlockDelegate } from '@core/block/providers/delegate';
+import { AddonBlockMyOverviewComponentsModule } from './components/components.module';
+import { AddonBlockMyOverviewHandler } from './providers/block-handler';
 
 @NgModule({
     declarations: [
-        AddonBlockMyOverviewComponent
     ],
     imports: [
         IonicModule,
-        CoreComponentsModule,
-        CoreCoursesComponentsModule,
+        AddonBlockMyOverviewComponentsModule,
         TranslateModule.forChild()
     ],
     exports: [
-        AddonBlockMyOverviewComponent
+    ],
+    providers: [
+        AddonBlockMyOverviewHandler
     ]
 })
-export class AddonBlockMyOverviewModule {}
+export class AddonBlockMyOverviewModule {
+    constructor(blockDelegate: CoreBlockDelegate, blockHandler: AddonBlockMyOverviewHandler) {
+        blockDelegate.registerHandler(blockHandler);
+    }
+}

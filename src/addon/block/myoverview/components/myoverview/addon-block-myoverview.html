@@ -6,6 +6,9 @@
 </core-navbar-buttons>
 
 <core-loading [hideUntil]="loaded" class="core-loading-center">
+    <ion-item-divider color="light">
+        <h2>{{ 'addon.block_myoverview.pluginname' | translate }}</h2>
+    </ion-item-divider>
     <div padding ion-row justify-content-end [hidden]="showFilter">
         <!-- "Time" selector. -->
         <ion-col [hidden]="!showSelectorFilter">

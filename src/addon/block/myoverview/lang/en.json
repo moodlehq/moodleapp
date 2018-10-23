@@ -2,11 +2,12 @@
     "all": "All",
     "future": "Future",
     "inprogress": "In progress",
-    "past": "Past",
+    "lastaccessed": "Last accessed",
     "morecourses": "More courses",
     "nocoursesfuture": "No future courses",
     "nocoursesinprogress": "No in progress courses",
     "nocoursespast": "No past courses",
-    "lastaccessed": "Last accessed",
+    "past": "Past",
+    "pluginname": "Course Overview",
     "title": "Title"
 }

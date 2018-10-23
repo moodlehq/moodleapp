@@ -17,6 +17,7 @@ import { CoreCoursesProvider } from './courses';
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@core/mainmenu/providers/delegate';
 import { CoreCoursesDashboardProvider } from '../providers/dashboard';
 import { CoreSiteHomeProvider } from '@core/sitehome/providers/sitehome';
+import { AddonBlockTimelineProvider } from '@addon/block/timeline/providers/timeline';
 
 /**
  * Handler to add Dashboard into main menu.
@@ -27,7 +28,7 @@ export class CoreDashboardMainMenuHandler implements CoreMainMenuHandler {
     priority = 1100;
 
     constructor(private coursesProvider: CoreCoursesProvider, private dashboardProvider: CoreCoursesDashboardProvider,
-        private siteHomeProvider: CoreSiteHomeProvider) { }
+        private siteHomeProvider: CoreSiteHomeProvider, private timelineProvider: AddonBlockTimelineProvider) { }
 
     /**
      * Check if the handler is enabled on a site level.
@@ -35,20 +36,27 @@ export class CoreDashboardMainMenuHandler implements CoreMainMenuHandler {
      * @return {boolean | Promise<boolean>} Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
-        // Check if my overview is enabled.
-        return this.dashboardProvider.isEnabled().then((enabled) => {
+        // Check if 3.6 dashboard is enabled.
+        return this.dashboardProvider.isAvailable().then((enabled) => {
             if (enabled) {
                 return true;
             }
 
-            return this.siteHomeProvider.isAvailable().then((enabled) => {
-                // Show in case siteHome is enabled.
+            // Check if my overview is enabled.
+            return this.timelineProvider.isAvailable().then((enabled) => {
                 if (enabled) {
                     return true;
                 }
 
-                // My overview not enabled, check if my courses is enabled.
-                return !this.coursesProvider.isMyCoursesDisabledInSite();
+                return this.siteHomeProvider.isAvailable().then((enabled) => {
+                    // Show in case siteHome is enabled.
+                    if (enabled) {
+                        return true;
+                    }
+
+                    // My overview not enabled, check if my courses is enabled.
+                    return !this.coursesProvider.isMyCoursesDisabledInSite();
+                });
             });
         });
     }

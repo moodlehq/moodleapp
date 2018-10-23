@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreCoursesProvider } from './courses';
-import { AddonBlockTimelineProvider } from '@addon/block/timeline/providers/timeline';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Service that provides some features regarding course overview.
@@ -22,30 +21,69 @@ import { AddonBlockTimelineProvider } from '@addon/block/timeline/providers/time
 @Injectable()
 export class CoreCoursesDashboardProvider {
 
-    constructor(private coursesProvider: CoreCoursesProvider, private timelineProvider: AddonBlockTimelineProvider) { }
+    constructor(private sitesProvider: CoreSitesProvider) { }
+
+    protected ROOT_CACHE_KEY = 'CoreCoursesDashboard:';
 
     /**
-     * Returns whether or not My Overview is available for a certain site.
+     * Get cache key for dashboard blocks WS calls.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with true if available, resolved with false or rejected otherwise.
+     * @param {number} [userId] User ID. Default, 0 means current user.
+     * @return {string} Cache key.
      */
-    isAvailable(siteId?: string): Promise<boolean> {
-        return this.timelineProvider.isAvailable(siteId);
+    protected getDashboardBlocksCacheKey(userId: number = 0): string {
+        return this.ROOT_CACHE_KEY + 'blocks:' + userId;
     }
 
     /**
-     * Check if My Overview is available and not disabled.
+     * Get dashboard blocks.
      *
-     * @return {Promise<boolean>} Promise resolved with true if enabled, resolved with false otherwise.
+     * @param {number} [userId] User ID. Default, current user.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any[]>} Promise resolved with the list of blocks.
+     * @since 3.6
      */
-    isEnabled(): Promise<boolean> {
-        if (!this.coursesProvider.isMyCoursesDisabledInSite()) {
-            return this.isAvailable().catch(() => {
-                return false;
-            });
-        }
+    getDashboardBlocks(userId?: number, siteId?: string): Promise<any[]> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                },
+                preSets = {
+                    cacheKey: this.getDashboardBlocksCacheKey(userId)
+                };
 
-        return Promise.resolve(false);
+            if (userId) {
+                params['userid'] = userId;
+            }
+
+            return site.read('core_block_get_dashboard_blocks', params, preSets).then((result) => {
+                return result.blocks || [];
+            });
+        });
+    }
+
+    /**
+     * Invalidates dashboard blocks WS call.
+     *
+     * @param {number} [userId] User ID. Default, current user.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateDashboardBlocks(userId?: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getDashboardBlocksCacheKey(userId));
+        });
+    }
+
+    /**
+     * Returns whether or not block based Dashboard is available for a certain site.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<boolean>} Promise resolved with true if available, resolved with false or rejected otherwise.
+     * @since 3.6
+     */
+    isAvailable(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.wsAvailable('core_block_get_dashboard_blocks');
+        });
     }
 }
