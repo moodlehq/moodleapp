@@ -260,6 +260,10 @@ export class CoreSitesProvider {
                 protocol = protocol == 'https://' ? 'http://' : 'https://';
 
                 return this.checkSiteWithProtocol(siteUrl, protocol).catch((secondError) => {
+                    if (secondError.critical) {
+                        return Promise.reject(secondError.error);
+                    }
+
                     // Site doesn't exist. Return the error message.
                     return Promise.reject(this.textUtils.getErrorMessageFromError(error) ||
                             this.textUtils.getErrorMessageFromError(secondError) ||
