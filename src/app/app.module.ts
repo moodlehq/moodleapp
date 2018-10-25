@@ -89,6 +89,7 @@ import { AddonBlockMyOverviewModule } from '@addon/block/myoverview/myoverview.m
 import { AddonBlockSiteMainMenuModule } from '@addon/block/sitemainmenu/sitemainmenu.module';
 import { AddonBlockTimelineModule } from '@addon/block/timeline/timeline.module';
 import { AddonBlockRecentlyAccessedCoursesModule } from '@addon/block/recentlyaccessedcourses/recentlyaccessedcourses.module';
+import { AddonBlockRecentlyAccessedItemsModule } from '@addon/block/recentlyaccesseditems/recentlyaccesseditems.module';
 import { AddonModAssignModule } from '@addon/mod/assign/assign.module';
 import { AddonModBookModule } from '@addon/mod/book/book.module';
 import { AddonModChatModule } from '@addon/mod/chat/chat.module';
@@ -204,6 +205,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonBlockSiteMainMenuModule,
         AddonBlockTimelineModule,
         AddonBlockRecentlyAccessedCoursesModule,
+        AddonBlockRecentlyAccessedItemsModule,
         AddonModAssignModule,
         AddonModBookModule,
         AddonModChatModule,

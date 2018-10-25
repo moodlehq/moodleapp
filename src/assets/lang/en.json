@@ -24,6 +24,8 @@
     "addon.block_myoverview.title": "Title",
     "addon.block_recentlyaccessedcourses.nocourses": "No recent courses",
     "addon.block_recentlyaccessedcourses.pluginname": "Recently accessed courses",
+    "addon.block_recentlyaccesseditems.noitems": "No recent items",
+    "addon.block_recentlyaccesseditems.pluginname": "Recently accessed items",
     "addon.block_sitemainmenu.pluginname": "Main menu",
     "addon.block_timeline.duedate": "Due date",
     "addon.block_timeline.next30days": "Next 30 days",
