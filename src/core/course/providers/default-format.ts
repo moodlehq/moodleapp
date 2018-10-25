@@ -96,20 +96,29 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      * @return {any|Promise<any>} Current section (or promise resolved with current section).
      */
     getCurrentSection(course: any, sections: any[]): any | Promise<any> {
-        if (!this.coursesProvider.isGetCoursesByFieldAvailable()) {
-            // Cannot get the current section, return all of them.
-            return sections[0];
-        }
+        let promise;
 
         // We need the "marker" to determine the current section.
-        return this.coursesProvider.getCoursesByField('id', course.id).catch(() => {
-            // Ignore errors.
-        }).then((courses) => {
-            if (courses && courses[0] && courses[0].marker > 0) {
+        if (typeof course.marker != 'undefined') {
+            // We already have it.
+            promise = Promise.resolve(course.marker);
+        } else if (!this.coursesProvider.isGetCoursesByFieldAvailable()) {
+            // Cannot get the current section, return all of them.
+            return sections[0];
+        } else {
+            // Try to retrieve the marker.
+            promise = this.coursesProvider.getCoursesByField('id', course.id).catch(() => {
+                // Ignore errors.
+            }).then((courses) => {
+                return courses && courses[0] && courses[0].marker;
+            });
+        }
+
+        return promise.then((marker) => {
+            if (marker > 0) {
                 // Find the marked section.
-                const course = courses[0],
-                    section = sections.find((sect) => {
-                        return sect.section == course.marker;
+                const section = sections.find((sect) => {
+                        return sect.section == marker;
                     });
 
                 if (section) {
