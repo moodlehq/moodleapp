@@ -13,20 +13,22 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
-import { CoreBlockHandler, CoreBlockHandlerData } from '@core/block/providers/delegate';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreBlockHandlerData } from '@core/block/providers/delegate';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { AddonBlockMyOverviewComponent } from '../components/myoverview/myoverview';
+import { CoreBlockBaseHandler } from '@core/block/classes/base-block-handler';
 
 /**
- * Course nav handler.
+ * Block  handler.
  */
 @Injectable()
-export class AddonBlockMyOverviewHandler implements CoreBlockHandler {
-    name = 'AddonBlockMyOverviewHandler';
+export class AddonBlockMyOverviewHandler extends CoreBlockBaseHandler {
+    name = 'AddonBlockMyOverview';
     blockName = 'myoverview';
 
-    constructor(private coursesProvider: CoreCoursesProvider) {
-        // Nothing to do.
+    constructor(private coursesProvider: CoreCoursesProvider, private sitesProvider: CoreSitesProvider) {
+        super();
     }
 
     /**
@@ -35,7 +37,8 @@ export class AddonBlockMyOverviewHandler implements CoreBlockHandler {
      * @return {boolean} Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
-        return !this.coursesProvider.isMyCoursesDisabledInSite();
+        return this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.6') ||
+            !this.coursesProvider.isMyCoursesDisabledInSite();
     }
 
     /**

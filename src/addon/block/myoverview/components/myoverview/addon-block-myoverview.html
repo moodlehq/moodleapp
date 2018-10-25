@@ -1,14 +1,14 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons end>
-     <button [hidden]="!showFilterSwitchButton()" ion-button icon-only [attr.aria-label]="'core.courses.filtermycourses' | translate" (click)="switchFilter()">
+     <button [hidden]="!loaded || !showFilterSwitchButton()" ion-button icon-only [attr.aria-label]="'core.courses.filtermycourses' | translate" (click)="switchFilter()">
         <ion-icon name="funnel"></ion-icon>
     </button>
 </core-navbar-buttons>
 
+<ion-item-divider color="light">
+    <h2>{{ 'addon.block_myoverview.pluginname' | translate }}</h2>
+</ion-item-divider>
 <core-loading [hideUntil]="loaded" class="core-loading-center">
-    <ion-item-divider color="light">
-        <h2>{{ 'addon.block_myoverview.pluginname' | translate }}</h2>
-    </ion-item-divider>
     <div padding ion-row justify-content-end [hidden]="showFilter">
         <!-- "Time" selector. -->
         <ion-col [hidden]="!showSelectorFilter">
