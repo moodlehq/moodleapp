@@ -54,6 +54,15 @@ export class CoreCoursesHelperProvider {
      * @return {Promise<any>} Promise resolved when done.
      */
     loadCoursesExtraInfo(courses: any[]): Promise<any> {
+        if (courses[0] && typeof courses[0].overviewfiles != 'undefined' && typeof courses[0].displayname != 'undefined') {
+            // We already have the extra data. Call loadCourseExtraInfo to load the calculated fields.
+            courses.forEach((course) => {
+                this.loadCourseExtraInfo(course, course);
+            });
+
+            return Promise.resolve();
+        }
+
         if (!courses.length || !this.coursesProvider.isGetCoursesByFieldAvailable()) {
             // No courses or cannot get the data, stop.
             return Promise.resolve();
