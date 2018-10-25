@@ -287,6 +287,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         this.slideChanged();
 
         setTimeout(() => {
+            this.calculateTabBarHeight();
             this.slides.update();
             this.slides.resize();
 

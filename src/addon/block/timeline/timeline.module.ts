@@ -15,33 +15,28 @@
 import { NgModule } from '@angular/core';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-import { CorePipesModule } from '@pipes/pipes.module';
-import { CoreCoursesComponentsModule } from '@core/courses/components/components.module';
-import { AddonBlockTimelineComponent } from './components/timeline/timeline';
-import { AddonBlockTimelineEventsComponent } from './components/events/events';
+import { CoreBlockDelegate } from '@core/block/providers/delegate';
+import { AddonBlockTimelineComponentsModule } from './components/components.module';
 import { AddonBlockTimelineProvider } from './providers/timeline';
+import { AddonBlockTimelineHandler } from './providers/block-handler';
 
 @NgModule({
     declarations: [
-        AddonBlockTimelineComponent,
-        AddonBlockTimelineEventsComponent
     ],
     imports: [
         IonicModule,
-        CoreComponentsModule,
-        CoreDirectivesModule,
-        CorePipesModule,
-        CoreCoursesComponentsModule,
+        AddonBlockTimelineComponentsModule,
         TranslateModule.forChild()
     ],
     exports: [
-        AddonBlockTimelineComponent,
-        AddonBlockTimelineEventsComponent
     ],
     providers: [
-        AddonBlockTimelineProvider
+        AddonBlockTimelineProvider,
+        AddonBlockTimelineHandler
     ]
 })
-export class AddonBlockTimelineModule {}
+export class AddonBlockTimelineModule {
+    constructor(blockDelegate: CoreBlockDelegate, blockHandler: AddonBlockTimelineHandler) {
+        blockDelegate.registerHandler(blockHandler);
+    }
+}

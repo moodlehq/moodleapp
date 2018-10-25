@@ -63,7 +63,7 @@ ion-app.app-root page-addon-messages-discussion {
             min-height: initial;
             line-height: initial;
             @include margin(0, 0, 0, 10px);
-            height: auto;
+            height: 1.6em !important;
             -webkit-align-self: flex-end;
             -ms-flex-item-align: end;
             align-self: flex-end;

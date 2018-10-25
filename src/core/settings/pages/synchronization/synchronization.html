@@ -16,7 +16,7 @@
         <ion-item-divider color="light">
             <p>{{ 'core.settings.sites' | translate }}</p>
         </ion-item-divider>
-        <ion-item *ngFor="let site of sites" [class.core-primary-item]="site.id == currentSiteId" text-wrap>
+        <ion-item *ngFor="let site of sites" [class.core-primary-selected-item]="site.id == currentSiteId" text-wrap>
             <h2><core-format-text [text]="site.siteName"></core-format-text></h2>
             <p>{{ site.fullName }}</p>
             <p>{{ site.siteUrl }}</p>

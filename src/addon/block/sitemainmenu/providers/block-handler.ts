@@ -13,28 +13,20 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
-import { CoreBlockHandler, CoreBlockHandlerData } from '@core/block/providers/delegate';
+import { CoreBlockHandlerData } from '@core/block/providers/delegate';
 import { AddonBlockSiteMainMenuComponent } from '../components/sitemainmenu/sitemainmenu';
+import { CoreBlockBaseHandler } from '@core/block/classes/base-block-handler';
 
 /**
- * Course nav handler.
+ * Block handler.
  */
 @Injectable()
-export class AddonBlockSiteMainMenuHandler implements CoreBlockHandler {
-    name = 'AddonBlockSiteMainMenuHandler';
+export class AddonBlockSiteMainMenuHandler extends CoreBlockBaseHandler {
+    name = 'AddonBlockSiteMainMenu';
     blockName = 'site_main_menu';
 
     constructor() {
-        // Nothing to do.
-    }
-
-    /**
-     * Check if the handler is enabled on a site level.
-     *
-     * @return {boolean} Whether or not the handler is enabled on a site level.
-     */
-    isEnabled(): boolean | Promise<boolean> {
-        return true;
+        super();
     }
 
     /**

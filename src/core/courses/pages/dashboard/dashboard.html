@@ -23,26 +23,23 @@
             </ng-template>
         </core-tab>
 
-        <!-- Courses tab. -->
-        <core-tab [show]="coursesEnabled" [title]="'core.courses.courses' | translate">
+        <!-- Dashboard tab. -->
+        <core-tab [show]="dashboardEnabled" [title]="'core.courses.mymoodle' | translate">
             <ng-template>
                 <ion-content>
-                    <ion-refresher [enabled]="!!blockMyOverview && blockMyOverview.loaded" (ionRefresh)="blockMyOverview.doRefresh($event)">
+                    <ion-refresher [enabled]="dashboardLoaded" (ionRefresh)="refreshDashboard($event)">
                         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
                     </ion-refresher>
-                    <addon-block-myoverview></addon-block-myoverview>
-                </ion-content>
-            </ng-template>
-        </core-tab>
+                    <core-loading [hideUntil]="dashboardLoaded" class="core-loading-center">
+                        <ion-list>
+                            <!-- Dashboard blocks. -->
+                            <ng-container *ngFor="let block of blocks">
+                                <core-block [block]="block" contextLevel="user" [instanceId]="userId"></core-block>
+                            </ng-container>
+                        </ion-list>
 
-        <!-- Timeline tab. -->
-        <core-tab [show]="timelineEnabled" [title]="'core.courses.timeline' | translate">
-            <ng-template>
-                <ion-content>
-                    <ion-refresher [enabled]="!!blockTimeline && blockTimeline.loaded" (ionRefresh)="blockTimeline.doRefresh($event)">
-                        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
-                    </ion-refresher>
-                    <addon-block-timeline></addon-block-timeline>
+                        <core-empty-box *ngIf="blocks.length == 0" icon="qr-scanner" [message]="'core.course.nocontentavailable' | translate"></core-empty-box>
+                    </core-loading>
                 </ion-content>
             </ng-template>
         </core-tab>

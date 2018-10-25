@@ -80,6 +80,8 @@ export class CoreBlockDelegate extends CoreDelegate {
 
     protected handlerNameProperty = 'blockName';
 
+    protected featurePrefix = 'CoreBlockDelegate_';
+
     constructor(logger: CoreLoggerProvider, sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider,
             protected defaultHandler: CoreBlockDefaultHandler) {
         super('CoreBlockDelegate', logger, sitesProvider, eventsProvider);

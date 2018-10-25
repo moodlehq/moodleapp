@@ -1,34 +1,39 @@
-<div padding [hidden]="!loaded" ion-row>
-    <ion-col>
-        <ion-select text-start [(ngModel)]="filter" (ngModelChange)="switchFilter()" interface="popover" class="core-button-select">
-            <ion-option value="all">{{ 'core.all' | translate }}</ion-option>
-            <ion-option value="overdue">{{ 'addon.block_timeline.overdue' | translate }}</ion-option>
-            <ion-option disabled value="disabled">{{ 'addon.block_timeline.duedate' | translate }}</ion-option>
-            <ion-option value="next7days">{{ 'addon.block_timeline.next7days' | translate }}</ion-option>
-            <ion-option value="next30days">{{ 'addon.block_timeline.next30days' | translate }}</ion-option>
-            <ion-option value="next3months">{{ 'addon.block_timeline.next3months' | translate }}</ion-option>
-            <ion-option value="next6months">{{ 'addon.block_timeline.next6months' | translate }}</ion-option>
-        </ion-select>
-    </ion-col>
-    <ion-col>
-        <ion-select text-start [(ngModel)]="sort" (ngModelChange)="switchSort()" interface="popover" class="core-button-select">
-            <ion-option value="sortbydates">{{ 'addon.block_timeline.sortbydates' | translate }}</ion-option>
-            <ion-option value="sortbycourses">{{ 'addon.block_timeline.sortbycourses' | translate }}</ion-option>
-        </ion-select>
-    </ion-col>
-</div>
-<core-loading [hideUntil]="loaded && timeline.loaded" [hidden]="sort != 'sortbydates'" class="core-loading-center">
-    <addon-block-timeline-events [events]="timeline.events" showCourse="true" [canLoadMore]="timeline.canLoadMore" (loadMore)="loadMoreTimeline()" [from]="dataFrom" [to]="dataTo"></addon-block-timeline-events>
-</core-loading>
-<core-loading [hideUntil]="loaded && timelineCourses.loaded" [hidden]="sort != 'sortbycourses'" class="core-loading-center">
-    <ion-grid no-padding>
-        <ion-row no-padding>
-            <ion-col *ngFor="let course of timelineCourses.courses" no-padding col-12 col-md-6>
-                <core-courses-course-progress [course]="course">
-                    <addon-block-timeline-events [events]="course.events" [canLoadMore]="course.canLoadMore" (loadMore)="loadMoreCourse(course)" [from]="dataFrom" [to]="dataTo"></addon-block-timeline-events>
-                </core-courses-course-progress>
-            </ion-col>
-        </ion-row>
-    </ion-grid>
-    <core-empty-box *ngIf="timelineCourses.courses.length == 0" image="assets/img/icons/courses.svg" [message]="'addon.block_timeline.nocoursesinprogress' | translate"></core-empty-box>
+<ion-item-divider color="light">
+    <h2>{{ 'addon.block_timeline.pluginname' | translate }}</h2>
+</ion-item-divider>
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+    <div padding ion-row>
+        <ion-col>
+            <ion-select text-start [(ngModel)]="filter" (ngModelChange)="switchFilter()" interface="popover" class="core-button-select">
+                <ion-option value="all">{{ 'core.all' | translate }}</ion-option>
+                <ion-option value="overdue">{{ 'addon.block_timeline.overdue' | translate }}</ion-option>
+                <ion-option disabled value="disabled">{{ 'addon.block_timeline.duedate' | translate }}</ion-option>
+                <ion-option value="next7days">{{ 'addon.block_timeline.next7days' | translate }}</ion-option>
+                <ion-option value="next30days">{{ 'addon.block_timeline.next30days' | translate }}</ion-option>
+                <ion-option value="next3months">{{ 'addon.block_timeline.next3months' | translate }}</ion-option>
+                <ion-option value="next6months">{{ 'addon.block_timeline.next6months' | translate }}</ion-option>
+            </ion-select>
+        </ion-col>
+        <ion-col>
+            <ion-select text-start [(ngModel)]="sort" (ngModelChange)="switchSort()" interface="popover" class="core-button-select">
+                <ion-option value="sortbydates">{{ 'addon.block_timeline.sortbydates' | translate }}</ion-option>
+                <ion-option value="sortbycourses">{{ 'addon.block_timeline.sortbycourses' | translate }}</ion-option>
+            </ion-select>
+        </ion-col>
+    </div>
+    <core-loading [hideUntil]="timeline.loaded" [hidden]="sort != 'sortbydates'" class="core-loading-center">
+        <addon-block-timeline-events [events]="timeline.events" showCourse="true" [canLoadMore]="timeline.canLoadMore" (loadMore)="loadMoreTimeline()" [from]="dataFrom" [to]="dataTo"></addon-block-timeline-events>
+    </core-loading>
+    <core-loading [hideUntil]="timelineCourses.loaded" [hidden]="sort != 'sortbycourses'" class="core-loading-center">
+        <ion-grid no-padding>
+            <ion-row no-padding>
+                <ion-col *ngFor="let course of timelineCourses.courses" no-padding col-12 col-md-6>
+                    <core-courses-course-progress [course]="course">
+                        <addon-block-timeline-events [events]="course.events" [canLoadMore]="course.canLoadMore" (loadMore)="loadMoreCourse(course)" [from]="dataFrom" [to]="dataTo"></addon-block-timeline-events>
+                    </core-courses-course-progress>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+        <core-empty-box *ngIf="timelineCourses.courses.length == 0" image="assets/img/icons/courses.svg" [message]="'addon.block_timeline.nocoursesinprogress' | translate"></core-empty-box>
+    </core-loading>
 </core-loading>

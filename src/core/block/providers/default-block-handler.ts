@@ -21,7 +21,7 @@ import { CoreBlockBaseHandler } from '../classes/base-block-handler';
 @Injectable()
 export class CoreBlockDefaultHandler extends CoreBlockBaseHandler {
     name = 'CoreBlockDefault';
-    type = 'default';
+    blockName = 'default';
 
     constructor() {
         super();

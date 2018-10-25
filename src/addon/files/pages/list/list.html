@@ -11,7 +11,7 @@
     <core-loading [hideUntil]="filesLoaded" *ngIf="showPrivateFiles || showSiteFiles">
         <!-- Allow selecting the files to see: private or site. -->
         <div padding *ngIf="showPrivateFiles && showSiteFiles && !path">
-            <ion-select [(ngModel)]="root" (ngModelChange)="rootChanged()" interface="popover">
+            <ion-select [(ngModel)]="root" (ngModelChange)="rootChanged()" interface="popover" class="core-button-select">
                 <ion-option value="my">{{ 'addon.files.privatefiles' | translate }}</ion-option>
                 <ion-option value="site">{{ 'addon.files.sitefiles' | translate }}</ion-option>
             </ion-select>

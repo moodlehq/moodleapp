@@ -13,20 +13,35 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreBlockHandlerData } from '@core/block/providers/delegate';
-import { AddonBlockActivityModulesComponent } from '../components/activitymodules/activitymodules';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { AddonBlockTimelineProvider } from '@addon/block/timeline/providers/timeline';
+import { AddonBlockTimelineComponent } from '../components/timeline/timeline';
 import { CoreBlockBaseHandler } from '@core/block/classes/base-block-handler';
 
 /**
  * Block handler.
  */
 @Injectable()
-export class AddonBlockActivityModulesHandler extends CoreBlockBaseHandler {
-    name = 'AddonBlockActivityModules';
-    blockName = 'activity_modules';
+export class AddonBlockTimelineHandler extends CoreBlockBaseHandler {
+    name = 'AddonBlockTimeline';
+    blockName = 'timeline';
 
-    constructor() {
+    constructor(private timelineProvider: AddonBlockTimelineProvider, private coursesProvider: CoreCoursesProvider,
+        private sitesProvider: CoreSitesProvider) {
+
         super();
+    }
+
+    /**
+     * Check if the handler is enabled on a site level.
+     *
+     * @return {boolean} Whether or not the handler is enabled on a site level.
+     */
+    isEnabled(): boolean | Promise<boolean> {
+        return this.timelineProvider.isAvailable() && (this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.6') ||
+            !this.coursesProvider.isMyCoursesDisabledInSite());
     }
 
     /**
@@ -42,9 +57,9 @@ export class AddonBlockActivityModulesHandler extends CoreBlockBaseHandler {
             : CoreBlockHandlerData | Promise<CoreBlockHandlerData> {
 
         return {
-            title: 'addon.block_activitymodules.pluginname',
-            class: 'addon-block-activitymodules',
-            component: AddonBlockActivityModulesComponent
+            title: 'addon.block_timeline.pluginname',
+            class: 'addon-block-timeline',
+            component: AddonBlockTimelineComponent
         };
     }
 }
