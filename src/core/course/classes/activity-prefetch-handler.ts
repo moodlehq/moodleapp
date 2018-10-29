@@ -101,8 +101,13 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
         }
 
         const prefetchPromise = this.setDownloading(module.id, siteId).then(() => {
-            // Package marked as downloading, call the download function.
-            // Send all the params except downloadFn. This includes all params passed after siteId.
+            // Package marked as downloading, get module info to be able to handle links.
+            return Promise.all([
+                this.courseProvider.getModuleBasicInfo(module.id, siteId),
+                this.courseProvider.getModule(module.id, courseId, undefined, false, true, siteId),
+            ]);
+        }).then(() => {
+            // Call the download function, send all the params except downloadFn. This includes all params passed after siteId.
             return downloadFn.apply(downloadFn, [module, courseId, single, siteId].concat(args));
         }).then((extra: any) => {
             // Only accept string types.

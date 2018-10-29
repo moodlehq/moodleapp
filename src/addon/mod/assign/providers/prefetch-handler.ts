@@ -230,8 +230,6 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
 
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        promises.push(this.courseProvider.getModuleBasicInfo(module.id, siteId));
-
         // Get assignment to retrieve all its submissions.
         promises.push(this.assignProvider.getAssignment(courseId, module.id, siteId).then((assign) => {
             const subPromises = [],
