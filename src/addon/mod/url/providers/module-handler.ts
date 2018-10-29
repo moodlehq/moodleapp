@@ -164,6 +164,8 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
     protected openUrl(module: any, courseId: number): void {
         this.urlProvider.logView(module.instance).then(() => {
             this.courseProvider.checkModuleCompletion(courseId, module.completionstatus);
+        }).catch(() => {
+            // Ignore errors.
         });
         this.urlHelper.open(module.contents[0].fileurl);
     }

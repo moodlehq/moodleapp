@@ -96,6 +96,8 @@ export class AddonModFeedbackFormPage implements OnDestroy {
         this.fetchData().then(() => {
             this.feedbackProvider.logView(this.feedback.id, true).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+            }).catch(() => {
+                // Ignore errors.
             });
         });
     }

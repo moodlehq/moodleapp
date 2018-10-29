@@ -52,6 +52,8 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
         this.loadContent().then(() => {
             this.resourceProvider.logView(this.module.instance).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+            }).catch(() => {
+                // Ignore errors.
             });
         });
     }

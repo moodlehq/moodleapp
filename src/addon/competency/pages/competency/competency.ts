@@ -54,9 +54,14 @@ export class AddonCompetencyCompetencyPage {
     ionViewDidLoad(): void {
         this.fetchCompetency().then(() => {
             if (this.planId) {
-                this.competencyProvider.logCompetencyInPlanView(this.planId, this.competencyId, this.planStatus, this.userId);
+                this.competencyProvider.logCompetencyInPlanView(this.planId, this.competencyId, this.planStatus, this.userId)
+                        .catch(() => {
+                    // Ignore errors.
+                });
             } else {
-                this.competencyProvider.logCompetencyInCourseView(this.courseId, this.competencyId, this.userId);
+                this.competencyProvider.logCompetencyInCourseView(this.courseId, this.competencyId, this.userId).catch(() => {
+                    // Ignore errors.
+                });
             }
         }).finally(() => {
             this.competencyLoaded = true;

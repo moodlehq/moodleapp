@@ -55,7 +55,9 @@ export class CoreGradesCoursesPage {
             }
 
             // Add log in Moodle.
-            return this.gradesProvider.logCoursesGradesView();
+            return this.gradesProvider.logCoursesGradesView().catch(() => {
+                // Ignore errors.
+            });
         }).finally(() => {
             this.gradesLoaded = true;
         });

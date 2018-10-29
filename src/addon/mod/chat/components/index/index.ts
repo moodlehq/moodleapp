@@ -49,6 +49,8 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
         this.loadContent().then(() => {
             this.chatProvider.logView(this.chat.id).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+            }).catch(() => {
+                // Ignore errors.
             });
         });
     }
