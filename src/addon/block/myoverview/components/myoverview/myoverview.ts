@@ -40,7 +40,9 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         all: [],
         past: [],
         inprogress: [],
-        future: []
+        future: [],
+        favourite: [],
+        hidden: []
     };
     selectedFilter = 'inprogress';
     sort = 'title';
@@ -51,9 +53,13 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         all: {},
         inprogress: {},
         past: {},
-        future: {}
+        future: {},
+        favourite: {},
+        hidden: {}
     };
     showFilter = false;
+    showFavourite = false;
+    showHidden = false;
     showSelectorFilter = false;
     showSortFilter = false;
 
@@ -162,8 +168,10 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
             this.courses.filter = '';
             this.showFilter = false;
-            this.showSelectorFilter = this.courses.past.length > 0 || this.courses.future.length > 0 || (courses.length > 0 &&
+            this.showSelectorFilter = courses.length > 0 && (this.courses.past.length > 0 || this.courses.future.length > 0 ||
                 typeof courses[0].enddate != 'undefined');
+            this.showHidden = this.showSelectorFilter && typeof courses[0].hidden != 'undefined';
+            this.showFavourite = this.showSelectorFilter && typeof courses[0].isfavourite != 'undefined';
             if (!this.showSelectorFilter) {
                 // No selector, show all.
                 this.selectedFilter = 'all';
@@ -276,22 +284,34 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             }
         }
 
-        this.courses.all = courses;
+        this.courses.all = [];
         this.courses.past = [];
         this.courses.inprogress = [];
         this.courses.future = [];
+        this.courses.favourite = [];
+        this.courses.hidden = [];
 
         const today = moment().unix();
         courses.forEach((course) => {
-            if ((course.enddate && course.enddate < today) || course.completed) {
-                // Courses that have already ended.
-                this.courses.past.push(course);
-            } else if (course.startdate > today) {
-                // Courses that have not started yet.
-                this.courses.future.push(course);
-            } else {
-                // Courses still in progress.
-                this.courses.inprogress.push(course);
+            if (course.hidden) {
+                this.courses.hidden.push(course);
+            } else  {
+                this.courses.all.push(course);
+
+                if ((course.enddate && course.enddate < today) || course.completed) {
+                    // Courses that have already ended.
+                    this.courses.past.push(course);
+                } else if (course.startdate > today) {
+                    // Courses that have not started yet.
+                    this.courses.future.push(course);
+                } else {
+                    // Courses still in progress.
+                    this.courses.inprogress.push(course);
+                }
+
+                if (course.isfavourite) {
+                    this.courses.favourite.push(course);
+                }
             }
         });
     }
