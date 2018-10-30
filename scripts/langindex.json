@@ -193,6 +193,7 @@
   "addon.mod_assign.graded": "assign",
   "addon.mod_assign.gradedby": "assign",
   "addon.mod_assign.gradedon": "assign",
+  "addon.mod_assign.gradelocked": "assign",
   "addon.mod_assign.gradenotsynced": "local_moodlemobileapp",
   "addon.mod_assign.gradeoutof": "assign",
   "addon.mod_assign.gradingstatus": "assign",
