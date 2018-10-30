@@ -241,19 +241,6 @@ export class CoreCourseSectionPage implements OnDestroy {
                 });
             }));
 
-            // Get the overview files.
-            if (this.course.overviewfiles) {
-                this.course.imageThumb = this.course.overviewfiles[0] && this.course.overviewfiles[0].fileurl;
-            } else if (this.coursesProvider.isGetCoursesByFieldAvailable()) {
-                promises.push(this.coursesProvider.getCoursesByField('id', this.course.id).then((coursesInfo) => {
-                    if (coursesInfo[0] && coursesInfo[0].overviewfiles && coursesInfo[0].overviewfiles[0]) {
-                        this.course.imageThumb = coursesInfo[0].overviewfiles[0].fileurl;
-                    } else {
-                        this.course.imageThumb = false;
-                    }
-                }));
-            }
-
             // Load the course handlers.
             promises.push(this.courseOptionsDelegate.getHandlersToDisplay(this.injector, this.course, refresh, false)
                     .then((handlers) => {
@@ -330,7 +317,6 @@ export class CoreCourseSectionPage implements OnDestroy {
         promises.push(this.courseProvider.invalidateSections(this.course.id));
         promises.push(this.coursesProvider.invalidateUserCourses());
         promises.push(this.courseFormatDelegate.invalidateData(this.course, this.sections));
-        promises.push(this.coursesProvider.invalidateCoursesByField('id', this.course.id));
 
         if (this.sections) {
             promises.push(this.prefetchDelegate.invalidateCourseUpdates(this.course.id));

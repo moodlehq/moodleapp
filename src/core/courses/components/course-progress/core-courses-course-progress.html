@@ -1,6 +1,6 @@
 <ion-card [attr.course-color]="course.id % 10">
-    <div (click)="openCourse(course)" class="core-course-thumb" [class.core-course-color-img]="course.imageThumb">
-        <img *ngIf="course.imageThumb" [src]="course.imageThumb" core-external-content alt=""/>
+    <div (click)="openCourse(course)" class="core-course-thumb" [class.core-course-color-img]="course.courseImage">
+        <img *ngIf="course.courseImage" [src]="course.courseImage" core-external-content alt=""/>
         <core-icon name="fa-star" *ngIf="course.isfavourite"></core-icon>
     </div>
     <ion-item tappable text-wrap detail-none (click)="openCourse(course)" [title]="course.displayname || course.fullname" class="core-course-link" [class.item-disabled]="course.visible == 0">
