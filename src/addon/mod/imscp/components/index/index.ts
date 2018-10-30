@@ -53,7 +53,7 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
 
         this.loadContent().then(() => {
             this.imscpProvider.logView(this.module.instance).then(() => {
-                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch(() => {
                 // Ignore errors.
             });

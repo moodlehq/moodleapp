@@ -86,7 +86,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             }
 
             this.quizProvider.logViewQuiz(this.quizData.id).then(() => {
-                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch((error) => {
                 // Ignore errors.
             });
@@ -370,7 +370,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      */
     protected goToAutoReview(): Promise<any> {
         // If we go to auto review it means an attempt was finished. Check completion status.
-        this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+        this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
 
         // Verify that user can see the review.
         const attemptId = this.autoReview.attemptId;
@@ -395,7 +395,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     protected hasSyncSucceed(result: any): boolean {
         if (result.attemptFinished) {
             // An attempt was finished, check completion status.
-            this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+            this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
         }
 
         // If the sync call isn't rejected it means the sync was successful.
@@ -484,7 +484,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     protected isRefreshSyncNeeded(syncEventData: any): boolean {
         if (syncEventData.attemptFinished) {
             // An attempt was finished, check completion status.
-            this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+            this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
         }
 
         if (this.quizData && syncEventData.quizId == this.quizData.id) {

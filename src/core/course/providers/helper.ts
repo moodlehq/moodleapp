@@ -147,11 +147,16 @@ export class CoreCourseHelperProvider {
             section.modules.forEach((module) => {
                 module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, section.id);
 
-                if (completionStatus && typeof completionStatus[module.id] != 'undefined') {
-                    // Check if activity has completions and if it's marked.
-                    module.completionstatus = completionStatus[module.id];
-                    module.completionstatus.courseId = courseId;
-                    module.completionstatus.courseName = courseName;
+                if (module.completiondata && module.completion > 0) {
+                    module.completiondata.courseId = courseId;
+                    module.completiondata.courseName = courseName;
+                    module.completiondata.tracking = module.completion;
+                    module.completiondata.cmid = module.id;
+                } else if (completionStatus && typeof completionStatus[module.id] != 'undefined') {
+                    // Not in use > 3.6. Check if activity has completions and if it's marked.
+                    module.completiondata = completionStatus[module.id];
+                    module.completiondata.courseId = courseId;
+                    module.completiondata.courseName = courseName;
                 }
 
                 // Check if the module is stealth.
@@ -1070,7 +1075,13 @@ export class CoreCourseHelperProvider {
             if (this.coursesProvider.isGetCoursesByFieldAvailable()) {
                 promises.push(this.coursesProvider.getCoursesByField('id', course.id));
             }
-            promises.push(this.courseProvider.getActivitiesCompletionStatus(course.id));
+
+            const sectionWithModules = sections.find((section) => {
+                    return section.modules.length > 0;
+            });
+            if (!sectionWithModules || typeof sectionWithModules.modules[0].completion == 'undefined') {
+                promises.push(this.courseProvider.getActivitiesCompletionStatus(course.id));
+            }
 
             return this.utils.allPromises(promises);
         }).then(() => {

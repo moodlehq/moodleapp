@@ -75,7 +75,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
         this.loadContent(false, true).then(() => {
             this.assignProvider.logView(this.assign.id).then(() => {
-                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch(() => {
                 // Ignore errors.
             });
@@ -104,7 +104,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         this.submittedObserver = this.eventsProvider.on(AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT, (data) => {
             if (this.assign && data.assignmentId == this.assign.id && data.userId == this.userId) {
                 // Assignment submitted, check completion.
-                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
 
                 // Reload data since it can have offline data now.
                 this.showLoadingAndRefresh(true, false);

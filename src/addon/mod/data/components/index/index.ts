@@ -104,7 +104,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             }
 
             this.dataProvider.logView(this.data.id).then(() => {
-                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch(() => {
                 // Ignore errors.
             });

@@ -129,6 +129,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider {
             }
 
             // Get the current completion status to check if any completion was modified in web.
+            // This can be retrieved on core_course_get_contents since 3.6 but this is an easy way to get them.
             return this.courseProvider.getActivitiesCompletionStatus(courseId, siteId, undefined, false, true, false)
                     .then((onlineCompletions) => {
 
@@ -183,7 +184,11 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider {
             if (result.updated) {
                 // Update data.
                 return this.courseProvider.invalidateSections(courseId, siteId).then(() => {
-                    return this.courseProvider.getActivitiesCompletionStatus(courseId);
+                    if (this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.6')) {
+                        return this.courseProvider.getSections(courseId, false, true, undefined, siteId);
+                    } else {
+                        return this.courseProvider.getActivitiesCompletionStatus(courseId, siteId);
+                    }
                 }).catch(() => {
                     // Ignore errors.
                 });

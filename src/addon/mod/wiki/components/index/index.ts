@@ -105,7 +105,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
             if (this.isMainPage) {
                 this.wikiProvider.logView(this.wiki.id).then(() => {
-                    this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                    this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
                 }).catch((error) => {
                     // Ignore errors.
                 });
