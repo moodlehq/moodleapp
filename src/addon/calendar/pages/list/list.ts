@@ -291,7 +291,7 @@ export class AddonCalendarListPage implements OnDestroy {
     refreshEvents(refresher: any): void {
         const promises = [];
 
-        promises.push(this.calendarProvider.invalidateEventsList(this.courses));
+        promises.push(this.calendarProvider.invalidateEventsList());
 
         if (this.categoriesRetrieved) {
             promises.push(this.coursesProvider.invalidateCategories(0, true));

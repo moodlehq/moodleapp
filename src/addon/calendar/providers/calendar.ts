@@ -297,46 +297,51 @@ export class AddonCalendarProvider {
             : Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             siteId = site.getId();
+            const promises = [];
+            let courses, groups;
 
-            return this.coursesProvider.getUserCourses(false, siteId).then((courses) => {
+            promises.push(this.coursesProvider.getUserCourses(false, siteId).then((data) => {
+                courses = data;
                 courses.push({ id: site.getSiteHomeId() }); // Add front page.
+            }));
+            promises.push(this.groupsProvider.getAllUserGroups(siteId).then((data) => {
+                groups = data;
+            }));
 
-                return this.groupsProvider.getUserGroups(courses, siteId).then((groups) => {
-                    const now = this.timeUtils.timestamp(),
-                        start = now + (CoreConstants.SECONDS_DAY * daysToStart),
-                        end = start + (CoreConstants.SECONDS_DAY * daysInterval),
-                        data = {
-                            options: {
-                                userevents: 1,
-                                siteevents: 1,
-                                timestart: start,
-                                timeend: end
-                            },
-                            events: {
-                                courseids: [],
-                                groupids: []
-                            }
-                        };
-
-                    courses.forEach((course, index) => {
-                        data.events.courseids[index] = course.id;
-                    });
-
-                    groups.forEach((group, index) => {
-                        data.events.groupids[index] = group.id;
-                    });
-
-                    // We need to retrieve cached data using cache key because we have timestamp in the params.
-                    const preSets = {
-                        cacheKey: this.getEventsListCacheKey(daysToStart, daysInterval),
-                        getCacheUsingCacheKey: true
+            return Promise.all(promises).then(() => {
+                const now = this.timeUtils.timestamp(),
+                    start = now + (CoreConstants.SECONDS_DAY * daysToStart),
+                    end = start + (CoreConstants.SECONDS_DAY * daysInterval),
+                    data = {
+                        options: {
+                            userevents: 1,
+                            siteevents: 1,
+                            timestart: start,
+                            timeend: end
+                        },
+                        events: {
+                            courseids: [],
+                            groupids: []
+                        }
                     };
 
-                    return site.read('core_calendar_get_calendar_events', data, preSets).then((response) => {
-                        this.storeEventsInLocalDB(response.events, siteId);
+                data.events.courseids = courses.map((course) => {
+                    return course.id;
+                });
+                data.events.groupids = groups.map((group) => {
+                    return group.id;
+                });
 
-                        return response.events;
-                    });
+                // We need to retrieve cached data using cache key because we have timestamp in the params.
+                const preSets = {
+                    cacheKey: this.getEventsListCacheKey(daysToStart, daysInterval),
+                    getCacheUsingCacheKey: true
+                };
+
+                return site.read('core_calendar_get_calendar_events', data, preSets).then((response) => {
+                    this.storeEventsInLocalDB(response.events, siteId);
+
+                    return response.events;
                 });
             });
         });
@@ -365,18 +370,17 @@ export class AddonCalendarProvider {
     /**
      * Invalidates events list and all the single events and related info.
      *
-     * @param {any[]} courses List of courses or course ids.
      * @param {string} [siteId] Site Id. If not defined, use current site.
      * @return {Promise<any[]>} Promise resolved when the list is invalidated.
      */
-    invalidateEventsList(courses: any[], siteId?: string): Promise<any[]> {
+    invalidateEventsList(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             siteId = site.getId();
 
             const promises = [];
 
             promises.push(this.coursesProvider.invalidateUserCourses(siteId));
-            promises.push(this.groupsProvider.invalidateUserGroups(courses, siteId));
+            promises.push(this.groupsProvider.invalidateAllUserGroups(siteId));
             promises.push(site.invalidateWsCacheForKeyStartingWith(this.getEventsListPrefixCacheKey()));
 
             return Promise.all(promises);
