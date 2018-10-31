@@ -92,6 +92,20 @@ export class AddonModAssignFeedbackCommentsHandler implements AddonModAssignFeed
     }
 
     /**
+     * Get files used by this plugin.
+     * The files returned by this function will be prefetched when the user prefetches the assign.
+     *
+     * @param {any} assign The assignment.
+     * @param {any} submission The submission.
+     * @param {any} plugin The plugin object.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {any[]|Promise<any[]>} The files (or promise resolved with the files).
+     */
+    getPluginFiles(assign: any, submission: any, plugin: any, siteId?: string): any[] | Promise<any[]> {
+        return this.assignProvider.getSubmissionPluginAttachments(plugin);
+    }
+
+    /**
      * Get the text to submit.
      *
      * @param {CoreTextUtilsProvider} textUtils Text utils instance.
