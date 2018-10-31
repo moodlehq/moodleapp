@@ -152,11 +152,17 @@ export class CoreCourseHelperProvider {
                     module.completiondata.courseName = courseName;
                     module.completiondata.tracking = module.completion;
                     module.completiondata.cmid = module.id;
+
+                    // Use of completionstatus is deprecated, use completiondata instead.
+                    module.completionstatus = module.completiondata;
                 } else if (completionStatus && typeof completionStatus[module.id] != 'undefined') {
-                    // Not in use > 3.6. Check if activity has completions and if it's marked.
+                    // Should not happen on > 3.6. Check if activity has completions and if it's marked.
                     module.completiondata = completionStatus[module.id];
                     module.completiondata.courseId = courseId;
                     module.completiondata.courseName = courseName;
+
+                    // Use of completionstatus is deprecated, use completiondata instead.
+                    module.completionstatus = module.completiondata;
                 }
 
                 // Check if the module is stealth.

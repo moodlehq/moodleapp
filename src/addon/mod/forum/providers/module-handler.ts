@@ -77,7 +77,13 @@ export class AddonModForumModuleHandler implements CoreCourseModuleHandler {
             }
         };
 
-        this.updateExtraBadge(data, courseId, module.id);
+        if (typeof module.afterlink != 'undefined') {
+            data.extraBadgeColor = '';
+            const match = />(\d+)[^<]+/.exec(module.afterlink);
+            data.extraBadge = match ? this.translate.instant('addon.mod_forum.unreadpostsnumber', {$a : match[1] }) : '';
+        } else {
+            this.updateExtraBadge(data, courseId, module.id);
+        }
 
         const event = this.eventsProvider.on(AddonModForumProvider.MARK_READ_EVENT, (eventData) => {
             if (eventData.courseId == courseId && eventData.moduleId == module.id) {

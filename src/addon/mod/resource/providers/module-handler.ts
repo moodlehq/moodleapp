@@ -134,27 +134,30 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
      */
     protected getResourceData(module: any, courseId: number, handlerData: CoreCourseModuleHandlerData): Promise<any> {
         const promises = [];
-        let resourceInfo;
+        let infoFiles = [],
+            options: any = {};
 
         // Check if the button needs to be shown or not. This also loads the module contents.
         promises.push(this.hideOpenButton(module, courseId).then((hideOpenButton) => {
             handlerData.buttons[0].hidden = hideOpenButton;
         }));
 
-        if (this.resourceProvider.isGetResourceWSAvailable()) {
+        if (typeof module.customdata != 'undefined') {
+            options = this.textUtils.unserialize(this.textUtils.parseJSON(module.customdata));
+        } else if (this.resourceProvider.isGetResourceWSAvailable()) {
             // Get the resource data.
             promises.push(this.resourceProvider.getResourceData(courseId, module.id).then((info) => {
-                resourceInfo = info;
+                infoFiles = info.contentfiles;
+                options = this.textUtils.unserialize(info.displayoptions);
             }));
         }
 
         return Promise.all(promises).then(() => {
-            const files = module.contents && module.contents.length ? module.contents : resourceInfo && resourceInfo.contentfiles,
+            const files = module.contents && module.contents.length ? module.contents : infoFiles,
                 resourceData = {
                     icon: '',
                     extra: ''
                 },
-                options = (resourceInfo && this.textUtils.unserialize(resourceInfo.displayoptions)) || {},
                 extra = [];
 
             if (files && files.length) {
@@ -162,19 +165,32 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
                 resourceData.icon = this.mimetypeUtils.getFileIcon(file.filename);
 
                 if (options.showsize) {
-                    const size = files.reduce((result, file) => {
-                        return result + file.filesize;
-                    }, 0);
+                    let size;
+                    if (options.filedetails) {
+                        size = options.filedetails.size;
+                    } else {
+                        size = files.reduce((result, file) => {
+                            return result + file.filesize;
+                        }, 0);
+                    }
                     extra.push(this.textUtils.bytesToSize(size, 1));
                 }
+
                 if (options.showtype) {
+                    // We should take it from options.filedetails.size if avalaible ∫but it's already translated.
                     extra.push(this.mimetypeUtils.getMimetypeDescription(file));
                 }
 
                 if (options.showdate) {
-                    /* Modified date may be up to several minutes later than uploaded date just because
-                       teacher did not submit the form promptly. Give teacher up to 5 minutes to do it. */
-                    if (file.timemodified > file.timecreated + CoreConstants.SECONDS_MINUTE * 5) {
+                    if (options.filedetails && options.filedetails.modifieddate) {
+                        extra.push(this.translate.instant('addon.mod_resource.modifieddate',
+                            {$a: moment(options.filedetails.modifieddate * 1000).format('LLL')}));
+                    } else if (options.filedetails && options.filedetails.uploadeddate) {
+                        extra.push(this.translate.instant('addon.mod_resource.uploadeddate',
+                            {$a: moment(options.filedetails.uploadeddate * 1000).format('LLL')}));
+                    } else if (file.timemodified > file.timecreated + CoreConstants.SECONDS_MINUTE * 5) {
+                        /* Modified date may be up to several minutes later than uploaded date just because
+                           teacher did not submit the form promptly. Give teacher up to 5 minutes to do it. */
                         extra.push(this.translate.instant('addon.mod_resource.modifieddate',
                             {$a: moment(file.timemodified * 1000).format('LLL')}));
                     } else {
