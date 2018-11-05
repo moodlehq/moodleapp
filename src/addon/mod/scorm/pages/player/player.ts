@@ -295,7 +295,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
     /**
      * Page will leave.
      */
-    ionViewWillLeave(): void {
+    ionViewWillUnload(): void {
         // Empty src when leaving the state so unload event is triggered in the iframe.
         this.src = '';
     }
