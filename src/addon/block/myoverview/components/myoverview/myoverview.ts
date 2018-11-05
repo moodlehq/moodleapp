@@ -66,6 +66,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     protected prefetchIconsInitialized = false;
     protected isDestroyed;
     protected updateSiteObserver;
+    protected coursesObserver;
     protected courseIds = [];
     protected fetchContentDefaultError = 'Error getting my overview data.';
 
@@ -95,6 +96,10 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                 this.initPrefetchCoursesIcons();
             }
         });
+
+        this.coursesObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, () => {
+            this.refreshContent();
+        }, this.sitesProvider.getCurrentSiteId());
 
         this.currentSite = this.sitesProvider.getCurrentSite();
 
@@ -326,6 +331,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;
+        this.coursesObserver && this.coursesObserver.off();
         this.updateSiteObserver && this.updateSiteObserver.off();
     }
 }

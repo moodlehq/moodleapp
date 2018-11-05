@@ -353,7 +353,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
                 this.refreshData().finally(() => {
                     // My courses have been updated, trigger event.
                     this.eventsProvider.trigger(
-                        CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {}, this.sitesProvider.getCurrentSiteId());
+                        CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {course: this.course}, this.sitesProvider.getCurrentSiteId());
                 });
             });
         }).catch((error) => {
