@@ -1,0 +1,7 @@
+ion-app.app-root .core-input-required-asterisk, ion-app.app-root .icon.core-input-required-asterisk {
+    color: $red !important;
+    font-size: 8px;
+    @include padding(null, null, null, 4px);
+    line-height: 100%;
+    vertical-align: top;
+}

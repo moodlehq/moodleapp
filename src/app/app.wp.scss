@@ -1,0 +1,58 @@
+ion-app.app-root.wp {
+  .button-wp {
+    min-height: $button-wp-height;
+  }
+
+  // Light buttons color.
+  .button-wp-light {
+    color: color($colors, primary, base);
+  }
+
+  .col[align-self-stretch] .card-wp {
+    height: calc(100% - #{($card-wp-margin-end + $card-wp-margin-start)});
+  }
+
+  .bar-buttons core-context-menu .button-clear-wp {
+    color: $toolbar-wp-button-color;
+  }
+
+  .item-wp ion-spinner[item-start] + .item-inner,
+  .item-wp ion-spinner[item-start] + .item-input {
+    @include margin-horizontal(($item-wp-padding-start / 2), null);
+  }
+
+  @each $color-name, $color-base, $color-contrast in get-colors($colors-wp) {
+    .core-#{$color-name}-card {
+      @extend .card-wp ;
+      @extend .card-content-wp;
+
+      &[icon-start] {
+        @include padding(null, null, null, $card-wp-padding-left * 2 + 20);
+
+        ion-icon {
+          @include position(null, null, null, $card-wp-padding-left);
+        }
+      }
+    }
+  }
+
+  .core-avoid-header ion-content {
+      top: $navbar-wp-height;
+      height: calc(100% - #{($navbar-wp-height)});
+  }
+
+  // Different levels of padding.
+  @for $i from 0 through 15 {
+    .core-padding-#{$i} {
+      @include padding(null, null, null, 15px * $i + $item-wp-padding-start);
+    }
+  }
+
+  // Recover borders on items inside cards.
+  .card-wp.with-borders  .item-wp.item-block .item-inner {
+    border-bottom: 1px solid $list-wp-border-color;
+  }
+  .card-wp.with-borders .item-wp:last-child .item-inner {
+    border-bottom: 0;
+  }
+}

@@ -1,0 +1,16 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+
+        <ion-buttons end>
+            <!-- The buttons defined by the component will be added in here. -->
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="urlComponent.loaded" (ionRefresh)="urlComponent.doRefresh($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <addon-mod-url-index [module]="module" [courseId]="courseId" (dataRetrieved)="updateData($event)"></addon-mod-url-index>
+</ion-content>

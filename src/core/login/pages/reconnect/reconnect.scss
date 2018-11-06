@@ -1,0 +1,62 @@
+ion-app.app-root page-core-login-reconnect {
+    .scroll-content {
+        background: $core-login-page-background-color;
+    }
+
+    img {
+        max-width: 100%;
+    }
+
+    img.login-logo {
+        width: 90%;
+        max-width: 300px;
+    }
+
+    .box {
+        padding: 16px;
+        margin: 8px;
+        background: $core-login-box-background-color;
+        border: 1px solid $core-login-box-background-border;
+        color: $core-login-box-text-color;
+    }
+
+    .core-sitename, .core-siteurl {
+        @if $core-fixed-url { display: none; }
+    }
+
+    @if $core-login-button-outline {
+        .button-md.button-default-md, .button-ios.button-default-ios {
+            @extend .button-md-light;
+        }
+    }
+
+    @if $core-login-loading-color {
+        .core-loading-container {
+            color: $core-login-loading-color;
+
+            .spinner circle, .spinner line {
+                stroke: $core-login-loading-color;
+            }
+        }
+    }
+
+    .list .core-username {
+        &.item-md {
+            @include padding-horizontal($item-md-padding-start, $content-padding);
+        }
+        &.item-ios {
+            @include padding-horizontal($item-ios-padding-start, $content-padding);
+        }
+        &.item-wp {
+            @include padding-horizontal($item-wp-padding-start, $content-padding);
+        }
+
+        .item-inner {
+            @include padding(null, null, null, 8px);
+        }
+    }
+
+    .item-input {
+        margin-bottom: 20px;
+    }
+}

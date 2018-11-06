@@ -1,0 +1,32 @@
+
+<!-- Question contents. -->
+<core-dynamic-component *ngIf="loaded" [component]="componentClass" [data]="data" class="core-question-{{question.slot}}">
+    <!-- This content will only be shown if there's no component to render the question. -->
+    <p padding>{{ 'core.question.errorquestionnotsupported' | translate:{$a: question.type} }}</p>
+</core-dynamic-component>
+
+<!-- Sequence check input. -->
+<input *ngIf="seqCheck" type="hidden" name="{{seqCheck.name}}" value="{{seqCheck.value}}" >
+
+<!-- Question behaviour components. -->
+<core-dynamic-component *ngFor="let componentClass of behaviourComponents" [component]="componentClass" [data]="data"></core-dynamic-component>
+
+<!-- Question validation error. -->
+<ion-item text-wrap class="core-danger-item" *ngIf="question.validationError">
+    <p>{{ question.validationError }}</p>
+</ion-item>
+
+<!-- Question behaviour buttons. -->
+<ion-item text-wrap *ngFor="let button of question.behaviourButtons">
+    <button ion-button block (click)="buttonClicked.emit(button)" [disabled]="button.disabled">{{ button.value }}</button>
+</ion-item>
+
+<!-- Question feedback. -->
+<ion-item text-wrap class="core-question-feedback-container" *ngIf="question.feedbackHtml">
+    <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.feedbackHtml"></core-format-text></p>
+</ion-item>
+
+<!-- Question comment. -->
+<ion-item text-wrap class="core-question-comment" *ngIf="question.commentHtml">
+    <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.commentHtml"></core-format-text></p>
+</ion-item>

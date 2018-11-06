@@ -1,0 +1,39 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'core.settings.settings' | translate}}</ion-title>
+        <ion-buttons end>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<core-split-view>
+    <ion-content>
+        <ion-list>
+            <a ion-item (click)="openHandler('CoreSettingsGeneralPage')" [title]="'core.settings.general' | translate"  [class.core-split-item-selected]="'CoreSettingsGeneralPage' == selectedPage" detail-push>
+                <ion-icon name="construct" item-start></ion-icon>
+                <p>{{ 'core.settings.general' | translate }}</p>
+            </a>
+            <a ion-item (click)="openHandler('CoreSettingsSpaceUsagePage')" [title]="'core.settings.spaceusage' | translate" [class.core-split-item-selected]="'CoreSettingsSpaceUsagePage' == selectedPage" detail-push>
+                <ion-icon name="stats" item-start></ion-icon>
+                <p>{{ 'core.settings.spaceusage' | translate }}</p>
+            </a>
+            <a ion-item (click)="openHandler('CoreSettingsSynchronizationPage')" [title]="'core.settings.synchronization' | translate" [class.core-split-item-selected]="'CoreSettingsSynchronizationPage' == selectedPage" detail-push>
+                <ion-icon name="sync" item-start></ion-icon>
+                <p>{{ 'core.settings.synchronization' | translate }}</p>
+            </a>
+            <a ion-item *ngIf="isIOS" (click)="openHandler('CoreSharedFilesListPage', {manage: true})" [title]="'core.sharedfiles.sharedfiles' | translate" [class.core-split-item-selected]="'CoreSharedFilesListPage' == selectedPage" detail-push>
+                <ion-icon name="folder" item-start></ion-icon>
+                <p>{{ 'core.sharedfiles.sharedfiles' | translate }}</p>
+            </a>
+
+            <a ion-item *ngFor="let handler of handlers" [ngClass]="['core-settings-handler', handler.class]" (click)="openHandler(handler.page, handler.params)" [title]="handler.title | translate" detail-push [class.core-split-item-selected]="handler.page == selectedPage">
+                <core-icon [name]="handler.icon" item-start *ngIf="handler.icon"></core-icon>
+                <p>{{ handler.title | translate}}</p>
+            </a>
+
+            <a ion-item (click)="openHandler('CoreSettingsAboutPage')" [title]="'core.settings.about' | translate" [class.core-split-item-selected]="'CoreSettingsAboutPage' == selectedPage" detail-push>
+                <ion-icon name="contacts" item-start></ion-icon>
+                <p>{{ 'core.settings.about' | translate }}</p>
+            </a>
+        </ion-list>
+    </ion-content>
+</core-split-view>

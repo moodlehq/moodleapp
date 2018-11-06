@@ -1,0 +1,42 @@
+ion-app.app-root core-split-view {
+    ion-menu.split-pane-side {
+        display: block;
+
+        .menu-inner {
+            @include position(0, 0, 0, 0);
+            -webkit-transform: initial;
+            transform: initial;
+            width: 100%;
+        }
+    }
+
+    .split-pane-main {
+        display: none;
+    }
+
+    .split-pane-visible {
+        .split-pane-main {
+            display: block;
+        }
+
+        .split-pane-side .core-split-item-selected {
+            background-color: $gray-lighter;
+            @include border-start(5px, solid, $core-splitview-selected);
+            &.item-md {
+                @include padding(null, null, null, $item-md-padding-start - 5px);
+            }
+            &.item-ios {
+                @include padding(null, null, null, $item-ios-padding-start - 5px);
+            }
+            &.item-wp {
+                @include padding(null, null, null, $item-wp-padding-start - 5px);
+            }
+        }
+    }
+    ion-header {
+        display: none;
+    }
+    ion-content.statusbar-padding:first-child .scroll-content {
+        padding-top: 0  !important;
+    }
+}

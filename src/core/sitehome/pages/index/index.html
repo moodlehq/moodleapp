@@ -1,0 +1,11 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'core.sitehome.sitehome' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="siteHomeComponent && siteHomeComponent.dataLoaded" (ionRefresh)="siteHomeComponent.doRefresh($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-sitehome-index></core-sitehome-index>
+</ion-content>

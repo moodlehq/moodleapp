@@ -1,0 +1,10 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ title }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="url">
+        <core-iframe *ngIf="url" [src]="url"></core-iframe>
+    </core-loading>
+</ion-content>

@@ -1,0 +1,28 @@
+<ion-card>
+    <div (click)="openCourse(course)" class="core-course-thumb core-course-color-{{course.id % 10}}" [class.core-course-color-img]="course.imageThumb">
+        <img *ngIf="course.imageThumb" [src]="course.imageThumb" core-external-content alt=""/>
+    </div>
+    <ion-item tappable text-wrap detail-none (click)="openCourse(course)" [title]="course.displayname || course.fullname" class="core-course-link">
+        <h2><core-format-text [text]="course.displayname || course.fullname"></core-format-text></h2>
+
+        <div class="core-button-spinner" *ngIf="downloadCourseEnabled">
+            <!-- Download course. -->
+            <button *ngIf="prefetchCourseData.prefetchCourseIcon != 'spinner'" ion-button icon-only clear color="dark" (click)="prefetchCourse($event)" [attr.aria-label]="prefetchCourseData.title | translate">
+                <core-icon [name]="prefetchCourseData.prefetchCourseIcon"></core-icon>
+            </button>
+            <!-- Download course spinner. -->
+            <ion-spinner *ngIf="prefetchCourseData.prefetchCourseIcon == 'spinner'"></ion-spinner>
+        </div>
+    </ion-item>
+    <ion-item text-wrap *ngIf="course.summary && course.summary.length">
+        <p>
+            <summary>
+                <core-format-text [text]="course.summary" [singleLine]="true" [clean]="true" [fullOnClick]="true"></core-format-text>
+            </summary>
+        </p>
+    </ion-item>
+    <ion-item *ngIf="course.progress != null && course.progress >= 0">
+        <core-progress-bar [progress]="course.progress"></core-progress-bar>
+    </ion-item>
+    <ng-content></ng-content>
+</ion-card>

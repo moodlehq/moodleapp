@@ -1,0 +1,14 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'core.login.security_question' | translate }}</ion-title>
+
+        <ion-buttons end>
+            <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <core-iframe [src]="src" (loaded)="loaded($event)"></core-iframe>
+</ion-content>

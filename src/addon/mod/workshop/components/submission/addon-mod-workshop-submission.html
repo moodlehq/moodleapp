@@ -1,0 +1,84 @@
+<core-loading [hideUntil]="loaded">
+    <div *ngIf="!summary">
+        <ion-list-header text-wrap>
+            <ion-avatar item-start>
+                <img [src]="profile && profile.profileimageurl" core-external-content [alt]="'core.pictureof' | translate:{$a: profile && profile.fullname}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
+            </ion-avatar>
+            <h2>{{submission.title}}</h2>
+            <p *ngIf="profile && profile.fullname">{{profile.fullname}}</p>
+            <p *ngIf="showGrade(submission.submissiongrade)" [class.addon-has-overriden-grade]="showGrade(submission.submissiongradeover)">
+                {{ 'addon.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.submissiongrade}}
+            </p>
+            <p *ngIf="showGrade(submission.submissiongradeover)" class="addon-overriden-grade">
+                {{ 'addon.mod_workshop.gradeover' | translate }}: {{submission.submissiongradeover}}
+            </p>
+            <p *ngIf="access.canviewallsubmissions && showGrade(submission.gradinggrade)">
+                {{ 'addon.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{submission.gradinggrade}}
+            </p>
+            <ion-note item-end *ngIf="!submission.timemodified">
+                <ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}
+            </ion-note>
+            <ion-note item-end *ngIf="submission.timemodified">
+                {{submission.timemodified | coreDateDayOrTime}}
+                <ng-container *ngIf="submission.offline"><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ng-container>
+                <ng-container *ngIf="submission.deleted"><ion-icon name="trash"></ion-icon> {{ 'core.deletedoffline' | translate }}</ng-container>
+            </ion-note>
+        </ion-list-header>
+        <ion-item text-wrap *ngIf="submission.content">
+            <core-format-text [component]="component" [componentId]="componentId" [text]="submission.content"></core-format-text>
+        </ion-item>
+        <ion-item *ngFor="let attachment of submission.attachmentfiles">
+            <!-- Files already attached to the submission. -->
+            <core-file *ngIf="!attachment.name" [file]="attachment" [component]="component" [componentId]="componentId"></core-file>
+            <!-- Files stored in offline to be sent later. -->
+            <core-local-file *ngIf="attachment.name" [file]="attachment"></core-local-file>
+        </ion-item>
+        <ion-item text-wrap *ngIf="viewDetails && submission.feedbackauthor">
+            <ion-avatar item-start *ngIf="evaluateByProfile">
+                <img [src]="evaluateByProfile.profileimageurl" core-external-content core-user-link [courseId]="courseId" [userId]="evaluateByProfile.id" [alt]="'core.pictureof' | translate:{$a: evaluateByProfile.fullname}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
+            </ion-avatar>
+
+            <h2 *ngIf="evaluateByProfile && evaluateByProfile.fullname">{{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}</h2>
+            <core-format-text [text]="submission.feedbackauthor"></core-format-text>
+        </ion-item>
+        <ion-item *ngIf="viewDetails">
+            <button ion-button block (click)="gotoSubmission()">
+                {{ 'core.showmore' | translate }}
+                <ion-icon name="arrow-forward" item-end></ion-icon>
+            </button>
+        </ion-item>
+    </div>
+
+    <a ion-item text-wrap *ngIf="summary" [attr.detail-none]="submission.timemodified ? null : true" (click)="gotoSubmission()">
+        <ion-avatar item-start>
+            <img [src]="profile && profile.profileimageurl" core-external-content [alt]="'core.pictureof' | translate:{$a: profile && profile.fullname}" core-user-link [courseId]="courseId" [userId]="profile && profile.id" role="presentation" onError="this.src='assets/img/user-avatar.png'">
+        </ion-avatar>
+
+        <h2>{{submission.title}}</h2>
+        <p *ngIf="profile && profile.fullname">{{profile.fullname}}</p>
+        <p *ngIf="submission.reviewedbycount">
+            {{ 'addon.mod_workshop.receivedgrades' | translate }}: {{submission.reviewedbycount}} / {{submission.reviewedby.length}}
+        </p>
+        <p *ngIf="submission.reviewerofcount">
+            {{ 'addon.mod_workshop.givengrades' | translate }}: {{submission.reviewerofcount}} / {{submission.reviewerof.length}}
+        </p>
+        <p *ngIf="!showGrade(submission.submissiongradeover) && showGrade(submission.submissiongrade)">
+            {{ 'addon.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.submissiongrade}}
+        </p>
+        <p *ngIf="showGrade(submission.submissiongradeover)" class="addon-overriden-grade">
+            {{ 'addon.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.submissiongradeover}}
+        </p>
+        <p *ngIf="access.canviewallsubmissions && showGrade(submission.gradinggrade)">
+            {{ 'addon.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{submission.gradinggrade}}
+        </p>
+
+        <ion-badge *ngIf="assessment && (showGrade(assessment.grade) || assessment.offline)" color="success">{{ 'addon.mod_workshop.assessedsubmission' | translate }}</ion-badge>
+        <ion-badge *ngIf="assessment && !showGrade(assessment.grade) && !assessment.offline" color="danger">{{ 'addon.mod_workshop.notassessed' | translate }}</ion-badge>
+
+        <ion-note item-end *ngIf="submission.timemodified">
+            {{submission.timemodified | coreDateDayOrTime}}
+            <div *ngIf="offline"><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</div>
+            <div *ngIf="submission.deleted"><ion-icon name="trash"></ion-icon> {{ 'core.deletedoffline' | translate }}</div>
+        </ion-note>
+    </a>
+</core-loading>

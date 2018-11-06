@@ -1,0 +1,126 @@
+ion-app.app-root core-rich-text-editor {
+    height: 40vh;
+    overflow: hidden;
+    min-height: 200px; /* Just in case vh is not supported */
+    min-height: 40vh;
+    width: 100%;
+    position: relative;
+    display: block;
+
+    > div {
+        position: absolute;
+        @include position(0, 0, 0, 0);
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .core-rte-editor, .core-textarea {
+        padding: 2px;
+        margin: 2px;
+        width: 100%;
+        resize: none;
+        background-color: $white;
+        flex-grow: 1;
+        * {
+            overflow: hidden;
+        }
+    }
+
+    .core-rte-editor {
+        -webkit-user-select: auto !important;
+        word-wrap: break-word;
+        overflow-x: hidden;
+        overflow-y: auto;
+        cursor: text;
+        img {
+            @include padding(null, null, null, 2px);
+            max-width: 95%;
+        }
+        &:empty:before {
+            content: attr(data-placeholder-text);
+            display: block;
+            color: $gray-light;
+            font-weight: bold;
+        }
+
+        // Make empty elements selectable (to move the cursor).
+        *:empty:after {
+            content: '\200B';
+        }
+
+        ul {
+            list-style-type: disc;
+        }
+        ol {
+            list-style-type: decimal;
+        }
+        ul, ol {
+            -webkit-padding-start: 15px;
+            list-style-position: inside;
+
+            ul {
+                list-style-type: circle;
+            }
+            ol {
+                list-style-type: lower-latin;
+            }
+            ul, ol {
+                list-style-position: inside;
+                @include margin(null, null, null, 15px);
+            }
+        }
+    }
+
+    .core-textarea {
+        position: relative;
+
+        textarea {
+            margin: 0 !important;
+            padding: 0;
+            height: 100% !important;
+            width: 100% !important;
+            resize: none;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: absolute;
+            @include position(0, 0, 0, 0);
+        }
+    }
+
+    div.core-rte-toolbar {
+        background: $gray-darker;
+        @include margin(0px, 1px, 15px, 1px);
+        text-align: center;
+        flex-grow: 0;
+        width: 100%;
+        z-index: 1;
+
+        .core-rte-buttons {
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-evenly;
+
+            button {
+                background: $gray-darker;
+                color: $white;
+                font-size: 1.1em;
+                height: 35px;
+                min-width: 30px;
+                @include padding(null, 3px, null, 3px);
+                @include border-end(qpx, solid, $gray-dark);
+                border-bottom: 1px solid $gray-dark;
+                @include position(-6px, 0, null, null);
+                flex-grow: 1;
+                margin: 0;
+            }
+        }
+    }
+
+}
+
+body.keyboard-is-open ion-app.app-root core-rich-text-editor {
+    min-height: 200px;
+}

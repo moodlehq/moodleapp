@@ -1,0 +1,174 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons end>
+    <core-context-menu>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl" [iconAction]="'open'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()" [iconAction]="'arrow-forward'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && hasOffline && isOnline"  [priority]="600" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch()" [iconAction]="prefetchStatusIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="400" [content]="size" [iconDescription]="'cube'" (action)="removeFiles()" [iconAction]="'trash'"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<!-- Content. -->
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+
+    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+
+    <ng-container *ngIf="showTabs">
+        <core-tabs [hideUntil]="tabsReady" [selectedIndex]="firstSelectedTab">
+            <core-tab [title]="'addon.mod_feedback.overview' | translate" (ionSelect)="tabChanged('overview')">
+                <ng-template>
+                    <ng-container *ngTemplateOutlet="tabOverview"></ng-container>
+                </ng-template>
+            </core-tab>
+            <core-tab [show]="access.canviewreports" [title]="'addon.mod_feedback.analysis' | translate" (ionSelect)="tabChanged('analysis')">
+                <ng-template>
+                    <ng-container *ngTemplateOutlet="tabAnalysis"></ng-container>
+                </ng-template>
+            </core-tab>
+
+            <core-tab [show]="!access.canviewreports" [title]="'addon.mod_feedback.completed_feedbacks' | translate" (ionSelect)="tabChanged('analysis')">
+                <ng-template>
+                    <ng-container *ngTemplateOutlet="tabAnalysis"></ng-container>
+                </ng-template>
+            </core-tab>
+        </core-tabs>
+    </ng-container>
+
+    <ng-container *ngIf="!showTabs">
+        <ng-container *ngTemplateOutlet="tabOverview"></ng-container>
+    </ng-container>
+</core-loading>
+
+
+<ng-template #basicInfo>
+    <ion-list *ngIf="(access.canedititems || access.canviewreports) && !access.isempty">
+        <ion-item text-wrap *ngIf="access.canedititems && (groupInfo.separateGroups || groupInfo.visibleGroups)">
+            <ion-label id="addon-feedback-groupslabel" *ngIf="groupInfo.separateGroups">{{ 'core.groupsseparate' | translate }}</ion-label>
+            <ion-label id="addon-feedback-groupslabel" *ngIf="groupInfo.visibleGroups">{{ 'core.groupsvisible' | translate }}</ion-label>
+            <ion-select [(ngModel)]="group" (ionChange)="setGroup(group)" aria-labelledby="addon-feedback-groupslabel" interface="popover">
+                <ion-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">{{groupOpt.name}}</ion-option>
+            </ion-select>
+        </ion-item>
+        <a ion-item text-wrap *ngIf="access.canviewreports || access.canedititems" (click)="access.canviewreports && openFeature('Respondents')" [attr.detail-none]="access.canviewreports ? null : true">
+            <h2>{{ 'addon.mod_feedback.completed_feedbacks' | translate }}</h2>
+            <ion-badge item-end>{{feedback.completedCount}}</ion-badge>
+        </a>
+        <a ion-item text-wrap *ngIf="!access.isanonymous && access.canviewreports" (click)="openFeature('NonRespondents')" detail-push>
+            <h2>{{ 'addon.mod_feedback.show_nonrespondents' | translate }}</h2>
+        </a>
+        <ion-item text-wrap *ngIf="access.canedititems">
+            <h2>{{ 'addon.mod_feedback.questions' | translate }}</h2>
+            <ion-badge item-end>{{feedback.itemsCount}}</ion-badge>
+        </ion-item>
+    </ion-list>
+</ng-template>
+
+<!-- Template to render the overview. -->
+<ng-template #tabOverview>
+    <core-loading [hideUntil]="tabsLoaded.overview">
+        <ng-container *ngTemplateOutlet="basicInfo"></ng-container>
+
+        <!-- Feedback done in offline but not synchronized -->
+        <div class="core-warning-card" icon-start *ngIf="hasOffline">
+            <ion-icon name="warning"></ion-icon>
+            {{ 'core.hasdatatosync' | translate: {$a: moduleName} }}
+        </div>
+
+        <div class="core-info-card" icon-start *ngIf="access.cancomplete && !access.isopen">
+            <ion-icon name="information-circle"></ion-icon>
+            {{ 'addon.mod_feedback.feedback_is_not_open' | translate }}
+        </div>
+
+        <div class="core-success-card" *ngIf="access.cancomplete && access.isopen && !access.cansubmit">
+            <ion-icon name="checkmark"></ion-icon>
+            {{ 'addon.mod_feedback.this_feedback_is_already_submitted' | translate }}
+        </div>
+
+        <ion-list *ngIf="access.canedititems || access.canviewreports || !access.isempty">
+            <ion-item text-wrap *ngIf="access.canedititems && overview.timeopen">
+                <h2>{{ 'addon.mod_feedback.feedbackopen' | translate }}</h2>
+                <p>{{overview.openTimeReadable}}</p>
+            </ion-item>
+            <ion-item text-wrap *ngIf="access.canedititems && overview.timeclose">
+                <h2>{{ 'addon.mod_feedback.feedbackclose' | translate }}</h2>
+                <p>{{overview.closeTimeReadable}}</p>
+            </ion-item>
+            <ion-item text-wrap *ngIf="access.canedititems && feedback.page_after_submit">
+                <h2>{{ 'addon.mod_feedback.page_after_submit' | translate }}</h2>
+                <core-format-text  [component]="component" [componentId]="componentId" [text]=" feedback.page_after_submit"></core-format-text>
+            </ion-item>
+            <ng-container *ngIf="!access.isempty">
+                <ion-item text-wrap>
+                    <h2>{{ 'addon.mod_feedback.mode' | translate }}</h2>
+                    <p *ngIf="access.isanonymous">{{ 'addon.mod_feedback.anonymous' | translate }}</p>
+                    <p *ngIf="!access.isanonymous">{{ 'addon.mod_feedback.non_anonymous' | translate }}</p>
+                </ion-item>
+                <ion-grid>
+                    <ion-row align-items-center>
+                        <ion-col>
+                            <button ion-button block outline icon-start (click)="gotoAnswerQuestions(true)">
+                                <ion-icon name="search"></ion-icon>
+                                {{ 'addon.mod_feedback.preview' | translate }}
+                            </button>
+                        </ion-col>
+                        <ion-col *ngIf="access.cancomplete && access.cansubmit">
+                            <button ion-button block icon-end *ngIf="!goPage" (click)="gotoAnswerQuestions()">
+                                {{ 'addon.mod_feedback.complete_the_form' | translate }}
+                                <ion-icon name="arrow-forward"></ion-icon>
+                            </button>
+                            <button ion-button block icon-end *ngIf="goPage" (click)="gotoAnswerQuestions()">
+                                {{ 'addon.mod_feedback.continue_the_form' | translate }}
+                                <ion-icon name="arrow-forward"></ion-icon>
+                            </button>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+
+            </ng-container>
+        </ion-list>
+    </core-loading>
+</ng-template>
+
+<!-- Template to render the analysis. -->
+<ng-template #tabAnalysis>
+    <core-loading [hideUntil]="tabsLoaded.analysis">
+        <ng-container *ngTemplateOutlet="basicInfo"></ng-container>
+
+        <ng-container *ngIf="access.canedititems || !access.isempty">
+            <div class="core-info-card" icon-start *ngIf="warning">
+                <ion-icon name="information-circle"></ion-icon>
+                {{ warning }}
+            </div>
+
+            <ion-list *ngIf="items && items.length">
+                <ion-item text-wrap *ngFor="let item of items" class="core-analysis">
+                    <h2>{{item.number}}. <core-format-text  [component]="component" [componentId]="componentId" [text]="item.name"></core-format-text></h2>
+                    <p><core-format-text  [component]="component" [componentId]="componentId" [text]="item.label"></core-format-text></p>
+                    <ng-container [ngSwitch]="item.template">
+                        <ng-container *ngSwitchCase="'numeric'">
+                            <ul>
+                                <li *ngFor="let data of item.data">{{ data }}</li>
+                            </ul>
+                            <p>{{ 'addon.mod_feedback.average' | translate }}: {{item.average | number : '1.2-2'}}</p>
+                        </ng-container>
+                        <ng-container *ngSwitchCase="'list'">
+                            <ul>
+                                <ng-container *ngFor="let data of item.data">
+                                    <li *ngIf="data">
+                                        <core-format-text [text]="data"></core-format-text>
+                                    </li>
+                                </ng-container>
+                            </ul>
+                        </ng-container>
+                        <ng-container *ngSwitchCase="'chart'">
+                            <core-chart [type]="item.chartType" [data]="item.chartData" [labels]="item.labels" height="300"></core-chart>
+                            <p *ngIf="item.average">{{ 'addon.mod_feedback.average' | translate }}: {{item.average | number : '1.2-2'}}</p>
+                        </ng-container>
+                    </ng-container>
+                </ion-item>
+            </ion-list>
+        </ng-container>
+    </core-loading>
+</ng-template>

@@ -1,0 +1,102 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons end>
+    <core-context-menu>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl" [iconAction]="'open'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()" [iconAction]="'arrow-forward'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'addon.mod_forum.refreshdiscussions' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && hasOffline && isOnline"  [priority]="600" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch()" [iconAction]="prefetchStatusIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="400" [content]="size" [iconDescription]="'cube'" (action)="removeFiles()" [iconAction]="'trash'"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<!-- Content. -->
+<core-split-view>
+    <ion-content [class.has-fab]="forum && forum.cancreatediscussions">
+        <ion-refresher [enabled]="loaded" (ionRefresh)="doRefresh($event)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+        <core-loading [hideUntil]="loaded" class="core-loading-center">
+            <core-course-module-description [description]="description" [component]="component" [componentId]="componentId" [note]="descriptionNote"></core-course-module-description>
+
+            <!-- Forum discussions found to be synchronized -->
+            <ion-card class="core-warning-card" icon-start *ngIf="hasOffline">
+                <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: moduleName} }}
+            </ion-card>
+
+            <ng-container *ngIf="forum && discussions.length > 0">
+                <ion-card *ngFor="let discussion of offlineDiscussions" (click)="openNewDiscussion(discussion.timecreated)" [class.addon-forum-discussion-selected]="discussion.timecreated == -selectedDiscussion">
+                    <ion-item text-wrap>
+                        <ion-avatar item-start core-user-link [userId]="discussion.userid" [courseId]="courseId">
+                            <img [src]="discussion.userpictureurl" onError="this.src='assets/img/user-avatar.png'" core-external-content [alt]="'core.pictureof' | translate:{$a: discussion.userfullname}" role="presentation">
+                        </ion-avatar>
+                        <h2><core-format-text [text]="discussion.subject"></core-format-text></h2>
+                        <p *ngIf="discussion.userfullname">
+                            <ion-note float-end padding-left><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ion-note>
+                            {{discussion.userfullname}}
+                        </p>
+                    </ion-item>
+                    <ion-card-content>
+                        <ion-note text-end *ngIf="discussion.groupname">
+                            <ion-icon name="people"></ion-icon> {{ discussion.groupname }}
+                        </ion-note>
+                        <p><core-format-text [maxHeight]="60" [component]="component" [componentId]="componentId" [text]="discussion.message"></core-format-text></p>
+                    </ion-card-content>
+                </ion-card>
+                <ion-card *ngFor="let discussion of discussions" (click)="openDiscussion(discussion)" [class.addon-forum-discussion-selected]="discussion.discussion == selectedDiscussion">
+                    <ion-item text-wrap>
+                        <ion-avatar item-start core-user-link [userId]="discussion.userid" [courseId]="courseId">
+                            <img [src]="discussion.userpictureurl" onError="this.src='assets/img/user-avatar.png'" core-external-content [alt]="'core.pictureof' | translate:{$a: discussion.userfullname}" role="presentation">
+                        </ion-avatar>
+                        <h2><ion-icon name="pin" *ngIf="discussion.pinned"></ion-icon> <core-format-text [text]="discussion.subject"></core-format-text></h2>
+                        <p>
+                            <ion-note float-end padding-left text-end>
+                                {{discussion.created | coreDateDayOrTime}}
+                                <div *ngIf="discussion.numunread"><core-icon name="fa-circle" color="primary"></core-icon> {{ 'addon.mod_forum.unreadpostsnumber' | translate:{ '$a' : discussion.numunread} }}</div>
+                            </ion-note>
+                            {{discussion.userfullname}}
+                        </p>
+                    </ion-item>
+                    <ion-card-content>
+                        <core-format-text [maxHeight]="60" [component]="component" [componentId]="componentId" [text]="discussion.message"></core-format-text>
+                    </ion-card-content>
+                    <ion-row text-center>
+                        <ion-col *ngIf="discussion.groupname">
+                            <ion-note>
+                                <ion-icon name="people"></ion-icon> {{ discussion.groupname }}
+                            </ion-note>
+                        </ion-col>
+                        <ion-col>
+                            <ion-note>
+                                <ion-icon name="chatboxes"></ion-icon> {{ 'addon.mod_forum.numreplies' | translate:{numreplies: discussion.numreplies} }}
+                            </ion-note>
+                        </ion-col>
+                        <ion-col *ngIf="discussion.timemodified > discussion.created">
+                            <ion-note>
+                                <ion-icon name="time"></ion-icon> {{discussion.timemodified | coreTimeAgo}}
+                            </ion-note>
+                        </ion-col>
+                    </ion-row>
+                </ion-card>
+            </ng-container>
+
+            <core-empty-box *ngIf="forum && discussions.length == 0" icon="chatbubbles" [message]="'addon.mod_forum.forumnodiscussionsyet' | translate">
+                <div padding *ngIf="forum.cancreatediscussions">
+                    <button ion-button block (click)="openNewDiscussion()">
+                        {{ 'addon.mod_forum.addanewdiscussion' | translate }}
+                    </button>
+                </div>
+            </core-empty-box>
+
+            <ion-infinite-scroll [enabled]="canLoadMore" (ionInfinite)="$event.waitFor(fetchMoreDiscussions())">
+                <ion-infinite-scroll-content></ion-infinite-scroll-content>
+            </ion-infinite-scroll>
+        </core-loading>
+
+        <ion-fab bottom end *ngIf="forum && forum.cancreatediscussions">
+            <button ion-fab (click)="openNewDiscussion()" [attr.aria-label]="addDiscussionText">
+                <ion-icon name="add"></ion-icon>
+            </button>
+        </ion-fab>
+    </ion-content>
+</core-split-view>

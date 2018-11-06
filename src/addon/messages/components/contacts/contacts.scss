@@ -1,0 +1,12 @@
+ion-app.app-root addon-messages-discussions {
+    h2 {
+        display: flex;
+        justify-content: space-between;
+
+        .note {
+            margin: 0;
+            align-self: flex-end;
+            display: inline-flex;
+        }
+    }
+}

@@ -1,0 +1,7 @@
+<span *ngIf="!isShowOrListMode()" [formGroup]="form">
+    <span *ngIf="mode == 'edit'" [core-mark-required]="field.required" class="core-mark-required"></span>
+    <ion-input type="url" [formControlName]="'f_'+field.id" [placeholder]="field.name"></ion-input>
+    <core-input-errors *ngIf="error && mode == 'edit'" [control]="form.controls['f_'+field.id]" [errorText]="error"></core-input-errors>
+</span>
+
+<a *ngIf="isShowOrListMode() && value && value.content" [href]="value.content" core-link capture="true">{{field.name}}</a>

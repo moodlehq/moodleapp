@@ -1,0 +1,13 @@
+ion-app.app-root {
+    .card-md core-file + core-file > .item-md.item-block > .item-inner {
+        border-top: 1px solid $list-md-border-color;
+    }
+
+    .card-ios core-file + core-file > .item-ios.item-block > .item-inner {
+        border-top: $hairlines-width solid $list-ios-border-color;
+    }
+
+    .card-wp core-file + core-file > .item-wp.item-block > .item-inner {
+        border-top: 1px solid $list-wp-border-color;
+    }
+}

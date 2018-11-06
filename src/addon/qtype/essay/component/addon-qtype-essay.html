@@ -1,0 +1,40 @@
+<section ion-list *ngIf="question.text || question.text === ''">
+    <!-- Question text. -->
+    <ion-item text-wrap>
+        <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text></p>
+    </ion-item>
+
+    <!-- Textarea. -->
+    <ion-item *ngIf="question.textarea && !question.hasDraftFiles">
+        <!-- "Format" hidden input -->
+        <input item-content *ngIf="question.formatInput" type="hidden" [name]="question.formatInput.name" [value]="question.formatInput.value" >
+        <!-- Plain text textarea. -->
+        <ion-textarea *ngIf="question.isPlainText" class="core-question-textarea" [ngClass]='{"core-monospaced": question.isMonospaced}' placeholder="{{ 'core.question.answer' | translate }}" [attr.name]="question.textarea.name" aria-multiline="true" [ngModel]="question.textarea.text"></ion-textarea>
+        <!-- Rich text editor. -->
+        <core-rich-text-editor item-content *ngIf="!question.isPlainText" placeholder="{{ 'core.question.answer' | translate }}" [control]="formControl" [name]="question.textarea.name" [component]="component" [componentId]="componentId"></core-rich-text-editor>
+    </ion-item>
+
+    <!-- Draft files not supported. -->
+    <ng-container *ngIf="question.textarea && question.hasDraftFiles">
+        <ion-item text-wrap class="core-danger-item">
+            <p class="core-question-warning">{{ 'core.question.errorinlinefilesnotsupported' | translate }}</p>
+        </ion-item>
+        <ion-item text-wrap>
+            <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.textarea.text"></core-format-text></p>
+        </ion-item>
+    </ng-container>
+
+    <!-- Attachments not supported in the app yet. -->
+    <ion-item text-wrap *ngIf="question.allowsAttachments" class="core-danger-item">
+        <p class="core-question-warning">{{ 'core.question.errorattachmentsnotsupported' | translate }}</p>
+    </ion-item>
+
+    <!-- Answer to the question and attachments (reviewing). -->
+    <ion-item text-wrap *ngIf="!question.textarea && (question.answer || (!question.attachments.length && !question.allowsAttachments))">
+        <p><core-format-text [ngClass]='{"core-monospaced": question.isMonospaced}' [component]="component" [componentId]="componentId" [text]="question.answer"></core-format-text></p>
+    </ion-item>
+
+    <ion-item *ngIf="!question.textarea && question.attachments && question.attachments.length">
+        <core-file *ngFor="let attachment of question.attachments" [file]="attachment" [component]="component" [componentId]="componentId"></core-file>
+    </ion-item>
+</section>

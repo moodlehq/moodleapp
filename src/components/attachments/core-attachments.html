@@ -1,0 +1,25 @@
+<ion-item text-wrap>
+    {{ 'core.maxsizeandattachments' | translate:{$a: {size: maxSizeReadable, attachments: maxSubmissionsReadable} } }}
+</ion-item>
+<ion-item text-wrap *ngIf="fileTypes && fileTypes.mimetypes && fileTypes.mimetypes.length">
+    <p>{{ 'core.fileuploader.filesofthesetypes' | translate }}</p>
+    <ul class="list-with-style">
+        <li *ngFor="let typeInfo of fileTypes.info">
+            <strong *ngIf="typeInfo.name">{{typeInfo.name}} </strong>{{typeInfo.extlist}}
+        </li>
+    </ul>
+</ion-item>
+<div *ngFor="let file of files; let index=index">
+    <!-- Files already attached to the submission, either in online or in offline. -->
+    <core-file *ngIf="!file.name || file.offline" [file]="file" [component]="component" [componentId]="componentId" [canDelete]="true" (onDelete)="delete(index, true)" [canDownload]="!file.offline"></core-file>
+
+    <!-- Files added to draft but not attached to submission yet. -->
+    <core-local-file *ngIf="file.name && !file.offline" [file]="file" [manage]="true" (onDelete)="delete(index, false)" (onRename)="renamed(index, $event)"></core-local-file>
+</div>
+<!-- Button to add more files. -->
+<ion-item text-wrap *ngIf="unlimitedFiles || (maxSubmissions >= 0 && files && files.length < maxSubmissions)">
+    <a ion-button block icon-start (click)="add()">
+        <ion-icon name="add"></ion-icon>
+        {{ 'core.fileuploader.addfiletext' | translate }}
+    </a>
+</ion-item>

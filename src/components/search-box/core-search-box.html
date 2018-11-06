@@ -1,0 +1,13 @@
+<ion-card>
+    <form #f="ngForm" (ngSubmit)="submitForm()">
+        <ion-item>
+            <ion-input type="text" name="search" [(ngModel)]="searchText" [placeholder]="placeholder" [autocorrect]="autocorrect" [spellcheck]="spellcheck" [core-auto-focus]="autoFocus" [disabled]="disabled"></ion-input>
+            <button item-end ion-button clear icon-only type="submit" class="button-small" [attr.aria-label]="searchLabel" [disabled]="!searchText || (searchText.length < lengthCheck)" [disabled]="disabled">
+                <ion-icon name="search"></ion-icon>
+            </button>
+            <button *ngIf="showClear" item-end ion-button clear icon-only class="button-small" [attr.aria-label]="'core.clearsearch' | translate" [disabled]="!searched" (click)="clearForm()" [disabled]="disabled">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-item>
+    </form>
+</ion-card>

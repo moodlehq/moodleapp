@@ -1,0 +1,31 @@
+<ion-content>
+    <ion-refresher [enabled]="loaded" (ionRefresh)="refreshData($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <core-search-box (onSubmit)="search($event)" (onClear)="clearSearch($event)" [placeholder]=" 'addon.messages.contactname' | translate" autocorrect="off" spellcheck="false" lengthCheck="2" [disabled]="!loaded"></core-search-box>
+
+    <core-loading [hideUntil]="loaded" [message]="loadingMessage">
+        <core-empty-box *ngIf="!hasContacts && searchString == ''" icon="person" [message]="'addon.messages.contactlistempty' | translate"></core-empty-box>
+
+        <core-empty-box *ngIf="!hasContacts && searchString != ''" icon="person" [message]="'addon.messages.nousersfound' | translate"></core-empty-box>
+
+        <ion-list *ngFor="let contactType of contactTypes" no-margin>
+            <ng-container *ngIf="contacts[contactType] && (contacts[contactType].length > 0 || contactType === searchType)">
+                <ion-item-divider color="light">
+                    <h2>{{ 'addon.messages.type_' + contactType | translate }}</h2>
+                    <ion-note item-end>{{ contacts[contactType].length }}</ion-note>
+                </ion-item-divider>
+                <ng-container *ngFor="let contact of contacts[contactType]">
+                    <!-- Don't show deleted users -->
+                    <a ion-item text-wrap *ngIf="contact.profileimageurl || contact.profileimageurlsmall"  [title]="contact.fullname" (click)="gotoDiscussion(contact.id)" [class.core-split-item-selected]="contact.id == discussionUserId" detail-none>
+                        <ion-avatar item-start>
+                            <img src="{{contact.profileimageurl || contact.profileimageurlsmall}}" [alt]="'core.pictureof' | translate:{$a: contact.fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'">
+                        </ion-avatar>
+                        <h2><core-format-text [text]="contact.fullname"></core-format-text></h2>
+                    </a>
+                </ng-container>
+            </ng-container>
+        </ion-list>
+    </core-loading>
+</ion-content>

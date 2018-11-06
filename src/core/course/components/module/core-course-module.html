@@ -1,0 +1,42 @@
+<a *ngIf="module && module.visibleoncoursepage !== 0" ion-item text-wrap id="core-course-module-{{module.id}}" class="core-course-module-handler {{module.handlerData.class}}" (click)="moduleClicked($event)" [ngClass]="{'item-media': module.handlerData.icon, 'core-not-clickable': !module.handlerData.action || !module.uservisible === false, 'item-dimmed': module.visible === 0 || module.uservisible === false}" title="{{ module.handlerData.title }}" detail-none>
+
+    <img item-start *ngIf="module.handlerData.icon" [src]="module.handlerData.icon" alt="" role="presentation" class="core-module-icon">
+    <div class="core-module-title">
+        <core-format-text [text]="module.handlerData.title"></core-format-text>
+
+        <!-- Buttons. -->
+        <div item-end *ngIf="module.uservisible !== false" class="buttons core-module-buttons" [ngClass]="{'core-button-completion': module.completionstatus}">
+            <!-- Module completion. -->
+            <core-course-module-completion *ngIf="module.completionstatus" [completion]="module.completionstatus" [moduleName]="module.name" (completionChanged)="completionChanged.emit()"></core-course-module-completion>
+
+            <div class="core-module-buttons-more">
+                <!-- Download button. -->
+                <button *ngIf="downloadEnabled && showDownload" [hidden]="spinner || module.handlerData.spinner" ion-button icon-only clear (click)="download($event, false)" color="dark" class="core-animate-show-hide" [attr.aria-label]="'core.download' | translate">
+                    <ion-icon name="cloud-download"></ion-icon>
+                </button>
+
+                <!-- Refresh button. -->
+                <button *ngIf="downloadEnabled && showRefresh" [hidden]="spinner || module.handlerData.spinner" ion-button icon-only clear (click)="download($event, true)" color="dark" class="core-animate-show-hide" [attr.aria-label]="'core.refresh' | translate">
+                    <ion-icon name="refresh"></ion-icon>
+                </button>
+
+                <!-- Buttons defined by the module handler. -->
+                <button ion-button icon-only clear *ngFor="let button of module.handlerData.buttons" [hidden]="button.hidden || spinner || module.handlerData.spinner" (click)="buttonClicked($event, button)" color="dark" class="core-animate-show-hide" [attr.aria-label]="button.label | translate">
+                    <core-icon [name]="button.icon" [ios]="button.iosIcon || ''" [md]="button.mdIcon || ''"></core-icon>
+                </button>
+
+                <!-- Spinner. -->
+                <ion-spinner *ngIf="spinner || module.handlerData.spinner" class="core-animate-show-hide"></ion-spinner>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="module.visible === 0 || module.availabilityinfo || module.handlerData.extraBadge || module.isStealth">
+        <ion-badge item-end *ngIf="module.handlerData.extraBadge" [color]="module.handlerData.extraBadgeColor" text-wrap text-start>
+            <core-format-text [text]="module.handlerData.extraBadge"></core-format-text>
+        </ion-badge>
+        <ion-badge item-end *ngIf="module.visible === 0">{{ 'core.course.hiddenfromstudents' | translate }}</ion-badge>
+        <ion-badge item-end *ngIf="module.visible !== 0 && module.isStealth">{{ 'core.course.hiddenoncoursepage' | translate }}</ion-badge>
+        <ion-badge item-end *ngIf="module.availabilityinfo"><core-format-text [text]="module.availabilityinfo"></core-format-text></ion-badge>
+    </div>
+    <core-format-text class="core-module-description" *ngIf="module.description" maxHeight="80" [text]="module.description"></core-format-text>
+</a>

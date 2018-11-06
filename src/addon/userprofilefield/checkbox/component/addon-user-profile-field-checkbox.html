@@ -1,0 +1,19 @@
+<!-- Render (no edit). -->
+<ion-item *ngIf="!edit && field && field.name">
+    <h2>{{ field.name }}</h2>
+    <p *ngIf="field.value != '0'">
+        {{ 'core.yes' | translate }}
+    </p>
+    <p *ngIf="field.value == '0'">
+        {{ 'core.no' | translate }}
+    </p>
+</ion-item>
+<!-- Edit. -->
+<ion-item *ngIf="edit && field && field.shortname" [formGroup]="form">
+    <ion-label>
+        <span [core-mark-required]="field.required">{{ field.name }}</span>
+        <core-input-errors [control]="form.controls[field.modelName]"></core-input-errors>
+    </ion-label>
+    <ion-checkbox item-end [formControlName]="field.modelName">
+    </ion-checkbox>
+</ion-item>

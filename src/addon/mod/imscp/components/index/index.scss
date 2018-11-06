@@ -1,0 +1,12 @@
+ion-app.app-root addon-mod-imscp-index {
+    .addon-mod-imscp-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    core-iframe {
+        flex-basis: 100%;
+    }
+}

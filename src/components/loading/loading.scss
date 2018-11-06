@@ -1,0 +1,52 @@
+ion-app.app-root {
+    core-loading {
+        @include core-transition(height, 200ms);
+
+        .core-loading-container {
+            width: 100%;
+            text-align: center;
+            padding-top: 10px;
+            clear: both;
+        }
+
+        .core-loading-content {
+            display: inline;
+            padding-bottom: 1px; /* This makes height be real */
+        }
+
+        &.core-loading-noheight .core-loading-content {
+            height: auto;
+        }
+    }
+
+    .scroll-content > core-loading,
+    ion-content > .scroll-content > core-loading,
+    .core-loading-center {
+        position: static !important;
+    }
+
+    .scroll-content > core-loading,
+    ion-content > .scroll-content > core-loading,
+    .core-loading-center,
+    core-loading.core-loading-loaded {
+        position: relative;
+
+        > .core-loading-container {
+            position: absolute;
+            @include position(0, 0, 0, 0);
+            display: table;
+            height: 100%;
+            width: 100%;
+            z-index: 1;
+            margin: 0;
+            padding: 0;
+            clear: both;
+
+            .core-loading-spinner {
+                display: table-cell;
+                text-align: center;
+                vertical-align: middle;
+            }
+        }
+    }
+}

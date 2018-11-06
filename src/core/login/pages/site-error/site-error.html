@@ -1,0 +1,27 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'core.error' | translate }}</ion-title>
+
+        <ion-buttons end>
+            <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content padding>
+    <h3>{{ 'core.whoops' | translate }}</h3>
+    <p>{{ 'core.login.problemconnectingerror' | translate }}</p>
+    <p padding>{{siteUrl}}</p>
+    <p>{{ 'core.login.problemconnectingerrorcontinue' | translate }}</p>
+    <button ion-button block (click)="closeModal()">{{ 'core.tryagain' | translate }}</button>
+    <h3>{{ 'core.login.stillcantconnect' | translate }}</h3>
+    <p>{{ 'core.login.contactyouradministrator' | translate }}</p>
+    <p *ngIf="issue">
+        {{ 'core.login.contactyouradministratorissue' | translate:{$a: ''} }}
+    </p>
+    <p *ngIf="issue">
+        <core-format-text [text]="issue"></core-format-text>
+    </p>
+</ion-content>
+

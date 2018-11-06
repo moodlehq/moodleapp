@@ -1,0 +1,61 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'core.login.reconnect' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content padding class="core-center-view">
+    <div class="box">
+        <div *ngIf="site" text-wrap text-center margin-bottom [ngClass]="{'item-avatar-center': site.avatar}">
+            <ion-avatar *ngIf="site.avatar">
+                <!-- Show user avatar. -->
+                <img [src]="site.avatar" class="avatar" core-external-content [siteId]="site.id" alt="{{ 'core.pictureof' | translate:{$a: site.fullname} }}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
+            </ion-avatar>
+
+            <!-- Show site logo or a default image. -->
+            <img *ngIf="!site.avatar && logoUrl" [src]="logoUrl" core-external-content [siteId]="site.id" role="presentation">
+            <img *ngIf="!site.avatar && !logoUrl" src="assets/img/login_logo.png" class="login-logo" role="presentation">
+
+            <!-- If no sitename show big siteurl. -->
+            <p *ngIf="!siteName" class="item-heading core-siteurl">{{siteUrl}}</p>
+            <!-- If sitename, show big sitename and small siteurl. -->
+            <p *ngIf="siteName" class="item-heading core-sitename"><core-format-text [text]="siteName"></core-format-text></p>
+            <p *ngIf="siteName" class="core-siteurl">{{siteUrl}}</p>
+
+            <p *ngIf="!isLoggedOut">
+                <ion-icon padding name="alert"></ion-icon> {{ 'core.login.reconnectdescription' | translate }}
+            </p>
+        </div>
+        <ion-list>
+            <ion-item padding text-wrap class="core-username">
+                <p class="item-heading">{{ 'core.login.username' | translate }}</p>
+                <p>{{username}}</p>
+            </ion-item>
+            <form [formGroup]="credForm" (ngSubmit)="login()">
+                <ion-item margin-bottom>
+                    <core-show-password item-content [name]="'password'">
+                        <ion-input class="core-ioninput-password" name="password" type="password" placeholder="{{ 'core.login.password' | translate }}" formControlName="password" [clearOnEdit]="false"></ion-input>
+                    </core-show-password>
+                </ion-item>
+                <ion-grid>
+                    <ion-row>
+                        <ion-col>
+                            <a ion-button block color="light" (click)="cancel()">{{ 'core.login.cancel' | translate }}</a>
+                        </ion-col>
+                        <ion-col>
+                            <button ion-button block [disabled]="!credForm.valid">{{ 'core.login.loginbutton' | translate }}</button>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </form>
+        </ion-list>
+
+        <!-- Identity providers. -->
+        <ion-list *ngIf="identityProviders && identityProviders.length" padding-top>
+            <ion-list-header text-wrap>{{ 'core.login.potentialidps' | translate }}</ion-list-header>
+            <button ion-item *ngFor="let provider of identityProviders" text-wrap class="core-oauth-icon" (click)="oauthClicked(provider)" title="{{provider.name}}">
+                <img [src]="provider.iconurl" alt="{{provider.name}}" item-start>
+                {{provider.name}}
+            </button>
+        </ion-list>
+    </div>
+</ion-content>

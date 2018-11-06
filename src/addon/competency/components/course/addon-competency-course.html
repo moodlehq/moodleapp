@@ -1,0 +1,73 @@
+<ion-content>
+    <ion-refresher [enabled]="competenciesLoaded" (ionRefresh)="refreshCourseCompetencies($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="competenciesLoaded">
+        <ion-card *ngIf="!user && competencies && competencies.statistics.competencycount > 0">
+            <ion-item text-wrap *ngIf="competencies.settings.pushratingstouserplans">
+                {{ 'addon.competency.coursecompetencyratingsarepushedtouserplans' | translate }}
+            </ion-item>
+            <ion-item text-wrap *ngIf="!competencies.settings.pushratingstouserplans">
+                {{ 'addon.competency.coursecompetencyratingsarenotpushedtouserplans' | translate }}
+            </ion-item>
+            <ion-item text-wrap>
+                <strong>{{ 'addon.competency.progress' | translate }}</strong>:
+                {{ 'addon.competency.xcompetenciesproficientoutofyincourse' | translate:{$a: {x: competencies.statistics.proficientcompetencycount, y: competencies.statistics.competencycount} } }} ({{ competencies.statistics.proficientcompetencypercentageformatted }}%)
+                <core-progress-bar [progress]="competencies.statistics.proficientcompetencypercentage"></core-progress-bar>
+            </ion-item>
+            <ion-item text-wrap *ngIf="competencies.statistics.leastproficientcount > 0">
+                <strong>{{ 'addon.competency.competenciesmostoftennotproficientincourse' | translate }}</strong>:
+                <p *ngFor="let comp of competencies.statistics.leastproficient">
+                    <a (click)="openCompetencySummary(comp.id)">
+                        {{ comp.shortname }} - {{ comp.idnumber }}
+                    </a>
+                </p>
+            </ion-item>
+        </ion-card>
+
+        <h3 margin-horizontal *ngIf="competencies && competencies.statistics.competencycount > 0">{{ 'addon.competency.competencies' | translate }}</h3>
+        <ion-card *ngIf="user">
+             <ion-item text-wrap>
+                <ion-avatar *ngIf="user.profileimageurl && user.profileimageurl !== true" item-start>
+                    <img [src]="user.profileimageurl" [alt]="'core.pictureof' | translate:{$a: user.fullname}" core-external-content>
+                </ion-avatar>
+                <span *ngIf="user.profileimageurl === true" item-start>
+                    <ion-icon name="person"></ion-icon>
+                </span>
+                <h2><core-format-text [text]="user.fullname"></core-format-text></h2>
+            </ion-item>
+        </ion-card>
+        <core-empty-box *ngIf="competencies && competencies.statistics.competencycount == 0" icon="ribbon" message="{{ 'addon.competency.nocompetencies' | translate }}"></core-empty-box>
+
+        <div *ngIf="competencies">
+            <ion-card *ngFor="let competency of competencies.competencies">
+                <a ion-item text-wrap (click)="openCompetency(competency.competency.id)" [title]="competency.competency.shortname">
+                    {{competency.competency.shortname}} <small>{{competency.competency.idnumber}}</small>
+                    <ion-badge item-end *ngIf="competency.usercompetencycourse && competency.usercompetencycourse.gradename" [color]="competency.usercompetencycourse.proficiency ? 'success' : 'danger'">{{ competency.usercompetencycourse.gradename }}</ion-badge>
+                </a>
+                <ion-item text-wrap>
+                    <div *ngIf="competency.competency.description">
+                        <core-format-text [text]=" competency.competency.description "></core-format-text>
+                    </div>
+                    <div>
+                        <strong>{{ 'addon.competency.path' | translate }}</strong>:
+                        {{ competency.comppath.framework.name }}
+                        <span *ngFor="let ancestor of competency.comppath.ancestors">
+                            &nbsp;/&nbsp;<a (click)="openCompetencySummary(ancestor.id)">{{ ancestor.name }}</a>
+                        </span>
+                    </div>
+                    <div>
+                        <strong>{{ 'addon.competency.activities' | translate }}</strong>:
+                        <span *ngIf="competency.coursemodules.length == 0">
+                            {{ 'addon.competency.noactivities' | translate }}
+                        </span>
+                        <a ion-item text-wrap *ngFor="let activity of competency.coursemodules" [href]="activity.url" [title]="activity.name">
+                            <img item-start [src]="activity.iconurl" core-external-content alt="" role="presentation" *ngIf="activity.iconurl" class="core-module-icon">
+                            <core-format-text [text]="activity.name"></core-format-text>
+                        </a>
+                    </div>
+                </ion-item>
+            </ion-card>
+        </div>
+    </core-loading>
+</ion-content>

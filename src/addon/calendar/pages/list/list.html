@@ -1,0 +1,37 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'addon.calendar.calendarevents' | translate }}</ion-title>
+        <ion-buttons end>
+            <button *ngIf="courses && courses.length" ion-button icon-only (click)="openCourseFilter($event)" [attr.aria-label]="'core.courses.filter' | translate">
+                <ion-icon name="funnel"></ion-icon>
+            </button>
+            <core-context-menu>
+                <core-context-menu-item [hidden]="!notificationsEnabled" [priority]="600" [content]="'core.settings.settings' | translate" (action)="openSettings()" [iconAction]="'cog'"></core-context-menu-item>
+            </core-context-menu>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<core-split-view>
+    <ion-content>
+        <ion-refresher [enabled]="eventsLoaded" (ionRefresh)="refreshEvents($event)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+        <core-loading [hideUntil]="eventsLoaded">
+            <core-empty-box *ngIf="!filteredEvents || !filteredEvents.length" icon="calendar" [message]="'addon.calendar.noevents' | translate">
+            </core-empty-box>
+
+            <ion-list *ngIf="filteredEvents && filteredEvents.length" no-margin>
+                <a ion-item text-wrap *ngFor="let event of filteredEvents" [title]="event.name" (click)="gotoEvent(event.id)" [class.core-split-item-selected]="event.id == eventId">
+                    <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" item-start class="core-module-icon">
+                    <core-icon *ngIf="event.icon && !event.moduleIcon" [name]="event.icon" item-start></core-icon>
+                    <h2><core-format-text [text]="event.name"></core-format-text></h2>
+                    <p>{{ event.timestart | coreToLocaleString }}</p>
+                </a>
+            </ion-list>
+
+            <ion-infinite-scroll [enabled]="canLoadMore" (ionInfinite)="$event.waitFor(fetchEvents())">
+               <ion-infinite-scroll-content></ion-infinite-scroll-content>
+            </ion-infinite-scroll>
+        </core-loading>
+    </ion-content>
+</core-split-view>

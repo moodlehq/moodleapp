@@ -1,0 +1,11 @@
+<section ion-list *ngIf="question.text || question.text === ''">
+    <ion-item text-wrap class="addon-qtype-ddwtos-container">
+        <p *ngIf="!question.readOnly" class="core-info-card" icon-start>
+            <ion-icon name="information-circle"></ion-icon>
+            {{ 'core.question.howtodraganddrop' | translate }}
+        </p>
+        <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text></p>
+        <core-format-text *ngIf="question.answers" [component]="component" [componentId]="componentId" [text]="question.answers" (afterRender)="questionRendered()"></core-format-text>
+        <div class="drags"></div>
+    </ion-item>
+</section>

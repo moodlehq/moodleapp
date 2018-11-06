@@ -1,0 +1,19 @@
+<ion-grid no-padding *ngIf="previous || info || next">
+    <ion-row>
+        <ion-col text-start>
+            <a ion-button icon-only clear *ngIf="previous" (click)="action.emit(previous)" [title]="'core.previous' | translate">
+                <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
+            </a>
+        </ion-col>
+        <ion-col text-center>
+            <a ion-button icon-only clear *ngIf="info" (click)="showInfo()" [title]="title">
+                <ion-icon name="information-circle"></ion-icon>
+            </a>
+        </ion-col>
+        <ion-col text-end>
+            <a ion-button icon-only clear *ngIf="next" (click)="action.emit(next)" [title]="'core.next' | translate">
+                <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
+            </a>
+        </ion-col>
+    </ion-row>
+</ion-grid>

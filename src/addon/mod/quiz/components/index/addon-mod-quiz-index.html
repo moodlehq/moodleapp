@@ -1,0 +1,132 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons end>
+    <core-context-menu>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl" [iconAction]="'open'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()" [iconAction]="'arrow-forward'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && hasOffline && isOnline"  [priority]="600" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch()" [iconAction]="prefetchStatusIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="400" [content]="size" [iconDescription]="'cube'" (action)="removeFiles()" [iconAction]="'trash'"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<!-- Content. -->
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+
+    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+
+    <!-- Access rules description messages. -->
+    <ion-card *ngIf="(quiz && quiz.gradeMethodReadable) || (accessRules && accessRules.length) || syncTime">
+        <ion-list>
+            <ion-item text-wrap *ngFor="let rule of accessRules">
+                <p>{{ rule }}</p>
+            </ion-item>
+            <ion-item text-wrap *ngIf="quiz && quiz.gradeMethodReadable">
+                <p class="item-heading">{{ 'addon.mod_quiz.grademethod' | translate }}</p>
+                <p>{{ quiz.gradeMethodReadable }}</p>
+            </ion-item>
+            <ion-item text-wrap *ngIf="syncTime">
+                <p class="item-heading">{{ 'core.lastsync' | translate }}</p>
+                <p>{{ syncTime }}</p>
+            </ion-item>
+        </ion-list>
+    </ion-card>
+
+    <!-- List of user attempts. -->
+    <ion-card class="addon-mod_quiz-table" *ngIf="quiz && attempts && attempts.length">
+        <ion-card-header text-wrap>
+            <h2>{{ 'addon.mod_quiz.summaryofattempts' | translate }}</h2>
+        </ion-card-header>
+        <ion-list>
+            <!-- "Header" of the table -->
+            <ion-item text-wrap class="addon-mod_quiz-table-header" detail-push>
+                <ion-row align-items-center>
+                    <ion-col text-center class="hidden-phone" *ngIf="quiz.showAttemptColumn"><b>{{ 'addon.mod_quiz.attemptnumber' | translate }}</b></ion-col>
+                    <ion-col text-center class="hidden-tablet" *ngIf="quiz.showAttemptColumn"><b>#</b></ion-col>
+                    <ion-col col-7><b>{{ 'addon.mod_quiz.attemptstate' | translate }}</b></ion-col>
+                    <ion-col text-center class="hidden-phone" *ngIf="quiz.showMarkColumn"><b>{{ 'addon.mod_quiz.marks' | translate }} / {{ quiz.sumGradesFormatted }}</b></ion-col>
+                    <ion-col text-center *ngIf="quiz.showGradeColumn"><b>{{ 'addon.mod_quiz.grade' | translate }} / {{ quiz.gradeFormatted }}</b></ion-col>
+                </ion-row>
+            </ion-item>
+            <!-- List of attempts. -->
+            <a ion-item text-wrap *ngFor="let attempt of attempts" [ngClass]='{"addon-mod_quiz-highlighted core-white-push-arrow": attempt.highlightGrade}' [navPush]="'AddonModQuizAttemptPage'" [navParams]="{courseId: courseId, quizId: quiz.id, attemptId: attempt.id}" [attr.aria-label]="'core.seemoredetail' | translate">
+                <ion-row align-items-center>
+                    <ion-col text-center *ngIf="quiz.showAttemptColumn && attempt.preview">{{ 'addon.mod_quiz.preview' | translate }}</ion-col>
+                    <ion-col text-center *ngIf="quiz.showAttemptColumn && !attempt.preview">{{ attempt.attempt }}</ion-col>
+                    <ion-col col-7>
+                        <p *ngFor="let sentence of attempt.readableState">{{ sentence }}</p>
+                    </ion-col>
+                    <ion-col text-center class="hidden-phone" *ngIf="quiz.showMarkColumn"><p>{{ attempt.readableMark }}</p></ion-col>
+                    <ion-col text-center *ngIf="quiz.showGradeColumn"><p>{{ attempt.readableGrade }}</p></ion-col>
+                </ion-row>
+            </a>
+        </ion-list>
+    </ion-card>
+
+    <!-- Result info. -->
+    <ion-card *ngIf="quiz && showResults && (gradeResult || gradeOverridden || gradebookFeedback || (quiz.showFeedbackColumn && overallFeedback))">
+        <ion-list>
+            <ion-item text-wrap *ngIf="gradeResult">{{ gradeResult }}</ion-item>
+            <ion-item text-wrap *ngIf="gradeOverridden">{{ 'core.course.overriddennotice' | translate }}</ion-item>
+            <ion-item text-wrap *ngIf="gradebookFeedback">
+                <p class="item-heading">{{ 'addon.mod_quiz.comment' | translate }}</p>
+                <p><core-format-text [component]="component" [componentId]="componentId" [text]="gradebookFeedback"></core-format-text></p>
+            </ion-item>
+            <ion-item text-wrap *ngIf="quiz.showFeedbackColumn && overallFeedback">
+                <p class="item-heading">{{ 'addon.mod_quiz.overallfeedback' | translate }}</p>
+                <p><core-format-text [component]="component" [componentId]="componentId" [text]="overallFeedback"></core-format-text></p>
+            </ion-item>
+        </ion-list>
+    </ion-card>
+
+    <!-- More data and button to start/continue. -->
+    <ion-card *ngIf="quiz">
+        <ion-list>
+            <!-- Error messages. -->
+            <ion-item text-wrap class="core-danger-item" *ngFor="let message of preventMessages">
+                <p>{{ message }}</p>
+            </ion-item>
+            <ion-item text-wrap class="core-danger-item" *ngIf="quiz.hasquestions === 0">
+                <p>{{ 'addon.mod_quiz.noquestions' | translate }}</p>
+            </ion-item>
+            <ion-item text-wrap class="core-danger-item" *ngIf="unsupportedQuestions && unsupportedQuestions.length">
+                <p>{{ 'addon.mod_quiz.errorquestionsnotsupported' | translate }}</p>
+                <p *ngFor="let type of unsupportedQuestions">{{ type }}</p>
+            </ion-item>
+            <ion-item text-wrap class="core-danger-item" *ngIf="unsupportedRules && unsupportedRules.length">
+                <p>{{ 'addon.mod_quiz.errorrulesnotsupported' | translate }}</p>
+                <p *ngFor="let name of unsupportedRules">{{ name }}</p>
+            </ion-item>
+            <ion-item text-wrap class="core-danger-item" *ngIf="behaviourSupported === false">
+                <p>{{ 'addon.mod_quiz.errorbehaviournotsupported' | translate }}</p>
+                <p>{{ quiz.preferredbehaviour }}</p>
+            </ion-item>
+
+            <!-- Synchronization warning. -->
+            <div class="core-warning-card" icon-start *ngIf="buttonText && hasOffline && !showStatusSpinner">
+                <ion-icon name="warning"></ion-icon>
+                {{ 'core.hasdatatosync' | translate: {$a: moduleName} }}
+            </div>
+
+            <!-- Button to start/continue. -->
+            <ion-item *ngIf="buttonText && !showStatusSpinner">
+                <button ion-button block (click)="attemptQuiz()">
+                    {{ buttonText | translate }}
+                </button>
+            </ion-item>
+
+            <!-- Button to open in browser if it cannot be attempted in the app. -->
+            <ion-item *ngIf="!buttonText && ((unsupportedQuestions && unsupportedQuestions.length) || (unsupportedRules && unsupportedRules.length) || behaviourSupported === false)">
+                <a ion-button block [href]="externalUrl" core-link icon-end>
+                    {{ 'core.openinbrowser' | translate }}
+                    <ion-icon name="open"></ion-icon>
+                </a>
+            </ion-item>
+
+            <!-- Spinner shown while downloading or calculating. -->
+            <ion-item text-center *ngIf="showStatusSpinner">
+                <ion-spinner></ion-spinner>
+            </ion-item>
+        </ion-list>
+    </ion-card>
+</core-loading>

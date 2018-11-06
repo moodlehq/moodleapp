@@ -1,0 +1,98 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons end>
+    <core-context-menu>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl" [iconAction]="'open'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()" [iconAction]="'arrow-forward'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && hasOffline && isOnline"  [priority]="600" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch()" [iconAction]="prefetchStatusIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="400" [content]="size" [iconDescription]="'cube'" (action)="removeFiles()" [iconAction]="'trash'"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<!-- Content. -->
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+
+    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+
+    <!-- Activity availability messages -->
+    <ion-card class="core-info-card" icon-start *ngIf="choiceNotOpenYet">
+        <ion-icon name="information-circle"></ion-icon>
+        <p *ngIf="options && options.length">{{ 'addon.mod_choice.previewonly' | translate:{$a: choice.openTimeReadable} }}</p>
+        <p *ngIf="!options || !options.length">{{ 'addon.mod_choice.notopenyet' | translate:{$a: choice.openTimeReadable} }}</p>
+    </ion-card>
+    <ion-card class="core-info-card" icon-start *ngIf="choiceClosed">
+        <ion-icon name="information-circle"></ion-icon>
+        <p *ngIf="options && options.length">{{ 'addon.mod_choice.yourselection' | translate }} <core-format-text [text]="options[0].text"></core-format-text></p>
+        <p>{{ 'addon.mod_choice.expired' | translate:{$a: choice.closeTimeReadable} }}</p>
+    </ion-card>
+
+    <!-- Choice done in offline but not synchronized -->
+    <ion-card class="core-warning-card" icon-start *ngIf="hasOffline">
+        <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: moduleName} }}
+    </ion-card>
+
+    <!-- Inform what will happen with the choices. -->
+    <div *ngIf="canEdit && publishInfo && options && options.length" class="core-info-card" icon-start>
+        <ion-icon name="information-circle"></ion-icon>
+        {{ publishInfo | translate }}
+    </div>
+
+    <!-- Choice options -->
+    <ion-card *ngIf="options && options.length">
+        <ng-container *ngIf="choice.allowmultiple">
+            <ion-item text-wrap *ngFor="let option of options">
+                <ion-label><core-format-text [text]="option.text"></core-format-text> <span *ngIf="choice.limitanswers && option.countanswers >= option.maxanswers">{{ 'addon.mod_choice.full' | translate }}</span></ion-label>
+                <ion-checkbox item-end [(ngModel)]="option.checked" [disabled]="option.disabled || !canEdit"></ion-checkbox>
+            </ion-item>
+        </ng-container>
+        <ng-container *ngIf="!choice.allowmultiple">
+            <ion-item text-wrap *ngFor="let option of options" radio-group [(ngModel)]="selectedOption.id">
+                <ion-label><core-format-text [text]="option.text"></core-format-text> <span *ngIf="choice.limitanswers && option.countanswers >= option.maxanswers">{{ 'addon.mod_choice.full' | translate }}</span></ion-label>
+                <ion-radio color="primary" [value]="option.id" [disabled]="option.disabled || !canEdit"></ion-radio>
+            </ion-item>
+        </ng-container>
+        <ion-item *ngIf="canEdit">
+            <button ion-button block (click)="save()" [disabled]="!canSave()">{{ 'addon.mod_choice.savemychoice' | translate }}</button>
+        </ion-item>
+        <ion-item *ngIf="canDelete">
+            <button ion-button block color="light" (click)="delete()">{{ 'addon.mod_choice.removemychoice' | translate }}</button>
+        </ion-item>
+    </ion-card>
+
+    <!-- Choice results -->
+    <div *ngIf="canSeeResults">
+        <ion-item-divider color="light" text-center>
+            {{ 'addon.mod_choice.responses' | translate }}
+        </ion-item-divider>
+        <ion-grid no-padding>
+            <ion-row>
+                <ion-col col-12 col-lg-5>
+                    <ion-item text-wrap class="core-warning-item" *ngIf="hasOffline">
+                        <ion-icon item-start name="warning" color="warning"></ion-icon> {{ 'addon.mod_choice.resultsnotsynced' | translate }}
+                    </ion-item>
+                    <ion-item>
+                        <core-chart type="pie" [data]="data" [labels]="labels" height="300"></core-chart>
+                    </ion-item>
+                </ion-col>
+                <ion-col *ngIf="choice.publish && results" col-12 col-lg-7>
+                    <ion-item-group *ngFor="let result of results">
+                        <ion-item-divider text-wrap color="light">
+                            <h2><core-format-text [text]="result.text"></core-format-text></h2>
+                            <p>{{ 'addon.mod_choice.numberofuser' | translate }}: {{ result.numberofuser }} ({{ 'core.percentagenumber' | translate: {$a: result.percentageamount} }})</p>
+                        </ion-item-divider>
+                        <a ion-item *ngFor="let user of result.userresponses" core-user-link [courseId]="courseid" [userId]="user.userid" [title]="user.fullname" text-wrap>
+                            <ion-avatar item-start>
+                                <img [src]="user.profileimageurl" [alt]="'core.pictureof' | translate:{$a: user.fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'">
+                            </ion-avatar>
+                            <p>{{user.fullname}}</p>
+                        </a>
+                    </ion-item-group>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+    <ion-card class="core-info-card" *ngIf="!canSeeResults && !choiceNotOpenYet">
+        <p>{{ 'addon.mod_choice.noresultsviewable' | translate }}</p>
+    </ion-card>
+</core-loading>

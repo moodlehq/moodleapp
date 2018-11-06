@@ -1,0 +1,971 @@
+// http://ionicframework.com/docs/theming/
+
+
+// App Global Sass
+// --------------------------------------------------
+// Put style rules here that you want to apply globally. These
+// styles are for the entire app and not just one component.
+// Additionally, this file can be also used as an entry point
+// to import other Sass files to be included in the output CSS.
+//
+// Shared Sass variables, which can be used to adjust Ionic's
+// default Sass variables, belong in "theme/variables.scss".
+//
+// To declare rules for a specific mode, create a child rule
+// for the .md, .ios, or .wp mode classes. The mode class is
+// automatically applied to the <body> element in the app.
+
+// Alignment
+// -------------------------
+
+ion-app.app-root {
+  .text-left           { text-align: left; }
+  .text-right          { text-align: right; }
+  .text-center         { text-align: center; }
+  .text-justify        { text-align: justify; }
+  .clearfix {
+    &:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+  }
+  .img-responsive {
+    display: block;
+    max-width: 100%;
+  }
+
+  .opacity-hide { opacity: 0; }
+  .core-big   { font-size: 115%; }
+  .invisible { visibility: hidden; }
+
+  .button-no-uppercase {
+    text-transform: none;
+  }
+
+  @include media-breakpoint-up(sm) {
+    .core-center-view .scroll-content {
+      display: flex!important;
+      align-content: center !important;
+      align-items: center !important;
+      > * {
+        margin: 0 auto;
+        max-width: 600px;
+      }
+    }
+  }
+
+  @include media-breakpoint-down(sm) {
+    .hidden-phone {
+      display: none !important;
+      opacity: 0 !important;
+    }
+  }
+
+  @include media-breakpoint-up(md) {
+    .hidden-tablet {
+      display: none !important;
+      opacity: 0 !important;
+    }
+  }
+
+  @mixin core-headings() {
+    h1 {
+      font-size: 3rem;
+    }
+    h2 {
+      font-size: 2.8rem;
+    }
+    h3 {
+      font-size: 2.6rem;
+    }
+    h4 {
+      font-size: 2.2rem;
+    }
+    h5 {
+      font-size: 1.8rem;
+    }
+    h6 {
+      font-size: 1.4rem;
+    }
+  }
+
+  // Define an alternative way to set a heading in an item without using a heading tag.
+  // This is done for accessibility reasons when a heading is semantically incorrect.
+  .item .item-heading {
+    @extend h6;
+    margin: 0;
+  }
+
+  .item-dimmed {
+    opacity: 0.71;
+  }
+
+  .item-radio-checked {
+    background-color: $gray-lighter;
+  }
+
+  // Make no-lines work in any element, not just ion-item and ion-list.
+  .item *[no-lines] .item-inner,
+  *[no-lines] .item .item-inner {
+    border: 0;
+  }
+
+  .core-oauth-icon, .item.core-oauth-icon, .list .item.core-oauth-icon {
+    min-height: 32px;
+    img, .label {
+      max-height: 32px;
+      vertical-align: middle;
+    }
+    img {
+      max-width: 32px;
+    }
+    .label {
+      @include margin(null, null, null, 5px);
+      color: $gray-darker;
+    }
+  }
+
+  .core-bold, .core-bold .label {
+    font-weight: bold;
+  }
+
+  .core-module-icon {
+    width: auto;
+  }
+
+  .core-button-spinner {
+    min-height: 44px;
+    min-width: 50px;
+    text-align: center;
+
+    .spinner {
+      margin-top: 8px;
+    }
+  }
+
+  // Avatar
+  // -------------------------
+  // Large centered avatar
+  .item-avatar-center {
+      text-align: center;
+
+      &.item-complex .item-content {
+          text-align: center;
+          @include padding(null, null, null, 49px);
+      }
+
+      > img:first-child,
+      ion-avatar img,
+      img {
+          display: block;
+          margin: auto;
+          width: 90px;
+          height: 90px;
+          max-width: 90px;
+          max-height: 90px;
+          margin-bottom: 10px;
+          border-radius : 50%;
+          padding: 4px;
+          border: 1px solid #ddd;
+
+          &.avatar-full {
+              border-radius: 2%;
+              border: 0;
+              max-width: 100%;
+              max-height: 160px;
+              width: auto;
+              height: auto;
+          }
+      }
+  }
+
+  ion-avatar ion-img, ion-avatar img {
+    text-indent: -99999px;
+    background-color: $gray-light;
+  }
+
+  // Form items
+  // -------------------------
+
+  .item .core-input-footnote {
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-style: italic;
+  }
+
+  ion-datetime {
+    position: relative;
+  }
+
+  input {
+    @include rtl() {
+      text-align: right;
+    }
+  }
+
+
+
+  /** Format Text */
+  core-format-text[maxHeight],
+  core-format-text[ng-reflect-max-height] {
+    display: block;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+
+    /* Force display inline */
+    &.inline {
+      display: inline-block;
+      width: auto;
+    }
+
+    // This is to allow clicks in radio/checkbox content.
+    &.core-text-formatted {
+      cursor: pointer;
+      pointer-events: auto;
+
+      .core-show-more {
+        display: none;
+      }
+
+      &:not(.core-shortened) {
+        max-height: none !important;
+      }
+
+      &.core-shortened {
+        color: $gray-darker;
+        overflow: hidden;
+        min-height: 50px;
+
+        .core-show-more {
+          color: color($colors, dark);
+          text-align: right;
+          font-size: 14px;
+          display: block;
+          position: absolute;
+          @include position(null, 0, 0, null);
+          z-index: 1001;
+          background-color: $white;
+          @include padding(null, null, null, 10px);
+        }
+
+        &:before {
+          content: '';
+          height: 100%;
+          position: absolute;
+          @include position(null, 0, 0, 0);
+          background: -moz-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+          background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba(255, 255, 255, 0)), color-stop(calc(100% - 15px), white));
+          background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+          background: -o-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+          background: -ms-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+          background: linear-gradient(to bottom, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+          z-index: 1000;
+        }
+      }
+    }
+
+    &.core-expand-in-fullview {
+      .core-show-more {
+        @include svg-background-image($item-md-detail-push-svg, true);
+        @include padding-horizontal(null, 18px);
+        @include background-position(end, 0, center);
+
+        background-repeat: no-repeat;
+        background-size: 14px 14px;
+      }
+    }
+  }
+
+  core-format-text[singleLine="true"],
+  core-format-text[ng-reflect-single-line="true"] {
+      cursor: pointer;
+      pointer-events: auto;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+      position: relative;
+      width: 100%;
+  }
+
+  .core-media-adapt-width {
+    max-width: 100%;
+  }
+
+  img.core-media-adapt-width {
+    height: auto;
+  }
+
+  audio.core-media-adapt-width {
+    width: 100%;
+  }
+
+  .core-adapted-img-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .core-image-viewer-icon {
+    position: absolute;
+    @include position(null, 10px, 10px, null);
+    color: $black;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, .5);
+    text-align: center;
+
+    width: 32px;
+    height: 32px;
+    max-width: 32px;
+    line-height: 32px;
+    font-size: 24px;
+    ion-icon {
+      font-size: 24px;
+    }
+  }
+
+  core-format-text {
+    audio, video, a, iframe {
+      pointer-events: auto;
+    }
+
+    // Fix lists styles in core-format-text.
+    ul {
+      list-style-type: disc;
+    }
+    ol {
+      list-style-type: decimal;
+    }
+    ul, ol {
+      -webkit-padding-start: 15px;
+      list-style-position: inside;
+      ul {
+        list-style-type: circle;
+      }
+      ol {
+        list-style-type: lower-latin;
+      }
+      ul, ol {
+        list-style-position: inside;
+        @include margin(null, null, null, 15px);
+      }
+    }
+
+    .badge {
+      position: initial !important;
+    }
+
+    .core-disable-media-adapt,
+    .core-disable-media-adapt .core-media-adapt-width {
+      max-width: none !important;
+      max-height: none !important;
+      width: initial !important;
+      height: initial !important;
+      display: inline-block !important;
+    }
+
+    @include core-headings();
+  }
+
+  .item core-format-text {
+    @include core-headings();
+  }
+
+  .item core-format-text,
+  core-format-text {
+    p {
+      margin-bottom: 1rem;
+    }
+  }
+
+  // Images in ion-card have width 100% and display block. Remove that when the image is in core-format-text.
+  ion-card core-format-text img {
+    width: min-content;
+    display: inline;
+  }
+
+  // Message item.
+  .item-message {
+    core-format-text > p:only-child {
+      display: inline;
+    }
+  }
+
+  // Media item, ideal for icons.
+  .item-media {
+    min-height: $item-media-height + ($content-padding * 2);
+    > img:first-child {
+      max-width: $item-media-width;
+      max-height: $item-media-height;
+    }
+  }
+
+  .item .item-button[icon-only] {
+      height: 2.8em;
+      font-size: 1.6rem;
+      padding: 8px 11px;
+      margin: 0;
+  }
+
+  // Ionic fix. Button can occupy all page if not.
+  ion-select {
+    position: relative;
+  }
+
+  ion-col ion-select {
+      @include float(end);
+      max-width: none;
+      width: 100%;
+      .select-text {
+        white-space: normal;
+        text-align: right;
+      }
+  }
+
+  ion-select {
+    color: $core-select-placeholder-color;
+    align-self: start;
+
+    .select-icon .select-icon-inner {
+      color: $core-select-placeholder-color;
+    }
+  }
+
+  ion-select.core-button-select,
+  .core-button-select {
+    background-color: white;
+    color: $core-select-placeholder-color;
+    white-space: normal;
+    align-self: start;
+    max-width: none;
+
+    &.select-md,
+    &.button-md {
+      background: $card-md-background-color;
+      box-shadow: $card-md-box-shadow;
+    }
+
+    &.select-ios,
+    &.button-ios {
+      background: $card-ios-background-color;
+      box-shadow: $card-ios-box-shadow;
+    }
+
+    &.select-wp,
+    &.button-wp {
+      background: $card-wp-background-color;
+      box-shadow: $card-wp-box-shadow;
+    }
+
+    .select-text {
+        white-space: normal;
+    }
+
+    .button-inner {
+      justify-content: start;
+    }
+
+    .select-icon .select-icon-inner {
+      color: $core-select-placeholder-color;
+    }
+
+    ion-icon:last-child {
+      @include margin(null, null, null, 5px);
+      text-align: right;
+      flex-grow: 2;
+    }
+  }
+
+
+
+  // File uploader.
+  // -------------------------
+  .core-fileuploader-file-handler {
+      position: relative;
+
+      input {
+          position: absolute;
+          @include position(null, 0, 0, null);
+          min-width: 100%;
+          min-height: 100%;
+          opacity: 0;
+          outline: none;
+          z-index: 100;
+          cursor: pointer;
+      }
+  }
+
+  // Question.
+  // -------------------------
+
+  .core-question-answer-correct,
+  .core-question-comment {
+    color: $core-question-correct-color;
+    background-color: $core-question-correct-color-bg;
+
+    .label, ion-label.label {
+      color: $core-question-correct-color;
+    }
+  }
+
+  .core-question-answer-incorrect,
+  .core-question-incorrect {
+    color: $core-question-incorrect-color;
+    background-color: $core-question-incorrect-color-bg;
+
+    .label, ion-label.label {
+      color: $core-question-incorrect-color;
+    }
+  }
+
+  .core-question-feedback-container {
+    background-color: $core-question-feedback-color-bg;
+    color: $core-question-feedback-color;
+
+    .specificfeedback, .rightanswer, .im-feedback, .feedback, .generalfeedback {
+      margin: 0 0 .5em;
+    }
+
+    .correctness {
+      display: inline-block;
+      padding: 2px 4px;
+      font-weight: bold;
+      line-height: 14px;
+      color: $white;
+      text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+      background-color: $gray-dark;
+      -webkit-border-radius: 3px;
+      border-radius: 3px;
+
+      &.incorrect {
+        background-color: $red;
+      }
+      &.correct {
+        background-color: $green;
+      }
+    }
+  }
+
+  .core-question-feedback-inline {
+    display: inline-block;
+  }
+
+  .core-question-feedback-padding {
+    @include padding(8px, 35px, 8px, 14px);
+  }
+
+  .core-question-correct {
+    background-color: $core-question-state-correct-color;
+  }
+  .core-question-partiallycorrect {
+    background-color: $core-question-state-partial-color;
+  }
+  .core-question-notanswered,
+  .core-question-incorrect {
+    background-color: $core-question-state-incorrect-color;
+  }
+  .core-question-answersaved {
+    color: $text-color;
+    background-color: $core-question-saved-color-bg;
+  }
+
+  .core-question-warning {
+    color: $core-question-warning-color;
+  }
+
+  .questioncorrectnessicon,
+  .fa.icon.questioncorrectnessicon {
+    font-size: 20px;
+  }
+
+  // Atto styles
+  // -------------------------
+  .atto_image_preview {
+      width: 100%;
+      height: 100%;
+      margin-left: auto;
+      margin-right: auto;
+  }
+
+  .atto_image_preview_box {
+      max-height: 200px;
+      margin-bottom: 1em;
+      overflow: auto;
+  }
+
+  .editor_atto_content img {
+      cursor: pointer;
+  }
+
+  .atto_image_size {
+      display: inline-block;
+  }
+
+  .atto_image_size input[type=checkbox] {
+      @include margin(null, 1em, null, 1em);
+  }
+
+  .atto_image_size input[type=text] {
+      width: 3em;
+  }
+
+  .atto_image_size label {
+      display: inline-block;
+  }
+
+  .atto_image_button_text-top {
+      vertical-align: text-top;
+      margin: 0 0.5em;
+  }
+
+  .atto_image_button_middle {
+      vertical-align: middle;
+      margin: 0 0.5em;
+  }
+
+  .atto_image_button_text-bottom {
+      vertical-align: text-bottom;
+      margin: 0 0.5em;
+  }
+
+  .atto_image_button_text-top.img-responsive,
+  .atto_image_button_middle.img-responsive,
+  .atto_image_button_text-bottom.img-responsive {
+      /* If the image is display: block then linking the image to URLs won't work. */
+      display: inline-block;
+      max-width: calc(100% - 1em);
+  }
+
+  /*rtl:begin:ignore*/
+  .atto_image_button_left {
+      @include float(start);
+      @include margin(0, 0.5em, 0, 0);
+      max-width: calc(100% - 1em);
+  }
+
+  .atto_image_button_right {
+      @include float(end);
+      @include margin(0, 0, 0, 0.5em);
+      max-width: calc(100% - 1em);
+  }
+  /*rtl:end:ignore*/
+
+  .action-sheet-group {
+      overflow: auto;
+  }
+  .alert-message {
+      overflow-y: auto;
+  }
+
+  ion-toast.core-toast-success .toast-wrapper{
+      background: $green-dark;
+  }
+
+  ion-toast.core-toast-alert .toast-wrapper{
+      background: $red-dark;
+  }
+
+  textarea {
+    width: 100%;
+    resize: none;
+
+    &[core-auto-rows] {
+      height: auto;
+      line-height: 18px;
+      padding: 5px;
+    }
+
+    &:not([core-auto-rows]) {
+      height: 200px;
+      min-height: $core-rte-min-height;
+    }
+  }
+
+  .toolbar .core-bar-button-image {
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    max-width: $core-toolbar-button-image-width - 1;
+    max-height: $core-toolbar-button-image-width - 1;
+    border-radius: 50%;
+  }
+
+  // Footer with auto height.
+  .footer.footer-adjustable {
+      height: auto;
+  }
+
+  .core-circle:before {
+    content: ' \25CF';
+  }
+
+  @each $color-name, $color-base, $color-contrast in get-colors($colors) {
+    // Message cards.
+    .core-#{$color-name}-card {
+      @extend ion-card;
+      border-bottom: 3px solid $color-base;
+
+      &[icon-start] {
+        @include padding(null, null, null, 52px);
+        position: relative;
+
+        ion-icon {
+          color: $color-base;
+          position: absolute;
+          @include position(0, null, null, 16px)
+          height: 100%;
+          font-size: 24px;
+          display: flex;
+          align-items: center;
+        }
+      }
+    }
+
+    .core-#{$color-name}-item {
+      border-bottom: 3px solid $color-base !important;
+      ion-icon {
+        color: $color-base;
+      }
+    }
+
+    .core-#{$color-name}-circle {
+      margin: 0 4px;
+    }
+
+    .core-#{$color-name}-circle:before {
+      @extend .core-circle:before;
+      color: $color-base;
+    }
+
+    .text-#{$color-name}, p.text-#{$color-name}, .item p.text-#{$color-name}, .card p.text-#{$color-name} {
+      color: $color-base;
+    }
+  }
+
+  .accesshide {
+    position: absolute;
+    @include position(null, null, null, -10000px);
+    font-weight: normal;
+    font-size: 1em;
+  }
+
+  .core-monospaced {
+    font-family: Andale Mono,Monaco,Courier New,DejaVu Sans Mono,monospace;
+  }
+
+
+  .core-white-push-arrow .item-inner{
+      @include push-arrow-color($white);
+  }
+
+  // For list where some items have detail icon and some others don't.
+  .core-list-align-detail-right .item .item-inner {
+      @include padding-horizontal(null, 32px);
+  }
+
+  [ion-fixed] {
+    width: 100%;
+  }
+
+  .core-modal-fullscreen {
+    .modal-wrapper {
+      position: absolute;
+      @include position(0 !important, null, null, 0 !important);
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+  }
+
+  .has-fab .scroll-content{
+    padding-bottom: 56px;
+  }
+
+  .scroll-content ion-fab {
+    position: fixed;
+    margin-bottom: 56px;
+  }
+
+
+  // For some reason, in iOS the pages don't inherit the background-color from ion-app, set it explicitly.
+  .ion-page {
+    background-color: $background-color;
+  }
+
+  // Embed video responsive classes.
+  // Taken from https://github.com/twbs/bootstrap/blob/v4-dev/scss/utilities/_embed.scss
+  .embed-responsive {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
+    overflow: hidden;
+
+    &::before {
+      display: block;
+      content: "";
+    }
+
+    .embed-responsive-item,
+    iframe,
+    embed,
+    object,
+    video {
+      position: absolute;
+      @include position(0, null, 0, 0);
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    iframe iframe {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .embed-responsive-21by9 {
+    &::before {
+      padding-top: percentage(9 / 21);
+    }
+  }
+
+  .embed-responsive-16by9 {
+    &::before {
+      padding-top: percentage(9 / 16);
+    }
+  }
+
+  .embed-responsive-4by3 {
+    &::before {
+      padding-top: percentage(3 / 4);
+    }
+  }
+
+  .embed-responsive-1by1 {
+    &::before {
+      padding-top: percentage(1 / 1);
+    }
+  }
+
+  ion-alert.core-inapp-notification {
+    pointer-events: none;
+    position: fixed;
+    align-items: start;
+
+    ion-backdrop {
+      display: none;
+    }
+
+    .alert-wrapper {
+      width: $toast-width;
+      max-width: $toast-max-width;
+      box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+      padding: 2px 0;
+      border-radius: 0;
+      pointer-events: auto;
+    }
+
+    .alert-head {
+      padding: 5px 10px;
+      text-align: left;
+      h2 {
+        font-size: 14px;
+      }
+    }
+
+    .alert-message {
+      padding: 5px 10px;
+      text-align: left;
+      p {
+        font-size: 14px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
+    }
+  }
+
+  .core-icon-with-badge {
+    position: relative;
+
+    .icon {
+      font-size: 32px;
+    }
+
+    .core-icon-badge {
+      width: auto;
+      height: auto;
+      margin: 0;
+      position: absolute;
+      @include position(-18px, -8px, null, null);
+      color: red;
+      font-size: 16px;
+    }
+  }
+
+  .item.item-radio, .item.item-checkbox {
+    // Fix links and videos in ion-radio and ion-checkbox.
+    .input-wrapper {
+      position: relative;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    // Show whole text on options.
+    ion-label {
+      white-space: normal;
+    }
+  }
+
+  .core-no-text-wrap {
+    white-space: nowrap;
+
+    &.item.item-radio, &.item.item-checkbox {
+      ion-label {
+        white-space: nowrap;
+      }
+    }
+  }
+
+  // Fix modals displayed over action sheet.
+  &.disable-scroll ion-modal .ion-page {
+    pointer-events: initial;
+  }
+}
+
+[dir="ltr"] body, [dir="rtl"] body {
+  padding-top: constant(safe-area-inset-top); //for iOS 11.2
+  padding-top: env(safe-area-inset-top); //for iOS 11.1
+}
+
+body.keyboard-is-open {
+  ion-content:not(.has-footer) {
+    > .scroll-content, > .fixed-content {
+      margin-bottom: 0 !important;
+    }
+  }
+
+  core-ion-tabs .tabbar {
+      display: none;
+  }
+}
+
+// Fix iframes in fullscreen mode.
+//
+// Ionic sets "contain: strict" to some elements. This enables paint containment,
+// which changes behaviour of fixed positioned elements and seems to break iframes
+// in fullscreen mode. See https://www.w3.org/TR/css-contain-1/#containment-paint
+ion-app,
+ion-nav,
+ion-tab,
+ion-tabs,
+.app-root,
+.ion-page,
+ion-modal,
+.modal-wrapper,
+.split-pane {
+  contain: size layout style;
+}

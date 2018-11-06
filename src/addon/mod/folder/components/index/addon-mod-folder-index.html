@@ -1,0 +1,29 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons end>
+    <core-context-menu>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl" [iconAction]="'open'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()" [iconAction]="'arrow-forward'"></core-context-menu-item>
+        <core-context-menu-item [priority]="700" [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="600" [content]="prefetchText" (action)="prefetch()" [iconAction]="prefetchStatusIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="500" [content]="size" [iconDescription]="'cube'" (action)="removeFiles()" [iconAction]="'trash'"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<!-- Content. -->
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+
+    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+
+    <ion-list *ngIf="contents && contents.length > 0">
+        <ng-container *ngFor="let file of contents">
+            <a *ngIf="file.type === 'folder'" ion-item class="item-media" [navPush]="'AddonModFolderIndexPage'" [navParams]="{path: file.filepath, courseId: courseId, module: file}">
+                <img [src]="file.fileicon" alt="" role="presentation" item-start>
+                <p>{{file.name}}</p>
+            </a>
+            <core-file *ngIf="file.type !== 'folder'" [file]="file" [component]="component" [componentId]="file.contextid"></core-file>
+        </ng-container>
+    </ion-list>
+
+    <core-empty-box *ngIf="!contents || contents.length == 0" icon="folder" [message]=" 'addon.mod_folder.emptyfilelist' | translate"></core-empty-box>
+
+</core-loading>

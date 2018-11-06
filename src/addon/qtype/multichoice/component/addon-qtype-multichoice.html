@@ -1,0 +1,35 @@
+<section ion-list *ngIf="question.text || question.text === ''">
+    <!-- Question text first. -->
+    <ion-item text-wrap>
+        <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text></p>
+        <p *ngIf="question.prompt"><core-format-text [component]="component" [componentId]="componentId" [text]="question.prompt"></core-format-text></p>
+    </ion-item>
+
+    <!-- Checkbox for multiple choice. -->
+    <ng-container *ngIf="question.multi">
+        <ion-item text-wrap *ngFor="let option of question.options" [ngClass]="{'core-question-answer-correct': option.isCorrect === 1, 'core-question-answer-incorrect': option.isCorrect === 0}">
+            <ion-label>
+                <core-format-text [component]="component" [componentId]="componentId" [text]="option.text"></core-format-text>
+                <p *ngIf="option.feedback" class="core-question-feedback-container"><core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback"></core-format-text></p>
+            </ion-label>
+            <ion-checkbox [attr.name]="option.name" [(ngModel)]="option.checked" [disabled]="option.disabled" item-end></ion-checkbox>
+
+            <!-- ion-checkbox doesn't use an input. Create a hidden input to hold the value. -->
+            <input item-content type="hidden" [ngModel]="option.checked" [attr.name]="option.name">
+        </ion-item>
+    </ng-container>
+
+    <!-- Radio buttons for single choice. -->
+    <div *ngIf="!question.multi" radio-group [(ngModel)]="question.singleChoiceModel" [name]="question.optionsName">
+        <ion-item text-wrap *ngFor="let option of question.options" [ngClass]='{"core-question-answer-correct": option.isCorrect === 1, "core-question-answer-incorrect": option.isCorrect === 0}'>
+            <ion-label>
+                <core-format-text [component]="component" [componentId]="componentId" [text]="option.text"></core-format-text>
+                <p *ngIf="option.feedback" class="core-question-feedback-container"><core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback"></core-format-text></p>
+            </ion-label>
+            <ion-radio [value]="option.value" [disabled]="option.disabled"></ion-radio>
+        </ion-item>
+
+        <!-- ion-radio doesn't use an input. Create a hidden input to hold the selected value. -->
+        <input type="hidden" [ngModel]="question.singleChoiceModel" [attr.name]="question.optionsName">
+    </div>
+</section>

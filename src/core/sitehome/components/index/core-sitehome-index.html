@@ -1,0 +1,37 @@
+<core-loading [hideUntil]="dataLoaded">
+
+    <ion-list>
+        <!-- Site home main contents. -->
+        <ng-container *ngIf="section && section.hasContent">
+            <ion-item text-wrap *ngIf="section.summary">
+                <core-format-text [text]="section.summary"></core-format-text>
+            </ion-item>
+
+            <core-course-module *ngFor="let module of section.modules" [module]="module" [courseId]="siteHomeId" [downloadEnabled]="true"></core-course-module>
+        </ng-container>
+
+        <!-- Site home items: news, categories, courses, etc. -->
+        <ng-container *ngIf="items.length > 0">
+            <ion-item-divider color="light" *ngIf="section && section.hasContent"></ion-item-divider>
+            <ng-container *ngFor="let item of items">
+                <core-sitehome-all-course-list class="item" *ngIf="item == 'all-course-list'"></core-sitehome-all-course-list>
+                <core-sitehome-categories  *ngIf="item == 'categories'"></core-sitehome-categories>
+                <core-sitehome-course-search *ngIf="item == 'course-search'"></core-sitehome-course-search>
+                <core-sitehome-enrolled-course-list *ngIf="item == 'enrolled-course-list'"></core-sitehome-enrolled-course-list>
+                <core-sitehome-news *ngIf="item == 'news'"></core-sitehome-news>
+            </ng-container>
+        </ng-container>
+
+        <!-- Site home block. -->
+        <ng-container *ngIf="block && block.hasContent">
+            <ion-item-divider color="light" *ngIf="(section && section.hasContent) || items.length > 0"></ion-item-divider>
+            <ion-item text-wrap *ngIf="block.summary">
+                <core-format-text [text]="block.summary"></core-format-text>
+            </ion-item>
+
+            <core-course-module *ngFor="let module of block.modules" [module]="module" [courseId]="siteHomeId" [downloadEnabled]="true"></core-course-module>
+        </ng-container>
+    </ion-list>
+
+    <core-empty-box *ngIf="!hasContent" icon="qr-scanner" [message]="'core.course.nocontentavailable' | translate"></core-empty-box>
+</core-loading>

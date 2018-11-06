@@ -1,0 +1,65 @@
+ion-app.app-root page-core-emulator-capture-media {
+    ion-content {
+        .core-av-wrapper {
+            position: absolute;
+            @include position(0, 0, 0, 0);
+            margin: 0;
+            padding: 0;
+            clear: both;
+
+            .core-webcam-image-canvas {
+                display: none;
+            }
+
+            .core-audio-record-container {
+                width: 100%;
+                height: 100%;
+
+                .core-audio-canvas {
+                    width: 100%;
+                    height: 100%;
+                }
+
+                .core-audio-captured {
+                    width: 100%;
+                }
+            }
+
+            audio, video, img {
+                width: 100%;
+                height: 100%;
+                display: table-cell;
+                text-align: center;
+                vertical-align: middle;
+                object-fit: contain;
+
+                &.core-webcam-stream {
+                    -webkit-transform: scaleX(-1);
+                    transform: scaleX(-1);
+                }
+            }
+        }
+
+        .scroll-content {
+            // We're modifying the height of the footer, the padding-bottom of the scroll needs to change too.
+            margin-bottom: 44px !important;
+        }
+    }
+
+    ion-footer {
+        background-color: $gray;
+        border-top: 1px solid $gray-dark;
+
+        .col {
+            padding: 0;
+
+            .icon.ion-md-trash, .icon.ion-ios-trash {
+                color: $red;
+            }
+        }
+
+        .chrono-container {
+            line-height: 24px;
+        }
+    }
+}

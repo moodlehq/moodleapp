@@ -1,0 +1,54 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="entryLoaded" (ionRefresh)="refreshDatabase($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="entryLoaded">
+        <!-- Database entries found to be synchronized -->
+        <div class="core-warning-card" icon-start *ngIf="hasOffline">
+            <ion-icon name="warning"></ion-icon>
+            {{ 'core.hasdatatosync' | translate: {$a: moduleName} }}
+        </div>
+
+        <ion-item text-wrap *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
+            <ion-label id="addon-data-groupslabel" *ngIf="groupInfo.separateGroups">{{ 'core.groupsseparate' | translate }}</ion-label>
+            <ion-label id="addon-data-groupslabel" *ngIf="groupInfo.visibleGroups">{{ 'core.groupsvisible' | translate }}</ion-label>
+            <ion-select [(ngModel)]="selectedGroup" (ionChange)="setGroup(selectedGroup)" aria-labelledby="addon-data-groupslabel" interface="popover">
+                <ion-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">{{groupOpt.name}}</ion-option>
+            </ion-select>
+        </ion-item>
+
+        <div class="addon-data-contents {{cssClass}}">
+            <style *ngIf="cssTemplate">
+                {{ cssTemplate }}
+            </style>
+
+            <core-compile-html [text]="entryRendered" [jsData]="jsData" [extraImports]="extraImports"></core-compile-html>
+        </div>
+
+        <ion-item *ngIf="data && entry">
+            <core-comments contextLevel="module" [instanceId]="data.coursemodule" component="mod_data" [itemId]="entry.id" area="database_entry"></core-comments>
+        </ion-item>
+
+        <ion-grid *ngIf="previousId || nextId">
+            <ion-row align-items-center>
+                <ion-col *ngIf="previousId">
+                    <button ion-button block outline icon-start (click)="gotoEntry(previousId)">
+                        <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
+                        {{ 'core.previous' | translate }}
+                    </button>
+                </ion-col>
+                <ion-col *ngIf="nextId">
+                    <button ion-button block icon-end (click)="gotoEntry(nextId)">
+                        {{ 'core.next' | translate }}
+                        <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
+                    </button>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </core-loading>
+</ion-content>

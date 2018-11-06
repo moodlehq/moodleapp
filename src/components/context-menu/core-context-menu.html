@@ -1,0 +1,4 @@
+<button [hidden]="hideMenu" ion-button clear icon-only [attr.aria-label]="ariaLabel" (click)="showContextMenu($event)" class="bar-button">
+    <core-icon [name]="icon"></core-icon>
+</button>
+<ng-content></ng-content>

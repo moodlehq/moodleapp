@@ -1,0 +1,18 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ title }}</ion-title>
+
+        <ion-buttons end>
+            <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content padding>
+    <core-format-text [text]="content" [component]="component" [componentId]="componentId"></core-format-text>
+
+    <ion-card *ngIf="files && files.length">
+        <core-file *ngFor="let file of files" [file]="file" [component]="component" [componentId]="componentId"></core-file>
+    </ion-card>
+</ion-content>

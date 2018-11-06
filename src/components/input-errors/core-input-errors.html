@@ -1,0 +1,16 @@
+<div class="core-input-error-container" role="alert" *ngIf="(formControl && formControl.dirty && !formControl.valid) || errorText">
+    <ng-container *ngIf="formControl && formControl.dirty && !formControl.valid">
+        <ng-container *ngFor="let error of errorKeys">
+            <div *ngIf="formControl.hasError(error)" class="core-input-error">
+                <span *ngIf="errorMessages[error]">{{errorMessages[error]}}</span>
+                <span *ngIf="!errorMessages[error] && error == 'max' && formControl.errors.max">
+                    {{ 'core.login.invalidvaluemax' | translate:{$a: formControl.errors.max.max} }}
+                </span>
+                <span *ngIf="!errorMessages[error] && error == 'min' && formControl.errors.min">
+                    {{ 'core.login.invalidvaluemin' | translate:{$a: formControl.errors.min.min} }}
+                </span>
+            </div>
+        </ng-container>
+    </ng-container>
+    <div *ngIf="errorText" class="core-input-error">{{ errorText }}</div>
+</div>

@@ -1,0 +1,11 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+
+        <ion-buttons end>
+            <!-- The buttons defined by the component will be added in here. -->
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+
+<addon-mod-forum-index [module]="module" [courseId]="courseId" (dataRetrieved)="updateData($event)"></addon-mod-forum-index>

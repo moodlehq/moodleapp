@@ -1,0 +1,20 @@
+ion-app.app-root page-core-mainmenu {
+    .ion-md-fa-graduation-cap,
+    .ion-ios-fa-graduation-cap,
+    .ion-ios-fa-graduation-cap-outline,
+    .ion-wp-fa-graduation-cap,
+    .ion-fa-graduation-cap {
+        @extend .fa-graduation-cap;
+        @extend .fa;
+        font-size: 21px;
+        height: 21px;
+    }
+
+    .ion-ios-fa-graduation-cap-outline {
+        color: transparent;
+        -webkit-text-stroke-width: 0.8px;
+        -webkit-text-stroke-color: $tabs-tab-color-inactive;
+        font-size: 23px;
+        height: 23px;
+    }
+}

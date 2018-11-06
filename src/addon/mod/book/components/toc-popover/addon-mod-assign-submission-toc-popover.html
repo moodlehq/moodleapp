@@ -1,0 +1,5 @@
+<ion-list>
+    <a ion-item text-wrap *ngFor="let chapter of chapters" (click)="loadChapter(chapter.id)" detail-none>
+        <p [attr.padding-left]="chapter.level == 1 ? true : null">{{chapter.title}}</p>
+    </a>
+</ion-list>

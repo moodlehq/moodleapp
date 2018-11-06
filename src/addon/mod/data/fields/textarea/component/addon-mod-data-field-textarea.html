@@ -1,0 +1,9 @@
+<span *ngIf="!isShowOrListMode()" [formGroup]="form">
+    <ion-input *ngIf="mode == 'search'" type="text" [placeholder]="field.name" [formControlName]="'f_'+field.id"></ion-input>
+
+    <span *ngIf="mode == 'edit'" [core-mark-required]="field.required" class="core-mark-required"></span>
+    <core-rich-text-editor *ngIf="mode == 'edit'" item-content [control]="form.controls['f_'+field.id]" [placeholder]="field.name" [formControlName]="'f_'+field.id" [component]="component" [componentId]="componentId"></core-rich-text-editor>
+    <core-input-errors *ngIf="error && mode == 'edit'" [control]="form.controls['f_'+field.id]" [errorText]="error"></core-input-errors>
+</span>
+
+<core-format-text *ngIf="isShowOrListMode() && value" [text]="format(value)" [component]="component" [componentId]="componentId"></core-format-text>

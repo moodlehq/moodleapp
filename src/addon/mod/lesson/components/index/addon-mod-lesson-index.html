@@ -1,0 +1,247 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons end>
+    <core-context-menu>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl" [iconAction]="'open'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()" [iconAction]="'arrow-forward'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && hasOffline && isOnline"  [priority]="600" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch()" [iconAction]="prefetchStatusIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="400" [content]="size" [iconDescription]="'cube'" (action)="removeFiles()" [iconAction]="'trash'"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<!-- Content. -->
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+
+    <core-tabs [selectedIndex]="selectedTab">
+        <!-- Index/Preview tab. -->
+        <core-tab [title]="'addon.mod_lesson.preview' | translate">
+            <ng-template>
+                <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+
+                <!-- Prevent access messages. Only show the first one. -->
+                <div class="core-info-card" icon-start *ngIf="lesson && preventMessages && preventMessages.length">
+                    <ion-icon name="information-circle"></ion-icon>
+                    <core-format-text [component]="component" [componentId]="componentId" [text]="preventMessages[0].message"></core-format-text>
+                </div>
+
+                <!-- Lesson has data to be synchronized -->
+                <div class="core-warning-card" icon-start *ngIf="hasOffline">
+                    <ion-icon name="warning"></ion-icon>
+                    {{ 'core.hasdatatosync' | translate: {$a: moduleName} }}
+                </div>
+
+                <!-- Input password for protected lessons. -->
+                <ion-card *ngIf="askPassword">
+                    <form ion-list (ngSubmit)="submitPassword(passwordinput)">
+                        <ion-item>
+                            <core-show-password item-content [name]="'password'">
+                                <ion-label>{{ 'addon.mod_lesson.enterpassword' | translate }}</ion-label>
+                                <ion-input name="password" type="password" placeholder="{{ 'core.login.password' | translate }}" [core-auto-focus] #passwordinput [clearOnEdit]="false"></ion-input>
+                            </core-show-password>
+                        </ion-item>
+                        <ion-item>
+                            <button ion-button block type="submit" icon-end>
+                                {{ 'addon.mod_lesson.continue' | translate }}
+                                <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
+                            </button>
+                        </ion-item>
+                    </form>
+                </ion-card>
+
+                <core-loading [hideUntil]="!showSpinner">
+                    <ion-list *ngIf="lesson && (!preventMessages || !preventMessages.length)">
+                        <ion-item text-wrap *ngIf="retakeToReview">
+                            <!-- A retake was finished in a synchronization, allow reviewing it. -->
+                            <p>{{ 'addon.mod_lesson.retakefinishedinsync' | translate }}</p>
+                            <a ion-button block (click)="review()">{{ 'addon.mod_lesson.review' | translate }}</a>
+                        </ion-item>
+
+                        <ion-item text-wrap *ngIf="leftDuringTimed && !lesson.timelimit">
+                            <!-- User left during the session and there is no time limit, ask to continue. -->
+                            <p [innerHTML]="'addon.mod_lesson.youhaveseen' | translate"></p>
+                            <ion-grid>
+                                <ion-row>
+                                    <ion-col>
+                                        <a ion-button block color="light" (click)="start(false)">{{ 'core.no' | translate }}</a>
+                                    </ion-col>
+                                    <ion-col>
+                                        <a ion-button block (click)="start(true)">{{ 'core.yes' | translate }}</a>
+                                    </ion-col>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-item>
+
+                        <ion-item text-wrap *ngIf="leftDuringTimed && lesson.timelimit && lesson.retake">
+                            <!-- User left during the session with time limit and retakes allowed, ask to continue. -->
+                            <p [innerHTML]="'addon.mod_lesson.leftduringtimed' | translate"></p>
+                            <a ion-button block icon-end (click)="start(false)">
+                                {{ 'addon.mod_lesson.continue' | translate }}
+                                <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
+                            </a>
+                        </ion-item>
+
+                        <ion-item text-wrap *ngIf="leftDuringTimed && lesson.timelimit && !lesson.retake">
+                            <!-- User left during the session with time limit and retakes not allowed. This should be handled by preventMessages -->
+                            <p [innerHTML]="'addon.mod_lesson.leftduringtimednoretake' | translate"></p>
+                        </ion-item>
+
+                        <ion-item text-wrap *ngIf="!leftDuringTimed">
+                            <!-- User hasn't left during the session, show a start button. -->
+                            <a ion-button block *ngIf="!canManage" icon-end (click)="start(false)">
+                                {{ 'core.start' | translate }}
+                                <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
+                            </a>
+                            <a ion-button block *ngIf="canManage" icon-end (click)="start(false)">
+                                {{ 'addon.mod_lesson.preview' | translate }}
+                                <ion-icon name="search"></ion-icon>
+                            </a>
+                        </ion-item>
+                    </ion-list>
+                </core-loading>
+            </ng-template>
+        </core-tab>
+
+        <!-- Reports tab. -->
+        <core-tab *ngIf="canViewReports" [title]="'addon.mod_lesson.reports' | translate" (ionSelect)="reportsSelected()">
+            <ng-template>
+                <core-loading [hideUntil]="reportLoaded">
+                    <!-- Group selector if the activity uses groups. -->
+                    <ion-item text-wrap *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
+                        <ion-label id="addon-mod_lesson-groupslabel" *ngIf="groupInfo.separateGroups">{{ 'core.groupsseparate' | translate }}</ion-label>
+                        <ion-label id="addon-mod_lesson-groupslabel" *ngIf="groupInfo.visibleGroups">{{ 'core.groupsvisible' | translate }}</ion-label>
+                        <ion-select [(ngModel)]="group" (ionChange)="setGroup(group)" aria-labelledby="addon-mod_lesson-groupslabel" interface="popover">
+                            <ion-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">{{groupOpt.name}}</ion-option>
+                        </ion-select>
+                    </ion-item>
+
+                    <!-- No lesson retakes. -->
+                    <core-empty-box *ngIf="!overview && selectedGroupName" icon="stats" [message]="'addon.mod_lesson.nolessonattemptsgroup' | translate:{$a: selectedGroupName}">
+                    </core-empty-box>
+                    <core-empty-box *ngIf="!overview && !selectedGroupName" icon="stats" [message]="'addon.mod_lesson.nolessonattempts' | translate">
+                    </core-empty-box>
+
+                    <!-- General statistics for the current group. -->
+                    <ion-card class="addon-mod_lesson-lessonstats" *ngIf="overview">
+                        <ion-card-header text-wrap>
+                            {{ 'addon.mod_lesson.lessonstats' | translate }}
+                        </ion-card-header>
+
+                        <!-- In tablet, max 2 rows with 3 columns. -->
+                        <ion-list class="hidden-phone">
+                            <ion-item text-wrap *ngIf="overview.lessonscored">
+                                <ion-row>
+                                    <ion-col text-center>
+                                        <p class="item-heading">{{ 'addon.mod_lesson.averagescore' | translate }}</p>
+                                        <p *ngIf="overview.numofattempts > 0">{{ 'core.percentagenumber' | translate:{$a: overview.avescore} }}</p>
+                                        <p *ngIf="overview.numofattempts <= 0">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
+                                    </ion-col>
+
+                                    <ion-col text-center>
+                                        <p class="item-heading">{{ 'addon.mod_lesson.highscore' | translate }}</p>
+                                        <p *ngIf="overview.highscore != null">{{ 'core.percentagenumber' | translate:{$a: overview.highscore} }}</p>
+                                        <p *ngIf="overview.highscore == null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
+                                    </ion-col>
+
+                                    <ion-col text-center>
+                                        <p class="item-heading">{{ 'addon.mod_lesson.lowscore' | translate }}</p>
+                                        <p *ngIf="overview.lowscore != null">{{ 'core.percentagenumber' | translate:{$a: overview.lowscore} }}</p>
+                                        <p *ngIf="overview.lowscore == null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
+                                    </ion-col>
+                                </ion-row>
+                            </ion-item>
+
+                            <ion-item text-wrap>
+                                <ion-row>
+                                    <ion-col text-center>
+                                        <p class="item-heading">{{ 'addon.mod_lesson.averagetime' | translate }}</p>
+                                        <p *ngIf="overview.avetime != null && overview.numofattempts">{{ overview.avetimeReadable }}</p>
+                                        <p *ngIf="overview.avetime == null || !overview.numofattempts">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
+                                    </ion-col>
+
+                                    <ion-col text-center>
+                                        <p class="item-heading">{{ 'addon.mod_lesson.hightime' | translate }}</p>
+                                        <p *ngIf="overview.hightime != null">{{ overview.hightimeReadable }}</p>
+                                        <p *ngIf="overview.hightime == null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
+                                    </ion-col>
+
+                                    <ion-col text-center>
+                                        <p class="item-heading">{{ 'addon.mod_lesson.lowtime' | translate }}</p>
+                                        <p *ngIf="overview.lowtime != null">{{ overview.lowtimeReadable }}</p>
+                                        <p *ngIf="overview.lowtime == null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
+                                    </ion-col>
+                                </ion-row>
+                            </ion-item>
+                        </ion-list>
+
+                        <!-- In phone, 3 rows with 1 or 2 columns. -->
+                        <ion-list class="hidden-tablet">
+                            <ion-item text-wrap>
+                                <ion-row>
+                                    <ion-col text-center *ngIf="overview.lessonscored">
+                                        <p class="item-heading">{{ 'addon.mod_lesson.averagescore' | translate }}</p>
+                                        <p *ngIf="overview.numofattempts > 0">{{ 'core.percentagenumber' | translate:{$a: overview.avescore} }}</p>
+                                        <p *ngIf="overview.numofattempts <= 0">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
+                                    </ion-col>
+
+                                    <ion-col [attr.text-center]="overview.lessonscored ? true : null">
+                                        <p class="item-heading">{{ 'addon.mod_lesson.averagetime' | translate }}</p>
+                                        <p *ngIf="overview.avetime != null && overview.numofattempts">{{ overview.avetimeReadable }}</p>
+                                        <p *ngIf="overview.avetime == null || !overview.numofattempts">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
+                                    </ion-col>
+                                </ion-row>
+                            </ion-item>
+
+                            <ion-item text-wrap>
+                                <ion-row>
+                                    <ion-col text-center *ngIf="overview.lessonscored">
+                                        <p class="item-heading">{{ 'addon.mod_lesson.highscore' | translate }}</p>
+                                        <p *ngIf="overview.highscore != null">{{ 'core.percentagenumber' | translate:{$a: overview.highscore} }}</p>
+                                        <p *ngIf="overview.highscore == null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
+                                    </ion-col>
+
+                                    <ion-col [attr.text-center]="overview.lessonscored ? true : null">
+                                        <p class="item-heading">{{ 'addon.mod_lesson.hightime' | translate }}</p>
+                                        <p *ngIf="overview.hightime != null">{{ overview.hightimeReadable }}</p>
+                                        <p *ngIf="overview.hightime == null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
+                                    </ion-col>
+                                </ion-row>
+                            </ion-item>
+
+                            <ion-item text-wrap>
+                                <ion-row>
+                                    <ion-col text-center *ngIf="overview.lessonscored">
+                                        <p class="item-heading">{{ 'addon.mod_lesson.lowscore' | translate }}</p>
+                                        <p *ngIf="overview.lowscore != null">{{ 'core.percentagenumber' | translate:{$a: overview.lowscore} }}</p>
+                                        <p *ngIf="overview.lowscore == null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
+                                    </ion-col>
+
+                                    <ion-col [attr.text-center]="overview.lessonscored ? true : null">
+                                        <p class="item-heading">{{ 'addon.mod_lesson.lowtime' | translate }}</p>
+                                        <p *ngIf="overview.lowtime != null">{{ overview.lowtimeReadable }}</p>
+                                        <p *ngIf="overview.lowtime == null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
+                                    </ion-col>
+                                </ion-row>
+                            </ion-item>
+                        </ion-list>
+                    </ion-card>
+
+                    <!-- List of students that have retakes. -->
+                    <ion-card *ngIf="overview">
+                        <ion-card-header text-wrap>
+                            {{ 'addon.mod_lesson.overview' | translate }}
+                        </ion-card-header>
+
+                        <a ion-item text-wrap *ngFor="let student of overview.students" [navPush]="'AddonModLessonUserRetakePage'" [navParams]="{courseId: courseId, lessonId: lesson.id, userId: student.id}">
+                            <ion-avatar item-start *ngIf="student.profileimageurl" core-user-link [userId]="student.id" [courseId]="courseId">
+                                <img [src]="student.profileimageurl" [alt]="'core.pictureof' | translate:{$a: student.fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'" role="presentation">
+                            </ion-avatar>
+                            <h2>{{ student.fullname }}</h2>
+                            <core-progress-bar [progress]="student.bestgrade"></core-progress-bar>
+                        </a>
+                    </ion-card>
+                </core-loading>
+            </ng-template>
+        </core-tab>
+    </core-tabs>
+</core-loading>

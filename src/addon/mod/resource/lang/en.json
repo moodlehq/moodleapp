@@ -1,0 +1,6 @@
+{
+    "errorwhileloadingthecontent": "Error while loading the content.",
+    "modifieddate": "Modified {{$a}}",
+    "openthefile": "Open the file",
+    "uploadeddate": "Uploaded {{$a}}"
+}

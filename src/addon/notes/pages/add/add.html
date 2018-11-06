@@ -1,0 +1,28 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'addon.notes.addnewnote' | translate }}</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content padding>
+    <form name="itemEdit" (ngSubmit)="addNote()">
+        <ion-item>
+            <ion-label>{{ 'addon.notes.publishstate' | translate }}</ion-label>
+            <ion-select [(ngModel)]="publishState" name="publishState" interface="popover">
+                <ion-option value="personal">{{ 'addon.notes.personalnotes' | translate }}</ion-option>
+                <ion-option value="course">{{ 'addon.notes.coursenotes' | translate }}</ion-option>
+                <ion-option value="site">{{ 'addon.notes.sitenotes' | translate }}</ion-option>
+            </ion-select>
+        </ion-item>
+        <ion-item>
+            <ion-textarea placeholder="{{ 'addon.notes.note' | translate }}" rows="5" [(ngModel)]="text" name="text" required="required"></ion-textarea>
+        </ion-item>
+        <button ion-button block margin-vertical type="submit" [disabled]="processing || text.length < 2">
+            {{ 'addon.notes.addnewnote' | translate }}
+        </button>
+    </form>
+</ion-content>

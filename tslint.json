@@ -1,0 +1,98 @@
+{
+  "rules": {
+    "adjacent-overload-signatures": true,
+    "member-access": [true, "no-public"],
+    "member-ordering": [
+      true,
+      {
+        "order": [
+          "public-static-field",
+          "public-instance-field",
+          "public-constructor",
+          "private-static-field",
+          "private-instance-field",
+          "private-constructor"
+        ]
+      }
+    ],
+    "no-empty-interface": true,
+    "no-inferrable-types": [true, "ignore-params"],
+    "no-duplicate-variable": [true, "check-parameters"],
+    "no-non-null-assertion": true,
+    "only-arrow-functions": [true, "allow-declarations", "allow-named-functions"],
+    "typedef": [true, "call-signature", "arrow-call-signature", "parameter", "property-declaration",
+      "object-destructuring", "array-destructuring"],
+    "typedef-whitespace": [
+      true,
+      {
+        "call-signature": "nospace",
+        "index-signature": "nospace",
+        "parameter": "nospace",
+        "property-declaration": "nospace",
+        "variable-declaration": "nospace"
+      },
+      {
+        "call-signature": "onespace",
+        "index-signature": "onespace",
+        "parameter": "onespace",
+        "property-declaration": "onespace",
+        "variable-declaration": "onespace"
+      }
+    ],
+    "unified-signatures": true,
+    "ban-comma-operator": true,
+    "curly": true,
+    "label-position": true,
+    "no-bitwise": true,
+    "no-conditional-assignment": true,
+    "no-console": [true],
+    "no-construct": true,
+    "no-debugger": true,
+    "no-duplicate-super": true,
+    "no-duplicate-switch-case": true,
+    "no-duplicate-variable": [true, "check-parameters"],
+    "no-empty": true,
+    "no-eval": true,
+    "no-invalid-this": true,
+    "no-this-assignment": true,
+    "no-unused-variable": true,
+    "no-var-keyword": true,
+    "switch-default": true,
+    "use-isnan": true,
+    "eofline": true,
+    "indent": [true, "spaces", 4],
+    "linebreak-style": [true, "LF"],
+    "max-line-length": [true, 132],
+    "no-duplicate-imports": true,
+    "prefer-const": true,
+    "arrow-parens": true,
+    "binary-expression-operand-order": true,
+    "class-name": true,
+    "comment-format": [true, "check-space", "check-uppercase", {"ignore-words": ["you", "distributed", "limitations", "http", "@todo"]}],
+    "encoding": true,
+    "file-header": [true, "Copyright \\d{4}"],
+    "jsdoc-format": [true, "check-multiline-start"],
+    "newline-before-return": true,
+    "new-parens": true,
+    "no-consecutive-blank-lines": true,
+    "no-irregular-whitespace": true,
+    "no-trailing-whitespace": true,
+    "no-unnecessary-callback-wrapper": true,
+    "object-literal-key-quotes": [true, "consistent-as-needed"],
+    "quotemark": [true, "single"],
+    "semicolon": [true, "always"],
+    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
+    "whitespace": [true, "check-branch", "check-decl", "check-operator", "check-module", "check-separator", "check-type",
+      "check-typecast", "check-type-operator", "check-preblock"],
+    "ban-types": [
+      true,
+      ["Boolean", "Use 'boolean' instead."],
+      ["Number", "Use 'number' instead."],
+      ["String", "Use 'string' instead."],
+      ["Object", "Use {} instead."]
+    ]
+  },
+  "rulesDirectory": [
+    "node_modules/tslint-eslint-rules/dist/rules"
+  ]
+}

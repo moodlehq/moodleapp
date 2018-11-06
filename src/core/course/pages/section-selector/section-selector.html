@@ -1,0 +1,20 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'core.course.sections' | translate }}</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ng-container *ngFor="let section of sections">
+        <a ion-item *ngIf="section.hasContent" text-wrap (click)="selectSection(section)" [class.core-primary-item]="selected.id == section.id" [class.item-dimmed]="section.visible === 0 || section.uservisible === false" detail-none>
+            <core-icon name="fa-folder" item-start></core-icon>
+            <h2><core-format-text [text]="section.formattedName || section.name"></core-format-text></h2>
+            <ion-badge color="secondary" *ngIf="section.visible === 0 && section.uservisible !== false">{{ 'core.course.hiddenfromstudents' | translate }}</ion-badge>
+            <ion-badge color="secondary" *ngIf="section.availabilityinfo"><core-format-text  [text]=" section.availabilityinfo"></core-format-text></ion-badge>
+        </a>
+    </ng-container>
+</ion-content>

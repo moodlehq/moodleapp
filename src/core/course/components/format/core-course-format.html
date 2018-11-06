@@ -1,0 +1,102 @@
+<!-- Buttons to add to the header. *ngIf is needed, otherwise the component is executed too soon and doesn't find the header. -->
+<core-navbar-buttons end *ngIf="loaded">
+    <core-context-menu>
+        <core-context-menu-item [hidden]="!displaySectionSelector || !sections || !sections.length" [priority]="500" [content]="'core.course.sections' | translate" (action)="showSectionSelector($event)" iconAction="menu"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<!-- Default course format. -->
+<core-dynamic-component [component]="courseFormatComponent" [data]="data">
+    <!-- Course summary. By default we only display the course progress. -->
+    <core-dynamic-component [component]="courseSummaryComponent" [data]="data">
+        <ion-list no-lines *ngIf="course.imageThumb || (course.progress != null && course.progress >= 0)" class="core-format-progress-list">
+            <div *ngIf="course.imageThumb" class="core-course-thumb">
+                <img [src]="course.imageThumb" core-external-content alt=""/>
+            </div>
+            <ion-item *ngIf="course.progress != null && course.progress >= 0" class="core-course-progress">
+                <core-progress-bar [progress]="course.progress"></core-progress-bar>
+            </ion-item>
+        </ion-list>
+    </core-dynamic-component>
+
+    <core-loading [hideUntil]="loaded">
+        <!-- Section selector. -->
+        <core-dynamic-component [component]="sectionSelectorComponent" [data]="data">
+            <div text-wrap *ngIf="displaySectionSelector && sections && sections.length" padding class="clearfix" ion-row justify-content-between>
+                <button float-start ion-button icon-start (click)="showSectionSelector($event)" color="light" class="core-button-select button-no-uppercase" ion-col>
+                    <core-icon name="fa-folder"></core-icon>
+                    {{selectedSection && (selectedSection.formattedName || selectedSection.name) || 'core.course.sections' | translate }}
+                    <ion-icon name="arrow-dropdown" ios="md-arrow-dropdown"></ion-icon>
+                </button>
+                <!-- Section download. -->
+                <ng-container *ngTemplateOutlet="sectionDownloadTemplate; context: {section: selectedSection}"></ng-container>
+            </div>
+        </core-dynamic-component>
+
+        <!-- Single section. -->
+        <div *ngIf="selectedSection && selectedSection.id != allSectionsId">
+            <core-dynamic-component [component]="singleSectionComponent" [data]="data">
+                <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: selectedSection}"></ng-container>
+                <core-empty-box *ngIf="!selectedSection.hasContent" icon="qr-scanner" [message]="'core.course.nocontentavailable' | translate"></core-empty-box>
+            </core-dynamic-component>
+        </div>
+
+        <!-- Multiple sections. -->
+        <div *ngIf="selectedSection && selectedSection.id == allSectionsId">
+            <core-dynamic-component [component]="allSectionsComponent" [data]="data">
+                <ng-container *ngFor="let section of sections">
+                    <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: section}"></ng-container>
+                </ng-container>
+            </core-dynamic-component>
+        </div>
+    </core-loading>
+    <ion-buttons padding end class="core-course-section-nav-buttons" *ngIf="displaySectionSelector && sections && sections.length">
+        <button *ngIf="previousSection" ion-button color="light" icon-only (click)="sectionChanged(previousSection)" title="{{ 'core.previous' | translate }}">
+            <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
+            <core-format-text class="accesshide" [text]="previousSection.formattedName || previousSection.name"></core-format-text>
+        </button>
+        <button *ngIf="nextSection" ion-button icon-only (click)="sectionChanged(nextSection)" title="{{ 'core.next' | translate }}">
+            <core-format-text class="accesshide" [text]="nextSection.formattedName || nextSection.name"></core-format-text>
+            <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
+        </button>
+    </ion-buttons>
+
+</core-dynamic-component>
+
+<!-- Template to render a section. -->
+<ng-template #sectionTemplate let-section="section">
+    <section ion-list *ngIf="section.hasContent && section.id != allSectionsId">
+        <!-- Title is only displayed when viewing all sections. -->
+        <ion-item-divider text-wrap color="light" *ngIf="selectedSection.id == allSectionsId && section.name">
+            <core-format-text [text]="section.name"></core-format-text>
+            <!-- Section download. -->
+            <ng-container *ngTemplateOutlet="sectionDownloadTemplate; context: {section: section}"></ng-container>
+        </ion-item-divider>
+
+        <ion-item text-wrap *ngIf="section.summary">
+            <core-format-text [text]="section.summary"></core-format-text>
+        </ion-item>
+
+        <ng-container *ngFor="let module of section.modules">
+            <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [courseId]="course.id" [downloadEnabled]="downloadEnabled" (completionChanged)="completionChanged.emit()"></core-course-module>
+        </ng-container>
+    </section>
+</ng-template>
+
+<!-- Template to render a section download button/progress. -->
+<ng-template #sectionDownloadTemplate let-section="section">
+    <div *ngIf="section && downloadEnabled" class="core-button-spinner" float-end>
+        <!-- Download button. -->
+        <button *ngIf="section.showDownload && !section.isDownloading && !section.isCalculating" (click)="prefetch($event, section)" ion-button icon-only clear color="dark" [attr.aria-label]="'core.download' | translate">
+            <ion-icon name="cloud-download"></ion-icon>
+        </button>
+        <!-- Refresh button. -->
+        <button *ngIf="section.showRefresh && !section.isDownloading && !section.isCalculating" (click)="prefetch($event, section)" ion-button icon-only clear color="dark" [attr.aria-label]="'core.refresh' | translate">
+            <ion-icon name="refresh"></ion-icon>
+        </button>
+        <!-- Download progress. -->
+        <ion-badge class="core-course-download-section-progress" *ngIf="section.isDownloading && section.total > 0 && section.count < section.total">{{section.count}} / {{section.total}}</ion-badge>
+        <!-- Spinner (downloading or calculating status). -->
+        <ion-spinner *ngIf="(section.isDownloading && section.total > 0) || section.isCalculating"></ion-spinner>
+    </div>
+</ng-template>

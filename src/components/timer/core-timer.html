@@ -1,0 +1,6 @@
+<ion-item #container class="core-timer" [attr.text-center]="align == 'center' ? true : null" [attr.text-end]="align == 'right' ? true : null">
+    <ion-icon name="timer" item-start></ion-icon>
+    <label *ngIf="timeLeft > 0 && timerText">{{ timerText }}</label>
+    <span *ngIf="timeLeft > 0">{{ timeLeft | coreSecondsToHMS }}</span>
+    <span class="core-timesup" *ngIf="timeLeft <= 0">{{ 'core.timesup' | translate }}</span>
+</ion-item>

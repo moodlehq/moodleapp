@@ -1,0 +1,87 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons end>
+    <core-context-menu>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl" [iconAction]="'open'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="assign && (description || (assign.introattachments && assign.introattachments.length))" [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()" [iconAction]="'arrow-forward'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && hasOffline && isOnline"  [priority]="600" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch()" [iconAction]="prefetchStatusIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="400" [content]="size" [iconDescription]="'cube'" (action)="removeFiles()" [iconAction]="'trash'"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<!-- Content. -->
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+
+    <!-- Description and intro attachments. -->
+    <ion-card *ngIf="description" (click)="expandDescription($event)">
+        <ion-item text-wrap>
+            <core-format-text [text]="description" [component]="component" [componentId]="componentId" maxHeight="120" (click)="expandDescription($event)"></core-format-text>
+        </ion-item>
+    </ion-card>
+
+    <ion-card *ngIf="assign && assign.introattachments && assign.introattachments.length">
+        <core-file *ngFor="let file of assign.introattachments" [file]="file" [component]="component" [componentId]="componentId"></core-file>
+    </ion-card>
+
+    <!-- Assign has something offline. -->
+    <div *ngIf="hasOffline" class="core-warning-card" icon-start>
+        <ion-icon name="warning"></ion-icon>
+        {{ 'core.hasdatatosync' | translate:{$a: moduleName} }}
+    </div>
+
+    <!-- User can view all submissions (teacher). -->
+    <ion-card *ngIf="assign && canViewSubmissions" class="core-list-align-detail-right">
+        <ion-item text-wrap *ngIf="timeRemaining">
+            <h2>{{ 'addon.mod_assign.timeremaining' | translate }}</h2>
+            <p>{{ timeRemaining }}</p>
+        </ion-item>
+        <ion-item text-wrap *ngIf="lateSubmissions">
+            <h2>{{ 'addon.mod_assign.latesubmissions' | translate }}</h2>
+            <p>{{ lateSubmissions }}</p>
+        </ion-item>
+
+        <!-- Summary of all submissions. -->
+        <a ion-item text-wrap *ngIf="summary && summary.participantcount" (click)="goToSubmissionList()">
+            <h2 *ngIf="assign.teamsubmission">{{ 'addon.mod_assign.numberofteams' | translate }}</h2>
+            <h2 *ngIf="!assign.teamsubmission">{{ 'addon.mod_assign.numberofparticipants' | translate }}</h2>
+            <ion-badge item-end *ngIf="showNumbers" color="primary">
+                {{ summary.participantcount }}
+            </ion-badge>
+        </a>
+
+        <!-- Summary of submissions with draft status. -->
+        <a ion-item text-wrap *ngIf="assign.submissiondrafts && summary && summary.submissionsenabled" [attr.detail-none]="(showNumbers && !summary.submissiondraftscount) ? true : null" (click)="goToSubmissionList(submissionStatusDraft, summary.submissiondraftscount)">
+            <h2>{{ 'addon.mod_assign.numberofdraftsubmissions' | translate }}</h2>
+            <ion-badge item-end *ngIf="showNumbers" color="primary">
+                {{ summary.submissiondraftscount }}
+            </ion-badge>
+        </a>
+
+        <!-- Summary of submissions with submitted status. -->
+        <a ion-item text-wrap *ngIf="summary && summary.submissionsenabled" [attr.detail-none]="(showNumbers && !summary.submissionssubmittedcount) ? true : null" (click)="goToSubmissionList(submissionStatusSubmitted, summary.submissionssubmittedcount)">
+            <h2>{{ 'addon.mod_assign.numberofsubmittedassignments' | translate }}</h2>
+            <ion-badge item-end *ngIf="showNumbers" color="primary">
+                {{ summary.submissionssubmittedcount }}
+            </ion-badge>
+        </a>
+
+        <!-- Summary of submissions that need grading. -->
+        <a ion-item text-wrap *ngIf="summary && summary.submissionsenabled && !assign.teamsubmission && showNumbers" [attr.detail-none]="needsGradingAvalaible ? null : true" (click)="goToSubmissionList(needGrading, needsGradingAvalaible)">
+            <h2>{{ 'addon.mod_assign.numberofsubmissionsneedgrading' | translate }}</h2>
+            <ion-badge item-end color="primary">
+                {{ summary.submissionsneedgradingcount }}
+            </ion-badge>
+        </a>
+
+        <!-- Ungrouped users. -->
+        <div *ngIf="assign.teamsubmission && summary && summary.warnofungroupedusers" class="core-info-card" icon-start>
+            <ion-icon name="information-circle"></ion-icon>
+            {{ 'addon.mod_assign.ungroupedusers' | translate }}
+        </div>
+    </ion-card>
+
+    <!-- If it's a student, display his submission. -->
+    <addon-mod-assign-submission *ngIf="loaded && !canViewSubmissions" [courseId]="courseId" [moduleId]="module.id"></addon-mod-assign-submission>
+
+</core-loading>

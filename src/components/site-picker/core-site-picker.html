@@ -1,0 +1,6 @@
+<ion-item>
+    <ion-label>{{ 'core.site' | translate }}</ion-label>
+    <ion-select [(ngModel)]="selectedSite" (ngModelChange)="siteSelected.emit(selectedSite)" interface="popover">
+        <ion-option *ngFor="let site of sites" [value]="site.id">{{ site.fullNameAndSiteName }}</ion-option>
+    </ion-select>
+</ion-item>

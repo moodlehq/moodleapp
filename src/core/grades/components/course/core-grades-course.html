@@ -1,0 +1,38 @@
+<ion-content>
+    <ion-refresher [enabled]="gradesLoaded" (ionRefresh)="refreshGrades($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="gradesLoaded">
+        <core-empty-box *ngIf="!gradesTable" icon="stats" [message]="'core.grades.nogradesreturned' | translate">
+        </core-empty-box>
+
+        <div *ngIf="gradesTable" class="core-grades-container">
+            <table cellspacing="0" cellpadding="0" class="core-grades-table">
+                <thead>
+                    <tr>
+                        <th *ngFor="let column of gradesTable.columns" id="{{column.name}}" [class.hidden-phone]="column.hiddenPhone" [attr.colspan]="column.colspan" text-start>
+                            {{ 'core.grades.' + column.name | translate }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let row of gradesTable.rows" (click)="row.itemtype != 'category' && gotoGrade(row.id)" [class]="row.rowclass">
+                        <ng-container *ngIf="row.itemtype">
+                            <td *ngIf="row.itemtype == 'category'" class="core-grades-table-category" [attr.rowspan]="row.rowspan">
+                            </td>
+                            <th class="core-grades-table-gradeitem" [class.column-itemname]="row.itemtype == 'category'" [attr.colspan]="row.colspan" [class.core-split-item-selected]="gradeId == row.id" text-start>
+                                <core-icon *ngIf="row.icon" name="{{row.icon}}" item-start></core-icon>
+                                <img *ngIf="row.image" [src]="row.image" item-start/>
+                                <span [innerHTML]="row.gradeitem"></span>
+                            </th>
+                            <ng-container *ngFor="let column of gradesTable.columns">
+                                <td *ngIf="column.name != 'gradeitem' && row[column.name] != undefined" [class]="'core-grades-table-' + column.name" [innerHTML]="row[column.name]" [class.hidden-phone]="column.hiddenPhone" text-start>
+                                </td>
+                            </ng-container>
+                        </ng-container>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </core-loading>
+</ion-content>

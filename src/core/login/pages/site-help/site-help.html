@@ -1,0 +1,14 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'core.login.help' | translate }}</ion-title>
+
+        <ion-buttons end>
+            <button ion-button icon-only (click)="closeHelp()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content padding>
+    <core-format-text [text]="'core.login.helpmelogin' | translate"></core-format-text>
+</ion-content>

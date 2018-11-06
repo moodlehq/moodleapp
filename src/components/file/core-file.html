@@ -1,0 +1,13 @@
+<a ion-item text-wrap class="item-media" (click)="download($event, true)" detail-none>
+    <img [src]="fileIcon" alt="" role="presentation" item-start />
+    <p>{{fileName}}</p>
+    <div class="buttons" item-end>
+        <button ion-button clear icon-only (click)="download($event)" *ngIf="!isDownloading && showDownload" [attr.aria-label]="'core.download' | translate" color="dark">
+            <ion-icon [name]="isDownloaded ? 'refresh' : 'cloud-download'"></ion-icon>
+        </button>
+        <button ion-button clear icon-only (click)="delete($event)" *ngIf="!isDownloading && canDelete" [attr.aria-label]="'core.delete' | translate" color="danger">
+            <ion-icon name="trash"></ion-icon>
+        </button>
+    </div>
+    <ion-spinner *ngIf="isDownloading" item-end></ion-spinner>
+</a>

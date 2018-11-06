@@ -1,0 +1,17 @@
+<ng-container *ngFor="let field of assessment.form.fields; let n = index">
+    <ion-card *ngIf="n < assessment.form.dimenssionscount">
+        <ion-item text-wrap>
+            <h2>{{ field.dimtitle }}</h2>
+            <core-format-text [text]="field.description"></core-format-text>
+        </ion-item>
+        <ion-item *ngIf="edit">
+            <ion-label stacked [core-mark-required]="true">{{ 'addon.mod_workshop_assessment_comments.dimensioncommentfor' | translate : {'$a': field.dimtitle } }}</ion-label>
+            <ion-textarea aria-multiline="true" [(ngModel)]="selectedValues[n].peercomment" core-auto-rows></ion-textarea>
+            <core-input-errors item-content *ngIf="fieldErrors['peercomment_' + n]" [errorText]="fieldErrors['peercomment_' + n]"></core-input-errors>
+        </ion-item>
+        <ion-item *ngIf="!edit" text-wrap>
+            <h2>{{ 'addon.mod_workshop_assessment_comments.dimensioncommentfor' | translate : {'$a': field.dimtitle } }}</h2>
+            <p><core-format-text [text]="selectedValues[n].peercomment"></core-format-text></p>
+        </ion-item>
+    </ion-card>
+</ng-container>

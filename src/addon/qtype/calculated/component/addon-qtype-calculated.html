@@ -1,0 +1,65 @@
+<section ion-list class="addon-qtype-calculated-container" *ngIf="question.text || question.text === ''">
+    <ion-item text-wrap>
+        <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text></p>
+    </ion-item>
+
+    <!-- Display unit options before the answer input. -->
+    <ng-container *ngIf="question.options && question.options.length && question.optionsFirst">
+        <ng-container *ngTemplateOutlet="radioUnits"></ng-container>
+    </ng-container>
+
+    <ion-item text-wrap ion-grid>
+        <ion-grid item-content>
+            <ion-row>
+                <!-- Display unit select before the answer input. -->
+                <ng-container *ngIf="question.select && question.selectFirst">
+                    <ng-container *ngTemplateOutlet="selectUnits"></ng-container>
+                </ng-container>
+
+                <!-- Input to enter the answer. -->
+                <ion-col>
+                    <ion-input padding-left type="text" placeholder="{{ 'core.question.answer' | translate }}" [attr.name]="question.input.name" [value]="question.input.value" [disabled]="question.input.readOnly" [ngClass]="[question.input.correctClass]" autocorrect="off">
+                    </ion-input>
+                </ion-col>
+
+                <!-- Display unit select after the answer input. -->
+                <ng-container *ngIf="question.select && !question.selectFirst">
+                    <ng-container *ngTemplateOutlet="selectUnits"></ng-container>
+                </ng-container>
+            </ion-row>
+        </ion-grid>
+    </ion-item>
+
+    <!-- Display unit options after the answer input. -->
+    <ng-container *ngIf="question.options && question.options.length && !question.optionsFirst">
+        <ng-container *ngTemplateOutlet="radioUnits"></ng-container>
+    </ng-container>
+</section>
+
+<!-- Template for units entered using a select. -->
+<ng-template #selectUnits>
+    <ion-col>
+        <label *ngIf="question.select.accessibilityLabel" class="accesshide" for="{{question.select.id}}">{{ question.select.accessibilityLabel }}</label>
+        <ion-select id="{{question.select.id}}" [name]="question.select.name" [(ngModel)]="question.select.selected" interface="popover" [disabled]="question.select.disabled">
+            <ion-option *ngFor="let option of question.select.options" [value]="option.value">{{option.label}}</ion-option>
+        </ion-select>
+
+        <!-- ion-select doesn't use a select. Create a hidden input to hold the selected value. -->
+        <input type="hidden" [ngModel]="question.select.selected" [attr.name]="question.select.name">
+    </ion-col>
+</ng-template>
+
+<!-- Template for units entered using radio buttons. -->
+<ng-template #radioUnits>
+    <div radio-group [(ngModel)]="question.unit" [name]="question.optionsName">
+        <ion-item text-wrap *ngFor="let option of question.options">
+            <ion-label>
+                <p>{{option.text}}</p>
+            </ion-label>
+            <ion-radio [value]="option.value" [disabled]="option.disabled || question.input.readOnly"></ion-radio>
+        </ion-item>
+
+        <!-- ion-radio doesn't use an input. Create a hidden input to hold the selected value. -->
+        <input type="hidden" [ngModel]="question.unit" [attr.name]="question.optionsName">
+    </div>
+</ng-template>

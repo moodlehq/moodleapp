@@ -1,0 +1,10 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'core.grades.grades' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<core-split-view>
+    <core-grades-course class="core-avoid-header" [courseId]="courseId" [userId]="userId" [gradeId]="gradeId"></core-grades-course>
+</core-split-view>
+
+

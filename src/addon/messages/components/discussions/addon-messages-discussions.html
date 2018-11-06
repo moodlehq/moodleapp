@@ -1,0 +1,44 @@
+<ion-content>
+    <ion-refresher [enabled]="loaded" (ionRefresh)="refreshData($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <core-search-box *ngIf="search.enabled" (onSubmit)="searchMessage($event)" (onClear)="clearSearch($event)" [placeholder]=" 'addon.messages.message' | translate" autocorrect="off" spellcheck="false" lengthCheck="2" [disabled]="!loaded"></core-search-box>
+
+    <core-loading [hideUntil]="loaded" [message]="loadingMessage">
+
+        <core-empty-box *ngIf="(!discussions || discussions.length <= 0) && !search.showResults" icon="chatbubbles" [message]="'addon.messages.nomessages' | translate"></core-empty-box>
+
+        <core-empty-box *ngIf="(!search.results || search.results.length <= 0) && search.showResults" icon="search" [message]="'core.noresults' | translate"></core-empty-box>
+
+        <ion-list *ngIf="search.showResults" no-margin>
+            <ion-item-divider color="light">
+                <h2>{{ 'core.searchresults' | translate }}</h2>
+                <ion-note item-end>{{ search.results.length }}</ion-note>
+            </ion-item-divider>
+            <a ion-item text-wrap *ngFor="let result of search.results" [title]="result.fullname" (click)="gotoDiscussion(result.userid, result.messageid)" [class.core-split-item-selected]="result.userid == discussionUserId" detail-none>
+                <ion-avatar item-start>
+                    <img src="{{result.profileimageurl}}" [alt]="'core.pictureof' | translate:{$a: result.fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'">
+                </ion-avatar>
+                <h2><core-format-text [text]="result.fullname"></core-format-text></h2>
+                <p><core-format-text clean="true" singleLine="true" [text]="result.lastmessage"></core-format-text></p>
+            </a>
+        </ion-list>
+
+        <ion-list *ngIf="!search.showResults" no-margin>
+            <a ion-item text-wrap *ngFor="let discussion of discussions" [title]="discussion.fullname" (click)="gotoDiscussion(discussion.message.user)" [class.core-split-item-selected]="discussion.message.user == discussionUserId" detail-none>
+                <ion-avatar item-start>
+                    <img src="{{discussion.profileimageurl}}" [alt]="'core.pictureof' | translate:{$a: discussion.fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'">
+                </ion-avatar>
+                <h2>
+                    <core-format-text [text]="discussion.fullname"></core-format-text>
+                    <ion-note *ngIf="discussion.message.timecreated > 0 || discussion.unread">
+                        <span *ngIf="discussion.unread" class="core-primary-circle"></span>
+                        <span *ngIf="discussion.message.timecreated > 0">{{discussion.message.timecreated / 1000 | coreDateDayOrTime}}</span>
+                    </ion-note>
+                </h2>
+                <p><core-format-text clean="true" singleLine="true" [text]="discussion.message.message"></core-format-text></p>
+            </a>
+        </ion-list>
+    </core-loading>
+</ion-content>

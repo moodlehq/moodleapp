@@ -1,0 +1,34 @@
+<a *ngIf="action == 'more'" ion-button icon-only clear [href]="url" core-link capture="true" [title]="'addon.mod_data.more' | translate">
+    <ion-icon name="search"></ion-icon>
+</a>
+
+<a *ngIf="action == 'edit'" ion-button icon-only clear [href]="url" core-link capture="true" [title]="'core.edit' | translate">
+    <ion-icon name="cog"></ion-icon>
+</a>
+
+<a *ngIf="action == 'delete' && !entry.deleted" ion-button icon-only clear [href]="url" core-link capture="true" [title]="'core.delete' | translate">
+    <ion-icon name="trash"></ion-icon>
+</a>
+
+<a *ngIf="action == 'delete' && entry.deleted" ion-button icon-only clear (click)="undoDelete()" [title]="'core.restore' | translate">
+    <ion-icon name="undo"></ion-icon>
+</a>
+
+<a *ngIf="action == 'approve'" ion-button icon-only clear [href]="url" core-link capture="true" [title]="'addon.mod_data.approve' | translate">
+    <ion-icon name="thumbs-up"></ion-icon>
+</a>
+
+<a *ngIf="action == 'disapprove'" ion-button icon-only clear [href]="url" core-link capture="true" [title]="'addon.mod_data.disapprove' | translate">
+    <ion-icon name="thumbs-down"></ion-icon>
+</a>
+
+<core-comments *ngIf="action == 'comments' && mode == 'list'" contextLevel="module" [instanceId]="database.coursemodule" component="mod_data" [itemId]="entry.id" area="database_entry"></core-comments>
+
+<span *ngIf="action == 'timeadded'">{{ entry.timecreated * 1000 |  coreFormatDate:"dffulldate" }}</span>
+<span *ngIf="action == 'timemodified'">{{ entry.timemodified * 1000 |  coreFormatDate:"dffulldate" }}</span>
+
+<a *ngIf="action == 'userpicture'" core-user-link [courseId]="database.courseid" [userId]="entry.userid" [title]="entry.fullname">
+    <img class="avatar-round" [src]="userPicture" [alt]="'core.pictureof' | translate:{$a: entry.fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'" role="presentation">
+</a>
+
+<a *ngIf="action == 'user' && entry" core-user-link [courseId]="database.courseid" [userId]="entry.userid" [title]="entry.fullname">{{entry.fullname}}</a>

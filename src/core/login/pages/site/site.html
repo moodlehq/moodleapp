@@ -1,0 +1,46 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'core.login.connecttomoodle' | translate }}</ion-title>
+
+        <ion-buttons end>
+            <button ion-button icon-only (click)="showHelp()" [attr.aria-label]="'core.help' | translate">
+                <ion-icon name="help-circle"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content class="core-center-view">
+    <div class="box">
+        <div text-center padding>
+            <img src="assets/img/login_logo.png" class="avatar-full login-logo" role="presentation">
+        </div>
+        <form ion-list [formGroup]="siteForm" (ngSubmit)="connect(siteForm.value.siteUrl)">
+            <!-- Form to input the site URL if there are no fixed sites. -->
+            <div *ngIf="!fixedSites">
+                <p padding>{{ 'core.login.newsitedescription' | translate }}</p>
+                <ion-item>
+                    <ion-input type="url" name="url" placeholder="{{ 'core.login.siteaddress' | translate }}" formControlName="siteUrl" [core-auto-focus]="showKeyboard"></ion-input>
+                </ion-item>
+            </div>
+
+            <!-- Pick the site from a list of fixed sites. -->
+            <div *ngIf="fixedSites" text-wrap>
+                <!-- Display them using a select. -->
+                <ion-item *ngIf="!displayAsButtons" margin-vertical>
+                    <ion-label stacked for="siteSelect">{{ 'core.login.selectsite' | translate }}</ion-label>
+                    <ion-select formControlName="siteUrl" name="url" placeholder="{{ 'core.login.siteaddress' | translate }}" interface="popover">
+                        <ion-option *ngFor="let site of fixedSites" [value]="site.url">{{site.name}}</ion-option>
+                    </ion-select>
+                </ion-item>
+
+                <!-- Display them using buttons. -->
+                <div *ngIf="displayAsButtons">
+                    <p class="padding no-padding-bottom">{{ 'core.login.selectsite' | translate }}</p>
+                    <a *ngFor="let site of fixedSites" ion-button block (click)="connect(site.url)" title="{{site.name}}" margin-bottom>{{site.name}}</a>
+                </div>
+            </div>
+
+            <button *ngIf="!fixedSites || !displayAsButtons" ion-button block [disabled]="!siteForm.valid">{{ 'core.login.connect' | translate }}</button>
+        </form>
+    </div>
+</ion-content>

@@ -1,0 +1,109 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title><core-format-text [text]="siteName"></core-format-text></ion-title>
+
+        <ion-buttons end>
+            <button *ngIf="tabShown == 'courses' && courses[courses.selected] && courses[courses.selected].length > 5" ion-button icon-only [attr.aria-label]="'core.courses.filtermycourses' | translate" (click)="switchFilter()">
+                <ion-icon name="funnel"></ion-icon>
+            </button>
+            <button *ngIf="searchEnabled" ion-button icon-only (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
+                <ion-icon name="search"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <core-tabs [selectedIndex]="firstSelectedTab" [hideUntil]="tabsReady">
+        <!-- Site home tab. -->
+        <core-tab [show]="siteHomeEnabled" [title]="'core.sitehome.sitehome' | translate" (ionSelect)="tabChanged('sitehome')">
+            <ng-template>
+                <ion-content>
+                    <ion-refresher [enabled]="siteHomeComponent && siteHomeComponent.dataLoaded" (ionRefresh)="siteHomeComponent.doRefresh($event)">
+                        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+                    </ion-refresher>
+                    <core-sitehome-index></core-sitehome-index>
+                </ion-content>
+            </ng-template>
+        </core-tab>
+
+        <!-- Courses tab. -->
+        <core-tab [title]="'core.courses.courses' | translate" (ionSelect)="tabChanged('courses')">
+            <ng-template>
+                <ion-content>
+                    <ion-refresher [enabled]="timeline.loaded || timelineCourses.loaded || courses.loaded" (ionRefresh)="refreshMyOverview($event)">
+                        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+                    </ion-refresher>
+
+                    <core-loading [hideUntil]="courses.loaded" class="core-loading-center">
+                        <!-- "Time" selector. -->
+                        <div padding class="clearfix" [hidden]="showFilter" ion-row justify-content-between>
+                            <ion-select float-start [title]="'core.show' | translate" [(ngModel)]="courses.selected" ion-col (ngModelChange)="selectedChanged()" interface="popover" class="core-button-select">
+                                <ion-option value="inprogress">{{ 'core.courses.inprogress' | translate }}</ion-option>
+                                <ion-option value="future">{{ 'core.courses.future' | translate }}</ion-option>
+                                <ion-option value="past">{{ 'core.courses.past' | translate }}</ion-option>
+                            </ion-select>
+                            <!-- Download all courses. -->
+                            <div *ngIf="downloadAllCoursesEnabled && courses[courses.selected] && courses[courses.selected].length > 1" class="core-button-spinner">
+                                <button *ngIf="prefetchCoursesData[courses.selected].icon && prefetchCoursesData[courses.selected].icon != 'spinner'" ion-button icon-only clear color="dark" (click)="prefetchCourses()">
+                                    <core-icon [name]="prefetchCoursesData[courses.selected].icon"></core-icon>
+                                </button>
+                                <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData[courses.selected].badge">{{prefetchCoursesData[courses.selected].badge}}</ion-badge>
+                                <ion-spinner *ngIf="!prefetchCoursesData[courses.selected].icon || prefetchCoursesData[courses.selected].icon == 'spinner'"></ion-spinner>
+                            </div>
+                        </div>
+                        <core-empty-box *ngIf="courses[courses.selected].length == 0 && courses.selected == 'inprogress'" image="assets/img/icons/courses.svg" [message]="'core.courses.nocoursesinprogress' | translate"></core-empty-box>
+                        <core-empty-box *ngIf="courses[courses.selected].length == 0 && courses.selected == 'future'" image="assets/img/icons/courses.svg" [message]="'core.courses.nocoursesfuture' | translate"></core-empty-box>
+                        <core-empty-box *ngIf="courses[courses.selected].length == 0 && courses.selected == 'past'" image="assets/img/icons/courses.svg" [message]="'core.courses.nocoursespast' | translate"></core-empty-box>
+
+                        <!-- Filter courses. -->
+                        <ion-searchbar #searchbar *ngIf="showFilter" [(ngModel)]="courses.filter" (ionInput)="filterChanged($event)" (ionCancel)="filterChanged()" [placeholder]="'core.courses.filtermycourses' | translate">
+                        </ion-searchbar>
+                        <!-- List of courses. -->
+                        <div>
+                            <ion-grid no-padding>
+                                <ion-row no-padding>
+                                    <ion-col *ngFor="let course of filteredCourses" no-padding col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 align-self-stretch>
+                                        <core-courses-course-progress [course]="course" class="core-courseoverview"></core-courses-course-progress>
+                                    </ion-col>
+                                </ion-row>
+                            </ion-grid>
+                        </div>
+                    </core-loading>
+                </ion-content>
+            </ng-template>
+        </core-tab>
+
+        <!-- Timeline tab. -->
+        <core-tab [title]="'core.courses.timeline' | translate" (ionSelect)="tabChanged('timeline')">
+            <ng-template>
+                <ion-content>
+                    <ion-refresher [enabled]="timeline.loaded || timelineCourses.loaded || courses.loaded" (ionRefresh)="refreshMyOverview($event)">
+                        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+                    </ion-refresher>
+
+                    <div padding [hidden]="!(timeline.loaded || timelineCourses.loaded)">
+                        <ion-select [(ngModel)]="timeline.sort" (ngModelChange)="switchSort()" interface="popover" class="core-button-select">
+                            <ion-option value="sortbydates">{{ 'core.courses.sortbydates' | translate }}</ion-option>
+                            <ion-option value="sortbycourses">{{ 'core.courses.sortbycourses' | translate }}</ion-option>
+                        </ion-select>
+                    </div>
+                    <core-loading [hideUntil]="timeline.loaded" [hidden]="timeline.sort != 'sortbydates'" class="core-loading-center">
+                        <core-courses-overview-events [events]="timeline.events" showCourse="true" [canLoadMore]="timeline.canLoadMore" (loadMore)="loadMoreTimeline()"></core-courses-overview-events>
+                    </core-loading>
+                    <core-loading [hideUntil]="timelineCourses.loaded" [hidden]="timeline.sort != 'sortbycourses'" class="core-loading-center">
+                        <ion-grid no-padding>
+                            <ion-row no-padding>
+                                <ion-col *ngFor="let course of timelineCourses.courses" no-padding col-12 col-md-6>
+                                    <core-courses-course-progress [course]="course">
+                                        <core-courses-overview-events [events]="course.events" [canLoadMore]="course.canLoadMore" (loadMore)="loadMoreCourse(course)"></core-courses-overview-events>
+                                    </core-courses-course-progress>
+                                </ion-col>
+                            </ion-row>
+                        </ion-grid>
+                        <core-empty-box *ngIf="timelineCourses.courses.length == 0" image="assets/img/icons/courses.svg" [message]="'core.courses.nocoursesoverview' | translate"></core-empty-box>
+                    </core-loading>
+                </ion-content>
+            </ng-template>
+        </core-tab>
+    </core-tabs>
+</ion-content>

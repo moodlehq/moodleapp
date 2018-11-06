@@ -1,0 +1,15 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ title }}</ion-title>
+
+        <ion-buttons end>
+            <!-- If the site plugin defines some buttons using core-nav-buttons, they will be added here. -->
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="content && content.content && content.content.dataLoaded" (ionRefresh)="refreshData($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-site-plugins-module-index [module]="module" [courseId]="courseId"></core-site-plugins-module-index>
+</ion-content>

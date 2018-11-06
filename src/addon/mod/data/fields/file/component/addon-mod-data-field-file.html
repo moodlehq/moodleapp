@@ -1,0 +1,19 @@
+<span *ngIf="mode == 'edit'">
+    <span [core-mark-required]="field.required" class="core-mark-required"></span>
+    <core-attachments [files]="files" [maxSize]="maxSizeBytes" maxSubmissions="1" [component]="component" [componentId]="componentId" [allowOffline]="true"></core-attachments>
+    <core-input-errors *ngIf="error" [errorText]="error"></core-input-errors>
+</span>
+
+<span *ngIf="mode == 'search'" [formGroup]="form">
+    <ion-input type="text" [formControlName]="'f_'+field.id" [placeholder]="field.name"></ion-input>
+</span>
+
+<ng-container *ngIf="isShowOrListMode()">
+    <div *ngFor="let file of files" no-lines>
+        <!-- Files already attached to the submission. -->
+        <core-file *ngIf="!file.name" [file]="file" [component]="component" [componentId]="componentId" [alwaysDownload]="true"></core-file>
+
+        <!-- Files stored in offline to be sent later. -->
+        <core-local-file *ngIf="file.name" [file]="file"></core-local-file>
+    </div>
+</ng-container>

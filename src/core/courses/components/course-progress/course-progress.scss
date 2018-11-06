@@ -1,0 +1,56 @@
+ion-app.app-root core-courses-course-progress {
+    ion-card.card {
+        display: flex;
+        flex-direction: column;
+
+        .core-course-thumb {
+            height: 150px;
+            width: 100%;
+            overflow: hidden;
+            cursor: pointer;
+            pointer-events: auto;
+            position: relative;
+
+            @for $i from 0 to length($core-course-image-background) {
+                &.core-course-color-#{$i} {
+                    background: nth($core-course-image-background, $i + 1);
+                }
+            }
+
+            &.core-course-color-img {
+                background: white;
+            }
+
+            img {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                margin: auto;
+            }
+        }
+
+        .core-course-link {
+            padding-top: 8px;
+            padding-bottom: 8px;
+            .item-inner {
+                @include padding(null, 0, null, null);
+            }
+            .label {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            h2 {
+                margins: 6px 0;
+                flex-grow: 1;
+            }
+        }
+        .label {
+            @include margin(0, 0, 0, null);
+        }
+    }
+
+    button {
+        z-index: 1;
+    }
+}

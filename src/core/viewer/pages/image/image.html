@@ -1,0 +1,16 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ title }}</ion-title>
+
+        <ion-buttons end>
+            <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-scroll zoom="true" maxZoom="2" class="core-zoom-pane" scrollX="true" scrollY="true">
+        <img [src]="image" [alt]="title" core-external-content [component]="component" [componentId]="componentId">
+    </ion-scroll>
+</ion-content>

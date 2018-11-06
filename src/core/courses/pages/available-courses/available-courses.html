@@ -1,0 +1,16 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'core.courses.availablecourses' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="coursesLoaded" (ionRefresh)="refreshCourses($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="coursesLoaded">
+        <div *ngIf="courses.length > 0">
+            <core-courses-course-list-item *ngFor="let course of courses" [course]="course"></core-courses-course-list-item>
+        </div>
+        <core-empty-box *ngIf="!courses.length" icon="ionic" [message]="'core.courses.nocourses' | translate"></core-empty-box>
+    </core-loading>
+</ion-content>

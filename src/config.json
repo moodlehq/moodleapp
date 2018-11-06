@@ -1,0 +1,20 @@
+{
+    "app_id" : "com.ecpd.ecpdmobile",
+    "appname": "eCPD",
+    "desktopappname": "eCPD Mobile",
+    "versioncode" : 3521,
+    "versionname" : "3.5.3",
+    "cache_expiration_time" : 300000,
+    "default_lang" : "en",
+    "languages": {"en": "English", "et": "Amharic"},
+    "wsservice" : "moodle_mobile_app",
+    "wsextservice" : "local_mobile",
+    "demo_sites": {"teacher": {"url": "https://echpd.org/en/", "username": "admin", "password": "Alematgrg!2"}, "teacher": {"url": "https://school.demo.moodle.net", "username": "teacher", "password": "moodle"}},
+    "gcmpn": "694767596569",
+    "customurlscheme": "ecpdmobile",
+    "siteurl": "http://echpd.org/en/",
+    "multisitesdisplay": "",
+    "skipssoconfirmation": false,
+    "forcedefaultlanguage": false,
+    "privacypolicy": "http://echpd.org/en/mod/page/view.php?id=2"
+}

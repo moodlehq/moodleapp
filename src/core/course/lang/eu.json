@@ -1,0 +1,22 @@
+{
+    "activitydisabled": "Zure erakundeak jarduera hau mobile app-an desgaitu du.",
+    "activitynotyetviewableremoteaddon": "Zure erakundeak oraindik app-ean onartzen ez den gehigarri bat instalatuta dauka..",
+    "activitynotyetviewablesiteupgradeneeded": "Zure erakundeko Moodle instalazioak eguneraketa bat behar du.",
+    "allsections": "Atal guztiak",
+    "askadmintosupport": "Jarri harremanetan zure guneko kudeatzailearekin eta esaiozu jarduera hau Moodle Mobile app-an erabili nahi duzula.",
+    "confirmdeletemodulefiles": "Ziur zaude modulu honetako fitxategiak ezabatu nahi dituzula?",
+    "confirmdownload": "{{size}} jaistear zaude. Ziur al zaude aurrera egin nahi duzula?",
+    "confirmdownloadunknownsize": "Ezin izan dugu deskargaren tamaina kalkulatu. Ziur zaude jaitsi nahi duzula?",
+    "confirmpartialdownloadsize": "<strong>Gutxienez</strong> {{size}} jaistera zoaz. Ziur zaude jarraitu nahi duzula?",
+    "contents": "Edukiak",
+    "couldnotloadsectioncontent": "Ezin izan da ataleko edukia kargatu. Saiatu beranduago mesedez.",
+    "couldnotloadsections": "Ezin izan dira atalak kargatu. Saiatu beranduago mesedez.",
+    "downloadcourse": "Jaitsi ikastaroa",
+    "errordownloadingcourse": "Errorea ikastaroa jaistean.",
+    "errordownloadingsection": "Errorea atala jaistean.",
+    "errorgetmodule": "Errore bat gertatu da jardueraren datuak eskuratzean.",
+    "hiddenfromstudents": "Ezkutuan ikasleentzat",
+    "nocontentavailable": "Ez dago edukirik eskuragarri momentu honetan.",
+    "overriddennotice": "Jarduera honetako zure azken kalifikazioa eskuz egokitu da.",
+    "useactivityonbrowser": "Hala ere zure gailuko nabigatzailea erabilita erabil dezakezu."
+}

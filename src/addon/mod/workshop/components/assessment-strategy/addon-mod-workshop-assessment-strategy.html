@@ -1,0 +1,43 @@
+<h3 padding>{{ 'addon.mod_workshop.assessmentform' | translate }}</h3>
+
+<form name="mma-mod_workshop-assessment-form">
+    <core-loading [hideUntil]="assessmentStrategyLoaded">
+        <ng-container *ngIf="componentClass && assessmentStrategyLoaded">
+            <core-dynamic-component [component]="componentClass" [data]="data"></core-dynamic-component>
+        </ng-container>
+
+        <div class="core-info-card" *ngIf="notSupported">
+            {{ 'addon.mod_workshop.assessmentstrategynotsupported' | translate:{$a: strategy} }}
+        </div>
+
+        <ion-card *ngIf="assessmentStrategyLoaded && overallFeedkback && (edit || data.assessment.feedbackauthor || data.assessment.feedbackattachmentfiles.length) ">
+            <ion-item text-wrap>
+                <h2>{{ 'addon.mod_workshop.overallfeedback' | translate }}</h2>
+            </ion-item>
+            <ion-item stacked *ngIf="edit">
+                <ion-label stacked [core-mark-required]="overallFeedkbackRequired">{{ 'addon.mod_workshop.feedbackauthor' | translate }}</ion-label>
+                <core-rich-text-editor item-content [control]="feedbackControl" [component]="component" [componentId]="workshop.coursemodule" (contentChanged)="onFeedbackChange($event)"></core-rich-text-editor>
+                <core-input-errors item-content *ngIf="overallFeedkbackRequired && fieldErrors && fieldErrors['feedbackauthor']" [errorText]="fieldErrors['feedbackauthor']"></core-input-errors>
+            </ion-item>
+            <core-attachments *ngIf="edit && workshop.overallfeedbackfiles" [files]="data.assessment.feedbackattachmentfiles" [maxSize]="workshop.overallfeedbackmaxbytes"
+                [maxSubmissions]="workshop.overallfeedbackfiles" [component]="component" [componentId]="componentId" [allowOffline]="true"></core-attachments>
+            <ion-item *ngIf="edit && access && access.canallocate">
+                <ion-label stacked [core-mark-required]="true">{{ 'addon.mod_workshop.assessmentweight' | translate }}</ion-label>
+                <ion-select [(ngModel)]="weight" interface="popover">
+                    <ion-option *ngFor="let w of weights" [value]="w">{{w}}</ion-option>
+                </ion-select>
+            </ion-item>
+            <ion-item text-wrap *ngIf="!edit && data.assessment.feedbackauthor">
+                <core-format-text [component]="component" [componentId]="componentId" [text]="data.assessment.feedbackauthor"></core-format-text>
+            </ion-item>
+            <ion-item *ngIf="!edit && workshop.overallfeedbackfiles && data.assessment.feedbackattachmentfiles && data.assessment.feedbackattachmentfiles.length">
+                <ng-container *ngFor="let attachment of data.assessment.feedbackattachmentfiles">
+                    <!-- Files already attached to the submission. -->
+                    <core-file *ngIf="!attachment.name" [file]="attachment" [component]="component" [componentId]="componentId"></core-file>
+                    <!-- Files stored in offline to be sent later. -->
+                    <core-local-file *ngIf="attachment.name" [file]="attachment"></core-local-file>
+                </ng-container>
+            </ion-item>
+        </ion-card>
+    </core-loading>
+</form>

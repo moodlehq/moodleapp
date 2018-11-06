@@ -1,0 +1,70 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons end>
+    <button *ngIf="glossary" ion-button icon-only (click)="openModePicker($event)" [attr.aria-label]="'addon.mod_glossary.browsemode' | translate">
+        <ion-icon name="funnel"></ion-icon>
+    </button>
+    <core-context-menu>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl" [iconAction]="'open'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()" [iconAction]="'arrow-forward'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && hasOffline && isOnline"  [priority]="650" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="canAdd" [priority]="600" [content]="'addon.mod_glossary.addentry' | translate" (action)="openNewEntry()" iconAction="add"></core-context-menu-item>
+        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch()" [iconAction]="prefetchStatusIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="400" [content]="size" [iconDescription]="'cube'" (action)="removeFiles()" [iconAction]="'trash'"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<!-- Content. -->
+<core-split-view>
+    <ion-content [class.has-fab]="canAdd">
+        <ion-refresher [enabled]="loaded" (ionRefresh)="doRefresh($event)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+
+        <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+
+        <!-- Glossary entries found to be synchronized -->
+        <ion-card class="core-warning-card" icon-start *ngIf="hasOffline">
+            <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: moduleName} }}
+        </ion-card>
+
+        <core-search-box *ngIf="viewMode == 'search'" (onSubmit)="search($event)" [placeholder]="'addon.mod_glossary.searchquery' | translate" [autoFocus]="true" [lengthCheck]="2" [showClear]="false"></core-search-box>
+
+        <core-loading [hideUntil]="loaded" class="core-loading-center">
+
+            <ion-list *ngIf="viewMode != 'search' && offlineEntries.length > 0">
+                <ion-item-divider color="light">
+                    {{ 'addon.mod_glossary.entriestobesynced' | translate }}
+                </ion-item-divider>
+                <a ion-item *ngFor="let entry of offlineEntries" (click)="openNewEntry(entry)" detail-none>
+                    <p>{{entry.concept}}</p>
+                </a>
+            </ion-list>
+
+            <ion-list *ngIf="entries.length > 0">
+                <ng-container *ngFor="let entry of entries; let index = index">
+
+                    <ion-item-divider color="light" *ngIf="showDivider(entry, entries[index - 1])">
+                        {{getDivider(entry)}}
+                    </ion-item-divider>
+
+                    <a ion-item (click)="openEntry(entry.id)" [class.core-split-item-selected]="entry.id == selectedEntry" detail-none>
+                        <p>{{entry.concept}}</p>
+                    </a>
+                </ng-container>
+            </ion-list>
+
+            <core-empty-box *ngIf="!entries.length && !offlineEntries.length" icon="list" [message]="'addon.mod_glossary.noentriesfound' | translate"></core-empty-box>
+
+            <ion-infinite-scroll [enabled]="canLoadMore" (ionInfinite)="$event.waitFor(loadMoreEntries())">
+                <ion-infinite-scroll-content></ion-infinite-scroll-content>
+            </ion-infinite-scroll>
+        </core-loading>
+
+        <ion-fab bottom end *ngIf="canAdd">
+            <button ion-fab (click)="openNewEntry()" [attr.aria-label]="'addon.mod_glossary.addentry' | translate">
+                <ion-icon name="add"></ion-icon>
+            </button>
+        </ion-fab>
+    </ion-content>
+</core-split-view>

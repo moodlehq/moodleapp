@@ -1,0 +1,132 @@
+ion-app.app-root core-course-module {
+    background: white;
+    display: block;
+
+    a.core-course-module-handler {
+        align-items: flex-start;
+        min-height: 52px;
+
+        &.item .item-inner {
+            @include padding(null, 0, null, null);
+        }
+        .label {
+            @include margin(0, 0, 0, null);
+        }
+        .core-module-icon {
+            align-items: flex-start;
+        }
+    }
+
+    .core-module-title {
+        display: flex;
+        flex-flow: row;
+        align-items: flex-start;
+
+        core-format-text {
+            flex-grow: 2;
+        }
+        .core-module-buttons,
+        .buttons.core-module-buttons {
+            margin: 0;
+        }
+
+        .core-module-buttons,
+        .core-module-buttons-more {
+            display: flex;
+            flex-flow: row;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .core-module-buttons core-course-module-completion,
+        .core-module-buttons-more button {
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .core-module-buttons-more .spinner {
+            @include position(null, 13px, null, null);
+            position: absolute;
+        }
+    }
+}
+
+ion-app.app-root.md core-course-module {
+    .core-module-description {
+        @include padding(null, $label-md-margin-end, null, null);
+        margin-bottom: $label-md-margin-bottom;
+
+        .core-show-more {
+            @include padding(null, $label-md-margin-end, null, null);
+        }
+    }
+
+    a.core-course-module-handler .core-module-icon {
+        margin-top: $label-md-margin-top;
+        margin-bottom: $label-md-margin-bottom;
+        width: 24px;
+        height: 24px;
+    }
+
+    .core-module-title core-format-text {
+        padding-top: $label-md-margin-top + 3;
+    }
+    .button-md {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+    .core-module-buttons-more {
+        min-height: 52px;
+        min-width: 53px;
+    }
+}
+
+ion-app.app-root.ios core-course-module {
+    .core-module-description {
+        @include padding(null, $label-ios-margin-end, null, null);
+        margin-bottom: $label-md-margin-bottom;
+
+        .core-show-more {
+            @include padding(null, $label-ios-margin-end, null, null);
+        }
+    }
+
+    a.core-course-module-handler .core-module-icon {
+        margin-top: $label-ios-margin-top;
+        margin-bottom: $label-ios-margin-bottom;
+    }
+
+    .core-module-title core-format-text {
+        padding-top: $label-ios-margin-top + 3;
+    }
+
+    .core-module-buttons-more {
+        min-height: 53px;
+        min-width: 58px;
+    }
+}
+
+ion-app.app-root.wp core-course-module {
+    .core-module-description {
+        @include padding(null, $item-wp-padding-end / 2, null, null);
+        margin-bottom: $label-md-margin-bottom;
+
+        .core-show-more {
+            @include padding(null, $item-wp-padding-end / 2, null, null);
+        }
+    }
+
+    a.core-course-module-handler .core-module-icon {
+        margin-top: $item-wp-padding-top;
+        margin-bottom: $item-wp-padding-bottom;
+    }
+
+    .core-module-title core-format-text {
+        padding-top: $item-wp-padding-top + 3;
+    }
+
+    .button-wp {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+}

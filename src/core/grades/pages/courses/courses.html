@@ -1,0 +1,23 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'core.grades.grades' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<core-split-view>
+    <ion-content>
+        <ion-refresher [enabled]="gradesLoaded" (ionRefresh)="refreshGrades($event)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+        <core-loading [hideUntil]="gradesLoaded">
+            <core-empty-box *ngIf="grades && grades.length == 0" icon="stats" [message]="'core.grades.nogradesreturned' | translate">
+            </core-empty-box>
+
+            <ion-list *ngIf="grades && grades.length > 0">
+                <a ion-item text-wrap *ngFor="let grade of grades" [title]="grade.courseFullName" (click)="gotoCourseGrades(grade.courseid)" [class.core-split-item-selected]="grade.courseid == courseId">
+                    <h2><core-format-text [text]="grade.courseFullName"></core-format-text></h2>
+                    <ion-badge item-end color="light">{{grade.grade}}</ion-badge>
+                </a>
+            </ion-list>
+        </core-loading>
+    </ion-content>
+</core-split-view>

@@ -1,0 +1,19 @@
+<span *ngIf="!isShowOrListMode()" [formGroup]="form">
+    <ion-input *ngIf="mode == 'search'" type="text" [placeholder]="field.name" [formControlName]="'f_'+field.id"></ion-input>
+
+    <span *ngIf="mode == 'edit'" [core-mark-required]="field.required" class="core-mark-required"></span>
+    <div *ngIf="mode == 'edit'" class="addon-data-lantlong">
+        <ion-input type="text" [formControlName]="'f_'+field.id+'_0'" maxlength="10"></ion-input>
+        <span class="placeholder-icon" item-right>°N</span>
+    </div>
+    <div *ngIf="mode == 'edit'" class="addon-data-lantlong">
+        <ion-input type="text" [formControlName]="'f_'+field.id+'_1'" maxlength="10"></ion-input>
+        <span class="placeholder-icon" item-right>°E</span>
+    </div>
+    <core-input-errors *ngIf="error && mode == 'edit'" [control]="form.controls['f_'+field.id]" [errorText]="error"></core-input-errors>
+</span>
+
+
+<span *ngIf="isShowOrListMode() && value">
+    <a [href]="getLatLongLink(north, east)">{{ formatLatLong(north, east) }}</a>
+</span>

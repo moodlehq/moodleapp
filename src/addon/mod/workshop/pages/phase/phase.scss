@@ -1,0 +1,15 @@
+ion-app.app-root page-addon-mod-workshop-phase-info {
+    .core-workshop-phase-selected {
+        background-color: $white;
+        @include border-start(5px, solid, $core-splitview-selected);
+        &.item-md {
+            @include padding(null, null, null, $item-md-padding-start - 5px);
+        }
+        &.item-ios {
+            @include padding(null, null, null, $item-ios-padding-start - 5px);
+        }
+        &.item-wp {
+            @include padding(null, null, null, $item-wp-padding-start - 5px);
+        }
+    }
+}

@@ -1,0 +1,13 @@
+<section ion-list *ngIf="question.text || question.text === ''" class="addon-qtype-ddimageortext-container">
+    <!-- Content is outside the core-loading to let the script calculate drag items position -->
+    <core-loading [hideUntil]="question.loaded"></core-loading>
+
+    <ion-item text-wrap [ngClass]="{invisible: !question.loaded}">
+        <p *ngIf="!question.readOnly" class="core-info-card" icon-start>
+            <ion-icon name="information-circle"></ion-icon>
+            {{ 'core.question.howtodraganddrop' | translate }}
+        </p>
+        <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text></p>
+        <core-format-text *ngIf="question.ddArea" [adaptImg]="false" [component]="component" [componentId]="componentId" [text]="question.ddArea" (afterRender)="questionRendered()"></core-format-text>
+    </ion-item>
+</section>

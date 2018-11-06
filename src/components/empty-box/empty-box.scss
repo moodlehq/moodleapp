@@ -1,0 +1,55 @@
+ion-app.app-root core-empty-box {
+  .core-empty-box {
+    position: absolute;
+    @include position(0, 0, 0, 0);
+    display: table;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    clear: both;
+    pointer-events: none;
+    z-index: -5;
+
+    .core-empty-box-content {
+      color: $black;
+      margin: 0;
+      display: table-cell;
+      text-align: center;
+      vertical-align: middle;
+      pointer-events: auto;
+    }
+
+    &.core-empty-box-inline {
+      position: relative;
+      z-index: initial;
+      @include position(initial, initial, null, initial);
+      height: auto;
+    }
+
+    .icon {
+      font-size: 120px;
+    }
+    img {
+      height: 125px;
+      width: 145px;
+    }
+    p {
+      font-size: 120%;
+    }
+  }
+
+  @include media-breakpoint-down(sm) {
+    .core-empty-box {
+      position: relative;
+
+      .icon {
+        font-size: 100px;
+      }
+      img {
+        height: 104px;
+        width: 121px;
+      }
+    }
+  }
+}

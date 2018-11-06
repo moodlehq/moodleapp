@@ -1,0 +1,30 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+
+        <ion-buttons end>
+            <button ion-button clear (click)="save()" [attr.aria-label]="'core.save' | translate">
+                {{ 'core.save' | translate }}
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <ion-list>
+            <!-- @todo: plagiarism_print_disclosure -->
+            <form name="addon-mod_assign-edit-form" *ngIf="userSubmission && userSubmission.plugins && userSubmission.plugins.length">
+                <!-- Submission statement. -->
+                <ion-item text-wrap *ngIf="submissionStatement">
+                    <ion-label><core-format-text [text]="submissionStatement"></core-format-text></ion-label>
+                    <ion-checkbox item-end name="submissionstatement" [(ngModel)]="submissionStatementAccepted"></ion-checkbox>
+
+                    <!-- ion-checkbox doesn't use an input. Create a hidden input to hold the value. -->
+                    <input item-content type="hidden" [ngModel]="submissionStatementAccepted" name="submissionstatement">
+                </ion-item>
+
+                <addon-mod-assign-submission-plugin *ngFor="let plugin of userSubmission.plugins" [assign]="assign" [submission]="userSubmission" [plugin]="plugin" [edit]="true" [allowOffline]="allowOffline"></addon-mod-assign-submission-plugin>
+            </form>
+        </ion-list>
+    </core-loading>
+</ion-content>

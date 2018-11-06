@@ -1,0 +1,24 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'core.settings.general' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-item text-wrap>
+        <ion-label><h2>{{ 'core.settings.language' | translate }}</h2></ion-label>
+        <ion-select [(ngModel)]="selectedLanguage" (ngModelChange)="languageChanged()" interface="popover">
+            <ion-option *ngFor="let code of languageCodes" [value]="code">{{ languages[code] }}</ion-option>
+        </ion-select>
+    </ion-item>
+    <ion-item text-wrap *ngIf="rteSupported">
+        <ion-label>
+            <h2>{{ 'core.settings.enablerichtexteditor' | translate }}</h2>
+            <p>{{ 'core.settings.enablerichtexteditordescription' | translate }}</p>
+        </ion-label>
+        <ion-toggle [(ngModel)]="richTextEditor" (ngModelChange)="richTextEditorChanged()"></ion-toggle>
+    </ion-item>
+    <ion-item text-wrap *ngIf="showReport">
+        <ion-label><h2>{{ 'core.settings.reportinbackground' | translate }}</h2></ion-label>
+        <ion-toggle [(ngModel)]="reportInBackground" (ngModelChange)="reportInBackgroundChanged()"></ion-toggle>
+    </ion-item>
+</ion-content>

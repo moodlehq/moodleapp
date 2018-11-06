@@ -1,0 +1,18 @@
+ion-app.app-root addon-mod-wiki-subwiki-picker {
+
+    $core-subwiki-selected: $core-color !default;
+
+    .item-divider, .item-divider .label {
+        font-weight: bold;
+    }
+
+    .item.addon-mod_wiki-subwiki-selected {
+        background-color: $gray-light;
+        color: $core-subwiki-selected;
+
+        .icon {
+            color: $core-subwiki-selected;
+            font-size: 24px;
+        }
+    }
+}

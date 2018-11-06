@@ -1,0 +1,27 @@
+<core-loading [hideUntil]="loaded">
+    <a ion-item *ngIf="summary" text-wrap [attr.detail-none]="canViewAssessment && !canSelfAssess? null : true" (click)="gotoAssessment()">
+        <ion-avatar item-start>
+            <img [src]="profile && profile.profileimageurl" core-external-content [alt]="'core.pictureof' | translate:{$a: profile && profile.fullname}" core-user-link [courseId]="courseId" [userId]="profile && profile.id" role="presentation" onError="this.src='assets/img/user-avatar.png'">
+        </ion-avatar>
+
+        <h2 *ngIf="profile && profile.fullname">{{profile.fullname}}</h2>
+        <p *ngIf="showGrade(assessment.grade)">
+            {{ 'addon.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{assessment.grade}}
+        </p>
+        <p *ngIf="access.canviewallsubmissions && !showGrade(assessment.gradinggradeover) && showGrade(assessment.gradinggrade)">
+            {{ 'addon.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{assessment.gradinggrade}}
+        </p>
+        <p *ngIf="access.canviewallsubmissions && showGrade(assessment.gradinggradeover)" class="core-overriden-grade">
+            {{ 'addon.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{assessment.gradinggradeover}}
+        </p>
+        <p *ngIf="assessment.weight && assessment.weight != 1">
+            {{ 'addon.mod_workshop.weightinfo' | translate:{$a: assessment.weight } }}
+        </p>
+        <ion-badge *ngIf="!assessment.grade" color="danger">{{ 'addon.mod_workshop.notassessed' | translate }}</ion-badge>
+        <button ion-button block *ngIf="canSelfAssess && !showGrade(assessment.grade)" (click)="gotoOwnAssessment()">{{ 'addon.mod_workshop.assess' | translate }}</button>
+        <button ion-button block *ngIf="canSelfAssess && showGrade(assessment.grade)" (click)="gotoOwnAssessment()">{{ 'addon.mod_workshop.reassess' | translate }}</button>
+        <ion-note item-end *ngIf="offline">
+            <ion-icon name="time"></ion-icon>{{ 'core.notsent' | translate }}
+        </ion-note>
+    </a>
+</core-loading>

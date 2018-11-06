@@ -1,0 +1,30 @@
+<ng-container *ngFor="let field of assessment.form.fields; let n = index">
+    <ion-card *ngIf="n < assessment.form.dimenssionscount">
+        <ion-item text-wrap>
+            <h2>{{ field.dimtitle }}</h2>
+            <core-format-text [text]="field.description"></core-format-text>
+        </ion-item>
+        <ion-list radio-group [(ngModel)]="selectedValues[n].grade" [name]="'grade_' + n">
+            <ion-item>
+                <ion-label stacked [core-mark-required]="edit">{{ 'addon.mod_workshop.yourassessmentfor' | translate : {'$a': field.dimtitle } }}</ion-label>
+                <core-input-errors item-content *ngIf="edit && fieldErrors['grade_' + n]" [errorText]="fieldErrors['grade_' + n]"></core-input-errors>
+            </ion-item>
+            <ion-item>
+                <ion-label><core-format-text [text]="field.grade0"></core-format-text></ion-label>
+                <ion-radio [value]="-1" [disabled]="!edit"></ion-radio>
+            </ion-item>
+            <ion-item>
+                <ion-label><core-format-text [text]="field.grade1"></core-format-text></ion-label>
+                <ion-radio [value]="1" [disabled]="!edit"></ion-radio>
+            </ion-item>
+        </ion-list>
+        <ion-item *ngIf="edit">
+            <ion-label stacked>{{ 'addon.mod_workshop_assessment_numerrors.dimensioncommentfor' | translate : {'$a': field.dimtitle } }}</ion-label>
+            <ion-textarea aria-multiline="true" [(ngModel)]="selectedValues[n].peercomment" [name]="'peercomment_' + n" core-auto-rows></ion-textarea>
+        </ion-item>
+        <ion-item *ngIf="!edit" text-wrap>
+            <h2>{{ 'addon.mod_workshop_assessment_numerrors.dimensioncommentfor' | translate : {'$a': field.dimtitle } }}</h2>
+            <p><core-format-text [text]="selectedValues[n].peercomment"></core-format-text></p>
+        </ion-item>
+    </ion-card>
+</ng-container>

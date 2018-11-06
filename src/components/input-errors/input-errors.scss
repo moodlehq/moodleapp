@@ -1,0 +1,16 @@
+ion-app.app-root core-input-errors {
+    width: 100%;
+
+    .core-input-error-container {
+        .core-input-error {
+            padding: 4px;
+            color: $red;
+            font-size: 12px;
+            display: none;
+
+            &:first-child {
+                display: block;
+            }
+        }
+    }
+}

@@ -1,0 +1,80 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons end>
+    <!-- Select subwiki. -->
+    <button ion-button icon-only *ngIf="subwikiData.count > 1" (click)="showSubwikiPicker($event)" [attr.aria-label]="'addon.mod_wiki.subwiki' | translate">
+        <ion-icon name="person"></ion-icon>
+    </button>
+
+    <!-- Go to "home". -->
+    <button ion-button icon-only *ngIf="showHomeButton" (click)="goToWikiHome()" [attr.aria-label]="'addon.mod_wiki.gowikihome' | translate">
+        <ion-icon name="home"></ion-icon>
+    </button>
+
+    <core-context-menu>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl" [iconAction]="'open'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()" [iconAction]="'arrow-forward'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline && !pageIsOffline" [priority]="700" [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && isOnline && (hasOffline || pageIsOffline)"  [priority]="600" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="canEdit && (isOnline || pageIsOffline)" [priority]="590" [content]="'core.edit' | translate" iconAction="create" (action)="goToEditPage()"></core-context-menu-item>
+        <core-context-menu-item *ngIf="canEdit" [priority]="580" [content]="'addon.mod_wiki.createpage' | translate" iconAction="add" (action)="goToNewPage()"></core-context-menu-item>
+        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch()" [iconAction]="prefetchStatusIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="400" [content]="size" [iconDescription]="'cube'" (action)="removeFiles()" [iconAction]="'trash'"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<!-- Content. -->
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+
+    <core-tabs [hideUntil]="loaded" [selectedIndex]="selectedTab">
+        <!-- Page contents. -->
+        <core-tab [title]="'addon.mod_wiki.viewpage' | translate" icon="document">
+            <ng-template>
+                <div padding class="addon-mod_wiki-page-content">
+                    <core-course-module-description *ngIf="isMainPage" [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+
+                    <!-- Wiki has something offline. -->
+                    <div class="core-warning-card" icon-start *ngIf="pageIsOffline || hasOffline">
+                        <ion-icon name="warning"></ion-icon>
+                        <span *ngIf="pageIsOffline">{{ 'core.hasdatatosync' | translate:{$a: pageStr} }}</span>
+                        <span *ngIf="!pageIsOffline">{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</span>
+                    </div>
+
+                    <!-- Page warning. -->
+                    <div class="core-warning-card" icon-start *ngIf="pageWarning">
+                        <ion-icon name="warning"></ion-icon>
+                        {{ pageWarning }}
+                    </div>
+
+                    <article [ngClass]="{'addon-mod_wiki-noedit': !canEdit}">
+                        <core-format-text *ngIf="pageContent" [component]="component" [componentId]="componentId" [text]="pageContent"></core-format-text>
+                        <core-empty-box *ngIf="!pageContent" icon="document" [message]="'addon.mod_wiki.nocontent' | translate"></core-empty-box>
+                    </article>
+                </div>
+            </ng-template>
+        </core-tab>
+
+        <!-- Map. -->
+        <core-tab [title]="'addon.mod_wiki.map' | translate" icon="map">
+            <ng-template>
+                <ion-list>
+                    <ng-container *ngFor="let letter of map">
+                        <ion-item-divider color="light" *ngIf="letter.label">
+                            {{ letter.label }}
+                        </ion-item-divider>
+                        <a ion-item text-wrap *ngFor="let page of letter.pages" (click)="goToPage(page)">
+                            {{ page.title }}
+                            <ion-note *ngIf="!page.id" item-end color="danger">{{ 'core.offline' | translate }}</ion-note>
+                        </a>
+                    </ng-container>
+                </ion-list>
+            </ng-template>
+        </core-tab>
+    </core-tabs>
+
+</core-loading>
+
+<ion-fab bottom end *ngIf="canEdit">
+    <button ion-fab (click)="goToNewPage()" [attr.aria-label]="'addon.mod_wiki.createpage' | translate">
+        <ion-icon name="add"></ion-icon>
+    </button>
+</ion-fab>

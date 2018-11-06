@@ -1,0 +1,10 @@
+<ion-list>
+    <ion-list-header *ngIf="title">{{title}}</ion-list-header>
+    <a ion-item text-wrap *ngFor="let item of items" core-link [capture]="item.captureLink" [autoLogin]="item.autoLogin" [href]="item.href" (click)="itemClicked($event, item)" [attr.aria-label]="item.ariaAction" [hidden]="item.hidden" [attr.detail-none]="!item.href || item.iconAction">
+        <core-icon *ngIf="item.iconDescription" [name]="item.iconDescription" [attr.aria-label]="item.ariaDescription" item-start></core-icon>
+        <core-format-text [clean]="true" [text]="item.content"></core-format-text>
+        <core-icon *ngIf="(item.href || item.action) && item.iconAction && item.iconAction != 'spinner'" [name]="item.iconAction" item-end></core-icon>
+        <ion-spinner *ngIf="(item.href || item.action) && item.iconAction == 'spinner'" item-end></ion-spinner>
+        <ion-badge class="{{item.badgeClass}}" item-end *ngIf="item.badge">{{item.badge}}</ion-badge>
+    </a>
+</ion-list>

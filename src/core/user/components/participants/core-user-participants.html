@@ -1,0 +1,25 @@
+<core-split-view>
+    <ion-content>
+        <ion-refresher [enabled]="participantsLoaded" (ionRefresh)="refreshParticipants($event)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+        <core-loading [hideUntil]="participantsLoaded">
+            <core-empty-box *ngIf="participants && participants.length == 0" icon="person" [message]="'core.user.noparticipants' | translate">
+            </core-empty-box>
+
+            <ion-list *ngIf="participants && participants.length > 0" no-margin>
+                <a ion-item text-wrap *ngFor="let participant of participants" [title]="participant.fullname" (click)="gotoParticipant(participant.id)" [class.core-split-item-selected]="participant.id == participantId">
+                    <ion-avatar item-start>
+                        <img src="{{participant.profileimageurl}}" [alt]="'core.pictureof' | translate:{$a: participant.fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'">
+                    </ion-avatar>
+                    <h2><core-format-text [text]="participant.fullname"></core-format-text></h2>
+                    <p *ngIf="participant.lastaccess"><strong>{{ 'core.lastaccess' | translate }}: </strong>{{ participant.lastaccess * 1000 | coreFormatDate:"dfmediumdate"}}</p>
+                </a>
+            </ion-list>
+
+            <ion-infinite-scroll [enabled]="canLoadMore" (ionInfinite)="$event.waitFor(fetchData())">
+               <ion-infinite-scroll-content></ion-infinite-scroll-content>
+            </ion-infinite-scroll>
+        </core-loading>
+    </ion-content>
+</core-split-view>

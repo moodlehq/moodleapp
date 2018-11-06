@@ -1,0 +1,63 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title><core-format-text [text]="course.fullname"></core-format-text></ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="dataLoaded" (ionRefresh)="refreshData($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="dataLoaded">
+
+        <ion-list *ngIf="course">
+            <div *ngIf="course.imageThumb" (click)="openCourse()" class="core-course-thumb">
+                <img [src]="course.imageThumb" core-external-content alt=""/>
+            </div>
+            <a ion-item text-wrap (click)="openCourse()" [title]="course.fullname" [attr.detail-none]=" avoidOpenCourse || !canAccessCourse">
+                <core-icon name="fa-graduation-cap" fixed-width item-start></core-icon>
+                <h2><core-format-text [text]="course.fullname"></core-format-text></h2>
+                <p *ngIf="course.categoryname"><core-format-text [text]="course.categoryname"></core-format-text></p>
+                <p *ngIf="course.startdate">{{course.startdate * 1000 | coreFormatDate:"dfdaymonthyear"}} <span *ngIf="course.enddate"> - {{course.enddate * 1000 | coreFormatDate:"dfdaymonthyear"}}</span></p>
+            </a>
+
+            <ion-item text-wrap *ngIf="course.summary" detail-none>
+                <core-format-text [text]="course.summary" maxHeight="120"></core-format-text>
+            </ion-item>
+
+            <ng-container text-wrap *ngIf="course.contacts && course.contacts.length">
+                <ion-item-divider color="light">{{ 'core.teachers' | translate }}</ion-item-divider>
+                <a ion-item text-wrap *ngFor="let contact of course.contacts" core-user-link userId="{{contact.id}}" courseId="{{isEnrolled ? course.id : null}}" [attr.aria-label]="'core.viewprofile' | translate">
+                    <ion-avatar item-start>
+                        <img [src]="contact.userpictureurl" onError="this.src='assets/img/user-avatar.png'" core-external-content [alt]="'core.pictureof' | translate:{$a: contact.userfullname}" role="presentation">
+                    </ion-avatar>
+                    <h2>{{contact.fullname}}</h2>
+                </a>
+                <ion-item-divider color="light"></ion-item-divider>
+            </ng-container>
+            <core-file *ngFor="let file of course.overviewfiles" [file]="file" [component]="component" [componentId]="course.id"></core-file>
+            <div *ngIf="!isEnrolled" detail-none>
+                <ion-item text-wrap *ngFor="let instance of selfEnrolInstances">
+                    <h2>{{ instance.name }}</h2>
+                    <button ion-button block margin-top (click)="selfEnrolClicked(instance.id)">{{ 'core.courses.enrolme' | translate }}</button>
+                </ion-item>
+            </div>
+            <ion-item text-wrap *ngIf="!isEnrolled && paypalEnabled" detail-none>
+                <h2>{{ 'core.courses.paypalaccepted' | translate }}</h2>
+                <p>{{ 'core.paymentinstant' | translate }}</p>
+                <button ion-button block margin-top (click)="paypalEnrol()">{{ 'core.courses.sendpaymentbutton' | translate }}</button>
+            </ion-item>
+            <ion-item *ngIf="!isEnrolled && !selfEnrolInstances.length && !paypalEnabled">
+                <p>{{ 'core.courses.notenrollable' | translate }}</p>
+            </ion-item>
+            <a ion-item *ngIf="canAccessCourse && downloadCourseEnabled" (click)="prefetchCourse()" detail-none [attr.aria-label]="prefetchCourseData.title | translate">
+                <core-icon *ngIf="prefetchCourseData.prefetchCourseIcon != 'spinner'" [name]="prefetchCourseData.prefetchCourseIcon" item-start></core-icon>
+                <ion-spinner *ngIf="prefetchCourseData.prefetchCourseIcon == 'spinner'" item-start></ion-spinner>
+                <h2>{{ 'core.course.downloadcourse' | translate }}</h2>
+            </a>
+            <a ion-item (click)="openCourse()" [title]="course.fullname" *ngIf="!avoidOpenCourse && canAccessCourse">
+                <ion-icon name="briefcase" item-start></ion-icon>
+                <h2>{{ 'core.course.contents' | translate }}</h2>
+            </a>
+        </ion-list>
+    </core-loading>
+</ion-content>

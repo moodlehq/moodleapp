@@ -1,0 +1,39 @@
+ion-app.app-root page-core-user-profile {
+    .core-icon-foreground {
+        position: relative;
+        @include position(null, null, 30px, 60px);
+        font-size: 24px;
+    }
+    .core-user-communication-handlers {
+        background: $list-background-color;
+        border-bottom: 1px solid $list-border-color;
+
+        .core-user-profile-handler {
+            background: $list-background-color;
+            border: 0;
+            color: $core-user-profile-communication-icons-color;
+
+            p {
+                margin: 0;
+            }
+
+            .icon {
+                border-radius: 50%;
+                width: 32px;
+                height: 32px;
+                max-width: 32px;
+                font-size: 22px;
+                line-height: 32px;
+                color: white;
+                background-color: $core-user-profile-communication-icons-color;
+                margin-bottom: 5px;
+          }
+        }
+    }
+
+    .core-user-profile-handler {
+        ion-spinner {
+            @include margin(null, null, null, 0.3em);
+        }
+    }
+}

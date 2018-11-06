@@ -1,0 +1,39 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'addon.notifications.notifications' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="notificationsLoaded" (ionRefresh)="refreshNotifications($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="notificationsLoaded">
+        <div padding *ngIf="canMarkAllNotificationsAsRead">
+            <button ion-button block (click)="markAllNotificationsAsRead()" color="light" icon-start *ngIf="!loadingMarkAllNotificationsAsRead">
+                <core-icon name="fa-check"></core-icon>
+                {{ 'addon.notifications.markallread' | translate }}
+            </button>
+            <button ion-button block color="light" icon-start *ngIf="loadingMarkAllNotificationsAsRead">
+                <ion-spinner></ion-spinner>
+            </button>
+        </div>
+        <ion-card *ngFor="let notification of notifications">
+            <ion-item>
+                <ion-avatar item-start core-user-link [userId]="notification.useridfrom" [courseId]="notification.courseid">
+                    <img [src]="notification.profileimageurlfrom || 'assets/img/user-avatar.png'" core-external-content [alt]="'core.pictureof' | translate:{$a: notification.userfromfullname}" role="presentation">
+                </ion-avatar>
+                <h2>{{notification.userfromfullname}}</h2>
+                <div item-end *ngIf="!notification.timeread"><core-icon name="fa-circle" color="primary"></core-icon></div>
+                <p>{{notification.timecreated | coreDateDayOrTime}}</p>
+            </ion-item>
+            <ion-item text-wrap>
+                <p><core-format-text [text]="notification.mobiletext | coreCreateLinks"></core-format-text></p>
+            </ion-item>
+            <addon-notifications-actions [contextUrl]="notification.contexturl" [courseId]="notification.courseid"></addon-notifications-actions>
+        </ion-card>
+        <core-empty-box *ngIf="!notifications || notifications.length <= 0" icon="notifications" [message]="'addon.notifications.therearentnotificationsyet' | translate"></core-empty-box>
+        <ion-infinite-scroll [enabled]="canLoadMore" (ionInfinite)="loadMoreNotifications($event)">
+            <ion-infinite-scroll-content></ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+    </core-loading>
+</ion-content>

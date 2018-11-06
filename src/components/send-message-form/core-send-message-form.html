@@ -1,0 +1,8 @@
+<form>
+    <textarea class="core-send-message-input" [core-auto-focus]="showKeyboard" [placeholder]="placeholder" rows="1" core-auto-rows [(ngModel)]="message" name="message" (onResize)="textareaResized()"></textarea>
+    <ion-buttons end>
+        <button ion-button icon-only clear="true" type="submit" [disabled]="!message" [attr.aria-label]="'core.send' | translate" [core-suppress-events] (onClick)="submitForm($event)">
+            <ion-icon name="send" color="dark"></ion-icon>
+        </button>
+    </ion-buttons>
+</form>

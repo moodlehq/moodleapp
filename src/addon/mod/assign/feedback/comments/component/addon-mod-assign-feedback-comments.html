@@ -1,0 +1,23 @@
+<!-- Read only. -->
+<ion-item text-wrap *ngIf="(text || canEdit) && !edit">
+    <h2>{{ plugin.name }}</h2>
+    <p>
+        <core-format-text [component]="component" [componentId]="assign.cmid" [maxHeight]="80" [fullOnClick]="true" [fullTitle]="plugin.name" [text]="text"></core-format-text>
+    </p>
+    <div item-end>
+        <div text-end>
+            <button ion-button icon-only clear *ngIf="canEdit" (click)="editComment()" color="dark">
+                <ion-icon name="create"></ion-icon>
+            </button>
+        </div>
+        <ion-note *ngIf="!isSent" color="dark">
+            <ion-icon name="time"></ion-icon>
+            {{ 'core.notsent' | translate }}
+        </ion-note>
+    </div>
+</ion-item>
+
+<!-- Edit -->
+<ion-item text-wrap *ngIf="edit && loaded">
+    <core-rich-text-editor item-content [control]="control" [placeholder]="plugin.name" name="assignfeedbackcomments_editor" [component]="component" [componentId]="assign.cmid"></core-rich-text-editor>
+</ion-item>

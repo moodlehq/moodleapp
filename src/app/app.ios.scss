@@ -1,0 +1,94 @@
+ion-app.app-root.ios {
+  .button-ios {
+    min-height: $button-ios-height
+  }
+
+  // Light buttons color.
+  .button-ios-light {
+    color: color($colors, primary, base);
+  }
+
+  .col[align-self-stretch] .card-ios {
+    height: calc(100% - #{($card-ios-margin-end + $card-ios-margin-start)});
+  }
+
+  .bar-buttons core-context-menu .button-clear-ios {
+    color: $toolbar-ios-button-color;
+  }
+
+  .item-ios ion-spinner[item-start],
+  .item-ios ion-spinner[item-end] {
+    @include margin($item-ios-padding-icon-top, null, $item-ios-padding-icon-bottom, 0);
+  }
+
+
+  @each $color-name, $color-base, $color-contrast in get-colors($colors-ios) {
+    .core-#{$color-name}-card {
+      @extend .card-ios ;
+      @extend .card-content-ios;
+
+      &[icon-start] {
+        @include padding(null, null, null, $card-ios-padding-left * 2 + 20);
+
+        ion-icon {
+          @include position(null, null, null, $card-ios-padding-left);
+        }
+      }
+    }
+  }
+
+  .core-avoid-header ion-content {
+      top: $navbar-ios-height;
+      height: calc(100% - #{($navbar-ios-height)});
+  }
+
+  &.platform-cordova .core-avoid-header ion-content.statusbar-padding,
+  &.platform-cordova .core-avoid-header .menu-inner > ion-content {
+      height: calc(100% - #{($navbar-ios-height + $cordova-ios-statusbar-padding)});
+      height: calc(100% - #{($navbar-ios-height)} - constant(safe-area-inset-top));
+      height: calc(100% - #{($navbar-ios-height)} - env(safe-area-inset-top));
+
+      top: calc(#{$navbar-ios-height + $cordova-ios-statusbar-padding});
+      top: calc(#{$navbar-ios-height} + constant(safe-area-inset-top));
+      top: calc(#{$navbar-ios-height} + env(safe-area-inset-top));
+  }
+
+  &.platform-cordova .core-avoid-header .core-avoid-header .menu-inner > ion-content,
+  core-tab core-split-view .core-avoid-header .menu-inner > ion-content {
+      top: 0;
+      height: 100%;
+  }
+
+  // Different levels of padding.
+  @for $i from 0 through 15 {
+    .core-padding-#{$i} {
+      @include padding(null, null, null, 15px * $i + $item-ios-padding-start);
+    }
+  }
+
+  // Recover borders on items inside cards.
+  .card-ios.with-borders  .item-ios.item-block .item-inner {
+    border-bottom: $hairlines-width solid $list-ios-border-color;
+  }
+  .card-ios.with-borders .item-ios:last-child .item-inner {
+    border-bottom: 0;
+  }
+
+
+  .radio-ios .radio-icon {
+    @include position(0, null, null, 0);
+    @include margin(0);
+    @include border-radius($radio-md-icon-border-radius);
+
+    position: relative;
+    display: block;
+
+    width: $checkbox-ios-icon-size;
+    height: $checkbox-ios-icon-size;
+
+    border-width: $checkbox-ios-icon-border-width;
+    border-style: $checkbox-ios-icon-border-style;
+    border-color: $checkbox-ios-icon-border-color-off;
+    background-color: $checkbox-ios-background-color-off;
+  }
+}

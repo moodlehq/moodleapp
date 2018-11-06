@@ -1,0 +1,49 @@
+<ng-template #eventTemplate let-event="event">
+    <a ion-item core-link text-wrap detail-none capture="true" class="core-course-module-handler item-media" [href]="event.url" [title]="event.name">
+        <img item-start [src]="event.iconUrl" core-external-content alt="" role="presentation" *ngIf="event.iconUrl" class="core-module-icon">
+        <h2><core-format-text [text]="event.name"></core-format-text></h2>
+        <p>{{event.timesort * 1000 | coreFormatDate:"dfmediumdate" }} <core-format-text *ngIf="showCourse" [text]="event.course.fullnamedisplay"></core-format-text></p>
+        <button ion-button clear item-end class="hidden-phone" (click)="action($event, event.action.url)" [title]="event.action.name" [disabled]="!event.action.actionable" *ngIf="event.action">
+            {{event.action.name}}
+            <ion-badge item-end margin-start *ngIf="event.action.showitemcount">{{event.action.itemcount}}</ion-badge>
+        </button>
+        <ion-badge class="hidden-tablet" item-end *ngIf="event.action.showitemcount">{{event.action.itemcount}}</ion-badge>
+    </a>
+</ng-template>
+
+<ion-item-group *ngIf="recentlyOverdue.length > 0">
+    <ion-item-divider color="danger">{{ 'core.courses.recentlyoverdue' | translate }}</ion-item-divider>
+    <ng-container *ngFor="let event of recentlyOverdue">
+        <ng-container *ngTemplateOutlet="eventTemplate; context: {event: event}"></ng-container>
+    </ng-container>
+</ion-item-group>
+
+<ion-item-group *ngIf="next7Days.length > 0">
+    <ion-item-divider color="light">{{ 'core.courses.next7days' | translate }}</ion-item-divider>
+    <ng-container *ngFor="let event of next7Days">
+        <ng-container *ngTemplateOutlet="eventTemplate; context: {event: event}"></ng-container>
+    </ng-container>
+</ion-item-group>
+
+<ion-item-group *ngIf="next30Days.length > 0">
+    <ion-item-divider color="light">{{ 'core.courses.next30days' | translate }}</ion-item-divider>
+    <ng-container *ngFor="let event of next30Days">
+        <ng-container *ngTemplateOutlet="eventTemplate; context: {event: event}"></ng-container>
+    </ng-container>
+</ion-item-group>
+
+<ion-item-group *ngIf="future.length > 0">
+    <ion-item-divider color="light">{{ 'core.courses.future' | translate }}</ion-item-divider>
+    <ng-container *ngFor="let event of future">
+        <ng-container *ngTemplateOutlet="eventTemplate; context: {event: event}"></ng-container>
+    </ng-container>
+</ion-item-group>
+
+<div padding text-center *ngIf="canLoadMore && !empty">
+    <!-- Button and spinner to show more attempts. -->
+    <button *ngIf="!loadingMore" ion-button block (click)="loadMoreEvents()">{{ 'core.loadmore' | translate }}</button>
+    <ion-spinner *ngIf="loadingMore"></ion-spinner>
+</div>
+
+<core-empty-box *ngIf="empty && showCourse" image="assets/img/icons/activities.svg" [message]="'core.courses.noevents' | translate"></core-empty-box>
+<core-empty-box *ngIf="empty && !showCourse" [message]="'core.courses.noevents' | translate"></core-empty-box>

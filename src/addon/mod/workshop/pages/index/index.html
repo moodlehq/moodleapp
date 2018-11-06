@@ -1,0 +1,16 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+
+        <ion-buttons end>
+            <!-- The buttons defined by the component will be added in here. -->
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="workshopComponent.loaded" (ionRefresh)="workshopComponent.doRefresh($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <addon-mod-workshop-index [module]="module" [courseId]="courseId" [group]="selectedGroup" (dataRetrieved)="updateData($event)"></addon-mod-workshop-index>
+</ion-content>

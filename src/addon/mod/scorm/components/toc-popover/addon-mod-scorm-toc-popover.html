@@ -1,0 +1,19 @@
+<ion-list>
+    <ion-item text-wrap *ngIf="attemptToContinue">
+        <p>{{ 'addon.mod_scorm.dataattemptshown' | translate:{number: attemptToContinue} }}</p>
+    </ion-item>
+    <ion-item text-center *ngIf="isBrowse">
+        <p>{{ 'addon.mod_scorm.browsemode' | translate }}</p>
+    </ion-item>
+    <ion-item text-center *ngIf="isReview">
+        <p>{{ 'addon.mod_scorm.reviewmode' | translate }}</p>
+    </ion-item>
+
+    <!-- List of SCOs. -->
+    <ng-container *ngFor="let sco of toc">
+        <a *ngIf="sco.isvisible" ion-item text-wrap [ngClass]="['core-padding-' + sco.level]" (click)="loadSco(sco)" [attr.disabled]="!sco.prereq || !sco.launch ? true : null" detail-none>
+            <img [src]="sco.image.url" [alt]="sco.image.description" />
+            <span>{{ sco.title }}</span>
+        </a>
+    </ng-container>
+</ion-list>

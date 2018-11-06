@@ -1,0 +1,22 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'addon.messageoutput_airnotifier.processorsettingsdesc' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="devicesLoaded" (ionRefresh)="refreshDevices($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="devicesLoaded">
+        <ion-list>
+            <ion-item text-wrap *ngFor="let device of devices">
+                <ion-label [class.core-bold]="device.current">
+                    {{ device.model }}
+                    <span *ngIf="device.current">({{ 'core.currentdevice' | translate }})</span>
+                </ion-label>
+                <ion-spinner *ngIf="device.updating" item-end></ion-spinner>
+                <ion-toggle [disabled]="device.updating" [(ngModel)]="device.enable" (ngModelChange)="enableDevice(device, device.enable)"></ion-toggle>
+            </ion-item>
+        </ion-list>
+    </core-loading>
+</ion-content>

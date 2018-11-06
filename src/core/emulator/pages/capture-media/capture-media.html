@@ -1,0 +1,55 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-buttons start>
+            <button ion-button (click)="cancel()">{{ 'core.cancel' | translate }}</button>
+        </ion-buttons>
+
+        <ion-title>{{ title | translate }}</ion-title>
+
+        <ion-buttons end>
+            <button ion-button *ngIf="hasCaptured" (click)="done()">{{ 'core.done' | translate }}</button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content  class="has-footer">
+    <core-loading [hideUntil]="readyToCapture">
+        <div class="core-av-wrapper">
+            <!-- Video stream for image and video. -->
+            <video *ngIf="!isAudio" [hidden]="hasCaptured" class="core-webcam-stream" autoplay #streamVideo></video>
+
+            <!-- For video recording, use 2 videos and show/hide them because a CSS rule caused problems with the controls. -->
+            <video *ngIf="isVideo" [hidden]="!hasCaptured" class="core-webcam-video-captured" controls #previewVideo></video>
+
+            <!-- Canvas to treat the image and an img to show the result. -->
+            <canvas *ngIf="isImage" class="core-webcam-image-canvas" #imgCanvas></canvas>
+            <img *ngIf="isImage" [hidden]="!hasCaptured" class="core-webcam-image" alt="{{ 'core.capturedimage' | translate }}" #previewImage>
+
+            <!-- Canvas to show audio waves when recording audio and audio player to listen to the result. -->
+            <div *ngIf="isAudio" class="core-audio-record-container">
+                <canvas [hidden]="hasCaptured" class="core-audio-canvas" #streamAudio></canvas>
+                <audio [hidden]="!hasCaptured" class="core-audio-captured" controls #previewAudio></audio>
+            </div>
+        </div>
+    </core-loading>
+</ion-content>
+
+<ion-footer>
+    <ion-row *ngIf="readyToCapture">
+        <ion-col></ion-col>
+        <ion-col text-center>
+            <button ion-button icon-only clear *ngIf="!hasCaptured" (click)="actionClicked()" [attr.aria-label]="title">
+                <ion-icon *ngIf="!isCapturing && isAudio" name="microphone"></ion-icon>
+                <ion-icon *ngIf="!isCapturing && isVideo" name="videocam"></ion-icon>
+                <ion-icon *ngIf="isImage" name="camera"></ion-icon>
+                <ion-icon *ngIf="isCapturing" name="square"></ion-icon>
+            </button>
+            <button ion-button icon-only clear *ngIf="hasCaptured" (click)="discard()" [attr.aria-label]="'core.discard' | translate">
+                <ion-icon name="trash"></ion-icon>
+            </button>
+        </ion-col>
+        <ion-col padding text-end class="chrono-container">
+            <core-chrono *ngIf="!isImage" [hidden]="hasCaptured" [running]="isCapturing" [reset]="resetChrono" [endTime]="maxTime" (onEnd)="stopCapturing()"></core-chrono>
+        </ion-col>
+    </ion-row>
+</ion-footer>
+

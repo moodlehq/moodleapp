@@ -1,0 +1,7 @@
+<section ion-list *ngIf="question.text || question.text === ''">
+    <ion-item text-wrap>
+        <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text></p>
+    </ion-item>
+    <ion-input padding-left type="text" placeholder="{{ 'core.question.answer' | translate }}" [attr.name]="question.input.name" [value]="question.input.value" autocorrect="off" [disabled]="question.input.readOnly" [ngClass]="[question.input.correctClass]">
+    </ion-input>
+</section>
