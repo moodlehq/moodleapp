@@ -1,0 +1,19 @@
+ion-app.app-root core-block {
+  position: relative;
+
+  core-loading.core-loading-center {
+    display: block;
+
+    .core-loading-container {
+        margin-top: 10px;
+        position: relative;
+    }
+  }
+
+  core-empty-box .core-empty-box {
+    position: relative;
+    z-index: initial;
+    @include position(initial, initial, null, initial);
+    height: auto;
+  }
+}

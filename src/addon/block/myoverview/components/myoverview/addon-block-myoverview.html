@@ -17,6 +17,8 @@
                 <ion-option value="inprogress">{{ 'addon.block_myoverview.inprogress' | translate }}</ion-option>
                 <ion-option value="future">{{ 'addon.block_myoverview.future' | translate }}</ion-option>
                 <ion-option value="past">{{ 'addon.block_myoverview.past' | translate }}</ion-option>
+                <ion-option value="favourite" *ngIf="showFavourite">{{ 'addon.block_myoverview.favourites' | translate }}</ion-option>
+                <ion-option value="hidden" *ngIf="showHidden">{{ 'addon.block_myoverview.hiddencourses' | translate }}</ion-option>
             </ion-select>
         </ion-col>
         <!-- "Sort" selector. -->
@@ -35,11 +37,7 @@
             <ion-spinner *ngIf="!prefetchCoursesData[selectedFilter].icon || prefetchCoursesData[selectedFilter].icon == 'spinner'"></ion-spinner>
         </ion-col>
     </div>
-    <ng-container *ngIf="courses[selectedFilter].length == 0">
-        <core-empty-box *ngIf="selectedFilter == 'inprogress'" image="assets/img/icons/courses.svg" [message]="'addon.block_myoverview.nocoursesinprogress' | translate"></core-empty-box>
-        <core-empty-box *ngIf="selectedFilter == 'future'" image="assets/img/icons/courses.svg" [message]="'addon.block_myoverview.nocoursesfuture' | translate"></core-empty-box>
-        <core-empty-box *ngIf="selectedFilter == 'past'" image="assets/img/icons/courses.svg" [message]="'addon.block_myoverview.nocoursespast' | translate"></core-empty-box>
-    </ng-container>
+    <core-empty-box *ngIf="courses[selectedFilter].length == 0" image="assets/img/icons/courses.svg" [message]="'addon.block_myoverview.nocourses' | translate"></core-empty-box>
 
     <!-- Filter courses. -->
     <ion-searchbar #searchbar *ngIf="showFilter" [(ngModel)]="courses.filter" (ionInput)="filterChanged($event)" (ionCancel)="filterChanged()" [placeholder]="'core.courses.filtermycourses' | translate">
