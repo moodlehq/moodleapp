@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCoursesProvider } from './courses';
+import { AddonCourseCompletionProvider } from '@addon/coursecompletion/providers/coursecompletion';
 
 /**
  * Helper to gather some common courses functions.
@@ -22,7 +23,8 @@ import { CoreCoursesProvider } from './courses';
 @Injectable()
 export class CoreCoursesHelperProvider {
 
-    constructor(private coursesProvider: CoreCoursesProvider, private utils: CoreUtilsProvider) { }
+    constructor(private coursesProvider: CoreCoursesProvider, private utils: CoreUtilsProvider,
+        private courseCompletionProvider: AddonCourseCompletionProvider) { }
 
     /**
      * Given a course object returned by core_enrol_get_users_courses and another one returned by core_course_get_courses_by_field,
@@ -85,9 +87,11 @@ export class CoreCoursesHelperProvider {
     /**
      * Get user courses with admin and nav options.
      *
-     * @return {Promise<any[]>} Promise resolved when done.
+     * @param  {string}  [sort=fullname] Sort courses after get them. If sort is not defined it won't be sorted.
+     * @param  {number}  [slice=0]    Slice results to get the X first one. If slice > 0 it will be done after sorting.
+     * @return {Promise<any[]>} Courses filled with options.
      */
-    getUserCoursesWithOptions(): Promise<any[]> {
+    getUserCoursesWithOptions(sort: string = 'fullname', slice: number = 0): Promise<any[]> {
         return this.coursesProvider.getUserCourses().then((courses) => {
             const promises = [],
                 courseIds = courses.map((course) => {
@@ -107,12 +111,43 @@ export class CoreCoursesHelperProvider {
             promises.push(this.loadCoursesExtraInfo(courses));
 
             return Promise.all(promises).then(() => {
-                return courses.sort((a, b) => {
-                    const compareA = a.fullname.toLowerCase(),
-                        compareB = b.fullname.toLowerCase();
+                if (courses.length <= 0) {
+                    return [];
+                }
+                switch (sort) {
+                    case 'fullname':
+                        courses.sort((a, b) => {
+                            const compareA = a.fullname.toLowerCase(),
+                                compareB = b.fullname.toLowerCase();
 
-                    return compareA.localeCompare(compareB);
-                });
+                            return compareA.localeCompare(compareB);
+                        });
+                        break;
+                    case 'lastaccess':
+                        courses.sort((a, b) => {
+                            return b.lastaccess - b.lastaccess;
+                        });
+                        break;
+                    default:
+                        // Sort not implemented. Do not sort.
+                }
+                courses = slice > 0 ? courses.slice(0, slice) : courses;
+
+                // Fetch course completion status.
+                return Promise.all(courses.map((course) => {
+                    if (typeof course.enablecompletion != 'undefined' && course.enablecompletion == 0) {
+                        // Completion is disabled for this course, there is no need to fetch the completion status.
+                        return Promise.resolve(course);
+                    }
+
+                    return this.courseCompletionProvider.getCompletion(course.id).catch(() => {
+                        // Ignore error, maybe course completion is disabled or user has no permission.
+                    }).then((completion) => {
+                        course.completed = completion && completion.completed;
+
+                        return course;
+                    });
+                }));
             });
         });
     }

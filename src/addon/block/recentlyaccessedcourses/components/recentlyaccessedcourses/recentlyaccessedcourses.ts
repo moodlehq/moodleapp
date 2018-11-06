@@ -103,27 +103,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
      * @return {Promise<any>} Promise resolved when done.
      */
     protected fetchContent(): Promise<any> {
-        return this.coursesHelper.getUserCoursesWithOptions().then((courses) => {
-            courses = courses.sort((a, b) => {
-                return b.lastaccess - b.lastaccess;
-            }).slice(0, 10);
-
-            // Fetch course completion status.
-            return Promise.all(courses.map((course) => {
-                if (typeof course.enablecompletion != 'undefined' && course.enablecompletion == 0) {
-                    // Completion is disabled for this course, there is no need to fetch the completion status.
-                    return Promise.resolve(course);
-                }
-
-                return this.courseCompletionProvider.getCompletion(course.id).catch(() => {
-                    // Ignore error, maybe course completion is disabled or user has no permission.
-                }).then((completion) => {
-                    course.completed = completion && completion.completed;
-
-                    return course;
-                });
-            }));
-        }).then((courses) => {
+        return this.coursesHelper.getUserCoursesWithOptions('lastaccess', 10).then((courses) => {
             this.courses = courses;
 
             this.initPrefetchCoursesIcons();

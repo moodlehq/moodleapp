@@ -24,7 +24,7 @@
         <!-- "Sort" selector. -->
         <ion-col [hidden]="!showSortFilter">
             <ion-select text-start [(ngModel)]="sort" (ngModelChange)="switchSort()" interface="popover" class="core-button-select">
-                <ion-option value="title">{{ 'addon.block_myoverview.title' | translate }}</ion-option>
+                <ion-option value="fullname">{{ 'addon.block_myoverview.title' | translate }}</ion-option>
                 <ion-option value="lastaccess">{{ 'addon.block_myoverview.lastaccessed' | translate }}</ion-option>
             </ion-select>
         </ion-col>

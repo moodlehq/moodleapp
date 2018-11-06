@@ -45,7 +45,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         hidden: []
     };
     selectedFilter = 'inprogress';
-    sort = 'title';
+    sort = 'fullname';
     currentSite: any;
     downloadAllCoursesEnabled: boolean;
     filteredCourses: any[];
@@ -145,26 +145,10 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @return {Promise<any>} Promise resolved when done.
      */
     protected fetchContent(): Promise<any> {
-        return this.coursesHelper.getUserCoursesWithOptions().then((courses) => {
-            // Fetch course completion status.
-            return Promise.all(courses.map((course) => {
-                if (typeof course.enablecompletion != 'undefined' && course.enablecompletion == 0) {
-                    // Completion is disabled for this course, there is no need to fetch the completion status.
-                    return Promise.resolve(course);
-                }
-
-                return this.courseCompletionProvider.getCompletion(course.id).catch(() => {
-                    // Ignore error, maybe course compleiton is disabled or user ha no permission.
-                }).then((completion) => {
-                    course.completed = completion && completion.completed;
-
-                    return course;
-                });
-            }));
-        }).then((courses) => {
+        return this.coursesHelper.getUserCoursesWithOptions(this.sort).then((courses) => {
             this.showSortFilter = courses.length > 0 && typeof courses[0].lastaccess != 'undefined';
 
-            this.sortCourses(courses);
+            this.initCourseFilters(courses);
 
             this.courses.filter = '';
             this.showFilter = false;
@@ -242,25 +226,11 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     }
 
     /**
-     * Sort and init courses filters.
-     * @param {any[]} courses Courses to sort.
+     * Init courses filters.
+     *
+     * @param {any[]} courses Courses to filter.
      */
-    sortCourses(courses: any[]): void {
-        if (this.showSortFilter) {
-            if (this.sort == 'lastaccess') {
-                courses.sort((a, b) => {
-                    return b.lastaccess - a.lastaccess;
-                });
-            } else if (this.sort == 'title') {
-                courses.sort((a, b) => {
-                    const compareA = a.fullname.toLowerCase(),
-                        compareB = b.fullname.toLowerCase();
-
-                    return compareA.localeCompare(compareB);
-                });
-            }
-        }
-
+    initCourseFilters(courses: any[]): void {
         this.courses.all = [];
         this.courses.past = [];
         this.courses.inprogress = [];
@@ -291,6 +261,8 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                 }
             }
         });
+
+        this.filteredCourses = this.courses[this.selectedFilter];
     }
 
     /**
@@ -298,7 +270,24 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      */
     switchSort(): void {
         this.currentSite.setLocalSiteConfig('AddonBlockMyOverviewSort', this.sort);
-        this.sortCourses(this.courses.all);
+        const courses = this.courses.all.concat(this.courses.hidden);
+
+        if (this.showSortFilter) {
+            if (this.sort == 'lastaccess') {
+                courses.sort((a, b) => {
+                    return b.lastaccess - a.lastaccess;
+                });
+            } else if (this.sort == 'fullname') {
+                courses.sort((a, b) => {
+                    const compareA = a.fullname.toLowerCase(),
+                        compareB = b.fullname.toLowerCase();
+
+                    return compareA.localeCompare(compareB);
+                });
+            }
+        }
+
+        this.initCourseFilters(courses);
     }
 
     /**
