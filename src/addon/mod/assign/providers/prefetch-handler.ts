@@ -106,6 +106,13 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                             promises.push(this.getSubmissionFiles(assign, submission.submitid, !!submission.blindid, siteId)
                                     .then((submissionFiles) => {
                                 files = files.concat(submissionFiles);
+                            }).catch((error) => {
+                                if (error && error.errorcode == 'nopermission') {
+                                    // The user does not have persmission to view this submission, ignore it.
+                                    return Promise.resolve();
+                                }
+
+                                return Promise.reject(error);
                             }));
                         });
 
@@ -257,11 +264,11 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
      * @param {any} assign Assign.
      * @param {number} courseId Course ID.
      * @param {number} moduleId Module ID.
-     * @param {number} [userId] User ID. If not defined, site's current user.
-     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {number} userId User ID. If not defined, site's current user.
+     * @param {string} siteId Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when prefetched, rejected otherwise.
      */
-    protected prefetchSubmissions(assign: any, courseId: number, moduleId: number, userId?: number, siteId?: string): Promise<any> {
+    protected prefetchSubmissions(assign: any, courseId: number, moduleId: number, userId: number, siteId: string): Promise<any> {
 
         // Get submissions.
         return this.assignProvider.getSubmissions(assign.id, siteId).then((data) => {
@@ -279,8 +286,23 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                         subPromises.push(this.assignProvider.getSubmissionStatus(assign.id, submission.submitid,
                                 !!submission.blindid, true, false, siteId).then((subm) => {
                             return this.prefetchSubmission(assign, courseId, moduleId, subm, submission.submitid, siteId);
+                        }).catch((error) => {
+                            if (error && error.errorcode == 'nopermission') {
+                                // The user does not have persmission to view this submission, ignore it.
+                                return Promise.resolve();
+                            }
+
+                            return Promise.reject(error);
                         }));
                     });
+
+                    // Prefetch the submission of the current user even if it does not exist, this will be create it.
+                    if (!data.submissions || !data.submissions.find((subm) => subm.submitid == userId)) {
+                        subPromises.push(this.assignProvider.getSubmissionStatus(assign.id, userId, false, true, false, siteId)
+                                .then((subm) => {
+                            return this.prefetchSubmission(assign, courseId, moduleId, subm, userId, siteId);
+                        }));
+                    }
 
                     return Promise.all(subPromises);
                 }));
