@@ -303,35 +303,18 @@ export class CoreCourseProvider {
             siteId?: string, modName?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        let promise;
-
-        if (!courseId) {
-            // No courseId passed, try to retrieve it.
-            promise = this.getModuleBasicInfo(moduleId, siteId).then((module) => {
-                return module.course;
-            });
-        } else {
-            promise = Promise.resolve(courseId);
-        }
-
-        return promise.then((cid) => {
-            courseId = cid;
-
-            // Get the site.
-            return this.sitesProvider.getSite(siteId);
-        }).then((site) => {
-            // We have courseId, we can use core_course_get_contents for compatibility.
-            this.logger.debug(`Getting module ${moduleId} in course ${courseId}`);
-
+        // Helper function to do the WS request without processing the result.
+        const doRequest = (site: CoreSite, moduleId: number, modName: string, includeStealth: boolean, preferCache: boolean):
+                Promise<any> => {
             const params: any = {
-                    courseid: courseId,
-                    options: []
-                },
-                preSets: any = {
-                    omitExpires: preferCache
-                };
+                courseid: courseId,
+                options: []
+            };
+            const preSets: CoreSiteWSPreSets = {
+                omitExpires: preferCache
+            };
 
-            if (this.canRequestStealthModules(site)) {
+            if (includeStealth) {
                 params.options.push({
                     name: 'includestealthmodules',
                     value: 1
@@ -354,35 +337,72 @@ export class CoreCourseProvider {
             }
 
             if (!preferCache && ignoreCache) {
-                preSets.getFromCache = 0;
-                preSets.emergencyCache = 0;
-            }
-
-            if (sectionId) {
-                params.options.push({
-                    name: 'sectionid',
-                    value: sectionId
-                });
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
             }
 
             return site.read('core_course_get_contents', params, preSets).catch(() => {
-                // Error getting the module. Try to get all contents (without filtering by module).
-                return this.getSections(courseId, false, false, preSets, siteId);
-            }).then((sections) => {
-                for (let i = 0; i < sections.length; i++) {
-                    const section = sections[i];
-                    for (let j = 0; j < section.modules.length; j++) {
-                        const module = section.modules[j];
-                        if (module.id == moduleId) {
-                            module.course = courseId;
-
-                            return module;
-                        }
+                // The module might still be cached by a request with different parameters.
+                if (!ignoreCache && !this.appProvider.isOnline()) {
+                    if (includeStealth) {
+                        // Older versions didn't include the includestealthmodules option.
+                        return doRequest(site, moduleId, modName, false, true);
+                    } else if (modName) {
+                        // Falback to the request for the given moduleId only.
+                        return doRequest(site, moduleId, undefined, this.canRequestStealthModules(site), true);
                     }
                 }
 
                 return Promise.reject(null);
             });
+        };
+
+        let promise;
+        if (!courseId) {
+            // No courseId passed, try to retrieve it.
+            promise = this.getModuleBasicInfo(moduleId, siteId).then((module) => {
+                courseId = module.course;
+            });
+        } else {
+            promise = Promise.resolve();
+        }
+
+        return promise.then(() => {
+            return this.sitesProvider.getSite(siteId);
+        }).then((site) => {
+            // We have courseId, we can use core_course_get_contents for compatibility.
+            this.logger.debug(`Getting module ${moduleId} in course ${courseId}`);
+
+            return doRequest(site, moduleId, modName, this.canRequestStealthModules(site), preferCache);
+        }).catch(() => {
+            // Error getting the module. Try to get all contents (without filtering by module).
+            const preSets: CoreSiteWSPreSets = {
+                omitExpires: preferCache
+            };
+
+            if (!preferCache && ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
+            }
+
+            return this.getSections(courseId, false, false, preSets, siteId);
+        }).then((sections) => {
+            for (let i = 0; i < sections.length; i++) {
+                const section = sections[i];
+                if (sectionId != null && !isNaN(sectionId) && sectionId != section.id) {
+                    continue;
+                }
+                for (let j = 0; j < section.modules.length; j++) {
+                    const module = section.modules[j];
+                    if (module.id == moduleId) {
+                        module.course = courseId;
+
+                        return module;
+                    }
+                }
+            }
+
+            return Promise.reject(null);
         });
     }
 

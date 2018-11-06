@@ -132,6 +132,8 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
         this.fetchSubmissionData().then(() => {
             this.workshopProvider.logViewSubmission(this.submissionId).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+            }).catch(() => {
+                // Ignore errors.
             });
         });
     }

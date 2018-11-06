@@ -240,6 +240,7 @@
     "view": "View",
     "viewcode": "View code",
     "vieweditor": "View editor",
+    "viewembeddedcontent": "View embedded content",
     "viewprofile": "View profile",
     "warningofflinedatadeleted": "Offline data from {{component}} '{{name}}' has been deleted. {{error}}",
     "whatisyourage": "What is your age?",

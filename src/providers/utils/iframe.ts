@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable, NgZone } from '@angular/core';
-import { Platform } from 'ionic-angular';
+import { Config, Platform } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Network } from '@ionic-native/network';
 import { CoreAppProvider } from '../app';
@@ -24,6 +24,7 @@ import { CoreDomUtilsProvider } from './dom';
 import { CoreTextUtilsProvider } from './text';
 import { CoreUrlUtilsProvider } from './url';
 import { CoreUtilsProvider } from './utils';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 
 /*
  * "Utils" service with helper functions for iframes, embed and similar.
@@ -37,7 +38,8 @@ export class CoreIframeUtilsProvider {
     constructor(logger: CoreLoggerProvider, private fileProvider: CoreFileProvider, private sitesProvider: CoreSitesProvider,
             private urlUtils: CoreUrlUtilsProvider, private textUtils: CoreTextUtilsProvider, private utils: CoreUtilsProvider,
             private domUtils: CoreDomUtilsProvider, private platform: Platform, private appProvider: CoreAppProvider,
-            private translate: TranslateService, private network: Network, private zone: NgZone) {
+            private translate: TranslateService, private network: Network, private zone: NgZone, private config: Config,
+            private contentLinksHelper: CoreContentLinksHelperProvider) {
         this.logger = logger.getInstance('CoreUtilsProvider');
     }
 
@@ -57,16 +59,51 @@ export class CoreIframeUtilsProvider {
                 return true;
             }
 
-            // The frame has an online URL but the app is offline. Show a warning.
+            // The frame has an online URL but the app is offline. Show a warning, or a link if the URL can be opened in the app.
             const div = document.createElement('div');
 
             div.setAttribute('text-center', '');
             div.setAttribute('padding', '');
             div.classList.add('core-iframe-offline-warning');
-            div.innerHTML = (isSubframe ?  '' : this.domUtils.getConnectionWarningIconHtml()) +
-                    '<p>' + this.translate.instant('core.networkerroriframemsg') + '</p>';
 
-            element.parentElement.insertBefore(div, element);
+            const site = this.sitesProvider.getCurrentSite();
+            const username = site ? site.getInfo().username : undefined;
+            this.contentLinksHelper.canHandleLink(src, undefined, username).then((canHandleLink) => {
+                if (canHandleLink) {
+                    const link = document.createElement('a');
+
+                    if (isSubframe) {
+                        // Ionic styles are not available in subframes, adding some minimal inline styles.
+                        link.style.display = 'block';
+                        link.style.padding = '1em';
+                        link.style.fontWeight = '500';
+                        link.style.textAlign = 'center';
+                        link.style.textTransform = 'uppercase';
+                        link.style.cursor = 'pointer';
+                    } else {
+                        const mode = this.config.get('mode');
+                        link.setAttribute('ion-button', '');
+                        link.classList.add('button', 'button-' + mode,
+                                'button-default', 'button-default-' + mode,
+                                'button-block', 'button-block-' + mode);
+                    }
+
+                    const message = this.translate.instant('core.viewembeddedcontent');
+                    link.innerHTML = isSubframe ? message : '<span class="button-inner">' + message + '</span>';
+
+                    link.onclick = (event: Event): void => {
+                        this.contentLinksHelper.handleLink(src, username);
+                        event.preventDefault();
+                    };
+
+                    div.appendChild(link);
+                } else {
+                    div.innerHTML = (isSubframe ?  '' : this.domUtils.getConnectionWarningIconHtml()) +
+                        '<p>' + this.translate.instant('core.networkerroriframemsg') + '</p>';
+                }
+
+                element.parentElement.insertBefore(div, element);
+            });
 
             // Add a class to specify that the iframe is hidden.
             element.classList.add('core-iframe-offline-disabled');

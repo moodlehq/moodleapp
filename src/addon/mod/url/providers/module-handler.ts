@@ -140,6 +140,9 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
         return this.courseProvider.loadModuleContents(module, courseId, undefined, false, false, undefined, this.modName)
                 .then(() => {
             return !(module.contents && module.contents[0] && module.contents[0].fileurl);
+        }).catch(() => {
+            // Module contents could not be loaded, most probably device is offline.
+            return true;
         });
     }
 
@@ -164,6 +167,8 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
     protected openUrl(module: any, courseId: number): void {
         this.urlProvider.logView(module.instance).then(() => {
             this.courseProvider.checkModuleCompletion(courseId, module.completionstatus);
+        }).catch(() => {
+            // Ignore errors.
         });
         this.urlHelper.open(module.contents[0].fileurl);
     }

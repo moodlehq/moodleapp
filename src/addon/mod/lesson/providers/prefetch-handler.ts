@@ -358,9 +358,6 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
             // Prefetch question attempts in last retake for offline calculations.
             promises.push(this.lessonProvider.getQuestionsAttemptsOnline(lesson.id, retake, false, undefined, false, true, siteId));
 
-            // Get module info to be able to handle links.
-            promises.push(this.courseProvider.getModuleBasicInfo(module.id, siteId));
-
             if (accessInfo.canviewreports) {
                 // Prefetch reports data.
                 promises.push(this.groupsProvider.getActivityAllowedGroupsIfEnabled(module.id, undefined, siteId).then((groups) => {

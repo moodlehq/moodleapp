@@ -341,7 +341,9 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                             this.currentPage = data.pageId;
 
                             this.showLoadingAndFetch(true, false).then(() => {
-                                this.wikiProvider.logPageView(this.currentPage);
+                                this.wikiProvider.logPageView(this.currentPage).catch(() => {
+                                    // Ignore errors.
+                                });
                             });
 
                             // Stop listening for new page events.

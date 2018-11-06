@@ -1630,6 +1630,7 @@
     "core.view": "View",
     "core.viewcode": "View code",
     "core.vieweditor": "View editor",
+    "core.viewembeddedcontent": "View embedded content",
     "core.viewprofile": "View profile",
     "core.warningofflinedatadeleted": "Offline data from {{component}} '{{name}}' has been deleted. {{error}}",
     "core.whatisyourage": "What is your age?",

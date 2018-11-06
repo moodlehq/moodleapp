@@ -154,6 +154,8 @@ export class AddonModResourceHelperProvider {
                 module.contents).then(() => {
             this.resourceProvider.logView(module.instance).then(() => {
                 this.courseProvider.checkModuleCompletion(courseId, module.completionstatus);
+            }).catch(() => {
+                // Ignore errors.
             });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.mod_resource.errorwhileloadingthecontent', true);

@@ -168,6 +168,8 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
                 if (!this.nextChapter) {
                     this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
                 }
+            }).catch(() => {
+                // Ignore errors.
             });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.mod_book.errorchapter', true);

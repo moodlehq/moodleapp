@@ -67,7 +67,9 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.fetchNotes(true).then(() => {
-            this.notesProvider.logView(this.courseId);
+            this.notesProvider.logView(this.courseId).catch(() => {
+                // Ignore errors.
+            });
         });
     }
 
@@ -128,7 +130,9 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
         this.refreshIcon = 'spinner';
         this.syncIcon = 'spinner';
         this.fetchNotes(true).then(() => {
-            this.notesProvider.logView(this.courseId);
+            this.notesProvider.logView(this.courseId).catch(() => {
+                // Ignore errors.
+            });
         });
     }
 

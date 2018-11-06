@@ -57,6 +57,8 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
             this.loadContent().then(() => {
                 this.folderProvider.logView(this.module.instance).then(() => {
                     this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                }).catch(() => {
+                    // Ignore errors.
                 });
             }).finally(() => {
                 this.loaded = true;

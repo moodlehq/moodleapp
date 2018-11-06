@@ -97,7 +97,9 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
         super.ngOnInit();
 
         this.loadContent(false, true).then(() => {
-            this.feedbackProvider.logView(this.feedback.id);
+            this.feedbackProvider.logView(this.feedback.id).catch(() => {
+                // Ignore errors.
+            });
         }).finally(() => {
             this.tabsReady = true;
         });
