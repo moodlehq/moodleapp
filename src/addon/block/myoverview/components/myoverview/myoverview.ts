@@ -45,7 +45,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         hidden: []
     };
     selectedFilter = 'inprogress';
-    sort = 'title';
+    sort = 'fullname';
     currentSite: any;
     downloadAllCoursesEnabled: boolean;
     filteredCourses: any[];
@@ -103,7 +103,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             this.sort = value;
         }));
         promises.push(this.currentSite.getLocalSiteConfig('AddonBlockMyOverviewFilter', this.selectedFilter).then((value) => {
-            this.selectedFilter = value;
+            this.selectedFilter = typeof this.courses[value] == 'undefined' ? 'inprogress' : value;
         }));
 
         Promise.all(promises).finally(() => {
@@ -145,26 +145,10 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @return {Promise<any>} Promise resolved when done.
      */
     protected fetchContent(): Promise<any> {
-        return this.coursesHelper.getUserCoursesWithOptions().then((courses) => {
-            // Fetch course completion status.
-            return Promise.all(courses.map((course) => {
-                if (typeof course.enablecompletion != 'undefined' && course.enablecompletion == 0) {
-                    // Completion is disabled for this course, there is no need to fetch the completion status.
-                    return Promise.resolve(course);
-                }
-
-                return this.courseCompletionProvider.getCompletion(course.id).catch(() => {
-                    // Ignore error, maybe course compleiton is disabled or user ha no permission.
-                }).then((completion) => {
-                    course.completed = completion && completion.completed;
-
-                    return course;
-                });
-            }));
-        }).then((courses) => {
+        return this.coursesHelper.getUserCoursesWithOptions(this.sort).then((courses) => {
             this.showSortFilter = courses.length > 0 && typeof courses[0].lastaccess != 'undefined';
 
-            this.sortCourses(courses);
+            this.initCourseFilters(courses);
 
             this.courses.filter = '';
             this.showFilter = false;
@@ -210,22 +194,9 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         this.prefetchIconsInitialized = true;
 
         Object.keys(this.prefetchCoursesData).forEach((filter) => {
-            if (!this.courses[filter] || this.courses[filter].length < 2) {
-                // Not enough courses.
-                this.prefetchCoursesData[filter].icon = '';
-
-                return;
-            }
-
-            this.courseHelper.determineCoursesStatus(this.courses[filter]).then((status) => {
-                let icon = this.courseHelper.getCourseStatusIconAndTitleFromStatus(status).icon;
-                if (icon == 'spinner') {
-                    // It seems all courses are being downloaded, show a download button instead.
-                    icon = 'cloud-download';
-                }
-                this.prefetchCoursesData[filter].icon = icon;
+            this.courseHelper.initPrefetchCoursesIcons(this.courses[filter], this.prefetchCoursesData[filter]).then((prefetch) => {
+                this.prefetchCoursesData[filter] = prefetch;
             });
-
         });
     }
 
@@ -236,23 +207,13 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      */
     prefetchCourses(): Promise<any> {
         const selected = this.selectedFilter,
-            selectedData = this.prefetchCoursesData[selected],
-            initialIcon = selectedData.icon;
+            initialIcon = this.prefetchCoursesData[selected].icon;
 
-        selectedData.icon = 'spinner';
-        selectedData.badge = '';
-
-        return this.courseHelper.confirmAndPrefetchCourses(this.courses[this.selectedFilter], (progress) => {
-            selectedData.badge = progress.count + ' / ' + progress.total;
-        }).then(() => {
-            selectedData.icon = 'refresh';
-        }).catch((error) => {
+        return this.courseHelper.prefetchCourses(this.courses[selected], this.prefetchCoursesData[selected]).catch((error) => {
             if (!this.isDestroyed) {
                 this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
-                selectedData.icon = initialIcon;
+                this.prefetchCoursesData[selected].icon = initialIcon;
             }
-        }).finally(() => {
-            selectedData.badge = '';
         });
     }
 
@@ -265,25 +226,11 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     }
 
     /**
-     * Sort and init courses filters.
-     * @param {any[]} courses Courses to sort.
+     * Init courses filters.
+     *
+     * @param {any[]} courses Courses to filter.
      */
-    sortCourses(courses: any[]): void {
-        if (this.showSortFilter) {
-            if (this.sort == 'lastaccess') {
-                courses.sort((a, b) => {
-                    return b.lastaccess - a.lastaccess;
-                });
-            } else if (this.sort == 'title') {
-                courses.sort((a, b) => {
-                    const compareA = a.fullname.toLowerCase(),
-                        compareB = b.fullname.toLowerCase();
-
-                    return compareA.localeCompare(compareB);
-                });
-            }
-        }
-
+    initCourseFilters(courses: any[]): void {
         this.courses.all = [];
         this.courses.past = [];
         this.courses.inprogress = [];
@@ -314,6 +261,8 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                 }
             }
         });
+
+        this.filteredCourses = this.courses[this.selectedFilter];
     }
 
     /**
@@ -321,7 +270,24 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      */
     switchSort(): void {
         this.currentSite.setLocalSiteConfig('AddonBlockMyOverviewSort', this.sort);
-        this.sortCourses(this.courses.all);
+        const courses = this.courses.all.concat(this.courses.hidden);
+
+        if (this.showSortFilter) {
+            if (this.sort == 'lastaccess') {
+                courses.sort((a, b) => {
+                    return b.lastaccess - a.lastaccess;
+                });
+            } else if (this.sort == 'fullname') {
+                courses.sort((a, b) => {
+                    const compareA = a.fullname.toLowerCase(),
+                        compareB = b.fullname.toLowerCase();
+
+                    return compareA.localeCompare(compareB);
+                });
+            }
+        }
+
+        this.initCourseFilters(courses);
     }
 
     /**
