@@ -92,7 +92,7 @@ export class CoreLoginSitePage {
                     this.domUtils.showErrorModal(error);
                 });
             }, (error) => {
-                this.loginHelper.treatUserTokenError(siteData.url, error);
+                this.loginHelper.treatUserTokenError(siteData.url, error, siteData.username, siteData.password);
             }).finally(() => {
                 modal.dismiss();
             });

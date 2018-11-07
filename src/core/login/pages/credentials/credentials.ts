@@ -228,7 +228,7 @@ export class CoreLoginCredentialsPage {
                 }
             });
         }).catch((error) => {
-            this.loginHelper.treatUserTokenError(siteUrl, error);
+            this.loginHelper.treatUserTokenError(siteUrl, error, username, password);
         }).finally(() => {
             modal.dismiss();
         });
