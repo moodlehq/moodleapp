@@ -27,6 +27,8 @@
     "addon.block_recentlyaccesseditems.noitems": "No recent items",
     "addon.block_recentlyaccesseditems.pluginname": "Recently accessed items",
     "addon.block_sitemainmenu.pluginname": "Main menu",
+    "addon.block_starredcourses.nocourses": "No starred courses",
+    "addon.block_starredcourses.pluginname": "Starred courses",
     "addon.block_timeline.duedate": "Due date",
     "addon.block_timeline.next30days": "Next 30 days",
     "addon.block_timeline.next3months": "Next 3 months",
