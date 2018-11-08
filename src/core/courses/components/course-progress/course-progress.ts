@@ -68,6 +68,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
             this.initPrefetchCourse();
         }
 
+        // This field is only available from 3.6 onwards.
         this.courseOptionMenuEnabled = typeof this.course.isfavourite != 'undefined';
 
         // Refresh the enabled flag if site is updated.
@@ -203,7 +204,8 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
     protected setCourseHidden(hide: boolean): void {
         this.showSpinner = true;
 
-        this.userProvider.updateUserPreference('block_myoverview_hidden_course_' + this.course.id, hide ? 1 : false).then(() => {
+        // We should use null to unset the preference.
+        this.userProvider.updateUserPreference('block_myoverview_hidden_course_' + this.course.id, hide ? 1 : null).then(() => {
             this.course.hidden = hide;
             this.eventsProvider.trigger(
                 CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {course: this.course}, this.sitesProvider.getCurrentSiteId());
