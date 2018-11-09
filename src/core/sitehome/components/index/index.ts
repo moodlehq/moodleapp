@@ -37,7 +37,7 @@ export class CoreSiteHomeIndexComponent implements OnInit {
     hasSupportedBlock: boolean;
     items: any[] = [];
     siteHomeId: number;
-    blocks: any[];
+    blocks = [];
 
     constructor(private domUtils: CoreDomUtilsProvider, private sitesProvider: CoreSitesProvider,
             private courseProvider: CoreCourseProvider, private courseHelper: CoreCourseHelperProvider,

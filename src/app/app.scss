@@ -205,7 +205,7 @@ ion-app.app-root {
   }
 
   input {
-    @include text-align('end');
+    @include text-align('start');
     @include rtl() {
       text-align: right;
     }
