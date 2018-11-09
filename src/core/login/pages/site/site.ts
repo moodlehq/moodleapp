@@ -32,8 +32,10 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class CoreLoginSitePage {
     siteForm: FormGroup;
     fixedSites: any[];
-    displayAsButtons = false;
+    filteredSites: any[];
+    fixedDisplay = 'buttons';
     showKeyboard = false;
+    filter = '';
 
     constructor(navParams: NavParams, private navCtrl: NavController, fb: FormBuilder, private appProvider: CoreAppProvider,
             private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
@@ -46,7 +48,12 @@ export class CoreLoginSitePage {
         // Load fixed sites if they're set.
         if (this.loginHelper.hasSeveralFixedSites()) {
             this.fixedSites = <any[]> this.loginHelper.getFixedSites();
-            this.displayAsButtons = CoreConfigConstants.multisitesdisplay == 'buttons';
+            this.fixedDisplay = CoreConfigConstants.multisitesdisplay;
+            // Autoselect if not defined.
+            if (['list', 'select', 'buttons'].indexOf(this.fixedDisplay) < 0) {
+                this.fixedDisplay = this.fixedSites.length > 8 ? 'list' : (this.fixedSites.length > 3 ? 'select' : 'buttons');
+            }
+            this.filteredSites = this.fixedSites;
             url = this.fixedSites[0].url;
         }
 
@@ -109,6 +116,22 @@ export class CoreLoginSitePage {
                 this.showLoginIssue(url, error);
             }).finally(() => {
                 modal.dismiss();
+            });
+        }
+    }
+
+    /**
+     * The filter has changed.
+     *
+     * @param {any} Received Event.
+     */
+    filterChanged(event: any): void {
+        const newValue = event.target.value && event.target.value.trim().toLowerCase();
+        if (!newValue || !this.fixedSites) {
+            this.filteredSites = this.fixedSites;
+        } else {
+            this.filteredSites = this.fixedSites.filter((site) => {
+                return site.name.toLowerCase().indexOf(newValue) > -1 || site.url.toLowerCase().indexOf(newValue) > -1;
             });
         }
     }
