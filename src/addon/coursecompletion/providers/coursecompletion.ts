@@ -165,7 +165,19 @@ export class AddonCourseCompletionProvider {
         }
 
         return this.coursesProvider.getUserCourse(courseId, preferCache).then((course) => {
-            return !(course && typeof course.enablecompletion != 'undefined' && course.enablecompletion == 0);
+            if (course) {
+                if (typeof course.enablecompletion != 'undefined' && course.enablecompletion == 0) {
+                    // Completion not enabled for the course.
+                    return false;
+                }
+
+                if (typeof course.completionhascriteria != 'undefined' && course.completionhascriteria == 0) {
+                    // No criteria, cannot view completion.
+                    return false;
+                }
+            }
+
+            return true;
         });
     }
 
@@ -177,27 +189,50 @@ export class AddonCourseCompletionProvider {
      * @return {Promise<boolean>} Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     isPluginViewEnabledForUser(courseId: number, userId?: number): Promise<boolean> {
-        // Disable emergency cache to be able to detect that the plugin has been disabled (WS will fail).
-        const preSets: any = {
-            emergencyCache: 0
-        };
+        // Check if user wants to view his own completion.
+        const currentUserId = this.sitesProvider.getCurrentSiteUserId();
+        let promise;
 
-        return this.getCompletion(courseId, userId, preSets).then(() => {
-            return true;
-        }).catch((error) => {
-            if (this.utils.isWebServiceError(error)) {
-                // The WS returned an error, plugin is not enabled.
-                return false;
-            } else {
-                // Not a WS error. Check if we have a cached value.
-                preSets.omitExpires = true;
-
-                return this.getCompletion(courseId, userId, preSets).then(() => {
+        if (!userId || userId == currentUserId) {
+            // Viewing own completion. Get the course to check if it has completion criteria.
+            promise = this.coursesProvider.getUserCourse(courseId, true).then((course): any => {
+                // If the site is returning the completionhascriteria then the user can view his own completion.
+                // We already checked the value in isPluginViewEnabledForCourse.
+                if (course && typeof course.completionhascriteria != 'undefined') {
                     return true;
-                }).catch(() => {
+                }
+
+                return Promise.reject(null);
+            });
+        } else {
+            promise = Promise.reject(null);
+        }
+
+        return promise.catch(() => {
+            // User not viewing own completion or the site doesn't tell us if the course has criteria.
+            // The only way to know if completion can be viewed is to call the WS.
+            // Disable emergency cache to be able to detect that the plugin has been disabled (WS will fail).
+            const preSets: any = {
+                emergencyCache: 0
+            };
+
+            return this.getCompletion(courseId, userId, preSets).then(() => {
+                return true;
+            }).catch((error) => {
+                if (this.utils.isWebServiceError(error)) {
+                    // The WS returned an error, plugin is not enabled.
                     return false;
-                });
-            }
+                } else {
+                    // Not a WS error. Check if we have a cached value.
+                    preSets.omitExpires = true;
+
+                    return this.getCompletion(courseId, userId, preSets).then(() => {
+                        return true;
+                    }).catch(() => {
+                        return false;
+                    });
+                }
+            });
         });
     }
 
