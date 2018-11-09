@@ -449,6 +449,7 @@ ion-app.app-root {
     white-space: normal;
     align-self: start;
     max-width: none;
+    @include text-align('start');
 
     &.select-md,
     &.button-md {
