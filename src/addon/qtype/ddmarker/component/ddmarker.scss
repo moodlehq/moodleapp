@@ -45,7 +45,7 @@ addon-qtype-ddmarker {
     div.ddarea .markertexts {
         min-height: 80px;
         position: absolute;
-        text-align: left;
+        @include text-align('start');
     }
     .dropbackground {
         margin: 0 auto;
