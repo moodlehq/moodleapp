@@ -471,7 +471,8 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             addAttempt : false,
             applyToAll: false,
             scale: false,
-            lang: false
+            lang: false,
+            disabled: false
         };
 
         this.originalGrades =  {
@@ -823,6 +824,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                         this.grade.gradebookGrade = parsedGrade || parsedGrade == 0 ? parsedGrade : null;
                     }
 
+                    this.grade.disabled = grade.gradeislocked || grade.gradeisoverridden;
                     this.grade.modified = grade.gradedategraded;
                 } else if (grade.outcomeid) {
 
@@ -839,6 +841,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                             outcomes.push(outcome);
                         }
                     });
+                    this.gradeInfo.disabled = grade.gradeislocked || grade.gradeisoverridden;
                 }
             });
 

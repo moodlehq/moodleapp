@@ -152,22 +152,23 @@
 
                 <!-- Numeric grade. -->
                 <ion-item text-wrap *ngIf="grade.method == 'simple' && !grade.scale">
-                    <ion-label stacked>{{ 'addon.mod_assign.gradeoutof' | translate: {$a: gradeInfo.grade} }}</ion-label>
-                    <ion-input type="number" [(ngModel)]="grade.grade" min="0" [max]="gradeInfo.grade" [lang]="grade.lang"></ion-input>
+                    <ion-label stacked><h2>{{ 'addon.mod_assign.gradeoutof' | translate: {$a: gradeInfo.grade} }}</h2></ion-label>
+                    <ion-input *ngIf="!grade.disabled" type="number" [(ngModel)]="grade.grade" min="0" [max]="gradeInfo.grade" [lang]="grade.lang"></ion-input>
+                    <p item-content *ngIf="grade.disabled">{{ 'addon.mod_assign.gradelocked' | translate }}</p>
                 </ion-item>
 
                 <!-- Grade using a scale. -->
                 <ion-item text-wrap *ngIf="grade.method == 'simple' && grade.scale">
-                    <ion-label>{{ 'addon.mod_assign.grade' | translate }}</ion-label>
-                    <ion-select [(ngModel)]="grade.grade" interface="popover">
+                    <ion-label><h2>{{ 'addon.mod_assign.grade' | translate }}</h2></ion-label>
+                    <ion-select [(ngModel)]="grade.grade" interface="popover" [disabled]="grade.disabled">
                         <ion-option *ngFor="let grade of grade.scale" [value]="grade.value">{{grade.label}}</ion-option>
                     </ion-select>
                 </ion-item>
 
                 <!-- Outcomes. -->
                 <ion-item text-wrap *ngFor="let outcome of gradeInfo.outcomes">
-                    <ion-label>{{ outcome.name }}</ion-label>
-                    <ion-select *ngIf="canSaveGrades && outcome.itemNumber" [(ngModel)]="outcome.selectedId" interface="popover">
+                    <ion-label><h2>{{ outcome.name }}</h2></ion-label>
+                    <ion-select *ngIf="canSaveGrades && outcome.itemNumber" [(ngModel)]="outcome.selectedId" interface="popover" [disabled]="gradeInfo.disabled">
                         <ion-option *ngFor="let grade of outcome.options" [value]="grade.value">{{grade.label}}</ion-option>
                     </ion-select>
                     <p item-content *ngIf="!canSaveGrades || !outcome.itemNumber">{{ outcome.selected }}</p>
@@ -176,7 +177,8 @@
                 <!-- Gradebook grade for simple grading. -->
                 <ion-item text-wrap *ngIf="grade.method == 'simple'">
                     <h2>{{ 'addon.mod_assign.currentgrade' | translate }}</h2>
-                    <p *ngIf="grade.gradebookGrade !== false && grade.gradebookGrade !== null">{{ grade.gradebookGrade }}</p>
+                    <p *ngIf="grade.gradebookGrade !== false && grade.gradebookGrade !== null && !grade.scale">{{ grade.gradebookGrade }}</p>
+                    <p *ngIf="grade.gradebookGrade !== false && grade.gradebookGrade !== null && grade.scale">{{ grade.scale[grade.gradebookGrade].label }}</p>
                     <p *ngIf="grade.gradebookGrade === false || grade.gradebookGrade === null">-</p>
                 </ion-item>
 

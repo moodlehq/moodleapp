@@ -37,6 +37,7 @@
     "gradedby": "Graded by",
     "gradenotsynced": "Grade not synced",
     "gradedon": "Graded on",
+    "gradelocked": "This grade is locked or overridden in the gradebook.",
     "gradeoutof": "Grade out of {{$a}}",
     "gradingstatus": "Grading status",
     "groupsubmissionsettings": "Group submission settings",
