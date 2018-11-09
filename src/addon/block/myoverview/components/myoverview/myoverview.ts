@@ -176,9 +176,17 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         if (!newValue || !this.courses[this.selectedFilter]) {
             this.filteredCourses = this.courses[this.selectedFilter];
         } else {
-            this.filteredCourses = this.courses[this.selectedFilter].filter((course) => {
-                return course.fullname.toLowerCase().indexOf(newValue) > -1;
-            });
+            // Use displayname if avalaible, or fullname if not.
+            if (this.courses[this.selectedFilter].length > 0 &&
+                    typeof this.courses[this.selectedFilter][0].displayname != 'undefined') {
+                this.filteredCourses = this.courses[this.selectedFilter].filter((course) => {
+                    return course.displayname.toLowerCase().indexOf(newValue) > -1;
+                });
+            } else {
+                this.filteredCourses = this.courses[this.selectedFilter].filter((course) => {
+                    return course.fullname.toLowerCase().indexOf(newValue) > -1;
+                });
+            }
         }
     }
 
