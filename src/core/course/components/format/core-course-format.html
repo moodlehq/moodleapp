@@ -20,9 +20,9 @@
         <!-- Section selector. -->
         <core-dynamic-component [component]="sectionSelectorComponent" [data]="data">
             <div text-wrap *ngIf="displaySectionSelector && sections && sections.length" padding class="clearfix" ion-row justify-content-between>
-                <button float-start ion-button icon-start (click)="showSectionSelector($event)" color="light" class="core-button-select button-no-uppercase" ion-col>
+                <button float-start ion-button icon-start icon-end (click)="showSectionSelector($event)" color="light" class="core-button-select button-no-uppercase" ion-col>
                     <core-icon name="fa-folder"></core-icon>
-                    {{selectedSection && (selectedSection.formattedName || selectedSection.name) || 'core.course.sections' | translate }}
+                    <span class="core-section-selector-text">{{selectedSection && (selectedSection.formattedName || selectedSection.name) || 'core.course.sections' | translate }}</span>
                     <ion-icon name="arrow-dropdown" ios="md-arrow-dropdown"></ion-icon>
                 </button>
                 <!-- Section download. -->

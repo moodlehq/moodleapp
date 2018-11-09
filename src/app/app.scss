@@ -205,6 +205,7 @@ ion-app.app-root {
   }
 
   input {
+    @include text-align('end');
     @include rtl() {
       text-align: right;
     }
@@ -248,7 +249,7 @@ ion-app.app-root {
 
         .core-show-more {
           color: color($colors, dark);
-          text-align: right;
+          @include text-align('end');
           font-size: 14px;
           display: block;
           position: absolute;
@@ -423,7 +424,7 @@ ion-app.app-root {
       width: 100%;
       .select-text {
         white-space: normal;
-        text-align: right;
+        @include text-align('end');
       }
   }
 
@@ -448,6 +449,7 @@ ion-app.app-root {
     white-space: normal;
     align-self: start;
     max-width: none;
+    @include text-align('start');
 
     &.select-md,
     &.button-md {
@@ -481,7 +483,7 @@ ion-app.app-root {
 
     ion-icon:last-child {
       @include margin(null, null, null, 5px);
-      text-align: right;
+      @include text-align('end');
       flex-grow: 2;
     }
   }
@@ -891,7 +893,7 @@ ion-app.app-root {
 
     .alert-head {
       padding: 5px 10px;
-      text-align: left;
+      @include text-align('start');
       h2 {
         font-size: 14px;
       }
@@ -899,7 +901,7 @@ ion-app.app-root {
 
     .alert-message {
       padding: 5px 10px;
-      text-align: left;
+      @include text-align('start');
       p {
         font-size: 14px;
         margin-top: 5px;
