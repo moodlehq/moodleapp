@@ -310,7 +310,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      */
     protected logView(): void {
         this.lessonProvider.logViewLesson(this.lesson.id, this.password).then(() => {
-            this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+            this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
         }).catch((error) => {
             // Ignore errors.
         });

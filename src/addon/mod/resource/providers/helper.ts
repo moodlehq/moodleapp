@@ -153,7 +153,7 @@ export class AddonModResourceHelperProvider {
         return this.courseHelper.downloadModuleAndOpenFile(module, courseId, AddonModResourceProvider.COMPONENT, module.id,
                 module.contents).then(() => {
             this.resourceProvider.logView(module.instance).then(() => {
-                this.courseProvider.checkModuleCompletion(courseId, module.completionstatus);
+                this.courseProvider.checkModuleCompletion(courseId, module.completiondata);
             }).catch(() => {
                 // Ignore errors.
             });

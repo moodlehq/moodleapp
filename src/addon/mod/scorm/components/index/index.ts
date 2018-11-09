@@ -94,7 +94,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * Check the completion.
      */
     protected checkCompletion(): void {
-        this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+        this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
     }
 
     /**

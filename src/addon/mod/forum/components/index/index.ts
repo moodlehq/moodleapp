@@ -114,7 +114,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             }
 
             this.forumProvider.logView(this.forum.id).then(() => {
-                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch((error) => {
                 // Ignore errors.
             });
@@ -423,7 +423,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             });
 
             // Check completion since it could be configured to complete once the user adds a new discussion or replies.
-            this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+            this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
         }
     }
 

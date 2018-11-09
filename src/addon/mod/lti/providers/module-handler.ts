@@ -88,7 +88,7 @@ export class AddonModLtiModuleHandler implements CoreCourseModuleHandler {
                         return this.ltiProvider.getLtiLaunchData(ltiData.id).then((launchData) => {
                             // "View" LTI.
                             this.ltiProvider.logView(ltiData.id).then(() => {
-                                this.courseProvider.checkModuleCompletion(courseId, module.completionstatus);
+                                this.courseProvider.checkModuleCompletion(courseId, module.completiondata);
                             }).catch(() => {
                                 // Ignore errors.
                             });

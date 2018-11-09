@@ -86,7 +86,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
             }
 
             this.glossaryProvider.logView(this.glossary.id, this.viewMode).then(() => {
-                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch((error) => {
                 // Ignore errors.
             });
@@ -387,7 +387,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
             this.showLoadingAndRefresh(false);
 
             // Check completion since it could be configured to complete once the user adds a new discussion or replies.
-            this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+            this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
         }
     }
 

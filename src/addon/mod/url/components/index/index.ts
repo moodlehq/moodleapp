@@ -172,7 +172,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
      */
     go(): void {
         this.urlProvider.logView(this.module.instance).then(() => {
-            this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+            this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
         }).catch(() => {
             // Ignore errors.
         });

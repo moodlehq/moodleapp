@@ -6,6 +6,7 @@ information provided here is intended especially for developers.
 - gulp was updated to v4. In order for gulp to work, you need to install gulp-cli: npm install -g gulp-cli
   It's also recommended to update ionic cli to v4, otherwise some errors could be raised while building: npm install -g ionic
 - The value of the constant CoreCourseProvider.ALL_SECTIONS_ID has changed from -1 to -2.
+- Use of completionstatus on the module object has been deprecated, use completiondata instead.
 
 === 3.5.2 ===
 

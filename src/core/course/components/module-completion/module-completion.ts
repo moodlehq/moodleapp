@@ -25,7 +25,7 @@ import { CoreCourseProvider } from '../../providers/course';
  *
  * Example usage:
  *
- * <core-course-module-completion [completion]="module.completionstatus" [moduleName]="module.name"
+ * <core-course-module-completion [completion]="module.completiondata" [moduleName]="module.name"
  *     (completionChanged)="completionChanged()"></core-course-module-completion>
  */
 @Component({

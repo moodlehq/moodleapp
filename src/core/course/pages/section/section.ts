@@ -184,34 +184,41 @@ export class CoreCourseSectionPage implements OnDestroy {
             }
         }).then(() => {
             const promises = [];
-            let promise;
 
-            // Get the completion status.
-            if (this.course.enablecompletion === false) {
-                // Completion not enabled.
-                promise = Promise.resolve({});
-            } else {
-                promise = this.courseProvider.getActivitiesCompletionStatus(this.course.id).catch(() => {
-                    // It failed, don't use completion.
-                    return {};
-                });
-            }
+            // Get all the sections.
+            promises.push(this.courseProvider.getSections(this.course.id, false, true).then((sections) => {
+                if (refresh) {
+                    // Invalidate the recently downloaded module list. To ensure info can be prefetched.
+                    const modules = this.courseProvider.getSectionsModules(sections);
 
-            promises.push(promise.then((completionStatus) => {
-                // Get all the sections.
-                return this.courseProvider.getSections(this.course.id, false, true).then((sections) => {
-                    if (refresh) {
-                        // Invalidate the recently downloaded module list. To ensure info can be prefetched.
-                        const modules = this.courseProvider.getSectionsModules(sections);
-
-                        return this.prefetchDelegate.invalidateModules(modules, this.course.id).then(() => {
-                            return sections;
-                        });
-                    } else {
+                    return this.prefetchDelegate.invalidateModules(modules, this.course.id).then(() => {
                         return sections;
-                    }
-                }).then((sections) => {
+                    });
+                } else {
+                    return sections;
+                }
+            }).then((sections) => {
+                let promise;
 
+                 // Get the completion status.
+                if (this.course.enablecompletion === false) {
+                    // Completion not enabled.
+                    promise = Promise.resolve({});
+                } else {
+                    const sectionWithModules = sections.find((section) => {
+                            return section.modules.length > 0;
+                    });
+                    if (sectionWithModules && typeof sectionWithModules.modules[0].completion != 'undefined') {
+                        promise = Promise.resolve({});
+                    } else {
+                        promise = this.courseProvider.getActivitiesCompletionStatus(this.course.id).catch(() => {
+                            // It failed, don't use completion.
+                            return {};
+                        });
+                    }
+                }
+
+                return promise.then((completionStatus) => {
                     this.courseHelper.addHandlerDataForModules(sections, this.course.id, completionStatus, this.course.fullname);
 
                     // Format the name of each section and check if it has content.

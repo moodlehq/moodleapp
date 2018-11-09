@@ -67,7 +67,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
                 return;
             }
             this.choiceProvider.logView(this.choice.id).then(() => {
-                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch((error) => {
                 // Ignore errors.
             });
@@ -354,7 +354,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             this.choiceProvider.submitResponse(this.choice.id, this.choice.name, this.courseId, responses).then(() => {
                 // Success!
                 // Check completion since it could be configured to complete once the user answers the choice.
-                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
                 this.domUtils.scrollToTop(this.content);
 
                 // Let's refresh the data.

@@ -106,7 +106,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
             }
 
             this.workshopProvider.logView(this.workshop.id).then(() => {
-                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch((error) => {
                 // Ignore errors.
             });
@@ -123,7 +123,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
             this.showLoadingAndRefresh(true);
 
             // Check completion since it could be configured to complete once the user adds a new discussion or replies.
-            this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+            this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
         }
     }
 
