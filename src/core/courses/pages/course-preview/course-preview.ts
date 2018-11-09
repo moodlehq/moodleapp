@@ -101,7 +101,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
         this.courseUrl = this.textUtils.concatenatePaths(currentSiteUrl, 'course/view.php?id=' + this.course.id);
         this.paypalReturnUrl = this.textUtils.concatenatePaths(currentSiteUrl, 'enrol/paypal/return.php');
         if (this.course.overviewfiles && this.course.overviewfiles.length > 0) {
-            this.course.imageThumb = this.course.overviewfiles[0].fileurl;
+            this.course.courseImage = this.course.overviewfiles[0].fileurl;
         }
 
         // Initialize the self enrol modal.

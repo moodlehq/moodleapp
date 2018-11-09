@@ -38,13 +38,13 @@ export class CoreCoursesHelperProvider {
             course.displayname = courseByField.displayname;
 
             if (courseByField.overviewfiles && courseByField.overviewfiles[0]) {
-                course.imageThumb = courseByField.overviewfiles[0].fileurl;
+                course.courseImage = courseByField.overviewfiles[0].fileurl;
             } else {
-                course.imageThumb = false;
+                course.courseImage = false;
             }
         } else {
             delete course.displayname;
-            course.imageThumb = false;
+            course.courseImage = false;
         }
     }
 
