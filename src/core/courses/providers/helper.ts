@@ -133,8 +133,13 @@ export class CoreCoursesHelperProvider {
                 }
                 courses = slice > 0 ? courses.slice(0, slice) : courses;
 
-                // Fetch course completion status.
+                // Fetch course completion status if needed.
                 return Promise.all(courses.map((course) => {
+                    if (typeof course.completed != 'undefined') {
+                        // The WebService already returns the completed status, no need to fetch it.
+                        return Promise.resolve(course);
+                    }
+
                     if (typeof course.enablecompletion != 'undefined' && course.enablecompletion == 0) {
                         // Completion is disabled for this course, there is no need to fetch the completion status.
                         return Promise.resolve(course);
