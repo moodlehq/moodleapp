@@ -378,16 +378,7 @@ export class CoreSitesProvider {
      * @return {Promise} A promise to be resolved if the site exists.
      */
     siteExists(siteUrl: string): Promise<void> {
-        const data: any = {};
-
-        if (!this.appProvider.isMobile() && !this.appProvider.isDesktop()) {
-            // Send fake parameters for CORS. This is only needed in browser.
-            data.username = 'a';
-            data.password = 'b';
-            data.service = 'c';
-        }
-
-        return this.http.post(siteUrl + '/login/token.php', data).timeout(CoreConstants.WS_TIMEOUT).toPromise().catch(() => {
+        return this.http.post(siteUrl + '/login/token.php', {}).timeout(CoreConstants.WS_TIMEOUT).toPromise().catch(() => {
             // Default error messages are kinda bad, return our own message.
             return Promise.reject({error: this.translate.instant('core.cannotconnect')});
         }).then((data: any) => {
