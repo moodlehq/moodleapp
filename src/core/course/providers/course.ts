@@ -34,6 +34,15 @@ export class CoreCourseProvider {
     static ACCESS_GUEST = 'courses_access_guest';
     static ACCESS_DEFAULT = 'courses_access_default';
 
+    static COMPLETION_TRACKING_NONE = 0;
+    static COMPLETION_TRACKING_MANUAL = 1;
+    static COMPLETION_TRACKING_AUTOMATIC = 2;
+
+    static COMPLETION_INCOMPLETE = 0;
+    static COMPLETION_COMPLETE = 1;
+    static COMPLETION_COMPLETE_PASS = 2;
+    static COMPLETION_COMPLETE_FAIL = 3;
+
     protected ROOT_CACHE_KEY = 'mmCourse:';
 
     // Variables for database.

@@ -34,6 +34,24 @@ export class CoreCourseSectionSelectorPage {
     constructor(navParams: NavParams, courseHelper: CoreCourseHelperProvider, private viewCtrl: ViewController) {
         this.sections = navParams.get('sections');
         this.selected = navParams.get('selected');
+        this.sections.forEach((section) => {
+            let complete = 0,
+                total = 0;
+            section.modules && section.modules.forEach((module) => {
+                if (typeof module.completiondata != 'undefined' &&
+                        module.completiondata.tracking > CoreCourseProvider.COMPLETION_TRACKING_NONE) {
+                    total++;
+                    if (module.completiondata.state == CoreCourseProvider.COMPLETION_COMPLETE ||
+                            module.completiondata.state == CoreCourseProvider.COMPLETION_COMPLETE_PASS) {
+                        complete++;
+                    }
+                }
+            });
+
+            if (total > 0) {
+                section.progress = complete / total * 100;
+            }
+        });
     }
 
     /**

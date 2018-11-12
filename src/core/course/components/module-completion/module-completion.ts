@@ -95,22 +95,28 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
         let langKey,
             image;
 
-        if (this.completion.tracking === 1 && this.completion.state === 0) {
+        if (this.completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_MANUAL &&
+                this.completion.state === CoreCourseProvider.COMPLETION_INCOMPLETE) {
             image = 'completion-manual-n';
             langKey = 'core.completion-alt-manual-n';
-        } else if (this.completion.tracking === 1 && this.completion.state === 1) {
+        } else if (this.completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_MANUAL &&
+                this.completion.state === CoreCourseProvider.COMPLETION_COMPLETE) {
             image = 'completion-manual-y';
             langKey = 'core.completion-alt-manual-y';
-        } else if (this.completion.tracking === 2 && this.completion.state === 0) {
+        } else if (this.completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_AUTOMATIC &&
+                this.completion.state === CoreCourseProvider.COMPLETION_INCOMPLETE) {
             image = 'completion-auto-n';
             langKey = 'core.completion-alt-auto-n';
-        } else if (this.completion.tracking === 2 && this.completion.state === 1) {
+        } else if (this.completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_AUTOMATIC &&
+                this.completion.state === CoreCourseProvider.COMPLETION_COMPLETE) {
             image = 'completion-auto-y';
             langKey = 'core.completion-alt-auto-y';
-        } else if (this.completion.tracking === 2 && this.completion.state === 2) {
+        } else if (this.completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_AUTOMATIC &&
+                this.completion.state === CoreCourseProvider.COMPLETION_COMPLETE_PASS) {
             image = 'completion-auto-pass';
             langKey = 'core.completion-alt-auto-pass';
-        } else if (this.completion.tracking === 2 && this.completion.state === 3) {
+        } else if (this.completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_AUTOMATIC &&
+                this.completion.state === CoreCourseProvider.COMPLETION_COMPLETE_FAIL) {
             image = 'completion-auto-fail';
             langKey = 'core.completion-alt-auto-fail';
         }
