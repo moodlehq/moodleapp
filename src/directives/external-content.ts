@@ -182,7 +182,8 @@ export class CoreExternalContentDirective implements AfterViewInit {
             const dwnUnknown = tagName == 'IMG' || tagName == 'TRACK' || targetAttr == 'poster';
             let promise;
 
-            if (targetAttr === 'src' && tagName !== 'SOURCE' && tagName !== 'TRACK') {
+            if (targetAttr === 'src' && tagName !== 'SOURCE' && tagName !== 'TRACK' && tagName !== 'VIDEO' &&
+                    tagName !== 'AUDIO') {
                 promise = this.filepoolProvider.getSrcByUrl(siteId, url, this.component, this.componentId, 0, true, dwnUnknown);
             } else {
                 promise = this.filepoolProvider.getUrlByUrl(siteId, url, this.component, this.componentId, 0, true, dwnUnknown);
