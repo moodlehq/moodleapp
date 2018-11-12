@@ -218,7 +218,8 @@ export class AddonBlockTimelineProvider {
      */
     isAvailable(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.wsAvailable('core_calendar_get_action_events_by_courses');
+            return site.wsAvailable('core_calendar_get_action_events_by_courses') &&
+                site.wsAvailable('core_calendar_get_action_events_by_timesort');
         });
     }
 
