@@ -96,12 +96,17 @@ export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHand
 
                 this.messagesProvider.isBlocked(user.id).then((isBlocked) => {
                     if (isBlocked) {
-                        return this.messagesProvider.unblockContact(user.id);
-                    } else {
-                        const template = this.translate.instant('addon.messages.blockcontactconfirm'),
-                            title = this.translate.instant('addon.messages.blockcontact');
+                        const template = this.translate.instant('addon.messages.unblockuserconfirm', {$a: user.fullname});
+                        const okText = this.translate.instant('addon.messages.unblockuser');
 
-                        return this.domUtils.showConfirm(template, title, title).then(() => {
+                        return this.domUtils.showConfirm(template, undefined, okText).then(() => {
+                            return this.messagesProvider.unblockContact(user.id);
+                        });
+                    } else {
+                        const template = this.translate.instant('addon.messages.blockuserconfirm', {$a: user.fullname});
+                        const okText = this.translate.instant('addon.messages.blockuser');
+
+                        return this.domUtils.showConfirm(template, undefined, okText).then(() => {
                             return this.messagesProvider.blockContact(user.id);
                         });
                     }
@@ -129,7 +134,7 @@ export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHand
         return this.messagesProvider.isBlocked(userId).then((isBlocked) => {
             if (isBlocked) {
                 this.updateButton(userId, {
-                    title: 'addon.messages.unblockcontact',
+                    title: 'addon.messages.unblockuser',
                     class: 'addon-messages-unblockcontact-handler',
                     icon: 'checkmark-circle',
                     hidden: false,
@@ -137,7 +142,7 @@ export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHand
                 });
             } else {
                 this.updateButton(userId, {
-                    title: 'addon.messages.blockcontact',
+                    title: 'addon.messages.blockuser',
                     class: 'addon-messages-blockcontact-handler',
                     icon: 'close-circle',
                     hidden: false,
