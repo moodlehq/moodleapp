@@ -966,6 +966,66 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Show a modal to inform the user that a confirmation email was sent, and a button to resend the email on 3.6+ sites.
+     *
+     * @param {string} siteUrl Site URL.
+     * @param {string} [email] Email of the user. If set displayed in the message.
+     * @param {string} [username] Username. If not set the button to resend email will not be shown.
+     * @param {string} [password] User password. If not set the button to resend email will not be shown.
+     */
+    protected showNotConfirmedModal(siteUrl: string, email?: string, username?: string, password?: string): void {
+        const title = this.translate.instant('core.login.mustconfirm');
+        let message;
+        if (email) {
+            message = this.translate.instant('core.login.emailconfirmsent', { $a: email });
+        } else {
+            message = this.translate.instant('core.login.emailconfirmsentnoemail');
+        }
+
+        // Check whether we need to display the resend button or not.
+        let promise;
+        if (username && password) {
+            const modal = this.domUtils.showModalLoading();
+            // We don't have site info before login, the only way to check if the WS is available is by calling it.
+            const preSets = { siteUrl };
+            promise = this.wsProvider.callAjax('core_auth_resend_confirmation_email', {}, preSets).catch((error) => {
+                // If the WS responds with an invalid parameter error it means the WS is avaiable.
+                return Promise.resolve(error && error.errorcode === 'invalidparameter');
+            }).finally(() => {
+                modal.dismiss();
+            });
+        } else {
+            promise = Promise.resolve(false);
+        }
+
+        promise.then((canResend) => {
+            if (canResend) {
+                const okText = this.translate.instant('core.login.resendemail');
+                const cancelText = this.translate.instant('core.close');
+
+                this.domUtils.showConfirm(message, title, okText, cancelText).then(() => {
+                    // Call the WS to resend the confirmation email.
+                    const modal = this.domUtils.showModalLoading('core.sending', true);
+                    const data = { username, password };
+                    const preSets = { siteUrl };
+                    this.wsProvider.callAjax('core_auth_resend_confirmation_email', data, preSets).then((response) => {
+                        const message = this.translate.instant('core.login.emailconfirmsentsuccess');
+                        this.domUtils.showAlert(this.translate.instant('core.success'), message);
+                    }).catch((error) => {
+                        this.domUtils.showErrorModal(error);
+                    }).finally(() => {
+                        modal.dismiss();
+                    });
+                }).catch(() => {
+                    // Dialog dismissed.
+                });
+            } else {
+                this.domUtils.showAlert(title, message);
+            }
+        });
+    }
+
+    /**
      * Function called when site policy is not agreed. Reserved for core use.
      *
      * @param {string} [siteId] Site ID. If not defined, current site.
@@ -998,10 +1058,14 @@ export class CoreLoginHelperProvider {
      *
      * @param {string} siteUrl Site URL to construct change password URL.
      * @param {any} error Error object containing errorcode and error message.
+     * @param {string} [username] Username.
+     * @param {string} [password] User password.
      */
-    treatUserTokenError(siteUrl: string, error: any): void {
+    treatUserTokenError(siteUrl: string, error: any, username?: string, password?: string): void {
         if (error.errorcode == 'forcepasswordchangenotice') {
             this.openChangePassword(siteUrl, this.textUtils.getErrorMessageFromError(error));
+        } else if (error.errorcode == 'usernotconfirmed') {
+            this.showNotConfirmedModal(siteUrl, undefined, username, password);
         } else if (error.errorcode == 'legacymoodleversion') {
             this.showLegacyNoticeModal(this.textUtils.getErrorMessageFromError(error));
         } else {
