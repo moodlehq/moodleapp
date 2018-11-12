@@ -178,7 +178,9 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
             if (action) {
                 switch (action) {
                     case 'download':
-                        this.prefetchCourse(e);
+                        if (this.prefetchCourseData.prefetchCourseIcon != 'spinner') {
+                            this.prefetchCourse(e);
+                        }
                         break;
                     case 'hide':
                         this.setCourseHidden(true);

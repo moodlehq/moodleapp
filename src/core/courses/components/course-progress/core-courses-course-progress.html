@@ -18,13 +18,13 @@
         </div>
 
         <div class="core-button-spinner" *ngIf="courseOptionMenuEnabled">
-            <!-- Options menu. -->
-            <button ion-button icon-only clear color="dark" (click)="showCourseOptionsMenu($event)" *ngIf="prefetchCourseData.prefetchCourseIcon != 'spinner' && !showSpinner">
-                <core-icon name="more"></core-icon>
-            </button>
-
             <!-- Download course spinner. -->
             <ion-spinner *ngIf="prefetchCourseData.prefetchCourseIcon == 'spinner' || showSpinner"></ion-spinner>
+
+            <!-- Options menu. -->
+            <button ion-button icon-only clear color="dark" (click)="showCourseOptionsMenu($event)" *ngIf="!showSpinner">
+                <core-icon name="more"></core-icon>
+            </button>
         </div>
     </ion-item>
     <ion-item text-wrap *ngIf="course.summary && course.summary.length" [class.item-disabled]="course.visible == 0">

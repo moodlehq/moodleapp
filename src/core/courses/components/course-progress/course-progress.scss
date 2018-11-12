@@ -57,6 +57,14 @@ ion-app.app-root core-courses-course-progress {
             &.core-course-more-than-title {
                 padding-bottom: 0;
             }
+
+            .core-button-spinner .spinner {
+                vertical-align: middle;
+            }
+
+            .item-button[icon-only] {
+                min-width: 50px;
+            }
         }
         .label {
             @include margin(0, 0, 0, null);
