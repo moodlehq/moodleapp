@@ -17,6 +17,7 @@ import { IonicPage } from 'ionic-angular';
 import { AddonMessagesProvider } from '../../providers/messages';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Page that displays the messages settings page.
@@ -31,10 +32,21 @@ export class AddonMessagesSettingsPage implements OnDestroy {
 
     preferences: any;
     preferencesLoaded: boolean;
-    blockNonContactsState = false;
+    contactablePrivacy: number | boolean;
+    advancedContactable = false; // Whether the site supports "advanced" contactable privacy.
+    allowSiteMessaging = false;
+    onlyContactsValue = AddonMessagesProvider.MESSAGE_PRIVACY_ONLYCONTACTS;
+    courseMemberValue = AddonMessagesProvider.MESSAGE_PRIVACY_COURSEMEMBER;
+    siteValue = AddonMessagesProvider.MESSAGE_PRIVACY_SITE;
+
+    protected previousContactableValue: number | boolean;
 
     constructor(private messagesProvider: AddonMessagesProvider, private domUtils: CoreDomUtilsProvider,
-            private userProvider: CoreUserProvider) {
+            private userProvider: CoreUserProvider, sitesProvider: CoreSitesProvider) {
+
+        const currentSite = sitesProvider.getCurrentSite();
+        this.advancedContactable = currentSite && currentSite.isVersionGreaterEqualThan('3.6');
+        this.allowSiteMessaging = currentSite && currentSite.canUseAdvancedFeature('messagingallusers');
     }
 
     /**
@@ -54,7 +66,8 @@ export class AddonMessagesSettingsPage implements OnDestroy {
     protected fetchPreferences(): Promise<any> {
         return this.messagesProvider.getMessagePreferences().then((preferences) => {
             this.preferences = preferences;
-            this.blockNonContactsState = preferences.blocknoncontacts;
+            this.contactablePrivacy = preferences.blocknoncontacts;
+            this.previousContactableValue = this.contactablePrivacy;
         }).catch((message) => {
             this.domUtils.showErrorModal(message);
         }).finally(() => {
@@ -85,19 +98,31 @@ export class AddonMessagesSettingsPage implements OnDestroy {
     }
 
     /**
-     * Block non contacts.
+     * Save the contactable privacy setting..
      *
-     * @param {boolean} block If it should be blocked or not.
+     * @param {number|boolean} value The value to set.
      */
-    blockNonContacts(block: boolean): void {
+    saveContactablePrivacy(value: number | boolean): void {
+        if (this.contactablePrivacy == this.previousContactableValue) {
+            // Value hasn't changed from previous, it probably means that we just fetched the value from the server.
+            return;
+        }
+
         const modal = this.domUtils.showModalLoading('core.sending', true);
-        this.userProvider.updateUserPreference('message_blocknoncontacts', block ? 1 : 0).then(() => {
+
+        if (!this.advancedContactable) {
+            // Convert from boolean to number.
+            value = value ? 1 : 0;
+        }
+
+        this.userProvider.updateUserPreference('message_blocknoncontacts', value).then(() => {
             // Update the preferences since they were modified.
             this.updatePreferencesAfterDelay();
+            this.previousContactableValue = this.contactablePrivacy;
         }).catch((message) => {
             // Show error and revert change.
             this.domUtils.showErrorModal(message);
-            this.blockNonContactsState = !this.blockNonContactsState;
+            this.contactablePrivacy = this.previousContactableValue;
         }).finally(() => {
             modal.dismiss();
         });
@@ -148,7 +173,7 @@ export class AddonMessagesSettingsPage implements OnDestroy {
      *
      * @param {any} refresher Refresher.
      */
-    refreshEvent(refresher: any): void {
+    refreshPreferences(refresher: any): void {
         this.messagesProvider.invalidateMessagePreferences().finally(() => {
             this.fetchPreferences().finally(() => {
                 refresher.complete();
