@@ -56,6 +56,10 @@ export class CoreMainMenuPage implements OnDestroy {
         this.showTabs = true;
 
         this.subscription = this.menuDelegate.getHandlers().subscribe((handlers) => {
+            // Remove the handlers that should only appear in the More menu.
+            handlers = handlers.filter((handler) => {
+                return !handler.onlyInMore;
+            });
             handlers = handlers.slice(0, CoreMainMenuProvider.NUM_MAIN_HANDLERS); // Get main handlers.
 
             // Re-build the list of tabs. If a handler is already in the list, use existing object to prevent re-creating the tab.

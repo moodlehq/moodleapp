@@ -25,8 +25,7 @@ export class CoreSitePluginsMainMenuHandler extends CoreSitePluginsBaseHandler i
             protected initResult: any) {
         super(name);
 
-        // Set 699 as max priority so site plugins are always shown in the More tab (700 is Notifications tab).
-        this.priority = Math.min(handlerSchema.priority, 699);
+        this.priority = handlerSchema.priority;
     }
 
     /**
@@ -45,7 +44,8 @@ export class CoreSitePluginsMainMenuHandler extends CoreSitePluginsBaseHandler i
                 component: this.plugin.component,
                 method: this.handlerSchema.method,
                 initResult: this.initResult
-            }
+            },
+            onlyInMore: true
         };
     }
 }
