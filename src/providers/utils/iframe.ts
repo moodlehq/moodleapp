@@ -317,8 +317,26 @@ export class CoreIframeUtilsProvider {
             }
 
             if (scheme && scheme != 'file' && scheme != 'filesystem') {
-                // Scheme suggests it's an external resource, open it in browser.
+                // Scheme suggests it's an external resource.
                 event.preventDefault();
+
+                const frameSrc = element.src || element.data,
+                    frameScheme = this.urlUtils.getUrlScheme(frameSrc);
+
+                // If the frame is not local, check the target to identify how to treat the link.
+                if (frameScheme && frameScheme != 'file' && frameScheme != 'filesystem' &&
+                        (!link.target || link.target == '_self')) {
+                    // Load the link inside the frame itself.
+                    if (element.tagName.toLowerCase() == 'object') {
+                        element.setAttribute('data', link.href);
+                    } else {
+                        element.setAttribute('src', link.href);
+                    }
+
+                    return;
+                }
+
+                // The frame is local or the link needs to be opened in a new window. Open in browser.
                 if (!this.sitesProvider.isLoggedIn()) {
                     this.utils.openInBrowser(link.href);
                 } else {
