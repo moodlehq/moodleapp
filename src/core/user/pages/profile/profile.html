@@ -16,7 +16,7 @@
                 </div>
                 <h2><core-format-text [text]="user.fullname"></core-format-text></h2>
                 <p><core-format-text *ngIf="user.address" [text]="user.address"></core-format-text></p>
-                <p *ngIf="user.roles">
+                <p *ngIf="user.roles" text-wrap>
                     <strong>{{ 'core.user.roles' | translate}}</strong>{{'core.labelsep' | translate}}
                     <core-format-text [text]="user.roles"></core-format-text>
                 </p>
