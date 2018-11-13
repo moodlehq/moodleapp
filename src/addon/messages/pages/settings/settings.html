@@ -8,12 +8,28 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="preferencesLoaded">
-        <!-- Block non contacts. -->
+        <!-- Contactable privacy. -->
         <ion-card>
-            <ion-item>
+            <ion-item *ngIf="!advancedContactable">
               <ion-label>{{ 'addon.messages.blocknoncontacts' | translate }}</ion-label>
-              <ion-toggle [(ngModel)]="blockNonContactsState" (ionChange)="blockNonContacts(blockNonContactsState)"></ion-toggle>
+              <ion-toggle [(ngModel)]="contactablePrivacy" (ionChange)="saveContactablePrivacy(contactablePrivacy)"></ion-toggle>
             </ion-item>
+
+            <ion-list *ngIf="advancedContactable" text-wrap radio-group [(ngModel)]="contactablePrivacy" (ionChange)="saveContactablePrivacy(contactablePrivacy)">
+                <ion-item-divider color="light">{{ 'addon.messages.contactableprivacy' | translate }}</ion-item-divider>
+                <ion-item>
+                    <ion-label>{{ 'addon.messages.contactableprivacy_onlycontacts' | translate }}</ion-label>
+                    <ion-radio [value]="onlyContactsValue"></ion-radio>
+                </ion-item>
+                <ion-item>
+                    <ion-label>{{ 'addon.messages.contactableprivacy_coursemember' | translate }}</ion-label>
+                    <ion-radio [value]="courseMemberValue"></ion-radio>
+                </ion-item>
+                <ion-item *ngIf="allowSiteMessaging">
+                    <ion-label>{{ 'addon.messages.contactableprivacy_site' | translate }}</ion-label>
+                    <ion-radio [value]="siteValue"></ion-radio>
+                </ion-item>
+            </ion-list>
         </ion-card>
 
         <ng-container *ngIf="preferences">

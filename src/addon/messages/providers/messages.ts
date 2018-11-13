@@ -37,6 +37,10 @@ export class AddonMessagesProvider {
     static POLL_INTERVAL = 10000;
     static PUSH_SIMULATION_COMPONENT = 'AddonMessagesPushSimulation';
 
+    static MESSAGE_PRIVACY_COURSEMEMBER = 0; // Privacy setting for being messaged by anyone within courses user is member of.
+    static MESSAGE_PRIVACY_ONLYCONTACTS = 1; // Privacy setting for being messaged only by contacts.
+    static MESSAGE_PRIVACY_SITE = 2; // Privacy setting for being messaged by anyone on the site.
+
     protected logger;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider,
@@ -469,7 +473,7 @@ export class AddonMessagesProvider {
 
             return site.read('core_message_get_user_message_preferences', {}, preSets).then((data) => {
                 if (data.preferences) {
-                    data.preferences.blocknoncontacts = !!data.blocknoncontacts;
+                    data.preferences.blocknoncontacts = data.blocknoncontacts;
 
                     return data.preferences;
                 }
