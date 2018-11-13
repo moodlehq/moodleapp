@@ -48,7 +48,7 @@ export class AddonNotificationsProvider {
     protected formatNotificationsData(notifications: any[]): void {
         notifications.forEach((notification) => {
             // Set message to show.
-            if (notification.contexturl && notification.contexturl.indexOf('/mod/forum/')) {
+            if (notification.contexturl && notification.contexturl.indexOf('/mod/forum/') >= 0) {
                 notification.mobiletext = notification.smallmessage;
             } else {
                 notification.mobiletext = notification.fullmessage;
