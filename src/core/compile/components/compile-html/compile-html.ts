@@ -53,9 +53,9 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     @ViewChild('dynamicComponent', { read: ViewContainerRef }) container: ViewContainerRef;
 
     loaded: boolean;
+    componentInstance: any;
 
     protected componentRef: ComponentRef<any>;
-    protected componentInstance: any;
     protected element;
     protected differ: any; // To detect changes in the jsData input.
 

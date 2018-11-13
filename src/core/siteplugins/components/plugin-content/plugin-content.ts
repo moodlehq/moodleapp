@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input, Output, EventEmitter, Optional, DoCheck, KeyValueDiffers } from '@angular/core';
+import {
+    Component, OnInit, Input, Output, EventEmitter, Optional, DoCheck, KeyValueDiffers, ViewChild, ElementRef
+} from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
@@ -26,6 +28,9 @@ import { Subject } from 'rxjs';
     templateUrl: 'core-siteplugins-plugin-content.html',
 })
 export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
+    // Get the compile element. Don't set the right type to prevent circular dependencies.
+    @ViewChild('compile') compileComponent: ElementRef;
+
     @Input() component: string;
     @Input() method: string;
     @Input() args: any;
