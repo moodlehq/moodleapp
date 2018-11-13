@@ -21,11 +21,13 @@ import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
 import { CoreCoursesCourseProgressComponent } from '../components/course-progress/course-progress';
 import { CoreCoursesCourseListItemComponent } from '../components/course-list-item/course-list-item';
+import { CoreCoursesCourseOptionsMenuComponent } from '../components/course-options-menu/course-options-menu';
 
 @NgModule({
     declarations: [
         CoreCoursesCourseProgressComponent,
-        CoreCoursesCourseListItemComponent
+        CoreCoursesCourseListItemComponent,
+        CoreCoursesCourseOptionsMenuComponent
     ],
     imports: [
         CommonModule,
@@ -39,7 +41,11 @@ import { CoreCoursesCourseListItemComponent } from '../components/course-list-it
     ],
     exports: [
         CoreCoursesCourseProgressComponent,
-        CoreCoursesCourseListItemComponent
+        CoreCoursesCourseListItemComponent,
+        CoreCoursesCourseOptionsMenuComponent
+    ],
+    entryComponents: [
+        CoreCoursesCourseOptionsMenuComponent
     ]
 })
 export class CoreCoursesComponentsModule {}

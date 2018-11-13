@@ -56,6 +56,10 @@ ion-app.app-root core-courses-course-progress {
                 margins: 6px 0;
                 flex-grow: 1;
             }
+
+            &.core-course-more-than-title {
+                padding-bottom: 0;
+            }
         }
         .label {
             @include margin(0, 0, 0, null);

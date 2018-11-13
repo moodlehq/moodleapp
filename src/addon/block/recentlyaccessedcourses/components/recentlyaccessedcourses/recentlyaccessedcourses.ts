@@ -15,6 +15,7 @@
 import { Component, OnInit, OnDestroy, Injector } from '@angular/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCoursesHelperProvider } from '@core/courses/providers/helper';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
@@ -40,13 +41,15 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     protected prefetchIconsInitialized = false;
     protected isDestroyed;
     protected updateSiteObserver;
+    protected coursesObserver;
     protected courseIds = [];
     protected fetchContentDefaultError = 'Error getting recent courses data.';
 
     constructor(injector: Injector, private coursesProvider: CoreCoursesProvider,
             private courseCompletionProvider: AddonCourseCompletionProvider, private eventsProvider: CoreEventsProvider,
             private courseHelper: CoreCourseHelperProvider, private utils: CoreUtilsProvider,
-            private courseOptionsDelegate: CoreCourseOptionsDelegate, private coursesHelper: CoreCoursesHelperProvider) {
+            private courseOptionsDelegate: CoreCourseOptionsDelegate, private coursesHelper: CoreCoursesHelperProvider,
+            private sitesProvider: CoreSitesProvider) {
 
         super(injector, 'AddonBlockRecentlyAccessedCoursesComponent');
     }
@@ -67,7 +70,11 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
                 // Download all courses is enabled now, initialize it.
                 this.initPrefetchCoursesIcons();
             }
-        });
+        }, this.sitesProvider.getCurrentSiteId());
+
+        this.coursesObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, () => {
+            this.refreshContent();
+        }, this.sitesProvider.getCurrentSiteId());
 
         super.ngOnInit();
     }
@@ -147,6 +154,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;
+        this.coursesObserver && this.coursesObserver.off();
         this.updateSiteObserver && this.updateSiteObserver.off();
     }
 }

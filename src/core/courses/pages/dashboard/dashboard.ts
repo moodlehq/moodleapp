@@ -69,7 +69,7 @@ export class CoreCoursesDashboardPage implements OnDestroy {
         this.updateSiteObserver = this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, () => {
             this.searchEnabled = !this.coursesProvider.isSearchCoursesDisabledInSite();
             this.loadSiteName();
-        });
+        }, this.sitesProvider.getCurrentSiteId());
 
         const promises = [];
 

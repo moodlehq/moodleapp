@@ -13,14 +13,16 @@
 // limitations under the License.
 
 import { Component, Input, OnInit, OnDestroy, Optional } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, PopoverController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
+import { CoreCoursesCourseOptionsMenuComponent } from '../course-options-menu/course-options-menu';
 
 /**
  * This component is meant to display a course for a list of courses with progress.
@@ -42,7 +44,9 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
         prefetchCourseIcon: 'spinner',
         title: 'core.course.downloadcourse'
     };
+    showSpinner = false;
     downloadCourseEnabled: boolean;
+    courseOptionMenuEnabled: boolean;
 
     protected isDestroyed = false;
     protected courseStatusObserver;
@@ -51,7 +55,8 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
     constructor(@Optional() private navCtrl: NavController, private courseHelper: CoreCourseHelperProvider,
             private courseFormatDelegate: CoreCourseFormatDelegate, private domUtils: CoreDomUtilsProvider,
             private courseProvider: CoreCourseProvider, private eventsProvider: CoreEventsProvider,
-            private sitesProvider: CoreSitesProvider, private coursesProvider: CoreCoursesProvider) { }
+            private sitesProvider: CoreSitesProvider, private coursesProvider: CoreCoursesProvider,
+            private popoverCtrl: PopoverController, private userProvider: CoreUserProvider) { }
 
     /**
      * Component being initialized.
@@ -62,6 +67,9 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
         if (this.downloadCourseEnabled) {
             this.initPrefetchCourse();
         }
+
+        // This field is only available from 3.6 onwards.
+        this.courseOptionMenuEnabled = typeof this.course.isfavourite != 'undefined';
 
         // Refresh the enabled flag if site is updated.
         this.siteUpdatedObserver = this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, () => {
@@ -151,6 +159,59 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
 
         this.prefetchCourseData.prefetchCourseIcon = statusData.icon;
         this.prefetchCourseData.title = statusData.title;
+    }
+
+    /**
+     * Show the context menu.
+     *
+     * @param {Event} e Click Event.
+     */
+    showCourseOptionsMenu(e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const popover = this.popoverCtrl.create(CoreCoursesCourseOptionsMenuComponent, {
+            course: this.course,
+            prefetch: this.prefetchCourseData
+        });
+        popover.onDidDismiss((action) => {
+            if (action) {
+                switch (action) {
+                    case 'download':
+                        this.prefetchCourse(e);
+                        break;
+                    case 'hide':
+                        this.setCourseHidden(true);
+                        break;
+                    case 'show':
+                        this.setCourseHidden(false);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+        popover.present({
+            ev: e
+        });
+    }
+
+    /**
+     * Hide/Unhide the course from the course list.
+     *
+     * @param {boolean} hide True to hide and false to show.
+     */
+    protected setCourseHidden(hide: boolean): void {
+        this.showSpinner = true;
+
+        // We should use null to unset the preference.
+        this.userProvider.updateUserPreference('block_myoverview_hidden_course_' + this.course.id, hide ? 1 : null).then(() => {
+            this.course.hidden = hide;
+            this.eventsProvider.trigger(
+                CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {course: this.course}, this.sitesProvider.getCurrentSiteId());
+        }).finally(() => {
+            this.showSpinner = false;
+        });
     }
 
     /**

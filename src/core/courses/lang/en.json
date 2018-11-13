@@ -14,6 +14,7 @@
     "errorselfenrol": "An error occurred while self enrolling.",
     "filtermycourses": "Filter my courses",
     "frontpage": "Front page",
+    "hidecourse": "Hide from view",
     "mycourses": "My courses",
     "nocourses": "No course information to show.",
     "nocoursesyet": "No courses in this category",
@@ -28,5 +29,6 @@
     "searchcoursesadvice": "You can use the search courses button to find courses to access as a  guest or enrol yourself in courses that allow it.",
     "selfenrolment": "Self enrolment",
     "sendpaymentbutton": "Send payment via PayPal",
+    "show": "Show this course",
     "totalcoursesearchresults": "Total courses: {{$a}}"
 }
