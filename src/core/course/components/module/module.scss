@@ -49,6 +49,10 @@ ion-app.app-root core-course-module {
             position: absolute;
         }
     }
+
+    .core-not-clickable:active {
+        background-color: $list-background-color;
+    }
 }
 
 ion-app.app-root.md core-course-module {
