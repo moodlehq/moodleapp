@@ -14,7 +14,7 @@
 
 import {
     Component, Input, OnInit, OnChanges, OnDestroy, ViewContainerRef, ViewChild, ComponentRef, SimpleChange, ChangeDetectorRef,
-    ElementRef, Optional, Output, EventEmitter, DoCheck, KeyValueDiffers
+    ElementRef, Optional, Output, EventEmitter, DoCheck, KeyValueDiffers, AfterContentInit, AfterViewInit
 } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreCompileProvider } from '../../providers/compile';
@@ -124,7 +124,8 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
         const compileInstance = this;
 
         // Create the component, using the text as the template.
-        return class CoreCompileHtmlFakeComponent implements OnInit {
+        return class CoreCompileHtmlFakeComponent implements OnInit, AfterContentInit, AfterViewInit, OnDestroy {
+
             constructor() {
                 // Store this instance so it can be accessed by the outer component.
                 compileInstance.componentInstance = this;
@@ -145,11 +146,35 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
                 compileInstance.setInputData();
             }
 
+            /**
+             * Component being initialized.
+             */
             ngOnInit(): void {
                 // If there is some javascript to run, do it now.
                 if (compileInstance.javascript) {
                     compileInstance.compileProvider.executeJavascript(this, compileInstance.javascript);
                 }
+            }
+
+            /**
+             * Content has been initialized.
+             */
+            ngAfterContentInit(): void {
+                // To be overridden.
+            }
+
+            /**
+             * View has been initialized.
+             */
+            ngAfterViewInit(): void {
+                // To be overridden.
+            }
+
+            /**
+             * Component destroyed.
+             */
+            ngOnDestroy(): void {
+                // To be overridden.
             }
         };
     }
