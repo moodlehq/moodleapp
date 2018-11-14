@@ -19,6 +19,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '../../providers/course';
 import { CoreCourseHelperProvider } from '../../providers/helper';
 import { CoreCourseFormatDelegate } from '../../providers/format-delegate';
@@ -72,7 +73,8 @@ export class CoreCourseSectionPage implements OnDestroy {
             private translate: TranslateService, private courseHelper: CoreCourseHelperProvider, eventsProvider: CoreEventsProvider,
             private textUtils: CoreTextUtilsProvider, private coursesProvider: CoreCoursesProvider,
             sitesProvider: CoreSitesProvider, private navCtrl: NavController, private injector: Injector,
-            private prefetchDelegate: CoreCourseModulePrefetchDelegate, private syncProvider: CoreCourseSyncProvider) {
+            private prefetchDelegate: CoreCourseModulePrefetchDelegate, private syncProvider: CoreCourseSyncProvider,
+            private utils: CoreUtilsProvider) {
         this.course = navParams.get('course');
         this.sectionId = navParams.get('sectionId');
         this.sectionNumber = navParams.get('sectionNumber');
@@ -274,6 +276,20 @@ export class CoreCourseSectionPage implements OnDestroy {
                     });
                 }
             }));
+
+            // Load the course format options when course completion is enabled to show completion progress on sections.
+            if (this.course.enablecompletion && this.coursesProvider.isGetCoursesByFieldAvailable()) {
+                promises.push(this.coursesProvider.getCoursesByField('id', this.course.id).catch(() => {
+                    // Ignore errors.
+                }).then((courses) => {
+                    courses && courses[0] && Object.assign(this.course, courses[0]);
+
+                    if (this.course.courseformatoptions) {
+                        this.course.courseformatoptions = this.utils.objectToKeyValueMap(this.course.courseformatoptions,
+                            'name', 'value');
+                    }
+                }));
+            }
 
             return Promise.all(promises).catch((error) => {
                 this.domUtils.showErrorModalDefault(error, 'core.course.couldnotloadsectioncontent', true);
