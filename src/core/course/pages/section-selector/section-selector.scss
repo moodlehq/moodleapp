@@ -1,0 +1,11 @@
+ion-app.app-root page-core-course-section-selector {
+    core-progress-bar {
+        .core-progress-text {
+            line-height: 24px;
+            @include position(-8px, 10px, null, null);
+        }
+        progress {
+            margin: 8px 0 4px 0;
+        }
+    }
+}

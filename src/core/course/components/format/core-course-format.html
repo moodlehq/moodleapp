@@ -7,15 +7,6 @@
 
 <!-- Default course format. -->
 <core-dynamic-component [component]="courseFormatComponent" [data]="data">
-    <!-- Course summary. By default we only display the course progress. -->
-    <core-dynamic-component [component]="courseSummaryComponent" [data]="data">
-        <ion-list no-lines *ngIf="selectedSection && selectedSection.id == allSectionsId && course.progress != null && course.progress >= 0" class="core-format-progress-list">
-            <ion-item class="core-course-progress">
-                <core-progress-bar [progress]="course.progress"></core-progress-bar>
-            </ion-item>
-        </ion-list>
-    </core-dynamic-component>
-
     <core-loading [hideUntil]="loaded">
         <!-- Section selector. -->
         <core-dynamic-component [component]="sectionSelectorComponent" [data]="data">
@@ -28,6 +19,15 @@
                 <!-- Section download. -->
                 <ng-container *ngTemplateOutlet="sectionDownloadTemplate; context: {section: selectedSection}"></ng-container>
             </div>
+        </core-dynamic-component>
+
+        <!-- Course summary. By default we only display the course progress. -->
+        <core-dynamic-component [component]="courseSummaryComponent" [data]="data">
+            <ion-list no-lines *ngIf="selectedSection && selectedSection.id == allSectionsId && course.progress != null && course.progress >= 0" class="core-format-progress-list">
+                <ion-item class="core-course-progress">
+                    <core-progress-bar [progress]="course.progress"></core-progress-bar>
+                </ion-item>
+            </ion-list>
         </core-dynamic-component>
 
         <!-- Single section. -->

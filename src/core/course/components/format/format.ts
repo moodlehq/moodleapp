@@ -246,7 +246,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     showSectionSelector(): void {
         const modal = this.modalCtrl.create('CoreCourseSectionSelectorPage',
-            {sections: this.sections, selected: this.selectedSection});
+            {course: this.course, sections: this.sections, selected: this.selectedSection});
         modal.onDidDismiss((newSection) => {
             if (newSection) {
                 this.sectionChanged(newSection);
