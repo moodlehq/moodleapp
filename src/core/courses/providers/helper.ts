@@ -89,9 +89,10 @@ export class CoreCoursesHelperProvider {
      *
      * @param  {string}  [sort=fullname] Sort courses after get them. If sort is not defined it won't be sorted.
      * @param  {number}  [slice=0]    Slice results to get the X first one. If slice > 0 it will be done after sorting.
+     * @param  {string}  [filter]    Filter using some field.
      * @return {Promise<any[]>} Courses filled with options.
      */
-    getUserCoursesWithOptions(sort: string = 'fullname', slice: number = 0): Promise<any[]> {
+    getUserCoursesWithOptions(sort: string = 'fullname', slice: number = 0, filter?: string): Promise<any[]> {
         return this.coursesProvider.getUserCourses().then((courses) => {
             const promises = [],
                 courseIds = courses.map((course) => {
@@ -114,6 +115,17 @@ export class CoreCoursesHelperProvider {
                 if (courses.length <= 0) {
                     return [];
                 }
+
+                switch (filter) {
+                    case 'isfavourite':
+                        courses = courses.filter((course) => {
+                            return !!course.isfavourite;
+                        });
+                        break;
+                    default:
+                        // Filter not implemented.
+                }
+
                 switch (sort) {
                     case 'fullname':
                         courses.sort((a, b) => {
@@ -128,9 +140,15 @@ export class CoreCoursesHelperProvider {
                             return b.lastaccess - b.lastaccess;
                         });
                         break;
+                    case 'timemodified':
+                        courses.sort((a, b) => {
+                            return b.timemodified - b.timemodified;
+                        });
+                        break;
                     default:
                         // Sort not implemented. Do not sort.
                 }
+
                 courses = slice > 0 ? courses.slice(0, slice) : courses;
 
                 // Fetch course completion status if needed.
