@@ -1,3 +1,5 @@
+$core-star-color: $core-color !default;
+
 ion-app.app-root core-courses-course-progress {
     ion-card.card {
         display: flex;
@@ -29,16 +31,6 @@ ion-app.app-root core-courses-course-progress {
                 bottom: 0;
                 margin: auto;
             }
-
-            ion-icon {
-                position: absolute;
-                @include position(0, null, null, 0);
-                padding: 16px;
-                color: $gray-darker;
-                 -webkit-text-stroke-width: 0.5px;
-                 -webkit-text-stroke-color: $gray-lighter;
-                font-size: 16px;
-            }
         }
 
         .core-course-link {
@@ -55,10 +47,23 @@ ion-app.app-root core-courses-course-progress {
             h2 {
                 margins: 6px 0;
                 flex-grow: 1;
+
+                ion-icon {
+                    margin-right: 4px;
+                    color: $core-star-color;
+                }
             }
 
             &.core-course-more-than-title {
                 padding-bottom: 0;
+            }
+
+            .core-button-spinner .spinner {
+                vertical-align: middle;
+            }
+
+            .item-button[icon-only] {
+                min-width: 50px;
             }
         }
         .label {

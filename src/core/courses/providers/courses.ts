@@ -938,4 +938,27 @@ export class CoreCoursesProvider {
             });
         });
     }
+
+    /**
+     * Set favourite property on a course.
+     *
+     * @param {number} courseId   Course ID.
+     * @param {boolean} favourite If favourite or unfavourite.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    setFavouriteCourse(courseId: number, favourite: boolean, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params: any = {
+                    courses: [
+                        {
+                            id: courseId,
+                            favourite: favourite ? 1 : 0
+                        }
+                    ]
+                };
+
+            return site.write('core_course_set_favourite_courses', params);
+        });
+    }
 }

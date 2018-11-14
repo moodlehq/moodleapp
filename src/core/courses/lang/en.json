@@ -1,4 +1,5 @@
 {
+    "addtofavourites": "Star this course",
     "allowguests": "This course allows guest users to enter",
     "availablecourses": "Available courses",
     "cannotretrievemorecategories": "Categories deeper than level {{$a}} cannot be retrieved.",
@@ -24,6 +25,7 @@
     "password": "Enrolment key",
     "paymentrequired": "This course requires a payment for entry.",
     "paypalaccepted": "PayPal payments accepted",
+    "removefromfavourites": "Unstar this course",
     "search": "Search",
     "searchcourses": "Search courses",
     "searchcoursesadvice": "You can use the search courses button to find courses to access as a  guest or enrol yourself in courses that allow it.",

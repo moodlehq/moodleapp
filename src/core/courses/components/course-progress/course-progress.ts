@@ -178,13 +178,21 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
             if (action) {
                 switch (action) {
                     case 'download':
-                        this.prefetchCourse(e);
+                        if (this.prefetchCourseData.prefetchCourseIcon != 'spinner') {
+                            this.prefetchCourse(e);
+                        }
                         break;
                     case 'hide':
                         this.setCourseHidden(true);
                         break;
                     case 'show':
                         this.setCourseHidden(false);
+                        break;
+                    case 'favourite':
+                        this.setCourseFavourite(true);
+                        break;
+                    case 'unfavourite':
+                        this.setCourseFavourite(false);
                         break;
                     default:
                         break;
@@ -207,6 +215,23 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
         // We should use null to unset the preference.
         this.userProvider.updateUserPreference('block_myoverview_hidden_course_' + this.course.id, hide ? 1 : null).then(() => {
             this.course.hidden = hide;
+            this.eventsProvider.trigger(
+                CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {course: this.course}, this.sitesProvider.getCurrentSiteId());
+        }).finally(() => {
+            this.showSpinner = false;
+        });
+    }
+
+    /**
+     * Favourite/Unfavourite the course from the course list.
+     *
+     * @param {boolean} favourite True to favourite and false to unfavourite.
+     */
+    protected setCourseFavourite(favourite: boolean): void {
+        this.showSpinner = true;
+
+        this.coursesProvider.setFavouriteCourse(this.course.id, favourite).then(() => {
+            this.course.isfavourite = favourite;
             this.eventsProvider.trigger(
                 CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {course: this.course}, this.sitesProvider.getCurrentSiteId());
         }).finally(() => {

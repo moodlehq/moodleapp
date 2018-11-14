@@ -1,10 +1,12 @@
 <ion-card [attr.course-color]="course.id % 10">
     <div (click)="openCourse(course)" class="core-course-thumb" [class.core-course-color-img]="course.courseImage">
         <img *ngIf="course.courseImage" [src]="course.courseImage" core-external-content alt=""/>
-        <core-icon name="fa-star" *ngIf="course.isfavourite"></core-icon>
     </div>
     <ion-item tappable text-wrap detail-none (click)="openCourse(course)" [title]="course.displayname || course.fullname" class="core-course-link" [class.item-disabled]="course.visible == 0" [class.core-course-more-than-title]="(course.summary && course.summary.length) || (course.progress != null && course.progress >= 0)">
-        <h2><core-format-text [text]="course.displayname || course.fullname"></core-format-text></h2>
+        <h2>
+            <core-icon name="fa-star" *ngIf="course.isfavourite"></core-icon>
+            <core-format-text [text]="course.displayname || course.fullname"></core-format-text>
+        </h2>
 
         <div class="core-button-spinner" *ngIf="downloadCourseEnabled && !courseOptionMenuEnabled">
             <!-- Download course. -->
@@ -16,13 +18,13 @@
         </div>
 
         <div class="core-button-spinner" *ngIf="courseOptionMenuEnabled">
-            <!-- Options menu. -->
-            <button ion-button icon-only clear color="dark" (click)="showCourseOptionsMenu($event)" *ngIf="prefetchCourseData.prefetchCourseIcon != 'spinner' && !showSpinner">
-                <core-icon name="more"></core-icon>
-            </button>
-
             <!-- Download course spinner. -->
             <ion-spinner *ngIf="prefetchCourseData.prefetchCourseIcon == 'spinner' || showSpinner"></ion-spinner>
+
+            <!-- Options menu. -->
+            <button ion-button icon-only clear color="dark" (click)="showCourseOptionsMenu($event)" *ngIf="!showSpinner">
+                <core-icon name="more"></core-icon>
+            </button>
         </div>
     </ion-item>
     <ion-item text-wrap *ngIf="course.summary && course.summary.length" [class.item-disabled]="course.visible == 0">
