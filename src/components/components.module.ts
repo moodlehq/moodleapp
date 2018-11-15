@@ -50,6 +50,7 @@ import { CoreAttachmentsComponent } from './attachments/attachments';
 import { CoreIonTabsComponent } from './ion-tabs/ion-tabs';
 import { CoreIonTabComponent } from './ion-tabs/ion-tab';
 import { CoreInfiniteLoadingComponent } from './infinite-loading/infinite-loading';
+import { CoreUserAvatarComponent } from './user-avatar/user-avatar';
 
 @NgModule({
     declarations: [
@@ -85,7 +86,8 @@ import { CoreInfiniteLoadingComponent } from './infinite-loading/infinite-loadin
         CoreAttachmentsComponent,
         CoreIonTabsComponent,
         CoreIonTabComponent,
-        CoreInfiniteLoadingComponent
+        CoreInfiniteLoadingComponent,
+        CoreUserAvatarComponent
     ],
     entryComponents: [
         CoreContextMenuPopoverComponent,
@@ -128,7 +130,8 @@ import { CoreInfiniteLoadingComponent } from './infinite-loading/infinite-loadin
         CoreAttachmentsComponent,
         CoreIonTabsComponent,
         CoreIonTabComponent,
-        CoreInfiniteLoadingComponent
+        CoreInfiniteLoadingComponent,
+        CoreUserAvatarComponent
     ]
 })
 export class CoreComponentsModule {}

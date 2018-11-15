@@ -6,10 +6,8 @@
 <ion-content>
     <core-loading [hideUntil]="feedbackLoaded">
         <ion-list no-margin>
-            <a *ngIf="attempt.fullname" ion-item text-wrap core-user-link [userId]="attempt.userid" [attr.aria-label]=" 'core.user.viewprofile' | translate" core-user-link [courseId]="attempt.courseid" [title]="attempt.fullname">
-                <ion-avatar item-start>
-                    <img [src]="attempt.profileimageurl" [alt]="'core.pictureof' | translate:{$a: attempt.fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'">
-                </ion-avatar>
+            <a *ngIf="attempt.fullname" ion-item text-wrap core-user-link [userId]="attempt.userid" [attr.aria-label]=" 'core.user.viewprofile' | translate" [courseId]="attempt.courseid" [title]="attempt.fullname">
+                <ion-avatar class="user-avatar" [user]="attempt" item-start></ion-avatar>
                 <h2>{{attempt.fullname}}</h2>
                 <p *ngIf="attempt.timemodified">{{attempt.timemodified * 1000 | coreFormatDate:"LLL"}}</p>
             </a>

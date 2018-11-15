@@ -36,9 +36,7 @@
 
         <ion-list *ngIf="!canAddFeedback && evaluate && evaluate.text">
             <ion-item text-wrap>
-                <ion-avatar item-start *ngIf="evaluateByProfile">
-                    <img [src]="evaluateByProfile.profileimageurl" core-external-content core-user-link [courseId]="courseId" [userId]="evaluateByProfile.id" [alt]="'core.pictureof' | translate:{$a: evaluateByProfile.fullname}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
-                </ion-avatar>
+                <ion-avatar class="user-avatar" [user]="evaluateByProfile" item-start [courseId]="courseId" [userId]="evaluateByProfile.id"></ion-avatar>
                 <h2 *ngIf="evaluateByProfile && evaluateByProfile.fullname">{{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}</h2>
                 <core-format-text [text]="evaluate.text"></core-format-text>
             </ion-item>
@@ -97,9 +95,7 @@
 
         <ion-list *ngIf="assessmentId && !access.assessingallowed && assessment.feedbackreviewer">
             <ion-item text-wrap>
-                <ion-avatar item-start *ngIf="evaluateGradingByProfile">
-                    <img [src]="evaluateGradingByProfile.profileimageurl" core-external-content core-user-link [courseId]="courseId" [userId]="evaluateGradingByProfile.id" [alt]="'core.pictureof' | translate:{$a: evaluateGradingByProfile.fullname}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
-                </ion-avatar>
+                <ion-avatar class="user-avatar" [user]="evaluateGradingByProfile" item-start [courseId]="courseId" [userId]="evaluateGradingByProfile.id"></ion-avatar>
                 <h2 *ngIf="evaluateGradingByProfile && evaluateGradingByProfile.fullname">{{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateGradingByProfile.fullname} }}</h2>
                 <core-format-text [text]="assessment.feedbackreviewer"></core-format-text>
             </ion-item>

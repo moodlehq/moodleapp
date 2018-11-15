@@ -12,9 +12,7 @@
 
         <ion-card *ngFor="let comment of comments">
             <ion-item text-wrap>
-                <ion-avatar item-start>
-                    <img [src]="comment.profileimageurl" onError="this.src='assets/img/user-avatar.png'" core-external-content core-user-link [userId]="comment.userid" [alt]="'core.pictureof' | translate:{$a: comment.fullname}" role="presentation">
-                </ion-avatar>
+                <ion-avatar class="user-avatar" [user]="comment" item-start></ion-avatar>
                 <h2>{{ comment.fullname }}</h2>
                 <p>{{ comment.time }}</p>
             </ion-item>

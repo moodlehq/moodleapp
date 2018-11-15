@@ -27,9 +27,7 @@
         <ion-list *ngIf="notes && notes.length > 0">
             <ion-card *ngFor="let note of notes">
                 <ion-item text-wrap>
-                    <ion-avatar item-start>
-                        <img [src]="note.userprofileimageurl || 'assets/img/user-avatar.png'" core-external-content core-user-link [userId]="note.userid" [courseId]="note.courseid" [alt]="'core.pictureof' | translate:{$a: note.userfullname}" role="presentation">
-                    </ion-avatar>
+                    <ion-avatar class="user-avatar" [user]="note" item-start></ion-avatar>
                     <h2>{{note.userfullname}}</h2>
                     <p *ngIf="!note.offline" item-end>{{note.lastmodified | coreDateDayOrTime}}</p>
                     <p *ngIf="note.offline" item-end><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</p>
