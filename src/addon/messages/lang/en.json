@@ -7,6 +7,7 @@
     "contactableprivacy_coursemember": "My contacts and anyone in my courses",
     "contactableprivacy_onlycontacts": "My contacts only",
     "contactableprivacy_site": "Anyone on the site",
+    "contactblocked": "Contact blocked",
     "contactlistempty": "The contact list is empty",
     "contactname": "Contact name",
     "contacts": "Contacts",
@@ -16,12 +17,15 @@
     "errorwhileretrievingcontacts": "Error while retrieving contacts from the server.",
     "errorwhileretrievingdiscussions": "Error while retrieving discussions from the server.",
     "errorwhileretrievingmessages": "Error while retrieving messages from the server.",
+    "groupmessages": "Group messages",
     "messagenotsent": "The message was not sent. Please try again later.",
     "message": "Message",
     "messagepreferences": "Message preferences",
     "messages": "Messages",
     "newmessage": "New message",
     "newmessages": "New messages",
+    "nofavourites": "No favourites",
+    "nogroupmessages": "No group messages",
     "nomessages": "No messages",
     "nousersfound": "No users found",
     "removecontact": "Remove contact",
@@ -33,5 +37,6 @@
     "type_strangers": "Others",
     "unblockuser": "Unblock user",
     "unblockuserconfirm": "Are you sure you want to unblock {{$a}}?",
-    "warningmessagenotsent": "Couldn't send message(s) to user {{user}}. {{error}}"
+    "warningmessagenotsent": "Couldn't send message(s) to user {{user}}. {{error}}",
+    "you": "You:"
 }
