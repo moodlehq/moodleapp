@@ -294,6 +294,11 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                         }));
                     });
 
+                    if (!assign.markingworkflow) {
+                        // Get assignment grades only if workflow is not enabled to check grading date.
+                        subPromises.push(this.assignProvider.getAssignmentGrades(assign.id, siteId));
+                    }
+
                     // Prefetch the submission of the current user even if it does not exist, this will be create it.
                     if (!data.submissions || !data.submissions.find((subm) => subm.submitid == userId)) {
                         subPromises.push(this.assignProvider.getSubmissionStatus(assign.id, userId, false, true, false, siteId)

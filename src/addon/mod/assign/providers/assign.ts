@@ -52,6 +52,7 @@ export class AddonModAssignProvider {
     static GRADING_STATUS_NOT_GRADED = 'notgraded';
     static MARKING_WORKFLOW_STATE_RELEASED = 'released';
     static NEED_GRADING = 'needgrading';
+    static GRADED_FOLLOWUP_SUBMIT = 'gradedfollowupsubmit';
 
     // Events.
     static SUBMISSION_SAVED_EVENT = 'addon_mod_assign_submission_saved';
@@ -244,6 +245,49 @@ export class AddonModAssignProvider {
     }
 
     /**
+     * Returns grade information from assign_grades for the requested assignment id
+     *
+     * @param {number} assignId Assignment Id.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}   Resolved with requested info when done.
+     */
+    getAssignmentGrades(assignId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                    assignmentids: [assignId]
+                },
+                preSets = {
+                    cacheKey: this.getAssignmentGradesCacheKey(assignId)
+                };
+
+            return site.read('mod_assign_get_grades', params, preSets).then((response) => {
+                // Search the assignment.
+                if (response.assignments && response.assignments.length) {
+                    const assignment = response.assignments[0];
+
+                    if (assignment.assignmentid == assignId) {
+                        return assignment.grades;
+                    }
+                } else if (response.warnings && response.warnings.length) {
+                    return Promise.reject(response.warnings[0]);
+                }
+
+                return Promise.reject(null);
+            });
+        });
+    }
+
+    /**
+     * Get cache key for assignment grades data WS calls.
+     *
+     * @param {number} assignId Assignment ID.
+     * @return {string} Cache key.
+     */
+    protected getAssignmentGradesCacheKey(assignId: number): string {
+        return this.ROOT_CACHE_KEY + 'assigngrades:' + assignId;
+    }
+
+    /**
      * Find participant on a list.
      *
      * @param {any[]} participants List of participants.
@@ -294,7 +338,8 @@ export class AddonModAssignProvider {
             return;
         }
 
-        if (status == AddonModAssignProvider.GRADING_STATUS_GRADED || status == AddonModAssignProvider.GRADING_STATUS_NOT_GRADED) {
+        if (status == AddonModAssignProvider.GRADING_STATUS_GRADED || status == AddonModAssignProvider.GRADING_STATUS_NOT_GRADED
+               || status == AddonModAssignProvider.GRADED_FOLLOWUP_SUBMIT) {
             return 'addon.mod_assign.' + status;
         }
 
@@ -486,6 +531,7 @@ export class AddonModAssignProvider {
             case 'noattempt':
             case 'noonlinesubmissions':
             case 'nosubmission':
+            case 'gradedfollowupsubmit':
                 return 'danger';
             default:
                 return 'light';
@@ -710,6 +756,19 @@ export class AddonModAssignProvider {
     }
 
     /**
+     * Invalidates assignment grades data WS calls.
+     *
+     * @param {number} assignId Assignment ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateAssignmentGradesData(assignId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getAssignmentGradesCacheKey(assignId));
+        });
+    }
+
+    /**
      * Invalidate the prefetched content except files.
      * To invalidate files, use AddonModAssignProvider.invalidateFiles.
      *
@@ -727,6 +786,7 @@ export class AddonModAssignProvider {
             // Do not invalidate assignment data before getting assignment info, we need it!
             promises.push(this.invalidateAllSubmissionData(assign.id, siteId));
             promises.push(this.invalidateAssignmentUserMappingsData(assign.id, siteId));
+            promises.push(this.invalidateAssignmentGradesData(assign.id, siteId));
             promises.push(this.invalidateListParticipantsData(assign.id, siteId));
             promises.push(this.commentsProvider.invalidateCommentsByInstance('module', assign.id, siteId));
             promises.push(this.invalidateAssignmentData(courseId, siteId));

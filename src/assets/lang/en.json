@@ -199,6 +199,7 @@
     "addon.mod_assign.grade": "Grade",
     "addon.mod_assign.graded": "Graded",
     "addon.mod_assign.gradedby": "Graded by",
+    "addon.mod_assign.gradedfollowupsubmit": "Graded - follow up submission received",
     "addon.mod_assign.gradedon": "Graded on",
     "addon.mod_assign.gradelocked": "This grade is locked or overridden in the gradebook.",
     "addon.mod_assign.gradenotsynced": "Grade not synced",

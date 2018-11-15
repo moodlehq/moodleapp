@@ -555,6 +555,18 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                     this.assignProvider.getSubmissionGradingStatusTranslationId(this.grade.gradingStatus);
             }
 
+            if (this.isGrading && this.lastAttempt.gradingstatus == 'graded' && !this.assign.markingworkflow) {
+                if (this.feedback.gradeddate < this.lastAttempt.submission.timemodified) {
+                    this.lastAttempt.gradingstatus = AddonModAssignProvider.GRADED_FOLLOWUP_SUBMIT;
+
+                    // Get grading text and color.
+                    this.gradingStatusTranslationId = this.assignProvider.getSubmissionGradingStatusTranslationId(
+                            this.lastAttempt.gradingstatus);
+                    this.gradingColor = this.assignProvider.getSubmissionGradingStatusColor(this.lastAttempt.gradingstatus);
+
+                }
+            }
+
             if (!this.feedback || !this.feedback.plugins) {
                 // Feedback plugins not present, we have to use assign configs to detect the plugins used.
                 this.feedback = {};

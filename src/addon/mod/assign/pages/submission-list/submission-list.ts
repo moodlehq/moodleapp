@@ -99,7 +99,8 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
      */
     protected fetchAssignment(): Promise<any> {
         let participants,
-            submissionsData;
+            submissionsData,
+            grades;
 
         // Get assignment data.
         return this.assignProvider.getAssignment(this.courseId, this.moduleId).then((assign) => {
@@ -124,6 +125,13 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
             }).catch(() => {
                 this.haveAllParticipants = false;
             });
+        }).then(() => {
+            if (!this.assign.markingworkflow) {
+                // Get assignment grades only if workflow is not enabled to check grading date.
+                return this.assignProvider.getAssignmentGrades(this.assign.id).then((assignmentGrades) => {
+                    grades = assignmentGrades;
+                });
+            }
         }).then(() => {
             // We want to show the user data on each submission.
             return this.assignProvider.getSubmissionsUserData(submissionsData.submissions, this.courseId, this.assign.id,
@@ -161,6 +169,18 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
                                 return;
                             }
 
+                            if (submission.gradingstatus == 'graded' && !this.assign.markingworkflow) {
+                                // Get the last grade of the submission.
+                                const grade = grades.filter((grade) => {
+                                    return grade.userid == submission.userid;
+                                }).reduce((a, b) => {
+                                    return ( a.timemodified > b.timemodified ? a : b );
+                                });
+
+                                if (grade && grade.timemodified < submission.timemodified) {
+                                    submission.gradingstatus = AddonModAssignProvider.GRADED_FOLLOWUP_SUBMIT;
+                                }
+                            }
                             submission.statusColor = this.assignProvider.getSubmissionStatusColor(submission.status);
                             submission.gradingColor = this.assignProvider.getSubmissionGradingStatusColor(submission.gradingstatus);
 
@@ -228,6 +248,7 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
         if (this.assign) {
             promises.push(this.assignProvider.invalidateAllSubmissionData(this.assign.id));
             promises.push(this.assignProvider.invalidateAssignmentUserMappingsData(this.assign.id));
+            promises.push(this.assignProvider.invalidateAssignmentGradesData(this.assign.id));
             promises.push(this.assignProvider.invalidateListParticipantsData(this.assign.id));
         }
 
