@@ -11,7 +11,7 @@ ion-app.app-root page-core-user-profile {
         border-radius: 50%;
         background-color: white;
     }
-    .user-avatar.item-avatar-center {
+    [core-user-avatar].item-avatar-center {
         display: inline-block;
         img {
             margin: 0;

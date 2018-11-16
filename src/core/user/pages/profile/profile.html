@@ -10,7 +10,7 @@
     <core-loading [hideUntil]="userLoaded">
         <ion-list *ngIf="user && !isDeleted">
             <ion-item text-center>
-                <ion-avatar class="user-avatar item-avatar-center" [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="true">
+                <ion-avatar core-user-avatar class="item-avatar-center" [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="true">
                     <ion-icon name="create" class="core-icon-foreground" *ngIf="canChangeProfilePicture" (click)="changeProfilePicture()"></ion-icon>
                 </ion-avatar>
                 <h2><core-format-text [text]="user.fullname"></core-format-text></h2>

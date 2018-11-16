@@ -66,18 +66,21 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges {
      * Set fields from user.
      */
     protected setFields(): void {
-        if (this.user) {
-            this.profileUrl = this.profileUrl || this.user.profileimageurl || this.user.userprofileimageurl ||
-                this.user.userpictureurl || this.user.profileimageurlsmall;
+        this.profileUrl = this.profileUrl || (this.user && (this.user.profileimageurl || this.user.userprofileimageurl ||
+            this.user.userpictureurl || this.user.profileimageurlsmall));
 
-            this.fullname = this.fullname || this.user.fullname || this.user.userfullname;
-
-            this.userId = this.userId || this.user.userid;
-            this.courseId = this.courseId || this.user.courseid;
-
-            // If not available we cannot ensure the avatar is from the current user.
-            this.myUser = this.userId && this.userId == this.currentUserId;
+        if (typeof this.profileUrl != 'string') {
+            this.profileUrl = '';
         }
+
+        this.fullname = this.fullname || (this.user && (this.user.fullname || this.user.userfullname));
+
+        this.userId = this.userId || (this.user && this.user.userid);
+        this.courseId = this.courseId || (this.user && this.user.courseid);
+
+        // If not available we cannot ensure the avatar is from the current user.
+        this.myUser = this.userId && this.userId == this.currentUserId;
+
     }
 
     /**
@@ -95,7 +98,6 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges {
      * Function executed image clicked.
      */
     gotoProfile(event: any): void {
-        // If the event prevented default action, do nothing.
         if (this.linkProfile && this.userId) {
             event.preventDefault();
             event.stopPropagation();

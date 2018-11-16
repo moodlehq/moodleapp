@@ -202,6 +202,11 @@ export class CoreCourseSectionPage implements OnDestroy {
             }).then((sections) => {
                 let promise;
 
+                // Add log in Moodle.
+                this.courseProvider.logView(this.course.id, this.sectionNumber).catch(() => {
+                    // Ignore errors.
+                });
+
                  // Get the completion status.
                 if (this.course.enablecompletion === false) {
                     // Completion not enabled.
