@@ -27,6 +27,7 @@ import { InfiniteScroll } from 'ionic-angular';
 })
 export class CoreInfiniteLoadingComponent {
     @Input() enabled: boolean;
+    @Input() error = false;
     @Input() position = 'bottom';
     @Output() action: EventEmitter<() => void>; // Will emit an event when triggered.
 

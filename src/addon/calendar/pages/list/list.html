@@ -29,7 +29,7 @@
                 </a>
             </ion-list>
 
-            <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreEvents($event)"></core-infinite-loading>
+            <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreEvents($event)" [error]="loadMoreError"></core-infinite-loading>
         </core-loading>
     </ion-content>
 </core-split-view>

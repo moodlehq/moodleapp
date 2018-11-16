@@ -41,6 +41,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     descriptionNote: string;
     forum: any;
     canLoadMore = false;
+    loadMoreError = false;
     discussions = [];
     offlineDiscussions = [];
     selectedDiscussion = 0; // Disucssion ID or negative timecreated if it's an offline discussion.
@@ -130,6 +131,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * @return {Promise<any>} Promise resolved when done.
      */
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
+        this.loadMoreError = false;
+
         return this.forumProvider.getForum(this.courseId, this.module.id).then((forum) => {
             this.forum = forum;
 
@@ -184,7 +187,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
             this.domUtils.showErrorModalDefault(message, 'addon.mod_forum.errorgetforum', true);
 
-            this.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
+            this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
         });
     }
 
@@ -241,6 +244,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * @return {Promise<any>} Promise resolved when done.
      */
     protected fetchDiscussions(refresh: boolean): Promise<any> {
+        this.loadMoreError = false;
+
         if (refresh) {
             this.page = 0;
         }
@@ -314,7 +319,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         return this.fetchDiscussions(false).catch((message) => {
             this.domUtils.showErrorModalDefault(message, 'addon.mod_forum.errorgetforum', true);
 
-            this.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
+            this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
         }).finally(() => {
             infiniteComplete && infiniteComplete();
         });

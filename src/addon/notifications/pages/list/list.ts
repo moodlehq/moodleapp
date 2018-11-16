@@ -36,6 +36,7 @@ export class AddonNotificationsListPage {
     notifications = [];
     notificationsLoaded = false;
     canLoadMore = false;
+    loadMoreError = false;
     canMarkAllNotificationsAsRead = false;
     loadingMarkAllNotificationsAsRead = false;
 
@@ -76,6 +77,8 @@ export class AddonNotificationsListPage {
      * @return {Promise<any>} Resolved when done.
      */
     protected fetchNotifications(refresh?: boolean): Promise<any> {
+        this.loadMoreError = false;
+
         if (refresh) {
             this.readCount = 0;
             this.unreadCount = 0;
@@ -107,7 +110,7 @@ export class AddonNotificationsListPage {
                 }).catch((error) => {
                     if (unread.length == 0) {
                         this.domUtils.showErrorModalDefault(error, 'addon.notifications.errorgetnotifications', true);
-                        this.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
+                        this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
                     }
                 }));
             } else {
@@ -125,7 +128,7 @@ export class AddonNotificationsListPage {
             });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.notifications.errorgetnotifications', true);
-            this.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
+            this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
         });
     }
 

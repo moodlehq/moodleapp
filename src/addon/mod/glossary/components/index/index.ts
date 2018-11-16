@@ -44,6 +44,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     offlineEntries = [];
     canAdd = false;
     canLoadMore = false;
+    loadMoreError = false;
     loadingMessage = this.translate.instant('core.loading');
     selectedEntry: number;
 
@@ -139,6 +140,8 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      * @return {Promise<any>} Promise resolved when done.
      */
     protected fetchEntries(append: boolean = false): Promise<any> {
+        this.loadMoreError = false;
+
         if (!this.fetchFunction || !this.fetchArguments) {
             // This happens in search mode with an empty query.
             return Promise.resolve({entries: [], count: 0});
@@ -155,8 +158,6 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
             }
             this.canLoadMore = this.entries.length < result.count;
         }).catch((error) => {
-            this.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
-
             return Promise.reject(error);
         });
     }
@@ -294,6 +295,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      */
     loadMoreEntries(infiniteComplete?: any): Promise<any> {
         return this.fetchEntries(true).catch((error) => {
+            this.loadMoreError = true;
             this.domUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingentries', true);
         }).finally(() => {
             infiniteComplete && infiniteComplete();
