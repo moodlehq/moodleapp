@@ -27,7 +27,7 @@
             <ng-container *ngIf="forum && discussions.length > 0">
                 <ion-card *ngFor="let discussion of offlineDiscussions" (click)="openNewDiscussion(discussion.timecreated)" [class.addon-forum-discussion-selected]="discussion.timecreated == -selectedDiscussion">
                     <ion-item text-wrap>
-                        <ion-avatar class="user-avatar" [user]="discussion" item-start [courseId]="courseId"></ion-avatar>
+                        <ion-avatar core-user-avatar [user]="discussion" item-start [courseId]="courseId"></ion-avatar>
                         <h2><core-format-text [text]="discussion.subject"></core-format-text></h2>
                         <p *ngIf="discussion.userfullname">
                             <ion-note float-end padding-left><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ion-note>
@@ -43,7 +43,7 @@
                 </ion-card>
                 <ion-card *ngFor="let discussion of discussions" (click)="openDiscussion(discussion)" [class.addon-forum-discussion-selected]="discussion.discussion == selectedDiscussion">
                     <ion-item text-wrap>
-                        <ion-avatar class="user-avatar" [user]="discussion" item-start [courseId]="courseId"></ion-avatar>
+                        <ion-avatar core-user-avatar [user]="discussion" item-start [courseId]="courseId"></ion-avatar>
                         <h2><core-icon name="fa-map-pin" *ngIf="discussion.pinned"></core-icon> <core-format-text [text]="discussion.subject"></core-format-text></h2>
                         <p>
                             <ion-note float-end padding-left text-end>

@@ -19,21 +19,24 @@ import { CoreSitesProvider } from '@providers/sites';
 /**
  * Component to display a "user avatar".
  *
- * Example: <core-user-avatar [user]="participant"></core-user-avatar>
+ * Example: <ion-avatar core-user-avatar [user]="participant"></ion-avatar>
  */
 @Component({
-    selector: 'ion-avatar.user-avatar',
+    selector: 'ion-avatar[core-user-avatar]',
     templateUrl: 'core-user-avatar.html'
 })
 export class CoreUserAvatarComponent implements OnInit, OnChanges {
     @Input() user: any;
     // The following params will override the ones in user object.
     @Input() profileUrl?: string;
+    @Input() protected linkProfile = true; // Avoid linking to the profile if wanted.
     @Input() fullname?: string;
     @Input() protected userId?: number; // If provided or found it will be used to link the image to the profile.
     @Input() protected courseId?: number;
+    @Input() checkOnline = false; // If want to check and show online status.
 
     // Variable to check if we consider this user online or not.
+    // @TODO: Use setting when available (see MDL-63972) so we can use site setting.
     protected timetoshowusers = 300000; // Miliseconds default.
     protected myUser = false;
     protected currentUserId: number;
@@ -46,20 +49,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges {
      * Component being initialized.
      */
     ngOnInit(): void {
-        console.error(this.user);
         this.setFields();
-
-        // @TODO: This setting is not currently available so we are always using the default setting.
-        /*if (!this.myUser) {
-            let minutes = 5;
-            this.sitesProvider.getCurrentSite().getConfig('block_online_users_timetosee').then((timetosee) => {
-                minutes = timetosee || minutes;
-            }).catch(() => {
-                // Ignore errors.
-            }).finally(() => {
-                this.timetoshowusers = minutes * 60000;
-            });
-        }*/
     }
 
     /**
@@ -76,16 +66,18 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges {
      * Set fields from user.
      */
     protected setFields(): void {
-        this.profileUrl = this.profileUrl || this.user.profileimageurl || this.user.userprofileimageurl ||
-            this.user.userpictureurl || this.user.profileimageurlsmall;
+        if (this.user) {
+            this.profileUrl = this.profileUrl || this.user.profileimageurl || this.user.userprofileimageurl ||
+                this.user.userpictureurl || this.user.profileimageurlsmall;
 
-        this.fullname = this.fullname || this.user.fullname || this.user.userfullname;
+            this.fullname = this.fullname || this.user.fullname || this.user.userfullname;
 
-        this.userId = this.userId || this.user.userid;
-        this.courseId = this.courseId || this.user.courseid;
+            this.userId = this.userId || this.user.userid;
+            this.courseId = this.courseId || this.user.courseid;
 
-        // If not available we cannot ensure the avatar is from the current user.
-        this.myUser = this.userId && this.userId == this.currentUserId;
+            // If not available we cannot ensure the avatar is from the current user.
+            this.myUser = this.userId && this.userId == this.currentUserId;
+        }
     }
 
     /**
@@ -104,7 +96,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges {
      */
     gotoProfile(event: any): void {
         // If the event prevented default action, do nothing.
-        if (!event.defaultPrevented && this.userId) {
+        if (this.linkProfile && this.userId) {
             event.preventDefault();
             event.stopPropagation();
             this.navCtrl.push('CoreUserProfilePage', { userId: this.userId, courseId: this.courseId });

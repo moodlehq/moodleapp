@@ -1,6 +1,6 @@
 <ion-card-header text-wrap no-padding >
     <ion-item text-wrap>
-        <ion-avatar class="user-avatar" [user]="post" item-start (click)="openUserProfile(post.userid)"></ion-avatar>
+        <ion-avatar core-user-avatar [user]="post" item-start (click)="openUserProfile(post.userid)"></ion-avatar>
         <h2><span [class.core-bold]="post.parent == 0"><core-format-text [text]="post.subject"></core-format-text></span></h2>
         <p>
             <ion-note float-end padding-left *ngIf="!post.modified"><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ion-note>

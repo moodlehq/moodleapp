@@ -10,7 +10,7 @@
     <core-loading [hideUntil]="competencyLoaded">
         <ion-card *ngIf="user">
             <ion-item text-wrap>
-                <ion-avatar class="user-avatar" [user]="user" item-start></ion-avatar>
+                <ion-avatar core-user-avatar [user]="user" item-start></ion-avatar>
                 <h2><core-format-text [text]="user.fullname"></core-format-text></h2>
             </ion-item>
         </ion-card>
@@ -73,7 +73,7 @@
             </p>
             <ion-card *ngFor="let evidence of competency.evidence">
                 <a ion-item text-wrap *ngIf="evidence.actionuser" (click)="openUserProfile(evidence.actionuser.id)">
-                    <ion-avatar class="user-avatar" [user]="evidence.actionuser" item-start></ion-avatar>
+                    <ion-avatar core-user-avatar [user]="evidence.actionuser" item-start></ion-avatar>
                     <h2>{{ evidence.actionuser.fullname }}</h2>
                     <p>{{ evidence.timemodified | coreToLocaleString }}</p>
                 </a>

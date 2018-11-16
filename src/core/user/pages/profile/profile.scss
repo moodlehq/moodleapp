@@ -1,9 +1,27 @@
 ion-app.app-root page-core-user-profile {
     .core-icon-foreground {
-        position: relative;
-        @include position(null, null, 30px, 60px);
+        position: absolute;
+        @include position(null, 0, 0, null);
         font-size: 24px;
+        line-height: 30px;
+        text-align: center;
+
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: white;
     }
+    .user-avatar.item-avatar-center {
+        display: inline-block;
+        img {
+            margin: 0;
+        }
+        .contact-status {
+            width: 24px;
+            height: 24px;
+        }
+    }
+
     .core-user-communication-handlers {
         background: $list-background-color;
         border-bottom: 1px solid $list-border-color;

@@ -15,7 +15,7 @@
     <core-loading [hideUntil]="loaded">
 
         <ion-item text-wrap>
-            <ion-avatar class="user-avatar" [user]="profile" item-start [courseId]="courseId" [userId]="profile.id"></ion-avatar>
+            <ion-avatar *ngIf="profile" core-user-avatar [user]="profile" item-start [courseId]="courseId" [userId]="profile.id"></ion-avatar>
 
             <h2 *ngIf="profile && profile.fullname">{{profile.fullname}}</h2>
 
@@ -65,7 +65,7 @@
         </form>
         <ion-list *ngIf="!evaluating && evaluate && evaluate.text">
             <ion-item text-wrap>
-                <ion-avatar class="user-avatar" [user]="evaluateGradingByProfile" item-start [courseId]="courseId" [userId]="evaluateGradingByProfile.id"></ion-avatar>
+                <ion-avatar core-user-avatar *ngIf="evaluateGradingByProfile" [user]="evaluateGradingByProfile" item-start [courseId]="courseId" [userId]="evaluateGradingByProfile.id"></ion-avatar>
                 <h2 *ngIf="evaluateGradingByProfile && evaluateGradingByProfile.fullname">{{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateGradingByProfile.fullname} }}</h2>
                 <core-format-text [text]="evaluate.text"></core-format-text>
             </ion-item>

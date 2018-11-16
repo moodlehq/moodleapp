@@ -21,7 +21,7 @@
             </ion-item-divider>
             <ng-container *ngIf="total > 0">
                 <ion-item *ngFor="let user of users" text-wrap>
-                    <ion-avatar class="user-avatar" [user]="user" item-start></ion-avatar>
+                    <ion-avatar core-user-avatar [user]="user" item-start></ion-avatar>
                     <h2><core-format-text [text]="user.fullname"></core-format-text></h2>
                     <p>
                         <ion-badge color="success" *ngIf="user.started">

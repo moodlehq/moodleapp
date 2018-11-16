@@ -12,7 +12,7 @@
         <ion-list *ngIf="student">
             <!-- Student data. -->
             <a ion-item text-wrap core-user-link [userId]="student.id" [courseId]="courseId" [title]="student.fullname">
-                <ion-avatar class="user-avatar" [user]="student" item-start [userId]="student.id" [courseId]="courseId"></ion-avatar>
+                <ion-avatar core-user-avatar [user]="student" item-start [userId]="student.id" [courseId]="courseId"></ion-avatar>
                 <h2>{{student.fullname}}</h2>
                 <core-progress-bar [progress]="student.bestgrade"></core-progress-bar>
             </a>

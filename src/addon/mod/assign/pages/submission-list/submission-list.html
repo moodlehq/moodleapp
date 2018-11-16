@@ -18,7 +18,7 @@
                 <!-- List of submissions. -->
                 <ng-container *ngFor="let submission of submissions">
                     <a ion-item text-wrap (click)="loadSubmission(submission)" [class.core-split-item-selected]="submission.id == selectedSubmissionId">
-                        <ion-avatar class="user-avatar" [user]="submission" item-start></ion-avatar>
+                        <ion-avatar core-user-avatar [user]="submission" item-start></ion-avatar>
                         <h2 *ngIf="submission.userfullname">{{submission.userfullname}}</h2>
                         <h2 *ngIf="!submission.userfullname">{{ 'addon.mod_assign.hiddenuser' | translate }}{{submission.blindid}}</h2>
                         <p *ngIf="assign.teamsubmission">
