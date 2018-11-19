@@ -26,6 +26,8 @@ import { MockLocationStrategy } from '@angular/common/testing';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
+
 import { MoodleMobileApp } from './app.component';
 import { CoreInterceptor } from '@classes/interceptor';
 import { CorePageTransition } from '@classes/page-transition';
@@ -276,6 +278,7 @@ export const CORE_PROVIDERS: any[] = [
             useClass: CoreInterceptor,
             multi: true,
         },
+        ScreenOrientation,
         {provide: COMPILER_OPTIONS, useValue: {}, multi: true},
         {provide: JitCompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS]},
         {provide: LocationStrategy, useClass: MockLocationStrategy},
