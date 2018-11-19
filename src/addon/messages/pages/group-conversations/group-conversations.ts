@@ -94,7 +94,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 } else {
                     // An existing conversation has a new message, update the last message.
                     conversation.lastmessage = data.message;
-                    conversation.lastmessagedate = data.timecreated;
+                    conversation.lastmessagedate = data.timecreated / 1000;
                 }
             }
         }, this.siteId);
@@ -145,7 +145,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     ngOnInit(): void {
         if (this.conversationId) {
             // There is a discussion to load, open the discussion in a new state.
-            this.gotoConversation(this.conversationId, null);
+            this.gotoConversation(this.conversationId);
         }
 
         this.fetchData().then(() => {
@@ -162,7 +162,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 }
 
                 if (conversation) {
-                    this.gotoConversation(conversation.id, conversation.userid);
+                    this.gotoConversation(conversation.id);
                 }
             }
         });
@@ -247,13 +247,14 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * Navigate to a particular conversation.
      *
      * @param {number} conversationId Conversation Id to load.
-     * @param {number} userId User of the conversation. @todo This will probably be removed when group messaging is fully supported.
+     * @param {number} userId User of the conversation. Only if there is no conversationId.
      * @param {number} [messageId] Message to scroll after loading the discussion. Used when searching.
      */
-    gotoConversation(conversationId: number, userId: number, messageId?: number): void {
+    gotoConversation(conversationId: number, userId?: number, messageId?: number): void {
         this.selectedConversation = conversationId;
 
         const params = {
+            conversationId: conversationId,
             userId: userId
         };
         if (messageId) {
@@ -358,7 +359,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * Page destroyed.
      */
     ngOnDestroy(): void {
-        this.newMessagesObserver && this.newMessagesObserver.unsubscribe();
+        this.newMessagesObserver && this.newMessagesObserver.off();
         this.appResumeSubscription && this.appResumeSubscription.unsubscribe();
         this.pushObserver && this.pushObserver.unsubscribe();
         this.readChangedObserver && this.readChangedObserver.off();

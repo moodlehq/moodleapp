@@ -8,6 +8,8 @@
             <button ion-button icon-only (click)="gotoSettings($event)" [attr.aria-label]="'addon.messages.messagepreferences' | translate">
                 <ion-icon name="cog"></ion-icon>
             </button>
+            <!-- Add an empty context menu so discussion page can add items in split view, otherwise the menu disappears in some cases. -->
+            <core-context-menu></core-context-menu>
         </ion-buttons>
     </ion-navbar>
 </ion-header>

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild, Optional } from '@angular/core';
 import { IonicPage, NavParams, NavController, Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
@@ -25,6 +25,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreAppProvider } from '@providers/app';
 import { coreSlideInOut } from '@classes/animations';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { Md5 } from 'ts-md5/dist/md5';
 import * as moment from 'moment';
 
@@ -53,12 +54,16 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     protected syncObserver: any;
     protected oldContentHeight = 0;
     protected keyboardObserver: any;
+    protected scrollBottom = true;
+    protected viewDestroyed = false;
 
-    userId: number;
+    conversationId: number; // Conversation ID. Undefined if it's a new individual conversation.
+    conversation: any; // The conversation object (if it exists).
+    userId: number; // User ID you're talking to (only if group messaging not enabled or it's a new individual conversation).
     currentUserId: number;
     title: string;
-    profileLink: string;
-    showProfileLink: boolean;
+    showInfo: boolean;
+    conversationImage: string;
     loaded = false;
     showKeyboard = false;
     canLoadMore = false;
@@ -66,26 +71,30 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     messages = [];
     showDelete = false;
     canDelete = false;
-    scrollBottom = true;
-    viewDestroyed = false;
+    groupMessagingEnabled: boolean;
+    isGroup = false;
 
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, navParams: NavParams,
             private userProvider: CoreUserProvider, private navCtrl: NavController, private messagesSync: AddonMessagesSyncProvider,
             private domUtils: CoreDomUtilsProvider, private messagesProvider: AddonMessagesProvider, logger: CoreLoggerProvider,
-            private utils: CoreUtilsProvider, private appProvider: CoreAppProvider, private translate: TranslateService) {
+            private utils: CoreUtilsProvider, private appProvider: CoreAppProvider, private translate: TranslateService,
+            @Optional() private svComponent: CoreSplitViewComponent) {
         this.siteId = sitesProvider.getCurrentSiteId();
         this.currentUserId = sitesProvider.getCurrentSiteUserId();
+        this.groupMessagingEnabled = this.messagesProvider.isGroupMessagingEnabled();
 
         this.logger = logger.getInstance('AddonMessagesDiscussionPage');
 
+        this.conversationId = navParams.get('conversationId');
         this.userId = navParams.get('userId');
         this.showKeyboard = navParams.get('showKeyboard');
 
         // Refresh data if this discussion is synchronized automatically.
         this.syncObserver = eventsProvider.on(AddonMessagesSyncProvider.AUTO_SYNCED, (data) => {
-            if (data.userId == this.userId) {
+            if ((data.userId && data.userId == this.userId) ||
+                    (data.conversationId && data.conversationId == this.conversationId)) {
                 // Fetch messages.
-                this.fetchData();
+                this.fetchMessages();
 
                 // Show first warning if any.
                 if (data.warnings && data.warnings[0]) {
@@ -102,8 +111,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      * @param {boolean} [keep=true] If set the keep flag or not.
      */
     protected addMessage(message: any, keep: boolean = true): void {
-        // Use smallmessage instead of message ID because ID changes when a message is read.
-        message.hash = Md5.hashAsciiStr(message.smallmessage) + '#' + message.timecreated + '#' + message.useridfrom;
+        // Use text instead of message ID because ID changes when a message is read.
+        message.hash = Md5.hashAsciiStr(message.text || '') + '#' + message.timecreated + '#' + message.useridfrom;
         if (typeof this.keepMessageMap[message.hash] === 'undefined') {
             // Message not added to the list. Add it now.
             this.messages.push(message);
@@ -143,15 +152,17 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     ionViewDidLoad(): void {
         // Disable the profile button if we're already coming from a profile.
         const backViewPage = this.navCtrl.getPrevious() && this.navCtrl.getPrevious().component.name;
-        this.showProfileLink = !backViewPage || backViewPage !== 'CoreUserProfilePage';
+        this.showInfo = !backViewPage || backViewPage !== 'CoreUserProfilePage';
 
-        // Get the user profile to retrieve the user fullname and image.
-        this.userProvider.getProfile(this.userId, undefined, true).then((user) => {
-            if (!this.title) {
-                this.title = user.fullname;
-            }
-            this.profileLink = user.profileimageurl;
-        });
+        if (!this.groupMessagingEnabled && this.userId) {
+            // Get the user profile to retrieve the user fullname and image.
+            this.userProvider.getProfile(this.userId, undefined, true).then((user) => {
+                if (!this.title) {
+                    this.title = user.fullname;
+                }
+                this.conversationImage = user.profileimageurl;
+            });
+        }
 
         // Synchronize messages if needed.
         this.messagesSync.syncDiscussion(this.userId).catch(() => {
@@ -161,24 +172,34 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                 this.domUtils.showErrorModal(warnings[0]);
             }
 
-            // Fetch the messages for the first time.
-            return this.fetchData().then(() => {
-                if (!this.title && this.messages.length) {
-                    // Didn't receive the fullname via argument. Try to get it from messages.
-                    // It's possible that name cannot be resolved when no messages were yet exchanged.
-                    if (this.messages[0].useridto != this.currentUserId) {
-                        this.title = this.messages[0].usertofullname || '';
-                    } else {
-                        this.title = this.messages[0].userfromfullname || '';
+            if (this.groupMessagingEnabled) {
+                // Get the conversation ID if it exists and we don't have it yet.
+                return this.getConversation().then((exists) => {
+                    if (exists) {
+                        // Fetch the messages for the first time.
+                        return this.fetchMessages();
                     }
-                }
-            }).catch((error) => {
-                this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingmessages', true);
-            }).finally(() => {
-                this.checkCanDelete();
-                this.resizeContent();
-                this.loaded = true;
-            });
+                });
+            } else {
+                // Fetch the messages for the first time.
+                return this.fetchMessages().then(() => {
+                    if (!this.title && this.messages.length) {
+                        // Didn't receive the fullname via argument. Try to get it from messages.
+                        // It's possible that name cannot be resolved when no messages were yet exchanged.
+                        if (this.messages[0].useridto != this.currentUserId) {
+                            this.title = this.messages[0].usertofullname || '';
+                        } else {
+                            this.title = this.messages[0].userfromfullname || '';
+                        }
+                    }
+                });
+            }
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingmessages', true);
+        }).finally(() => {
+            this.checkCanDelete();
+            this.resizeContent();
+            this.loaded = true;
         });
 
         // Recalculate footer position when keyboard is shown or hidden.
@@ -204,12 +225,12 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
 
     /**
      * Convenience function to fetch messages.
+     *
      * @return {Promise<any>} Resolved when done.
      */
-    protected fetchData(): Promise<any> {
+    protected fetchMessages(): Promise<any> {
         this.loadMoreError = false;
 
-        this.logger.debug(`Polling new messages for discussion with user '${this.userId}'`);
         if (this.messagesBeingSent > 0) {
             // We do not poll while a message is being sent or we could confuse the user.
             // Otherwise, his message would disappear from the list, and he'd have to wait for the interval to check for messages.
@@ -217,6 +238,15 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         } else if (this.fetching) {
             // Already fetching.
             return Promise.reject(null);
+        } else if (this.groupMessagingEnabled && !this.conversationId) {
+            // Don't have enough data to fetch messages.
+            return Promise.reject(null);
+        }
+
+        if (this.conversationId) {
+            this.logger.debug(`Polling new messages for conversation '${this.conversationId}'`);
+        } else {
+            this.logger.debug(`Polling new messages for discussion with user '${this.userId}'`);
         }
 
         this.fetching = true;
@@ -224,11 +254,19 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         // Wait for synchronization process to finish.
         return this.messagesSync.waitForSync(this.userId).then(() => {
             // Fetch messages. Invalidate the cache before fetching.
-            return this.messagesProvider.invalidateDiscussionCache(this.userId).catch(() => {
-                // Ignore errors.
-            });
-        }).then(() => {
-            return this.getDiscussion(this.pagesLoaded);
+            if (this.groupMessagingEnabled) {
+                return this.messagesProvider.invalidateConversationMessages(this.conversationId).catch(() => {
+                    // Ignore errors.
+                }).then(() => {
+                    return this.getConversationMessages(this.pagesLoaded);
+                });
+            } else {
+                return this.messagesProvider.invalidateDiscussionCache(this.userId).catch(() => {
+                    // Ignore errors.
+                }).then(() => {
+                    return this.getDiscussionMessages(this.pagesLoaded);
+                });
+            }
         }).then((messages) => {
             if (this.viewDestroyed) {
                 return Promise.resolve();
@@ -261,8 +299,80 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
 
             // Mark retrieved messages as read if they are not.
             this.markMessagesAsRead();
+
         }).finally(() => {
             this.fetching = false;
+        });
+    }
+
+    /**
+     * Get the conversation.
+     *
+     * @return {Promise<boolean>} Promise resolved with a boolean: whether the conversation exists or not.
+     */
+    protected getConversation(): Promise<boolean> {
+        let promise;
+
+        if (this.conversationId) {
+            // Retrieve the conversation. Invalidate data first to get the right unreadcount.
+            promise = this.messagesProvider.invalidateConversation(this.conversationId).then(() => {
+                return this.messagesProvider.getConversation(this.conversationId);
+            });
+        } else {
+            // We don't have the conversation ID, check if it exists.
+            promise = this.messagesProvider.getConversationBetweenUsers(this.userId).catch((error) => {
+                if (error.errorcode == 'conversationdoesntexist') {
+                    // Conversation does not exist, return undefined.
+                    return;
+                }
+
+                return Promise.reject(error);
+            });
+        }
+
+        return promise.then((conversation) => {
+            this.conversation = conversation;
+            if (conversation) {
+                this.title = conversation.name;
+                this.conversationImage = conversation.imageurl;
+                this.isGroup = conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP;
+                if (!this.isGroup) {
+                    this.userId = conversation.userid;
+                }
+
+                return true;
+            } else {
+                return false;
+            }
+        });
+    }
+
+    /**
+     * Get the messages of the conversation. Used if group messaging is supported.
+     *
+     * @param {number} pagesToLoad Number of "pages" to load.
+     * @param  {number} [offset=0] Offset for message list.
+     * @return {Promise<any[]>} Promise resolved with the list of messages.
+     */
+    protected getConversationMessages(pagesToLoad: number, offset: number = 0): Promise<any[]> {
+        const excludePending = offset > 0;
+
+        return this.messagesProvider.getConversationMessages(this.conversationId, excludePending, offset).then((result) => {
+            pagesToLoad--;
+
+            if (pagesToLoad > 0 && result.canLoadMore) {
+                offset += AddonMessagesProvider.LIMIT_MESSAGES;
+
+                // Get more messages.
+                return this.getConversationMessages(pagesToLoad, offset).then((nextMessages) => {
+                    return result.messages.concat(nextMessages);
+                });
+            } else {
+                // No more messages to load, return them.
+                this.canLoadMore = result.canLoadMore;
+
+                return result.messages;
+            }
         });
     }
 
@@ -276,8 +386,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      * @param  {number}  [lfSentRead=0]       Number of read sent messages already fetched, so fetch will be done from this.
      * @return {Promise<any>}  Resolved when done.
      */
-    protected getDiscussion(pagesToLoad: number, lfReceivedUnread: number = 0, lfReceivedRead: number = 0, lfSentUnread: number = 0,
-            lfSentRead: number = 0): Promise<any> {
+    protected getDiscussionMessages(pagesToLoad: number, lfReceivedUnread: number = 0, lfReceivedRead: number = 0,
+            lfSentUnread: number = 0, lfSentRead: number = 0): Promise<any> {
 
         // Only get offline messages if we're loading the first "page".
         const excludePending = lfReceivedUnread > 0 || lfReceivedRead > 0 || lfSentUnread > 0 || lfSentRead > 0;
@@ -308,7 +418,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                 });
 
                 // Get next messages.
-                return this.getDiscussion(pagesToLoad, lfReceivedUnread, lfReceivedRead, lfSentUnread, lfSentRead)
+                return this.getDiscussionMessages(pagesToLoad, lfReceivedUnread, lfReceivedRead, lfSentUnread, lfSentRead)
                         .then((nextMessages) => {
                     return result.messages.concat(nextMessages);
                 });
@@ -330,23 +440,39 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
 
         if (this.messagesProvider.isMarkAllMessagesReadEnabled()) {
             let messageUnreadFound = false;
-            // Mark all messages at a time if one messages is unread.
-            for (const x in this.messages) {
-                const message = this.messages[x];
-                // If an unread message is found, mark all messages as read.
-                if (message.useridfrom != this.currentUserId && message.read == 0) {
-                    messageUnreadFound = true;
-                    break;
+
+            // Mark all messages at a time if there is any unread message.
+            if (this.groupMessagingEnabled) {
+                messageUnreadFound = this.conversation && this.conversation.unreadcount > 0 && this.conversationId > 0;
+            } else {
+                for (const x in this.messages) {
+                    const message = this.messages[x];
+                    // If an unread message is found, mark all messages as read.
+                    if (message.useridfrom != this.currentUserId && message.read == 0) {
+                        messageUnreadFound = true;
+                        break;
+                    }
                 }
             }
+
             if (messageUnreadFound) {
                 this.setUnreadLabelPosition();
-                promises.push(this.messagesProvider.markAllMessagesRead(this.userId).then(() => {
-                    readChanged = true;
-                    // Mark all messages as read.
-                    this.messages.forEach((message) => {
-                        message.read = 1;
+
+                let promise;
+
+                if (this.groupMessagingEnabled) {
+                    promise = this.messagesProvider.markAllConversationMessagesRead(this.conversationId);
+                } else {
+                    promise = this.messagesProvider.markAllMessagesRead(this.userId).then(() => {
+                        // Mark all messages as read.
+                        this.messages.forEach((message) => {
+                            message.read = 1;
+                        });
                     });
+                }
+
+                promises.push(promise.then(() => {
+                    readChanged = true;
                 }));
             }
         } else {
@@ -366,6 +492,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         Promise.all(promises).finally(() => {
             if (readChanged) {
                 this.eventsProvider.trigger(AddonMessagesProvider.READ_CHANGED_EVENT, {
+                    conversationId: this.conversationId,
                     userId: this.userId
                 }, this.siteId);
             }
@@ -390,6 +517,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         if (trigger) {
             // Update discussions last message.
             this.eventsProvider.trigger(AddonMessagesProvider.NEW_MESSAGE_EVENT, {
+                conversationId: this.conversationId,
                 userId: this.userId,
                 message: this.lastMessage.text,
                 timecreated: this.lastMessage.timecreated
@@ -411,21 +539,39 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             return;
         }
 
-        let previousMessageRead = false;
+        if (this.groupMessagingEnabled) {
+            // Use the unreadcount from the conversation to calculate where should the label be placed.
+            if (this.conversation && this.conversation.unreadcount > 0 && this.messages) {
+                // Iterate over messages to find the right message using the unreadcount. Skip offline messages and own messages.
+                let found = 0;
 
-        for (const x in this.messages) {
-            const message = this.messages[x];
-            if (message.useridfrom != this.currentUserId) {
-                // Place unread from message label only once.
-                message.unreadFrom = message.read == 0 && previousMessageRead;
-
-                if (message.unreadFrom) {
-                    // Save where the label is placed.
-                    this.unreadMessageFrom = parseInt(message.id, 10);
-                    break;
+                for (let i = this.messages.length - 1; i >= 0; i--) {
+                    const message = this.messages[i];
+                    if (!message.pending && message.useridfrom != this.currentUserId) {
+                        found++;
+                        if (found == this.conversation.unreadcount) {
+                            this.unreadMessageFrom = parseInt(message.id, 10);
+                            break;
+                        }
+                    }
                 }
+            }
+        } else {
+            let previousMessageRead = false;
 
-                previousMessageRead = message.read != 0;
+            for (const x in this.messages) {
+                const message = this.messages[x];
+                if (message.useridfrom != this.currentUserId) {
+                    const unreadFrom = message.read == 0 && previousMessageRead;
+
+                    if (unreadFrom) {
+                        // Save where the label is placed.
+                        this.unreadMessageFrom = parseInt(message.id, 10);
+                        break;
+                    }
+
+                    previousMessageRead = message.read != 0;
+                }
             }
         }
 
@@ -450,15 +596,6 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      */
     protected hideUnreadLabel(): void {
         if (this.unreadMessageFrom > 0) {
-            for (const x in this.messages) {
-                const message = this.messages[x];
-                if (message.id == this.unreadMessageFrom) {
-                    message.unreadFrom = false;
-                    break;
-                }
-            }
-
-            // Label hidden.
             this.unreadMessageFrom = -1;
         }
     }
@@ -487,10 +624,15 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      * Set a polling to get new messages every certain time.
      */
     protected setPolling(): void {
+        if (this.groupMessagingEnabled && !this.conversationId) {
+            // Don't have enough data to poll messages.
+            return;
+        }
+
         if (!this.polling) {
             // Start polling.
             this.polling = setInterval(() => {
-                this.fetchData().catch(() => {
+                this.fetchMessages().catch(() => {
                     // Ignore errors.
                 });
             }, AddonMessagesProvider.POLL_INTERVAL);
@@ -509,12 +651,12 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     }
 
     /**
-     * Copy message to clipboard
+     * Copy message to clipboard.
      *
-     * @param {string} text Message text to be copied.
+     * @param {any} message Message to be copied.
      */
-    copyMessage(text: string): void {
-        this.utils.copyToClipboard(text);
+    copyMessage(message: any): void {
+        this.utils.copyToClipboard(message.smallmessage || message.text || '');
     }
 
     /**
@@ -534,7 +676,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                 this.removeMessage(message.hash);
                 this.notifyNewMessage();
 
-                this.fetchData(); // Re-fetch messages to update cached data.
+                this.fetchMessages(); // Re-fetch messages to update cached data.
             }).finally(() => {
                 modal.dismiss();
             });
@@ -554,9 +696,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         return this.waitForFetch().finally(() => {
             this.pagesLoaded++;
 
-            this.fetchData().catch((error) => {
+            this.fetchMessages().catch((error) => {
                 this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
-
                 this.pagesLoaded--;
                 this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingmessages', true);
             }).finally(() => {
@@ -638,7 +779,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
 
                 if (data.sent) {
                     // Message was sent, fetch messages right now.
-                    promise = this.fetchData();
+                    promise = this.fetchMessages();
                 } else {
                     promise = Promise.reject(null);
                 }
@@ -695,6 +836,19 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      */
     toggleDelete(): void {
         this.showDelete = !this.showDelete;
+    }
+
+    /**
+     * View info. If it's an individual conversation, go to the user profile.
+     * If it's a group conversation, view info about the group.
+     */
+    viewInfo(): void {
+        if (this.isGroup) {
+            // @todo
+        } else {
+            const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
+            navCtrl.push('CoreUserProfilePage', { userId: this.userId });
+        }
     }
 
     /**

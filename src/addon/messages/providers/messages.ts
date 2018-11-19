@@ -140,6 +140,41 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Format a conversation.
+     *
+     * @param {any} conversation Conversation to format.
+     * @param {number} userId User ID viewing the conversation.
+     * @return {any} Formatted conversation.
+     */
+    protected formatConversation(conversation: any, userId: number): any {
+        const numMessages = conversation.messages.length,
+            lastMessage = numMessages ? conversation.messages[numMessages - 1] : null;
+
+        conversation.lastmessage = lastMessage ? lastMessage.text : null;
+        conversation.lastmessagedate = lastMessage ? lastMessage.timecreated : null;
+        conversation.sentfromcurrentuser = lastMessage ? lastMessage.useridfrom == userId : null;
+
+        if (conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL) {
+            const otherUser = conversation.members.reduce((carry, member) => {
+                if (!carry && member.id != userId) {
+                    carry = member;
+                }
+
+                return carry;
+            }, null);
+
+            conversation.name = conversation.name ? conversation.name : otherUser.fullname;
+            conversation.imageurl = conversation.imageurl ? conversation.imageurl : otherUser.profileimageurl;
+            conversation.userid = otherUser.id;
+            conversation.showonlinestatus = otherUser.showonlinestatus;
+            conversation.isonline = otherUser.isonline;
+            conversation.isblocked = otherUser.isblocked;
+        }
+
+        return conversation;
+    }
+
+    /**
      * Get the cache key for blocked contacts.
      *
      * @param {number} userId The user who's contacts we're looking for.
@@ -185,6 +220,39 @@ export class AddonMessagesProvider {
      */
     protected getCacheKeyForDiscussions(): string {
         return this.ROOT_CACHE_KEY + 'discussions';
+    }
+
+    /**
+     * Get cache key for get conversations.
+     *
+     * @param {number} userId User ID.
+     * @param {number} conversationId Conversation ID.
+     * @return {string} Cache key.
+     */
+    protected getCacheKeyForConversation(userId: number, conversationId: number): string {
+        return this.ROOT_CACHE_KEY + 'conversation:' + userId + ':' + conversationId;
+    }
+
+    /**
+     * Get cache key for get conversations between users.
+     *
+     * @param {number} userId User ID.
+     * @param {number} otherUserId Other user ID.
+     * @return {string} Cache key.
+     */
+    protected getCacheKeyForConversationBetweenUsers(userId: number, otherUserId: number): string {
+        return this.ROOT_CACHE_KEY + 'conversationBetweenUsers:' + userId + ':' + otherUserId;
+    }
+
+    /**
+     * Get cache key for get conversation messages.
+     *
+     * @param {number} userId User ID.
+     * @param {number} conversationId Conversation ID.
+     * @return {string} Cache key.
+     */
+    protected getCacheKeyForConversationMessages(userId: number, conversationId: number): string {
+        return this.ROOT_CACHE_KEY + 'conversationMessages:' + userId + ':' + conversationId;
     }
 
     /**
@@ -298,6 +366,182 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Get a conversation by the conversation ID.
+     *
+     * @param {number} conversationId Conversation ID to fetch.
+     * @param {boolean} [includeContactRequests] Include contact requests.
+     * @param {boolean} [includePrivacyInfo] Include privacy info.
+     * @param {number} [messageOffset=0] Offset for messages list.
+     * @param {number} [messageLimit=1] Limit of messages. Defaults to 1 (last message).
+     *                                  We recommend getConversationMessages to get them.
+     * @param {number} [memberOffset=0] Offset for members list.
+     * @param {number} [memberLimit=2] Limit of members. Defaults to 2 (to be able to know the other user in individual ones).
+     *                                 We recommend getConversationMembers to get them.
+     * @param {boolean} [newestFirst=true] Whether to order messages by newest first.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>} Promise resolved with the response.
+     * @since 3.6
+     */
+    getConversation(conversationId: number, includeContactRequests?: boolean, includePrivacyInfo?: boolean,
+            messageOffset: number = 0, messageLimit: number = 1, memberOffset: number = 0, memberLimit: number = 2,
+            newestFirst: boolean = true, siteId?: string, userId?: number): Promise<any> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            const preSets = {
+                    cacheKey: this.getCacheKeyForConversation(userId, conversationId)
+                },
+                params: any = {
+                    userid: userId,
+                    conversationid: conversationId,
+                    includecontactrequests: includeContactRequests ? 1 : 0,
+                    includeprivacyinfo: includePrivacyInfo ? 1 : 0,
+                    messageoffset: messageOffset,
+                    messagelimit: messageLimit,
+                    memberoffset: memberOffset,
+                    memberlimit: memberLimit,
+                    newestmessagesfirst: newestFirst ? 1 : 0
+                };
+
+            return site.read('core_message_get_conversation', params, preSets).then((conversation) => {
+                return this.formatConversation(conversation, userId);
+            });
+        });
+    }
+
+    /**
+     * Get a conversation between two users.
+     *
+     * @param {number} otherUserId The other user ID.
+     * @param {boolean} [includeContactRequests] Include contact requests.
+     * @param {boolean} [includePrivacyInfo] Include privacy info.
+     * @param {number} [messageOffset=0] Offset for messages list.
+     * @param {number} [messageLimit=1] Limit of messages. Defaults to 1 (last message).
+     *                                  We recommend getConversationMessages to get them.
+     * @param {number} [memberOffset=0] Offset for members list.
+     * @param {number} [memberLimit=2] Limit of members. Defaults to 2 (to be able to know the other user in individual ones).
+     *                                 We recommend getConversationMembers to get them.
+     * @param {boolean} [newestFirst=true] Whether to order messages by newest first.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>} Promise resolved with the response.
+     * @since 3.6
+     */
+    getConversationBetweenUsers(otherUserId: number, includeContactRequests?: boolean, includePrivacyInfo?: boolean,
+            messageOffset: number = 0, messageLimit: number = 1, memberOffset: number = 0, memberLimit: number = 2,
+            newestFirst: boolean = true, siteId?: string, userId?: number): Promise<any> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            const preSets = {
+                    cacheKey: this.getCacheKeyForConversationBetweenUsers(userId, otherUserId)
+                },
+                params: any = {
+                    userid: userId,
+                    otheruserid: otherUserId,
+                    includecontactrequests: includeContactRequests ? 1 : 0,
+                    includeprivacyinfo: includePrivacyInfo ? 1 : 0,
+                    messageoffset: messageOffset,
+                    messagelimit: messageLimit,
+                    memberoffset: memberOffset,
+                    memberlimit: memberLimit,
+                    newestmessagesfirst: newestFirst ? 1 : 0
+                };
+
+            return site.read('core_message_get_conversation_between_users', params, preSets).then((conversation) => {
+                return this.formatConversation(conversation, userId);
+            });
+        });
+    }
+
+    /**
+     * Get a conversation by the conversation ID.
+     *
+     * @param {number} conversationId Conversation ID to fetch.
+     * @param {boolean} excludePending True to exclude messages pending to be sent.
+     * @param {number} [limitFrom=0] Offset for messages list.
+     * @param {number} [limitTo] Limit of messages.
+     * @param {boolean} [newestFirst=true] Whether to order messages by newest first.
+     * @param {number} [timeFrom] The timestamp from which the messages were created.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>} Promise resolved with the response.
+     * @since 3.6
+     */
+    getConversationMessages(conversationId: number, excludePending: boolean, limitFrom: number = 0, limitTo?: number,
+            newestFirst: boolean = true, timeFrom: number = 0, siteId?: string, userId?: number): Promise<any> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            if (typeof limitTo == 'undefined' || limitTo === null) {
+                limitTo = this.LIMIT_MESSAGES;
+            }
+
+            const preSets = {
+                    cacheKey: this.getCacheKeyForConversationMessages(userId, conversationId)
+                },
+                params: any = {
+                    currentuserid: userId,
+                    convid: conversationId,
+                    limitfrom: limitFrom,
+                    limitnum: limitTo < 1 ? limitTo : limitTo + 1, // If there is a limit, get 1 more than requested.
+                    newest: newestFirst ? 1 : 0,
+                    timefrom: timeFrom
+                };
+
+            if (limitFrom > 0) {
+                // Do not use cache when retrieving older messages.
+                // This is to prevent storing too much data and to prevent inconsistencies between "pages" loaded.
+                preSets['getFromCache'] = false;
+                preSets['saveToCache'] = false;
+                preSets['emergencyCache'] = false;
+            }
+
+            return site.read('core_message_get_conversation_messages', params, preSets).then((result) => {
+                if (limitTo < 1) {
+                    result.canLoadMore = false;
+                    result.messages = result.messages;
+                } else {
+                    result.canLoadMore = result.messages.length > limitTo;
+                    result.messages = result.messages.slice(0, limitTo);
+                }
+
+                result.messages.forEach((message) => {
+                    // Convert time to milliseconds.
+                    message.timecreated = message.timecreated ? message.timecreated * 1000 : 0;
+                });
+
+                if (this.appProvider.isDesktop() && params.useridto == userId && limitFrom === 0) {
+                    // Store the last received message (we cannot know if it's unread or not). Don't block the user for this.
+                    this.storeLastReceivedMessageIfNeeded(conversationId, result.messages[0], site.getId());
+                }
+
+                if (excludePending) {
+                    // No need to get offline messages, return the ones we have.
+                    return result;
+                }
+
+                // Get offline messages.
+                return this.messagesOffline.getMessages(userId).then((offlineMessages) => {
+                    // Mark offline messages as pending.
+                    offlineMessages.forEach((message) => {
+                        message.pending = true;
+                        message.text = message.smallmessage;
+                    });
+
+                    result.messages = result.messages.concat(offlineMessages);
+
+                    return result;
+                });
+            });
+        });
+    }
+
+    /**
      * Get the discussions of a certain user. This function is used in Moodle sites higher than 3.6.
      * If the site is older than 3.6, please use getDiscussions.
      *
@@ -308,6 +552,7 @@ export class AddonMessagesProvider {
      * @param {string} [siteId] Site ID. If not defined, use current site.
      * @param {number} [userId] User ID. If not defined, current user in the site.
      * @return {Promise<any>} Promise resolved with the conversations.
+     * @since 3.6
      */
     getConversations(type?: number, favourites?: boolean, limitFrom: number = 0, siteId?: string, userId?: number)
             : Promise<{conversations: any[], canLoadMore: boolean}> {
@@ -333,32 +578,8 @@ export class AddonMessagesProvider {
 
             return site.read('core_message_get_conversations', params, preSets).then((response) => {
                 // Format the conversations, adding some calculated fields.
-                const conversations = response.conversations.map((conversation) => {
-                    const numMessages = conversation.messages.length,
-                        lastMessage = numMessages ? conversation.messages[numMessages - 1] : null;
-
-                    conversation.lastmessage = lastMessage ? lastMessage.text : null;
-                    conversation.lastmessagedate = lastMessage ? lastMessage.timecreated : null;
-                    conversation.sentfromcurrentuser = lastMessage ? lastMessage.useridfrom == userId : null;
-
-                    if (conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL) {
-                        const otherUser = conversation.members.reduce((carry, member) => {
-                            if (!carry && member.id != userId) {
-                                carry = member;
-                            }
-
-                            return carry;
-                        }, null);
-
-                        conversation.name = conversation.name ? conversation.name : otherUser.fullname;
-                        conversation.imageurl = conversation.imageurl ? conversation.imageurl : otherUser.profileimageurl;
-                        conversation.userid = otherUser.id;
-                        conversation.showonlinestatus = otherUser.showonlinestatus;
-                        conversation.isonline = otherUser.isonline;
-                        conversation.isblocked = otherUser.isblocked;
-                    }
-
-                    return conversation;
+                const conversations = response.conversations.slice(0, this.LIMIT_MESSAGES).map((conversation) => {
+                    return this.formatConversation(conversation, userId);
                 });
 
                 return {
@@ -813,7 +1034,55 @@ export class AddonMessagesProvider {
     }
 
     /**
-     * Invalidate contacts cache.
+     * Invalidate conversation.
+     *
+     * @param {number} conversationId Conversation ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>} Resolved when done.
+     */
+    invalidateConversation(conversationId: number, siteId?: string, userId?: number): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            return site.invalidateWsCacheForKey(this.getCacheKeyForConversation(conversationId, userId));
+        });
+    }
+
+    /**
+     * Invalidate conversation between users.
+     *
+     * @param {number} otherUserId Other user ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>} Resolved when done.
+     */
+    invalidateConversationBetweenUsers(otherUserId: number, siteId?: string, userId?: number): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            return site.invalidateWsCacheForKey(this.getCacheKeyForConversationBetweenUsers(userId, otherUserId));
+        });
+    }
+
+    /**
+     * Invalidate conversation messages cache.
+     *
+     * @param {number} conversationId Conversation ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>} Resolved when done.
+     */
+    invalidateConversationMessages(conversationId: number, siteId?: string, userId?: number): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            return site.invalidateWsCacheForKey(this.getCacheKeyForConversationMessages(userId, conversationId));
+        });
+    }
+
+    /**
+     * Invalidate conversations cache.
      *
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @param {number} [userId] User ID. If not defined, current user in the site.
@@ -1001,6 +1270,25 @@ export class AddonMessagesProvider {
         };
 
         return this.sitesProvider.getCurrentSite().write('core_message_mark_message_read', params);
+    }
+
+    /**
+     * Mark all messages of a conversation as read.
+     *
+     * @param {number} conversationId Conversation ID.
+     * @returns {Promise<any>} Promise resolved if success.
+     * @since 3.6
+     */
+    markAllConversationMessagesRead(conversationId?: number): Promise<any> {
+        const params = {
+                userid: this.sitesProvider.getCurrentSiteUserId(),
+                conversationid: conversationId
+            },
+            preSets = {
+                responseExpected: false
+            };
+
+        return this.sitesProvider.getCurrentSite().write('core_message_mark_all_conversation_messages_as_read', params, preSets);
     }
 
     /**
@@ -1238,17 +1526,17 @@ export class AddonMessagesProvider {
     /**
      * Store the last received message if it's newer than the last stored.
      *
-     * @param  {number} userIdFrom ID of the useridfrom retrieved, 0 for all users.
+     * @param  {number} convIdOrUserIdFrom Conversation ID (3.6+) or ID of the useridfrom retrieved (3.5-), 0 for all users.
      * @param  {any} message       Last message received.
      * @param  {string} [siteId]   Site ID. If not defined, current site.
      * @return {Promise<any>}      Promise resolved when done.
      */
-    protected storeLastReceivedMessageIfNeeded(userIdFrom: number, message: any, siteId?: string): Promise<any> {
+    protected storeLastReceivedMessageIfNeeded(convIdOrUserIdFrom: number, message: any, siteId?: string): Promise<any> {
         const component = AddonMessagesProvider.PUSH_SIMULATION_COMPONENT;
 
         // Get the last received message.
         return this.emulatorHelper.getLastReceivedNotification(component, siteId).then((lastMessage) => {
-            if (userIdFrom > 0 && (!message || !lastMessage)) {
+            if (convIdOrUserIdFrom > 0 && (!message || !lastMessage)) {
                 // Seeing a single discussion. No received message or cannot know if it really is the last received message. Stop.
                 return;
             }
