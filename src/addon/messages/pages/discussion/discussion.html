@@ -20,7 +20,7 @@
         <core-infinite-loading [enabled]="canLoadMore" (action)="loadPrevious($event)" position="top" [error]="loadMoreError"></core-infinite-loading>
         <ion-list class="addon-messages-discussion-container safe-area-page" [attr.aria-live]="polite">
             <ng-container *ngFor="let message of messages; index as index; last as last">
-                <ion-chip *ngIf="showDate(message, messages[index - 1])" class="addon-messages-date" color="light">
+                <ion-chip *ngIf="message.showDate" class="addon-messages-date" color="light">
                     <ion-label>{{ message.timecreated | coreFormatDate: "LL" }}</ion-label>
                 </ion-chip>
 
@@ -30,6 +30,12 @@
                 </ion-chip>
 
                 <ion-item text-wrap (longPress)="copyMessage(message)" class="addon-message" [class.addon-message-mine]="message.useridfrom == currentUserId" [@coreSlideInOut]="message.useridfrom == currentUserId ? '' : 'fromLeft'">
+                    <!-- User data. -->
+                    <ion-avatar item-start *ngIf="message.showUserData">
+                        <img [src]="members[message.useridfrom].profileimageurl" [alt]="'core.pictureof' | translate:{$a: members[message.useridfrom].fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'">
+                    </ion-avatar>
+                    <h2 *ngIf="message.showUserData">{{ members[message.useridfrom].fullname }}</h2>
+
                     <!-- Some messages have <p> and some others don't. Add a <p> so they all have same styles. -->
                     <p class="addon-message-text">
                         <core-format-text (afterRender)="last && scrollToBottom()" [text]="message.text"></core-format-text>

@@ -73,6 +73,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     canDelete = false;
     groupMessagingEnabled: boolean;
     isGroup = false;
+    members: any = {}; // Members that wrote a message, indexed by ID.
 
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, navParams: NavParams,
             private userProvider: CoreUserProvider, private navCtrl: NavController, private messagesSync: AddonMessagesSyncProvider,
@@ -294,6 +295,12 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             // Sort the messages.
             this.messagesProvider.sortMessages(this.messages);
 
+            // Calculate which messages need to display the date or user data.
+            this.messages.forEach((message, index): any => {
+                message.showDate = this.showDate(message, this.messages[index - 1]);
+                message.showUserData = this.showUserData(message, this.messages[index - 1]);
+            });
+
             // Notify that there can be a new message.
             this.notifyNewMessage();
 
@@ -359,6 +366,13 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
 
         return this.messagesProvider.getConversationMessages(this.conversationId, excludePending, offset).then((result) => {
             pagesToLoad--;
+
+            // Treat members. Don't use CoreUtilsProvider.arrayToObject because we don't want to override the existing object.
+            if (result.members) {
+                result.members.forEach((member) => {
+                    this.members[member.id] = member;
+                });
+            }
 
             if (pagesToLoad > 0 && result.canLoadMore) {
                 offset += AddonMessagesProvider.LIMIT_MESSAGES;
@@ -829,6 +843,19 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
 
         // Check if day has changed.
         return !moment(message.timecreated).isSame(prevMessage.timecreated, 'day');
+    }
+
+    /**
+     * Check if the user info should be displayed for the current message.
+     * User data is only displayed for group conversations if the previous message was from another user.
+     *
+     * @param {any} message Current message where to show the user info.
+     * @param {any} [prevMessage] Previous message.
+     * @return {boolean} Whether user data should be shown.
+     */
+    showUserData(message: any, prevMessage?: any): boolean {
+        return this.isGroup && message.useridfrom != this.currentUserId && this.members[message.useridfrom] &&
+            (!prevMessage || prevMessage.useridfrom != message.useridfrom || message.showDate);
     }
 
     /**
