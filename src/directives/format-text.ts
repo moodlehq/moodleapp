@@ -382,7 +382,7 @@ export class CoreFormatTextDirective implements OnChanges {
                 images.forEach((img: HTMLElement) => {
                     this.addMediaAdaptClass(img);
                     this.addExternalContent(img);
-                    if (this.utils.isTrueOrOne(this.adaptImg)) {
+                    if (this.utils.isTrueOrOne(this.adaptImg) && !img.classList.contains('icon')) {
                         this.adaptImage(elWidth, img);
                     }
                 });
