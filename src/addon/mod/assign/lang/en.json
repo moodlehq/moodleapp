@@ -35,6 +35,7 @@
     "grade": "Grade",
     "graded": "Graded",
     "gradedby": "Graded by",
+    "gradedfollowupsubmit": "Graded - follow up submission received",
     "gradenotsynced": "Grade not synced",
     "gradedon": "Graded on",
     "gradelocked": "This grade is locked or overridden in the gradebook.",
