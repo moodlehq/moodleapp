@@ -1438,8 +1438,11 @@ export class AddonMessagesProvider {
             }
 
             // Online and no messages stored. Send it to server.
-            return this.sendMessageOnline(toUserId, message).then(() => {
-                return { sent: true };
+            return this.sendMessageOnline(toUserId, message).then((result) => {
+                return {
+                    sent: true,
+                    message: result
+                };
             }).catch((error) => {
                 if (this.utils.isWebServiceError(error)) {
                     // It's a WebService error, the user cannot send the message so don't store it.
@@ -1479,6 +1482,8 @@ export class AddonMessagesProvider {
 
             return this.invalidateDiscussionCache(toUserId, siteId).catch(() => {
                 // Ignore errors.
+            }).then(() => {
+                return response[0];
             });
         });
     }
@@ -1543,8 +1548,11 @@ export class AddonMessagesProvider {
             }
 
             // Online and no messages stored. Send it to server.
-            return this.sendMessageToConversationOnline(conversation.id, message).then(() => {
-                return { sent: true };
+            return this.sendMessageToConversationOnline(conversation.id, message).then((result) => {
+                return {
+                    sent: true,
+                    message: result
+                };
             }).catch((error) => {
                 if (this.utils.isWebServiceError(error)) {
                     // It's a WebService error, the user cannot send the message so don't store it.

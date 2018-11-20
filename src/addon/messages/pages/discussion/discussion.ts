@@ -141,7 +141,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         const position = this.messages.findIndex((message) => {
             return message.hash == hash;
         });
-        if (position > 0) {
+        if (position >= 0) {
             this.messages.splice(position, 1);
         }
     }
@@ -176,7 +176,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
 
             if (this.groupMessagingEnabled) {
                 // Get the conversation ID if it exists and we don't have it yet.
-                return this.getConversation().then((exists) => {
+                return this.getConversation(this.conversationId, this.userId).then((exists) => {
                     if (exists) {
                         // Fetch the messages for the first time.
                         return this.fetchMessages();
@@ -202,6 +202,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             this.checkCanDelete();
             this.resizeContent();
             this.loaded = true;
+            this.setPolling(); // Make sure we're polling messages.
         });
 
         // Recalculate footer position when keyboard is shown or hidden.
@@ -324,22 +325,24 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Get the conversation.
      *
+     * @param {number} conversationId Conversation ID.
+     * @param {number} userId User ID.
      * @return {Promise<boolean>} Promise resolved with a boolean: whether the conversation exists or not.
      */
-    protected getConversation(): Promise<boolean> {
+    protected getConversation(conversationId: number, userId: number): Promise<boolean> {
         let promise;
 
-        if (this.conversationId) {
+        if (conversationId) {
             // Retrieve the conversation. Invalidate data first to get the right unreadcount.
-            promise = this.messagesProvider.invalidateConversation(this.conversationId).then(() => {
-                return this.messagesProvider.getConversation(this.conversationId);
+            promise = this.messagesProvider.invalidateConversation(conversationId).then(() => {
+                return this.messagesProvider.getConversation(conversationId);
             });
         } else {
             // We don't have the conversation ID, check if it exists.
-            promise = this.messagesProvider.getConversationBetweenUsers(this.userId).catch((error) => {
+            promise = this.messagesProvider.getConversationBetweenUsers(userId).catch((error) => {
 
                 // Probably conversation does not exist or user is offline. Try to load offline messages.
-                return this.messagesOffline.getMessages(this.userId).then((messages) => {
+                return this.messagesOffline.getMessages(userId).then((messages) => {
                     if (messages && messages.length) {
                         // We have offline messages, this probably means that the conversation didn't exist. Don't display error.
                         messages.forEach((message) => {
@@ -358,6 +361,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
 
         return promise.then((conversation) => {
             this.conversation = conversation;
+
             if (conversation) {
                 this.conversationId = conversation.id;
                 this.title = conversation.name;
@@ -822,8 +826,19 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                 this.messagesBeingSent--;
 
                 if (data.sent) {
-                    // Message was sent, fetch messages right now.
-                    promise = this.fetchMessages();
+                    if (!this.conversationId && data.message && data.message.conversationid) {
+                        // Message sent to a new conversation, try to load the conversation.
+                        promise = this.getConversation(data.message.conversationid, this.userId).then(() => {
+                            // Now fetch messages.
+                            return this.fetchMessages();
+                        }).finally(() => {
+                            // Start polling messages now that the conversation exists.
+                            this.setPolling();
+                        });
+                    } else {
+                        // Message was sent, fetch messages right now.
+                        promise = this.fetchMessages();
+                    }
                 } else {
                     promise = Promise.reject(null);
                 }

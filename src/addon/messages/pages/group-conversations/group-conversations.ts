@@ -39,7 +39,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
     loaded = false;
     loadingMessage: string;
-    selectedConversation: number;
+    selectedConversationId: number;
+    selectedUserId: number;
     search = {
         enabled: false,
         showResults: false,
@@ -267,7 +268,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @param {number} [messageId] Message to scroll after loading the discussion. Used when searching.
      */
     gotoConversation(conversationId: number, userId?: number, messageId?: number): void {
-        this.selectedConversation = conversationId;
+        this.selectedConversationId = conversationId;
+        this.selectedUserId = userId;
 
         const params = {
             conversationId: conversationId,
