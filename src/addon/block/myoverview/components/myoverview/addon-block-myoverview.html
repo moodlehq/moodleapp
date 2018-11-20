@@ -9,7 +9,7 @@
     <h2>{{ 'addon.block_myoverview.pluginname' | translate }}</h2>
 </ion-item-divider>
 <core-loading [hideUntil]="loaded" class="core-loading-center">
-    <div padding ion-row justify-content-end [hidden]="showFilter">
+    <div padding ion-row justify-content-end [hidden]="showFilter" class="safe-padding-horizontal">
         <!-- "Time" selector. -->
         <ion-col [hidden]="!showSelectorFilter">
             <ion-select text-start [title]="'core.show' | translate" [(ngModel)]="selectedFilter" ion-col (ngModelChange)="selectedChanged()" interface="popover" class="core-button-select">
@@ -43,7 +43,7 @@
     <ion-searchbar #searchbar *ngIf="showFilter" [(ngModel)]="courses.filter" (ionInput)="filterChanged($event)" (ionCancel)="filterChanged()" [placeholder]="'core.courses.filtermycourses' | translate">
     </ion-searchbar>
     <!-- List of courses. -->
-    <div>
+    <div class="safe-area-page">
         <ion-grid no-padding>
             <ion-row no-padding>
                 <ion-col *ngFor="let course of filteredCourses" no-padding col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 align-self-stretch>

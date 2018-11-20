@@ -6,7 +6,7 @@
         <core-empty-box *ngIf="!gradesTable" icon="stats" [message]="'core.grades.nogradesreturned' | translate">
         </core-empty-box>
 
-        <div *ngIf="gradesTable" class="core-grades-container">
+        <div *ngIf="gradesTable" class="core-grades-container safe-area-page">
             <table cellspacing="0" cellpadding="0" class="core-grades-table">
                 <thead>
                     <tr>
