@@ -26,7 +26,8 @@ export class AddonMessagesOfflineProvider {
     protected logger;
 
     // Variables for database.
-    static MESSAGES_TABLE = 'addon_messages_offline_messages';
+    static MESSAGES_TABLE = 'addon_messages_offline_messages'; // When group messaging isn't available or a new conversation starts.
+    static CONVERSATION_MESSAGES_TABLE = 'addon_messages_offline_conversation_messages'; // Conversation messages.
     protected tablesSchema = [
         {
             name: AddonMessagesOfflineProvider.MESSAGES_TABLE,
@@ -53,12 +54,53 @@ export class AddonMessagesOfflineProvider {
                 }
             ],
             primaryKeys: ['touserid', 'smallmessage', 'timecreated']
+        },
+        {
+            name: AddonMessagesOfflineProvider.CONVERSATION_MESSAGES_TABLE,
+            columns: [
+                {
+                    name: 'conversationid',
+                    type: 'INTEGER'
+                },
+                {
+                    name: 'text',
+                    type: 'TEXT'
+                },
+                {
+                    name: 'timecreated',
+                    type: 'INTEGER'
+                },
+                {
+                    name: 'deviceoffline', // If message was stored because device was offline.
+                    type: 'INTEGER'
+                }
+            ],
+            primaryKeys: ['conversationid', 'text', 'timecreated']
         }
     ];
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider) {
         this.logger = logger.getInstance('AddonMessagesOfflineProvider');
         this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+    }
+
+    /**
+     * Delete a message.
+     *
+     * @param {number} conversationId Conversation ID.
+     * @param {string} message The message.
+     * @param {number} timeCreated The time the message was created.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved if stored, rejected if failure.
+     */
+    deleteConversationMessage(conversationId: number, message: string, timeCreated: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.getDb().deleteRecords(AddonMessagesOfflineProvider.CONVERSATION_MESSAGES_TABLE, {
+                    conversationid: conversationId,
+                    text: message,
+                    timecreated: timeCreated
+                });
+        });
     }
 
     /**
@@ -84,24 +126,18 @@ export class AddonMessagesOfflineProvider {
      * Get all messages where deviceoffline is set to 1.
      *
      * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved with messages.
+     * @return {Promise<any[]>}    Promise resolved with messages.
      */
-    getAllDeviceOfflineMessages(siteId?: string): Promise<any> {
+    getAllDeviceOfflineMessages(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(AddonMessagesOfflineProvider.MESSAGES_TABLE, {deviceoffline: 1});
-        });
-    }
+            const promises = [];
 
-    /**
-     * Get offline messages to send to a certain user.
-     *
-     * @param  {number} toUserId       User ID to get messages to.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved with messages.
-     */
-    getMessages(toUserId: number, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(AddonMessagesOfflineProvider.MESSAGES_TABLE, {touserid: toUserId});
+            promises.push(site.getDb().getRecords(AddonMessagesOfflineProvider.MESSAGES_TABLE, {deviceoffline: 1}));
+            promises.push(site.getDb().getRecords(AddonMessagesOfflineProvider.CONVERSATION_MESSAGES_TABLE, {deviceoffline: 1}));
+
+            return Promise.all(promises).then((results) => {
+                return results[0].concat(results[1]);
+            });
         });
     }
 
@@ -113,7 +149,54 @@ export class AddonMessagesOfflineProvider {
      */
     getAllMessages(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getAllRecords(AddonMessagesOfflineProvider.MESSAGES_TABLE);
+            const promises = [];
+
+            promises.push(site.getDb().getAllRecords(AddonMessagesOfflineProvider.MESSAGES_TABLE));
+            promises.push(site.getDb().getAllRecords(AddonMessagesOfflineProvider.CONVERSATION_MESSAGES_TABLE));
+
+            return Promise.all(promises).then((results) => {
+                return results[0].concat(results[1]);
+            });
+        });
+    }
+
+    /**
+     * Get offline messages to send to a certain user.
+     *
+     * @param {number} conversationId Conversation ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any[]>} Promise resolved with messages.
+     */
+    getConversationMessages(conversationId: number, siteId?: string): Promise<any[]> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.getDb().getRecords(AddonMessagesOfflineProvider.CONVERSATION_MESSAGES_TABLE,
+                    {conversationid: conversationId});
+        });
+    }
+
+    /**
+     * Get offline messages to send to a certain user.
+     *
+     * @param  {number} toUserId       User ID to get messages to.
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any[]>}    Promise resolved with messages.
+     */
+    getMessages(toUserId: number, siteId?: string): Promise<any[]> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.getDb().getRecords(AddonMessagesOfflineProvider.MESSAGES_TABLE, {touserid: toUserId});
+        });
+    }
+
+    /**
+     * Check if there are offline messages to send to a conversation.
+     *
+     * @param {number} conversationId Conversation ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<boolean>} Promise resolved with boolean: true if has offline messages, false otherwise.
+     */
+    hasConversationMessages(conversationId: number, siteId?: string): Promise<boolean> {
+        return this.getConversationMessages(conversationId, siteId).then((messages) => {
+            return !!messages.length;
         });
     }
 
@@ -122,11 +205,34 @@ export class AddonMessagesOfflineProvider {
      *
      * @param  {number} toUserId User ID to check.
      * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved with boolean: true if has offline messages, false otherwise.
+     * @return {Promise<boolean>}    Promise resolved with boolean: true if has offline messages, false otherwise.
      */
-    hasMessages(toUserId: number, siteId?: string): Promise<any> {
+    hasMessages(toUserId: number, siteId?: string): Promise<boolean> {
         return this.getMessages(toUserId, siteId).then((messages) => {
             return !!messages.length;
+        });
+    }
+
+    /**
+     * Save a conversation message to be sent later.
+     *
+     * @param {number} conversationId Conversation ID.
+     * @param {string} message The message to send.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved if stored, rejected if failure.
+     */
+    saveConversationMessage(conversationId: number, message: string, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const entry = {
+                conversationid: conversationId,
+                text: message,
+                timecreated: Date.now(),
+                deviceoffline: this.appProvider.isOnline() ? 0 : 1
+            };
+
+            return site.getDb().insertRecord(AddonMessagesOfflineProvider.CONVERSATION_MESSAGES_TABLE, entry).then(() => {
+                return entry;
+            });
         });
     }
 
@@ -169,7 +275,11 @@ export class AddonMessagesOfflineProvider {
                 data = { deviceoffline: value ? 1 : 0 };
 
             messages.forEach((message) => {
-                promises.push(db.insertRecord(AddonMessagesOfflineProvider.MESSAGES_TABLE, data));
+                if (message.conversationid) {
+                    promises.push(db.insertRecord(AddonMessagesOfflineProvider.CONVERSATION_MESSAGES_TABLE, data));
+                } else {
+                    promises.push(db.insertRecord(AddonMessagesOfflineProvider.MESSAGES_TABLE, data));
+                }
             });
 
             return Promise.all(promises);

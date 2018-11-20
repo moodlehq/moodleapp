@@ -115,7 +115,11 @@ export class AddonMessagesProvider {
         }
 
         // It's an offline message.
-        return this.messagesOffline.deleteMessage(message.touserid, message.smallmessage, message.timecreated);
+        if (message.conversationid) {
+            return this.messagesOffline.deleteConversationMessage(message.conversationid, message.text, message.timecreated);
+        } else {
+            return this.messagesOffline.deleteMessage(message.touserid, message.smallmessage, message.timecreated);
+        }
     }
 
     /**
@@ -127,12 +131,14 @@ export class AddonMessagesProvider {
      * @return {Promise<any>}   Promise resolved when the message has been deleted.
      */
     deleteMessageOnline(id: number, read: number, userId?: number): Promise<any> {
-        userId = userId || this.sitesProvider.getCurrentSiteUserId();
-        const params = {
+        const params: any = {
             messageid: id,
-            userid: userId,
-            read: read
+            userid: userId || this.sitesProvider.getCurrentSiteUserId()
         };
+
+        if (typeof read != 'undefined') {
+            params.read = read;
+        }
 
         return this.sitesProvider.getCurrentSite().write('core_message_delete_message', params).then(() => {
             return this.invalidateDiscussionCache(userId);
@@ -526,11 +532,11 @@ export class AddonMessagesProvider {
                 }
 
                 // Get offline messages.
-                return this.messagesOffline.getMessages(userId).then((offlineMessages) => {
+                return this.messagesOffline.getConversationMessages(conversationId).then((offlineMessages) => {
                     // Mark offline messages as pending.
                     offlineMessages.forEach((message) => {
                         message.pending = true;
-                        message.text = message.smallmessage;
+                        message.useridfrom = userId;
                     });
 
                     result.messages = result.messages.concat(offlineMessages);
@@ -1494,6 +1500,113 @@ export class AddonMessagesProvider {
             };
 
             return site.write('core_message_send_instant_messages', data);
+        });
+    }
+
+    /**
+     * Send a message to a conversation.
+     *
+     * @param {number} conversationId Conversation ID.
+     * @param {string} message The message to send.
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with:
+     *                                - sent (boolean) True if message was sent to server, false if stored in device.
+     *                                - message (any) If sent=false, contains the stored message.
+     * @since 3.6
+     */
+    sendMessageToConversation(conversationId: number, message: string, siteId?: string): Promise<any> {
+        // Convenience function to store a message to be synchronized later.
+        const storeOffline = (): Promise<any> => {
+            return this.messagesOffline.saveConversationMessage(conversationId, message, siteId).then((entry) => {
+                return {
+                    sent: false,
+                    message: entry
+                };
+            });
+        };
+
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        if (!this.appProvider.isOnline()) {
+            // App is offline, store the message.
+            return storeOffline();
+        }
+
+        // Check if this conversation already has offline messages.
+        // If so, store this message since they need to be sent in order.
+        return this.messagesOffline.hasConversationMessages(conversationId, siteId).catch(() => {
+            // Error, it's safer to assume it has messages.
+            return true;
+        }).then((hasStoredMessages) => {
+            if (hasStoredMessages) {
+                return storeOffline();
+            }
+
+            // Online and no messages stored. Send it to server.
+            return this.sendMessageToConversationOnline(conversationId, message).then(() => {
+                return { sent: true };
+            }).catch((error) => {
+                if (this.utils.isWebServiceError(error)) {
+                    // It's a WebService error, the user cannot send the message so don't store it.
+                    return Promise.reject(error);
+                }
+
+                // Error sending message, store it to retry later.
+                return storeOffline();
+            });
+        });
+    }
+
+    /**
+     * Send a message to a conversation. It will fail if offline or cannot connect.
+     *
+     * @param {number} conversationId Conversation ID.
+     * @param {string} message The message to send
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved if success, rejected if failure.
+     * @since 3.6
+     */
+    sendMessageToConversationOnline(conversationId: number, message: string, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        const messages = [
+                {
+                    text: message,
+                    textformat: 1
+                }
+            ];
+
+        return this.sendMessagesToConversationOnline(conversationId, messages, siteId).then((response) => {
+            return this.invalidateConversationMessages(conversationId, siteId).catch(() => {
+                // Ignore errors.
+            }).then(() => {
+                return response[0];
+            });
+        });
+    }
+
+    /**
+     * Send some messages to a conversation. It will fail if offline or cannot connect.
+     *
+     * @param {number} conversationId Conversation ID.
+     * @param {any} messages Messages to send. Each message must contain text and, optionally, textformat.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved if success, rejected if failure.
+     * @since 3.6
+     */
+    sendMessagesToConversationOnline(conversationId: number, messages: any, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                conversationid: conversationId,
+                messages: messages.map((message) => {
+                    return {
+                        text: message.text,
+                        textformat: typeof message.textformat != 'undefined' ? message.textformat : 1
+                    };
+                })
+            };
+
+            return site.write('core_message_send_messages_to_conversation', params);
         });
     }
 

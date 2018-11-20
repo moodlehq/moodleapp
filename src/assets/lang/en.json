@@ -188,6 +188,7 @@
     "addon.messages.type_strangers": "Others",
     "addon.messages.unblockuser": "Unblock user",
     "addon.messages.unblockuserconfirm": "Are you sure you want to unblock {{$a}}?",
+    "addon.messages.warningconversationmessagenotsent": "Couldn't send message(s) to conversation {{conversation}}. {{error}}",
     "addon.messages.warningmessagenotsent": "Couldn't send message(s) to user {{user}}. {{error}}",
     "addon.messages.you": "You:",
     "addon.mod_assign.acceptsubmissionstatement": "Please accept the submission statement.",

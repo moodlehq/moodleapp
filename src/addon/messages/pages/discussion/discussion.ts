@@ -18,6 +18,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { AddonMessagesProvider } from '../../providers/messages';
+import { AddonMessagesOfflineProvider } from '../../providers/messages-offline';
 import { AddonMessagesSyncProvider } from '../../providers/sync';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -79,7 +80,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             private userProvider: CoreUserProvider, private navCtrl: NavController, private messagesSync: AddonMessagesSyncProvider,
             private domUtils: CoreDomUtilsProvider, private messagesProvider: AddonMessagesProvider, logger: CoreLoggerProvider,
             private utils: CoreUtilsProvider, private appProvider: CoreAppProvider, private translate: TranslateService,
-            @Optional() private svComponent: CoreSplitViewComponent) {
+            @Optional() private svComponent: CoreSplitViewComponent, private messagesOffline: AddonMessagesOfflineProvider) {
         this.siteId = sitesProvider.getCurrentSiteId();
         this.currentUserId = sitesProvider.getCurrentSiteUserId();
         this.groupMessagingEnabled = this.messagesProvider.isGroupMessagingEnabled();
@@ -166,7 +167,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         }
 
         // Synchronize messages if needed.
-        this.messagesSync.syncDiscussion(this.userId).catch(() => {
+        this.messagesSync.syncDiscussion(this.conversationId, this.userId).catch(() => {
             // Ignore errors.
         }).then((warnings) => {
             if (warnings && warnings[0]) {
@@ -253,7 +254,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         this.fetching = true;
 
         // Wait for synchronization process to finish.
-        return this.messagesSync.waitForSync(this.userId).then(() => {
+        return this.messagesSync.waitForSyncConversation(this.conversationId, this.userId).then(() => {
             // Fetch messages. Invalidate the cache before fetching.
             if (this.groupMessagingEnabled) {
                 return this.messagesProvider.invalidateConversationMessages(this.conversationId).catch(() => {
@@ -269,47 +270,55 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                 });
             }
         }).then((messages) => {
-            if (this.viewDestroyed) {
-                return Promise.resolve();
-            }
-
-            // Check if we are at the bottom to scroll it after render.
-            this.scrollBottom = this.domUtils.getScrollHeight(this.content) - this.domUtils.getScrollTop(this.content) ===
-                this.domUtils.getContentHeight(this.content);
-
-            if (this.messagesBeingSent > 0) {
-                // Ignore polling due to a race condition.
-                return Promise.reject(null);
-            }
-
-            // Add new messages to the list and mark the messages that should still be displayed.
-            messages.forEach((message) => {
-                this.addMessage(message);
-            });
-
-            // Remove messages that shouldn't be in the list anymore.
-            for (const hash in this.keepMessageMap) {
-                this.removeMessage(hash);
-            }
-
-            // Sort the messages.
-            this.messagesProvider.sortMessages(this.messages);
-
-            // Calculate which messages need to display the date or user data.
-            this.messages.forEach((message, index): any => {
-                message.showDate = this.showDate(message, this.messages[index - 1]);
-                message.showUserData = this.showUserData(message, this.messages[index - 1]);
-            });
-
-            // Notify that there can be a new message.
-            this.notifyNewMessage();
-
-            // Mark retrieved messages as read if they are not.
-            this.markMessagesAsRead();
-
+            this.loadMessages(messages);
         }).finally(() => {
             this.fetching = false;
         });
+    }
+
+    /**
+     * Format and load a list of messages into the view.
+     *
+     * @param {any[]} messages Messages to load.
+     */
+    protected loadMessages(messages: any[]): void {
+        if (this.viewDestroyed) {
+            return;
+        }
+
+        // Check if we are at the bottom to scroll it after render.
+        this.scrollBottom = this.domUtils.getScrollHeight(this.content) - this.domUtils.getScrollTop(this.content) ===
+            this.domUtils.getContentHeight(this.content);
+
+        if (this.messagesBeingSent > 0) {
+            // Ignore polling due to a race condition.
+            return;
+        }
+
+        // Add new messages to the list and mark the messages that should still be displayed.
+        messages.forEach((message) => {
+            this.addMessage(message);
+        });
+
+        // Remove messages that shouldn't be in the list anymore.
+        for (const hash in this.keepMessageMap) {
+            this.removeMessage(hash);
+        }
+
+        // Sort the messages.
+        this.messagesProvider.sortMessages(this.messages);
+
+        // Calculate which messages need to display the date or user data.
+        this.messages.forEach((message, index): any => {
+            message.showDate = this.showDate(message, this.messages[index - 1]);
+            message.showUserData = this.showUserData(message, this.messages[index - 1]);
+        });
+
+        // Notify that there can be a new message.
+        this.notifyNewMessage();
+
+        // Mark retrieved messages as read if they are not.
+        this.markMessagesAsRead();
     }
 
     /**
@@ -328,18 +337,29 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         } else {
             // We don't have the conversation ID, check if it exists.
             promise = this.messagesProvider.getConversationBetweenUsers(this.userId).catch((error) => {
-                if (error.errorcode == 'conversationdoesntexist') {
-                    // Conversation does not exist, return undefined.
-                    return;
-                }
 
-                return Promise.reject(error);
+                // Probably conversation does not exist or user is offline. Try to load offline messages.
+                return this.messagesOffline.getMessages(this.userId).then((messages) => {
+                    if (messages && messages.length) {
+                        // We have offline messages, this probably means that the conversation didn't exist. Don't display error.
+                        messages.forEach((message) => {
+                            message.pending = true;
+                            message.text = message.smallmessage;
+                        });
+
+                        this.loadMessages(messages);
+                    } else if (error.errorcode != 'conversationdoesntexist') {
+                        // Display the error.
+                        return Promise.reject(error);
+                    }
+                });
             });
         }
 
         return promise.then((conversation) => {
             this.conversation = conversation;
             if (conversation) {
+                this.conversationId = conversation.id;
                 this.title = conversation.name;
                 this.conversationImage = conversation.imageurl;
                 this.isGroup = conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP;
@@ -677,7 +697,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      * Function to delete a message.
      *
      * @param {any} message  Message object to delete.
-     * @param {number} index Index where the mesasge is to delete it from the view.
+     * @param {number} index Index where the message is to delete it from the view.
      */
     deleteMessage(message: any, index: number): void {
         const langKey = message.pending ? 'core.areyousure' : 'addon.messages.deletemessageconfirmation';
@@ -779,6 +799,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             text: text,
             timecreated: new Date().getTime()
         };
+        message.showDate = this.showDate(message, this.messages[this.messages.length - 1]);
         this.addMessage(message, false);
 
         this.messagesBeingSent++;
@@ -786,7 +807,15 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         // If there is an ongoing fetch, wait for it to finish.
         // Otherwise, if a message is sent while fetching it could disappear until the next fetch.
         this.waitForFetch().finally(() => {
-            this.messagesProvider.sendMessage(this.userId, text).then((data) => {
+            let promise;
+
+            if (this.conversationId) {
+                promise = this.messagesProvider.sendMessageToConversation(this.conversationId, text);
+            } else {
+                promise = this.messagesProvider.sendMessage(this.userId, text);
+            }
+
+            promise.then((data) => {
                 let promise;
 
                 this.messagesBeingSent--;
@@ -836,9 +865,6 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         if (!prevMessage) {
             // First message, show it.
             return true;
-        } else if (message.pending) {
-            // If pending, it has no date, not show.
-            return false;
         }
 
         // Check if day has changed.
