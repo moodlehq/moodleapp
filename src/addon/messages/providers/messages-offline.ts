@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreAppProvider } from '@providers/app';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 
 /**
  * Service to handle Offline messages.
@@ -73,13 +74,18 @@ export class AddonMessagesOfflineProvider {
                 {
                     name: 'deviceoffline', // If message was stored because device was offline.
                     type: 'INTEGER'
+                },
+                {
+                    name: 'conversation', // Data about the conversation.
+                    type: 'TEXT'
                 }
             ],
             primaryKeys: ['conversationid', 'text', 'timecreated']
         }
     ];
 
-    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider) {
+    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider,
+            private textUtils: CoreTextUtilsProvider) {
         this.logger = logger.getInstance('AddonMessagesOfflineProvider');
         this.sitesProvider.createTablesFromSchema(this.tablesSchema);
     }
@@ -136,6 +142,8 @@ export class AddonMessagesOfflineProvider {
             promises.push(site.getDb().getRecords(AddonMessagesOfflineProvider.CONVERSATION_MESSAGES_TABLE, {deviceoffline: 1}));
 
             return Promise.all(promises).then((results) => {
+                results[1] = this.parseConversationMessages(results[1]);
+
                 return results[0].concat(results[1]);
             });
         });
@@ -155,6 +163,8 @@ export class AddonMessagesOfflineProvider {
             promises.push(site.getDb().getAllRecords(AddonMessagesOfflineProvider.CONVERSATION_MESSAGES_TABLE));
 
             return Promise.all(promises).then((results) => {
+                results[1] = this.parseConversationMessages(results[1]);
+
                 return results[0].concat(results[1]);
             });
         });
@@ -170,7 +180,10 @@ export class AddonMessagesOfflineProvider {
     getConversationMessages(conversationId: number, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.getDb().getRecords(AddonMessagesOfflineProvider.CONVERSATION_MESSAGES_TABLE,
-                    {conversationid: conversationId});
+                    {conversationid: conversationId}).then((messages) => {
+
+                return this.parseConversationMessages(messages);
+            });
         });
     }
 
@@ -214,20 +227,47 @@ export class AddonMessagesOfflineProvider {
     }
 
     /**
+     * Parse some fields of each offline conversation messages.
+     *
+     * @param {any[]} messages List of messages to parse.
+     * @return {any[]} Parsed messages.
+     */
+    protected parseConversationMessages(messages: any[]): any[] {
+        if (!messages) {
+            return [];
+        }
+
+        messages.forEach((message) => {
+            if (message.conversation) {
+                message.conversation = this.textUtils.parseJSON(message.conversation, {});
+            }
+        });
+
+        return messages;
+    }
+
+    /**
      * Save a conversation message to be sent later.
      *
-     * @param {number} conversationId Conversation ID.
+     * @param {any} conversation Conversation.
      * @param {string} message The message to send.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved if stored, rejected if failure.
      */
-    saveConversationMessage(conversationId: number, message: string, siteId?: string): Promise<any> {
+    saveConversationMessage(conversation: any, message: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const entry = {
-                conversationid: conversationId,
+                conversationid: conversation.id,
                 text: message,
                 timecreated: Date.now(),
-                deviceoffline: this.appProvider.isOnline() ? 0 : 1
+                deviceoffline: this.appProvider.isOnline() ? 0 : 1,
+                conversation: JSON.stringify({
+                    name: conversation.name || '',
+                    subname: conversation.subname || '',
+                    imageurl: conversation.imageurl || '',
+                    isfavourite: conversation.isfavourite ? 1 : 0,
+                    type: conversation.type
+                })
             };
 
             return site.getDb().insertRecord(AddonMessagesOfflineProvider.CONVERSATION_MESSAGES_TABLE, entry).then(() => {
@@ -276,9 +316,11 @@ export class AddonMessagesOfflineProvider {
 
             messages.forEach((message) => {
                 if (message.conversationid) {
-                    promises.push(db.insertRecord(AddonMessagesOfflineProvider.CONVERSATION_MESSAGES_TABLE, data));
+                    promises.push(db.updateRecords(AddonMessagesOfflineProvider.CONVERSATION_MESSAGES_TABLE, data,
+                            {conversationid: message.conversationid, text: message.text, timecreated: message.timecreated}));
                 } else {
-                    promises.push(db.insertRecord(AddonMessagesOfflineProvider.MESSAGES_TABLE, data));
+                    promises.push(db.updateRecords(AddonMessagesOfflineProvider.MESSAGES_TABLE, data,
+                            {touserid: message.touserid, smallmessage: message.smallmessage, timecreated: message.timecreated}));
                 }
             });
 

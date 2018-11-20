@@ -18,11 +18,13 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { AddonMessagesProvider } from '../../providers/messages';
+import { AddonMessagesOfflineProvider } from '../../providers/messages-offline';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreAppProvider } from '@providers/app';
 import { AddonPushNotificationsDelegate } from '@addon/pushnotifications/providers/delegate';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreUserProvider } from '@core/user/providers/user';
 
 /**
  * Page that displays the list of conversations, including group conversations.
@@ -71,7 +73,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, translate: TranslateService,
             private messagesProvider: AddonMessagesProvider, private domUtils: CoreDomUtilsProvider, navParams: NavParams,
             private appProvider: CoreAppProvider, platform: Platform, utils: CoreUtilsProvider,
-            pushNotificationsDelegate: AddonPushNotificationsDelegate) {
+            pushNotificationsDelegate: AddonPushNotificationsDelegate, private messagesOffline: AddonMessagesOfflineProvider,
+            private userProvider: CoreUserProvider) {
 
         this.search.loading =  translate.instant('core.searching');
         this.loadingString = translate.instant('core.loading');
@@ -179,12 +182,25 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
         // Load the first conversations of each type.
         const promises = [];
+        let offlineMessages;
 
         promises.push(this.fetchDataForOption(this.favourites, false));
         promises.push(this.fetchDataForOption(this.group, false));
         promises.push(this.fetchDataForOption(this.individual, false));
+        promises.push(this.messagesOffline.getAllMessages().then((messages) => {
+            offlineMessages = messages;
+        }));
 
         return Promise.all(promises).then(() => {
+            return this.loadOfflineMessages(offlineMessages);
+        }).then(() => {
+            if (offlineMessages && offlineMessages.length) {
+                // Sort the conversations, the offline messages could affect the order.
+                this.favourites.conversations = this.messagesProvider.sortConversations(this.favourites.conversations);
+                this.group.conversations = this.messagesProvider.sortConversations(this.group.conversations);
+                this.individual.conversations = this.messagesProvider.sortConversations(this.individual.conversations);
+            }
+
             if (typeof this.favourites.expanded == 'undefined') {
                 // The expanded status hasn't been initialized. Do it now.
                 this.favourites.expanded = this.favourites.count != 0;
@@ -284,6 +300,98 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         }).finally(() => {
             infiniteComplete && infiniteComplete();
         });
+    }
+
+    /**
+     * Load offline messages into the conversations.
+     *
+     * @param {any[]} messages Offline messages.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected loadOfflineMessages(messages: any[]): Promise<any> {
+        const promises = [];
+
+        messages.forEach((message) => {
+            if (message.conversationid) {
+                // It's an existing conversation. Search it.
+                let conversation = this.findConversation(message.conversationid);
+
+                if (conversation) {
+                    // Check if it's the last message. Offline messages are considered more recent than sent messages.
+                    if (typeof conversation.lastmessage === 'undefined' || conversation.lastmessage === null ||
+                            !conversation.lastmessagepending || conversation.lastmessagedate <= message.timecreated / 1000) {
+
+                        this.addLastOfflineMessage(conversation, message);
+                    }
+                } else {
+                    // Conversation not found, it's probably an old one. Add it.
+                    conversation = message.conversation || {};
+                    conversation.id = message.conversationid;
+
+                    this.addLastOfflineMessage(conversation, message);
+                    this.addOfflineConversation(conversation);
+                }
+            } else {
+                // Its a new conversation. Check if we already created it (there is more than one message for the same user).
+                const conversation = this.individual.conversations.find((conv) => {
+                    return conv.userid == message.touserid;
+                });
+
+                message.text = message.smallmessage;
+
+                if (conversation) {
+                    // Check if it's the last message. Offline messages are considered more recent than sent messages.
+                    if (conversation.lastmessagedate <= message.timecreated / 1000) {
+                        this.addLastOfflineMessage(conversation, message);
+                    }
+                } else {
+                    // Get the user data and create a new conversation.
+                    promises.push(this.userProvider.getProfile(message.touserid, undefined, true).catch(() => {
+                        // User not found.
+                    }).then((user) => {
+                        const conversation = {
+                            userid: message.touserid,
+                            name: user ? user.fullname : String(message.touserid),
+                            imageurl: user ? user.profileimageurl : '',
+                            type: AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL
+                        };
+
+                        this.addLastOfflineMessage(conversation, message);
+                        this.addOfflineConversation(conversation);
+                    }));
+                }
+            }
+        });
+
+        return Promise.all(promises);
+    }
+
+    /**
+     * Add an offline conversation into the right list of conversations.
+     *
+     * @param {any} conversation Offline conversation to add.
+     */
+    protected addOfflineConversation(conversation: any): void {
+        if (conversation.isfavourite) {
+            this.favourites.conversations.unshift(conversation);
+        } else if (conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP) {
+            this.group.conversations.unshift(conversation);
+        } else {
+            this.individual.conversations.unshift(conversation);
+        }
+    }
+
+    /**
+     * Add a last offline message into a conversation.
+     *
+     * @param {any} conversation Conversation where to put the last message.
+     * @param {any} message Offline message to add.
+     */
+    protected addLastOfflineMessage(conversation: any, message: any): void {
+        conversation.lastmessage = message.text;
+        conversation.lastmessagedate = message.timecreated / 1000;
+        conversation.lastmessagepending = true;
+        conversation.sentfromcurrentuser = true;
     }
 
     /**

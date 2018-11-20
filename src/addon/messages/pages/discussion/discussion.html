@@ -54,7 +54,7 @@
         <core-empty-box *ngIf="!messages || messages.length <= 0" icon="chatbubbles" [message]="'addon.messages.nomessages' | translate"></core-empty-box>
     </core-loading>
 </ion-content>
-<ion-footer color="light" class="footer-adjustable">
+<ion-footer color="light" class="footer-adjustable" *ngIf="!conversationId || conversation">
     <ion-toolbar color="light" position="bottom">
         <core-send-message-form (onSubmit)="sendMessage($event)" [showKeyboard]="showKeyboard" [placeholder]="'addon.messages.newmessage' | translate" (onResize)="resizeContent()"></core-send-message-form>
     </ion-toolbar>

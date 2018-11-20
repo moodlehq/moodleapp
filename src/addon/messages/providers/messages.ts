@@ -1506,7 +1506,7 @@ export class AddonMessagesProvider {
     /**
      * Send a message to a conversation.
      *
-     * @param {number} conversationId Conversation ID.
+     * @param {any} conversation Conversation.
      * @param {string} message The message to send.
      * @param  {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved with:
@@ -1514,10 +1514,10 @@ export class AddonMessagesProvider {
      *                                - message (any) If sent=false, contains the stored message.
      * @since 3.6
      */
-    sendMessageToConversation(conversationId: number, message: string, siteId?: string): Promise<any> {
+    sendMessageToConversation(conversation: any, message: string, siteId?: string): Promise<any> {
         // Convenience function to store a message to be synchronized later.
         const storeOffline = (): Promise<any> => {
-            return this.messagesOffline.saveConversationMessage(conversationId, message, siteId).then((entry) => {
+            return this.messagesOffline.saveConversationMessage(conversation, message, siteId).then((entry) => {
                 return {
                     sent: false,
                     message: entry
@@ -1534,7 +1534,7 @@ export class AddonMessagesProvider {
 
         // Check if this conversation already has offline messages.
         // If so, store this message since they need to be sent in order.
-        return this.messagesOffline.hasConversationMessages(conversationId, siteId).catch(() => {
+        return this.messagesOffline.hasConversationMessages(conversation.id, siteId).catch(() => {
             // Error, it's safer to assume it has messages.
             return true;
         }).then((hasStoredMessages) => {
@@ -1543,7 +1543,7 @@ export class AddonMessagesProvider {
             }
 
             // Online and no messages stored. Send it to server.
-            return this.sendMessageToConversationOnline(conversationId, message).then(() => {
+            return this.sendMessageToConversationOnline(conversation.id, message).then(() => {
                 return { sent: true };
             }).catch((error) => {
                 if (this.utils.isWebServiceError(error)) {
@@ -1611,12 +1611,32 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Helper method to sort conversations by last message time.
+     *
+     * @param {any[]} conversations Array of conversations.
+     * @return {any[]} Conversations sorted with most recent last.
+     */
+    sortConversations(conversations: any[]): any[] {
+        return conversations.sort((a, b) => {
+            const timeA = parseInt(a.lastmessagedate, 10),
+                timeB = parseInt(b.lastmessagedate, 10);
+
+            if (timeA == timeB && a.id) {
+                // Same time, sort by ID.
+                return a.id <= b.id ? 1 : -1;
+            }
+
+            return timeA <= timeB ? 1 : -1;
+        });
+    }
+
+    /**
      * Helper method to sort messages by time.
      *
-     * @param {any} messages Array of messages containing the key 'timecreated'.
-     * @return {any} Messages sorted with most recent last.
+     * @param {any[]} messages Array of messages containing the key 'timecreated'.
+     * @return {any[]} Messages sorted with most recent last.
      */
-    sortMessages(messages: any): any {
+    sortMessages(messages: any[]): any[] {
         return messages.sort((a, b) => {
             // Pending messages last.
             if (a.pending && !b.pending) {

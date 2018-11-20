@@ -781,6 +781,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
 
     /**
      * Sends a message to the server.
+     *
      * @param {string} text Message text.
      */
     sendMessage(text: string): void {
@@ -810,7 +811,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             let promise;
 
             if (this.conversationId) {
-                promise = this.messagesProvider.sendMessageToConversation(this.conversationId, text);
+                promise = this.messagesProvider.sendMessageToConversation(this.conversation, text);
             } else {
                 promise = this.messagesProvider.sendMessage(this.userId, text);
             }
