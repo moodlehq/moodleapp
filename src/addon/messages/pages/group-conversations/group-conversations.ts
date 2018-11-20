@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { IonicPage, Platform, NavParams } from 'ionic-angular';
+import { IonicPage, Platform, NavParams, Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
@@ -36,6 +36,7 @@ import { CoreUserProvider } from '@core/user/providers/user';
 })
 export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     @ViewChild(CoreSplitViewComponent) splitviewCtrl: CoreSplitViewComponent;
+    @ViewChild(Content) content: Content;
 
     loaded = false;
     loadingMessage: string;
@@ -85,20 +86,42 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
         // Update conversations when new message is received.
         this.newMessagesObserver = eventsProvider.on(AddonMessagesProvider.NEW_MESSAGE_EVENT, (data) => {
-            if (data.conversationId) {
-                // Search the conversation to update.
-                const conversation = this.findConversation(data.conversationId);
+            // Search the conversation to update.
+            let conversation;
 
-                if (typeof conversation == 'undefined') {
-                    // Probably a new conversation, refresh the list.
-                    this.loaded = false;
-                    this.refreshData().finally(() => {
-                        this.loaded = true;
-                    });
+            if (data.conversationId) {
+                conversation = this.findConversation(data.conversationId);
+            } else if (data.userId) {
+                conversation = this.individual.conversations && this.individual.conversations.find((conv) => {
+                    return conv.userid == data.userId;
+                });
+            }
+
+            if (typeof conversation == 'undefined') {
+                // Probably a new conversation, refresh the list.
+                this.loaded = false;
+                this.refreshData().finally(() => {
+                    this.loaded = true;
+                });
+            } else if (conversation.lastmessage != data.message || conversation.lastmessagedate != data.timecreated / 1000) {
+                const isNewer = data.timecreated / 1000 > conversation.lastmessagedate;
+
+                // An existing conversation has a new message, update the last message.
+                conversation.lastmessage = data.message;
+                conversation.lastmessagedate = data.timecreated / 1000;
+
+                // Sort the affected list.
+                if (conversation.isfavourite) {
+                    this.favourites.conversations = this.messagesProvider.sortConversations(this.favourites.conversations);
+                } else if (conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP) {
+                    this.group.conversations = this.messagesProvider.sortConversations(this.group.conversations);
                 } else {
-                    // An existing conversation has a new message, update the last message.
-                    conversation.lastmessage = data.message;
-                    conversation.lastmessagedate = data.timecreated / 1000;
+                    this.individual.conversations = this.messagesProvider.sortConversations(this.individual.conversations);
+                }
+
+                if (isNewer) {
+                    // The last message is newer than the previous one, scroll to top to keep viewing the conversation.
+                    this.domUtils.scrollToTop(this.content);
                 }
             }
         }, this.siteId);
