@@ -286,7 +286,7 @@ export const CORE_PROVIDERS: any[] = [
 })
 export class AppModule {
     constructor(platform: Platform, initDelegate: CoreInitDelegate, updateManager: CoreUpdateManagerProvider, config: Config,
-            sitesProvider: CoreSitesProvider, fileProvider: CoreFileProvider) {
+            sitesProvider: CoreSitesProvider, fileProvider: CoreFileProvider, private eventsProvider: CoreEventsProvider) {
         // Register a handler for platform ready.
         initDelegate.registerProcess({
             name: 'CorePlatformReady',
@@ -483,6 +483,52 @@ export class AppModule {
 
             // Initial imgs refresh.
             this.imgsUpdate();
+        };
+
+        const eventsProvider = this.eventsProvider;
+
+        // tslint:disable: typedef
+        (<any> Content).prototype.ngAfterViewInit = function() {
+            assert(this.getFixedElement(), 'fixed element was not found');
+            assert(this.getScrollElement(), 'scroll element was not found');
+
+            const scroll = this._scroll;
+            scroll.ev.fixedElement = this.getFixedElement();
+            scroll.ev.scrollElement = this.getScrollElement();
+
+            // Subscribe to the scroll start
+            scroll.onScrollStart = (ev) => {
+                this.ionScrollStart.emit(ev);
+            };
+
+            // Subscribe to every scroll move
+            scroll.onScroll = (ev) => {
+                // Emit to all of our other friends things be scrolling
+                this.ionScroll.emit(ev);
+
+                this.imgsUpdate();
+            };
+
+            // Subscribe to the scroll end
+            scroll.onScrollEnd = (ev) => {
+                this.ionScrollEnd.emit(ev);
+
+                this.imgsUpdate();
+            };
+
+            // Recalculate size when screen rotates.
+            this._orientationObs = eventsProvider.on(CoreEventsProvider.ORIENTATION_CHANGE, this.resize.bind(this));
+        };
+
+        // tslint:disable: typedef
+        (<any> Content).prototype.ngOnDestroy = function() {
+            this._scLsn && this._scLsn();
+            this._viewCtrlReadSub && this._viewCtrlReadSub.unsubscribe();
+            this._viewCtrlWriteSub && this._viewCtrlWriteSub.unsubscribe();
+            this._viewCtrlReadSub = this._viewCtrlWriteSub = null;
+            this._scroll && this._scroll.destroy();
+            this._footerEle = this._scLsn = this._scroll = null;
+            this._orientationObs && this._orientationObs.off();
         };
     }
 }

@@ -185,8 +185,9 @@ export class MoodleMobileApp implements OnInit {
                         viewport.setAttribute('content', 'viewport-fit=cover,' + viewport.getAttribute('content'));
                     });
                 }
+
+                this.eventsProvider.trigger(CoreEventsProvider.ORIENTATION_CHANGE);
             }
         );
-
     }
 }
