@@ -398,9 +398,11 @@ export class CoreCourseProvider {
         }).then((sections) => {
             for (let i = 0; i < sections.length; i++) {
                 const section = sections[i];
-                if (sectionId != null && !isNaN(sectionId) && sectionId != section.id) {
+                if (sectionId != null && !isNaN(sectionId) && section.id != CoreCourseProvider.STEALTH_MODULES_SECTION_ID &&
+                        sectionId != section.id) {
                     continue;
                 }
+
                 for (let j = 0; j < section.modules.length; j++) {
                     const module = section.modules[j];
                     if (module.id == moduleId) {
