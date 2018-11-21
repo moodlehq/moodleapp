@@ -137,6 +137,12 @@ export class CoreFormatTextDirective implements OnChanges {
             container.classList.add('atto_image_button_right');
         } else if (img.classList.contains('atto_image_button_left')) {
             container.classList.add('atto_image_button_left');
+        } else if (img.classList.contains('atto_image_button_text-top')) {
+            container.classList.add('atto_image_button_text-top');
+        } else if (img.classList.contains('atto_image_button_middle')) {
+            container.classList.add('atto_image_button_middle');
+        } else if (img.classList.contains('atto_image_button_text-bottom')) {
+            container.classList.add('atto_image_button_text-bottom');
         }
 
         this.domUtils.wrapElement(img, container);
