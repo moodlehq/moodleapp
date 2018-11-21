@@ -86,7 +86,7 @@
     <core-empty-box *ngIf="isEmpty && !search.searching" icon="archive" [message]="'addon.mod_data.norecords' | translate">
     </core-empty-box>
 
-    <core-empty-box *ngIf="isEmpty && search.searching" icon="archive" [message]="'addon.mod_data.nomatch' | translate">
+    <core-empty-box *ngIf="isEmpty && search.searching" icon="archive" [message]="'addon.mod_data.nomatch' | translate" class="core-empty-box-clickable">
         <a (click)="searchReset()">{{ 'addon.mod_data.resetsettings' | translate}}</a>
     </core-empty-box>
 
