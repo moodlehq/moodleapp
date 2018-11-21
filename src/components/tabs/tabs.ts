@@ -16,9 +16,10 @@ import {
     Component, Input, Output, EventEmitter, OnInit, OnChanges, OnDestroy, AfterViewInit, ViewChild, ElementRef,
     SimpleChange
 } from '@angular/core';
-import { CoreTabComponent } from './tab';
 import { Content, Slides } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreAppProvider } from '@providers/app';
+import { CoreTabComponent } from './tab';
 
 /**
  * This component displays some tabs that usually share data between them.
@@ -72,8 +73,13 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     protected isCurrentView = true;
     protected shouldSlideToInitial = false; // Whether we need to slide to the initial slide because it's out of view.
     protected hasSliddenToInitial = false; // Whether we've already slidden to the initial slide or there was no need.
+    protected selectHistory = [];
 
-    constructor(element: ElementRef, protected content: Content, protected domUtils: CoreDomUtilsProvider) {
+    protected firstSelectedTab: number;
+    protected unregisterBackButtonAction: any;
+
+    constructor(element: ElementRef, protected content: Content, protected domUtils: CoreDomUtilsProvider,
+            protected appProvider: CoreAppProvider) {
         this.tabBarElement = element.nativeElement;
     }
 
@@ -128,12 +134,47 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         if (this.initialized) {
             this.calculateSlides();
         }
+
+        this.registerBackButtonAction();
+    }
+
+    /**
+     * Register back button action.
+     */
+    protected registerBackButtonAction(): void {
+        this.unregisterBackButtonAction = this.appProvider.registerBackButtonAction(() => {
+            // The previous page in history is not the last one, we need the previous one.
+            if (this.selectHistory.length > 1) {
+                const tab = this.selectHistory[this.selectHistory.length - 2];
+
+                // Remove curent and previous tabs from history.
+                this.selectHistory = this.selectHistory.filter((tabId) => {
+                    return this.selected != tabId && tab != tabId;
+                });
+
+                this.selectTab(tab);
+
+                return true;
+            } else if (this.selected != this.firstSelectedTab) {
+                // All history is gone but we are not in the first selected tab.
+                this.selectHistory = [];
+
+                this.selectTab(this.firstSelectedTab);
+
+                return true;
+            }
+
+            return false;
+        }, 750);
     }
 
     /**
      * User left the page that contains the component.
      */
     ionViewDidLeave(): void {
+        // Unregister the custom back button action for this page
+        this.unregisterBackButtonAction && this.unregisterBackButtonAction();
+
         this.isCurrentView = false;
     }
 
@@ -229,6 +270,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         }
 
         if (selectedTab) {
+            this.firstSelectedTab = selectedIndex;
             this.selectTab(selectedIndex);
         }
 
@@ -405,6 +447,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             this.slides.slideTo(index);
         }
 
+        this.selectHistory.push(index);
         this.selected = index;
         newTab.selectTab();
         this.ionChange.emit(newTab);
