@@ -1,8 +1,8 @@
 {
     "addcontact": "Add contact",
-    "blockcontact": "Block contact",
-    "blockcontactconfirm": "You will no longer receive messages from this contact.",
     "blocknoncontacts": "Prevent non-contacts from messaging me",
+    "blockuser": "Block user",
+    "blockuserconfirm": "Are you sure you want to block {{$a}}?",
     "contactableprivacy": "Accept messages from:",
     "contactableprivacy_coursemember": "My contacts and anyone in my courses",
     "contactableprivacy_onlycontacts": "My contacts only",
@@ -31,6 +31,7 @@
     "type_online": "Online",
     "type_search": "Search results",
     "type_strangers": "Others",
-    "unblockcontact": "Unblock contact",
+    "unblockuser": "Unblock user",
+    "unblockuserconfirm": "Are you sure you want to unblock {{$a}}?",
     "warningmessagenotsent": "Couldn't send message(s) to user {{user}}. {{error}}"
 }

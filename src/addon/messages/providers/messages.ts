@@ -70,19 +70,30 @@ export class AddonMessagesProvider {
     }
 
     /**
-     * Block a contact.
+     * Block a user.
      *
      * @param {number} userId User ID of the person to block.
-     * @param {string} [siteId]  Site ID. If not defined, use current site.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
      * @return {Promise<any>} Resolved when done.
      */
     blockContact(userId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            const params = {
-                userids: [ userId ]
-            };
+            let promise;
+            if (site.wsAvailable('core_message_block_user')) {
+                // Since Moodle 3.6
+                const params = {
+                    userid: site.getUserId(),
+                    blockeduserid: userId,
+                };
+                promise = site.write('core_message_block_user', params);
+            } else {
+                const params = {
+                    userids: [userId]
+                };
+                promise = site.write('core_message_block_contacts', params);
+            }
 
-            return site.write('core_message_block_contacts', params).then(() => {
+            return promise.then(() => {
                 return this.invalidateAllContactsCache(site.getUserId(), site.getId());
             });
         });
@@ -1152,19 +1163,30 @@ export class AddonMessagesProvider {
      * Unblock a user.
      *
      * @param {number} userId User ID of the person to unblock.
-     * @param {string} [siteId]  Site ID. If not defined, use current site.
-     * @return {Promise<any>}  Resolved when done.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<any>} Resolved when done.
      */
     unblockContact(userId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            const params = {
-                    userids: [ userId ]
-                },
-                preSets = {
+            let promise;
+            if (site.wsAvailable('core_message_unblock_user')) {
+                // Since Moodle 3.6
+                const params = {
+                    userid: site.getUserId(),
+                    unblockeduserid: userId,
+                };
+                promise = site.write('core_message_unblock_user', params);
+            } else {
+                const params = {
+                    userids: [userId]
+                };
+                const preSets = {
                     responseExpected: false
                 };
+                promise = site.write('core_message_unblock_contacts', params, preSets);
+            }
 
-            return site.write('core_message_unblock_contacts', params, preSets).then(() => {
+            return promise.then(() => {
                 return this.invalidateAllContactsCache(site.getUserId(), site.getId());
             });
         });
