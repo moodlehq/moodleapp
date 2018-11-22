@@ -178,6 +178,7 @@
     "addon.messages.nogroupmessages": "No group messages",
     "addon.messages.nomessages": "No messages",
     "addon.messages.nousersfound": "No users found",
+    "addon.messages.numparticipants": "{{$a}} participants",
     "addon.messages.removecontact": "Remove contact",
     "addon.messages.removecontactconfirm": "Contact will be removed from your contacts list.",
     "addon.messages.showdeletemessages": "Show delete messages",

@@ -56,6 +56,7 @@
 </ion-content>
 <ion-footer color="light" class="footer-adjustable" *ngIf="!conversationId || conversation">
     <ion-toolbar color="light" position="bottom">
+        <!-- @todo: Check if the user can send messages. -->
         <core-send-message-form (onSubmit)="sendMessage($event)" [showKeyboard]="showKeyboard" [placeholder]="'addon.messages.newmessage' | translate" (onResize)="resizeContent()"></core-send-message-form>
     </ion-toolbar>
 </ion-footer>

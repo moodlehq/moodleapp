@@ -33,6 +33,7 @@ export class AddonMessagesProvider {
     static NEW_MESSAGE_EVENT = 'addon_messages_new_message_event';
     static READ_CHANGED_EVENT = 'addon_messages_read_changed_event';
     static READ_CRON_EVENT = 'addon_messages_read_cron_event';
+    static OPEN_CONVERSATION_EVENT = 'addon_messages_open_conversation_event'; // Notify that a conversation should be opened.
     static SPLIT_VIEW_LOAD_EVENT = 'addon_messages_split_view_load_event';
     static POLL_INTERVAL = 10000;
     static PUSH_SIMULATION_COMPONENT = 'AddonMessagesPushSimulation';
@@ -251,6 +252,17 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Get cache key for get conversation members.
+     *
+     * @param {number} userId User ID.
+     * @param {number} conversationId Conversation ID.
+     * @return {string} Cache key.
+     */
+    protected getCacheKeyForConversationMembers(userId: number, conversationId: number): string {
+        return this.ROOT_CACHE_KEY + 'conversationMembers:' + userId + ':' + conversationId;
+    }
+
+    /**
      * Get cache key for get conversation messages.
      *
      * @param {number} userId User ID.
@@ -459,6 +471,54 @@ export class AddonMessagesProvider {
 
             return site.read('core_message_get_conversation_between_users', params, preSets).then((conversation) => {
                 return this.formatConversation(conversation, userId);
+            });
+        });
+    }
+
+    /**
+     * Get a conversation members.
+     *
+     * @param {number} conversationId Conversation ID to fetch.
+     * @param {number} [limitFrom=0] Offset for members list.
+     * @param {number} [limitTo] Limit of members.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>} Promise resolved with the response.
+     * @since 3.6
+     */
+    getConversationMembers(conversationId: number, limitFrom: number = 0, limitTo?: number, includeContactRequests?: boolean,
+            siteId?: string, userId?: number): Promise<any> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            if (typeof limitTo == 'undefined' || limitTo === null) {
+                limitTo = this.LIMIT_MESSAGES;
+            }
+
+            const preSets = {
+                    cacheKey: this.getCacheKeyForConversationMembers(userId, conversationId)
+                },
+                params: any = {
+                    userid: userId,
+                    conversationid: conversationId,
+                    limitfrom: limitFrom,
+                    limitnum: limitTo < 1 ? limitTo : limitTo + 1, // If there is a limit, get 1 more than requested.
+                    includecontactrequests: includeContactRequests ? 1 : 0
+                };
+
+            return site.read('core_message_get_conversation_members', params, preSets).then((members) => {
+                const result: any = {};
+
+                if (limitTo < 1) {
+                    result.canLoadMore = false;
+                    result.members = members;
+                } else {
+                    result.canLoadMore = members.length > limitTo;
+                    result.members = members.slice(0, limitTo);
+                }
+
+                return result;
             });
         });
     }
@@ -1068,6 +1128,22 @@ export class AddonMessagesProvider {
             userId = userId || site.getUserId();
 
             return site.invalidateWsCacheForKey(this.getCacheKeyForConversationBetweenUsers(userId, otherUserId));
+        });
+    }
+
+    /**
+     * Invalidate conversation members cache.
+     *
+     * @param {number} conversationId Conversation ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>} Resolved when done.
+     */
+    invalidateConversationMembers(conversationId: number, siteId?: string, userId?: number): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            return site.invalidateWsCacheForKey(this.getCacheKeyForConversationMembers(userId, conversationId));
         });
     }
 

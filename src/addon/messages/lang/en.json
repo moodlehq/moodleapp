@@ -30,6 +30,7 @@
     "nogroupmessages": "No group messages",
     "nomessages": "No messages",
     "nousersfound": "No users found",
+    "numparticipants": "{{$a}} participants",
     "removecontact": "Remove contact",
     "removecontactconfirm": "Contact will be removed from your contacts list.",
     "showdeletemessages": "Show delete messages",

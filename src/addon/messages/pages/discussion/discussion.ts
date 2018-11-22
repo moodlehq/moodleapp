@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnDestroy, ViewChild, Optional } from '@angular/core';
-import { IonicPage, NavParams, NavController, Content } from 'ionic-angular';
+import { IonicPage, NavParams, NavController, Content, ModalController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
@@ -80,7 +80,9 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             private userProvider: CoreUserProvider, private navCtrl: NavController, private messagesSync: AddonMessagesSyncProvider,
             private domUtils: CoreDomUtilsProvider, private messagesProvider: AddonMessagesProvider, logger: CoreLoggerProvider,
             private utils: CoreUtilsProvider, private appProvider: CoreAppProvider, private translate: TranslateService,
-            @Optional() private svComponent: CoreSplitViewComponent, private messagesOffline: AddonMessagesOfflineProvider) {
+            @Optional() private svComponent: CoreSplitViewComponent, private messagesOffline: AddonMessagesOfflineProvider,
+            private modalCtrl: ModalController) {
+
         this.siteId = sitesProvider.getCurrentSiteId();
         this.currentUserId = sitesProvider.getCurrentSiteUserId();
         this.groupMessagingEnabled = this.messagesProvider.isGroupMessagingEnabled();
@@ -351,7 +353,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                         });
 
                         this.loadMessages(messages);
-                    } else if (error.errorcode != 'conversationdoesntexist') {
+                    } else if (error.errorcode != 'errorconversationdoesnotexist') {
                         // Display the error.
                         return Promise.reject(error);
                     }
@@ -913,8 +915,26 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      */
     viewInfo(): void {
         if (this.isGroup) {
-            // @todo
+            // Display the group information.
+            const modal = this.modalCtrl.create('AddonMessagesConversationInfoPage', {
+                conversationId: this.conversationId
+            });
+
+            modal.present();
+            modal.onDidDismiss((userId) => {
+                if (typeof userId != 'undefined') {
+                    // Open user conversation.
+                    if (this.svComponent) {
+                        // Notify the left pane to load it, this way the right conversation will be highlighted.
+                        this.eventsProvider.trigger(AddonMessagesProvider.OPEN_CONVERSATION_EVENT, {userId: userId}, this.siteId);
+                    } else {
+                        // Open the discussion in a new view.
+                        this.navCtrl.push('AddonMessagesDiscussionPage', {userId: userId});
+                    }
+                }
+            });
         } else {
+            // Open the user profile.
             const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
             navCtrl.push('CoreUserProfilePage', { userId: this.userId });
         }

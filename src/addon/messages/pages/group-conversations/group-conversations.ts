@@ -71,6 +71,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     protected appResumeSubscription: any;
     protected readChangedObserver: any;
     protected cronObserver: any;
+    protected openConversationObserver: any;
 
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, translate: TranslateService,
             private messagesProvider: AddonMessagesProvider, private domUtils: CoreDomUtilsProvider, navParams: NavParams,
@@ -87,15 +88,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         // Update conversations when new message is received.
         this.newMessagesObserver = eventsProvider.on(AddonMessagesProvider.NEW_MESSAGE_EVENT, (data) => {
             // Search the conversation to update.
-            let conversation;
-
-            if (data.conversationId) {
-                conversation = this.findConversation(data.conversationId);
-            } else if (data.userId) {
-                conversation = this.individual.conversations && this.individual.conversations.find((conv) => {
-                    return conv.userid == data.userId;
-                });
-            }
+            const conversation = this.findConversation(data.conversationId, data.userId);
 
             if (typeof conversation == 'undefined') {
                 // Probably a new conversation, refresh the list.
@@ -111,13 +104,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 conversation.lastmessagedate = data.timecreated / 1000;
 
                 // Sort the affected list.
-                if (conversation.isfavourite) {
-                    this.favourites.conversations = this.messagesProvider.sortConversations(this.favourites.conversations);
-                } else if (conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP) {
-                    this.group.conversations = this.messagesProvider.sortConversations(this.group.conversations);
-                } else {
-                    this.individual.conversations = this.messagesProvider.sortConversations(this.individual.conversations);
-                }
+                const option = this.getConversationOption(conversation);
+                option.conversations = this.messagesProvider.sortConversations(option.conversations);
 
                 if (isNewer) {
                     // The last message is newer than the previous one, scroll to top to keep viewing the conversation.
@@ -144,6 +132,13 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         // Update discussions when cron read is executed.
         this.cronObserver = eventsProvider.on(AddonMessagesProvider.READ_CRON_EVENT, (data) => {
             this.refreshData();
+        }, this.siteId);
+
+        // Load a discussion if we receive an event to do so.
+        this.openConversationObserver = eventsProvider.on(AddonMessagesProvider.OPEN_CONVERSATION_EVENT, (data) => {
+            if (data.conversationId || data.userId) {
+                this.gotoConversation(data.conversationId, data.userId, undefined, true);
+            }
         }, this.siteId);
 
         // Refresh the view when the app is resumed.
@@ -227,6 +222,18 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
             if (typeof this.favourites.expanded == 'undefined') {
                 // The expanded status hasn't been initialized. Do it now.
+                if (this.conversationId) {
+                    // A certain conversation should be opened, expand its option.
+                    const conversation = this.findConversation(this.conversationId);
+                    if (conversation) {
+                        const option = this.getConversationOption(conversation);
+                        option.expanded = true;
+
+                        return;
+                    }
+                }
+
+                // No conversation specified or not found, determine which one should be expanded.
                 this.favourites.expanded = this.favourites.count != 0;
                 this.group.expanded = this.favourites.count == 0 && this.group.count != 0;
                 this.individual.expanded = this.favourites.count == 0 && this.group.count == 0;
@@ -265,15 +272,22 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * Find a conversation in the list of loaded conversations.
      *
      * @param {number} conversationId The conversation ID to search.
+     * @param {number} userId User ID to search (if no conversationId).
      * @return {any} Conversation.
      */
-    protected findConversation(conversationId: number): any {
-        const conversations = (this.favourites.conversations || []).concat(this.group.conversations || [])
-                .concat(this.individual.conversations || []);
+    protected findConversation(conversationId: number, userId?: number): any {
+        if (conversationId) {
+            const conversations = (this.favourites.conversations || []).concat(this.group.conversations || [])
+                    .concat(this.individual.conversations || []);
 
-        return conversations.find((conv) => {
-            return conv.id == conversationId;
-        });
+            return conversations.find((conv) => {
+                return conv.id == conversationId;
+            });
+        } else if (this.individual.conversations) {
+            return this.individual.conversations.find((conv) => {
+                return conv.userid == userId;
+            });
+        }
     }
 
     /**
@@ -289,8 +303,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @param {number} conversationId Conversation Id to load.
      * @param {number} userId User of the conversation. Only if there is no conversationId.
      * @param {number} [messageId] Message to scroll after loading the discussion. Used when searching.
+     * @param {boolean} [scrollToConversation] Whether to scroll to the conversation.
      */
-    gotoConversation(conversationId: number, userId?: number, messageId?: number): void {
+    gotoConversation(conversationId: number, userId?: number, messageId?: number, scrollToConversation?: boolean): void {
         this.selectedConversationId = conversationId;
         this.selectedUserId = userId;
 
@@ -302,6 +317,23 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             params['message'] = messageId;
         }
         this.splitviewCtrl.push('AddonMessagesDiscussionPage', params);
+
+        if (scrollToConversation) {
+            // Search the conversation.
+            const conversation = this.findConversation(conversationId, userId);
+            if (conversation) {
+                // First expand the option if it isn't expanded.
+                const option = this.getConversationOption(conversation);
+                this.expandOption(option);
+
+                // Wait for the view to expand the option.
+                setTimeout(() => {
+                    // Now scroll to the conversation.
+                    this.domUtils.scrollToElementBySelector(this.content, '#addon-message-conversation-' +
+                            (conversation.id ? conversation.id : 'user-' + conversation.userid));
+                });
+            }
+        }
     }
 
     /**
@@ -358,9 +390,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 }
             } else {
                 // Its a new conversation. Check if we already created it (there is more than one message for the same user).
-                const conversation = this.individual.conversations.find((conv) => {
-                    return conv.userid == message.touserid;
-                });
+                const conversation = this.findConversation(undefined, message.touserid);
 
                 message.text = message.smallmessage;
 
@@ -397,13 +427,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @param {any} conversation Offline conversation to add.
      */
     protected addOfflineConversation(conversation: any): void {
-        if (conversation.isfavourite) {
-            this.favourites.conversations.unshift(conversation);
-        } else if (conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP) {
-            this.group.conversations.unshift(conversation);
-        } else {
-            this.individual.conversations.unshift(conversation);
-        }
+        const option = this.getConversationOption(conversation);
+        option.conversations.unshift(conversation);
     }
 
     /**
@@ -417,6 +442,22 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         conversation.lastmessagedate = message.timecreated / 1000;
         conversation.lastmessagepending = true;
         conversation.sentfromcurrentuser = true;
+    }
+
+    /**
+     * Given a conversation, return its option (favourites, group, individual).
+     *
+     * @param {any} conversation Conversation to check.
+     * @return {any} Option object.
+     */
+    protected getConversationOption(conversation: any): any {
+        if (conversation.isfavourite) {
+            return this.favourites;
+        } else if (conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP) {
+            return this.group;
+        } else {
+            return this.individual;
+        }
     }
 
     /**
@@ -447,12 +488,21 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             // Already expanded, close it.
             option.expanded = false;
         } else {
-            // Collapse all and expand the clicked one.
-            this.favourites.expanded = false;
-            this.group.expanded = false;
-            this.individual.expanded = false;
-            option.expanded = true;
+            this.expandOption(option);
         }
+    }
+
+    /**
+     * Expand a certain option.
+     *
+     * @param {any} option The option to expand.
+     */
+    protected expandOption(option: any): void {
+        // Collapse all and expand the right one.
+        this.favourites.expanded = false;
+        this.group.expanded = false;
+        this.individual.expanded = false;
+        option.expanded = true;
     }
 
     /**
@@ -497,5 +547,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         this.pushObserver && this.pushObserver.unsubscribe();
         this.readChangedObserver && this.readChangedObserver.off();
         this.cronObserver && this.cronObserver.off();
+        this.openConversationObserver && this.openConversationObserver.off();
     }
 }

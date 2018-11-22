@@ -1,0 +1,42 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'addon.messages.groupinfo' | translate }}</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="loaded" (ionRefresh)="refreshData($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <core-loading [hideUntil]="loaded">
+        <ion-item text-center *ngIf="conversation">
+            <div class="item-avatar-center" *ngIf="conversation.imageurl">
+                <img class="avatar" [src]="conversation.imageurl" core-external-content [alt]="conversation.name" role="presentation">
+            </div>
+            <h2><core-format-text [text]="conversation.name"></core-format-text></h2>
+            <p><core-format-text *ngIf="conversation.subname" [text]="conversation.subname"></core-format-text></p>
+            <p>{{ 'addon.messages.numparticipants' | translate:{$a: conversation.membercount} }}</p>
+        </ion-item>
+
+        <a ion-item text-wrap *ngFor="let member of members" (click)="closeModal(member.id)">
+            <ion-avatar item-start>
+                <img [src]="member.profileimageurl" [alt]="member.fullname" core-external-content onError="this.src='assets/img/user-avatar.png'">
+                <!-- @todo: Display connection status.
+                    <span *ngIf="member.showonlinestatus" class="core-primary-circle" [ngClass]='{"addon-message-contact-online": member.isonline}'></span> -->
+            </ion-avatar>
+            <h2>
+                <p>
+                    <core-format-text [text]="member.fullname"></core-format-text>
+                    <core-icon name="fa-ban" *ngIf="member.isblocked" [attr.aria-label]="'addon.messages.contactblocked' | translate"></core-icon>
+                </p>
+            </h2>
+        </a>
+
+        <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreMembers($event)"></core-infinite-loading>
+    </core-loading>
+</ion-content>

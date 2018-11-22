@@ -105,7 +105,7 @@
 
 <!-- Template to render a list of conversations. -->
 <ng-template #conversationsTemplate let-conversations="conversations" let-avatarOptional="avatarOptional">
-    <a ion-item text-wrap *ngFor="let conversation of conversations" [title]="conversation.name" detail-none (click)="gotoConversation(conversation.id, conversation.userid)" [class.core-split-item-selected]="(conversation.id && conversation.id == selectedConversationId) || (conversation.userid && conversation.userid == selectedUserId)">
+    <a ion-item text-wrap *ngFor="let conversation of conversations" [title]="conversation.name" detail-none (click)="gotoConversation(conversation.id, conversation.userid)" [class.core-split-item-selected]="(conversation.id && conversation.id == selectedConversationId) || (conversation.userid && conversation.userid == selectedUserId)" id="addon-message-conversation-{{ conversation.id ? conversation.id : 'user-' + conversation.userid }}">
         <ion-avatar item-start *ngIf="conversation.imageurl || !avatarOptional">
             <img src="{{conversation.imageurl}}" [alt]="conversation.name" core-external-content onError="this.src='assets/img/user-avatar.png'">
             <!-- @todo: Display connection status.
