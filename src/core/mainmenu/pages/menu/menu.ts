@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreIonTabsComponent } from '@components/ion-tabs/ion-tabs';
 import { CoreMainMenuProvider } from '../../providers/mainmenu';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from '../../providers/delegate';
 
@@ -31,16 +33,15 @@ export class CoreMainMenuPage implements OnDestroy {
     loaded = false;
     redirectPage: string;
     redirectParams: any;
-    initialTab: number;
     showTabs = false;
 
     protected subscription;
-    protected redirectPageLoaded = false;
+    protected redirectObs: any;
+
+    @ViewChild('mainTabs') mainTabs: CoreIonTabsComponent;
 
     constructor(private menuDelegate: CoreMainMenuDelegate, private sitesProvider: CoreSitesProvider, navParams: NavParams,
-            private navCtrl: NavController) {
-        this.redirectPage = navParams.get('redirectPage');
-        this.redirectParams = navParams.get('redirectParams');
+            private navCtrl: NavController, private eventsProvider: CoreEventsProvider) {
     }
 
     /**
@@ -54,6 +55,27 @@ export class CoreMainMenuPage implements OnDestroy {
         }
 
         this.showTabs = true;
+
+        this.redirectObs = this.eventsProvider.on(CoreEventsProvider.LOAD_PAGE_MAIN_MENU, (data) => {
+            // Check if the redirect page is the root page of any of the tabs.
+            const i = this.tabs.findIndex((tab, i) => {
+                return tab.page == data.redirectPage;
+            });
+
+            if (i >= 0) {
+                // Tab found. Set the params.
+                this.tabs[i].pageParams = Object.assign({}, data.redirectParams);
+            } else {
+                // Tab not found, use a phantom tab.
+                this.redirectPage = data.redirectPage;
+                this.redirectParams = data.redirectParams;
+            }
+
+            setTimeout(() => {
+                // Let the tab load the params before navigating.
+                this.mainTabs.selectTabRootByIndex(i + 1);
+            });
+        });
 
         this.subscription = this.menuDelegate.getHandlers().subscribe((handlers) => {
             // Remove the handlers that should only appear in the More menu.
@@ -83,33 +105,6 @@ export class CoreMainMenuPage implements OnDestroy {
                 return b.priority - a.priority;
             });
 
-            if (typeof this.initialTab == 'undefined' && !this.loaded) {
-                this.initialTab = 0;
-
-                // Calculate the tab to load.
-                if (this.redirectPage) {
-                    // Check if the redirect page is the root page of any of the tabs.
-                    const i = this.tabs.findIndex((tab, i) => {
-                        return tab.page == this.redirectPage;
-                    });
-                    if (i >= 0) {
-                        // Tab found. Set the params and unset the redirect page.
-                        this.initialTab = i + 1;
-                        this.tabs[i].pageParams = Object.assign(this.tabs[i].pageParams || {}, this.redirectParams);
-                        this.redirectPage = null;
-                        this.redirectParams = null;
-                    }
-                } else {
-                    const i = handlers.findIndex((handler, i) => {
-                        return handler.name == 'CoreDashboard';
-                    });
-
-                    if (i >= 0) {
-                        this.initialTab = i;
-                    }
-                }
-            }
-
             this.loaded = this.menuDelegate.areHandlersLoaded();
         });
     }
@@ -119,5 +114,6 @@ export class CoreMainMenuPage implements OnDestroy {
      */
     ngOnDestroy(): void {
         this.subscription && this.subscription.unsubscribe();
+        this.redirectObs && this.redirectObs.off();
     }
 }
