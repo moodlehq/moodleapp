@@ -11,9 +11,7 @@
 <ion-content>
     <core-loading [hideUntil]="usersLoaded">
         <ion-item text-wrap *ngFor="let user of users" [class.addon-mod-chat-user]="currentUserId != user.id && isOnline">
-            <ion-avatar item-start>
-                <img [src]="user.profileimageurl" onError="this.src='assets/img/user-avatar.png'" core-external-content [alt]="'core.pictureof' | translate:{$a: user.fullname}" role="presentation">
-            </ion-avatar>
+            <ion-avatar core-user-avatar [user]="user" item-start></ion-avatar>
             <h2><core-format-text [text]="user.fullname"></core-format-text></h2>
             <ng-container *ngIf="currentUserId != user.id && isOnline">
                 <button ion-button clear icon-left (click)="talkTo(user)">

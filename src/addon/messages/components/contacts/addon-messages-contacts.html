@@ -19,9 +19,7 @@
                 <ng-container *ngFor="let contact of contacts[contactType]">
                     <!-- Don't show deleted users -->
                     <a ion-item text-wrap *ngIf="contact.profileimageurl || contact.profileimageurlsmall"  [title]="contact.fullname" (click)="gotoDiscussion(contact.id)" [class.core-split-item-selected]="contact.id == discussionUserId" detail-none>
-                        <ion-avatar item-start>
-                            <img src="{{contact.profileimageurl || contact.profileimageurlsmall}}" [alt]="'core.pictureof' | translate:{$a: contact.fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'">
-                        </ion-avatar>
+                        <ion-avatar core-user-avatar [user]="contact" item-start></ion-avatar>
                         <h2><core-format-text [text]="contact.fullname"></core-format-text></h2>
                     </a>
                 </ng-container>

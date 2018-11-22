@@ -82,9 +82,7 @@
                             <p>{{ 'addon.mod_choice.numberofuser' | translate }}: {{ result.numberofuser }} ({{ 'core.percentagenumber' | translate: {$a: result.percentageamount} }})</p>
                         </ion-item-divider>
                         <a ion-item *ngFor="let user of result.userresponses" core-user-link [courseId]="courseid" [userId]="user.userid" [title]="user.fullname" text-wrap>
-                            <ion-avatar item-start>
-                                <img [src]="user.profileimageurl" [alt]="'core.pictureof' | translate:{$a: user.fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'">
-                            </ion-avatar>
+                            <ion-avatar core-user-avatar [user]="user" item-start [courseId]="courseid"></ion-avatar>
                             <p>{{user.fullname}}</p>
                         </a>
                     </ion-item-group>

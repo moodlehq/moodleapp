@@ -1,9 +1,7 @@
 <core-loading [hideUntil]="loaded">
     <div *ngIf="!summary">
         <ion-list-header text-wrap>
-            <ion-avatar item-start>
-                <img [src]="profile && profile.profileimageurl" core-external-content [alt]="'core.pictureof' | translate:{$a: profile && profile.fullname}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
-            </ion-avatar>
+            <ion-avatar core-user-avatar [user]="profile" item-start></ion-avatar>
             <h2>{{submission.title}}</h2>
             <p *ngIf="profile && profile.fullname">{{profile.fullname}}</p>
             <p *ngIf="showGrade(submission.submissiongrade)" [class.addon-has-overriden-grade]="showGrade(submission.submissiongradeover)">
@@ -34,9 +32,7 @@
             <core-local-file *ngIf="attachment.name" [file]="attachment"></core-local-file>
         </ion-item>
         <ion-item text-wrap *ngIf="viewDetails && submission.feedbackauthor">
-            <ion-avatar item-start *ngIf="evaluateByProfile">
-                <img [src]="evaluateByProfile.profileimageurl" core-external-content core-user-link [courseId]="courseId" [userId]="evaluateByProfile.id" [alt]="'core.pictureof' | translate:{$a: evaluateByProfile.fullname}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
-            </ion-avatar>
+            <ion-avatar core-user-avatar [user]="evaluateByProfile" item-start [courseId]="courseId" [userId]="evaluateByProfile.id"></ion-avatar>
 
             <h2 *ngIf="evaluateByProfile && evaluateByProfile.fullname">{{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}</h2>
             <core-format-text [text]="submission.feedbackauthor"></core-format-text>
@@ -50,9 +46,7 @@
     </div>
 
     <a ion-item text-wrap *ngIf="summary" [attr.detail-none]="submission.timemodified ? null : true" (click)="gotoSubmission()">
-        <ion-avatar item-start>
-            <img [src]="profile && profile.profileimageurl" core-external-content [alt]="'core.pictureof' | translate:{$a: profile && profile.fullname}" core-user-link [courseId]="courseId" [userId]="profile && profile.id" role="presentation" onError="this.src='assets/img/user-avatar.png'">
-        </ion-avatar>
+        <ion-avatar core-user-avatar [user]="profile" item-start [courseId]="courseId" [userId]="profile && profile.id"></ion-avatar>
 
         <h2>{{submission.title}}</h2>
         <p *ngIf="profile && profile.fullname">{{profile.fullname}}</p>

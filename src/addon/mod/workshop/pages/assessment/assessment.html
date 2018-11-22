@@ -15,9 +15,8 @@
     <core-loading [hideUntil]="loaded">
 
         <ion-item text-wrap>
-            <ion-avatar item-start *ngIf="profile">
-                <img [src]="profile.profileimageurl" core-external-content core-user-link [courseId]="courseId" [userId]="profile.id" [alt]="'core.pictureof' | translate:{$a: profile.fullname}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
-            </ion-avatar>
+            <ion-avatar *ngIf="profile" core-user-avatar [user]="profile" item-start [courseId]="courseId" [userId]="profile.id"></ion-avatar>
+
             <h2 *ngIf="profile && profile.fullname">{{profile.fullname}}</h2>
 
             <p *ngIf="workshop && assessment && showGrade(assessment.grade)">
@@ -66,9 +65,7 @@
         </form>
         <ion-list *ngIf="!evaluating && evaluate && evaluate.text">
             <ion-item text-wrap>
-                <ion-avatar item-start *ngIf="evaluateGradingByProfile">
-                    <img [src]="evaluateGradingByProfile.profileimageurl" core-external-content core-user-link [courseId]="courseId" [userId]="evaluateGradingByProfile.id" [alt]="'core.pictureof' | translate:{$a: evaluateGradingByProfile.fullname}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
-                </ion-avatar>
+                <ion-avatar core-user-avatar *ngIf="evaluateGradingByProfile" [user]="evaluateGradingByProfile" item-start [courseId]="courseId" [userId]="evaluateGradingByProfile.id"></ion-avatar>
                 <h2 *ngIf="evaluateGradingByProfile && evaluateGradingByProfile.fullname">{{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateGradingByProfile.fullname} }}</h2>
                 <core-format-text [text]="evaluate.text"></core-format-text>
             </ion-item>

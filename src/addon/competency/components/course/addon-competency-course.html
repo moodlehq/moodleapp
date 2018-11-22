@@ -28,12 +28,7 @@
         <h3 margin-horizontal *ngIf="competencies && competencies.statistics.competencycount > 0">{{ 'addon.competency.competencies' | translate }}</h3>
         <ion-card *ngIf="user">
              <ion-item text-wrap>
-                <ion-avatar *ngIf="user.profileimageurl && user.profileimageurl !== true" item-start>
-                    <img [src]="user.profileimageurl" [alt]="'core.pictureof' | translate:{$a: user.fullname}" core-external-content>
-                </ion-avatar>
-                <span *ngIf="user.profileimageurl === true" item-start>
-                    <ion-icon name="person"></ion-icon>
-                </span>
+                <ion-avatar core-user-avatar [user]="user" item-start></ion-avatar>
                 <h2><core-format-text [text]="user.fullname"></core-format-text></h2>
             </ion-item>
         </ion-card>

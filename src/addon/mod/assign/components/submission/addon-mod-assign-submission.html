@@ -2,9 +2,7 @@
 
     <!-- User and status of the submission. -->
     <a ion-item text-wrap *ngIf="!blindMarking && user" (click)="openUserProfile(submitId)" [title]="user.fullname">
-        <ion-avatar item-start>
-            <img [src]="user.profileimageurl" core-external-content [alt]="'core.pictureof' | translate:{$a: user.fullname}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
-        </ion-avatar>
+        <ion-avatar core-user-avatar [user]="user" item-start></ion-avatar>
         <h2>{{ user.fullname }}</h2>
         <ng-container *ngTemplateOutlet="submissionStatus"></ng-container>
     </a>
@@ -113,9 +111,7 @@
                     <h2>{{ 'addon.mod_assign.userswhoneedtosubmit' | translate: {$a: ''} }}</h2>
                     <div *ngFor="let user of membersToSubmit">
                         <a ion-item text-wrap *ngIf="user.fullname" (click)="openUserProfile(user.id)" [title]="user.fullname">
-                            <ion-avatar item-start>
-                                <img [src]="user.profileimageurl" core-external-content [alt]="'core.pictureof' | translate:{$a: user.fullname}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
-                            </ion-avatar>
+                            <ion-avatar core-user-avatar [user]="user" item-start></ion-avatar>
                             <h2>{{ user.fullname }}</h2>
                         </a>
                         <ion-item text-wrap *ngIf="!user.fullname">
@@ -213,9 +209,7 @@
 
                 <!-- Data about the grader (teacher who graded). -->
                 <a ion-item text-wrap *ngIf="grader" (click)="openUserProfile(grader.id)" [title]="grader.fullname" detail-push>
-                    <ion-avatar item-start>
-                        <img [src]="grader.profileimageurl" core-external-content [alt]="'core.pictureof' | translate:{$a: grader.fullname}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
-                    </ion-avatar>
+                    <ion-avatar core-user-avatar [user]="grader" item-start></ion-avatar>
                     <h2>{{ 'addon.mod_assign.gradedby' | translate }}</h2>
                     <h2>{{ grader.fullname }}</h2>
                     <p *ngIf="feedback.gradeddate">{{ feedback.gradeddate * 1000 | coreFormatDate:"dfmediumdate" }}</p>

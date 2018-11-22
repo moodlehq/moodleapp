@@ -13,7 +13,9 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { Platform } from 'ionic-angular';
 import { CoreCronDelegate } from '@providers/cron';
+import { CoreEventsProvider } from '@providers/events';
 import { CoreCourseProvider } from './providers/course';
 import { CoreCourseHelperProvider } from './providers/helper';
 import { CoreCourseFormatDelegate } from './providers/format-delegate';
@@ -29,6 +31,7 @@ import { CoreCourseFormatTopicsModule } from './formats/topics/topics.module';
 import { CoreCourseFormatWeeksModule } from './formats/weeks/weeks.module';
 import { CoreCourseSyncProvider } from './providers/sync';
 import { CoreCourseSyncCronHandler } from './providers/sync-cron-handler';
+import { CoreCourseLogCronHandler } from './providers/log-cron-handler';
 
 // List of providers (without handlers).
 export const CORE_COURSE_PROVIDERS: any[] = [
@@ -61,12 +64,29 @@ export const CORE_COURSE_PROVIDERS: any[] = [
         CoreCourseSyncProvider,
         CoreCourseFormatDefaultHandler,
         CoreCourseModuleDefaultHandler,
-        CoreCourseSyncCronHandler
+        CoreCourseSyncCronHandler,
+        CoreCourseLogCronHandler
     ],
     exports: []
 })
 export class CoreCourseModule {
-    constructor(cronDelegate: CoreCronDelegate, syncHandler: CoreCourseSyncCronHandler) {
+    constructor(cronDelegate: CoreCronDelegate, syncHandler: CoreCourseSyncCronHandler, logHandler: CoreCourseLogCronHandler,
+        platform: Platform, eventsProvider: CoreEventsProvider) {
         cronDelegate.register(syncHandler);
+        cronDelegate.register(logHandler);
+
+        platform.resume.subscribe(() => {
+            // Log the app is open to keep user in online status.
+            setTimeout(() => {
+                cronDelegate.forceCronHandlerExecution(logHandler.name);
+            }, 1000);
+        });
+
+        eventsProvider.on(CoreEventsProvider.LOGIN, () => {
+            // Log the app is open to keep user in online status.
+            setTimeout(() => {
+                cronDelegate.forceCronHandlerExecution(logHandler.name);
+            }, 1000);
+        });
     }
 }

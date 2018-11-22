@@ -11,9 +11,7 @@
     <core-loading [hideUntil]="loaded">
         <ng-container *ngIf="entry">
             <ion-item text-wrap *ngIf="showAuthor">
-                <ion-avatar item-start (click)="openUserProfile(post.userid)">
-                    <img [src]="entry.userpictureurl" onError="this.src='assets/img/user-avatar.png'" core-external-content [alt]="'core.pictureof' | translate:{$a: entry.userfullname}" role="presentation">
-                </ion-avatar>
+                <ion-avatar core-user-avatar [user]="entry" (click)="openUserProfile(post.userid)" item-start></ion-avatar>
                 <h2><core-format-text [text]="entry.concept"></core-format-text></h2>
                 <ion-note item-end *ngIf="showDate">{{ entry.timemodified | coreDateDayOrTime }}</ion-note>
                 <p><core-format-text [text]="entry.userfullname"></core-format-text></p>

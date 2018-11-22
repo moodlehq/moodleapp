@@ -1,8 +1,6 @@
 <core-loading [hideUntil]="loaded">
     <a ion-item *ngIf="summary" text-wrap [attr.detail-none]="canViewAssessment && !canSelfAssess? null : true" (click)="gotoAssessment()">
-        <ion-avatar item-start>
-            <img [src]="profile && profile.profileimageurl" core-external-content [alt]="'core.pictureof' | translate:{$a: profile && profile.fullname}" core-user-link [courseId]="courseId" [userId]="profile && profile.id" role="presentation" onError="this.src='assets/img/user-avatar.png'">
-        </ion-avatar>
+        <ion-avatar core-user-avatar [user]="profile" item-start [courseId]="courseId" [userId]="profile && profile.id"></ion-avatar>
 
         <h2 *ngIf="profile && profile.fullname">{{profile.fullname}}</h2>
         <p *ngIf="showGrade(assessment.grade)">

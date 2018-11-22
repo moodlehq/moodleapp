@@ -38,9 +38,7 @@
                 </div>
 
                 <ion-item text-wrap *ngIf="!message.system && message.message.substr(0, 4) != 'beep'" class="addon-mod-chat-message">
-                    <ion-avatar item-start>
-                        <img [src]="message.userprofileimageurl" onError="this.src='assets/img/user-avatar.png'" core-external-content [alt]="'core.pictureof' | translate:{$a: message.userfullname}" role="presentation">
-                    </ion-avatar>
+                    <ion-avatar core-user-avatar [user]="message" item-start></ion-avatar>
                     <h2>
                         <p float-end>{{ message.timestamp * 1000 | coreFormatDate:"dftimedate" }}</p>
                         <core-format-text [text]="message.userfullname"></core-format-text>

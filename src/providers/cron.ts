@@ -236,21 +236,35 @@ export class CoreCronDelegate {
         const promises = [];
 
         for (const name in this.handlers) {
-            const handler = this.handlers[name];
             if (this.isHandlerManualSync(name)) {
-                // Mark the handler as running (it might be running already).
-                handler.running = true;
-
-                // Cancel pending timeout.
-                clearTimeout(handler.timeout);
-                delete handler.timeout;
-
                 // Now force the execution of the handler.
-                promises.push(this.checkAndExecuteHandler(name, true, siteId));
+                promises.push(this.forceCronHandlerExecution(name, siteId));
             }
         }
 
         return this.utils.allPromises(promises);
+    }
+
+    /**
+     * Force execution of a cron tasks without waiting for the scheduled time.
+     * Please notice that some tasks may not be executed depending on the network connection and sync settings.
+     *
+     * @param {string} [name]  If provided, the name of the handler.
+     * @param {string} [siteId] Site ID. If not defined, all sites.
+     * @return {Promise<any>} Promise resolved if handler has been executed successfully, rejected otherwise.
+     */
+    forceCronHandlerExecution(name?: string, siteId?: string): Promise<any> {
+        const handler = this.handlers[name];
+
+        // Mark the handler as running (it might be running already).
+        handler.running = true;
+
+        // Cancel pending timeout.
+        clearTimeout(handler.timeout);
+        delete handler.timeout;
+
+        // Now force the execution of the handler.
+        return this.checkAndExecuteHandler(name, true, siteId);
     }
 
     /**
