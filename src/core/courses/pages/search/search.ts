@@ -29,6 +29,7 @@ export class CoreCoursesSearchPage {
     total = 0;
     courses: any[];
     canLoadMore: boolean;
+    loadMoreError = false;
 
     protected page = 0;
     protected currentSearch = '';
@@ -68,6 +69,8 @@ export class CoreCoursesSearchPage {
      * @return {Promise<any>} Promise resolved when done.
      */
     protected searchCourses(): Promise<any> {
+        this.loadMoreError = false;
+
         return this.coursesProvider.search(this.currentSearch, this.page).then((response) => {
             if (this.page === 0) {
                 this.courses = response.courses;
@@ -79,7 +82,7 @@ export class CoreCoursesSearchPage {
             this.page++;
             this.canLoadMore = this.courses.length < this.total;
         }).catch((error) => {
-            this.canLoadMore = false;
+            this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
             this.domUtils.showErrorModalDefault(error, 'core.courses.errorsearching', true);
         });
     }

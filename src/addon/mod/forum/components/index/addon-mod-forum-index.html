@@ -88,7 +88,7 @@
                 </div>
             </core-empty-box>
 
-            <core-infinite-loading [enabled]="canLoadMore" (action)="fetchMoreDiscussions($event)"></core-infinite-loading>
+            <core-infinite-loading [enabled]="canLoadMore" (action)="fetchMoreDiscussions($event)" [error]="loadMoreError"></core-infinite-loading>
         </core-loading>
 
         <ion-fab bottom end *ngIf="forum && forum.cancreatediscussions">

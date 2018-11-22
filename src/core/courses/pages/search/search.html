@@ -10,7 +10,7 @@
         <ion-item-divider color="light">{{ 'core.courses.totalcoursesearchresults' | translate:{$a: total} }}</ion-item-divider>
         <core-empty-box *ngIf="total == 0" icon="search" [message]="'core.courses.nosearchresults' | translate"></core-empty-box>
         <core-courses-course-list-item *ngFor="let course of courses" [course]="course"></core-courses-course-list-item>
-        <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreResults($event)"></core-infinite-loading>
+        <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreResults($event)" [error]="loadMoreError"></core-infinite-loading>
     </div>
 </ion-content>
 

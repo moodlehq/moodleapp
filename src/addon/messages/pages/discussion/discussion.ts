@@ -62,6 +62,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     loaded = false;
     showKeyboard = false;
     canLoadMore = false;
+    loadMoreError = false;
     messages = [];
     showDelete = false;
     canDelete = false;
@@ -206,6 +207,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      * @return {Promise<any>} Resolved when done.
      */
     protected fetchData(): Promise<any> {
+        this.loadMoreError = false;
+
         this.logger.debug(`Polling new messages for discussion with user '${this.userId}'`);
         if (this.messagesBeingSent > 0) {
             // We do not poll while a message is being sent or we could confuse the user.
@@ -552,6 +555,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             this.pagesLoaded++;
 
             this.fetchData().catch((error) => {
+                this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
+
                 this.pagesLoaded--;
                 this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingmessages', true);
             }).finally(() => {

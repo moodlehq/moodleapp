@@ -56,7 +56,7 @@
 
             <core-empty-box *ngIf="!entries.length && !offlineEntries.length" icon="list" [message]="'addon.mod_glossary.noentriesfound' | translate"></core-empty-box>
 
-            <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreEntries($event)"></core-infinite-loading>
+            <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreEntries($event)" [error]="loadMoreError"></core-infinite-loading>
         </core-loading>
 
         <ion-fab bottom end *ngIf="canAdd">

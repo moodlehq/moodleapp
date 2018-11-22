@@ -59,6 +59,7 @@ export class AddonCalendarListPage implements OnDestroy {
     notificationsEnabled = false;
     filteredEvents = [];
     canLoadMore = false;
+    loadMoreError = false;
     filter = {
         course: this.allCourses
     };
@@ -127,6 +128,8 @@ export class AddonCalendarListPage implements OnDestroy {
      * @return {Promise<any>} Promise resolved when done.
      */
     fetchEvents(refresh: boolean = false): Promise<any> {
+        this.loadMoreError = false;
+
         return this.calendarProvider.getEventsList(this.daysLoaded, AddonCalendarProvider.DAYS_INTERVAL).then((events) => {
             this.daysLoaded += AddonCalendarProvider.DAYS_INTERVAL;
             if (events.length === 0) {
@@ -168,7 +171,7 @@ export class AddonCalendarListPage implements OnDestroy {
             this.content.resize();
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
-            this.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
+            this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
         }).then(() => {
             // Success retrieving events. Get categories if needed.
             if (this.getCategories) {
