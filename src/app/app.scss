@@ -742,7 +742,8 @@ ion-app.app-root {
     }
 
     .core-#{$color-name}-selected-item {
-      @include border-start(5px, solid, $color-base);
+      @include safe-area-border-start(5px, solid, $color-base);
+
       &.item-md {
         @include padding(null, null, null, $item-md-padding-start - 5px);
       }
@@ -752,7 +753,11 @@ ion-app.app-root {
       &.item-wp {
         @include padding(null, null, null, $item-wp-padding-start - 5px);
       }
-   }
+    }
+
+    .split-pane-main .core-#{$color-name}-selected-item {
+      @include border-start(5px, solid, $color-base);
+    }
 
     .core-#{$color-name}-circle {
       margin: 0 4px;
@@ -987,6 +992,28 @@ body.keyboard-is-open {
   core-ion-tabs .tabbar {
       display: none;
   }
+}
+
+.safe-padding-horizontal,
+[padding].safe-padding-horizontal,
+ion-app.ios [padding].safe-padding-horizontal {
+  @include safe-area-padding-horizontal(0px, 0px);
+}
+
+ion-app.ios .split-pane-side,
+.split-pane-side {
+    .safe-padding-horizontal,
+    [padding].safe-padding-horizontal {
+      @include safe-area-padding-start(0px, $content-padding);
+    }
+}
+
+ion-app.ios .split-pane-main,
+.split-pane-main {
+    .safe-padding-horizontal,
+    [padding].safe-padding-horizontal {
+      @include safe-area-padding-end($content-padding, 0px);
+    }
 }
 
 // Fix iframes in fullscreen mode.

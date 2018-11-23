@@ -133,6 +133,7 @@
     <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application/activity[@android:name='MainActivity']">
         <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|screenLayout|smallestScreenSize" android:debuggable="true" />
     </edit-config>
+    <plugin name="cordova-plugin-screen-orientation" spec="^3.0.1" />
     <engine name="android" spec="7.0.0" />
     <engine name="ios" spec="4.5.4" />
 </widget>

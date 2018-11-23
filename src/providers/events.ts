@@ -56,6 +56,7 @@ export class CoreEventsProvider {
     static FILE_SHARED = 'file_shared';
     static KEYBOARD_CHANGE = 'keyboard_change';
     static CORE_LOADING_CHANGED = 'core_loading_changed';
+    static ORIENTATION_CHANGE = 'orientation_change';
 
     protected logger;
     protected observables: { [s: string]: Subject<any> } = {};

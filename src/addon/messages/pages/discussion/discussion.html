@@ -16,7 +16,7 @@
     <core-loading [hideUntil]="loaded">
         <!-- Load previous messages. -->
         <core-infinite-loading [enabled]="canLoadMore" (action)="loadPrevious($event)" position="top" [error]="loadMoreError"></core-infinite-loading>
-        <ion-list class="addon-messages-discussion-container" [attr.aria-live]="polite">
+        <ion-list class="addon-messages-discussion-container safe-area-page" [attr.aria-live]="polite">
             <ng-container *ngFor="let message of messages; index as index; last as last">
                 <ion-chip *ngIf="showDate(message, messages[index - 1])" class="addon-messages-date" color="light">
                     <ion-label>{{ message.timecreated | coreFormatDate: "LL" }}</ion-label>

@@ -22,6 +22,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { Keyboard } from '@ionic-native/keyboard';
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
 
 @Component({
     templateUrl: 'app.html'
@@ -35,7 +36,8 @@ export class MoodleMobileApp implements OnInit {
 
     constructor(private platform: Platform, statusBar: StatusBar, logger: CoreLoggerProvider, keyboard: Keyboard,
         private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider, private zone: NgZone,
-        private appProvider: CoreAppProvider, private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider) {
+        private appProvider: CoreAppProvider, private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider,
+        private screenOrientation: ScreenOrientation) {
         this.logger = logger.getInstance('AppComponent');
 
         platform.ready().then(() => {
@@ -168,5 +170,24 @@ export class MoodleMobileApp implements OnInit {
 
             pauseVideos(window);
         });
+
+        // Detect orientation changes.
+        this.screenOrientation.onChange().subscribe(
+            () => {
+                if (this.platform.is('ios')) {
+                    // Force ios to recalculate safe areas when rotating.
+                    // This can be erased when https://issues.apache.org/jira/browse/CB-13448 issue is solved or
+                    // After switching to WkWebview.
+                    const viewport = document.querySelector('meta[name=viewport]');
+                    viewport.setAttribute('content', viewport.getAttribute('content').replace('viewport-fit=cover,', ''));
+
+                    setTimeout(() => {
+                        viewport.setAttribute('content', 'viewport-fit=cover,' + viewport.getAttribute('content'));
+                    });
+                }
+
+                this.eventsProvider.trigger(CoreEventsProvider.ORIENTATION_CHANGE);
+            }
+        );
     }
 }

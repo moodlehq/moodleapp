@@ -34,7 +34,7 @@
             </ion-card>
 
             <!-- Show processor selector. -->
-            <div padding>
+            <div padding class="safe-padding-horizontal">
                 <ion-select *ngIf="preferences && preferences.processors && preferences.processors.length > 0" [ngModel]="currentProcessor.name" (ngModelChange)="changeProcessor($event)" interface="popover" class="core-button-select">
                     <ion-option *ngFor="let processor of preferences.processors" [value]="processor.name">{{ processor.displayname }}</ion-option>
                 </ion-select>

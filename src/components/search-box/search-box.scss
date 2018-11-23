@@ -6,4 +6,9 @@ ion-app.app-root core-search-box {
     .item.item-input.item-block .item-inner ion-input {
        border-bottom: 0;
     }
+
+    .item-inner {
+        padding-right: 0 !important;
+        padding-left: 0 !important;
+    }
 }
