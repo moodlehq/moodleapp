@@ -61,6 +61,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         type: AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL,
         favourites: false
     };
+    typeIndividual = AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL;
 
     protected loadingString: string;
     protected siteId: string;

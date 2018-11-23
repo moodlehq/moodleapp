@@ -15,6 +15,7 @@
 import { Component, Input, OnInit, OnChanges, SimpleChange } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
  * Component to display a "user avatar".
@@ -41,7 +42,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges {
     protected myUser = false;
     protected currentUserId: number;
 
-    constructor(private navCtrl: NavController, private sitesProvider: CoreSitesProvider) {
+    constructor(private navCtrl: NavController, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider) {
         this.currentUserId = this.sitesProvider.getCurrentSiteUserId();
     }
 
@@ -75,7 +76,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges {
 
         this.fullname = this.fullname || (this.user && (this.user.fullname || this.user.userfullname));
 
-        this.userId = this.userId || (this.user && this.user.userid);
+        this.userId = this.userId || (this.user && (this.user.userid || this.user.id));
         this.courseId = this.courseId || (this.user && this.user.courseid);
 
         // If not available we cannot ensure the avatar is from the current user.
@@ -89,9 +90,18 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges {
      * @return boolean
      */
     isOnline(): boolean {
-        const time = new Date().getTime() - this.timetoshowusers;
+        if (this.myUser || this.utils.isFalseOrZero(this.user.isonline)) {
+            return false;
+        }
 
-        return !this.myUser && ((this.user.lastaccess && this.user.lastaccess * 1000 >= time) || this.user.isonline);
+        if (this.user.lastaccess) {
+            // If the time has passed, don't show the online status.
+            const time = new Date().getTime() - this.timetoshowusers;
+
+            return this.user.lastaccess * 1000 >= time;
+        } else {
+            return this.user.isonline;
+        }
     }
 
     /**

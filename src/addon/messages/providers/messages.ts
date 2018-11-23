@@ -176,6 +176,7 @@ export class AddonMessagesProvider {
             conversation.showonlinestatus = otherUser.showonlinestatus;
             conversation.isonline = otherUser.isonline;
             conversation.isblocked = otherUser.isblocked;
+            conversation.otherUser = otherUser;
         }
 
         return conversation;

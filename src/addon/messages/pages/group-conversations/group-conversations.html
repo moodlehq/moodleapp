@@ -31,9 +31,7 @@
                 </ion-item-divider>
 
                 <a ion-item text-wrap *ngFor="let result of search.results" [title]="result.fullname" (click)="gotoConversation(result.conversationid, result.userid, result.messageid)" [class.core-split-item-selected]="(result.conversationid && result.conversationid == selectedConversationId) || (result.userid && result.userid == selectedUserId)" detail-none>
-                    <ion-avatar item-start>
-                        <img src="{{result.profileimageurl}}" [alt]="'core.pictureof' | translate:{$a: result.fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'">
-                    </ion-avatar>
+                    <ion-avatar core-user-avatar [user]="result" [linkProfile]="false" item-start></ion-avatar>
                     <h2>
                         <p>
                             <core-format-text [text]="result.fullname"></core-format-text>
@@ -73,7 +71,7 @@
                     <!-- @todo: Unread total of group conversations (MDL-63913). -->
                 </ion-item-divider>
                 <div *ngIf="group.conversations && group.expanded">
-                    <ng-container *ngTemplateOutlet="conversationsTemplate; context: {conversations: group.conversations, avatarOptional: true}"></ng-container>
+                    <ng-container *ngTemplateOutlet="conversationsTemplate; context: {conversations: group.conversations}"></ng-container>
                     <!-- The infinite loading cannot be inside the ng-template, it fails because it doesn't find ion-content. -->
                     <core-infinite-loading [enabled]="group.canLoadMore" (action)="loadMoreConversations(group, $event)" [error]="group.loadMoreError"></core-infinite-loading>
                     <ion-item text-wrap *ngIf="group.conversations.length == 0">
@@ -104,13 +102,16 @@
 </core-split-view>
 
 <!-- Template to render a list of conversations. -->
-<ng-template #conversationsTemplate let-conversations="conversations" let-avatarOptional="avatarOptional">
+<ng-template #conversationsTemplate let-conversations="conversations">
     <a ion-item text-wrap *ngFor="let conversation of conversations" [title]="conversation.name" detail-none (click)="gotoConversation(conversation.id, conversation.userid)" [class.core-split-item-selected]="(conversation.id && conversation.id == selectedConversationId) || (conversation.userid && conversation.userid == selectedUserId)" id="addon-message-conversation-{{ conversation.id ? conversation.id : 'user-' + conversation.userid }}">
-        <ion-avatar item-start *ngIf="conversation.imageurl || !avatarOptional">
-            <img src="{{conversation.imageurl}}" [alt]="conversation.name" core-external-content onError="this.src='assets/img/user-avatar.png'">
-            <!-- @todo: Display connection status.
-                <span *ngIf="conversation.showonlinestatus" class="core-primary-circle" [ngClass]='{"addon-message-contact-online": conversation.isonline}'></span> -->
+        <!-- Group conversation image. -->
+        <ion-avatar item-start *ngIf="conversation.type != typeIndividual && conversation.imageurl">
+            <img [src]="conversation.imageurl" [alt]="conversation.name" core-external-content>
         </ion-avatar>
+
+        <!-- Avatar for individual conversations. -->
+        <ion-avatar *ngIf="conversation.type == typeIndividual" core-user-avatar [user]="conversation.otherUser" [linkProfile]="false" [checkOnline]="conversation.showonlinestatus" item-start></ion-avatar>
+
         <h2>
             <p>
                 <core-format-text [text]="conversation.name"></core-format-text>

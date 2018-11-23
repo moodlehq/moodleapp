@@ -24,11 +24,7 @@
         </ion-item>
 
         <a ion-item text-wrap *ngFor="let member of members" (click)="closeModal(member.id)">
-            <ion-avatar item-start>
-                <img [src]="member.profileimageurl" [alt]="member.fullname" core-external-content onError="this.src='assets/img/user-avatar.png'">
-                <!-- @todo: Display connection status.
-                    <span *ngIf="member.showonlinestatus" class="core-primary-circle" [ngClass]='{"addon-message-contact-online": member.isonline}'></span> -->
-            </ion-avatar>
+            <ion-avatar core-user-avatar [user]="member" [linkProfile]="false" [checkOnline]="member.showonlinestatus" item-start></ion-avatar>
             <h2>
                 <p>
                     <core-format-text [text]="member.fullname"></core-format-text>
