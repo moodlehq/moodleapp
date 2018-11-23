@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, ElementRef, Renderer, ViewEncapsulation, forwardRef, ViewChild, Input } from '@angular/core';
+import { Component, Optional, ElementRef, Renderer, ViewEncapsulation, forwardRef, ViewChild, Input,
+    OnDestroy } from '@angular/core';
 import { Tabs, NavController, ViewController, App, Config, Platform, DeepLinker, Keyboard, RootNode } from 'ionic-angular';
 import { CoreIonTabComponent } from './ion-tab';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreAppProvider } from '@providers/app';
 
 /**
  * Equivalent to ion-tabs. It has 2 improvements:
@@ -28,7 +30,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
     encapsulation: ViewEncapsulation.None,
     providers: [{provide: RootNode, useExisting: forwardRef(() => CoreIonTabsComponent) }]
 })
-export class CoreIonTabsComponent extends Tabs {
+export class CoreIonTabsComponent extends Tabs implements OnDestroy {
 
     /**
      * Whether the tabs have been loaded. If defined, tabs won't be initialized until it's set to true.
@@ -62,9 +64,12 @@ export class CoreIonTabsComponent extends Tabs {
     protected viewInit = false; // Whether the view has been initialized.
     protected initialized = false; // Whether tabs have been initialized.
 
-    constructor(protected utils: CoreUtilsProvider, @Optional() parent: NavController, @Optional() viewCtrl: ViewController,
-            _app: App, config: Config, elementRef: ElementRef, _plt: Platform, renderer: Renderer, _linker: DeepLinker,
-            keyboard?: Keyboard) {
+    protected firstSelectedTab: string;
+    protected unregisterBackButtonAction: any;
+
+    constructor(protected utils: CoreUtilsProvider, protected appProvider: CoreAppProvider, @Optional() parent: NavController,
+            @Optional() viewCtrl: ViewController, _app: App, config: Config, elementRef: ElementRef, _plt: Platform,
+            renderer: Renderer, _linker: DeepLinker, keyboard?: Keyboard) {
         super(parent, viewCtrl, _app, config, elementRef, _plt, renderer, _linker, keyboard);
     }
 
@@ -75,6 +80,8 @@ export class CoreIonTabsComponent extends Tabs {
         this.viewInit = true;
 
         super.ngAfterViewInit();
+
+        this.registerBackButtonAction();
     }
 
     /**
@@ -146,6 +153,8 @@ export class CoreIonTabsComponent extends Tabs {
                         this.select(tab);
                     }
                 }
+
+                this.firstSelectedTab = this._selectHistory[0] || null;
             });
         } else {
             // Tabs not loaded yet. Set the tab bar position so the tab bar is shown, it'll have a spinner.
@@ -153,6 +162,42 @@ export class CoreIonTabsComponent extends Tabs {
 
             return Promise.resolve();
         }
+    }
+
+    /**
+     * Register back button action.
+     */
+    protected registerBackButtonAction(): void {
+        this.unregisterBackButtonAction = this.appProvider.registerBackButtonAction(() => {
+            let tab = this.previousTab(true);
+            if (tab) {
+                const selectedTab = this.getSelected();
+
+                // Remove curent and previous tabs from history.
+                this._selectHistory = this._selectHistory.filter((tabId) => {
+                    return selectedTab.id != tabId && tab.id != tabId;
+                });
+
+                this.select(tab);
+
+                return true;
+            } else  {
+                const selected = this.getSelected();
+                if (selected && this.firstSelectedTab && selected.id != this.firstSelectedTab) {
+                    // All history is gone but we are not in the first selected tab.
+                    this._selectHistory = [];
+
+                    tab = this._tabs.find((t) => { return t.id === this.firstSelectedTab; });
+                    if (tab && tab.enabled && tab.show) {
+                        this.select(tab);
+
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }, 250);
     }
 
     /**
@@ -203,5 +248,13 @@ export class CoreIonTabsComponent extends Tabs {
                 return typeof id != 'undefined';
             });
         }
+    }
+
+    /**
+     * Component destroyed.
+     */
+    ngOnDestroy(): void {
+        // Unregister the custom back button action for this page
+        this.unregisterBackButtonAction && this.unregisterBackButtonAction();
     }
 }

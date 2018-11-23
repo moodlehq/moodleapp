@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable, NgZone } from '@angular/core';
-import { Platform, App, NavController } from 'ionic-angular';
+import { Platform, App, NavController, MenuController } from 'ionic-angular';
 import { Keyboard } from '@ionic-native/keyboard';
 import { Network } from '@ionic-native/network';
 
@@ -68,9 +68,11 @@ export class CoreAppProvider {
     protected logger;
     protected ssoAuthenticationPromise: Promise<any>;
     protected isKeyboardShown = false;
+    protected backActions = [];
 
     constructor(dbProvider: CoreDbProvider, private platform: Platform, private keyboard: Keyboard, private appCtrl: App,
-            private network: Network, logger: CoreLoggerProvider, events: CoreEventsProvider, zone: NgZone) {
+            private network: Network, logger: CoreLoggerProvider, events: CoreEventsProvider, zone: NgZone,
+            private menuCtrl: MenuController) {
         this.logger = logger.getInstance('CoreAppProvider');
         this.db = dbProvider.getDB(this.DBNAME);
 
@@ -92,6 +94,10 @@ export class CoreAppProvider {
                 events.trigger(CoreEventsProvider.KEYBOARD_CHANGE, 0);
             });
         });
+
+        this.platform.registerBackButtonAction(() => {
+            this.backButtonAction();
+        }, 100);
     }
 
     /**
@@ -381,5 +387,96 @@ export class CoreAppProvider {
                 // Ignore errors.
             }
         }
+    }
+
+    /**
+     * Implement the backbutton actions pile.
+     */
+    backButtonAction(): void {
+        let x = 0;
+        for (; x < this.backActions.length; x++) {
+            if (this.backActions[x].priority < 1000) {
+                break;
+            }
+            // Stop in the first action taken.
+            if (this.backActions[x].fn()) {
+                return;
+            }
+        }
+
+        // Close open modals if any.
+        if (this.menuCtrl && this.menuCtrl.isOpen()) {
+            this.menuCtrl.close();
+
+            return;
+        }
+
+        // Remaining actions will have priority less than 1000.
+        for (; x < this.backActions.length; x++) {
+            if (this.backActions[x].priority < 500) {
+                break;
+            }
+            // Stop in the first action taken.
+            if (this.backActions[x].fn()) {
+                return;
+            }
+        }
+
+        // Nothing found, go back.
+        const navPromise = this.appCtrl.navPop();
+        if (navPromise) {
+            return;
+        }
+
+        // No views to go back to.
+
+        // Remaining actions will have priority less than 500.
+        for (; x < this.backActions.length; x++) {
+            // Stop in the first action taken.
+            if (this.backActions[x].fn()) {
+                return;
+            }
+        }
+
+        // Ionic will decide (exit the app).
+        this.appCtrl.goBack();
+    }
+
+    /**
+     * The back button event is triggered when the user presses the native
+     * platform's back button, also referred to as the "hardware" back button.
+     * This event is only used within Cordova apps running on Android and
+     * Windows platforms. This event is not fired on iOS since iOS doesn't come
+     * with a hardware back button in the same sense an Android or Windows device
+     * does.
+     *
+     * Registering a hardware back button action and setting a priority allows
+     * apps to control which action should be called when the hardware back
+     * button is pressed. This method decides which of the registered back button
+     * actions has the highest priority and should be called.
+     *
+     * @param {Function} fn Called when the back button is pressed,
+     * if this registered action has the highest priority.
+     * @param {number} priority Set the priority for this action. All actions sorted by priority will be executed since one of
+     * them returns true.
+     *   * Priorities higher or equal than 1000 will go before closing modals
+     *   * Priorities lower than 500 will only be executed if you are in the first state of the app (before exit).
+     * @returns {Function} A function that, when called, will unregister
+     * the back button action.
+     */
+    registerBackButtonAction(fn: Function, priority: number = 0): Function {
+        const action = { fn: fn, priority: priority };
+
+        this.backActions.push(action);
+
+        this.backActions.sort((a, b) => {
+            return b.priority - a.priority;
+        });
+
+        return (): boolean => {
+            const index = this.backActions.indexOf(action);
+
+            return index >= 0 && !!this.backActions.splice(index, 1);
+        };
     }
 }
