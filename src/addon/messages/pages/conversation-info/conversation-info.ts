@@ -31,6 +31,7 @@ export class AddonMessagesConversationInfoPage implements OnInit {
     conversation: any;
     members = [];
     canLoadMore = false;
+    loadMoreError = false;
 
     protected conversationId: number;
 
@@ -72,6 +73,8 @@ export class AddonMessagesConversationInfoPage implements OnInit {
      * @return {Promise<any>} Promise resolved when done.
      */
     protected fetchMembers(loadingMore?: boolean): Promise<any> {
+        this.loadMoreError = false;
+
         const limitFrom = loadingMore ? this.members.length : 0;
 
         return this.messagesProvider.getConversationMembers(this.conversationId, limitFrom).then((data) => {
@@ -94,7 +97,7 @@ export class AddonMessagesConversationInfoPage implements OnInit {
     loadMoreMembers(infiniteComplete?: any): Promise<any> {
         return this.fetchMembers(true).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'Error getting members.');
-            this.canLoadMore = false;
+            this.loadMoreError = true;
         }).finally(() => {
             infiniteComplete && infiniteComplete();
         });

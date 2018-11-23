@@ -253,6 +253,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @return {Promise<any>} Promise resolved when done.
      */
     fetchDataForOption(option: any, loadingMore?: boolean): Promise<void> {
+        option.loadMoreError = false;
+
         const limitFrom = loadingMore ? option.conversations.length : 0;
 
         return this.messagesProvider.getConversations(option.type, option.favourites, limitFrom).then((data) => {
@@ -353,7 +355,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     loadMoreConversations(option: any, infiniteComplete?: any): Promise<any> {
         return this.fetchDataForOption(option, true).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
-            option.canLoadMore = false;
+            option.loadMoreError = true;
         }).finally(() => {
             infiniteComplete && infiniteComplete();
         });

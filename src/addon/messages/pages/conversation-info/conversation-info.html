@@ -37,6 +37,6 @@
             </h2>
         </a>
 
-        <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreMembers($event)"></core-infinite-loading>
+        <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreMembers($event)" [error]="loadMoreError"></core-infinite-loading>
     </core-loading>
 </ion-content>
