@@ -90,6 +90,9 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
      * @return {CoreMainMenuHandlerToDisplay} Data needed to render the handler.
      */
     getDisplayData(): CoreMainMenuHandlerToDisplay {
+        this.handler.page = this.messagesProvider.isGroupMessagingEnabled() ?
+                'AddonMessagesGroupConversationsPage' : 'AddonMessagesIndexPage';
+
         if (this.handler.loading) {
             this.updateBadge();
         }

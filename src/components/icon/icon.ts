@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, ElementRef } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
 
 /**
  * Core Icon is a component that enabled a posibility to add fontawesome icon to the html. It's recommended if both fontawesome
@@ -24,7 +24,7 @@ import { Component, Input, OnInit, ElementRef } from '@angular/core';
     selector: 'core-icon',
     templateUrl: 'core-icon.html',
 })
-export class CoreIconComponent implements OnInit {
+export class CoreIconComponent implements OnInit, OnDestroy {
     // Common params.
     @Input() name: string;
     @Input('color') color?: string;
@@ -36,7 +36,9 @@ export class CoreIconComponent implements OnInit {
 
     // FontAwesome params.
     @Input('fixed-width') fixedWidth: string;
-    element: HTMLElement;
+
+    protected element: HTMLElement;
+    protected newElement: HTMLElement;
 
     constructor(el: ElementRef) {
         this.element = el.nativeElement;
@@ -46,22 +48,20 @@ export class CoreIconComponent implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
-        let newElement;
-
         if (this.name.startsWith('fa-')) {
             // Use a new created element to avoid ion-icon working.
-            newElement = document.createElement('ion-icon');
-            newElement.classList.add('icon');
-            newElement.classList.add('fa');
-            newElement.classList.add(this.name);
+            this.newElement = document.createElement('ion-icon');
+            this.newElement.classList.add('icon');
+            this.newElement.classList.add('fa');
+            this.newElement.classList.add(this.name);
             if (this.isTrueProperty(this.fixedWidth)) {
-                newElement.classList.add('fa-fw');
+                this.newElement.classList.add('fa-fw');
             }
             if (this.color) {
-                newElement.classList.add('fa-' + this.color);
+                this.newElement.classList.add('fa-' + this.color);
             }
         } else {
-            newElement = this.element.firstElementChild;
+            this.newElement = <HTMLElement> this.element.firstElementChild;
         }
 
         const attrs = this.element.attributes;
@@ -72,17 +72,17 @@ export class CoreIconComponent implements OnInit {
                     const classes = attrs[i].value.split(' ');
                     for (let j = 0; j < classes.length; j++) {
                         if (classes[j]) {
-                            newElement.classList.add(classes[j]);
+                            this.newElement.classList.add(classes[j]);
                         }
                     }
                 }
 
             } else {
-                newElement.setAttribute(attrs[i].name, attrs[i].value);
+                this.newElement.setAttribute(attrs[i].name, attrs[i].value);
             }
         }
 
-        this.element.parentElement.replaceChild(newElement, this.element);
+        this.element.parentElement.replaceChild(this.newElement, this.element);
     }
 
     /**
@@ -99,5 +99,14 @@ export class CoreIconComponent implements OnInit {
         }
 
         return !!val;
-  }
+    }
+
+    /**
+     * Component destroyed.
+     */
+    ngOnDestroy(): void {
+        if (this.newElement) {
+            this.newElement.remove();
+        }
+    }
 }

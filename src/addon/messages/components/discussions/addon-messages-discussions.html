@@ -7,10 +7,6 @@
 
     <core-loading [hideUntil]="loaded" [message]="loadingMessage">
 
-        <core-empty-box *ngIf="(!discussions || discussions.length <= 0) && !search.showResults" icon="chatbubbles" [message]="'addon.messages.nomessages' | translate"></core-empty-box>
-
-        <core-empty-box *ngIf="(!search.results || search.results.length <= 0) && search.showResults" icon="search" [message]="'core.noresults' | translate"></core-empty-box>
-
         <ion-list *ngIf="search.showResults" no-margin>
             <ion-item-divider color="light">
                 <h2>{{ 'core.searchresults' | translate }}</h2>
@@ -36,5 +32,9 @@
                 <p><core-format-text clean="true" singleLine="true" [text]="discussion.message.message"></core-format-text></p>
             </a>
         </ion-list>
+
+        <core-empty-box *ngIf="(!discussions || discussions.length <= 0) && !search.showResults" icon="chatbubbles" [message]="'addon.messages.nomessages' | translate"></core-empty-box>
+
+        <core-empty-box *ngIf="(!search.results || search.results.length <= 0) && search.showResults" icon="search" [message]="'core.noresults' | translate"></core-empty-box>
     </core-loading>
 </ion-content>

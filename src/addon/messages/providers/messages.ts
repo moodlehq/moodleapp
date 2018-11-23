@@ -28,8 +28,8 @@ import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
 @Injectable()
 export class AddonMessagesProvider {
     protected ROOT_CACHE_KEY = 'mmaMessages:';
-    protected LIMIT_MESSAGES = 50;
     protected LIMIT_SEARCH_MESSAGES = 50;
+    protected LIMIT_MESSAGES = AddonMessagesProvider.LIMIT_MESSAGES;
     static NEW_MESSAGE_EVENT = 'addon_messages_new_message_event';
     static READ_CHANGED_EVENT = 'addon_messages_read_changed_event';
     static READ_CRON_EVENT = 'addon_messages_read_cron_event';
@@ -40,6 +40,9 @@ export class AddonMessagesProvider {
     static MESSAGE_PRIVACY_COURSEMEMBER = 0; // Privacy setting for being messaged by anyone within courses user is member of.
     static MESSAGE_PRIVACY_ONLYCONTACTS = 1; // Privacy setting for being messaged only by contacts.
     static MESSAGE_PRIVACY_SITE = 2; // Privacy setting for being messaged by anyone on the site.
+    static MESSAGE_CONVERSATION_TYPE_INDIVIDUAL = 1; // An individual conversation.
+    static MESSAGE_CONVERSATION_TYPE_GROUP = 2; // A group conversation.
+    static LIMIT_MESSAGES = 50;
 
     protected logger;
 
@@ -185,6 +188,37 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Get cache key for get conversations.
+     *
+     * @param {number} userId User ID.
+     * @param {number} [type] Filter by type.
+     * @param {boolean} [favourites] Filter favourites.
+     * @return {string} Cache key.
+     */
+    protected getCacheKeyForConversations(userId: number, type?: number, favourites?: boolean): string {
+        return this.getCommonCacheKeyForUserConversations(userId) + ':' + type + ':' + favourites;
+    }
+
+    /**
+     * Get common cache key for get user conversations.
+     *
+     * @param {number} userId User ID.
+     * @return {string} Cache key.
+     */
+    protected getCommonCacheKeyForUserConversations(userId: number): string {
+        return this.getRootCacheKeyForConversations() + userId;
+    }
+
+    /**
+     * Get root cache key for get conversations.
+     *
+     * @return {string} Cache key.
+     */
+    protected getRootCacheKeyForConversations(): string {
+        return this.ROOT_CACHE_KEY + 'conversations:';
+    }
+
+    /**
      * Get all the contacts of the current user.
      *
      * @param  {string} [siteId]  Site ID. If not defined, use current site.
@@ -259,6 +293,78 @@ export class AddonMessagesProvider {
                 }
 
                 return validContacts;
+            });
+        });
+    }
+
+    /**
+     * Get the discussions of a certain user. This function is used in Moodle sites higher than 3.6.
+     * If the site is older than 3.6, please use getDiscussions.
+     *
+     * @param {number} [limitFrom=0] The offset to start at.
+     * @param {number} [type] Filter by type.
+     * @param {boolean} [favourites] Whether to restrict the results to contain NO favourite conversations (false), ONLY favourite
+     *                               conversation (true), or ignore any restriction altogether (undefined or null).
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>} Promise resolved with the conversations.
+     */
+    getConversations(type?: number, favourites?: boolean, limitFrom: number = 0, siteId?: string, userId?: number)
+            : Promise<{conversations: any[], canLoadMore: boolean}> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            const preSets = {
+                    cacheKey: this.getCacheKeyForConversations(userId, type, favourites)
+                },
+                params: any = {
+                    userid: userId,
+                    limitfrom: limitFrom,
+                    limitnum: this.LIMIT_MESSAGES + 1,
+                };
+
+            if (typeof type != 'undefined' && type != null) {
+                params.type = type;
+            }
+            if (typeof favourites != 'undefined' && favourites != null) {
+                params.favourites = favourites ? 1 : 0;
+            }
+
+            return site.read('core_message_get_conversations', params, preSets).then((response) => {
+                // Format the conversations, adding some calculated fields.
+                const conversations = response.conversations.map((conversation) => {
+                    const numMessages = conversation.messages.length,
+                        lastMessage = numMessages ? conversation.messages[numMessages - 1] : null;
+
+                    conversation.lastmessage = lastMessage ? lastMessage.text : null;
+                    conversation.lastmessagedate = lastMessage ? lastMessage.timecreated : null;
+                    conversation.sentfromcurrentuser = lastMessage ? lastMessage.useridfrom == userId : null;
+
+                    if (conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL) {
+                        const otherUser = conversation.members.reduce((carry, member) => {
+                            if (!carry && member.id != userId) {
+                                carry = member;
+                            }
+
+                            return carry;
+                        }, null);
+
+                        conversation.name = conversation.name ? conversation.name : otherUser.fullname;
+                        conversation.imageurl = conversation.imageurl ? conversation.imageurl : otherUser.profileimageurl;
+                        conversation.userid = otherUser.id;
+                        conversation.showonlinestatus = otherUser.showonlinestatus;
+                        conversation.isonline = otherUser.isonline;
+                        conversation.isblocked = otherUser.isblocked;
+                    }
+
+                    return conversation;
+                });
+
+                return {
+                    conversations: conversations,
+                    canLoadMore: response.conversations.length > this.LIMIT_MESSAGES
+                };
             });
         });
     }
@@ -346,7 +452,8 @@ export class AddonMessagesProvider {
     }
 
     /**
-     * Get the discussions of the current user.
+     * Get the discussions of the current user. This function is used in Moodle sites older than 3.6.
+     * If the site is 3.6 or higher, please use getConversations.
      *
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Resolved with an object where the keys are the user ID of the other user.
@@ -706,6 +813,21 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Invalidate contacts cache.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>} Resolved when done.
+     */
+    invalidateConversations(siteId?: string, userId?: number): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            return site.invalidateWsCacheForKeyStartingWith(this.getCommonCacheKeyForUserConversations(userId));
+        });
+    }
+
+    /**
      * Invalidate discussion cache.
      *
      * @param {number} userId    The user ID with whom the current user is having the discussion.
@@ -786,6 +908,16 @@ export class AddonMessagesProvider {
                 return false;
             });
         });
+    }
+
+    /**
+     * Returns whether or not group messaging is supported.
+     *
+     * @return {boolean} If related WS is avalaible on current site.
+     * @since 3.6
+     */
+    isGroupMessagingEnabled(): boolean {
+        return this.sitesProvider.wsAvailableInCurrentSite('core_message_get_conversations');
     }
 
     /**
