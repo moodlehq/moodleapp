@@ -586,21 +586,33 @@ export class CoreSitesProvider {
         }
 
         // We couldn't validate by version number. Let's try to validate by release number.
-        if (info.release) {
-            const matches = info.release.match(/^([\d|\.]*)/);
-            if (matches && matches.length > 1) {
-                if (matches[1] >= release31) {
-                    return this.VALID_VERSION;
-                } else if (matches[1] >= release24) {
-                    return this.LEGACY_APP_VERSION;
-                } else {
-                    return this.INVALID_VERSION;
-                }
+        const release = this.getReleaseNumber(info.release || '');
+        if (release) {
+            if (release >= release31) {
+                return this.VALID_VERSION;
+            }
+            if (release >= release24) {
+                return this.LEGACY_APP_VERSION;
             }
         }
 
         // Couldn't validate it.
         return this.INVALID_VERSION;
+    }
+
+    /**
+     * Returns the release number from site release info.
+     *
+     * @param  {string}  rawRelease Raw release info text.
+     * @return {string}   Release number or empty.
+     */
+    getReleaseNumber(rawRelease: string): string {
+        const matches = rawRelease.match(/^\d(\.\d(\.\d+)?)?/);
+        if (matches) {
+            return matches[0];
+        }
+
+        return '';
     }
 
     /**
@@ -1088,7 +1100,7 @@ export class CoreSitesProvider {
                     }
 
                     return this.appDB.updateRecords(this.SITES_TABLE, newValues, { id: siteId }).finally(() => {
-                        this.eventsProvider.trigger(CoreEventsProvider.SITE_UPDATED, {}, siteId);
+                        this.eventsProvider.trigger(CoreEventsProvider.SITE_UPDATED, info, siteId);
                     });
                 });
             });

@@ -83,3 +83,7 @@ ion-app.app-root core-courses-course-progress {
         z-index: 1;
     }
 }
+
+body.version-3-1 .core-course-thumb{
+    display: none;
+}

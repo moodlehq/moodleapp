@@ -64,6 +64,9 @@ export class MoodleMobileApp implements OnInit {
 
             // Unload lang custom strings.
             this.langProvider.clearCustomStrings();
+
+            // Remove version classes from body.
+            this.removeVersionClass();
         });
 
         // Listen for session expired events.
@@ -144,6 +147,10 @@ export class MoodleMobileApp implements OnInit {
         this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, (data) => {
             if (data.siteId == this.sitesProvider.getCurrentSiteId()) {
                 loadCustomStrings();
+
+                // Add version classes to body.
+                this.removeVersionClass();
+                this.addVersionClass(this.sitesProvider.getReleaseNumber(data.release || ''));
             }
         });
 
@@ -189,5 +196,37 @@ export class MoodleMobileApp implements OnInit {
                 this.eventsProvider.trigger(CoreEventsProvider.ORIENTATION_CHANGE);
             }
         );
+    }
+
+    /**
+     * Convenience function to add version to body classes.
+     *
+     * @param {string} release Current release number of the site.
+     */
+    protected addVersionClass(release: string): void {
+        const parts = release.split('.');
+
+        parts[1] = parts[1] || '0';
+        parts[2] = parts[2] || '0';
+
+        document.body.classList.add('version-' + parts[0], 'version-' + parts[0] + '-' + parts[1],
+            'version-' + parts[0] + '-' + parts[1] + '-' + parts[2]);
+
+    }
+
+    /**
+     * Convenience function to remove all version classes form body.
+     */
+    protected removeVersionClass(): void {
+        const remove = [];
+        Array.from(document.body.classList).forEach((tempClass) => {
+            if (tempClass.substring(0, 8) == 'version-') {
+                remove.push(tempClass);
+            }
+        });
+
+        remove.forEach((tempClass) => {
+            document.body.classList.remove(tempClass);
+        });
     }
 }
