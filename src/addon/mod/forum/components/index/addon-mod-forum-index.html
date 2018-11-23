@@ -76,7 +76,7 @@
                 </ion-card>
             </ng-container>
 
-            <core-empty-box *ngIf="forum && discussions.length == 0" icon="chatbubbles" [message]="'addon.mod_forum.forumnodiscussionsyet' | translate">
+            <core-empty-box *ngIf="forum && discussions.length == 0" icon="chatbubbles" [message]="'addon.mod_forum.forumnodiscussionsyet' | translate" class="core-empty-box-clickable">
                 <div padding *ngIf="forum.cancreatediscussions">
                     <button ion-button block (click)="openNewDiscussion()">
                         {{ 'addon.mod_forum.addanewdiscussion' | translate }}

@@ -17,6 +17,8 @@ import { Component, Input } from '@angular/core';
 /**
  * Component to show an empty box message. It will show an optional icon or image and a text centered on page.
  *
+ * Use class="core-empty-box-clickable" if you want to add some clickable elements to the box.
+ *
  * Usage:
  * <core-empty-box *ngIf="empty" icon="bell" [message]="'core.emptymessage' | translate"></core-empty-box>
  */

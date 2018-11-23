@@ -40,6 +40,10 @@ ion-app.app-root core-empty-box {
     }
   }
 
+  &.core-empty-box-clickable .core-empty-box {
+    z-index: 0;
+  }
+
   @media (max-width: 350px) {
     .core-empty-box {
       position: relative;
