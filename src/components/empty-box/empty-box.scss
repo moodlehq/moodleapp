@@ -40,9 +40,11 @@ ion-app.app-root core-empty-box {
     }
   }
 
-  @include media-breakpoint-down(sm) {
+  @media (max-width: 350px) {
     .core-empty-box {
       position: relative;
+      height: auto;
+      margin-top: 50px;
 
       .icon {
         font-size: 100px;

@@ -11,11 +11,13 @@
     </ion-refresher>
     <core-loading [hideUntil]="notesLoaded" class="core-loading-center">
 
-        <ion-select [(ngModel)]="type" (ngModelChange)="typeChanged()" interface="popover">
-            <ion-option value="site">{{ 'addon.notes.sitenotes' | translate }}</ion-option>
-            <ion-option value="course">{{ 'addon.notes.coursenotes' | translate }}</ion-option>
-            <ion-option value="personal">{{ 'addon.notes.personalnotes' | translate }}</ion-option>
-        </ion-select>
+        <div padding>
+            <ion-select [(ngModel)]="type" (ngModelChange)="typeChanged()" interface="popover" class="core-button-select">
+                <ion-option value="site">{{ 'addon.notes.sitenotes' | translate }}</ion-option>
+                <ion-option value="course">{{ 'addon.notes.coursenotes' | translate }}</ion-option>
+                <ion-option value="personal">{{ 'addon.notes.personalnotes' | translate }}</ion-option>
+            </ion-select>
+        </div>
 
         <div class="core-warning-card" icon-start *ngIf="hasOffline">
             <ion-icon name="warning"></ion-icon>
