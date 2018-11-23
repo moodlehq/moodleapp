@@ -195,7 +195,7 @@ export class CoreIframeUtilsProvider {
     redefineWindowOpen(element: any, contentWindow: Window, contentDocument: Document): void {
         if (contentWindow) {
             // Intercept window.open.
-            contentWindow.open = (url: string): Window => {
+            contentWindow.open = (url: string, target: string): Window => {
                 const scheme = this.urlUtils.getUrlScheme(url);
                 if (!scheme) {
                     // It's a relative URL, use the frame src to create the full URL.
@@ -216,7 +216,14 @@ export class CoreIframeUtilsProvider {
                     }
                 }
 
-                if (url.indexOf('cdvfile://') === 0 || url.indexOf('file://') === 0) {
+                if (target == '_self') {
+                    // Link should be loaded in the same frame.
+                    if (element.tagName.toLowerCase() == 'object') {
+                        element.setAttribute('data', url);
+                    } else {
+                        element.setAttribute('src', url);
+                    }
+                } else if (url.indexOf('cdvfile://') === 0 || url.indexOf('file://') === 0) {
                     // It's a local file.
                     this.utils.openFile(url).catch((error) => {
                         this.domUtils.showErrorModal(error);
