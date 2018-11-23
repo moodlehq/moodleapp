@@ -1034,6 +1034,10 @@ ion-app.ios .split-pane-main,
     }
 }
 
+details summary {
+  pointer-events: auto;
+}
+
 // Fix iframes in fullscreen mode.
 //
 // Ionic sets "contain: strict" to some elements. This enables paint containment,
