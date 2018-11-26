@@ -138,6 +138,7 @@ $core-login-box-text-color: $text-color !default;
 $core-login-button-outline: false !default;
 $core-login-loading-color: false !default;
 $core-select-placeholder-color: $core-color;
+$popover-width: 280px;
 
 // App iOS Variables
 // --------------------------------------------------
@@ -156,6 +157,7 @@ $radio-ios-disabled-opacity: .5 !default;
 $checkbox-ios-disabled-opacity: .5 !default;
 $toggle-ios-disabled-opacity: .5 !default;
 $note-ios-color: $gray-dark;
+$popover-ios-width: $popover-width;
 
 // App Material Design Variables
 // --------------------------------------------------
@@ -175,6 +177,7 @@ $radio-md-disabled-opacity: .5 !default;
 $checkbox-md-disabled-opacity: .5 !default;
 $toggle-md-disabled-opacity: .5 !default;
 $note-md-color: $gray-dark;
+$popover-md-width: $popover-width;
 
 // App Windows Variables
 // --------------------------------------------------
@@ -193,6 +196,7 @@ $radio-wp-disabled-opacity: .5 !default;
 $checkbox-wp-disabled-opacity: .5 !default;
 $toggle-wp-disabled-opacity: .5 !default;
 $note-wp-color: $gray-dark;
+$popover-wp-width: $popover-width;
 
 // App Theme
 // --------------------------------------------------
