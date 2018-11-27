@@ -5,6 +5,7 @@ ion-app.app-root core-iframe {
     iframe {
         border: 0;
         display: block;
+        max-width: 100%;
     }
 
     .core-loading-container {
