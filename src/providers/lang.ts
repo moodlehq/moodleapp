@@ -138,7 +138,8 @@ export class CoreLangProvider {
         // Change the config.
         promises.push(this.configProvider.set('current_language', language));
 
-        moment.locale(language);
+        // Use british english when parent english is loaded.
+        moment.locale(language == 'en' ? 'en-gb' : language);
         this.currentLanguage = language;
 
         return Promise.all(promises).finally(() => {
