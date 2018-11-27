@@ -81,7 +81,7 @@
             <ion-list>
                 <ion-item text-wrap *ngIf="organizations.length > 1">
                     <ion-label>{{ 'addon.mod_scorm.organizations' | translate }}</ion-label>
-                    <ion-select [(ngModel)]="currentOrganization.identifier" (ionChange)="loadOrganization()" interface="popover">
+                    <ion-select [(ngModel)]="currentOrganization.identifier" (ionChange)="loadOrganization()" interface="action-sheet">
                         <ion-option *ngFor="let org of organizations" [value]="org.identifier">{{ org.title }}</ion-option>
                     </ion-select>
                 </ion-item>

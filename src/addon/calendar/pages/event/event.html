@@ -55,7 +55,7 @@
         <ion-card list *ngIf="notificationsEnabled">
             <ion-item>
                 <ion-label>{{ 'addon.calendar.notifications' | translate }}</ion-label>
-                <ion-select [(ngModel)]="notificationTime" (ionChange)="updateNotificationTime($event)" interface="popover">
+                <ion-select [(ngModel)]="notificationTime" (ionChange)="updateNotificationTime($event)" interface="action-sheet">
                     <ion-option value="-1">{{ 'core.defaultvalue' | translate :{$a: defaultTimeReadable} }}</ion-option>
                     <ion-option value="0">{{ 'core.settings.disabled' | translate }}</ion-option>
                     <ion-option value="10">{{ 600 | coreDuration }}</ion-option>

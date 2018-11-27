@@ -6,7 +6,7 @@
 <ion-content>
     <ion-item text-wrap>
         <ion-label><h2>{{ 'core.settings.language' | translate }}</h2></ion-label>
-        <ion-select [(ngModel)]="selectedLanguage" (ngModelChange)="languageChanged()" interface="popover">
+        <ion-select [(ngModel)]="selectedLanguage" (ngModelChange)="languageChanged()" interface="action-sheet">
             <ion-option *ngFor="let code of languageCodes" [value]="code">{{ languages[code] }}</ion-option>
         </ion-select>
     </ion-item>
