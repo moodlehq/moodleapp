@@ -166,14 +166,17 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     behaviourButtonClicked(button: any): void {
         // Confirm that the user really wants to do it.
         this.domUtils.showConfirm(this.translate.instant('core.areyousure')).then(() => {
-            const modal = this.domUtils.showModalLoading('core.sending', true),
-                answers = this.getAnswers();
+            const modal = this.domUtils.showModalLoading('core.sending', true);
 
-            // Add the clicked button data.
-            answers[button.name] = button.value;
+            // Get the answers.
+            return this.prepareAnswers().then((answers) => {
 
-            // Behaviour checks are always in online.
-            return this.quizProvider.processAttempt(this.quiz, this.attempt, answers, this.preflightData).then(() => {
+                // Add the clicked button data.
+                answers[button.name] = button.value;
+
+                // Behaviour checks are always in online.
+                return this.quizProvider.processAttempt(this.quiz, this.attempt, answers, this.preflightData);
+            }).then(() => {
                 this.reloadNavigaton = true; // Data sent to server, navigation should be reloaded.
 
                 // Reload the current page.

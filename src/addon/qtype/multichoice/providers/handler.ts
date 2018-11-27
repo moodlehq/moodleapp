@@ -163,10 +163,9 @@ export class AddonQtypeMultichoiceHandler implements CoreQuestionHandler {
      */
     prepareAnswers(question: any, answers: any, offline: boolean, siteId?: string): void | Promise<any> {
         if (question && !question.multi && typeof answers[question.optionsName] != 'undefined' && !answers[question.optionsName]) {
-            /* It's a single choice and the user hasn't answered. Delete the answer and its sequencecheck because
+            /* It's a single choice and the user hasn't answered. Delete the answer because
                sending an empty string (default value) will mark the first option as selected. */
             delete answers[question.optionsName];
-            delete answers[question.optionsName.replace('answer', ':sequencecheck')];
         }
     }
 }
