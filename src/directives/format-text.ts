@@ -508,16 +508,16 @@ export class CoreFormatTextDirective implements OnChanges {
         }
 
         const data = this.textUtils.parseJSON(video.getAttribute('data-setup') || video.getAttribute('data-setup-lazy') || '{}'),
-            youtubeId = data.techOrder && data.techOrder[0] && data.techOrder[0] == 'youtube' && data.sources && data.sources[0] &&
-                data.sources[0].src && this.youtubeGetId(data.sources[0].src);
+            youtubeData = data.techOrder && data.techOrder[0] && data.techOrder[0] == 'youtube' &&
+                    this.parseYoutubeUrl(data.sources && data.sources[0] && data.sources[0].src);
 
-        if (!youtubeId) {
+        if (!youtubeData || !youtubeData.videoId) {
             return;
         }
 
         const iframe = document.createElement('iframe');
         iframe.id = video.id;
-        iframe.src = 'https://www.youtube.com/embed/' + youtubeId;
+        iframe.src = 'https://www.youtube.com/embed/' + youtubeData.videoId; // Don't apply other params to align with Moodle web.
         iframe.setAttribute('frameborder', '0');
         iframe.setAttribute('allowfullscreen', '1');
         iframe.width = '100%';
@@ -636,15 +636,52 @@ export class CoreFormatTextDirective implements OnChanges {
     }
 
     /**
-     * Convenience function to extract YouTube Id to translate to embedded video.
-     * Based on http://stackoverflow.com/questions/3452546/javascript-regex-how-to-get-youtube-video-id-from-url
+     * Parse a YouTube URL.
+     * Based on Youtube.parseUrl from Moodle media/player/videojs/amd/src/Youtube-lazy.js
      *
      * @param {string} url URL of the video.
      */
-    protected youtubeGetId(url: string): string {
-        const regExp = /^.*(?:(?:youtu.be\/)|(?:v\/)|(?:\/u\/\w\/)|(?:embed\/)|(?:watch\?))\??v?=?([^#\&\?]*).*/,
-            match = url.match(regExp);
+    protected parseYoutubeUrl(url: string): {videoId: string, listId?: string, start?: number} {
+        const result = {
+            videoId: null,
+            listId: null,
+            start: null
+        };
 
-        return (match && match[1].length == 11) ? match[1] : '';
+        if (!url) {
+            return result;
+        }
+
+        url = this.textUtils.decodeHTML(url);
+
+        // Get the video ID.
+        let match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+
+        if (match && match[2].length === 11) {
+            result.videoId = match[2];
+        }
+
+        // Now get the playlist (if any).
+        match = url.match(/[?&]list=([^#\&\?]+)/);
+
+        if (match && match[1]) {
+            result.listId = match[1];
+        }
+
+        // Now get the start time (if any).
+        match = url.match(/[?&]start=(\d+)/);
+
+        if (match && match[1]) {
+            result.start = parseInt(match[1], 10);
+        } else {
+            // No start param, but it could have a time param.
+            match = url.match(/[?&]t=(\d+h)?(\d+m)?(\d+s)?/);
+            if (match) {
+                result.start = (match[1] ? parseInt(match[1], 10) * 3600 : 0) + (match[2] ? parseInt(match[2], 10) * 60 : 0) +
+                        (match[3] ? parseInt(match[3], 10) : 0);
+            }
+        }
+
+        return result;
     }
 }
