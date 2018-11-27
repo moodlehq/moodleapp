@@ -2501,7 +2501,7 @@ export class CoreFilepoolProvider {
             // File not in pool.
         }).then((entry: CoreFilepoolFileEntry) => {
 
-            if (entry && !this.isFileOutdated(entry, options.revision, options.timemodified)) {
+            if (entry && !options.isexternalfile && !this.isFileOutdated(entry, options.revision, options.timemodified)) {
                 // We have the file, it is not stale, we can update links and remove from queue.
                 this.logger.debug('Queued file already in store, ignoring...');
                 this.addFileLinks(siteId, fileId, links).catch(() => {

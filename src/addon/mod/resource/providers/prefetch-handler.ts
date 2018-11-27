@@ -23,6 +23,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseResourcePrefetchHandlerBase } from '@core/course/classes/resource-prefetch-handler';
 import { AddonModResourceProvider } from './resource';
 import { AddonModResourceHelperProvider } from './helper';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Handler to prefetch resources.
@@ -39,6 +40,26 @@ export class AddonModResourcePrefetchHandler extends CoreCourseResourcePrefetchH
             protected resourceHelper: AddonModResourceHelperProvider) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
+    }
+
+    /**
+     * Return the status to show based on current status.
+     *
+     * @param {any} module Module.
+     * @param {string} status The current status.
+     * @param {boolean} canCheck Whether the site allows checking for updates.
+     * @return {string} Status to display.
+     */
+    determineStatus(module: any, status: string, canCheck: boolean): string {
+        if (status == CoreConstants.DOWNLOADED && module && module.contents) {
+            // If the first file is an external file, always display the module as outdated.
+            const mainFile = module.contents[0];
+            if (mainFile && mainFile.isexternalfile) {
+                return CoreConstants.OUTDATED;
+            }
+        }
+
+        return status;
     }
 
     /**
