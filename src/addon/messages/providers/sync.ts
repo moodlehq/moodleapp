@@ -222,7 +222,9 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
                         // In some Moodle versions, wait 1 second to make sure timecreated is different.
                         // This is because there was a bug where messages with the same timecreated had a wrong order.
                         if (!groupMessagingEnabled && index < messages.length - 1) {
-                            return setTimeout(() => {return; }, 1000);
+                            return new Promise((resolve, reject): any => {
+                                setTimeout(resolve, 1000);
+                            });
                         }
                     });
                 });
