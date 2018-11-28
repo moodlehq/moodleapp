@@ -38,6 +38,7 @@ export class AddonMessagesSettingsPage implements OnDestroy {
     onlyContactsValue = AddonMessagesProvider.MESSAGE_PRIVACY_ONLYCONTACTS;
     courseMemberValue = AddonMessagesProvider.MESSAGE_PRIVACY_COURSEMEMBER;
     siteValue = AddonMessagesProvider.MESSAGE_PRIVACY_SITE;
+    groupMessagingEnabled: boolean;
 
     protected previousContactableValue: number | boolean;
 
@@ -47,6 +48,7 @@ export class AddonMessagesSettingsPage implements OnDestroy {
         const currentSite = sitesProvider.getCurrentSite();
         this.advancedContactable = currentSite && currentSite.isVersionGreaterEqualThan('3.6');
         this.allowSiteMessaging = currentSite && currentSite.canUseAdvancedFeature('messagingallusers');
+        this.groupMessagingEnabled = this.messagesProvider.isGroupMessagingEnabled();
     }
 
     /**
@@ -65,6 +67,22 @@ export class AddonMessagesSettingsPage implements OnDestroy {
      */
     protected fetchPreferences(): Promise<any> {
         return this.messagesProvider.getMessagePreferences().then((preferences) => {
+            if (this.groupMessagingEnabled) {
+                // Simplify the preferences.
+                for (const component of preferences.components) {
+                    // Only display get the notification preferences.
+                    component.notifications = component.notifications.filter((notification) => {
+                        return notification.preferencekey == AddonMessagesProvider.NOTIFICATION_PREFERENCES_KEY;
+                    });
+
+                    for (const notification of component.notifications) {
+                        for (const processor of notification.processors) {
+                            processor.checked = processor.loggedin.checked || processor.loggedoff.checked;
+                        }
+                    }
+                }
+            }
+
             this.preferences = preferences;
             this.contactablePrivacy = preferences.blocknoncontacts;
             this.previousContactableValue = this.contactablePrivacy;
@@ -136,36 +154,70 @@ export class AddonMessagesSettingsPage implements OnDestroy {
      * @param {any}    processor    Notification processor.
      */
     changePreference(notification: any, state: string, processor: any): void {
-        const processorState = processor[state],
-            preferenceName = notification.preferencekey + '_' + processorState.name,
-            valueArray = [];
-        let value = 'none';
+        if (this.groupMessagingEnabled) {
+            // Update both states at the same time.
+            const valueArray = [],
+                promises = [];
+            let value = 'none';
 
-        notification.processors.forEach((processor) => {
-            if (processor[state].checked) {
-                valueArray.push(processor.name);
+            notification.processors.forEach((processor) => {
+                if (processor.checked) {
+                    valueArray.push(processor.name);
+                }
+            });
+
+            if (value.length > 0) {
+                value = valueArray.join(',');
             }
-        });
 
-        if (value.length > 0) {
-            value = valueArray.join(',');
+            notification.updating = true;
+
+            promises.push(this.userProvider.updateUserPreference(notification.preferencekey + '_loggedin', value));
+            promises.push(this.userProvider.updateUserPreference(notification.preferencekey + '_loggedoff', value));
+
+            Promise.all(promises).then(() => {
+                // Update the preferences since they were modified.
+                this.updatePreferencesAfterDelay();
+            }).catch((error) => {
+                // Show error and revert change.
+                this.domUtils.showErrorModal(error);
+                processor.checked = !processor.checked;
+            }).finally(() => {
+                notification.updating = false;
+            });
+        } else {
+            // Update only the specified state.
+            const processorState = processor[state],
+                preferenceName = notification.preferencekey + '_' + processorState.name,
+                valueArray = [];
+            let value = 'none';
+
+            notification.processors.forEach((processor) => {
+                if (processor[state].checked) {
+                    valueArray.push(processor.name);
+                }
+            });
+
+            if (value.length > 0) {
+                value = valueArray.join(',');
+            }
+
+            if (!notification.updating) {
+                notification.updating = {};
+            }
+
+            notification.updating[state] = true;
+            this.userProvider.updateUserPreference(preferenceName, value).then(() => {
+                // Update the preferences since they were modified.
+                this.updatePreferencesAfterDelay();
+            }).catch((message) => {
+                // Show error and revert change.
+                this.domUtils.showErrorModal(message);
+                processorState.checked = !processorState.checked;
+            }).finally(() => {
+                notification.updating[state] = false;
+            });
         }
-
-        if (!notification.updating) {
-            notification.updating = {};
-        }
-
-        notification.updating[state] = true;
-        this.userProvider.updateUserPreference(preferenceName, value).then(() => {
-            // Update the preferences since they were modified.
-            this.updatePreferencesAfterDelay();
-        }).catch((message) => {
-            // Show error and revert change.
-            this.domUtils.showErrorModal(message);
-            processorState.checked = !processorState.checked;
-        }).finally(() => {
-            notification.updating[state] = false;
-        });
     }
 
     /**

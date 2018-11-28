@@ -45,6 +45,8 @@ export class AddonMessagesProvider {
     static MESSAGE_CONVERSATION_TYPE_GROUP = 2; // A group conversation.
     static LIMIT_MESSAGES = 50;
 
+    static NOTIFICATION_PREFERENCES_KEY = 'message_provider_moodle_instantmessage';
+
     protected logger;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider,
