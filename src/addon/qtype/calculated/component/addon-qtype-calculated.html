@@ -40,7 +40,7 @@
 <ng-template #selectUnits>
     <ion-col>
         <label *ngIf="question.select.accessibilityLabel" class="accesshide" for="{{question.select.id}}">{{ question.select.accessibilityLabel }}</label>
-        <ion-select id="{{question.select.id}}" [name]="question.select.name" [(ngModel)]="question.select.selected" interface="popover" [disabled]="question.select.disabled">
+        <ion-select id="{{question.select.id}}" [name]="question.select.name" [(ngModel)]="question.select.selected" interface="action-sheet" [disabled]="question.select.disabled">
             <ion-option *ngFor="let option of question.select.options" [value]="option.value">{{option.label}}</ion-option>
         </ion-select>
 

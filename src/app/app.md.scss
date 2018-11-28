@@ -55,4 +55,29 @@ ion-app.app-root.md {
   .card-md.with-borders .item-md:last-child .item-inner {
     border-bottom: 0;
   }
+
+  .action-sheet-md {
+    .action-sheet-title,
+    .action-sheet-container > .action-sheet-group:first-child {
+      box-shadow: 0 3px 5px $gray;
+    }
+
+    .action-sheet-title {
+      padding-top: 0;
+      margin-top: $action-sheet-md-title-padding-top;
+    }
+    .action-sheet-cancel {
+      color: $red;
+    }
+
+    .action-sheet-wrapper {
+      bottom: 0;
+      top: initial;
+      max-height: 50%;
+      height: 100%;
+    }
+    .action-sheet-selected {
+      color: $core-color;
+    }
+  }
 }

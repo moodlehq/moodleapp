@@ -6,7 +6,7 @@
         </ion-item>
         <ion-item *ngIf="edit && field.grades">
             <ion-label [core-mark-required]="true" stacked>{{ 'addon.mod_workshop_assessment_accumulative.dimensiongradefor' | translate : {'$a': field.dimtitle } }}</ion-label>
-            <ion-select [(ngModel)]="selectedValues[n].grade" interface="popover">
+            <ion-select [(ngModel)]="selectedValues[n].grade" interface="action-sheet">
                 <ion-option *ngFor="let grade of field.grades" [value]="grade.value">{{grade.label}}</ion-option>
             </ion-select>
             <core-input-errors item-content *ngIf="fieldErrors['grade_' + n]" [errorText]="fieldErrors['grade_' + n]"></core-input-errors>

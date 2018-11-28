@@ -28,7 +28,7 @@
 
             <ion-item *ngIf="fixedSites && fixedDisplay == 'select'" margin-vertical text-wrap>
                 <ion-label stacked for="siteSelect">{{ 'core.login.selectsite' | translate }}</ion-label>
-                <ion-select formControlName="siteUrl" name="url" placeholder="{{ 'core.login.siteaddress' | translate }}" interface="popover">
+                <ion-select formControlName="siteUrl" name="url" placeholder="{{ 'core.login.siteaddress' | translate }}" interface="action-sheet">
                     <ion-option *ngFor="let site of fixedSites" [value]="site.url">{{site.name}}</ion-option>
                 </ion-select>
             </ion-item>

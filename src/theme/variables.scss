@@ -113,6 +113,12 @@ $refresher-icon-color: $core-color !default;
 
 $core-online-color: #5cb85c;
 
+$core-select-placeholder-color: $core-color !default;
+$item-avatar-size: 54px !default;
+$input-select-opacity: .5 !default;
+$note-color: $gray-dark !default;
+$popover-width: 280px !default;
+
 
 // Moodle Mobile variables
 // --------------------------------------------------
@@ -137,14 +143,13 @@ $core-login-box-background-border: $gray !default;
 $core-login-box-text-color: $text-color !default;
 $core-login-button-outline: false !default;
 $core-login-loading-color: false !default;
-$core-select-placeholder-color: $core-color;
 
 // App iOS Variables
 // --------------------------------------------------
 // iOS only Sass variables can go here
 
 $text-input-ios-show-focus-highlight: false;
-$item-ios-avatar-size: 54px;
+$item-ios-avatar-size: $item-avatar-size;
 $loading-ios-spinner-color: $core-loading-spinner-color;
 $spinner-ios-ios-color: $core-spinner-color;
 $tabs-ios-tab-color-inactive: $tabs-tab-color-inactive;
@@ -152,10 +157,11 @@ $button-ios-outline-background-color: $core-button-outline-background-color;
 $toolbar-ios-height: 44px + 8; // Avoid toolbar with different heights.
 $checkbox-ios-icon-border-radius: 0px !default;
 $select-ios-placeholder-color: $core-select-placeholder-color;
-$radio-ios-disabled-opacity: .5 !default;
-$checkbox-ios-disabled-opacity: .5 !default;
-$toggle-ios-disabled-opacity: .5 !default;
-$note-ios-color: $gray-dark;
+$radio-ios-disabled-opacity: $input-select-opacity !default;
+$checkbox-ios-disabled-opacity: $input-select-opacity !default;
+$toggle-ios-disabled-opacity: $input-select-opacity !default;
+$note-ios-color: $note-color;
+$popover-ios-width: $popover-width;
 
 // App Material Design Variables
 // --------------------------------------------------
@@ -163,7 +169,7 @@ $note-ios-color: $gray-dark;
 
 $text-input-md-show-focus-highlight: true;
 $item-md-detail-push-show: true;
-$item-md-avatar-size: 54px;
+$item-md-avatar-size: $item-avatar-size;
 $loading-md-spinner-color: $core-loading-spinner-color;
 $spinner-md-crescent-color: $core-spinner-color;
 $tabs-md-tab-color-inactive: $tabs-tab-color-inactive;
@@ -171,10 +177,12 @@ $button-md-outline-background-color: $core-button-outline-background-color;
 $font-family-md-base: "Roboto", "Noto Sans", "Helvetica Neue", sans-serif !default;
 $select-md-placeholder-color: $core-select-placeholder-color;
 $label-md-text-color: $text-color !default;
-$radio-md-disabled-opacity: .5 !default;
-$checkbox-md-disabled-opacity: .5 !default;
-$toggle-md-disabled-opacity: .5 !default;
-$note-md-color: $gray-dark;
+$radio-md-disabled-opacity: $input-select-opacity !default;
+$checkbox-md-disabled-opacity: $input-select-opacity !default;
+$toggle-md-disabled-opacity: $input-select-opacity !default;
+$note-md-color: $note-color;
+$popover-md-width: $popover-width;
+$action-sheet-md-title-color: $core-color;
 
 // App Windows Variables
 // --------------------------------------------------
@@ -182,17 +190,18 @@ $note-md-color: $gray-dark;
 
 $text-input-wp-show-focus-highlight: true;
 $item-wp-detail-push-show: true;
-$item-wp-avatar-size: 54px;
+$item-wp-avatar-size: $item-avatar-size;
 $loading-wp-spinner-color: $core-loading-spinner-color;
 $spinner-wp-circles-color: $core-spinner-color;
 $tabs-wp-tab-color-inactive: $tabs-tab-color-inactive;
 $button-wp-outline-background-color: $core-button-outline-background-color;
 $select-wp-placeholder-color: $core-select-placeholder-color;
 $label-wp-text-color: $text-color !default;
-$radio-wp-disabled-opacity: .5 !default;
-$checkbox-wp-disabled-opacity: .5 !default;
-$toggle-wp-disabled-opacity: .5 !default;
-$note-wp-color: $gray-dark;
+$radio-wp-disabled-opacity: $input-select-opacity !default;
+$checkbox-wp-disabled-opacity: $input-select-opacity !default;
+$toggle-wp-disabled-opacity: $input-select-opacity !default;
+$note-wp-color: $note-color;
+$popover-wp-width: $popover-width;
 
 // App Theme
 // --------------------------------------------------

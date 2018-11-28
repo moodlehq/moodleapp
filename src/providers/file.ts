@@ -79,9 +79,9 @@ export class CoreFileProvider {
         return this.platform.ready().then(() => {
 
             if (this.platform.is('android')) {
-                this.basePath = this.file.externalApplicationStorageDirectory;
+                this.basePath = this.file.externalApplicationStorageDirectory || this.basePath;
             } else if (this.platform.is('ios')) {
-                this.basePath = this.file.documentsDirectory;
+                this.basePath = this.file.documentsDirectory || this.basePath;
             } else if (!this.isAvailable() || this.basePath === '') {
                 this.logger.error('Error getting device OS.');
 
@@ -453,7 +453,7 @@ export class CoreFileProvider {
             };
             setTimeout(() => {
                 if (!hasStarted) {
-                    reject();
+                    reject('Upload cannot start.');
                 }
             }, 3000);
 

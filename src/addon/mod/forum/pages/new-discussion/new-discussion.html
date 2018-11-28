@@ -23,7 +23,7 @@
             </ion-item>
             <ion-item *ngIf="showGroups">
                 <ion-label id="addon-mod-forum-groupslabel">{{ 'addon.mod_forum.group' | translate }}</ion-label>
-                <ion-select [(ngModel)]="newDiscussion.groupId" aria-labelledby="addon-mod-forum-groupslabel" interface="popover">
+                <ion-select [(ngModel)]="newDiscussion.groupId" aria-labelledby="addon-mod-forum-groupslabel" interface="action-sheet">
                     <ion-option *ngFor="let group of groups" [value]="group.id">{{ group.name }}</ion-option>
                 </ion-select>
             </ion-item>

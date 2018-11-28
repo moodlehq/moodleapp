@@ -64,7 +64,7 @@
                         <ion-radio [value]="value + 1" [attr.aria-labelledby]="'addon-mod_survey-'+question.name"></ion-radio>
                     </ion-col>
                     <ion-col class="hidden-tablet">
-                        <ion-select padding [(ngModel)]="answers[question.name]" [attr.aria-labelledby]="'addon-mod_survey-'+question.name" interface="popover" [required]="question.required">
+                        <ion-select padding [(ngModel)]="answers[question.name]" [attr.aria-labelledby]="'addon-mod_survey-'+question.name" interface="action-sheet" [required]="question.required">
                             <ion-option value="-1" selected disabled>{{ 'core.choose' | translate }}</ion-option>
                             <ion-option *ngFor="let option of question.options; let value=index;" [value]="value +1">{{option}}</ion-option>
                         </ion-select>
@@ -80,7 +80,7 @@
                             <ion-label [core-mark-required]="question.required" padding-horizontal id="addon-mod_survey-{{question.name}}"><strong>{{question.num}}.</strong> {{ question.text }}</ion-label>
                         </ion-col>
                         <ion-col col-5>
-                            <ion-select padding [(ngModel)]="answers[question.name]" [attr.aria-labelledby]="'addon-mod_survey-'+question.name" interface="popover" [required]="question.required">
+                            <ion-select padding [(ngModel)]="answers[question.name]" [attr.aria-labelledby]="'addon-mod_survey-'+question.name" interface="action-sheet" [required]="question.required">
                             <ion-option *ngFor="let option of question.options; let value=index;" [value]="value">{{option}}</ion-option>
                         </ion-select>
                         </ion-col>

@@ -97,7 +97,7 @@
                                             <p><core-format-text id="addon-mod_lesson-matching-{{row.id}}" [component]="component" [componentId]="lesson.coursemodule" [text]="row.text"></core-format-text></p>
                                         </ion-col>
                                         <ion-col>
-                                            <ion-select [id]="row.id" [formControlName]="row.name" [attr.aria-labelledby]="'addon-mod_lesson-matching-' + row.id" interface="popover">
+                                            <ion-select [id]="row.id" [formControlName]="row.name" [attr.aria-labelledby]="'addon-mod_lesson-matching-' + row.id" interface="action-sheet">
                                                 <ion-option *ngFor="let option of row.options" [value]="option.value">{{option.label}}</ion-option>
                                             </ion-select>
                                         </ion-col>
