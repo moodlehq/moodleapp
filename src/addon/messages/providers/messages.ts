@@ -107,6 +107,49 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Delete a conversation.
+     *
+     * @param {number} conversationId Conversation to delete.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>} Promise resolved when the conversation has been deleted.
+     */
+    deleteConversation(conversationId: number, siteId?: string, userId?: number): Promise<any> {
+        return this.deleteConversations([conversationId], siteId, userId);
+    }
+
+    /**
+     * Delete several conversations.
+     *
+     * @param {number[]} conversationIds Conversations to delete.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>} Promise resolved when the conversations have been deleted.
+     */
+    deleteConversations(conversationIds: number[], siteId?: string, userId?: number): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            const params = {
+                    userid: userId,
+                    conversationids: conversationIds
+                };
+
+            return site.write('core_message_delete_conversations_by_id', params).then(() => {
+                const promises = [];
+
+                conversationIds.forEach((conversationId) => {
+                    promises.push(this.messagesOffline.deleteConversationMessages(conversationId, site.getId()).catch(() => {
+                        // Ignore errors (shouldn't happen).
+                    }));
+                });
+
+                return Promise.all(promises);
+            });
+        });
+    }
+
+    /**
      * Delete a message (online or offline).
      *
      * @param {any} message    Message to delete.

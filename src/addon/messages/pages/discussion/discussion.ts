@@ -76,6 +76,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     isGroup = false;
     members: any = {}; // Members that wrote a message, indexed by ID.
     favouriteIcon = 'fa-star';
+    deleteIcon = 'trash';
 
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, navParams: NavParams,
             private userProvider: CoreUserProvider, private navCtrl: NavController, private messagesSync: AddonMessagesSyncProvider,
@@ -981,6 +982,33 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         }).finally(() => {
             this.favouriteIcon = this.conversation.isfavourite ? 'fa-star-o' : 'fa-star';
             done && done();
+        });
+    }
+
+    /**
+     * Delete the conversation.
+     *
+     * @param {Function} [done] Function to call when done.
+     */
+    deleteConversation(done?: () => void): void {
+        this.domUtils.showConfirm(this.translate.instant('addon.messages.deleteallconfirm')).then(() => {
+            this.deleteIcon = 'spinner';
+
+            return this.messagesProvider.deleteConversation(this.conversation.id).then(() => {
+                this.eventsProvider.trigger(AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT, {
+                    conversationId: this.conversation.id,
+                    action: 'delete'
+                }, this.siteId);
+
+                this.conversationId = undefined;
+                this.conversation = undefined;
+                this.messages = [];
+            }).finally(() => {
+                this.deleteIcon = 'trash';
+                done && done();
+            });
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'Error deleting conversation.');
         });
     }
 

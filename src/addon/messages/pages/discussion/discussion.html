@@ -13,6 +13,7 @@
             <core-context-menu-item [hidden]="!showInfo || !isGroup" [priority]="1000" [content]="'addon.messages.groupinfo' | translate" (action)="viewInfo()" [iconAction]="'information-circle'"></core-context-menu-item>
             <core-context-menu-item [hidden]="!groupMessagingEnabled || !conversation" [priority]="800" [content]="(conversation && conversation.isfavourite ? 'addon.messages.removefromfavourites' : 'addon.messages.addtofavourites') | translate" (action)="changeFavourite($event)" [iconAction]="favouriteIcon" [closeOnClick]="false"></core-context-menu-item>
             <core-context-menu-item [hidden]="!canDelete" [priority]="400" [content]="'addon.messages.showdeletemessages' | translate" (action)="toggleDelete()" [iconAction]="'trash'"></core-context-menu-item>
+            <core-context-menu-item [hidden]="!groupMessagingEnabled || !conversationId || isGroup" [priority]="200" [content]="'addon.messages.deleteconversation' | translate" (action)="deleteConversation($event)" [iconAction]="deleteIcon" [closeOnClick]="false"></core-context-menu-item>
         </core-context-menu>
     </core-navbar-buttons>
 </ion-header>

@@ -160,6 +160,8 @@
   "addon.messages.contactlistempty": "local_moodlemobileapp",
   "addon.messages.contactname": "local_moodlemobileapp",
   "addon.messages.contacts": "message",
+  "addon.messages.deleteallconfirm": "message",
+  "addon.messages.deleteconversationq": "message",
   "addon.messages.deletemessage": "local_moodlemobileapp",
   "addon.messages.deletemessageconfirmation": "local_moodlemobileapp",
   "addon.messages.errordeletemessage": "local_moodlemobileapp",
