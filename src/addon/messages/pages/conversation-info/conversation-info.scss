@@ -1,0 +1,17 @@
+ion-app.app-root page-addon-messages-group-conversations {
+    h2 {
+        display: flex;
+        justify-content: space-between;
+
+        .note {
+            margin: 0;
+            align-self: flex-end;
+            display: inline-flex;
+            font-size: initial;
+        }
+    }
+
+    core-format-text.addon-message-last-message {
+        display: inline;
+    }
+}

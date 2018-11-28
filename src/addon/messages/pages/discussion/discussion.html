@@ -1,15 +1,17 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+        <ion-title>
+            <img *ngIf="conversationImage" class="core-bar-button-image" [src]="conversationImage">
+            <core-format-text [text]="title"></core-format-text>
+        </ion-title>
         <ion-buttons end></ion-buttons>
     </ion-navbar>
     <core-navbar-buttons end>
-        <button ion-button icon-only clear="true" (click)="toggleDelete()" [hidden]="!canDelete">
-            <ion-icon name="trash"></ion-icon>
-        </button>
-        <a [hidden]="!showProfileLink" core-user-link [userId]="userId" [attr.aria-label]=" 'core.user.viewprofile' | translate">
-            <img class="button core-bar-button-image" [src]="profileLink" core-external-content onError="this.src='assets/img/user-avatar.png'">
-        </a>
+        <core-context-menu>
+            <core-context-menu-item [hidden]="!showInfo || isGroup" [priority]="1000" [content]="'addon.messages.info' | translate" (action)="viewInfo()" [iconAction]="'information-circle'"></core-context-menu-item>
+            <core-context-menu-item [hidden]="!showInfo || !isGroup" [priority]="999" [content]="'addon.messages.groupinfo' | translate" (action)="viewInfo()" [iconAction]="'information-circle'"></core-context-menu-item>
+            <core-context-menu-item [hidden]="!canDelete" [priority]="800" [content]="'addon.messages.showdeletemessages' | translate" (action)="toggleDelete()" [iconAction]="'trash'"></core-context-menu-item>
+        </core-context-menu>
     </core-navbar-buttons>
 </ion-header>
 <ion-content class="has-footer">
@@ -18,16 +20,22 @@
         <core-infinite-loading [enabled]="canLoadMore" (action)="loadPrevious($event)" position="top" [error]="loadMoreError"></core-infinite-loading>
         <ion-list class="addon-messages-discussion-container safe-area-page" [attr.aria-live]="polite">
             <ng-container *ngFor="let message of messages; index as index; last as last">
-                <ion-chip *ngIf="showDate(message, messages[index - 1])" class="addon-messages-date" color="light">
+                <ion-chip *ngIf="message.showDate" class="addon-messages-date" color="light">
                     <ion-label>{{ message.timecreated | coreFormatDate: "LL" }}</ion-label>
                 </ion-chip>
 
-                <ion-chip class="addon-messages-unreadfrom" *ngIf="message.unreadFrom" color="light">
+                <ion-chip class="addon-messages-unreadfrom" *ngIf="unreadMessageFrom && message.id == unreadMessageFrom" color="light">
                     <ion-label>{{ 'addon.messages.newmessages' | translate:{$a: title} }}</ion-label>
                     <ion-icon name="arrow-round-down"></ion-icon>
                 </ion-chip>
 
-                <ion-item text-wrap (longPress)="copyMessage(message.smallmessage)" class="addon-message" [class.addon-message-mine]="message.useridfrom == currentUserId" [@coreSlideInOut]="message.useridfrom == currentUserId ? '' : 'fromLeft'">
+                <ion-item text-wrap (longPress)="copyMessage(message)" class="addon-message" [class.addon-message-mine]="message.useridfrom == currentUserId" [@coreSlideInOut]="message.useridfrom == currentUserId ? '' : 'fromLeft'">
+                    <!-- User data. -->
+                    <ion-avatar item-start *ngIf="message.showUserData">
+                        <img [src]="members[message.useridfrom].profileimageurl" [alt]="'core.pictureof' | translate:{$a: members[message.useridfrom].fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'">
+                    </ion-avatar>
+                    <h2 *ngIf="message.showUserData">{{ members[message.useridfrom].fullname }}</h2>
+
                     <!-- Some messages have <p> and some others don't. Add a <p> so they all have same styles. -->
                     <p class="addon-message-text">
                         <core-format-text (afterRender)="last && scrollToBottom()" [text]="message.text"></core-format-text>
@@ -46,8 +54,9 @@
         <core-empty-box *ngIf="!messages || messages.length <= 0" icon="chatbubbles" [message]="'addon.messages.nomessages' | translate"></core-empty-box>
     </core-loading>
 </ion-content>
-<ion-footer color="light" class="footer-adjustable">
+<ion-footer color="light" class="footer-adjustable" *ngIf="!conversationId || conversation">
     <ion-toolbar color="light" position="bottom">
+        <!-- @todo: Check if the user can send messages. -->
         <core-send-message-form (onSubmit)="sendMessage($event)" [showKeyboard]="showKeyboard" [placeholder]="'addon.messages.newmessage' | translate" (onResize)="resizeContent()"></core-send-message-form>
     </ion-toolbar>
 </ion-footer>

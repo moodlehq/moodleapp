@@ -13,16 +13,18 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { IonicPage, Platform, NavParams } from 'ionic-angular';
+import { IonicPage, Platform, NavParams, Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { AddonMessagesProvider } from '../../providers/messages';
+import { AddonMessagesOfflineProvider } from '../../providers/messages-offline';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreAppProvider } from '@providers/app';
 import { AddonPushNotificationsDelegate } from '@addon/pushnotifications/providers/delegate';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreUserProvider } from '@core/user/providers/user';
 
 /**
  * Page that displays the list of conversations, including group conversations.
@@ -34,10 +36,12 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 })
 export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     @ViewChild(CoreSplitViewComponent) splitviewCtrl: CoreSplitViewComponent;
+    @ViewChild(Content) content: Content;
 
     loaded = false;
     loadingMessage: string;
-    selectedConversation: number;
+    selectedConversationId: number;
+    selectedUserId: number;
     search = {
         enabled: false,
         showResults: false,
@@ -57,6 +61,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         type: AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL,
         favourites: false
     };
+    typeIndividual = AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL;
 
     protected loadingString: string;
     protected siteId: string;
@@ -67,11 +72,13 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     protected appResumeSubscription: any;
     protected readChangedObserver: any;
     protected cronObserver: any;
+    protected openConversationObserver: any;
 
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, translate: TranslateService,
             private messagesProvider: AddonMessagesProvider, private domUtils: CoreDomUtilsProvider, navParams: NavParams,
             private appProvider: CoreAppProvider, platform: Platform, utils: CoreUtilsProvider,
-            pushNotificationsDelegate: AddonPushNotificationsDelegate) {
+            pushNotificationsDelegate: AddonPushNotificationsDelegate, private messagesOffline: AddonMessagesOfflineProvider,
+            private userProvider: CoreUserProvider) {
 
         this.search.loading =  translate.instant('core.searching');
         this.loadingString = translate.instant('core.loading');
@@ -81,20 +88,29 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
         // Update conversations when new message is received.
         this.newMessagesObserver = eventsProvider.on(AddonMessagesProvider.NEW_MESSAGE_EVENT, (data) => {
-            if (data.conversationId) {
-                // Search the conversation to update.
-                const conversation = this.findConversation(data.conversationId);
+            // Search the conversation to update.
+            const conversation = this.findConversation(data.conversationId, data.userId);
 
-                if (typeof conversation == 'undefined') {
-                    // Probably a new conversation, refresh the list.
-                    this.loaded = false;
-                    this.refreshData().finally(() => {
-                        this.loaded = true;
-                    });
-                } else {
-                    // An existing conversation has a new message, update the last message.
-                    conversation.lastmessage = data.message;
-                    conversation.lastmessagedate = data.timecreated;
+            if (typeof conversation == 'undefined') {
+                // Probably a new conversation, refresh the list.
+                this.loaded = false;
+                this.refreshData().finally(() => {
+                    this.loaded = true;
+                });
+            } else if (conversation.lastmessage != data.message || conversation.lastmessagedate != data.timecreated / 1000) {
+                const isNewer = data.timecreated / 1000 > conversation.lastmessagedate;
+
+                // An existing conversation has a new message, update the last message.
+                conversation.lastmessage = data.message;
+                conversation.lastmessagedate = data.timecreated / 1000;
+
+                // Sort the affected list.
+                const option = this.getConversationOption(conversation);
+                option.conversations = this.messagesProvider.sortConversations(option.conversations);
+
+                if (isNewer) {
+                    // The last message is newer than the previous one, scroll to top to keep viewing the conversation.
+                    this.domUtils.scrollToTop(this.content);
                 }
             }
         }, this.siteId);
@@ -117,6 +133,13 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         // Update discussions when cron read is executed.
         this.cronObserver = eventsProvider.on(AddonMessagesProvider.READ_CRON_EVENT, (data) => {
             this.refreshData();
+        }, this.siteId);
+
+        // Load a discussion if we receive an event to do so.
+        this.openConversationObserver = eventsProvider.on(AddonMessagesProvider.OPEN_CONVERSATION_EVENT, (data) => {
+            if (data.conversationId || data.userId) {
+                this.gotoConversation(data.conversationId, data.userId, undefined, true);
+            }
         }, this.siteId);
 
         // Refresh the view when the app is resumed.
@@ -145,7 +168,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     ngOnInit(): void {
         if (this.conversationId) {
             // There is a discussion to load, open the discussion in a new state.
-            this.gotoConversation(this.conversationId, null);
+            this.gotoConversation(this.conversationId);
         }
 
         this.fetchData().then(() => {
@@ -162,7 +185,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 }
 
                 if (conversation) {
-                    this.gotoConversation(conversation.id, conversation.userid);
+                    this.gotoConversation(conversation.id);
                 }
             }
         });
@@ -179,14 +202,39 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
         // Load the first conversations of each type.
         const promises = [];
+        let offlineMessages;
 
         promises.push(this.fetchDataForOption(this.favourites, false));
         promises.push(this.fetchDataForOption(this.group, false));
         promises.push(this.fetchDataForOption(this.individual, false));
+        promises.push(this.messagesOffline.getAllMessages().then((messages) => {
+            offlineMessages = messages;
+        }));
 
         return Promise.all(promises).then(() => {
+            return this.loadOfflineMessages(offlineMessages);
+        }).then(() => {
+            if (offlineMessages && offlineMessages.length) {
+                // Sort the conversations, the offline messages could affect the order.
+                this.favourites.conversations = this.messagesProvider.sortConversations(this.favourites.conversations);
+                this.group.conversations = this.messagesProvider.sortConversations(this.group.conversations);
+                this.individual.conversations = this.messagesProvider.sortConversations(this.individual.conversations);
+            }
+
             if (typeof this.favourites.expanded == 'undefined') {
                 // The expanded status hasn't been initialized. Do it now.
+                if (this.conversationId) {
+                    // A certain conversation should be opened, expand its option.
+                    const conversation = this.findConversation(this.conversationId);
+                    if (conversation) {
+                        const option = this.getConversationOption(conversation);
+                        option.expanded = true;
+
+                        return;
+                    }
+                }
+
+                // No conversation specified or not found, determine which one should be expanded.
                 this.favourites.expanded = this.favourites.count != 0;
                 this.group.expanded = this.favourites.count == 0 && this.group.count != 0;
                 this.individual.expanded = this.favourites.count == 0 && this.group.count == 0;
@@ -206,6 +254,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @return {Promise<any>} Promise resolved when done.
      */
     fetchDataForOption(option: any, loadingMore?: boolean): Promise<void> {
+        option.loadMoreError = false;
+
         const limitFrom = loadingMore ? option.conversations.length : 0;
 
         return this.messagesProvider.getConversations(option.type, option.favourites, limitFrom).then((data) => {
@@ -225,15 +275,22 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * Find a conversation in the list of loaded conversations.
      *
      * @param {number} conversationId The conversation ID to search.
+     * @param {number} userId User ID to search (if no conversationId).
      * @return {any} Conversation.
      */
-    protected findConversation(conversationId: number): any {
-        const conversations = (this.favourites.conversations || []).concat(this.group.conversations || [])
-                .concat(this.individual.conversations || []);
+    protected findConversation(conversationId: number, userId?: number): any {
+        if (conversationId) {
+            const conversations = (this.favourites.conversations || []).concat(this.group.conversations || [])
+                    .concat(this.individual.conversations || []);
 
-        return conversations.find((conv) => {
-            return conv.id == conversationId;
-        });
+            return conversations.find((conv) => {
+                return conv.id == conversationId;
+            });
+        } else if (this.individual.conversations) {
+            return this.individual.conversations.find((conv) => {
+                return conv.userid == userId;
+            });
+        }
     }
 
     /**
@@ -247,19 +304,39 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * Navigate to a particular conversation.
      *
      * @param {number} conversationId Conversation Id to load.
-     * @param {number} userId User of the conversation. @todo This will probably be removed when group messaging is fully supported.
+     * @param {number} userId User of the conversation. Only if there is no conversationId.
      * @param {number} [messageId] Message to scroll after loading the discussion. Used when searching.
+     * @param {boolean} [scrollToConversation] Whether to scroll to the conversation.
      */
-    gotoConversation(conversationId: number, userId: number, messageId?: number): void {
-        this.selectedConversation = conversationId;
+    gotoConversation(conversationId: number, userId?: number, messageId?: number, scrollToConversation?: boolean): void {
+        this.selectedConversationId = conversationId;
+        this.selectedUserId = userId;
 
         const params = {
+            conversationId: conversationId,
             userId: userId
         };
         if (messageId) {
             params['message'] = messageId;
         }
         this.splitviewCtrl.push('AddonMessagesDiscussionPage', params);
+
+        if (scrollToConversation) {
+            // Search the conversation.
+            const conversation = this.findConversation(conversationId, userId);
+            if (conversation) {
+                // First expand the option if it isn't expanded.
+                const option = this.getConversationOption(conversation);
+                this.expandOption(option);
+
+                // Wait for the view to expand the option.
+                setTimeout(() => {
+                    // Now scroll to the conversation.
+                    this.domUtils.scrollToElementBySelector(this.content, '#addon-message-conversation-' +
+                            (conversation.id ? conversation.id : 'user-' + conversation.userid));
+                });
+            }
+        }
     }
 
     /**
@@ -279,10 +356,111 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     loadMoreConversations(option: any, infiniteComplete?: any): Promise<any> {
         return this.fetchDataForOption(option, true).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
-            option.canLoadMore = false;
+            option.loadMoreError = true;
         }).finally(() => {
             infiniteComplete && infiniteComplete();
         });
+    }
+
+    /**
+     * Load offline messages into the conversations.
+     *
+     * @param {any[]} messages Offline messages.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected loadOfflineMessages(messages: any[]): Promise<any> {
+        const promises = [];
+
+        messages.forEach((message) => {
+            if (message.conversationid) {
+                // It's an existing conversation. Search it.
+                let conversation = this.findConversation(message.conversationid);
+
+                if (conversation) {
+                    // Check if it's the last message. Offline messages are considered more recent than sent messages.
+                    if (typeof conversation.lastmessage === 'undefined' || conversation.lastmessage === null ||
+                            !conversation.lastmessagepending || conversation.lastmessagedate <= message.timecreated / 1000) {
+
+                        this.addLastOfflineMessage(conversation, message);
+                    }
+                } else {
+                    // Conversation not found, it's probably an old one. Add it.
+                    conversation = message.conversation || {};
+                    conversation.id = message.conversationid;
+
+                    this.addLastOfflineMessage(conversation, message);
+                    this.addOfflineConversation(conversation);
+                }
+            } else {
+                // Its a new conversation. Check if we already created it (there is more than one message for the same user).
+                const conversation = this.findConversation(undefined, message.touserid);
+
+                message.text = message.smallmessage;
+
+                if (conversation) {
+                    // Check if it's the last message. Offline messages are considered more recent than sent messages.
+                    if (conversation.lastmessagedate <= message.timecreated / 1000) {
+                        this.addLastOfflineMessage(conversation, message);
+                    }
+                } else {
+                    // Get the user data and create a new conversation.
+                    promises.push(this.userProvider.getProfile(message.touserid, undefined, true).catch(() => {
+                        // User not found.
+                    }).then((user) => {
+                        const conversation = {
+                            userid: message.touserid,
+                            name: user ? user.fullname : String(message.touserid),
+                            imageurl: user ? user.profileimageurl : '',
+                            type: AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL
+                        };
+
+                        this.addLastOfflineMessage(conversation, message);
+                        this.addOfflineConversation(conversation);
+                    }));
+                }
+            }
+        });
+
+        return Promise.all(promises);
+    }
+
+    /**
+     * Add an offline conversation into the right list of conversations.
+     *
+     * @param {any} conversation Offline conversation to add.
+     */
+    protected addOfflineConversation(conversation: any): void {
+        const option = this.getConversationOption(conversation);
+        option.conversations.unshift(conversation);
+    }
+
+    /**
+     * Add a last offline message into a conversation.
+     *
+     * @param {any} conversation Conversation where to put the last message.
+     * @param {any} message Offline message to add.
+     */
+    protected addLastOfflineMessage(conversation: any, message: any): void {
+        conversation.lastmessage = message.text;
+        conversation.lastmessagedate = message.timecreated / 1000;
+        conversation.lastmessagepending = true;
+        conversation.sentfromcurrentuser = true;
+    }
+
+    /**
+     * Given a conversation, return its option (favourites, group, individual).
+     *
+     * @param {any} conversation Conversation to check.
+     * @return {any} Option object.
+     */
+    protected getConversationOption(conversation: any): any {
+        if (conversation.isfavourite) {
+            return this.favourites;
+        } else if (conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP) {
+            return this.group;
+        } else {
+            return this.individual;
+        }
     }
 
     /**
@@ -313,12 +491,21 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             // Already expanded, close it.
             option.expanded = false;
         } else {
-            // Collapse all and expand the clicked one.
-            this.favourites.expanded = false;
-            this.group.expanded = false;
-            this.individual.expanded = false;
-            option.expanded = true;
+            this.expandOption(option);
         }
+    }
+
+    /**
+     * Expand a certain option.
+     *
+     * @param {any} option The option to expand.
+     */
+    protected expandOption(option: any): void {
+        // Collapse all and expand the right one.
+        this.favourites.expanded = false;
+        this.group.expanded = false;
+        this.individual.expanded = false;
+        option.expanded = true;
     }
 
     /**
@@ -358,10 +545,11 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * Page destroyed.
      */
     ngOnDestroy(): void {
-        this.newMessagesObserver && this.newMessagesObserver.unsubscribe();
+        this.newMessagesObserver && this.newMessagesObserver.off();
         this.appResumeSubscription && this.appResumeSubscription.unsubscribe();
         this.pushObserver && this.pushObserver.unsubscribe();
         this.readChangedObserver && this.readChangedObserver.off();
         this.cronObserver && this.cronObserver.off();
+        this.openConversationObserver && this.openConversationObserver.off();
     }
 }

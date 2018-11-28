@@ -17,7 +17,9 @@
     "errorwhileretrievingcontacts": "Error while retrieving contacts from the server.",
     "errorwhileretrievingdiscussions": "Error while retrieving discussions from the server.",
     "errorwhileretrievingmessages": "Error while retrieving messages from the server.",
+    "groupinfo": "Group info",
     "groupmessages": "Group messages",
+    "info": "Info",
     "messagenotsent": "The message was not sent. Please try again later.",
     "message": "Message",
     "messagepreferences": "Message preferences",
@@ -28,8 +30,10 @@
     "nogroupmessages": "No group messages",
     "nomessages": "No messages",
     "nousersfound": "No users found",
+    "numparticipants": "{{$a}} participants",
     "removecontact": "Remove contact",
     "removecontactconfirm": "Contact will be removed from your contacts list.",
+    "showdeletemessages": "Show delete messages",
     "type_blocked": "Blocked",
     "type_offline": "Offline",
     "type_online": "Online",
@@ -37,6 +41,7 @@
     "type_strangers": "Others",
     "unblockuser": "Unblock user",
     "unblockuserconfirm": "Are you sure you want to unblock {{$a}}?",
+    "warningconversationmessagenotsent": "Couldn't send message(s) to conversation {{conversation}}. {{error}}",
     "warningmessagenotsent": "Couldn't send message(s) to user {{user}}. {{error}}",
     "you": "You:"
 }
