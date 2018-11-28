@@ -3,14 +3,16 @@
         <ion-title>
             <img *ngIf="conversationImage" class="core-bar-button-image" [src]="conversationImage">
             <core-format-text [text]="title"></core-format-text>
+            <core-icon *ngIf="conversation && conversation.isfavourite" name="fa-star"></core-icon>
         </ion-title>
         <ion-buttons end></ion-buttons>
     </ion-navbar>
     <core-navbar-buttons end>
         <core-context-menu>
             <core-context-menu-item [hidden]="!showInfo || isGroup" [priority]="1000" [content]="'addon.messages.info' | translate" (action)="viewInfo()" [iconAction]="'information-circle'"></core-context-menu-item>
-            <core-context-menu-item [hidden]="!showInfo || !isGroup" [priority]="999" [content]="'addon.messages.groupinfo' | translate" (action)="viewInfo()" [iconAction]="'information-circle'"></core-context-menu-item>
-            <core-context-menu-item [hidden]="!canDelete" [priority]="800" [content]="'addon.messages.showdeletemessages' | translate" (action)="toggleDelete()" [iconAction]="'trash'"></core-context-menu-item>
+            <core-context-menu-item [hidden]="!showInfo || !isGroup" [priority]="1000" [content]="'addon.messages.groupinfo' | translate" (action)="viewInfo()" [iconAction]="'information-circle'"></core-context-menu-item>
+            <core-context-menu-item [hidden]="!groupMessagingEnabled || !conversation" [priority]="800" [content]="(conversation && conversation.isfavourite ? 'addon.messages.removefromfavourites' : 'addon.messages.addtofavourites') | translate" (action)="changeFavourite($event)" [iconAction]="favouriteIcon" [closeOnClick]="false"></core-context-menu-item>
+            <core-context-menu-item [hidden]="!canDelete" [priority]="400" [content]="'addon.messages.showdeletemessages' | translate" (action)="toggleDelete()" [iconAction]="'trash'"></core-context-menu-item>
         </core-context-menu>
     </core-navbar-buttons>
 </ion-header>

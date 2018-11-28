@@ -75,6 +75,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     groupMessagingEnabled: boolean;
     isGroup = false;
     members: any = {}; // Members that wrote a message, indexed by ID.
+    favouriteIcon = 'fa-star';
 
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, navParams: NavParams,
             private userProvider: CoreUserProvider, private navCtrl: NavController, private messagesSync: AddonMessagesSyncProvider,
@@ -332,51 +333,67 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      * @return {Promise<boolean>} Promise resolved with a boolean: whether the conversation exists or not.
      */
     protected getConversation(conversationId: number, userId: number): Promise<boolean> {
-        let promise;
+        let promise,
+            fallbackConversation;
 
+        // Try to get the conversationId if we don't have it.
         if (conversationId) {
-            // Retrieve the conversation. Invalidate data first to get the right unreadcount.
-            promise = this.messagesProvider.invalidateConversation(conversationId).then(() => {
-                return this.messagesProvider.getConversation(conversationId);
-            });
+            promise = Promise.resolve(conversationId);
         } else {
-            // We don't have the conversation ID, check if it exists.
-            promise = this.messagesProvider.getConversationBetweenUsers(userId).catch((error) => {
+            promise = this.messagesProvider.getConversationBetweenUsers(userId).then((conversation) => {
+                fallbackConversation = conversation;
 
-                // Probably conversation does not exist or user is offline. Try to load offline messages.
-                return this.messagesOffline.getMessages(userId).then((messages) => {
-                    if (messages && messages.length) {
-                        // We have offline messages, this probably means that the conversation didn't exist. Don't display error.
-                        messages.forEach((message) => {
-                            message.pending = true;
-                            message.text = message.smallmessage;
-                        });
-
-                        this.loadMessages(messages);
-                    } else if (error.errorcode != 'errorconversationdoesnotexist') {
-                        // Display the error.
-                        return Promise.reject(error);
-                    }
-                });
+                return conversation.id;
             });
         }
 
-        return promise.then((conversation) => {
-            this.conversation = conversation;
-
-            if (conversation) {
-                this.conversationId = conversation.id;
-                this.title = conversation.name;
-                this.conversationImage = conversation.imageurl;
-                this.isGroup = conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP;
-                if (!this.isGroup) {
-                    this.userId = conversation.userid;
+        return promise.then((conversationId) => {
+            // Retrieve the conversation. Invalidate data first to get the right unreadcount.
+            return this.messagesProvider.invalidateConversation(conversationId).catch(() => {
+                // Ignore errors.
+            }).then(() => {
+                return this.messagesProvider.getConversation(conversationId);
+            }).catch((error) => {
+                // Get conversation failed, use the fallback one if we have it.
+                if (fallbackConversation) {
+                    return fallbackConversation;
                 }
 
-                return true;
-            } else {
-                return false;
-            }
+                return Promise.reject(error);
+            }).then((conversation) => {
+                this.conversation = conversation;
+
+                if (conversation) {
+                    this.conversationId = conversation.id;
+                    this.title = conversation.name;
+                    this.conversationImage = conversation.imageurl;
+                    this.isGroup = conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP;
+                    this.favouriteIcon = conversation.isfavourite ? 'fa-star-o' : 'fa-star';
+                    if (!this.isGroup) {
+                        this.userId = conversation.userid;
+                    }
+
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+        }, (error) => {
+            // Probably conversation does not exist or user is offline. Try to load offline messages.
+            return this.messagesOffline.getMessages(userId).then((messages) => {
+                if (messages && messages.length) {
+                    // We have offline messages, this probably means that the conversation didn't exist. Don't display error.
+                    messages.forEach((message) => {
+                        message.pending = true;
+                        message.text = message.smallmessage;
+                    });
+
+                    this.loadMessages(messages);
+                } else if (error.errorcode != 'errorconversationdoesnotexist') {
+                    // Display the error.
+                    return Promise.reject(error);
+                }
+            });
         });
     }
 
@@ -938,6 +955,33 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
             navCtrl.push('CoreUserProfilePage', { userId: this.userId });
         }
+    }
+
+    /**
+     * Change the favourite state of the current conversation.
+     *
+     * @param {Function} [done] Function to call when done.
+     */
+    changeFavourite(done?: () => void): void {
+        this.favouriteIcon = 'spinner';
+
+        this.messagesProvider.setFavouriteConversation(this.conversation.id, !this.conversation.isfavourite).then(() => {
+            this.conversation.isfavourite = !this.conversation.isfavourite;
+
+            // Get the conversation data so it's cached. Don't block the user for this.
+            this.messagesProvider.getConversation(this.conversation.id);
+
+            this.eventsProvider.trigger(AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT, {
+                conversationId: this.conversation.id,
+                action: 'favourite',
+                value: this.conversation.isfavourite
+            }, this.siteId);
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'Error changing favourite state.');
+        }).finally(() => {
+            this.favouriteIcon = this.conversation.isfavourite ? 'fa-star-o' : 'fa-star';
+            done && done();
+        });
     }
 
     /**
