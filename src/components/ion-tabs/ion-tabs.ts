@@ -148,8 +148,15 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
                 // Tabs initialized. Force select the tab if it's not enabled.
                 if (this.selectedDisabled && typeof this.selectedIndex != 'undefined') {
                     const tab = this.getByIndex(this.selectedIndex);
-
-                    if (tab && (!tab.enabled || !tab.show)) {
+                    if (tab && (!tab.enabled)) {
+                        this.select(tab);
+                    }
+                } else {
+                    // Select first tab on init.
+                    const tab = this._tabs.find((tab) => {
+                        return tab.enabled;
+                    });
+                    if (tab) {
                         this.select(tab);
                     }
                 }
@@ -170,17 +177,25 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
     protected registerBackButtonAction(): void {
         this.unregisterBackButtonAction = this.appProvider.registerBackButtonAction(() => {
             let tab = this.previousTab(true);
+
             if (tab) {
                 const selectedTab = this.getSelected();
 
-                // Remove curent and previous tabs from history.
-                this._selectHistory = this._selectHistory.filter((tabId) => {
-                    return selectedTab.id != tabId && tab.id != tabId;
-                });
+                // It can happen when the previous is a phantom tab.
+                if (tab.id == selectedTab.id) {
+                    tab = this.previousTab(true);
+                }
 
-                this.select(tab);
+                if (tab) {
+                    // Remove curent and previous tabs from history.
+                    this._selectHistory = this._selectHistory.filter((tabId) => {
+                        return selectedTab.id != tabId && tab.id != tabId;
+                    });
 
-                return true;
+                    this.select(tab);
+
+                    return true;
+                }
             } else  {
                 const selected = this.getSelected();
                 if (selected && this.firstSelectedTab && selected.id != this.firstSelectedTab) {
@@ -188,7 +203,7 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
                     this._selectHistory = [];
 
                     tab = this._tabs.find((t) => { return t.id === this.firstSelectedTab; });
-                    if (tab && tab.enabled && tab.show) {
+                    if (tab && tab.enabled) {
                         this.select(tab);
 
                         return true;
@@ -246,6 +261,23 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
             });
             this.tabsIds = newTabsIds.filter((id) => {
                 return typeof id != 'undefined';
+            });
+        }
+    }
+
+    /**
+     * Select a tab by Index. First it will reset the status of the tab.
+     *
+     * @param {number} index Index of the tab.
+     */
+    selectTabRootByIndex(index: number): void {
+        const tab = this.getByIndex(index);
+        if (tab) {
+            tab.goToRoot({animate: false, updateUrl: true, isNavRoot: true}).then(() => {
+                // Tab not previously selected. Select it after going to root.
+                if (!tab.isSelected) {
+                    this.select(tab, {animate: false, updateUrl: true, isNavRoot: true});
+                }
             });
         }
     }

@@ -24,7 +24,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 export class CoreCourseLogCronHandler implements CoreCronHandler {
     name = 'CoreCourseLogCronHandler';
 
-    constructor(private coreProvider: CoreCourseProvider, private sitesProvider: CoreSitesProvider) {}
+    constructor(private courseProvider: CoreCourseProvider, private sitesProvider: CoreSitesProvider) {}
 
     /**
      * Execute the process.
@@ -35,7 +35,7 @@ export class CoreCourseLogCronHandler implements CoreCronHandler {
      */
     execute(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-           return this.coreProvider.logView(site.getSiteHomeId(), undefined, site.getId());
+           return this.courseProvider.logView(site.getSiteHomeId(), undefined, site.getId());
         });
     }
 
