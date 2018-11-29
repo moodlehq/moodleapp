@@ -99,6 +99,7 @@
   "devDependencies": {
     "@ionic/app-scripts": "3.1.9",
     "electron-rebuild": "^1.8.1",
+    "electron-builder-lib": "^20.23.1",
     "gulp": "^4.0.0",
     "gulp-clip-empty-files": "^0.1.2",
     "gulp-flatten": "^0.4.0",
@@ -109,10 +110,6 @@
     "through": "^2.3.8",
     "typescript": "~2.6.2",
     "webpack-merge": "^4.1.2"
-  },
-  "optionalDependencies": {
-    "electron-windows-notifications": "^2.1.1",
-    "electron-builder-squirrel-windows": "^20.19.0"
   },
   "browser": {
     "electron": false
@@ -174,7 +171,8 @@
       "icon": "resources/desktop/icon.ico"
     },
     "linux": {
-      "category": "Education"
+      "category": "Education",
+      "target": "AppImage"
     },
     "snap": {
       "confinement": "classic"
