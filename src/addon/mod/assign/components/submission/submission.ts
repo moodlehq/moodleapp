@@ -506,7 +506,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             if (feedback.grade && feedback.grade.grade && !this.grade.grade) {
                 const parsedGrade = parseFloat(feedback.grade.grade);
                 this.grade.grade = parsedGrade || parsedGrade == 0 ? parsedGrade : null;
-                this.grade.gradebookGrade = this.grade.grade;
+                this.grade.gradebookGrade = this.utils.formatFloat(this.grade.grade);
                 this.originalGrades.grade = this.grade.grade;
             }
         } else {
@@ -829,11 +829,11 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
                     // Not using outcomes or scale, get the numeric grade.
                     if (this.grade.scale) {
-                        this.grade.gradebookGrade = this.gradesHelper.getGradeValueFromLabel(
-                                this.grade.scale, grade.gradeformatted);
+                        this.grade.gradebookGrade = this.utils.formatFloat(this.gradesHelper.getGradeValueFromLabel(
+                                this.grade.scale, grade.gradeformatted));
                     } else {
                         const parsedGrade = parseFloat(grade.gradeformatted);
-                        this.grade.gradebookGrade = parsedGrade || parsedGrade == 0 ? parsedGrade : null;
+                        this.grade.gradebookGrade = parsedGrade || parsedGrade == 0 ? this.utils.formatFloat(parsedGrade) : null;
                     }
 
                     this.grade.disabled = grade.gradeislocked || grade.gradeisoverridden;
