@@ -604,6 +604,15 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Check whether input number supports writing comma as a decimal separator.
+     *
+     * @return {boolean} Whether input number supports writing comma as a decimal separator.
+     */
+    numberInputSupportsComma(): boolean {
+        return !this.platform.is('android') || this.platform.version().major > 5;
+    }
+
+    /**
      * Search and remove a certain element from inside another element.
      *
      * @param {HTMLElement} element DOM element to search in.

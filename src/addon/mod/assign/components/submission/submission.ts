@@ -472,7 +472,8 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             applyToAll: false,
             scale: false,
             lang: false,
-            disabled: false
+            disabled: false,
+            type: this.domUtils.numberInputSupportsComma() ? 'number' : 'text'
         };
 
         this.originalGrades =  {
@@ -585,7 +586,8 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                     if (data && (!feedback || !feedback.gradeddate || feedback.gradeddate < data.timemodified)) {
                         // If grade has been modified from gradebook, do not use offline.
                         if (this.grade.modified < data.timemodified) {
-                            this.grade.grade = data.grade;
+                            this.grade.grade = !this.grade.scale && this.grade.type == 'text' ?
+                                    this.utils.formatFloat(data.grade) : data.grade;
                             this.gradingStatusTranslationId = 'addon.mod_assign.gradenotsynced';
                             this.gradingColor = '';
                             this.originalGrades.grade = this.grade.grade;
@@ -772,8 +774,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                         userId: this.currentUserId
                     }, this.siteId);
                 });
-            }).catch((error) => {
-                this.domUtils.showErrorModalDefault(error, 'core.error', true);
             }).finally(() => {
                 // Select submission view.
                 this.tabs.selectTab(0);
@@ -802,6 +802,10 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
         if (this.gradeInfo.scale) {
             this.grade.scale = this.utils.makeMenuFromList(this.gradeInfo.scale, this.translate.instant('core.nograde'));
         } else {
+            // If the grade uses a text input, format it.
+            this.grade.grade = this.grade.type == 'text' ? this.utils.formatFloat(this.grade.grade) : this.grade.grade;
+            this.originalGrades.grade = this.grade.grade;
+
             // Get current language to format grade input field.
             this.langProvider.getCurrentLanguage().then((lang) => {
                 this.grade.lang = lang;
