@@ -4,3 +4,13 @@
     color: $color-base;
   }
 }
+
+
+[dir=rtl] .icon {
+    &.core-icon-dir-flip,
+    &.fa-caret-right,
+    &.ion-md-send, &.ion-ios-send {
+      -webkit-transform: scale(-1, 1);
+      transform: scale(-1, 1);
+    }
+}
