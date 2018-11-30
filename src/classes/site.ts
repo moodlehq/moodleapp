@@ -658,7 +658,7 @@ export class CoreSite {
                 } else if (error.errorcode === 'sitepolicynotagreed') {
                     // Site policy not agreed, trigger event.
                     this.eventsProvider.trigger(CoreEventsProvider.SITE_POLICY_NOT_AGREED, {}, this.id);
-                    error.message = this.translate.instant('core.sitepolicynotagreederror');
+                    error.message = this.translate.instant('core.login.sitepolicynotagreederror');
 
                     return Promise.reject(error);
                 } else if (error.errorcode === 'dmlwriteexception' && this.textUtils.hasUnicodeData(data)) {
