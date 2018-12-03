@@ -1,5 +1,6 @@
 {
     "addcontact": "Add contact",
+    "addtofavourites": "Star",
     "blocknoncontacts": "Prevent non-contacts from messaging me",
     "blockuser": "Block user",
     "blockuserconfirm": "Are you sure you want to block {{$a}}?",
@@ -11,6 +12,8 @@
     "contactlistempty": "The contact list is empty",
     "contactname": "Contact name",
     "contacts": "Contacts",
+    "deleteallconfirm": "Are you sure you would like to delete this entire conversation? This will not delete it for other conversation participants.",
+    "deleteconversation": "Delete conversation",
     "deletemessage": "Delete message",
     "deletemessageconfirmation": "Are you sure you want to delete this message? It will only be deleted from your messaging history and will still be viewable by the user who sent or received the message.",
     "errordeletemessage": "Error while deleting the message.",
@@ -33,6 +36,7 @@
     "numparticipants": "{{$a}} participants",
     "removecontact": "Remove contact",
     "removecontactconfirm": "Contact will be removed from your contacts list.",
+    "removefromfavourites": "Unstar",
     "showdeletemessages": "Show delete messages",
     "type_blocked": "Blocked",
     "type_offline": "Offline",

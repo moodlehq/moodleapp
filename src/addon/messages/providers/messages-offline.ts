@@ -110,6 +110,21 @@ export class AddonMessagesOfflineProvider {
     }
 
     /**
+     * Delete all the messages in a conversation.
+     *
+     * @param {number} conversationId Conversation ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved if stored, rejected if failure.
+     */
+    deleteConversationMessages(conversationId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.getDb().deleteRecords(AddonMessagesOfflineProvider.CONVERSATION_MESSAGES_TABLE, {
+                    conversationid: conversationId
+                });
+        });
+    }
+
+    /**
      * Delete a message.
      *
      * @param  {number} toUserId    User ID to send the message to.

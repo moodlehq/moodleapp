@@ -35,6 +35,7 @@ export class AddonMessagesProvider {
     static READ_CRON_EVENT = 'addon_messages_read_cron_event';
     static OPEN_CONVERSATION_EVENT = 'addon_messages_open_conversation_event'; // Notify that a conversation should be opened.
     static SPLIT_VIEW_LOAD_EVENT = 'addon_messages_split_view_load_event';
+    static UPDATE_CONVERSATION_LIST_EVENT = 'addon_messages_update_conversation_list_event';
     static POLL_INTERVAL = 10000;
     static PUSH_SIMULATION_COMPONENT = 'AddonMessagesPushSimulation';
 
@@ -101,6 +102,49 @@ export class AddonMessagesProvider {
 
             return promise.then(() => {
                 return this.invalidateAllContactsCache(site.getUserId(), site.getId());
+            });
+        });
+    }
+
+    /**
+     * Delete a conversation.
+     *
+     * @param {number} conversationId Conversation to delete.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>} Promise resolved when the conversation has been deleted.
+     */
+    deleteConversation(conversationId: number, siteId?: string, userId?: number): Promise<any> {
+        return this.deleteConversations([conversationId], siteId, userId);
+    }
+
+    /**
+     * Delete several conversations.
+     *
+     * @param {number[]} conversationIds Conversations to delete.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>} Promise resolved when the conversations have been deleted.
+     */
+    deleteConversations(conversationIds: number[], siteId?: string, userId?: number): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            const params = {
+                    userid: userId,
+                    conversationids: conversationIds
+                };
+
+            return site.write('core_message_delete_conversations_by_id', params).then(() => {
+                const promises = [];
+
+                conversationIds.forEach((conversationId) => {
+                    promises.push(this.messagesOffline.deleteConversationMessages(conversationId, site.getId()).catch(() => {
+                        // Ignore errors (shouldn't happen).
+                    }));
+                });
+
+                return Promise.all(promises);
             });
         });
     }
@@ -1114,7 +1158,7 @@ export class AddonMessagesProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
-            return site.invalidateWsCacheForKey(this.getCacheKeyForConversation(conversationId, userId));
+            return site.invalidateWsCacheForKey(this.getCacheKeyForConversation(userId, conversationId));
         });
     }
 
@@ -1694,6 +1738,53 @@ export class AddonMessagesProvider {
             };
 
             return site.write('core_message_send_messages_to_conversation', params);
+        });
+    }
+
+    /**
+     * Set or unset a conversation as favourite.
+     *
+     * @param {number} conversationId Conversation ID.
+     * @param {boolean} set Whether to set or unset it as favourite.
+     * @param {string} [siteId]  Site ID. If not defined, use current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>}  Resolved when done.
+     */
+    setFavouriteConversation(conversationId: number, set: boolean, siteId?: string, userId?: number): Promise<any> {
+        return this.setFavouriteConversations([conversationId], set, siteId, userId);
+    }
+
+    /**
+     * Set or unset some conversations as favourites.
+     *
+     * @param {number[]} conversations Conversation IDs.
+     * @param {boolean} set Whether to set or unset them as favourites.
+     * @param {string} [siteId]  Site ID. If not defined, use current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>}  Resolved when done.
+     */
+    setFavouriteConversations(conversations: number[], set: boolean, siteId?: string, userId?: number): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            const params = {
+                    userid: userId,
+                    conversations: conversations
+                },
+                wsName = set ? 'core_message_set_favourite_conversations' : 'core_message_unset_favourite_conversations';
+
+            return site.write(wsName, params).then(() => {
+                // Invalidate the conversations data.
+                const promises = [];
+
+                conversations.forEach((conversationId) => {
+                    promises.push(this.invalidateConversation(conversationId, site.getId(), userId));
+                });
+
+                return Promise.all(promises).catch(() => {
+                    // Ignore errors.
+                });
+            });
         });
     }
 

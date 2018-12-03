@@ -73,6 +73,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     protected readChangedObserver: any;
     protected cronObserver: any;
     protected openConversationObserver: any;
+    protected updateConversationListObserver: any;
 
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, translate: TranslateService,
             private messagesProvider: AddonMessagesProvider, private domUtils: CoreDomUtilsProvider, navParams: NavParams,
@@ -115,22 +116,22 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             }
         }, this.siteId);
 
-        // Update discussions when a message is read.
+        // Update conversations when a message is read.
         this.readChangedObserver = eventsProvider.on(AddonMessagesProvider.READ_CHANGED_EVENT, (data) => {
             if (data.conversationId) {
                 const conversation = this.findConversation(data.conversationId);
 
                 if (typeof conversation != 'undefined') {
-                    // A discussion has been read reset counter.
+                    // A conversation has been read reset counter.
                     conversation.unreadcount = 0;
 
-                    // Discussions changed, invalidate them.
+                    // Conversations changed, invalidate them.
                     this.messagesProvider.invalidateConversations();
                 }
             }
         }, this.siteId);
 
-        // Update discussions when cron read is executed.
+        // Update conversations when cron read is executed.
         this.cronObserver = eventsProvider.on(AddonMessagesProvider.READ_CRON_EVENT, (data) => {
             this.refreshData();
         }, this.siteId);
@@ -152,6 +153,11 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 this.loaded = true;
             });
         });
+
+        // Update conversations if we receive an event to do so.
+        this.updateConversationListObserver = eventsProvider.on(AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT, () => {
+            this.refreshData();
+        }, this.siteId);
 
         // If a message push notification is received, refresh the view.
         this.pushObserver = pushNotificationsDelegate.on('receive').subscribe((notification) => {
@@ -551,5 +557,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         this.readChangedObserver && this.readChangedObserver.off();
         this.cronObserver && this.cronObserver.off();
         this.openConversationObserver && this.openConversationObserver.off();
+        this.updateConversationListObserver && this.updateConversationListObserver.off();
     }
 }
