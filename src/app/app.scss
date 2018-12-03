@@ -498,6 +498,11 @@ ion-app.app-root {
       @include text-align('end');
       flex-grow: 2;
     }
+
+    .select-text {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
 
 
