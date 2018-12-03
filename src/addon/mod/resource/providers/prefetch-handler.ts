@@ -123,6 +123,20 @@ export class AddonModResourcePrefetchHandler extends CoreCourseResourcePrefetchH
     }
 
     /**
+     * Check if a resource is downloadable.
+     *
+     * @param {any} module Module to check.
+     * @param {number} courseId Course ID the module belongs to.
+     * @return {Promise<boolean>} Promise resolved with true if downloadable, resolved with false otherwise.
+     */
+    isDownloadable(module: any, courseId: number): Promise<boolean> {
+        // Don't allow downloading Nextcloud files for now.
+        return this.loadContents(module, courseId, false).then(() => {
+            return !this.resourceHelper.isNextcloudFile(module);
+        });
+    }
+
+    /**
      * Whether or not the handler is enabled on a site level.
      *
      * @return {boolean|Promise<boolean>} A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.

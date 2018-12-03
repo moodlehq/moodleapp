@@ -113,7 +113,7 @@ export class AddonModResourceHelperProvider {
      * @return {boolean}         Whether the resource should be displayed embeded.
      */
     isDisplayedEmbedded(module: any, display: number): boolean {
-        if (!module.contents.length || !this.fileProvider.isAvailable()) {
+        if (!module.contents.length || !this.fileProvider.isAvailable() || this.isNextcloudFile(module)) {
             return false;
         }
 
@@ -137,6 +137,16 @@ export class AddonModResourceHelperProvider {
             mimetype = this.mimetypeUtils.getMimeType(ext);
 
         return mimetype == 'text/html';
+    }
+
+    /**
+     * Check if the resource is a Nextcloud file.
+     *
+     * @param {any} module Module to check.
+     * @return {boolean} Whether it's a Nextcloud file.
+     */
+    isNextcloudFile(module: any): boolean {
+        return module.contents && module.contents[0] && module.contents[0].repositorytype == 'nextcloud';
     }
 
     /**
