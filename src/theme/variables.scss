@@ -84,7 +84,11 @@ $colors: (
   dark:       $black,
   warning:    $yellow,
   success:    $green,
-  info:       $blue
+  info:       $blue,
+  inverted: (
+    base: $white,
+    contrast: $core-color
+  )
 );
 
 $text-color:                 $black !default;
