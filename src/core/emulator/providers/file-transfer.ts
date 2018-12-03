@@ -130,7 +130,18 @@ export class FileTransferObjectMock extends FileTransferObject {
 
             xhr.onload = (): void => {
                 // Finished dowloading the file.
-                let response = xhr.response;
+                let response = xhr.response || xhr.responseText;
+
+                const status = Math.max(xhr.status === 1223 ? 204 : xhr.status, 0);
+                if (status < 200 || status >= 300) {
+                    // Request failed. Try to get the error message.
+                    this.parseResponse(response).then((response) => {
+                        reject(new FileTransferErrorMock(-1, source, target, xhr.status, response || xhr.statusText, null));
+                    });
+
+                    return;
+                }
+
                 if (!response) {
                     reject();
                 } else {
@@ -222,6 +233,51 @@ export class FileTransferObjectMock extends FileTransferObject {
      */
     onProgress(listener: (event: ProgressEvent) => any): void {
         this.progressListener = listener;
+    }
+
+    /**
+     * Same as Javascript's JSON.parse, but it will handle errors.
+     *
+     * @param {string} json JSON text.
+     * @return {any} JSON parsed as object or what it gets.
+     */
+    protected parseJSON(json: string): any {
+        try {
+            return JSON.parse(json);
+        } catch (ex) {
+            // Error.
+        }
+
+        return json;
+    }
+
+    /**
+     * Parse a response, converting it into text and the into an object if needed.
+     *
+     * @param {any} response The response to parse.
+     * @return {Promise<any>} Promise resolved with the parsed response.
+     */
+    protected parseResponse(response: any): Promise<any> {
+        return new Promise((resolve, reject): void => {
+            if (!response) {
+                resolve('');
+            } else if (response.toString && response.toString() == '[object Blob]') {
+                // Convert the Blob into text.
+                const reader = new FileReader();
+                reader.onloadend = (): void => {
+                    resolve(reader.result);
+                };
+                reader.readAsText(response);
+
+            } else if (response.toString && response.toString() == '[object ArrayBuffer]') {
+                // Convert the ArrayBuffer into text.
+                resolve(String.fromCharCode.apply(null, new Uint8Array(response)));
+            } else {
+                resolve(response);
+            }
+        }).then((response: any) => {
+            return this.parseJSON(response);
+        });
     }
 
     /**
