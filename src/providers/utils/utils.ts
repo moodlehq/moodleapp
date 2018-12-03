@@ -471,7 +471,7 @@ export class CoreUtilsProvider {
      * @return {string} Locale float.
      */
     formatFloat(float: any): string {
-        if (typeof float == 'undefined') {
+        if (typeof float == 'undefined' || float === null) {
             return '';
         }
 
