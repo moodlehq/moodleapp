@@ -990,6 +990,13 @@ ion-app.app-root {
     display: none !important;
   }
 
+  .core-horizontal-scroll {
+    display: flex;
+    flex-flow: nowrap;
+    overflow-x: scroll;
+    flex-direction: row;
+  }
+
   ion-content.core-expand-max .scroll-content {
     overflow-y: hidden;
     display: flex;

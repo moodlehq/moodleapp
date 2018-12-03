@@ -7,6 +7,14 @@
 
 <ion-item-divider color="light">
     <h2>{{ 'addon.block_myoverview.pluginname' | translate }}</h2>
+    <!-- Download all courses. -->
+    <div *ngIf="downloadAllCoursesEnabled && courses[selectedFilter] && courses[selectedFilter].length > 1" class="core-button-spinner" item-end>
+        <button *ngIf="prefetchCoursesData[selectedFilter].icon && prefetchCoursesData[selectedFilter].icon != 'spinner'" ion-button icon-only clear color="dark" (click)="prefetchCourses()">
+            <core-icon [name]="prefetchCoursesData[selectedFilter].icon"></core-icon>
+        </button>
+        <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData[selectedFilter].badge">{{prefetchCoursesData[selectedFilter].badge}}</ion-badge>
+        <ion-spinner *ngIf="!prefetchCoursesData[selectedFilter].icon || prefetchCoursesData[selectedFilter].icon == 'spinner'"></ion-spinner>
+    </div>
 </ion-item-divider>
 <core-loading [hideUntil]="loaded" class="core-loading-center">
     <div padding ion-row justify-content-end [hidden]="showFilter" class="safe-padding-horizontal">
@@ -27,14 +35,6 @@
                 <ion-option value="fullname">{{ 'addon.block_myoverview.title' | translate }}</ion-option>
                 <ion-option value="lastaccess">{{ 'addon.block_myoverview.lastaccessed' | translate }}</ion-option>
             </ion-select>
-        </ion-col>
-        <!-- Download all courses. -->
-        <ion-col *ngIf="downloadAllCoursesEnabled && courses[selectedFilter] && courses[selectedFilter].length > 1" class="core-button-spinner" text-end col-1>
-            <button *ngIf="prefetchCoursesData[selectedFilter].icon && prefetchCoursesData[selectedFilter].icon != 'spinner'" ion-button icon-only clear color="dark" (click)="prefetchCourses()">
-                <core-icon [name]="prefetchCoursesData[selectedFilter].icon"></core-icon>
-            </button>
-            <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData[selectedFilter].badge">{{prefetchCoursesData[selectedFilter].badge}}</ion-badge>
-            <ion-spinner *ngIf="!prefetchCoursesData[selectedFilter].icon || prefetchCoursesData[selectedFilter].icon == 'spinner'"></ion-spinner>
         </ion-col>
     </div>
     <core-empty-box *ngIf="courses[selectedFilter].length == 0" image="assets/img/icons/courses.svg" [message]="'addon.block_myoverview.nocourses' | translate"></core-empty-box>
