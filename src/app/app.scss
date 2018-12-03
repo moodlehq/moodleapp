@@ -984,6 +984,45 @@ ion-app.app-root {
   .core-iframe-offline-disabled {
     display: none !important;
   }
+
+  ion-content.core-expand-max .scroll-content {
+    overflow-y: hidden;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+
+    core-loading {
+      flex-grow: 1;
+      position: relative !important;
+
+      .core-loading-content {
+        position: absolute;
+        @include position(0,0,0,0);
+      }
+    }
+
+    ion-list {
+      display: flex;
+      height: 100%;
+      flex-direction: column;
+      > div {
+        overflow-y: auto;
+      }
+    }
+  }
+
+  .core-expandable {
+    ion-icon[item-start] + .item-inner {
+      @include margin-horizontal(0px, null);
+    }
+    .icon.fa.fa-caret-right,
+    .icon.fa.fa-caret-down {
+      min-width: 16px;
+      min-height: 1.6rem;
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+  }
 }
 
 @each $color-name, $color-base, $color-contrast in get-colors($colors) {
@@ -993,7 +1032,6 @@ ion-app.app-root {
     color: $color-contrast;
   }
 }
-
 
 [dir="ltr"] body, [dir="rtl"] body {
   padding-top: constant(safe-area-inset-top); //for iOS 11.2

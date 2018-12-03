@@ -14,7 +14,7 @@
     </ion-navbar>
 </ion-header>
 <core-split-view>
-    <ion-content>
+    <ion-content class="core-expand-max">
         <ion-refresher [enabled]="loaded" (ionRefresh)="refreshData($event)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
@@ -48,7 +48,7 @@
             <!-- Conversations. -->
             <ion-list *ngIf="!search.showResults">
                 <!-- Favourite conversations. -->
-                <ion-item-divider color="light" text-wrap *ngIf="favourites.conversations" (click)="toggle(favourites)">
+                <ion-item-divider color="light" text-wrap *ngIf="favourites.conversations" (click)="toggle(favourites)" class="core-expandable">
                     <core-icon *ngIf="!favourites.expanded" name="fa-caret-right" item-start></core-icon>
                     <core-icon *ngIf="favourites.expanded" name="fa-caret-down" item-start></core-icon>
                     {{ 'core.favourites' | translate }} ({{ favourites.count }})
@@ -64,7 +64,7 @@
                 </div>
 
                 <!-- Group conversations. -->
-                <ion-item-divider color="light" text-wrap *ngIf="group.conversations" (click)="toggle(group)">
+                <ion-item-divider color="light" text-wrap *ngIf="group.conversations" (click)="toggle(group)" class="core-expandable">
                     <core-icon *ngIf="!group.expanded" name="fa-caret-right" item-start></core-icon>
                     <core-icon *ngIf="group.expanded" name="fa-caret-down" item-start></core-icon>
                     {{ 'addon.messages.groupmessages' | translate }} ({{ group.count }})
@@ -79,7 +79,7 @@
                     </ion-item>
                 </div>
 
-                <ion-item-divider color="light" text-wrap *ngIf="individual.conversations" (click)="toggle(individual)">
+                <ion-item-divider color="light" text-wrap *ngIf="individual.conversations" (click)="toggle(individual)" class="core-expandable">
                     <core-icon *ngIf="!individual.expanded" name="fa-caret-right" item-start></core-icon>
                     <core-icon *ngIf="individual.expanded" name="fa-caret-down" item-start></core-icon>
                     {{ 'addon.messages.messages' | translate }} ({{ individual.count }})
