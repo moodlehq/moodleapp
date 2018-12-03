@@ -45,6 +45,70 @@ export class CoreFileProvider {
     constructor(logger: CoreLoggerProvider, private platform: Platform, private file: File, private appProvider: CoreAppProvider,
             private textUtils: CoreTextUtilsProvider, private zip: Zip, private mimeUtils: CoreMimetypeUtilsProvider) {
         this.logger = logger.getInstance('CoreFileProvider');
+
+        if (platform.is('android') && !Object.getOwnPropertyDescriptor(FileReader.prototype, 'onloadend')) {
+            // Cordova File plugin creates some getters and setter for FileReader, but Ionic's polyfills override them in Android.
+            // Create the getters and setters again. This code comes from FileReader.js in cordova-plugin-file.
+            this.defineGetterSetter(FileReader.prototype, 'readyState', function(): any {
+                return this._localURL ? this._readyState : this._realReader.readyState;
+            });
+
+            this.defineGetterSetter(FileReader.prototype, 'error', function(): any {
+                return this._localURL ? this._error : this._realReader.error;
+            });
+
+            this.defineGetterSetter(FileReader.prototype, 'result', function(): any {
+                return this._localURL ? this._result : this._realReader.result;
+            });
+
+            this.defineEvent('onloadstart');
+            this.defineEvent('onprogress');
+            this.defineEvent('onload');
+            this.defineEvent('onerror');
+            this.defineEvent('onloadend');
+            this.defineEvent('onabort');
+        }
+    }
+
+    /**
+     * Define an event for FileReader.
+     *
+     * @param {string} eventName Name of the event.
+     */
+    protected defineEvent(eventName: string): void {
+        this.defineGetterSetter(FileReader.prototype, eventName, function(): any {
+            return this._realReader[eventName] || null;
+        }, function(value: any): void {
+            this._realReader[eventName] = value;
+        });
+    }
+
+    /**
+     * Define a getter and, optionally, a setter for a certain property in an object.
+     *
+     * @param {any} obj Object to set the getter/setter for.
+     * @param {string} key Name of the property where to set them.
+     * @param {Function} getFunc The getter function.
+     * @param {Function} [setFunc] The setter function.
+     */
+    protected defineGetterSetter(obj: any, key: string, getFunc: Function, setFunc?: Function): void {
+        if (Object.defineProperty) {
+            const desc: any = {
+                get: getFunc,
+                configurable: true
+            };
+
+            if (setFunc) {
+                desc.set = setFunc;
+            }
+
+            Object.defineProperty(obj, key, desc);
+        } else {
+            obj.__defineGetter__(key, getFunc);
+            if (setFunc) {
+                obj.__defineSetter__(key, setFunc);
+            }
+        }
     }
 
     /**

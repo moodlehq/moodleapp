@@ -43,6 +43,7 @@ export class CoreLoggerProvider {
      */
     getInstance(className: string): any {
         className = className || '';
+        /* tslint:disable no-console */
 
         return {
             log: this.prepareLogFn(console.log.bind(console), className),
