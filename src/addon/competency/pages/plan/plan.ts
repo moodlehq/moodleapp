@@ -14,7 +14,6 @@
 
 import { Component, Optional } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -35,10 +34,9 @@ export class AddonCompetencyPlanPage {
     plan: any;
     user: any;
 
-    constructor(private navCtrl: NavController, navParams: NavParams, private translate: TranslateService,
-            private appProvider: CoreAppProvider, private domUtils: CoreDomUtilsProvider,
-            @Optional() private svComponent: CoreSplitViewComponent, private competencyProvider: AddonCompetencyProvider,
-            private competencyHelperProvider: AddonCompetencyHelperProvider) {
+    constructor(private navCtrl: NavController, navParams: NavParams, private appProvider: CoreAppProvider,
+            private domUtils: CoreDomUtilsProvider, @Optional() private svComponent: CoreSplitViewComponent,
+            private competencyProvider: AddonCompetencyProvider, private competencyHelperProvider: AddonCompetencyHelperProvider) {
         this.planId = navParams.get('planId');
     }
 
@@ -58,10 +56,14 @@ export class AddonCompetencyPlanPage {
      */
     protected fetchLearningPlan(): Promise<void> {
         return this.competencyProvider.getLearningPlan(this.planId).then((plan) => {
-            plan.plan.statusname = this.getStatusName(plan.plan.status);
+            plan.plan.statusname = this.competencyHelperProvider.getPlanStatusName(plan.plan.status);
             // Get the user profile image.
             this.competencyHelperProvider.getProfile(plan.plan.userid).then((user) => {
                 this.user = user;
+            });
+
+            plan.competencies.forEach((competency) => {
+                competency.usercompetency = competency.usercompetencyplan || competency.usercompetency;
             });
             this.plan = plan;
         }).catch((message) => {
@@ -81,38 +83,6 @@ export class AddonCompetencyPlanPage {
         } else {
             navCtrl.push('AddonCompetencyCompetencyPage', {competencyId, planId: this.planId});
         }
-    }
-
-    /**
-     * Convenience function to get the status name translated.
-     *
-     * @param {number} status
-     * @return {string}
-     */
-    protected getStatusName(status: number): string {
-        let statusTranslateName;
-        switch (status) {
-            case AddonCompetencyProvider.STATUS_DRAFT:
-                statusTranslateName = 'draft';
-                break;
-            case AddonCompetencyProvider.REVIEW_STATUS_IN_REVIEW:
-                statusTranslateName = 'inreview';
-                break;
-            case AddonCompetencyProvider.REVIEW_STATUS_WAITING_FOR_REVIEW:
-                statusTranslateName = 'waitingforreview';
-                break;
-            case AddonCompetencyProvider.STATUS_ACTIVE:
-                statusTranslateName = 'active';
-                break;
-            case AddonCompetencyProvider.STATUS_COMPLETE:
-                statusTranslateName = 'complete';
-                break;
-            default:
-                // We can use the current status name.
-                return String(status);
-        }
-
-        return this.translate.instant('addon.competency.planstatus' + statusTranslateName);
     }
 
     /**

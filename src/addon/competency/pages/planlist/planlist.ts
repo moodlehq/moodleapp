@@ -17,6 +17,7 @@ import { IonicPage, NavParams } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { AddonCompetencyProvider } from '../../providers/competency';
+import { AddonCompetencyHelperProvider } from '../../providers/helper';
 
 /**
  * Page that displays the list of learning plans.
@@ -34,7 +35,8 @@ export class AddonCompetencyPlanListPage {
     plansLoaded = false;
     plans = [];
 
-    constructor(navParams: NavParams, private domUtils: CoreDomUtilsProvider, private competencyProvider: AddonCompetencyProvider) {
+    constructor(navParams: NavParams, private domUtils: CoreDomUtilsProvider, private competencyProvider: AddonCompetencyProvider,
+            private competencyHelperProvider: AddonCompetencyHelperProvider) {
         this.userId = navParams.get('userId');
     }
 
@@ -64,6 +66,20 @@ export class AddonCompetencyPlanListPage {
      */
     protected fetchLearningPlans(): Promise<void> {
         return this.competencyProvider.getLearningPlans(this.userId).then((plans) => {
+            plans.forEach((plan) => {
+                plan.statusname = this.competencyHelperProvider.getPlanStatusName(plan.status);
+                switch (plan.status) {
+                    case AddonCompetencyProvider.STATUS_ACTIVE:
+                        plan.statuscolor = 'success';
+                        break;
+                    case AddonCompetencyProvider.STATUS_COMPLETE:
+                        plan.statuscolor = 'danger';
+                        break;
+                    default:
+                        plan.statuscolor = 'warning';
+                        break;
+                }
+            });
             this.plans = plans;
         }).catch((message) => {
             this.domUtils.showErrorModalDefault(message, 'Error getting learning plans data.');

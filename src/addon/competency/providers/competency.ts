@@ -22,14 +22,18 @@ import { CoreSitesProvider } from '@providers/sites';
 @Injectable()
 export class AddonCompetencyProvider {
 
+    // Learning plan status.
     static STATUS_DRAFT = 0;
     static STATUS_ACTIVE = 1;
     static STATUS_COMPLETE = 2;
-    static STATUS_WAITIN_GFOR_REVIEW = 3;
+    static STATUS_WAITING_FOR_REVIEW = 3;
     static STATUS_IN_REVIEW = 4;
+
+    // Competency status.
     static REVIEW_STATUS_IDLE = 0;
     static REVIEW_STATUS_WAITING_FOR_REVIEW = 1;
     static REVIEW_STATUS_IN_REVIEW = 2;
+
     protected ROOT_CACHE_KEY = 'mmaCompetency:';
 
     protected logger;

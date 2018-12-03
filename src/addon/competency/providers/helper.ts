@@ -13,8 +13,10 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUserProvider } from '@core/user/providers/user';
+import { AddonCompetencyProvider } from './competency';
 
 /**
  * Service that provides some features regarding learning plans.
@@ -22,7 +24,8 @@ import { CoreUserProvider } from '@core/user/providers/user';
 @Injectable()
 export class AddonCompetencyHelperProvider {
 
-    constructor(private sitesProvider: CoreSitesProvider, private userProvider: CoreUserProvider) {
+    constructor(private sitesProvider: CoreSitesProvider, private userProvider: CoreUserProvider,
+            private translate: TranslateService) {
     }
 
     /**
@@ -42,5 +45,63 @@ export class AddonCompetencyHelperProvider {
 
             return user;
         });
+    }
+
+    /**
+     * Get the review status name translated.
+     *
+     * @param {number} status
+     * @return {string}
+     */
+    getCompetencyStatusName(status: number): string {
+        let statusTranslateName;
+        switch (status) {
+            case AddonCompetencyProvider.REVIEW_STATUS_IDLE:
+                statusTranslateName = 'idle';
+                break;
+            case AddonCompetencyProvider.REVIEW_STATUS_IN_REVIEW:
+                statusTranslateName = 'inreview';
+                break;
+            case AddonCompetencyProvider.REVIEW_STATUS_WAITING_FOR_REVIEW:
+                statusTranslateName = 'waitingforreview';
+                break;
+            default:
+                // We can use the current status name.
+                return String(status);
+        }
+
+        return this.translate.instant('addon.competency.usercompetencystatus_' + statusTranslateName);
+    }
+
+    /**
+     * Get the status name translated.
+     *
+     * @param {number} status
+     * @return {string}
+     */
+    getPlanStatusName(status: number): string {
+        let statusTranslateName;
+        switch (status) {
+            case AddonCompetencyProvider.STATUS_DRAFT:
+                statusTranslateName = 'draft';
+                break;
+            case AddonCompetencyProvider.STATUS_ACTIVE:
+                statusTranslateName = 'active';
+                break;
+            case AddonCompetencyProvider.STATUS_COMPLETE:
+                statusTranslateName = 'complete';
+                break;
+            case AddonCompetencyProvider.STATUS_WAITING_FOR_REVIEW:
+                statusTranslateName = 'waitingforreview';
+                break;
+            case AddonCompetencyProvider.STATUS_IN_REVIEW:
+                statusTranslateName = 'inreview';
+                break;
+            default:
+                // We can use the current status name.
+                return String(status);
+        }
+
+        return this.translate.instant('addon.competency.planstatus' + statusTranslateName);
     }
 }
