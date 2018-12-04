@@ -78,7 +78,7 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
         };
 
         const handlerData: CoreCourseModuleHandlerData = {
-            icon: this.courseProvider.getModuleIconSrc(this.modName),
+            icon: this.courseProvider.getModuleIconSrc(this.modName, module.modicon),
             title: module.name,
             class: 'addon-mod_resource-handler',
             showDownloadButton: true,
@@ -162,6 +162,7 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
 
             if (files && files.length) {
                 const file = files[0];
+
                 resourceData.icon = this.mimetypeUtils.getFileIcon(file.filename);
 
                 if (options.showsize) {
@@ -201,9 +202,8 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
             }
 
             if (resourceData.icon == '') {
-                resourceData.icon = this.courseProvider.getModuleIconSrc(this.modName);
+                resourceData.icon = this.courseProvider.getModuleIconSrc(this.modName, module.modicon);
             }
-
             resourceData.extra += extra.join(' ');
 
             return resourceData;

@@ -436,7 +436,8 @@ export class CoreGradesHelperProvider {
             if (typeof module[1] != 'undefined') {
                 row['itemtype'] = 'mod';
                 row['itemmodule'] = module[1];
-                row['image'] = this.courseProvider.getModuleIconSrc(module[1]);
+                row['image'] = this.courseProvider.getModuleIconSrc(module[1],
+                    this.domUtils.convertToElement(text).querySelector('img').getAttribute('src'));
             }
         } else if (text.indexOf('src=') > -1) {
             const src = text.match(/src="([^"]*)"/);

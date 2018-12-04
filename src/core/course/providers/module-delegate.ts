@@ -313,10 +313,11 @@ export class CoreCourseModuleDelegate extends CoreDelegate {
      * Get the icon src for a certain type of module.
      *
      * @param {any} modname The name of the module type.
+     * @param {string} [modicon] The mod icon string.
      * @return {string} The icon src.
      */
-    getModuleIconSrc(modname: string): string {
-        return this.executeFunctionOnEnabled(modname, 'getIconSrc') || this.courseProvider.getModuleIconSrc(modname);
+    getModuleIconSrc(modname: string, modicon?: string): string {
+        return this.executeFunctionOnEnabled(modname, 'getIconSrc') || this.courseProvider.getModuleIconSrc(modname, modicon);
     }
 
     /**

@@ -536,10 +536,18 @@ export class CoreCourseProvider {
      * Returns the source to a module icon.
      *
      * @param {string} moduleName The module name.
+     * @param {string} [modicon] The mod icon string to use in case we are not using a core activity.
      * @return {string} The IMG src.
      */
-    getModuleIconSrc(moduleName: string): string {
+    getModuleIconSrc(moduleName: string, modicon?: string): string {
+        // @TODO: Check modicon url theme to apply other theme icons.
+
+        // Use default icon on core themes.
         if (this.CORE_MODULES.indexOf(moduleName) < 0) {
+            if (modicon) {
+                return modicon;
+            }
+
             moduleName = 'external-tool';
         }
 

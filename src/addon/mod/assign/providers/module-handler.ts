@@ -64,7 +64,7 @@ export class AddonModAssignModuleHandler implements CoreCourseModuleHandler {
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
         return {
-            icon: this.courseProvider.getModuleIconSrc('assign'),
+            icon: this.courseProvider.getModuleIconSrc(this.modName, module.modicon),
             title: module.name,
             class: 'addon-mod_assign-handler',
             showDownloadButton: true,

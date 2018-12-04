@@ -62,7 +62,7 @@ export class AddonModGlossaryModuleHandler implements CoreCourseModuleHandler {
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
         return {
-            icon: this.courseProvider.getModuleIconSrc('glossary'),
+            icon: this.courseProvider.getModuleIconSrc(this.modName, module.modicon),
             title: module.name,
             class: 'addon-mod_glossary-handler',
             showDownloadButton: true,

@@ -63,7 +63,7 @@ export class AddonModDataModuleHandler implements CoreCourseModuleHandler {
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
         return {
-            icon: this.courseProvider.getModuleIconSrc('data'),
+            icon: this.courseProvider.getModuleIconSrc(this.modName, module.modicon),
             title: module.name,
             class: 'addon-mod_data-handler',
             showDownloadButton: true,

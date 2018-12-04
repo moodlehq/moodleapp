@@ -60,7 +60,7 @@ export class AddonModFolderModuleHandler implements CoreCourseModuleHandler {
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
         return {
-            icon: this.courseProvider.getModuleIconSrc('folder'),
+            icon: this.courseProvider.getModuleIconSrc(this.modName, module.modicon),
             title: module.name,
             class: 'addon-mod_folder-handler',
             showDownloadButton: true,

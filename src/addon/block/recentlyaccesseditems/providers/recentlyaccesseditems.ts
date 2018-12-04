@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 
 /**
  * Service that provides some features regarding recently accessed items.
@@ -23,7 +24,8 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 export class AddonBlockRecentlyAccessedItemsProvider {
     protected ROOT_CACHE_KEY = 'AddonBlockRecentlyAccessedItems:';
 
-    constructor(private sitesProvider: CoreSitesProvider, private courseProvider: CoreCourseProvider) { }
+    constructor(private sitesProvider: CoreSitesProvider, private courseProvider: CoreCourseProvider,
+        private domUtils: CoreDomUtilsProvider) { }
 
     /**
      * Get cache key for get last accessed items value WS call.
@@ -49,7 +51,8 @@ export class AddonBlockRecentlyAccessedItemsProvider {
 
             return site.read('block_recentlyaccesseditems_get_recent_items', undefined, preSets).then((items) => {
                 return items.map((item) => {
-                    item.iconUrl = this.courseProvider.getModuleIconSrc(item.modname);
+                    const modicon = item.icon && this.domUtils.getHTMLElementAttribute(item.icon, 'src');
+                    item.iconUrl = this.courseProvider.getModuleIconSrc(item.modname, modicon);
 
                     return item;
                 });

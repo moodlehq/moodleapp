@@ -60,7 +60,7 @@ export class AddonModWorkshopModuleHandler implements CoreCourseModuleHandler {
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
         return {
-            icon: this.courseProvider.getModuleIconSrc('workshop'),
+            icon: this.courseProvider.getModuleIconSrc(this.modName, module.modicon),
             title: module.name,
             class: 'addon-mod_workshop-handler',
             showDownloadButton: true,
