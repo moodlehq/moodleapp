@@ -183,8 +183,13 @@ export class AddonModDataSearchPage {
 
     /**
      * Done editing.
+     *
+     * @param {Event} e Event.
      */
-    searchEntries(): void {
+    searchEntries(e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+
         const searchedData = this.searchForm.value;
 
         if (this.search.searchingAdvanced) {

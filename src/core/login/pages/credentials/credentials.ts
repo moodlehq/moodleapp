@@ -163,8 +163,15 @@ export class CoreLoginCredentialsPage {
 
     /**
      * Tries to authenticate the user.
+     *
+     * @param {Event} [e] Event.
      */
-    login(): void {
+    login(e?: Event): void {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
         this.appProvider.closeKeyboard();
 
         // Get input data.

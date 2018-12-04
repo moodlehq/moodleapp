@@ -30,7 +30,7 @@
                 <p class="item-heading">{{ 'core.login.username' | translate }}</p>
                 <p>{{username}}</p>
             </ion-item>
-            <form [formGroup]="credForm" (ngSubmit)="login()">
+            <form [formGroup]="credForm" (ngSubmit)="login($event)">
                 <ion-item margin-bottom>
                     <core-show-password item-content [name]="'password'">
                         <ion-input class="core-ioninput-password" name="password" type="password" placeholder="{{ 'core.login.password' | translate }}" formControlName="password" [clearOnEdit]="false"></ion-input>

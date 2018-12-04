@@ -9,7 +9,7 @@
     </ion-navbar>
 </ion-header>
 <ion-content padding>
-    <form name="itemEdit" (ngSubmit)="addNote()">
+    <form name="itemEdit" (ngSubmit)="addNote($event)">
         <ion-item>
             <ion-label>{{ 'addon.notes.publishstate' | translate }}</ion-label>
             <ion-select [(ngModel)]="publishState" name="publishState" interface="popover">

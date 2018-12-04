@@ -221,8 +221,13 @@ export class CoreLoginEmailSignupPage {
 
     /**
      * Create account.
+     *
+     * @param {Event} e Event.
      */
-    create(): void {
+    create(e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+
         if (!this.signupForm.valid || (this.settings.recaptchapublickey && !this.captcha.recaptcharesponse)) {
             // Form not valid. Scroll to the first element with errors.
             if (!this.domUtils.scrollToInputError(this.content)) {
@@ -309,8 +314,13 @@ export class CoreLoginEmailSignupPage {
 
     /**
      * Verify Age.
+     *
+     * @param {Event} e Event.
      */
-    verifyAge(): void {
+    verifyAge(e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+
         if (!this.ageVerificationForm.valid) {
             this.domUtils.showErrorModal('core.errorinvalidform', true);
 
