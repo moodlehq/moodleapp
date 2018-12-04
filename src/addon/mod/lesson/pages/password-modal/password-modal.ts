@@ -29,8 +29,14 @@ export class AddonModLessonPasswordModalPage {
 
     /**
      * Send the password back.
+     *
+     * @param {Event} e Event.
+     * @param {HTMLInputElement} password The input element.
      */
-    submitPassword(password: HTMLInputElement): void {
+    submitPassword(e: Event, password: HTMLInputElement): void {
+        e.preventDefault();
+        e.stopPropagation();
+
         this.viewCtrl.dismiss(password.value);
     }
 

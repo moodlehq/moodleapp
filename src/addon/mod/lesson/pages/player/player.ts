@@ -606,8 +606,13 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy {
 
     /**
      * Submit a question.
+     *
+     * @param {Event} e Event.
      */
-    submitQuestion(): void {
+    submitQuestion(e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+
         this.loaded = false;
 
         // Use getRawValue to include disabled values.

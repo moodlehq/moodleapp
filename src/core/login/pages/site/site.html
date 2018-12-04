@@ -17,7 +17,7 @@
         <div text-center padding>
             <img src="assets/img/login_logo.png" class="avatar-full login-logo" role="presentation">
         </div>
-        <form ion-list [formGroup]="siteForm" (ngSubmit)="connect(siteForm.value.siteUrl)" *ngIf="!fixedSites || fixedDisplay == 'select'">
+        <form ion-list [formGroup]="siteForm" (ngSubmit)="connect($event, siteForm.value.siteUrl)" *ngIf="!fixedSites || fixedDisplay == 'select'">
             <!-- Form to input the site URL if there are no fixed sites. -->
             <ng-container *ngIf="!fixedSites">
                 <p padding>{{ 'core.login.newsitedescription' | translate }}</p>
@@ -40,7 +40,7 @@
             <p class="padding no-padding-bottom">{{ 'core.login.selectsite' | translate }}</p>
 
             <ion-searchbar *ngIf="fixedSites.length > 4" [(ngModel)]="filter" (ionInput)="filterChanged($event)" (ionCancel)="filterChanged()" [placeholder]="'core.login.findyoursite' | translate"></ion-searchbar>
-            <ion-item *ngFor="let site of filteredSites" (click)="connect(site.url)" [title]="site.name" detail-push text-wrap>
+            <ion-item *ngFor="let site of filteredSites" (click)="connect($event, site.url)" [title]="site.name" detail-push text-wrap>
                 <h2>{{site.name}}</h2>
                 <p>{{site.url}}</p>
             </ion-item>
@@ -49,7 +49,7 @@
         <!-- Display them using buttons. -->
         <div *ngIf="fixedSites && fixedDisplay == 'buttons'">
             <p class="padding no-padding-bottom">{{ 'core.login.selectsite' | translate }}</p>
-            <a *ngFor="let site of fixedSites" ion-button block (click)="connect(site.url)" [title]="site.name" margin-bottom>{{site.name}}</a>
+            <a *ngFor="let site of fixedSites" ion-button block (click)="connect($event, site.url)" [title]="site.name" margin-bottom>{{site.name}}</a>
         </div>
     </div>
 </ion-content>

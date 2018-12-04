@@ -502,9 +502,13 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Submit password for password protected lessons.
      *
+     * @param {Event} e Event.
      * @param {HTMLInputElement} passwordEl The password input.
      */
-    submitPassword(passwordEl: HTMLInputElement): void {
+    submitPassword(e: Event, passwordEl: HTMLInputElement): void {
+        e.preventDefault();
+        e.stopPropagation();
+
         const password = passwordEl && passwordEl.value;
         if (!password) {
             this.domUtils.showErrorModal('addon.mod_lesson.emptypassword', true);

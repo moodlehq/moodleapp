@@ -185,9 +185,13 @@ export class AddonModDataEditPage {
     /**
      * Saves data.
      *
+     * @param {Event} e Event.
      * @return {Promise<any>} Resolved when done.
      */
-    save(): Promise<any> {
+    save(e: Event): Promise<any> {
+        e.preventDefault();
+        e.stopPropagation();
+
         const inputData = this.editForm.value;
 
         return this.dataHelper.hasEditDataChanged(inputData, this.fieldsArray, this.data.id,

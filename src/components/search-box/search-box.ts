@@ -60,9 +60,12 @@ export class CoreSearchBoxComponent implements OnInit {
     /**
      * Form submitted.
      *
-     * @param {string} value Entered value.
+     * @param {Event} e Event.
      */
-    submitForm(value: string): void {
+    submitForm(e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+
         if (this.searchText.length < this.lengthCheck) {
             // The view should handle this case, but we check it here too just in case.
             return;

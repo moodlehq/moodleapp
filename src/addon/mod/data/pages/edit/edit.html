@@ -23,7 +23,7 @@
                 {{ cssTemplate }}
             </style>
 
-            <form (ngSubmit)="save()" [formGroup]="editForm">
+            <form (ngSubmit)="save($event)" [formGroup]="editForm">
                 <core-compile-html [text]="editFormRender" [jsData]="jsData" [extraImports]="extraImports"></core-compile-html>
             </form>
         </div>

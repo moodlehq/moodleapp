@@ -64,8 +64,14 @@ export class CoreLoginSitePage {
 
     /**
      * Try to connect to a site.
+     *
+     * @param {Event} e Event.
+     * @param {string} url The URL to connect to.
      */
-    connect(url: string): void {
+    connect(e: Event, url: string): void {
+        e.preventDefault();
+        e.stopPropagation();
+
         this.appProvider.closeKeyboard();
 
         if (!url) {
