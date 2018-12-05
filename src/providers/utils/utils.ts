@@ -471,7 +471,7 @@ export class CoreUtilsProvider {
      * @return {string} Locale float.
      */
     formatFloat(float: any): string {
-        if (typeof float == 'undefined' || float === null) {
+        if (typeof float == 'undefined' || float === null || typeof float == 'boolean') {
             return '';
         }
 
@@ -1168,9 +1168,10 @@ export class CoreUtilsProvider {
      * Based on Moodle's unformat_float function.
      *
      * @param {any} localeFloat Locale aware float representation.
+     * @param {boolean} [strict] If true, then check the input and return false if it is not a valid number.
      * @return {any} False if bad format, empty string if empty value or the parsed float if not.
      */
-    unformatFloat(localeFloat: any): any {
+    unformatFloat(localeFloat: any, strict?: boolean): any {
         // Bad format on input type number.
         if (typeof localeFloat == 'undefined') {
             return false;
@@ -1189,18 +1190,17 @@ export class CoreUtilsProvider {
             return '';
         }
 
-        const localeSeparator = this.translate.instant('core.decsep');
-
         localeFloat = localeFloat.replace(' ', ''); // No spaces - those might be used as thousand separators.
-        localeFloat = localeFloat.replace(localeSeparator, '.');
+        localeFloat = localeFloat.replace(this.translate.instant('core.decsep'), '.');
 
-        localeFloat = parseFloat(localeFloat);
+        const parsedFloat = parseFloat(localeFloat);
+
         // Bad format.
-        if (isNaN(localeFloat)) {
+        if (strict && (!isFinite(localeFloat) || isNaN(parsedFloat))) {
             return false;
         }
 
-        return localeFloat;
+        return parsedFloat;
     }
 
     /**

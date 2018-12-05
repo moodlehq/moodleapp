@@ -146,10 +146,10 @@
                     </a>
                 </ion-item>
 
-                <!-- Numeric grade. -->
+                <!-- Numeric grade. Use a text input because otherwise we cannot read the value if it has an invalid character. -->
                 <ion-item text-wrap *ngIf="grade.method == 'simple' && !grade.scale">
                     <ion-label stacked><h2>{{ 'addon.mod_assign.gradeoutof' | translate: {$a: gradeInfo.grade} }}</h2></ion-label>
-                    <ion-input *ngIf="!grade.disabled" [type]="grade.type" [(ngModel)]="grade.grade" min="0" [max]="gradeInfo.grade" [lang]="grade.lang"></ion-input>
+                    <ion-input *ngIf="!grade.disabled" type="text" [(ngModel)]="grade.grade" min="0" [max]="gradeInfo.grade" [lang]="grade.lang"></ion-input>
                     <p item-content *ngIf="grade.disabled">{{ 'addon.mod_assign.gradelocked' | translate }}</p>
                 </ion-item>
 
