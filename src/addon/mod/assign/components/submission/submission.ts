@@ -472,8 +472,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             applyToAll: false,
             scale: false,
             lang: false,
-            disabled: false,
-            type: this.domUtils.numberInputSupportsComma() ? 'number' : 'text'
+            disabled: false
         };
 
         this.originalGrades =  {
@@ -586,8 +585,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                     if (data && (!feedback || !feedback.gradeddate || feedback.gradeddate < data.timemodified)) {
                         // If grade has been modified from gradebook, do not use offline.
                         if (this.grade.modified < data.timemodified) {
-                            this.grade.grade = !this.grade.scale && this.grade.type == 'text' ?
-                                    this.utils.formatFloat(data.grade) : data.grade;
+                            this.grade.grade = !this.grade.scale ? this.utils.formatFloat(data.grade) : data.grade;
                             this.gradingStatusTranslationId = 'addon.mod_assign.gradenotsynced';
                             this.gradingColor = '';
                             this.originalGrades.grade = this.grade.grade;
@@ -735,7 +733,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             const attemptNumber = this.userSubmission ? this.userSubmission.attemptnumber : -1,
                 outcomes = {},
                 // Scale "no grade" uses -1 instead of 0.
-                grade = this.grade.scale && this.grade.grade == 0 ? -1 : this.utils.unformatFloat(this.grade.grade);
+                grade = this.grade.scale && this.grade.grade == 0 ? -1 : this.utils.unformatFloat(this.grade.grade, true);
 
             if (grade === false) {
                 // Grade is invalid.
@@ -802,8 +800,8 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
         if (this.gradeInfo.scale) {
             this.grade.scale = this.utils.makeMenuFromList(this.gradeInfo.scale, this.translate.instant('core.nograde'));
         } else {
-            // If the grade uses a text input, format it.
-            this.grade.grade = this.grade.type == 'text' ? this.utils.formatFloat(this.grade.grade) : this.grade.grade;
+            // Format the grade.
+            this.grade.grade = this.utils.formatFloat(this.grade.grade);
             this.originalGrades.grade = this.grade.grade;
 
             // Get current language to format grade input field.
