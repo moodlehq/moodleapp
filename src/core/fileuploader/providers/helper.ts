@@ -13,12 +13,12 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { ActionSheetController, ActionSheet, Platform } from 'ionic-angular';
+import { ActionSheetController, ActionSheet, Platform, Loading } from 'ionic-angular';
 import { MediaFile } from '@ionic-native/media-capture';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
-import { CoreFileProvider } from '@providers/file';
+import { CoreFileProvider, CoreFileProgressEvent } from '@providers/file';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -93,18 +93,15 @@ export class CoreFileUploaderHelperProvider {
         name = name || file.name;
 
         const modal = this.domUtils.showModalLoading('core.fileuploader.readingfile', true);
-        let fileData;
 
-        // We have the data of the file to be uploaded, but not its URL (needed). Create a copy of the file to upload it.
-        return this.fileProvider.readFileData(file, CoreFileProvider.FORMATARRAYBUFFER).then((data) => {
-            fileData = data;
-
-            // Get unique name for the copy.
-            return this.fileProvider.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, name);
-        }).then((newName) => {
+        // Get unique name for the copy.
+        return this.fileProvider.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, name).then((newName) => {
             const filePath = this.textUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, newName);
 
-            return this.fileProvider.writeFile(filePath, fileData);
+            // Write the data into the file.
+            return this.fileProvider.writeFileDataInFile(file, filePath, (progress: CoreFileProgressEvent) => {
+                this.showProgressModal(modal, 'core.fileuploader.readingfileperc', progress);
+            });
         }).catch((error) => {
             this.logger.error('Error reading file to upload.', error);
             modal.dismiss();
@@ -681,16 +678,7 @@ export class CoreFileUploaderHelperProvider {
 
             return this.fileUploaderProvider.uploadFile(path, options, (progress: ProgressEvent) => {
                 // Progress uploading.
-                if (progress && progress.lengthComputable) {
-                    const perc = Math.min((progress.loaded / progress.total) * 100, 100);
-                    if (perc >= 0) {
-                        modal.setContent(this.translate.instant('core.fileuploader.uploadingperc', { $a: perc.toFixed(1) }));
-                        if (modal._cmp && modal._cmp.changeDetectorRef) {
-                            // Force a change detection, otherwise the content is not updated.
-                            modal._cmp.changeDetectorRef.detectChanges();
-                        }
-                    }
-                }
+                this.showProgressModal(modal, 'core.fileuploader.uploadingperc', progress);
             }, siteId).catch((error) => {
                 this.logger.error('Error uploading file.', error);
 
@@ -704,5 +692,28 @@ export class CoreFileUploaderHelperProvider {
                 modal.dismiss();
             });
         });
+    }
+
+    /**
+     * Show a progress modal.
+     *
+     * @param {Loading} modal The modal where to show the progress.
+     * @param {string} stringKey The key of the string to display.
+     * @param {ProgressEvent|CoreFileProgressEvent} progress The progress event.
+     */
+    protected showProgressModal(modal: Loading, stringKey: string, progress: ProgressEvent | CoreFileProgressEvent): void {
+        if (progress && progress.lengthComputable) {
+            // Calculate the progress percentage.
+            const perc = Math.min((progress.loaded / progress.total) * 100, 100);
+
+            if (perc >= 0) {
+                modal.setContent(this.translate.instant(stringKey, { $a: perc.toFixed(1) }));
+
+                if (modal._cmp && modal._cmp.changeDetectorRef) {
+                    // Force a change detection, otherwise the content is not updated.
+                    modal._cmp.changeDetectorRef.detectChanges();
+                }
+            }
+        }
     }
 }

@@ -1309,6 +1309,7 @@
   "core.fileuploader.more": "data",
   "core.fileuploader.photoalbums": "local_moodlemobileapp",
   "core.fileuploader.readingfile": "local_moodlemobileapp",
+  "core.fileuploader.readingfileperc": "local_moodlemobileapp",
   "core.fileuploader.selectafile": "local_moodlemobileapp",
   "core.fileuploader.uploadafile": "local_moodlemobileapp",
   "core.fileuploader.uploading": "local_moodlemobileapp",

@@ -23,6 +23,29 @@ import { CoreTextUtilsProvider } from './utils/text';
 import { Zip } from '@ionic-native/zip';
 
 /**
+ * Progress event used when writing a file data into a file.
+ */
+export interface CoreFileProgressEvent {
+    /**
+     * Whether the values are reliabñe.
+     * @type {boolean}
+     */
+    lengthComputable?: boolean;
+
+    /**
+     * Number of treated bytes.
+     * @type {number}
+     */
+    loaded?: number;
+
+    /**
+     * Total of bytes.
+     * @type {number}
+     */
+    total?: number;
+}
+
+/**
  * Factory to interact with the file system.
  */
 @Injectable()
@@ -41,6 +64,7 @@ export class CoreFileProvider {
     protected initialized = false;
     protected basePath = '';
     protected isHTMLAPI = false;
+    protected CHUNK_SIZE = 10485760; // 10 MB.
 
     constructor(logger: CoreLoggerProvider, private platform: Platform, private file: File, private appProvider: CoreAppProvider,
             private textUtils: CoreTextUtilsProvider, private zip: Zip, private mimeUtils: CoreMimetypeUtilsProvider) {
@@ -543,9 +567,10 @@ export class CoreFileProvider {
      *
      * @param {string} path Relative path to the file.
      * @param {any} data Data to write.
+     * @param {boolean} [append] Whether to append the data to the end of the file.
      * @return {Promise<any>} Promise to be resolved when the file is written.
      */
-    writeFile(path: string, data: any): Promise<any> {
+    writeFile(path: string, data: any, append?: boolean): Promise<any> {
         return this.init().then(() => {
             // Remove basePath if it's in the path.
             path = this.removeStartingSlash(path.replace(this.basePath, ''));
@@ -560,10 +585,64 @@ export class CoreFileProvider {
                     data = new Blob([data], { type: type || 'text/plain' });
                 }
 
-                return this.file.writeFile(this.basePath, path, data, { replace: true }).then(() => {
+                return this.file.writeFile(this.basePath, path, data, { replace: !append, append: !!append }).then(() => {
                     return fileEntry;
                 });
             });
+        });
+    }
+
+    /**
+     * Write some file data into a filesystem file.
+     * It's done in chunks to prevent crashing the app for big files.
+     *
+     * @param {any} file The data to write.
+     * @param {string} path Path where to store the data.
+     * @param {Function} [onProgress] Function to call on progress.
+     * @param {number} [offset=0] Offset where to start reading from.
+     * @param {boolean} [append] Whether to append the data to the end of the file.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    writeFileDataInFile(file: any, path: string, onProgress?: (event: CoreFileProgressEvent) => any, offset: number = 0,
+            append?: boolean): Promise<any> {
+
+        offset = offset || 0;
+
+        // Get the chunk to read.
+        const blob = file.slice(offset, Math.min(offset + this.CHUNK_SIZE, file.size));
+
+        return this.writeFileDataInFileChunk(blob, path, append).then((fileEntry) => {
+            offset += this.CHUNK_SIZE;
+
+            onProgress && onProgress({
+                lengthComputable: true,
+                loaded: offset,
+                total: file.size
+            });
+
+            if (offset >= file.size) {
+                // Done, stop.
+                return fileEntry;
+            }
+
+            // Read the next chunk.
+            return this.writeFileDataInFile(file, path, onProgress, offset, true);
+        });
+    }
+
+    /**
+     * Write a chunk of data into a file.
+     *
+     * @param {any} chunkData The chunk of data.
+     * @param {string} path Path where to store the data.
+     * @param {boolean} [append] Whether to append the data to the end of the file.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected writeFileDataInFileChunk(chunkData: any, path: string, append?: boolean): Promise<any> {
+        // Read the chunk data.
+        return this.readFileData(chunkData, CoreFileProvider.FORMATARRAYBUFFER).then((fileData) => {
+            // Write the data in the file.
+            return this.writeFile(path, fileData, append);
         });
     }
 
