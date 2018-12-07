@@ -351,6 +351,28 @@ $core-question-state-incorrect-color: $red-light !default;
   }
 }
 
+@mixin horizontal_scroll_item($width, $min-width, $max-width) {
+    flex: 0 0 $width;
+    min-width: $min-width;
+    max-width: $max-width;
+    align-self: stretch;
+    display: block;
+
+    &.card-md, .card-md {
+      height: calc(100% - #{($card-md-margin-end + $card-md-margin-start)});
+    }
+    &.card-ios, .card-ios {
+      height: calc(100% - #{($card-ios-margin-end + $card-ios-margin-start)});
+    }
+    &.card-wp, .card-wp {
+      height: calc(100% - #{($card-wp-margin-end + $card-wp-margin-start)});
+    }
+    &.card {
+      margin-top: $card-md-margin-start;
+      margin-bottom: $card-md-margin-end;
+    }
+}
+
 // Font Awesome
 $fa-font-path: $font-path;
 @import "font-awesome";
