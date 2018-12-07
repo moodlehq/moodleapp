@@ -25,6 +25,7 @@ import { CoreCronDelegate } from '@providers/cron';
 import { AddonMessagesSendMessageUserHandler } from './providers/user-send-message-handler';
 import { AddonMessagesAddContactUserHandler } from './providers/user-add-contact-handler';
 import { AddonMessagesBlockContactUserHandler } from './providers/user-block-contact-handler';
+import { AddonMessagesContactRequestLinkHandler } from './providers/contact-request-link-handler';
 import { AddonMessagesDiscussionLinkHandler } from './providers/discussion-link-handler';
 import { AddonMessagesIndexLinkHandler } from './providers/index-link-handler';
 import { AddonMessagesSyncCronHandler } from './providers/sync-cron-handler';
@@ -58,6 +59,7 @@ export const ADDON_MESSAGES_PROVIDERS: any[] = [
         AddonMessagesSendMessageUserHandler,
         AddonMessagesAddContactUserHandler,
         AddonMessagesBlockContactUserHandler,
+        AddonMessagesContactRequestLinkHandler,
         AddonMessagesDiscussionLinkHandler,
         AddonMessagesIndexLinkHandler,
         AddonMessagesSyncCronHandler,
@@ -74,11 +76,13 @@ export class AddonMessagesModule {
             sitesProvider: CoreSitesProvider, linkHelper: CoreContentLinksHelperProvider, updateManager: CoreUpdateManagerProvider,
             settingsHandler: AddonMessagesSettingsHandler, settingsDelegate: CoreSettingsDelegate,
             pushNotificationsDelegate: AddonPushNotificationsDelegate, utils: CoreUtilsProvider,
-            addContactHandler: AddonMessagesAddContactUserHandler, blockContactHandler: AddonMessagesBlockContactUserHandler) {
+            addContactHandler: AddonMessagesAddContactUserHandler, blockContactHandler: AddonMessagesBlockContactUserHandler,
+            contactRequestLinkHandler: AddonMessagesContactRequestLinkHandler) {
         // Register handlers.
         mainMenuDelegate.registerHandler(mainmenuHandler);
         contentLinksDelegate.registerHandler(indexLinkHandler);
         contentLinksDelegate.registerHandler(discussionLinkHandler);
+        contentLinksDelegate.registerHandler(contactRequestLinkHandler);
         userDelegate.registerHandler(sendMessageHandler);
         userDelegate.registerHandler(addContactHandler);
         userDelegate.registerHandler(blockContactHandler);
