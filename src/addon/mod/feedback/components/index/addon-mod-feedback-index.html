@@ -43,7 +43,7 @@
 
 
 <ng-template #basicInfo>
-    <ion-list *ngIf="(access.canedititems || access.canviewreports) && !access.isempty">
+    <ion-list *ngIf="access.canviewanalysis && !access.isempty">
         <ion-item text-wrap *ngIf="access.canedititems && (groupInfo.separateGroups || groupInfo.visibleGroups)">
             <ion-label id="addon-feedback-groupslabel" *ngIf="groupInfo.separateGroups">{{ 'core.groupsseparate' | translate }}</ion-label>
             <ion-label id="addon-feedback-groupslabel" *ngIf="groupInfo.visibleGroups">{{ 'core.groupsvisible' | translate }}</ion-label>
@@ -51,14 +51,14 @@
                 <ion-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">{{groupOpt.name}}</ion-option>
             </ion-select>
         </ion-item>
-        <a ion-item text-wrap *ngIf="access.canviewreports || access.canedititems" (click)="access.canviewreports && openFeature('Respondents')" [attr.detail-none]="access.canviewreports ? null : true">
+        <a ion-item text-wrap (click)="access.canviewreports && feedback.completedCount > 0 && openFeature('Respondents')" [attr.detail-none]="access.canviewreports && feedback.completedCount > 0 ? null : true">
             <h2>{{ 'addon.mod_feedback.completed_feedbacks' | translate }}</h2>
             <ion-badge item-end>{{feedback.completedCount}}</ion-badge>
         </a>
         <a ion-item text-wrap *ngIf="!access.isanonymous && access.canviewreports" (click)="openFeature('NonRespondents')" detail-push>
             <h2>{{ 'addon.mod_feedback.show_nonrespondents' | translate }}</h2>
         </a>
-        <ion-item text-wrap *ngIf="access.canedititems">
+        <ion-item text-wrap>
             <h2>{{ 'addon.mod_feedback.questions' | translate }}</h2>
             <ion-badge item-end>{{feedback.itemsCount}}</ion-badge>
         </ion-item>
