@@ -16,4 +16,8 @@ ion-app.app-root core-block {
     @include position(initial, initial, null, initial);
     height: auto;
   }
+
+  .item-divider .core-button-spinner {
+    margin: 0;
+  }
 }

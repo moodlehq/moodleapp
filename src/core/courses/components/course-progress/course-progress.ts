@@ -38,6 +38,7 @@ import { CoreCoursesCourseOptionsMenuComponent } from '../course-options-menu/co
 })
 export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
     @Input() course: any; // The course to render.
+    @Input() showAll = false; // If true, will show all actions, options, star and progress.
 
     isDownloading: boolean;
     prefetchCourseData = {
@@ -69,7 +70,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
         }
 
         // This field is only available from 3.6 onwards.
-        this.courseOptionMenuEnabled = typeof this.course.isfavourite != 'undefined';
+        this.courseOptionMenuEnabled = this.showAll && typeof this.course.isfavourite != 'undefined';
 
         // Refresh the enabled flag if site is updated.
         this.siteUpdatedObserver = this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, () => {
