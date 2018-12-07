@@ -1,11 +1,3 @@
 ion-app.app-root addon-block-recentlyaccesseditems .core-horizontal-scroll  .card {
     @include horizontal_scroll_item(80%, 250px, 300px);
-
-    [text-wrap] .label {
-        h2, p {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-    }
 }

@@ -359,17 +359,44 @@ $core-question-state-incorrect-color: $red-light !default;
     display: block;
 
     &.card-md, .card-md {
-      height: calc(100% - #{($card-md-margin-end + $card-md-margin-start)});
+      height: calc(100% - #{($card-md-margin-bottom + $card-md-margin-top)});
+      width: calc(100% - #{($card-md-margin-end + $card-md-margin-start)});
     }
     &.card-ios, .card-ios {
-      height: calc(100% - #{($card-ios-margin-end + $card-ios-margin-start)});
+      height: calc(100% - #{($card-ios-margin-bottom + $card-ios-margin-top)});
+      width: calc(100% - #{($card-md-margin-end + $card-md-margin-start)});
     }
     &.card-wp, .card-wp {
-      height: calc(100% - #{($card-wp-margin-end + $card-wp-margin-start)});
+      height: calc(100% - #{($card-wp-margin-bottom + $card-wp-margin-top)});
+      width: calc(100% - #{($card-md-margin-end + $card-md-margin-start)});
     }
-    &.card {
-      margin-top: $card-md-margin-start;
-      margin-bottom: $card-md-margin-end;
+    &.card-md {
+      margin-top: $card-md-margin-top;
+      margin-bottom: $card-md-margin-bottom;
+    }
+    &.card-ios {
+      margin-top: $card-ios-margin-top;
+      margin-bottom: $card-ios-margin-bottom;
+    }
+    &.card-wp {
+      margin-top: $card-wp-margin-top;
+      margin-bottom: $card-wp-margin-bottom;
+    }
+
+    &.card, .card {
+      @media (max-width: 360px) {
+        margin-left: 6px;
+        margin-right: 6px;
+        width: calc(100% - 12px);
+      }
+    }
+
+    [text-wrap] .label {
+        h2, p {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     }
 }
 
