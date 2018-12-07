@@ -2,8 +2,8 @@
     <ion-navbar core-back-button>
         <ion-title>{{ 'addon.messages.messages' | translate }}</ion-title>
         <ion-buttons end>
-            <button ion-button icon-only (click)="gotoContacts($event)" [attr.aria-label]="'addon.messages.contacts' | translate">
-                <ion-icon name="person"></ion-icon> <!-- @todo: Display number of pending requests. -->
+            <button ion-button icon-only (click)="gotoSearch()" [attr.aria-label]="'addon.messages.search' | translate">
+                <ion-icon name="search"></ion-icon>
             </button>
             <button ion-button icon-only (click)="gotoSettings($event)" [attr.aria-label]="'addon.messages.messagepreferences' | translate">
                 <ion-icon name="cog"></ion-icon>
@@ -19,34 +19,13 @@
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
 
-        <core-search-box *ngIf="search.enabled" (onSubmit)="searchMessage($event)" (onClear)="clearSearch($event)" [placeholder]=" 'addon.messages.message' | translate" autocorrect="off" spellcheck="false" lengthCheck="2" [disabled]="!loaded"></core-search-box>
-
         <core-loading [hideUntil]="loaded" [message]="loadingMessage">
-
-            <!-- Search results. -->
-            <ion-list *ngIf="search.showResults" no-margin>
-                <ion-item-divider color="light">
-                    <h2>{{ 'core.searchresults' | translate }}</h2>
-                    <ion-note item-end>{{ search.results.length }}</ion-note>
-                </ion-item-divider>
-
-                <a ion-item text-wrap *ngFor="let result of search.results" [title]="result.fullname" (click)="gotoConversation(result.conversationid, result.userid, result.messageid)" [class.core-split-item-selected]="(result.conversationid && result.conversationid == selectedConversationId) || (result.userid && result.userid == selectedUserId)" detail-none>
-                    <ion-avatar core-user-avatar [user]="result" [linkProfile]="false" item-start></ion-avatar>
-                    <h2>
-                        <p>
-                            <core-format-text [text]="result.fullname"></core-format-text>
-                            <core-icon name="fa-ban" *ngIf="result.isblocked" [attr.aria-label]="'addon.messages.contactblocked' | translate"></core-icon>
-                        </p>
-                        <ion-note *ngIf="result.lastmessagedate > 0">
-                            {{result.lastmessagedate | coreDateDayOrTime}}
-                        </ion-note>
-                    </h2>
-                    <p><core-format-text clean="true" singleLine="true" [text]="result.lastmessage" class="addon-message-last-message"></core-format-text></p>
-                </a>
-            </ion-list>
-
-            <!-- Conversations. -->
-            <ion-list *ngIf="!search.showResults">
+            <a ion-item text-wrap (click)="gotoContacts($event)" [attr.aria-label]="'addon.messages.contacts' | translate">
+                <ion-icon name="person" item-start></ion-icon>
+                <h2>{{ 'addon.messages.contacts' | translate }}</h2>
+                <ion-badge *ngIf="contactRequestsCount > 0" item-end>{{contactRequestsCount}}</ion-badge>
+            </a>
+            <ion-list>
                 <!-- Favourite conversations. -->
                 <ion-item-divider color="light" text-wrap *ngIf="favourites.conversations" (click)="toggle(favourites)" class="core-expandable">
                     <core-icon *ngIf="!favourites.expanded" name="fa-caret-right" item-start></core-icon>
@@ -94,9 +73,6 @@
                     </ion-item>
                 </div>
             </ion-list>
-
-            <!-- Search didn't get any result. -->
-            <core-empty-box *ngIf="(!search.results || search.results.length <= 0) && search.showResults" icon="search" [message]="'core.noresults' | translate"></core-empty-box>
         </core-loading>
     </ion-content>
 </core-split-view>

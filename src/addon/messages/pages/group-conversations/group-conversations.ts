@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { IonicPage, Platform, NavParams, Content } from 'ionic-angular';
+import { IonicPage, Platform, NavController, NavParams, Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
@@ -21,7 +21,6 @@ import { AddonMessagesProvider } from '../../providers/messages';
 import { AddonMessagesOfflineProvider } from '../../providers/messages-offline';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { CoreAppProvider } from '@providers/app';
 import { AddonPushNotificationsDelegate } from '@addon/pushnotifications/providers/delegate';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreUserProvider } from '@core/user/providers/user';
@@ -42,13 +41,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     loadingMessage: string;
     selectedConversationId: number;
     selectedUserId: number;
-    search = {
-        enabled: false,
-        showResults: false,
-        results: [],
-        loading: '',
-        text: ''
-    };
+    contactRequestsCount = 0;
     favourites: any = {
         type: null,
         favourites: true
@@ -74,14 +67,14 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     protected cronObserver: any;
     protected openConversationObserver: any;
     protected updateConversationListObserver: any;
+    protected contactRequestsCountObserver: any;
 
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, translate: TranslateService,
             private messagesProvider: AddonMessagesProvider, private domUtils: CoreDomUtilsProvider, navParams: NavParams,
-            private appProvider: CoreAppProvider, platform: Platform, utils: CoreUtilsProvider,
+            private navCtrl: NavController, platform: Platform, utils: CoreUtilsProvider,
             pushNotificationsDelegate: AddonPushNotificationsDelegate, private messagesOffline: AddonMessagesOfflineProvider,
             private userProvider: CoreUserProvider) {
 
-        this.search.loading =  translate.instant('core.searching');
         this.loadingString = translate.instant('core.loading');
         this.siteId = sitesProvider.getCurrentSiteId();
         this.currentUserId = sitesProvider.getCurrentSiteUserId();
@@ -166,6 +159,11 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 this.refreshData();
             }
         });
+
+        // Update the contact requests badge.
+        this.contactRequestsCountObserver = eventsProvider.on(AddonMessagesProvider.CONTACT_REQUESTS_COUNT_EVENT, (data) => {
+            this.contactRequestsCount = data.count;
+        }, this.siteId);
     }
 
     /**
@@ -195,6 +193,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 }
             }
         });
+
+        this.messagesProvider.getContactRequestsCount(this.siteId); // Badge is updated by the observer.
     }
 
     /**
@@ -204,7 +204,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      */
     protected fetchData(): Promise<any> {
         this.loadingMessage = this.loadingString;
-        this.search.enabled = this.messagesProvider.isSearchMessagesEnabled();
 
         // Load the first conversations of each type.
         const promises = [];
@@ -481,6 +480,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 if (refresher) {
                     // Actions to take if refresh comes from the user.
                     this.eventsProvider.trigger(AddonMessagesProvider.READ_CHANGED_EVENT, undefined, this.siteId);
+                    this.messagesProvider.refreshContactRequestsCount(this.siteId);
                     refresher.complete();
                 }
             });
@@ -515,36 +515,10 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Clear search and show conversations again.
+     * Navigate to the search page.
      */
-    clearSearch(): void {
-        this.loaded = false;
-        this.search.showResults = false;
-        this.search.text = ''; // Reset searched string.
-        this.fetchData().finally(() => {
-            this.loaded = true;
-        });
-    }
-
-    /**
-     * Search messages cotaining text.
-     *
-     * @param  {string}       query Text to search for.
-     * @return {Promise<any>}       Resolved when done.
-     */
-    searchMessage(query: string): Promise<any> {
-        this.appProvider.closeKeyboard();
-        this.loaded = false;
-        this.loadingMessage = this.search.loading;
-
-        return this.messagesProvider.searchMessages(query).then((searchResults) => {
-            this.search.showResults = true;
-            this.search.results = searchResults;
-        }).catch((error) => {
-            this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingmessages', true);
-        }).finally(() => {
-            this.loaded = true;
-        });
+    gotoSearch(): void {
+        this.navCtrl.push('AddonMessagesSearchPage');
     }
 
     /**
@@ -558,5 +532,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         this.cronObserver && this.cronObserver.off();
         this.openConversationObserver && this.openConversationObserver.off();
         this.updateConversationListObserver && this.updateConversationListObserver.off();
+        this.contactRequestsCountObserver && this.contactRequestsCountObserver.off();
     }
 }
