@@ -20,11 +20,15 @@ import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
 import { AddonMessagesDiscussionsComponent } from '../components/discussions/discussions';
+import { AddonMessagesConfirmedContactsComponent } from '../components/confirmed-contacts/confirmed-contacts';
+import { AddonMessagesContactRequestsComponent } from '../components/contact-requests/contact-requests';
 import { AddonMessagesContactsComponent } from '../components/contacts/contacts';
 
 @NgModule({
     declarations: [
         AddonMessagesDiscussionsComponent,
+        AddonMessagesConfirmedContactsComponent,
+        AddonMessagesContactRequestsComponent,
         AddonMessagesContactsComponent
     ],
     imports: [
@@ -39,6 +43,8 @@ import { AddonMessagesContactsComponent } from '../components/contacts/contacts'
     ],
     exports: [
         AddonMessagesDiscussionsComponent,
+        AddonMessagesConfirmedContactsComponent,
+        AddonMessagesContactRequestsComponent,
         AddonMessagesContactsComponent
     ]
 })
