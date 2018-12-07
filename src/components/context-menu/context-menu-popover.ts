@@ -54,11 +54,7 @@ export class CoreContextMenuPopoverComponent {
             event.preventDefault();
             event.stopPropagation();
 
-            if (!item.iconAction) {
-                this.logger.warn('Items with action must have an icon action to work', item);
-
-                return false;
-            } else if (item.iconAction == 'spinner') {
+            if (item.iconAction == 'spinner') {
                 return false;
             }
 
