@@ -68,6 +68,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     protected openConversationObserver: any;
     protected updateConversationListObserver: any;
     protected contactRequestsCountObserver: any;
+    protected memberInfoObserver: any;
 
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, translate: TranslateService,
             private messagesProvider: AddonMessagesProvider, private domUtils: CoreDomUtilsProvider, navParams: NavParams,
@@ -163,6 +164,27 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         // Update the contact requests badge.
         this.contactRequestsCountObserver = eventsProvider.on(AddonMessagesProvider.CONTACT_REQUESTS_COUNT_EVENT, (data) => {
             this.contactRequestsCount = data.count;
+        }, this.siteId);
+
+        // Update block status of a user.
+        this.memberInfoObserver = eventsProvider.on(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, (data) => {
+            if (!data.userBlocked && !data.userUnblocked) {
+                // The block status has not changed, ignore.
+                return;
+            }
+
+            const updateConversations = (conversations: any[]): void => {
+                if (!conversations || conversations.length <= 0) {
+                    return;
+                }
+                const conversation = conversations.find((conv) => conv.userid == data.userId);
+                if (conversation) {
+                    conversation.isblocked = data.userBlocked;
+                }
+            };
+
+            updateConversations(this.individual.conversations);
+            updateConversations(this.favourites.conversations);
         }, this.siteId);
     }
 
@@ -533,5 +555,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         this.openConversationObserver && this.openConversationObserver.off();
         this.updateConversationListObserver && this.updateConversationListObserver.off();
         this.contactRequestsCountObserver && this.contactRequestsCountObserver.off();
+        this.memberInfoObserver && this.memberInfoObserver.off();
     }
 }
