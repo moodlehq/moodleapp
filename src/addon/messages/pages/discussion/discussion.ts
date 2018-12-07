@@ -57,6 +57,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     protected keyboardObserver: any;
     protected scrollBottom = true;
     protected viewDestroyed = false;
+    protected memberInfoObserver: any;
+    protected showLoadingModal = false; // Whether to show a loading modal while fetching data.
 
     conversationId: number; // Conversation ID. Undefined if it's a new individual conversation.
     conversation: any; // The conversation object (if it exists).
@@ -77,6 +79,10 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     members: any = {}; // Members that wrote a message, indexed by ID.
     favouriteIcon = 'fa-star';
     deleteIcon = 'trash';
+    otherMember: any; // Other member information (individual conversations only).
+    footerType: 'message' | 'blocked' | 'requiresContact' | 'requestSent' | 'requestReceived' | 'unable';
+    requestContactSent = false;
+    requestContactReceived = false;
 
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, navParams: NavParams,
             private userProvider: CoreUserProvider, private navCtrl: NavController, private messagesSync: AddonMessagesSyncProvider,
@@ -106,6 +112,13 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                 if (data.warnings && data.warnings[0]) {
                     this.domUtils.showErrorModal(data.warnings[0]);
                 }
+            }
+        }, this.siteId);
+
+        // Refresh data if info of a mamber of the conversation have changed.
+        this.memberInfoObserver = eventsProvider.on(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, (data) => {
+            if (data.userId && (this.members[data.userId] || this.otherMember && data.userId == this.otherMember.id)) {
+                this.fetchData();
             }
         }, this.siteId);
     }
@@ -160,6 +173,25 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         const backViewPage = this.navCtrl.getPrevious() && this.navCtrl.getPrevious().component.name;
         this.showInfo = !backViewPage || backViewPage !== 'CoreUserProfilePage';
 
+        // Recalculate footer position when keyboard is shown or hidden.
+        this.keyboardObserver = this.eventsProvider.on(CoreEventsProvider.KEYBOARD_CHANGE, (kbHeight) => {
+            this.content.resize();
+        });
+
+        this.fetchData();
+    }
+
+    /**
+     * Convenience function to fetch the conversation data.
+     *
+     * @return {Promise<any>} Resolved when done.
+     */
+    protected fetchData(): Promise<any> {
+        let loader;
+        if (this.showLoadingModal) {
+            loader = this.domUtils.showModalLoading();
+        }
+
         if (!this.groupMessagingEnabled && this.userId) {
             // Get the user profile to retrieve the user fullname and image.
             this.userProvider.getProfile(this.userId, undefined, true).then((user) => {
@@ -171,7 +203,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         }
 
         // Synchronize messages if needed.
-        this.messagesSync.syncDiscussion(this.conversationId, this.userId).catch(() => {
+        return this.messagesSync.syncDiscussion(this.conversationId, this.userId).catch(() => {
             // Ignore errors.
         }).then((warnings) => {
             if (warnings && warnings[0]) {
@@ -185,8 +217,22 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                         // Fetch the messages for the first time.
                         return this.fetchMessages();
                     }
+                }).then(() => {
+                    let promise;
+                    if (this.userId) {
+                        promise = this.messagesProvider.getMemberInfo(this.userId);
+                    } else {
+                        // Group conversation.
+                        promise = Promise.resolve(null);
+                    }
+
+                    return promise.then((member) => {
+                        this.otherMember = member;
+                    });
                 });
             } else {
+                this.otherMember = null;
+
                 // Fetch the messages for the first time.
                 return this.fetchMessages().then(() => {
                     if (!this.title && this.messages.length) {
@@ -207,11 +253,9 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             this.resizeContent();
             this.loaded = true;
             this.setPolling(); // Make sure we're polling messages.
-        });
-
-        // Recalculate footer position when keyboard is shown or hidden.
-        this.keyboardObserver = this.eventsProvider.on(CoreEventsProvider.KEYBOARD_CHANGE, (kbHeight) => {
-            this.content.resize();
+            this.setContactRequestInfo();
+            this.setFooterType();
+            loader && loader.dismiss();
         });
     }
 
@@ -986,6 +1030,71 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     }
 
     /**
+     * Calculate whether there are pending contact requests.
+     */
+    protected setContactRequestInfo(): void {
+        this.requestContactSent = false;
+        this.requestContactReceived = false;
+        if (this.otherMember && !this.otherMember.iscontact) {
+            this.requestContactSent = this.otherMember.contactrequests.some((request) => {
+                return request.userid == this.currentUserId && request.requesteduserid == this.otherMember.id;
+            });
+            this.requestContactReceived = this.otherMember.contactrequests.some((request) => {
+                return request.userid == this.otherMember.id && request.requesteduserid == this.currentUserId;
+            });
+        }
+    }
+
+    /**
+     * Calculate what to display in the footer.
+     */
+    protected setFooterType(): void {
+        if (!this.otherMember) {
+            // Group conversation or group messaging not available.
+            this.footerType = 'message';
+        } else if (this.otherMember.isblocked) {
+            this.footerType = 'blocked';
+        } else if (this.requestContactReceived) {
+            this.footerType = 'requestReceived';
+        } else if (this.otherMember.canmessage) {
+            this.footerType = 'message';
+        } else if (this.requestContactSent) {
+            this.footerType = 'requestSent';
+        } else if (this.otherMember.requirescontact) {
+            this.footerType = 'requiresContact';
+        } else {
+            this.footerType = 'unable';
+        }
+    }
+
+    /**
+     * Displays a confirmation modal to block the user of the individual conversation.
+     *
+     * @return {Promise<any>} Promise resolved when user is blocked or dialog is cancelled.
+     */
+    blockUser(): Promise<any> {
+        if (!this.otherMember) {
+            // Should never happen.
+            return Promise.reject(null);
+        }
+
+        const template = this.translate.instant('addon.messages.blockuserconfirm', {$a: this.otherMember.fullname});
+        const okText = this.translate.instant('addon.messages.blockuser');
+
+        return this.domUtils.showConfirm(template, undefined, okText).then(() => {
+            const modal = this.domUtils.showModalLoading('core.sending', true);
+            this.showLoadingModal = true;
+
+            return this.messagesProvider.blockContact(this.otherMember.id).finally(() => {
+                modal.dismiss();
+                this.showLoadingModal = false;
+            });
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'core.error', true);
+        });
+    }
+
+    /**
      * Delete the conversation.
      *
      * @param {Function} [done] Function to call when done.
@@ -1013,6 +1122,131 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     }
 
     /**
+     * Displays a confirmation modal to unblock the user of the individual conversation.
+     *
+     * @return {Promise<any>} Promise resolved when user is unblocked or dialog is cancelled.
+     */
+    unblockUser(): Promise<any> {
+        if (!this.otherMember) {
+            // Should never happen.
+            return Promise.reject(null);
+        }
+
+        const template = this.translate.instant('addon.messages.unblockuserconfirm', {$a: this.otherMember.fullname});
+        const okText = this.translate.instant('addon.messages.unblockuser');
+
+        return this.domUtils.showConfirm(template, undefined, okText).then(() => {
+            const modal = this.domUtils.showModalLoading('core.sending', true);
+            this.showLoadingModal = true;
+
+            return this.messagesProvider.unblockContact(this.otherMember.id).finally(() => {
+                modal.dismiss();
+                this.showLoadingModal = false;
+            });
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'core.error', true);
+        });
+    }
+
+    /**
+     * Displays a confirmation modal to send a contact request to the other user of the individual conversation.
+     *
+     * @return {Promise<any>} Promise resolved when the request is sent or the dialog is cancelled.
+     */
+    createContactRequest(): Promise<any> {
+        if (!this.otherMember) {
+            // Should never happen.
+            return Promise.reject(null);
+        }
+
+        const template = this.translate.instant('addon.messages.addcontactconfirm', { $a: this.otherMember.fullname });
+        const okText = this.translate.instant('core.add');
+
+        return this.domUtils.showConfirm(template, undefined, okText).then(() => {
+            const modal = this.domUtils.showModalLoading('core.sending', true);
+            this.showLoadingModal = true;
+
+            return this.messagesProvider.createContactRequest(this.otherMember.id).finally(() => {
+                modal.dismiss();
+                this.showLoadingModal = false;
+            });
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'core.error', true);
+        });
+    }
+
+    /**
+     * Confirms the contact request of the other user of the individual conversation.
+     *
+     * @return {Promise<any>} Promise resolved when the request is confirmed.
+     */
+    confirmContactRequest(): Promise<any> {
+        if (!this.otherMember) {
+            // Should never happen.
+            return Promise.reject(null);
+        }
+
+        const modal = this.domUtils.showModalLoading('core.sending', true);
+        this.showLoadingModal = true;
+
+        return this.messagesProvider.confirmContactRequest(this.otherMember.id).finally(() => {
+            modal.dismiss();
+            this.showLoadingModal = false;
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'core.error', true);
+        });
+    }
+
+    /**
+     * Declines the contact request of the other user of the individual conversation.
+     *
+     * @return {Promise<any>} Promise resolved when the request is confirmed.
+     */
+    declineContactRequest(): Promise<any> {
+        if (!this.otherMember) {
+            // Should never happen.
+            return Promise.reject(null);
+        }
+
+        const modal = this.domUtils.showModalLoading('core.sending', true);
+        this.showLoadingModal = true;
+
+        return this.messagesProvider.declineContactRequest(this.otherMember.id).finally(() => {
+            modal.dismiss();
+            this.showLoadingModal = false;
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'core.error', true);
+        });
+    }
+
+    /**
+     * Displays a confirmation modal to remove the other user of the conversation from contacts.
+     *
+     * @return {Promise<any>} Promise resolved when the request is sent or the dialog is cancelled.
+     */
+    removeContact(): Promise<any> {
+        if (!this.otherMember) {
+            // Should never happen.
+            return Promise.reject(null);
+        }
+
+        const template = this.translate.instant('addon.messages.removecontactconfirm', { $a: this.otherMember.fullname });
+        const okText = this.translate.instant('core.remove');
+
+        return this.domUtils.showConfirm(template, undefined, okText).then(() => {
+            const modal = this.domUtils.showModalLoading('core.sending', true);
+            this.showLoadingModal = true;
+
+            return this.messagesProvider.removeContact(this.otherMember.id).finally(() => {
+                modal.dismiss();
+                this.showLoadingModal = false;
+            });
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'core.error', true);
+        });
+    }
+
+    /**
      * Page destroyed.
      */
     ngOnDestroy(): void {
@@ -1020,6 +1254,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         this.unsetPolling();
         this.syncObserver && this.syncObserver.off();
         this.keyboardObserver && this.keyboardObserver.off();
+        this.memberInfoObserver && this.memberInfoObserver.off();
         this.viewDestroyed = true;
     }
 }
