@@ -1309,6 +1309,7 @@
     "core.fileuploader.more": "More",
     "core.fileuploader.photoalbums": "Photo albums",
     "core.fileuploader.readingfile": "Reading file",
+    "core.fileuploader.readingfileperc": "Reading file: {{$a}}%",
     "core.fileuploader.selectafile": "Select a file",
     "core.fileuploader.uploadafile": "Upload a file",
     "core.fileuploader.uploading": "Uploading",
