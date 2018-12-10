@@ -403,3 +403,6 @@ $core-question-state-incorrect-color: $red-light !default;
 // Font Awesome
 $fa-font-path: $font-path;
 @import "font-awesome";
+
+// Format text styles.
+@import "format-text";
