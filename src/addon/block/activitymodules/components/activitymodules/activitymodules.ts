@@ -68,7 +68,8 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
 
             this.entries = [];
 
-            const archetypes = {};
+            const archetypes = {},
+                modIcons = {};
             let modFullNames = {};
 
             sections.forEach((section) => {
@@ -98,6 +99,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
                     } else {
                         modFullNames[mod.modname] = mod.modplural;
                     }
+                    modIcons[mod.modname] = mod.modicon;
                 });
             });
 
@@ -108,9 +110,9 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
                 let icon;
 
                 if (modName === 'resources') {
-                    icon = this.courseProvider.getModuleIconSrc('page');
+                    icon = this.courseProvider.getModuleIconSrc('page', modIcons['page']);
                 } else {
-                    icon = this.moduleDelegate.getModuleIconSrc(modName);
+                    icon = this.moduleDelegate.getModuleIconSrc(modName, modIcons[modName]);
                 }
 
                 this.entries.push({

@@ -59,7 +59,7 @@ export class AddonModChatModuleHandler implements CoreCourseModuleHandler {
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
         return {
-            icon: this.courseProvider.getModuleIconSrc('chat'),
+            icon: this.courseProvider.getModuleIconSrc(this.modName, module.modicon),
             title: module.name,
             class: 'addon-mod_chat-handler',
             action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void {

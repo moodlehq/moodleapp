@@ -68,7 +68,7 @@ export class AddonModForumModuleHandler implements CoreCourseModuleHandler {
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
         const data: CoreCourseModuleHandlerData = {
-            icon: this.courseProvider.getModuleIconSrc('forum'),
+            icon: this.courseProvider.getModuleIconSrc(this.modName, module.modicon),
             title: module.name,
             class: 'addon-mod_forum-handler',
             showDownloadButton: true,

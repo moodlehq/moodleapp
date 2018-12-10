@@ -347,6 +347,17 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Returns the attribute value of a string element. Only the first element will be selected.
+     *
+     * @param  {string} html      HTML element in string.
+     * @param  {string} attribute Attribute to get.
+     * @return {string}           Attribute value.
+     */
+    getHTMLElementAttribute(html: string, attribute: string): string {
+        return this.convertToElement(html).children[0].getAttribute('src');
+    }
+
+    /**
      * Returns height of an element.
      *
      * @param {any} element DOM element to measure.

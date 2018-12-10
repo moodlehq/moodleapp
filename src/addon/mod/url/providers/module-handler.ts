@@ -68,7 +68,7 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
         // tslint:disable: no-this-assignment
         const handler = this;
         const handlerData = {
-            icon: this.courseProvider.getModuleIconSrc(this.modName),
+            icon: this.courseProvider.getModuleIconSrc(this.modName, module.modicon),
             title: module.name,
             class: 'addon-mod_url-handler',
             showDownloadButton: false,
@@ -122,7 +122,7 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
             if (module.contents && module.contents[0]) {
                 // Calculate the icon to use.
                 handlerData.icon = this.urlProvider.guessIcon(module.contents[0].fileurl) ||
-                        this.courseProvider.getModuleIconSrc(this.modName);
+                    this.courseProvider.getModuleIconSrc(this.modName, module.modicon);
             }
         });
 
