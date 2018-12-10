@@ -22,9 +22,6 @@ ion-app.app-root core-rich-text-editor {
         resize: none;
         background-color: $white;
         flex-grow: 1;
-        * {
-            overflow: hidden;
-        }
     }
 
     .core-rte-editor {

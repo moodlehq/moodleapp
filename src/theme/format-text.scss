@@ -1,8 +1,10 @@
 /** Styles to match web platform */
 ion-app.app-root core-format-text,
 ion-app.app-root .item core-format-text,
-ion-app.app-root .core-rte-editor {
+ion-app.app-root core-rich-text-editor .core-rte-editor {
   @include core-headings();
+
+  font-size: 1.4rem;
 
   p {
     margin-bottom: 1rem;
@@ -11,22 +13,16 @@ ion-app.app-root .core-rte-editor {
   // Fix lists styles in core-format-text.
   ul {
     padding-left: 1rem;
-    list-style-type: disc;
   }
   ol {
     list-style-type: decimal;
   }
   ul, ol {
     -webkit-padding-start: 15px;
-    list-style-position: inside;
-    ul {
-      list-style-type: circle;
-    }
     ol {
       list-style-type: lower-latin;
     }
     ul, ol {
-      list-style-position: inside;
       @include margin(null, null, null, 15px);
     }
   }
