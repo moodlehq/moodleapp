@@ -212,7 +212,8 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
             this.overview.timeclose = parseInt(this.feedback.timeclose) * 1000 || 0;
             this.overview.closeTimeReadable = this.overview.timeclose ?
                 moment(this.overview.timeclose).format('LLL') : '';
-
+        }
+        if (accessData.canviewanalysis) {
             // Get groups (only for teachers).
             promises.push(this.fetchGroupInfo(this.feedback.coursemodule));
         }
