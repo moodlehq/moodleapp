@@ -130,6 +130,49 @@ ion-app.app-root core-rich-text-editor .core-rte-editor {
     @include margin(0, 0, 0, 0.5em);
   }
   /*rtl:end:ignore*/
+
+  // Bootstrap 4 Styles
+  // -------------------------
+  .media {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .media-body {
+    flex: 1;
+  }
+
+  .alert {
+    position: relative;
+    padding: .75rem 1.25rem;
+    margin-bottom: 1rem;
+    border: 0 solid transparent;
+  }
+
+  // Headings for larger alerts
+  .alert-heading {
+    // Specified to prevent conflicts of changing $headings-color
+    color: inherit;
+  }
+
+  // Provide class for links that match alerts
+  .alert-link {
+    font-weight: 400;
+  }
+
+  @each $color-name, $color-base in get-colors($colors) {
+    .alert-#{$color-name} {
+      color: $color-base;
+      border-color: $color-base;
+      background-color: mix($color-base, white, 20%);
+
+      .alert-link {
+        color: darken($color-base, 10%);
+      }
+    }
+    .alert-#{$color-name} p {
+      color: $color-base;
+    }
   }
 }
 
