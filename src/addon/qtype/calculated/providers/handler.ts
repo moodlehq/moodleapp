@@ -17,7 +17,6 @@ import { Injectable, Injector } from '@angular/core';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreQuestionHandler } from '@core/question/providers/delegate';
-import { AddonQtypeNumericalHandler } from '@addon/qtype/numerical/providers/handler';
 import { AddonQtypeCalculatedComponent } from '../component/calculated';
 
 /**
@@ -28,8 +27,7 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
     name = 'AddonQtypeCalculated';
     type = 'qtype_calculated';
 
-    constructor(private utils: CoreUtilsProvider, private numericalHandler: AddonQtypeNumericalHandler,
-            private domUtils: CoreDomUtilsProvider) { }
+    constructor(private utils: CoreUtilsProvider, private domUtils: CoreDomUtilsProvider) { }
 
     /**
      * Return the Component to use to display the question.
@@ -51,8 +49,7 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
      * @return {number} 1 if complete, 0 if not complete, -1 if cannot determine.
      */
     isCompleteResponse(question: any, answers: any): number {
-        // This question type depends on numerical.
-        if (this.isGradableResponse(question, answers) === 0 || !this.numericalHandler.validateUnits(answers['answer'])) {
+        if (this.isGradableResponse(question, answers) === 0 || !this.validateUnits(answers['answer'])) {
             return 0;
         }
 
@@ -81,7 +78,6 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
      * @return {number} 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
     isGradableResponse(question: any, answers: any): number {
-        // This question type depends on numerical.
         let isGradable = this.isValidValue(answers['answer']);
         if (isGradable && this.requiresUnits(question)) {
             // The question requires a unit.
@@ -100,7 +96,6 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
      * @return {boolean} Whether they're the same.
      */
     isSameResponse(question: any, prevAnswers: any, newAnswers: any): boolean {
-        // This question type depends on numerical.
         return this.utils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer') &&
             this.utils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'unit');
     }
@@ -125,5 +120,39 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
         const element = this.domUtils.convertToElement(question.html);
 
         return !!(element.querySelector('select[name*=unit]') || element.querySelector('input[type="radio"]'));
+    }
+
+    /**
+     * Validate a number with units. We don't have the list of valid units and conversions, so we can't perform
+     * a full validation. If this function returns true it means we can't be sure it's valid.
+     *
+     * @param {string} answer Answer.
+     * @return {boolean} False if answer isn't valid, true if we aren't sure if it's valid.
+     */
+    validateUnits(answer: string): boolean {
+        if (!answer) {
+            return false;
+        }
+
+        const regexString = '[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:e[-+]?\\d+)?';
+
+        // Strip spaces (which may be thousands separators) and change other forms of writing e to e.
+        answer = answer.replace(' ', '');
+        answer = answer.replace(/(?:e|E|(?:x|\*|×)10(?:\^|\*\*))([+-]?\d+)/, 'e$1');
+
+        // If a '.' is present or there are multiple ',' (i.e. 2,456,789) assume ',' is a thousands separator and stip it.
+        // Else assume it is a decimal separator, and change it to '.'.
+        if (answer.indexOf('.') != -1 || answer.split(',').length - 1 > 1) {
+            answer = answer.replace(',', '');
+        } else {
+            answer = answer.replace(',', '.');
+        }
+
+        // We don't know if units should be before or after so we check both.
+        if (answer.match(new RegExp('^' + regexString)) === null || answer.match(new RegExp(regexString + '$')) === null) {
+            return false;
+        }
+
+        return true;
     }
 }
