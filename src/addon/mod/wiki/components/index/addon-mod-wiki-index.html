@@ -47,7 +47,7 @@
 
                     <article [ngClass]="{'addon-mod_wiki-noedit': !canEdit}">
                         <core-format-text *ngIf="pageContent" [component]="component" [componentId]="componentId" [text]="pageContent"></core-format-text>
-                        <core-empty-box *ngIf="!pageContent" icon="document" [message]="'addon.mod_wiki.nocontent' | translate"></core-empty-box>
+                        <core-empty-box *ngIf="!pageContent" icon="document" [message]="'addon.mod_wiki.nocontent' | translate" [inline]="true"></core-empty-box>
                     </article>
                 </div>
             </ng-template>
