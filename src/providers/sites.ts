@@ -506,8 +506,13 @@ export class CoreSitesProvider {
                     params = {$a: siteUrl};
                 }
 
+                let error = this.translate.instant(errorKey, params);
+                if (this.appProvider.isWindows() || this.appProvider.isLinux()) {
+                    error += this.translate.instant('core.login.legacymoodleversiondesktopdownloadold');
+                }
+
                 return Promise.reject({
-                    error: this.translate.instant(errorKey, params),
+                    error: error,
                     errorcode: 'legacymoodleversion'
                 });
             } else {

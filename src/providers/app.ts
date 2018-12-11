@@ -147,6 +147,17 @@ export class CoreAppProvider {
     }
 
     /**
+     * Checks if the app is running in a 64 bits desktop environment (not browser).
+     *
+     * @return {boolean} Whether the app is running in a 64 bits desktop environment (not browser).
+     */
+    is64Bits(): boolean {
+        const process = (<any> window).process;
+
+        return this.isDesktop() && process.arch == 'x64';
+    }
+
+    /**
      * Checks if the app is running in a desktop environment (not browser).
      *
      * @return {boolean} Whether the app is running in a desktop environment (not browser).
