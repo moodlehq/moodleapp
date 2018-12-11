@@ -498,6 +498,11 @@ ion-app.app-root {
       @include text-align('end');
       flex-grow: 2;
     }
+
+    .select-text {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
 
 
@@ -983,6 +988,13 @@ ion-app.app-root {
 
   .core-iframe-offline-disabled {
     display: none !important;
+  }
+
+  .core-horizontal-scroll {
+    display: flex;
+    flex-flow: nowrap;
+    overflow-x: scroll;
+    flex-direction: row;
   }
 
   ion-content.core-expand-max .scroll-content {

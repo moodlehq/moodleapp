@@ -2,11 +2,14 @@
     <div (click)="openCourse(course)" class="core-course-thumb" [class.core-course-color-img]="course.courseImage">
         <img *ngIf="course.courseImage" [src]="course.courseImage" core-external-content alt=""/>
     </div>
-    <ion-item tappable text-wrap detail-none (click)="openCourse(course)" [title]="course.displayname || course.fullname" class="core-course-link" [class.item-disabled]="course.visible == 0" [class.core-course-more-than-title]="(course.summary && course.summary.length) || (course.progress != null && course.progress >= 0)">
-        <h2>
-            <core-icon name="fa-star" *ngIf="course.isfavourite"></core-icon>
-            <core-format-text [text]="course.displayname || course.fullname"></core-format-text>
-        </h2>
+    <ion-item tappable text-wrap detail-none (click)="openCourse(course)" [title]="course.displayname || course.fullname" class="core-course-link" [class.item-disabled]="course.visible == 0" [class.core-course-more-than-title]="(course.progress != null && course.progress >= 0)">
+        <div class="core-course-title">
+            <p *ngIf="course.displayname && course.shortname && course.fullname != course.displayname" class="core-course-shortname"><core-format-text [text]="course.shortname"></core-format-text></p>
+            <h2>
+                <core-icon name="fa-star" *ngIf="course.isfavourite"></core-icon>
+                <core-format-text [text]="course.fullname"></core-format-text>
+            </h2>
+        </div>
 
         <div class="core-button-spinner" *ngIf="downloadCourseEnabled && !courseOptionMenuEnabled">
             <!-- Download course. -->
@@ -27,14 +30,7 @@
             </button>
         </div>
     </ion-item>
-    <ion-item text-wrap *ngIf="course.summary && course.summary.length" [class.item-disabled]="course.visible == 0">
-        <p>
-            <summary>
-                <core-format-text [text]="course.summary" [singleLine]="true" [clean]="true" [fullOnClick]="true"></core-format-text>
-            </summary>
-        </p>
-    </ion-item>
-    <ion-item *ngIf="course.progress != null && course.progress >= 0">
+    <ion-item *ngIf="showAll && course.progress != null && course.progress >= 0">
         <core-progress-bar [progress]="course.progress"></core-progress-bar>
     </ion-item>
     <ng-content></ng-content>

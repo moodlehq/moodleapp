@@ -4,6 +4,7 @@ ion-app.app-root core-courses-course-progress {
     ion-card.card {
         display: flex;
         flex-direction: column;
+        align-self: stretch;
 
         @for $i from 0 to length($core-course-image-background) {
             &[course-color="#{$i}"] {
@@ -14,12 +15,14 @@ ion-app.app-root core-courses-course-progress {
         }
 
         .core-course-thumb {
-            height: 150px;
+            padding-top: 40%;
             width: 100%;
             overflow: hidden;
             cursor: pointer;
             pointer-events: auto;
             position: relative;
+            background-position: center;
+            background-size: cover;
 
             &.core-course-color-img {
                 background: white;
@@ -33,6 +36,10 @@ ion-app.app-root core-courses-course-progress {
             }
         }
 
+        .core-course-shortname {
+            margin-bottom: 8px;
+        }
+
         .core-course-link {
             @include padding(8px, 0px, 8px, 16px);
             .item-inner {
@@ -42,12 +49,14 @@ ion-app.app-root core-courses-course-progress {
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
+                flex-wrap: wrap;
             }
-            h2 {
-                margins: 6px 0;
+            .core-course-title {
+                margin: 5px 0;
                 flex-grow: 1;
+                max-width: calc(100% - 50px);
 
-                ion-icon {
+                h2 ion-icon {
                     margin-right: 4px;
                     color: $core-star-color;
                 }
@@ -63,6 +72,7 @@ ion-app.app-root core-courses-course-progress {
 
             .item-button[icon-only] {
                 min-width: 50px;
+                width: 50px;
             }
         }
         .label {
@@ -81,6 +91,53 @@ ion-app.app-root core-courses-course-progress {
 
     button {
         z-index: 1;
+    }
+}
+
+
+ion-app.app-root .core-horizontal-scroll core-courses-course-progress {
+    @include horizontal_scroll_item(45%, 210px, 300px);
+
+
+    ion-card.card {
+        .core-course-thumb {
+            padding-top: 40%;
+        }
+
+        .core-course-link {
+            @include padding(4px, 0px, 4px, 8px);
+            .core-course-shortname {
+                font-size: 1.2rem;
+            }
+
+            .core-course-title {
+                margin: 3px 0;
+                max-width: calc(100% - 40px);
+
+                h2 {
+                    font-size: 1.5rem;
+                    ion-icon {
+                        margin-right: 2px;
+                    }
+                }
+            }
+            .core-button-spinner {
+                min-height: 40px;
+                min-width: 40px;
+
+                ion-spinner {
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+            .item-button[icon-only] {
+                min-width: 40px;
+                width: 40px;
+                font-size: 1.5rem;
+                padding: 8px;
+            }
+
+        }
     }
 }
 
