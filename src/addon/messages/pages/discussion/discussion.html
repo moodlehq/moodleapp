@@ -25,32 +25,32 @@
     <core-loading [hideUntil]="loaded">
         <!-- Load previous messages. -->
         <core-infinite-loading [enabled]="canLoadMore" (action)="loadPrevious($event)" position="top" [error]="loadMoreError"></core-infinite-loading>
-        <ion-list class="addon-messages-discussion-container safe-area-page" [attr.aria-live]="'polite'">
+        <ion-list class="addon-messages-discussion-container safe-area-page" [class.addon-messages-discussion-group]="isGroup" [attr.aria-live]="'polite'">
             <ng-container *ngFor="let message of messages; index as index; last as last">
-                <ion-chip *ngIf="message.showDate" class="addon-messages-date" color="light">
-                    <ion-label>{{ message.timecreated | coreFormatDate: "LL" }}</ion-label>
-                </ion-chip>
+                <h6 text-center *ngIf="message.showDate" class="addon-messages-date">
+                    {{ message.timecreated | coreFormatDate: "LL" }}
+                </h6>
 
                 <ion-chip class="addon-messages-unreadfrom" *ngIf="unreadMessageFrom && message.id == unreadMessageFrom" color="light">
                     <ion-label>{{ 'addon.messages.newmessages' | translate:{$a: title} }}</ion-label>
                     <ion-icon name="arrow-round-down"></ion-icon>
                 </ion-chip>
 
-                <ion-item text-wrap (longPress)="copyMessage(message)" class="addon-message" [class.addon-message-mine]="message.useridfrom == currentUserId" [@coreSlideInOut]="message.useridfrom == currentUserId ? '' : 'fromLeft'">
+                <ion-item text-wrap (longPress)="copyMessage(message)" class="addon-message" [class.addon-message-mine]="message.useridfrom == currentUserId" [class.addon-message-not-mine]="message.useridfrom != currentUserId" [class.addon-message-no-user]="!message.showUserData" [@coreSlideInOut]="message.useridfrom == currentUserId ? '' : 'fromLeft'">
                     <!-- User data. -->
-                    <ion-avatar item-start *ngIf="message.showUserData">
-                        <img [src]="members[message.useridfrom].profileimageurl" [alt]="'core.pictureof' | translate:{$a: members[message.useridfrom].fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'">
-                    </ion-avatar>
-                    <h2 *ngIf="message.showUserData">{{ members[message.useridfrom].fullname }}</h2>
+                    <h2 class="addon-message-user" >
+                        <ion-avatar item-start core-user-avatar [user]="members[message.useridfrom]" [linkProfile]="false" *ngIf="message.showUserData"></ion-avatar>
+
+                        <div *ngIf="message.showUserData">{{ members[message.useridfrom].fullname }}</div>
+
+                        <ion-note *ngIf="!message.pending">{{ message.timecreated | coreFormatDate: "dftimedate" }}</ion-note>
+                        <ion-note *ngIf="message.pending"><ion-icon name="time"></ion-icon></ion-note>
+                    </h2>
 
                     <!-- Some messages have <p> and some others don't. Add a <p> so they all have same styles. -->
                     <p class="addon-message-text">
                         <core-format-text (afterRender)="last && scrollToBottom()" [text]="message.text"></core-format-text>
                     </p>
-                    <ion-note *ngIf="!message.pending">
-                        {{ message.timecreated | coreFormatDate: "dftimedate" }}
-                    </ion-note>
-                    <ion-note *ngIf="message.pending"><ion-icon name="time"></ion-icon></ion-note>
 
                     <button ion-button icon-only clear="true" *ngIf="!message.sending && showDelete" (click)="deleteMessage(message, index)" class="addon-messages-delete-button" [@coreSlideInOut]="'fromRight'" [attr.aria-label]=" 'addon.messages.deletemessage' | translate">
                         <ion-icon name="trash" color="danger"></ion-icon>
