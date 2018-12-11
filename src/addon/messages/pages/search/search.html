@@ -30,7 +30,7 @@
     </ion-item>
 
     <!-- List of results -->
-    <a ion-item text-wrap *ngFor="let result of item.results" [title]="result.fullname" (click)="openDiscussion(result.id)" [class.core-split-item-selected]="result.id == selectedUserId" detail-none>
+    <a ion-item text-wrap *ngFor="let result of item.results" [title]="result.fullname" (click)="openDiscussion(result.id)" [class.core-split-item-selected]="result.id == selectedUserId" class="addon-message-discussion">
         <ion-avatar item-start core-user-avatar [user]="result" [checkOnline]="true" [linkProfile]="false"></ion-avatar>
         <h2>
             <core-format-text [text]="result.fullname"></core-format-text>

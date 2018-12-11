@@ -1,17 +1,21 @@
 ion-app.app-root page-addon-messages-group-conversations {
-    h2 {
+    .addon-message-last-message {
         display: flex;
+        flex-direction: row;
         justify-content: space-between;
-
-        .note {
-            margin: 0;
-            align-self: flex-end;
-            display: inline-flex;
-            font-size: initial;
-        }
+        align-items: center;
     }
 
-    core-format-text.addon-message-last-message {
-        display: inline;
+    .addon-message-last-message-user {
+        white-space: nowrap;
+        color: $black;
+        @include margin(null, 2px, null, null)
+    }
+
+    .addon-message-last-message-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex-shrink: 1;
     }
 }
