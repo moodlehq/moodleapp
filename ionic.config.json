@@ -6,5 +6,6 @@
   },
   "type": "ionic-angular",
   "watchPatterns": [],
-  "pro_id": "com.moodle.moodlemobile"
+  "pro_id": "com.moodle.moodlemobile",
+  "id": "com.moodle.moodlemobile"
 }

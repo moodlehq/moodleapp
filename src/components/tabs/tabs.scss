@@ -30,6 +30,10 @@ ion-app.app-root .core-tabs-bar {
             line-height: 1.2em;
         }
 
+        ion-icon {
+            @include margin(null, 5px, null, null);
+        }
+
         ion-badge.tab-badge {
             position: relative;
             @include position(auto, auto, auto, auto);

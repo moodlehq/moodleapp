@@ -400,6 +400,30 @@ $core-question-state-incorrect-color: $red-light !default;
     }
 }
 
+@mixin core-headings() {
+  h1 {
+    font-size: 3rem;
+  }
+  h2 {
+    font-size: 2.8rem;
+  }
+  h3 {
+    font-size: 2.6rem;
+  }
+  h4 {
+    font-size: 2.2rem;
+  }
+  h5 {
+    font-size: 1.8rem;
+  }
+  h6 {
+    font-size: 1.4rem;
+  }
+}
+
 // Font Awesome
 $fa-font-path: $font-path;
 @import "font-awesome";
+
+// Format text styles.
+@import "format-text";

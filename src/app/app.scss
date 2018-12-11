@@ -69,27 +69,6 @@ ion-app.app-root {
     }
   }
 
-  @mixin core-headings() {
-    h1 {
-      font-size: 3rem;
-    }
-    h2 {
-      font-size: 2.8rem;
-    }
-    h3 {
-      font-size: 2.6rem;
-    }
-    h4 {
-      font-size: 2.2rem;
-    }
-    h5 {
-      font-size: 1.8rem;
-    }
-    h6 {
-      font-size: 1.4rem;
-    }
-  }
-
   // Define an alternative way to set a heading in an item without using a heading tag.
   // This is done for accessibility reasons when a heading is semantically incorrect.
   .item .item-heading {
@@ -212,92 +191,97 @@ ion-app.app-root {
     }
   }
 
-  /** Format Text */
+  /** Format Text - Show more styles. */
+  /** Styles of elements inside the directive should be placed in format-text.scss */
   core-format-text {
     user-select: text;
-  }
 
-  core-format-text[maxHeight],
-  core-format-text[ng-reflect-max-height] {
-    display: block;
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-
-    /* Force display inline */
-    &.inline {
-      display: inline-block;
-      width: auto;
-    }
-
-    // This is to allow clicks in radio/checkbox content.
-    &.core-text-formatted {
-      cursor: pointer;
-      pointer-events: auto;
-
-      .core-show-more {
-        display: none;
-      }
-
-      &:not(.core-shortened) {
-        max-height: none !important;
-      }
-
-      &.core-shortened {
-        color: $gray-darker;
-        overflow: hidden;
-        min-height: 50px;
-
-        .core-show-more {
-          color: color($colors, dark);
-          @include text-align('end');
-          font-size: 14px;
-          display: block;
-          position: absolute;
-          @include position(null, 0, 0, null);
-          z-index: 1001;
-          background-color: $white;
-          @include padding(null, null, null, 10px);
-        }
-
-        &:before {
-          content: '';
-          height: 100%;
-          position: absolute;
-          @include position(null, 0, 0, 0);
-          background: -moz-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
-          background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba(255, 255, 255, 0)), color-stop(calc(100% - 15px), white));
-          background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
-          background: -o-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
-          background: -ms-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
-          background: linear-gradient(to bottom, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
-          z-index: 1000;
-        }
-      }
-    }
-
-    &.core-expand-in-fullview {
-      .core-show-more {
-        @include svg-background-image($item-md-detail-push-svg, true);
-        @include padding-horizontal(null, 18px);
-        @include background-position(end, 0, center);
-
-        background-repeat: no-repeat;
-        background-size: 14px 14px;
-      }
-    }
-  }
-
-  core-format-text[singleLine="true"],
-  core-format-text[ng-reflect-single-line="true"] {
-      cursor: pointer;
-      pointer-events: auto;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    &[maxHeight],
+    &[ng-reflect-max-height] {
       display: block;
       position: relative;
       width: 100%;
+      overflow: hidden;
+
+      /* Force display inline */
+      &.inline {
+        display: inline-block;
+        width: auto;
+      }
+
+      // This is to allow clicks in radio/checkbox content.
+      &.core-text-formatted {
+        cursor: pointer;
+        pointer-events: auto;
+
+        .core-show-more {
+          display: none;
+        }
+
+        &:not(.core-shortened) {
+          max-height: none !important;
+        }
+
+        &.core-shortened {
+          color: $gray-darker;
+          overflow: hidden;
+          min-height: 50px;
+
+          .core-show-more {
+            color: color($colors, dark);
+            @include text-align('end');
+            font-size: 14px;
+            display: block;
+            position: absolute;
+            @include position(null, 0, 0, null);
+            z-index: 1001;
+            background-color: $white;
+            @include padding(null, null, null, 10px);
+          }
+
+          &:before {
+            content: '';
+            height: 100%;
+            position: absolute;
+            @include position(null, 0, 0, 0);
+            background: -moz-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+            background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba(255, 255, 255, 0)), color-stop(calc(100% - 15px), white));
+            background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+            background: -o-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+            background: -ms-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+            z-index: 1000;
+          }
+        }
+      }
+
+      &.core-expand-in-fullview {
+        .core-show-more {
+          @include svg-background-image($item-md-detail-push-svg, true);
+          @include padding-horizontal(null, 18px);
+          @include background-position(end, 0, center);
+
+          background-repeat: no-repeat;
+          background-size: 14px 14px;
+        }
+      }
+    }
+
+    &[singleLine="true"],
+    &[ng-reflect-single-line="true"] {
+        cursor: pointer;
+        pointer-events: auto;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        position: relative;
+        width: 100%;
+    }
+
+    audio, video, a, iframe {
+      pointer-events: auto;
+    }
   }
 
   .core-media-adapt-width {
@@ -333,84 +317,6 @@ ion-app.app-root {
     font-size: 24px;
     ion-icon {
       font-size: 24px;
-    }
-  }
-
-  core-format-text {
-    audio, video, a, iframe {
-      pointer-events: auto;
-    }
-
-    // Fix lists styles in core-format-text.
-    ul {
-      list-style-type: disc;
-    }
-    ol {
-      list-style-type: decimal;
-    }
-    ul, ol {
-      -webkit-padding-start: 15px;
-      list-style-position: inside;
-      ul {
-        list-style-type: circle;
-      }
-      ol {
-        list-style-type: lower-latin;
-      }
-      ul, ol {
-        list-style-position: inside;
-        @include margin(null, null, null, 15px);
-      }
-    }
-
-    .badge {
-      position: initial !important;
-    }
-
-    .core-disable-media-adapt,
-    .core-disable-media-adapt .core-media-adapt-width {
-      max-width: none !important;
-      max-height: none !important;
-      width: initial !important;
-      height: initial !important;
-      display: inline-block !important;
-    }
-
-    @include core-headings();
-
-    img.icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
-      margin: 0;
-      padding: 0;
-      -webkit-box-sizing: content-box;
-      box-sizing: content-box;
-      margin-right: .5rem;
-    }
-  }
-
-  .item core-format-text {
-    @include core-headings();
-  }
-
-  .item core-format-text,
-  core-format-text {
-    p {
-      margin-bottom: 1rem;
-    }
-  }
-
-  // Images in ion-card have width 100% and display block. Remove that when the image is in core-format-text.
-  ion-card core-format-text img {
-    width: min-content;
-    display: inline;
-  }
-
-  // Message item.
-  .item-message {
-    core-format-text > p:only-child {
-      display: inline;
     }
   }
 
@@ -504,7 +410,6 @@ ion-app.app-root {
       white-space: nowrap;
     }
   }
-
 
 
   // File uploader.
@@ -606,85 +511,6 @@ ion-app.app-root {
   .fa.icon.questioncorrectnessicon {
     font-size: 20px;
   }
-
-  // Atto styles
-  // -------------------------
-  .atto_image_preview {
-      width: 100%;
-      height: 100%;
-      margin-left: auto;
-      margin-right: auto;
-  }
-
-  .atto_image_preview_box {
-      max-height: 200px;
-      margin-bottom: 1em;
-      overflow: auto;
-  }
-
-  .editor_atto_content img {
-      cursor: pointer;
-  }
-
-  .atto_image_size {
-      display: inline-block;
-  }
-
-  .atto_image_size input[type=checkbox] {
-      @include margin(null, 1em, null, 1em);
-  }
-
-  .atto_image_size input[type=text] {
-      width: 3em;
-  }
-
-  .atto_image_size label {
-      display: inline-block;
-  }
-
-  .atto_image_button_text-top,
-  .atto_image_button_middle,
-  .atto_image_button_text-bottom,
-  .atto_image_button_left,
-  .atto_image_button_right {
-    vertical-align: middle;
-    max-width: 100%;
-    height: auto;
-    width: auto;
-    display: inline-block;
-    margin: 0 0.5em;
-
-    &.img-responsive {
-      /* If the image is display: block then linking the image to URLs won't work. */
-      /*display: inline-block;*/
-      max-width: 100%;
-      height: auto;
-      width: auto;
-    }
-  }
-
-  .atto_image_button_text-top {
-      vertical-align: text-top;
-  }
-
-  .atto_image_button_middle {
-      vertical-align: middle;  }
-
-  .atto_image_button_text-bottom {
-      vertical-align: text-bottom;
-  }
-
-  /*rtl:begin:ignore*/
-  .atto_image_button_left {
-      @include float(start);
-      @include margin(0, 0.5em, 0, 0);
-  }
-
-  .atto_image_button_right {
-      @include float(end);
-      @include margin(0, 0, 0, 0.5em);
-  }
-  /*rtl:end:ignore*/
 
   .action-sheet-group {
       overflow: auto;
