@@ -184,4 +184,8 @@ ion-app.app-root {
     width: min-content;
     display: inline;
   }
+
+  .toolbar core-format-text {
+    font-size: inherit;
+  }
 }
