@@ -31,7 +31,7 @@
                     <core-icon *ngIf="!favourites.expanded" name="fa-caret-right" item-start></core-icon>
                     <core-icon *ngIf="favourites.expanded" name="fa-caret-down" item-start></core-icon>
                     {{ 'core.favourites' | translate }} ({{ favourites.count }})
-                    <!-- @todo: Unread total of favourites (MDL-63913). -->
+                    <ion-badge item-end *ngIf="favourites.unread">{{ favourites.unread }}</ion-badge>
                 </ion-item-divider>
                 <div *ngIf="favourites.conversations && favourites.expanded">
                     <ng-container *ngTemplateOutlet="conversationsTemplate; context: {conversations: favourites.conversations}"></ng-container>
@@ -47,7 +47,7 @@
                     <core-icon *ngIf="!group.expanded" name="fa-caret-right" item-start></core-icon>
                     <core-icon *ngIf="group.expanded" name="fa-caret-down" item-start></core-icon>
                     {{ 'addon.messages.groupmessages' | translate }} ({{ group.count }})
-                    <!-- @todo: Unread total of group conversations (MDL-63913). -->
+                    <ion-badge item-end *ngIf="group.unread">{{ group.unread }}</ion-badge>
                 </ion-item-divider>
                 <div *ngIf="group.conversations && group.expanded">
                     <ng-container *ngTemplateOutlet="conversationsTemplate; context: {conversations: group.conversations}"></ng-container>
@@ -62,7 +62,7 @@
                     <core-icon *ngIf="!individual.expanded" name="fa-caret-right" item-start></core-icon>
                     <core-icon *ngIf="individual.expanded" name="fa-caret-down" item-start></core-icon>
                     {{ 'addon.messages.messages' | translate }} ({{ individual.count }})
-                    <!-- @todo: Unread total of individual conversations (MDL-63913). -->
+                    <ion-badge item-end *ngIf="individual.unread">{{ individual.unread }}</ion-badge>
                 </ion-item-divider>
                 <div *ngIf="individual.conversations && individual.expanded">
                     <ng-container *ngTemplateOutlet="conversationsTemplate; context: {conversations: individual.conversations}"></ng-container>
