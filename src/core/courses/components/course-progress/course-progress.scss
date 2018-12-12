@@ -96,12 +96,11 @@ ion-app.app-root core-courses-course-progress {
 
 
 ion-app.app-root .core-horizontal-scroll core-courses-course-progress {
-    @include horizontal_scroll_item(45%, 210px, 300px);
-
+    @include horizontal_scroll_item(80%, 250px, 300px);
 
     ion-card.card {
         .core-course-thumb {
-            padding-top: 40%;
+            padding-top: 30%;
         }
 
         .core-course-link {
