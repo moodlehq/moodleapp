@@ -60,7 +60,7 @@ export class AddonMessagesSearchPage implements OnDestroy {
         loadingMore: false,
         loadMoreError: false
     };
-    selectedUserId = null;
+    selectedResult = null;
 
     protected memberInfoObserver;
 
@@ -193,11 +193,11 @@ export class AddonMessagesSearchPage implements OnDestroy {
 
             if (!loadMore) {
                 if (this.contacts.results.length > 0) {
-                    this.openDiscussion(this.contacts.results[0].id, true);
+                    this.openConversation(this.contacts.results[0], true);
                 } else if (this.nonContacts.results.length > 0) {
-                    this.openDiscussion(this.nonContacts.results[0].id, true);
+                    this.openConversation(this.nonContacts.results[0], true);
                 } else if (this.messages.results.length > 0) {
-                    this.openDiscussion(this.messages.results[0].userid, true);
+                    this.openConversation(this.messages.results[0], true);
                 }
             }
         }).catch((error) => {
@@ -223,15 +223,21 @@ export class AddonMessagesSearchPage implements OnDestroy {
     }
 
     /**
-     * Open a discussion in the split view.
+     * Open a conversation in the split view.
      *
-     * @param {number} userId User id.
+     * @param {any} result User or message.
      * @param {boolean} [onInit=false] Whether the tser was selected on initial load.
      */
-    openDiscussion(userId: number, onInit: boolean = false): void {
+    openConversation(result: any, onInit: boolean = false): void {
         if (!onInit || this.splitviewCtrl.isOn()) {
-            this.selectedUserId = userId;
-            this.splitviewCtrl.push('AddonMessagesDiscussionPage', { userId });
+            this.selectedResult = result;
+            const params: any = {};
+            if (result.conversationid) {
+                params.conversationId = result.conversationid;
+            } else {
+                params.userId = result.id;
+            }
+            this.splitviewCtrl.push('AddonMessagesDiscussionPage', params);
         }
     }
 
