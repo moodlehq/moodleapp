@@ -107,7 +107,11 @@ export class AddonMessagesModule {
                     }
 
                     messagesProvider.invalidateDiscussionsCache(notification.site).finally(() => {
-                        linkHelper.goInSite(undefined, 'AddonMessagesIndexPage', undefined, notification.site);
+                        let pageName = 'AddonMessagesIndexPage';
+                        if (messagesProvider.isGroupMessagingEnabled()) {
+                            pageName = 'AddonMessagesGroupConversationsPage';
+                        }
+                        linkHelper.goInSite(undefined, pageName, undefined, notification.site);
                     });
                 });
             });
