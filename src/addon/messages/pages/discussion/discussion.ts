@@ -205,7 +205,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         // Synchronize messages if needed.
         return this.messagesSync.syncDiscussion(this.conversationId, this.userId).catch(() => {
             // Ignore errors.
-        }).then((warnings) => {
+        }).then((warnings): Promise<any> => {
             if (warnings && warnings[0]) {
                 this.domUtils.showErrorModal(warnings[0]);
             }
@@ -213,22 +213,26 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             if (this.groupMessagingEnabled) {
                 // Get the conversation ID if it exists and we don't have it yet.
                 return this.getConversation(this.conversationId, this.userId).then((exists) => {
+                    const promises = [];
+
                     if (exists) {
                         // Fetch the messages for the first time.
-                        return this.fetchMessages();
-                    }
-                }).then(() => {
-                    let promise;
-                    if (this.userId) {
-                        promise = this.messagesProvider.getMemberInfo(this.userId);
-                    } else {
-                        // Group conversation.
-                        promise = Promise.resolve(null);
+                        promises.push(this.fetchMessages());
                     }
 
-                    return promise.then((member) => {
-                        this.otherMember = member;
-                    });
+                    if (this.userId) {
+                        promises.push(this.messagesProvider.getMemberInfo(this.userId).then((member) => {
+                            this.otherMember = member;
+                            if (!exists && member) {
+                                this.conversationImage = member.profileimageurl;
+                                this.title = member.fullname;
+                            }
+                        }));
+                    } else {
+                        this.otherMember = null;
+                    }
+
+                    return Promise.all(promises);
                 });
             } else {
                 this.otherMember = null;
