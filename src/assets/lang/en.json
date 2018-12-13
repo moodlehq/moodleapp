@@ -1518,6 +1518,7 @@
     "core.nograde": "No grade",
     "core.none": "None",
     "core.nopasswordchangeforced": "You cannot proceed without changing your password.",
+    "core.nopermissionerror": "Sorry, but you do not currently have permissions to do that",
     "core.nopermissions": "Sorry, but you do not currently have permissions to do that ({{$a}})",
     "core.noresults": "No results",
     "core.notapplicable": "n/a",

@@ -163,6 +163,7 @@
     "nograde": "No grade",
     "none": "None",
     "nopasswordchangeforced": "You cannot proceed without changing your password.",
+    "nopermissionerror": "Sorry, but you do not currently have permissions to do that",
     "nopermissions": "Sorry, but you do not currently have permissions to do that ({{$a}})",
     "noresults": "No results",
     "notapplicable": "n/a",

@@ -672,6 +672,16 @@ export class CoreSite {
                     error.message = this.translate.instant('core.unicodenotsupported');
 
                     return Promise.reject(error);
+                } else if (error.exception === 'required_capability_exception' || error.errorcode === 'nopermission') {
+                    if (error.message === 'error/nopermission') {
+                        // This error message is returned by some web services but the string does not exist.
+                        error.message = this.translate.instant('core.nopermissionerror');
+                    }
+
+                    // Save the error instead of deleting the cache entry so the same content is displayed in offline.
+                    this.saveToCache(method, data, error, preSets);
+
+                    return Promise.reject(error);
                 } else if (typeof preSets.emergencyCache !== 'undefined' && !preSets.emergencyCache) {
                     this.logger.debug(`WS call '${method}' failed. Emergency cache is forbidden, rejecting.`);
 
@@ -695,6 +705,13 @@ export class CoreSite {
                     return Promise.reject(error);
                 });
             });
+        }).then((response) => {
+            // Check if the response is an error, this happens if the error was stored in the cache.
+            if (response && typeof response.exception !== 'undefined') {
+                return Promise.reject(response);
+            }
+
+            return response;
         });
     }
 
