@@ -24,7 +24,6 @@ import { AddonModDataHelperProvider } from '../../providers/helper';
 import { AddonModDataOfflineProvider } from '../../providers/offline';
 import { AddonModDataSyncProvider } from '../../providers/sync';
 import { AddonModDataComponentsModule } from '../components.module';
-import * as moment from 'moment';
 
 /**
  * Component that displays a data index page.
@@ -186,11 +185,10 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
                 this.timeAvailableFrom = this.data.timeavailablefrom && time < this.data.timeavailablefrom ?
                     parseInt(this.data.timeavailablefrom, 10) * 1000 : false;
-                this.timeAvailableFromReadable = this.timeAvailableFrom ?
-                    moment(this.timeAvailableFrom).format('LLL') : false;
+                this.timeAvailableFromReadable = this.timeAvailableFrom ? this.timeUtils.userDate(this.timeAvailableFrom) : false;
                 this.timeAvailableTo = this.data.timeavailableto && time > this.data.timeavailableto ?
                     parseInt(this.data.timeavailableto, 10) * 1000 : false;
-                this.timeAvailableToReadable = this.timeAvailableTo ? moment(this.timeAvailableTo).format('LLL') : false;
+                this.timeAvailableToReadable = this.timeAvailableTo ? this.timeUtils.userDate(this.timeAvailableTo) : false;
 
                 this.isEmpty = true;
                 this.groupInfo = null;

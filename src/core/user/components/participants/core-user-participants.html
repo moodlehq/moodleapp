@@ -11,7 +11,7 @@
                 <a ion-item text-wrap *ngFor="let participant of participants" [title]="participant.fullname" (click)="gotoParticipant(participant.id)" [class.core-split-item-selected]="participant.id == participantId">
                     <ion-avatar core-user-avatar [user]="participant" item-start [userId]="participant.id" [checkOnline]="true"></ion-avatar>
                     <h2><core-format-text [text]="participant.fullname"></core-format-text></h2>
-                    <p *ngIf="participant.lastaccess"><strong>{{ 'core.lastaccess' | translate }}: </strong>{{ participant.lastaccess * 1000 | coreFormatDate:"dfmediumdate"}}</p>
+                    <p *ngIf="participant.lastaccess"><strong>{{ 'core.lastaccess' | translate }}: </strong>{{ participant.lastaccess * 1000 | coreFormatDate }}</p>
                 </a>
             </ion-list>
             <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreData($event)" [error]="loadMoreError"></core-infinite-loading>

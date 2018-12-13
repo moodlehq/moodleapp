@@ -2,7 +2,7 @@
     <img [src]="fileIcon" alt="" role="presentation" item-start />
     <h2>{{fileName}}</h2>
     <p *ngIf="fileSizeReadable">{{ fileSizeReadable }}</p>
-    <p *ngIf="showTime">{{ timemodified * 1000 | coreFormatDate:"dfmediumdate" }}</p>
+    <p *ngIf="showTime">{{ timemodified * 1000 | coreFormatDate }}</p>
     <div class="buttons" item-end>
         <button ion-button clear icon-only (click)="download($event)" *ngIf="!isDownloading && showDownload" [attr.aria-label]="'core.download' | translate" color="dark">
             <ion-icon [name]="isDownloaded ? 'refresh' : 'cloud-download'"></ion-icon>

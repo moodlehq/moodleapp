@@ -15,6 +15,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLoggerProvider } from '@providers/logger';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import * as moment from 'moment';
 
 /**
@@ -36,7 +37,7 @@ import * as moment from 'moment';
 export class CoreDateDayOrTimePipe implements PipeTransform {
     protected logger;
 
-    constructor(logger: CoreLoggerProvider, private translate: TranslateService) {
+    constructor(logger: CoreLoggerProvider, private translate: TranslateService, private timeUtils: CoreTimeUtilsProvider) {
         this.logger = logger.getInstance('CoreDateDayOrTimePipe');
     }
 
@@ -59,10 +60,10 @@ export class CoreDateDayOrTimePipe implements PipeTransform {
         }
 
         return moment(timestamp * 1000).calendar(null, {
-            sameDay: 'LT',
+            sameDay: this.timeUtils.convertPHPToMoment(this.translate.instant('core.strftimetime')),
             lastDay: this.translate.instant('core.dflastweekdate'),
             lastWeek: this.translate.instant('core.dflastweekdate'),
-            sameElse: 'L'
+            sameElse: this.timeUtils.convertPHPToMoment(this.translate.instant('core.strftimedatefullshort'))
         });
     }
 }

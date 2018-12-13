@@ -22,6 +22,7 @@ import { AddonNotesProvider } from './notes';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreSyncProvider } from '@providers/sync';
@@ -38,9 +39,9 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider {
             syncProvider: CoreSyncProvider, textUtils: CoreTextUtilsProvider, translate: TranslateService,
             private notesOffline: AddonNotesOfflineProvider, private utils: CoreUtilsProvider,
             private eventsProvider: CoreEventsProvider,  private notesProvider: AddonNotesProvider,
-            private coursesProvider: CoreCoursesProvider) {
+            private coursesProvider: CoreCoursesProvider, timeUtils: CoreTimeUtilsProvider) {
 
-        super('AddonNotesSync', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate);
+        super('AddonNotesSync', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate, timeUtils);
     }
 
     /**

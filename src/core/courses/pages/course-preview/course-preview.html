@@ -17,7 +17,7 @@
                 <core-icon name="fa-graduation-cap" fixed-width item-start></core-icon>
                 <h2><core-format-text [text]="course.fullname"></core-format-text></h2>
                 <p *ngIf="course.categoryname"><core-format-text [text]="course.categoryname"></core-format-text></p>
-                <p *ngIf="course.startdate">{{course.startdate * 1000 | coreFormatDate:"dfdaymonthyear"}} <span *ngIf="course.enddate"> - {{course.enddate * 1000 | coreFormatDate:"dfdaymonthyear"}}</span></p>
+                <p *ngIf="course.startdate">{{course.startdate * 1000 | coreFormatDate:"strftimedatefullshort" }} <span *ngIf="course.enddate"> - {{course.enddate * 1000 | coreFormatDate:"strftimedatefullshort" }}</span></p>
             </a>
 
             <ion-item text-wrap *ngIf="course.summary" detail-none>

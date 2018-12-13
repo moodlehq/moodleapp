@@ -29,7 +29,7 @@
                 <!-- Render some data about the submission. -->
                 <ion-item text-wrap *ngIf="userSubmission && userSubmission.status != statusNew && userSubmission.timemodified">
                     <h2>{{ 'addon.mod_assign.timemodified' | translate }}</h2>
-                    <p>{{ userSubmission.timemodified * 1000 | coreFormatDate:"dfmediumdate" }}</p>
+                    <p>{{ userSubmission.timemodified * 1000 | coreFormatDate }}</p>
                 </ion-item>
 
                 <ion-item text-wrap *ngIf="timeRemaining" [ngClass]="[timeRemainingClass]">
@@ -44,18 +44,18 @@
 
                 <ion-item text-wrap *ngIf="assign.duedate && !isSubmittedForGrading">
                     <h2>{{ 'addon.mod_assign.duedate' | translate }}</h2>
-                    <p *ngIf="assign.duedate" >{{ assign.duedate * 1000 | coreFormatDate:"dfmediumdate" }}</p>
+                    <p *ngIf="assign.duedate" >{{ assign.duedate * 1000 | coreFormatDate }}</p>
                     <p *ngIf="!assign.duedate" >{{ 'addon.mod_assign.duedateno' | translate }}</p>
                 </ion-item>
 
                 <ion-item text-wrap *ngIf="assign.duedate && assign.cutoffdate && isSubmittedForGrading">
                     <h2>{{ 'addon.mod_assign.cutoffdate' | translate }}</h2>
-                    <p>{{ assign.cutoffdate * 1000 | coreFormatDate:"dfmediumdate" }}</p>
+                    <p>{{ assign.cutoffdate * 1000 | coreFormatDate }}</p>
                 </ion-item>
 
                 <ion-item text-wrap *ngIf="assign.duedate && lastAttempt && lastAttempt.extensionduedate && !isSubmittedForGrading">
                     <h2>{{ 'addon.mod_assign.extensionduedate' | translate }}</h2>
-                    <p>{{ lastAttempt.extensionduedate * 1000 | coreFormatDate:"dfmediumdate" }}</p>
+                    <p>{{ lastAttempt.extensionduedate * 1000 | coreFormatDate }}</p>
                 </ion-item>
 
                 <ion-item text-wrap *ngIf="currentAttempt && !isGrading">
@@ -212,7 +212,7 @@
                     <ion-avatar core-user-avatar [user]="grader" item-start></ion-avatar>
                     <h2>{{ 'addon.mod_assign.gradedby' | translate }}</h2>
                     <h2>{{ grader.fullname }}</h2>
-                    <p *ngIf="feedback.gradeddate">{{ feedback.gradeddate * 1000 | coreFormatDate:"dfmediumdate" }}</p>
+                    <p *ngIf="feedback.gradeddate">{{ feedback.gradeddate * 1000 | coreFormatDate }}</p>
                 </a>
 
                 <!-- Warning message if cannot save grades. -->

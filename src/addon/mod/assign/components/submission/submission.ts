@@ -32,7 +32,6 @@ import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModAssignProvider } from '../../providers/assign';
 import { AddonModAssignHelperProvider } from '../../providers/helper';
 import { AddonModAssignOfflineProvider } from '../../providers/assign-offline';
-import * as moment from 'moment';
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { AddonModAssignSubmissionPluginComponent } from '../submission-plugin/submission-plugin';
@@ -383,7 +382,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             this.assign = assign;
 
             if (assign.allowsubmissionsfromdate && assign.allowsubmissionsfromdate >= time) {
-                this.fromDate = moment(assign.allowsubmissionsfromdate * 1000).format(this.translate.instant('core.dfmediumdate'));
+                this.fromDate = this.timeUtils.userDate(assign.allowsubmissionsfromdate * 1000);
             }
 
             this.currentAttempt = 0;

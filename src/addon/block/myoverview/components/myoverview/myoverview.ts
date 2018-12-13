@@ -14,9 +14,9 @@
 
 import { Component, OnInit, OnDestroy, ViewChild, Injector } from '@angular/core';
 import { Searchbar } from 'ionic-angular';
-import * as moment from 'moment';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCoursesHelperProvider } from '@core/courses/providers/helper';
@@ -74,7 +74,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             private courseCompletionProvider: AddonCourseCompletionProvider, private eventsProvider: CoreEventsProvider,
             private courseHelper: CoreCourseHelperProvider, private utils: CoreUtilsProvider,
             private courseOptionsDelegate: CoreCourseOptionsDelegate, private coursesHelper: CoreCoursesHelperProvider,
-            private sitesProvider: CoreSitesProvider) {
+            private sitesProvider: CoreSitesProvider, private timeUtils: CoreTimeUtilsProvider) {
 
         super(injector, 'AddonBlockMyOverviewComponent');
     }
@@ -251,7 +251,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         this.courses.favourite = [];
         this.courses.hidden = [];
 
-        const today = moment().unix();
+        const today = this.timeUtils.timestamp();
         courses.forEach((course) => {
             if (course.hidden) {
                 this.courses.hidden.push(course);

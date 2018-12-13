@@ -15,12 +15,12 @@
 import { Component, Input, Optional, Injector, ViewChild } from '@angular/core';
 import { Content, NavController } from 'ionic-angular';
 import { CoreGroupInfo, CoreGroupsProvider } from '@providers/groups';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
 import { AddonModFeedbackProvider } from '../../providers/feedback';
 import { AddonModFeedbackHelperProvider } from '../../providers/helper';
 import { AddonModFeedbackOfflineProvider } from '../../providers/offline';
 import { AddonModFeedbackSyncProvider } from '../../providers/sync';
-import * as moment from 'moment';
 import { CoreTabsComponent } from '@components/tabs/tabs';
 
 /**
@@ -71,7 +71,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     constructor(injector: Injector, private feedbackProvider: AddonModFeedbackProvider, @Optional() content: Content,
             private feedbackOffline: AddonModFeedbackOfflineProvider, private groupsProvider: CoreGroupsProvider,
             private feedbackSync: AddonModFeedbackSyncProvider, private navCtrl: NavController,
-            private feedbackHelper: AddonModFeedbackHelperProvider) {
+            private feedbackHelper: AddonModFeedbackHelperProvider, private timeUtils: CoreTimeUtilsProvider) {
         super(injector, content);
 
         // Listen for form submit events.
@@ -207,11 +207,9 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
         if (accessData.canedititems) {
             this.overview.timeopen = parseInt(this.feedback.timeopen) * 1000 || 0;
-            this.overview.openTimeReadable = this.overview.timeopen ?
-                moment(this.overview.timeopen).format('LLL') : '';
+            this.overview.openTimeReadable = this.overview.timeopen ? this.timeUtils.userDate(this.overview.timeopen) : '';
             this.overview.timeclose = parseInt(this.feedback.timeclose) * 1000 || 0;
-            this.overview.closeTimeReadable = this.overview.timeclose ?
-                moment(this.overview.timeclose).format('LLL') : '';
+            this.overview.closeTimeReadable = this.overview.timeclose ? this.timeUtils.userDate(this.overview.timeclose) : '';
         }
         if (accessData.canviewanalysis) {
             // Get groups (only for teachers).

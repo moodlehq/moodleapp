@@ -1,6 +1,6 @@
 <ion-item-group *ngFor="let dayEvents of filteredEvents">
     <ion-item-divider [color]="dayEvents.color">
-        <h2>{{ dayEvents.dayTimestamp * 1000 | coreFormatDate:"LL" }}</h2>
+        <h2>{{ dayEvents.dayTimestamp * 1000 | coreFormatDate:"strftimedayshort" }}</h2>
     </ion-item-divider>
     <ng-container *ngFor="let event of dayEvents.events">
         <a ion-item text-wrap detail-none class="core-course-module-handler item-media" (click)="action($event, event)" [title]="event.action.actionable ? event.action.name: event.name">
@@ -9,7 +9,7 @@
             <p *ngIf="showCourse">
                 <core-format-text [text]="event.course.fullnamedisplay"></core-format-text>
             </p>
-            <ion-badge color="light" item-end>{{event.timesort * 1000 | coreFormatDate:"LT" }}</ion-badge>
+            <ion-badge color="light" item-end>{{event.timesort * 1000 | coreFormatDate:"strftimetime24" }}</ion-badge>
         </a>
     </ng-container>
 </ion-item-group>

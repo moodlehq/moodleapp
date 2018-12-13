@@ -17,7 +17,6 @@ import { NavController } from 'ionic-angular';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { AddonModChatProvider } from '../../providers/chat';
-import * as moment from 'moment';
 
 /**
  * Component that displays a chat.
@@ -73,7 +72,7 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
 
             if (chat.chattime && chat.schedule > 0 && span > 0) {
                 this.chatInfo = {
-                    date: moment(chat.chattime * 1000).format('LLL'),
+                    date: this.timeUtils.userDate(chat.chattime * 1000),
                     fromnow: this.timeUtils.formatTime(span)
                 };
             } else {

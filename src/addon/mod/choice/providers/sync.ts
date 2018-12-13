@@ -19,6 +19,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreAppProvider } from '@providers/app';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { AddonModChoiceOfflineProvider } from './offline';
 import { AddonModChoiceProvider } from './choice';
 import { CoreEventsProvider } from '@providers/events';
@@ -39,8 +40,10 @@ export class AddonModChoiceSyncProvider extends CoreSyncBaseProvider {
             protected appProvider: CoreAppProvider, private choiceOffline: AddonModChoiceOfflineProvider,
             private eventsProvider: CoreEventsProvider,  private choiceProvider: AddonModChoiceProvider,
             translate: TranslateService, private utils: CoreUtilsProvider, protected textUtils: CoreTextUtilsProvider,
-            courseProvider: CoreCourseProvider, syncProvider: CoreSyncProvider) {
-        super('AddonModChoiceSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate);
+            courseProvider: CoreCourseProvider, syncProvider: CoreSyncProvider, timeUtils: CoreTimeUtilsProvider) {
+        super('AddonModChoiceSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
+                timeUtils);
+
         this.componentTranslate = courseProvider.translateModuleName('choice');
     }
 

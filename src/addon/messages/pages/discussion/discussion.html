@@ -28,7 +28,7 @@
         <ion-list class="addon-messages-discussion-container safe-area-page" [class.addon-messages-discussion-group]="isGroup" [attr.aria-live]="'polite'">
             <ng-container *ngFor="let message of messages; index as index; last as last">
                 <h6 text-center *ngIf="message.showDate" class="addon-messages-date">
-                    {{ message.timecreated | coreFormatDate: "LL" }}
+                    {{ message.timecreated | coreFormatDate: "strftimedayshort" }}
                 </h6>
 
                 <ion-chip class="addon-messages-unreadfrom" *ngIf="unreadMessageFrom && message.id == unreadMessageFrom" color="light">
@@ -43,7 +43,7 @@
 
                         <div *ngIf="message.showUserData">{{ members[message.useridfrom].fullname }}</div>
 
-                        <ion-note *ngIf="!message.pending">{{ message.timecreated | coreFormatDate: "dftimedate" }}</ion-note>
+                        <ion-note *ngIf="!message.pending">{{ message.timecreated | coreFormatDate: "strftimetime" }}</ion-note>
                         <ion-note *ngIf="message.pending"><ion-icon name="time"></ion-icon></ion-note>
                     </h2>
 
