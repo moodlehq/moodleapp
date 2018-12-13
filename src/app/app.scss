@@ -437,8 +437,14 @@ ion-app.app-root {
     color: $core-question-correct-color;
     background-color: $core-question-correct-color-bg;
 
-    .label, ion-label.label {
+    .label, ion-label.label, .select-text, .select-icon .select-icon-inner {
       color: $core-question-correct-color;
+    }
+    .radio-icon {
+      border-color: $core-question-correct-color;
+    }
+    .radio-inner {
+      background-color: $core-question-correct-color;
     }
   }
 
@@ -447,8 +453,14 @@ ion-app.app-root {
     color: $core-question-incorrect-color;
     background-color: $core-question-incorrect-color-bg;
 
-    .label, ion-label.label {
+    .label, ion-label.label, .select-text, .select-icon .select-icon-inner {
       color: $core-question-incorrect-color;
+    }
+    .radio-icon {
+      border-color: $core-question-incorrect-color;
+    }
+    .radio-inner {
+      background-color: $core-question-incorrect-color;
     }
   }
 

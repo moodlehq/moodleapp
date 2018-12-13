@@ -89,7 +89,8 @@
             <!-- "Header" of the summary table. -->
             <ion-item text-wrap>
                 <ion-row align-items-center>
-                    <ion-col col-3 text-center><b>{{ 'addon.mod_quiz.question' | translate }}</b></ion-col>
+                    <ion-col col-3 text-center class="hidden-phone"><b>{{ 'addon.mod_quiz.question' | translate }}</b></ion-col>
+                    <ion-col col-3 text-center class="hidden-tablet"><b>#</b></ion-col>
                     <ion-col col-9 text-center><b>{{ 'addon.mod_quiz.status' | translate }}</b></ion-col>
                 </ion-row>
             </ion-item>
@@ -98,7 +99,7 @@
                 <a ion-item (click)="changePage(question.page, false, question.slot)" *ngIf="question.number" [attr.aria-label]="'core.question.questionno' | translate:{$a: question.number}" [attr.detail-push]="!quiz.isSequential && canReturn ? true : null">
                     <ion-row align-items-center>
                         <ion-col col-3 text-center>{{ question.number }}</ion-col>
-                        <ion-col col-9 text-center>{{ question.status }}</ion-col>
+                        <ion-col col-9 text-center text-wrap>{{ question.status }}</ion-col>
                     </ion-row>
                 </a>
             </ng-container>
