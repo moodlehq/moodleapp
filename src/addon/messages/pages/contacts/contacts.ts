@@ -93,7 +93,7 @@ export class AddonMessagesContactsPage implements OnDestroy {
     selectUser(tab: string, userId?: number, onInit: boolean = false): void {
         userId = userId || this.selectedUserId[tab];
 
-        if (!userId || userId == this.conversationUserId) {
+        if (!userId || userId == this.conversationUserId && this.splitviewCtrl.isOn()) {
             // No user conversation to open or it is already opened.
             return;
         }
