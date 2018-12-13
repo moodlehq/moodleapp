@@ -188,6 +188,7 @@
     "quotausage": "You have currently used {{$a.used}} of your {{$a.total}} limit.",
     "redirectingtosite": "You will be redirected to the site.",
     "refresh": "Refresh",
+    "remove": "Remove",
     "required": "Required",
     "requireduserdatamissing": "This user lacks some required profile data. Please enter the data in your site and try again.<br>{{$a}}",
     "resources": "Resources",

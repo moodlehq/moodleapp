@@ -1,0 +1,28 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'addon.messages.contacts' | translate }}</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only (click)="gotoSearch()" [attr.aria-label]="'addon.messages.search' | translate">
+                <ion-icon name="search"></ion-icon>
+            </button>
+            <!-- Add an empty context menu so discussion page can add items in split view, otherwise the menu disappears in some cases. -->
+            <core-context-menu></core-context-menu>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<core-split-view>
+    <ion-content>
+        <core-tabs>
+            <core-tab [title]="'addon.messages.contacts' | translate" (ionSelect)="selectUser('contacts')">
+                <ng-template>
+                    <addon-messages-confirmed-contacts (onUserSelected)="selectUser('contacts', $event.userId, $event.onInit)"></addon-messages-confirmed-contacts>
+                </ng-template>
+            </core-tab>
+            <core-tab [title]="'addon.messages.requests' | translate" [badge]="contactRequestsCount" (ionSelect)="selectUser('requests')">
+                 <ng-template>
+                    <addon-messages-contact-requests (onUserSelected)="selectUser('requests', $event.userId, $event.onInit)"></addon-messages-contact-requests>
+                </ng-template>
+            </core-tab>
+        </core-tabs>
+    </ion-content>
+</core-split-view>

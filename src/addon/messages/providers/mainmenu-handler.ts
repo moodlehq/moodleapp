@@ -43,6 +43,8 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
         loading: true
     };
 
+    protected updating = false;
+
     constructor(private messagesProvider: AddonMessagesProvider, private sitesProvider: CoreSitesProvider,
             private eventsProvider: CoreEventsProvider, private appProvider: CoreAppProvider,
             private localNotificationsProvider: CoreLocalNotificationsProvider, private textUtils: CoreTextUtilsProvider,
@@ -57,10 +59,15 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
             this.updateBadge(data.siteId);
         });
 
+        eventsProvider.on(AddonMessagesProvider.CONTACT_REQUESTS_COUNT_EVENT, (data) => {
+            this.updateBadge(data.siteId, data.count);
+        });
+
         // Reset info on logout.
         eventsProvider.on(CoreEventsProvider.LOGOUT, (data) => {
             this.handler.badge = '';
             this.handler.loading = true;
+            this.updating = false;
         });
 
         // If a message push notification is received, refresh the count.
@@ -103,23 +110,55 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
     /**
      * Triggers an update for the badge number and loading status. Mandatory if showBadge is enabled.
      *
-     * @param {string} siteId Site ID or current Site if undefined.
+     * @param {string} [siteId] Site ID or current Site if undefined.
+     * @param {number} [contactRequestsCount] Number of contact requests, if known.
      */
-    updateBadge(siteId?: string): void {
+    updateBadge(siteId?: string, contactRequestsCount?: number): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
         if (!siteId) {
             return;
         }
 
-        this.messagesProvider.getUnreadConversationsCount(undefined, siteId).then((unread) => {
-            // Leave badge enter if there is a 0+ or a 0.
-            this.handler.badge = parseInt(unread, 10) > 0 ? unread : '';
-            // Update badge.
-            this.pushNotificationsProvider.updateAddonCounter('AddonMessages', unread, siteId);
+        if (this.updating) {
+            // An update is already in prgoress.
+            return;
+        }
+
+        this.updating = true;
+
+        const promises = [];
+        let unreadCount = 0;
+        let unreadPlus = false;
+
+        promises.push(this.messagesProvider.getUnreadConversationsCount(undefined, siteId).then((unread) => {
+            unreadCount = parseInt(unread, 10);
+            unreadPlus = (typeof unread === 'string' && unread.slice(-1) === '+');
         }).catch(() => {
-            this.handler.badge = '';
+            // Ignore error.
+        }));
+
+        // Get the number of contact requests in 3.6+ sites if needed.
+        if (contactRequestsCount == null && this.messagesProvider.isGroupMessagingEnabled()) {
+            promises.push(this.messagesProvider.getContactRequestsCount(siteId).then((count) => {
+                contactRequestsCount = count;
+            }).catch(() => {
+                // Ignore errors
+            }));
+        }
+
+        Promise.all(promises).then(() => {
+            const totalCount = unreadCount + (contactRequestsCount || 0);
+            if (totalCount > 0) {
+                this.handler.badge = totalCount + (unreadPlus ? '+' : '');
+            } else {
+                this.handler.badge = '';
+            }
+
+            // Update badge.
+            this.pushNotificationsProvider.updateAddonCounter('AddonMessages', totalCount, siteId);
         }).finally(() => {
             this.handler.loading = false;
+            this.updating = false;
         });
     }
 

@@ -21,6 +21,8 @@ import { AddonMessagesOfflineProvider } from './messages-offline';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service to handle messages.
@@ -28,7 +30,6 @@ import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
 @Injectable()
 export class AddonMessagesProvider {
     protected ROOT_CACHE_KEY = 'mmaMessages:';
-    protected LIMIT_SEARCH_MESSAGES = 50;
     protected LIMIT_MESSAGES = AddonMessagesProvider.LIMIT_MESSAGES;
     static NEW_MESSAGE_EVENT = 'addon_messages_new_message_event';
     static READ_CHANGED_EVENT = 'addon_messages_read_changed_event';
@@ -36,6 +37,8 @@ export class AddonMessagesProvider {
     static OPEN_CONVERSATION_EVENT = 'addon_messages_open_conversation_event'; // Notify that a conversation should be opened.
     static SPLIT_VIEW_LOAD_EVENT = 'addon_messages_split_view_load_event';
     static UPDATE_CONVERSATION_LIST_EVENT = 'addon_messages_update_conversation_list_event';
+    static MEMBER_INFO_CHANGED_EVENT = 'addon_messages_member_changed_event';
+    static CONTACT_REQUESTS_COUNT_EVENT = 'addon_messages_contact_requests_count_event';
     static POLL_INTERVAL = 10000;
     static PUSH_SIMULATION_COMPONENT = 'AddonMessagesPushSimulation';
 
@@ -44,7 +47,10 @@ export class AddonMessagesProvider {
     static MESSAGE_PRIVACY_SITE = 2; // Privacy setting for being messaged by anyone on the site.
     static MESSAGE_CONVERSATION_TYPE_INDIVIDUAL = 1; // An individual conversation.
     static MESSAGE_CONVERSATION_TYPE_GROUP = 2; // A group conversation.
+    static LIMIT_CONTACTS = 50;
     static LIMIT_MESSAGES = 50;
+    static LIMIT_INITIAL_USER_SEARCH = 3;
+    static LIMIT_SEARCH = 50;
 
     static NOTIFICATION_PREFERENCES_KEY = 'message_provider_moodle_instantmessage';
 
@@ -53,7 +59,7 @@ export class AddonMessagesProvider {
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider,
             private userProvider: CoreUserProvider, private messagesOffline: AddonMessagesOfflineProvider,
             private utils: CoreUtilsProvider, private timeUtils: CoreTimeUtilsProvider,
-            private emulatorHelper: CoreEmulatorHelperProvider) {
+            private emulatorHelper: CoreEmulatorHelperProvider, private eventsProvider: CoreEventsProvider) {
         this.logger = logger.getInstance('AddonMessagesProvider');
     }
 
@@ -63,6 +69,7 @@ export class AddonMessagesProvider {
      * @param {number} userId  User ID of the person to add.
      * @param {string} [siteId]  Site ID. If not defined, use current site.
      * @return {Promise<any>}  Resolved when done.
+     * @deprecated since Moodle 3.6
      */
     addContact(userId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -101,7 +108,90 @@ export class AddonMessagesProvider {
             }
 
             return promise.then(() => {
-                return this.invalidateAllContactsCache(site.getUserId(), site.getId());
+                return this.invalidateAllMemberInfo(userId, site).finally(() => {
+                    const data = { userId, userBlocked: true };
+                    this.eventsProvider.trigger(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, data, site.id);
+                });
+            });
+        });
+    }
+
+    /**
+     * Confirm a contact request from another user.
+     *
+     * @param {number} userId ID of the user who made the contact request.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<any>} Resolved when done.
+     * @since 3.6
+     */
+    confirmContactRequest(userId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                userid: userId,
+                requesteduserid: site.getUserId(),
+            };
+
+            return site.write('core_message_confirm_contact_request', params).then(() => {
+                return this.utils.allPromises([
+                    this.invalidateAllMemberInfo(userId, site),
+                    this.invalidateContactsCache(site.id),
+                    this.invalidateUserContacts(site.id),
+                    this.refreshContactRequestsCount(site.id),
+                ]).finally(() => {
+                    const data = { userId, contactRequestConfirmed: true };
+                    this.eventsProvider.trigger(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, data, site.id);
+                });
+            });
+        });
+    }
+
+    /**
+     * Send a contact request to another user.
+     *
+     * @param {number} userId ID of the receiver of the contact request.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<any>} Resolved when done.
+     * @since 3.6
+     */
+    createContactRequest(userId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                userid: site.getUserId(),
+                requesteduserid: userId,
+            };
+
+            return site.write('core_message_create_contact_request', params).then(() => {
+                return this.invalidateAllMemberInfo(userId, site).finally(() => {
+                    const data = { userId, contactRequestCreated: true };
+                    this.eventsProvider.trigger(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, data, site.id);
+                });
+            });
+        });
+    }
+
+    /**
+     * Decline a contact request from another user.
+     *
+     * @param {number} userId ID of the user who made the contact request.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<any>} Resolved when done.
+     * @since 3.6
+     */
+    declineContactRequest(userId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                userid: userId,
+                requesteduserid: site.getUserId(),
+            };
+
+            return site.write('core_message_decline_contact_request', params).then(() => {
+                return this.utils.allPromises([
+                    this.invalidateAllMemberInfo(userId, site),
+                    this.refreshContactRequestsCount(site.id),
+                ]).finally(() => {
+                    const data = { userId, contactRequestDeclined: true };
+                    this.eventsProvider.trigger(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, data, site.id);
+                });
             });
         });
     }
@@ -248,6 +338,33 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Get the cache key for comfirmed contacts.
+     *
+     * @return {string} Cache key.
+     */
+    protected getCacheKeyForUserContacts(): string {
+        return this.ROOT_CACHE_KEY + 'userContacts';
+    }
+
+    /**
+     * Get the cache key for contact requests.
+     *
+     * @return {string} Cache key.
+     */
+    protected getCacheKeyForContactRequests(): string {
+        return this.ROOT_CACHE_KEY + 'contactRequests';
+    }
+
+    /**
+     * Get the cache key for contact requests count.
+     *
+     * @return {string} Cache key.
+     */
+    protected getCacheKeyForContactRequestsCount(): string {
+        return this.ROOT_CACHE_KEY + 'contactRequestsCount';
+    }
+
+    /**
      * Get the cache key for a discussion.
      *
      * @param {number} userId The other person with whom the current user is having the discussion.
@@ -333,6 +450,17 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Get cache key for member info.
+     *
+     * @param {number} userId User ID.
+     * @param {number} otherUserId The other user ID.
+     * @return {string} Cache key.
+     */
+    protected getCacheKeyForMemberInfo(userId: number, otherUserId: number): string {
+        return this.ROOT_CACHE_KEY + 'memberInfo:' + userId + ':' + otherUserId;
+    }
+
+    /**
      * Get common cache key for get user conversations.
      *
      * @param {number} userId User ID.
@@ -356,6 +484,7 @@ export class AddonMessagesProvider {
      *
      * @param  {string} [siteId]  Site ID. If not defined, use current site.
      * @return {Promise<any>} Resolved with the WS data.
+     * @deprecated since Moodle 3.6
      */
     getAllContacts(siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -377,7 +506,7 @@ export class AddonMessagesProvider {
     }
 
     /**
-     * Get all the blocked contacts of the current user.
+     * Get all the users blocked by the current user.
      *
      * @param  {string} [siteId] Site ID. If not defined, use current site.
      * @return {Promise<any>} Resolved with the WS data.
@@ -403,6 +532,7 @@ export class AddonMessagesProvider {
      *
      * @param  {string} [siteId] Site ID. If not defined, use current site.
      * @return {Promise<any>} Resolved with the WS data.
+     * @deprecated since Moodle 3.6
      */
     getContacts(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -426,6 +556,114 @@ export class AddonMessagesProvider {
                 }
 
                 return validContacts;
+            });
+        });
+    }
+
+    /**
+     * Get the list of user contacts.
+     *
+     * @param {number} [limitFrom=0] Position of the first contact to fetch.
+     * @param {number} [limitNum] Number of contacts to fetch. Default is AddonMessagesProvider.LIMIT_CONTACTS.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<{contacts: any[], canLoadMore: boolean}>} Resolved with the list of user contacts.
+     * @since 3.6
+     */
+    getUserContacts(limitFrom: number = 0, limitNum: number = AddonMessagesProvider.LIMIT_CONTACTS , siteId?: string):
+            Promise<{contacts: any[], canLoadMore: boolean}> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                userid: site.getUserId(),
+                limitfrom: limitFrom,
+                limitnum: limitNum <= 0 ? 0 : limitNum + 1
+            };
+            const preSets = {
+                cacheKey: this.getCacheKeyForUserContacts()
+            };
+
+            return site.read('core_message_get_user_contacts', params, preSets).then((contacts) => {
+                if (!contacts || !contacts.length) {
+                    return { contacts: [], canLoadMore: false };
+                }
+
+                this.userProvider.storeUsers(contacts, site.id);
+
+                if (limitNum <= 0) {
+                    return { contacts, canLoadMore: false };
+                }
+
+                return {
+                    contacts: contacts.slice(0, limitNum),
+                    canLoadMore: contacts.length > limitNum
+                };
+            });
+        });
+    }
+
+    /**
+     * Get the contact request sent to the current user.
+     *
+     * @param {number} [limitFrom=0] Position of the first contact request to fetch.
+     * @param {number} [limitNum] Number of contact requests to fetch. Default is AddonMessagesProvider.LIMIT_CONTACTS.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<{requests: any[], canLoadMore: boolean}>} Resolved with the list of contact requests.
+     * @since 3.6
+     */
+    getContactRequests(limitFrom: number = 0, limitNum: number =  AddonMessagesProvider.LIMIT_CONTACTS, siteId?: string):
+            Promise<{requests: any[], canLoadMore: boolean}> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const data = {
+                userid: site.getUserId(),
+                limitfrom: limitFrom,
+                limitnum: limitNum <= 0 ? 0 : limitNum + 1
+            };
+            const preSets = {
+                cacheKey: this.getCacheKeyForContactRequests()
+            };
+
+            return site.read('core_message_get_contact_requests', data, preSets).then((requests) => {
+                if (!requests || !requests.length) {
+                    return { requests: [], canLoadMore: false };
+                }
+
+                this.userProvider.storeUsers(requests, site.id);
+
+                if (limitNum <= 0) {
+                    return { requests, canLoadMore: false };
+                }
+
+                return {
+                    requests: requests.slice(0, limitNum),
+                    canLoadMore: requests.length > limitNum
+                };
+            });
+        });
+    }
+
+    /**
+     * Get the number of contact requests sent to the current user.
+     *
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<number>} Resolved with the number of contact requests.
+     * @since 3.6
+     */
+    getContactRequestsCount(siteId?: string): Promise<number> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const data = {
+                userid: site.getUserId(),
+            };
+            const preSets = {
+                cacheKey: this.getCacheKeyForContactRequestsCount(),
+                typeExpected: 'number'
+            };
+
+            return site.read('core_message_get_received_contact_requests_count', data, preSets).then((count) => {
+                // Notify the new count so all badges are updated.
+                this.eventsProvider.trigger(AddonMessagesProvider.CONTACT_REQUESTS_COUNT_EVENT, { count }, site.id);
+
+                return count;
             });
         });
     }
@@ -491,18 +729,20 @@ export class AddonMessagesProvider {
      * @param {boolean} [newestFirst=true] Whether to order messages by newest first.
      * @param {string} [siteId] Site ID. If not defined, use current site.
      * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @param {boolean} [preferCache] True if shouldn't call WS if data is cached, false otherwise.
      * @return {Promise<any>} Promise resolved with the response.
      * @since 3.6
      */
     getConversationBetweenUsers(otherUserId: number, includeContactRequests?: boolean, includePrivacyInfo?: boolean,
             messageOffset: number = 0, messageLimit: number = 1, memberOffset: number = 0, memberLimit: number = 2,
-            newestFirst: boolean = true, siteId?: string, userId?: number): Promise<any> {
+            newestFirst: boolean = true, siteId?: string, userId?: number, preferCache?: boolean): Promise<any> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
             const preSets = {
-                    cacheKey: this.getCacheKeyForConversationBetweenUsers(userId, otherUserId)
+                    cacheKey: this.getCacheKeyForConversationBetweenUsers(userId, otherUserId),
+                    omitExpires: !!preferCache,
                 },
                 params: any = {
                     userid: userId,
@@ -901,6 +1141,40 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Get conversation member info by user id, works even if no conversation betwen the users exists.
+     *
+     * @param {number} otherUserId The other user ID.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>} Promise resolved with the member info.
+     * @since 3.6
+     */
+    getMemberInfo(otherUserId: number, siteId?: string, userId?: number): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            const preSets = {
+                    cacheKey: this.getCacheKeyForMemberInfo(userId, otherUserId)
+                },
+                params: any = {
+                    referenceuserid: userId,
+                    userids: [otherUserId],
+                    includecontactrequests: 1,
+                    includeprivacyinfo: 1,
+                };
+
+            return site.read('core_message_get_member_info', params, preSets).then((members) => {
+                if (!members || members.length < 1) {
+                    // Should never happen.
+                    return Promise.reject(null);
+                }
+
+                return members[0];
+            });
+        });
+    }
+
+    /**
      * Get the cache key for the get message preferences call.
      *
      * @return {string} Cache key.
@@ -1147,6 +1421,42 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Invalidate user contacts cache.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Resolved when done.
+     */
+    invalidateUserContacts(siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getCacheKeyForUserContacts());
+        });
+    }
+
+    /**
+     * Invalidate contact requests cache.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Resolved when done.
+     */
+    invalidateContactRequestsCache(siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getCacheKeyForContactRequests());
+        });
+    }
+
+    /**
+     * Invalidate contact requests count cache.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Resolved when done.
+     */
+    invalidateContactRequestsCountCache(siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getCacheKeyForContactRequestsCount());
+        });
+    }
+
+    /**
      * Invalidate conversation.
      *
      * @param {number} conversationId Conversation ID.
@@ -1257,6 +1567,22 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Invalidate member info cache.
+     *
+     * @param {number} otherUserId The other user ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>} Resolved when done.
+     */
+    invalidateMemberInfo(otherUserId: number, siteId?: string, userId?: number): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            return site.invalidateWsCacheForKey(this.getCacheKeyForMemberInfo(userId, otherUserId));
+        });
+    }
+
+    /**
      * Invalidate get message preferences.
      *
      * @param  {string} [siteId] Site ID. If not defined, current site.
@@ -1269,6 +1595,31 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Invalidate all cache entries with member info.
+     *
+     * @param {number} userId Id of the user to invalidate.
+     * @param {CoreSite} site Site object.
+     * @return {Promie<any>} Promise resolved when done.
+     */
+    protected invalidateAllMemberInfo(userId: number, site: CoreSite): Promise<any> {
+        return this.utils.allPromises([
+            this.invalidateMemberInfo(userId, site.id),
+            this.invalidateUserContacts(site.id),
+            this.invalidateContactRequestsCache(site.id),
+            this.invalidateConversations(site.id),
+            this.getConversationBetweenUsers(userId, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+                    site.id, undefined, true).then((conversation) => {
+                return this.utils.allPromises([
+                    this.invalidateConversation(conversation.id),
+                    this.invalidateConversationMembers(conversation.id, site.id),
+                ]);
+            }).catch(() => {
+                // The conversation does not exist or we can't fetch it now, ignore it.
+            })
+        ]);
+    }
+
+    /**
      * Checks if the a user is blocked by the current user.
      *
      * @param {number} userId The user ID to check against.
@@ -1276,6 +1627,12 @@ export class AddonMessagesProvider {
      * @return {Promise<boolean>} Resolved with boolean, rejected when we do not know.
      */
     isBlocked(userId: number, siteId?: string): Promise<boolean> {
+        if (this.isGroupMessagingEnabled()) {
+            return this.getMemberInfo(userId, siteId).then((member) => {
+                return member.isblocked;
+            });
+        }
+
         return this.getBlockedContacts(siteId).then((blockedContacts) => {
             if (!blockedContacts.users || blockedContacts.users.length < 1) {
                 return false;
@@ -1295,6 +1652,12 @@ export class AddonMessagesProvider {
      * @return {Promise<boolean>} Resolved with boolean, rejected when we do not know.
      */
     isContact(userId: number, siteId?: string): Promise<boolean> {
+        if (this.isGroupMessagingEnabled()) {
+            return this.getMemberInfo(userId, siteId).then((member) => {
+                return member.iscontact;
+            });
+        }
+
         return this.getContacts(siteId).then((contacts) => {
             return ['online', 'offline'].some((type) => {
                 if (contacts[type] && contacts[type].length > 0) {
@@ -1439,6 +1802,21 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Refresh the number of contact requests sent to the current user.
+     *
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<number>} Resolved with the number of contact requests.
+     * @since 3.6
+     */
+    refreshContactRequestsCount(siteId?: string): Promise<number> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        return this.invalidateContactRequestsCountCache(siteId).then(() => {
+            return this.getContactRequestsCount(siteId);
+        });
+    }
+
+    /**
      * Remove a contact.
      *
      * @param {number} userId User ID of the person to remove.
@@ -1455,7 +1833,17 @@ export class AddonMessagesProvider {
                 };
 
             return site.write('core_message_delete_contacts', params, preSets).then(() => {
-                return this.invalidateContactsCache(site.getId());
+                if (this.isGroupMessagingEnabled()) {
+                    return this.utils.allPromises([
+                        this.invalidateUserContacts(site.id),
+                        this.invalidateAllMemberInfo(userId, site),
+                    ]).then(() => {
+                        const data = { userId, contactRemoved: true };
+                        this.eventsProvider.trigger(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, data, site.id);
+                    });
+                } else {
+                    return this.invalidateContactsCache(site.id);
+                }
             });
         });
     }
@@ -1496,28 +1884,91 @@ export class AddonMessagesProvider {
     /**
      * Search for all the messges with a specific text.
      *
-     * @param  {string} query        The query string
-     * @param  {number} [userId]     The user ID. If not defined, current user.
-     * @param  {number} [from=0]     Position of the first result to get. Defaults to 0.
-     * @param  {number} [limit]      Number of results to get. Defaults to LIMIT_SEARCH_MESSAGES.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}              Promise resolved with the results.
+     * @param {string} query The query string.
+     * @param {number} [userId] The user ID. If not defined, current user.
+     * @param {number} [limitFrom=0] Position of the first result to get. Defaults to 0.
+     * @param {number} [limitNum] Number of results to get. Defaults to AddonMessagesProvider.LIMIT_SEARCH.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with the results.
      */
-    searchMessages(query: string, userId?: number, from: number = 0, limit: number = this.LIMIT_SEARCH_MESSAGES, siteId?: string):
-            Promise<any> {
+    searchMessages(query: string, userId?: number, limitFrom: number = 0, limitNum: number = AddonMessagesProvider.LIMIT_SEARCH,
+            siteId?: string): Promise<{messages: any[], canLoadMore: boolean}> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
-            const param = {
+            const params = {
                     userid: userId || site.getUserId(),
                     search: query,
-                    limitfrom: from,
-                    limitnum: limit
+                    limitfrom: limitFrom,
+                    limitnum: limitNum <= 0 ? 0 : limitNum + 1
                 },
                 preSets = {
                     getFromCache: false // Always try to get updated data. If it fails, it will get it from cache.
                 };
 
-            return site.read('core_message_data_for_messagearea_search_messages', param, preSets).then((searchResults) => {
-                return searchResults.contacts;
+            return site.read('core_message_data_for_messagearea_search_messages', params, preSets).then((result) => {
+                if (!result.contacts || !result.contacts.length) {
+                    return { messages: [], canLoadMore: false };
+                }
+
+                result.contacts.forEach((result) => {
+                    result.id = result.userid;
+                });
+
+                this.userProvider.storeUsers(result.contacts, site.id);
+
+                if (limitNum <= 0) {
+                    return { messages: result.contacts, canLoadMore: false };
+                }
+
+                return {
+                    messages: result.contacts.slice(0, limitNum),
+                    canLoadMore: result.contacts.length > limitNum
+                };
+            });
+        });
+    }
+
+    /**
+     * Search for users.
+     *
+     * @param {string} query Text to search for.
+     * @param {number} [limitFrom=0] Position of the first found user to fetch.
+     * @param {number} [limitNum] Number of found users to fetch. Defaults to AddonMessagesProvider.LIMIT_SEARCH.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<any>} Resolved with two lists of found users: contacts and non-contacts.
+     * @since 3.6
+     */
+    searchUsers(query: string, limitFrom: number = 0, limitNum: number = AddonMessagesProvider.LIMIT_SEARCH, siteId?: string):
+            Promise<{contacts: any[], nonContacts: any[], canLoadMoreContacts: boolean, canLoadMoreNonContacts: boolean}> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const data = {
+                    userid: site.getUserId(),
+                    search: query,
+                    limitfrom: limitFrom,
+                    limitnum: limitNum <= 0 ? 0 : limitNum + 1
+                },
+                preSets = {
+                    getFromCache: false // Always try to get updated data. If it fails, it will get it from cache.
+                };
+
+            return site.read('core_message_message_search_users', data, preSets).then((result) => {
+                const contacts = result.contacts || [];
+                const nonContacts = result.noncontacts || [];
+
+                this.userProvider.storeUsers(contacts, site.id);
+                this.userProvider.storeUsers(nonContacts, site.id);
+
+                if (limitNum <= 0) {
+                    return { contacts, nonContacts, canLoadMoreContacts: false, canLoadMoreNonContacts: false };
+                }
+
+                return {
+                    contacts: contacts.slice(0, limitNum),
+                    nonContacts: nonContacts.slice(0, limitNum),
+                    canLoadMoreContacts: contacts.length > limitNum,
+                    canLoadMoreNonContacts: nonContacts.length > limitNum
+                };
             });
         });
     }
@@ -1918,7 +2369,10 @@ export class AddonMessagesProvider {
             }
 
             return promise.then(() => {
-                return this.invalidateAllContactsCache(site.getUserId(), site.getId());
+                return this.invalidateAllMemberInfo(userId, site).finally(() => {
+                    const data = { userId, userUnblocked: true };
+                    this.eventsProvider.trigger(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, data, site.id);
+                });
             });
         });
     }

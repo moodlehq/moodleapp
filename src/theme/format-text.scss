@@ -184,9 +184,4 @@ ion-app.app-root {
     width: min-content;
     display: inline;
   }
-
-  // Message item.
-  .item-message core-format-text > p:only-child {
-    display: inline;
-  }
 }

@@ -209,7 +209,7 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
 
         return this.messagesProvider.searchMessages(query).then((searchResults) => {
             this.search.showResults = true;
-            this.search.results = searchResults;
+            this.search.results = searchResults.messages;
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingmessages', true);
         }).finally(() => {
