@@ -65,7 +65,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
     protected prefetchIconsInitialized = false;
     protected isDestroyed;
-    protected updateSiteObserver;
+    protected downloadButtonObserver;
     protected coursesObserver;
     protected courseIds = [];
     protected fetchContentDefaultError = 'Error getting my overview data.';
@@ -83,13 +83,12 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.downloadAllCoursesEnabled = !this.coursesProvider.isDownloadCoursesDisabledInSite();
-
-        // Refresh the enabled flags if site is updated.
-        this.updateSiteObserver = this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, () => {
+        // Refresh the enabled flags if enabled.
+        this.downloadButtonObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED,
+                (data) => {
             const wasEnabled = this.downloadAllCoursesEnabled;
 
-            this.downloadAllCoursesEnabled = !this.coursesProvider.isDownloadCoursesDisabledInSite();
+            this.downloadAllCoursesEnabled = data.enabled;
 
             if (!wasEnabled && this.downloadAllCoursesEnabled && this.loaded) {
                 // Download all courses is enabled now, initialize it.
@@ -332,6 +331,6 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     ngOnDestroy(): void {
         this.isDestroyed = true;
         this.coursesObserver && this.coursesObserver.off();
-        this.updateSiteObserver && this.updateSiteObserver.off();
+        this.downloadButtonObserver && this.downloadButtonObserver.off();
     }
 }

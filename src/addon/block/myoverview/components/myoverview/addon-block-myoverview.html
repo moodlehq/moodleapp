@@ -1,10 +1,3 @@
-<!-- Buttons to add to the header. -->
-<core-navbar-buttons end>
-     <button [hidden]="!loaded || !showFilterSwitchButton()" ion-button icon-only [attr.aria-label]="'core.courses.filtermycourses' | translate" (click)="switchFilter()">
-        <ion-icon name="funnel"></ion-icon>
-    </button>
-</core-navbar-buttons>
-
 <ion-item-divider color="light">
     <h2>{{ 'addon.block_myoverview.pluginname' | translate }}</h2>
     <!-- Download all courses. -->
@@ -15,6 +8,9 @@
         <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData[selectedFilter].badge">{{prefetchCoursesData[selectedFilter].badge}}</ion-badge>
         <ion-spinner *ngIf="!prefetchCoursesData[selectedFilter].icon || prefetchCoursesData[selectedFilter].icon == 'spinner'"></ion-spinner>
     </div>
+    <core-context-menu item-end>
+        <core-context-menu-item *ngIf="loaded && showFilterSwitchButton()" [priority]="1000" [content]="'core.courses.filtermycourses' | translate" (action)="switchFilter()" iconAction="funnel"></core-context-menu-item>
+    </core-context-menu>
 </ion-item-divider>
 <core-loading [hideUntil]="loaded" class="core-loading-center">
     <div padding ion-row justify-content-end [hidden]="showFilter" class="safe-padding-horizontal">

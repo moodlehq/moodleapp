@@ -1,4 +1,4 @@
-<ion-header>
+    <ion-header>
     <ion-navbar core-back-button>
         <ion-title><core-format-text [text]="siteName"></core-format-text></ion-title>
 
@@ -6,6 +6,9 @@
             <button *ngIf="searchEnabled" ion-button icon-only (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
                 <ion-icon name="search"></ion-icon>
             </button>
+            <core-context-menu>
+                <core-context-menu-item *ngIf="downloadCourseEnabled" [priority]="1000" [content]="'core.settings.showdownloadoptions' | translate" (action)="toggleDownload()" [iconAction]="downloadEnabledIcon"></core-context-menu-item>
+            </core-context-menu>
         </ion-buttons>
     </ion-navbar>
 </ion-header>
