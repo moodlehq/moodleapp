@@ -24,7 +24,7 @@
             <ion-list>
                 <ion-item text-wrap>
                     <p class="item-heading">{{ 'addon.mod_quiz.startedon' | translate }}</p>
-                    <p>{{ attempt.timestart * 1000 | coreFormatDate:"dfmediumdate" }}</p>
+                    <p>{{ attempt.timestart * 1000 | coreFormatDate }}</p>
                 </ion-item>
                 <ion-item text-wrap>
                     <p class="item-heading">{{ 'addon.mod_quiz.attemptstate' | translate }}</p>
@@ -32,7 +32,7 @@
                 </ion-item>
                 <ion-item text-wrap *ngIf="showCompleted">
                     <p class="item-heading">{{ 'addon.mod_quiz.completedon' | translate }}</p>
-                    <p>{{ attempt.timefinish * 1000 | coreFormatDate:"dfmediumdate" }}</p>
+                    <p>{{ attempt.timefinish * 1000 | coreFormatDate }}</p>
                 </ion-item>
                 <ion-item text-wrap *ngIf="attempt.timeTaken">
                     <p class="item-heading">{{ 'addon.mod_quiz.timetaken' | translate }}</p>

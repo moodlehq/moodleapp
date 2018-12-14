@@ -23,6 +23,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { AddonModForumProvider } from './forum';
 import { AddonModForumHelperProvider } from './helper';
@@ -47,13 +48,15 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
             sitesProvider: CoreSitesProvider,
             syncProvider: CoreSyncProvider,
             textUtils: CoreTextUtilsProvider,
+            timeUtils: CoreTimeUtilsProvider,
             private uploaderProvider: CoreFileUploaderProvider,
             private utils: CoreUtilsProvider,
             private forumProvider: AddonModForumProvider,
             private forumHelper: AddonModForumHelperProvider,
             private forumOffline: AddonModForumOfflineProvider) {
 
-        super('AddonModForumSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate);
+        super('AddonModForumSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
+                timeUtils);
 
         this.componentTranslate = courseProvider.translateModuleName('forum');
     }

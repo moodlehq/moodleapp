@@ -17,8 +17,8 @@ import { NavController, ViewController } from 'ionic-angular';
 import { AddonModFeedbackProvider } from './feedback';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { TranslateService } from '@ngx-translate/core';
-import * as moment from 'moment';
 
 /**
  * Service that provides helper functions for feedbacks.
@@ -31,7 +31,8 @@ export class AddonModFeedbackHelperProvider {
     protected MODE_CATEGORY = 3;
 
     constructor(protected feedbackProvider: AddonModFeedbackProvider, protected userProvider: CoreUserProvider,
-            protected textUtils: CoreTextUtilsProvider, protected translate: TranslateService) {
+            protected textUtils: CoreTextUtilsProvider, protected translate: TranslateService,
+            protected timeUtils: CoreTimeUtilsProvider) {
     }
 
     /**
@@ -278,7 +279,7 @@ export class AddonModFeedbackHelperProvider {
         } else if (type == this.MODE_RESPONSETIME) {
             item.value = '__CURRENT__TIMESTAMP__';
             const tempValue = typeof item.rawValue != 'undefined' ? item.rawValue * 1000 : new Date().getTime();
-            item.presentation = moment(tempValue).format('LLL');
+            item.presentation = this.timeUtils.userDate(tempValue);
         } else {
             // Errors on item, return false.
             return false;

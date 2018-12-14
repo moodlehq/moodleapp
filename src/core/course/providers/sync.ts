@@ -19,6 +19,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreAppProvider } from '@providers/app';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreCourseOfflineProvider } from './course-offline';
 import { CoreCourseProvider } from './course';
 import { CoreEventsProvider } from '@providers/events';
@@ -38,9 +39,9 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider {
             protected appProvider: CoreAppProvider, private courseOffline: CoreCourseOfflineProvider,
             private eventsProvider: CoreEventsProvider,  private courseProvider: CoreCourseProvider,
             translate: TranslateService, private utils: CoreUtilsProvider, protected textUtils: CoreTextUtilsProvider,
-            syncProvider: CoreSyncProvider) {
+            syncProvider: CoreSyncProvider, timeUtils: CoreTimeUtilsProvider) {
 
-        super('CoreCourseSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate);
+        super('CoreCourseSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate, timeUtils);
     }
 
     /**

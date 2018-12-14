@@ -21,7 +21,6 @@ import { AddonModAssignProvider } from '../../providers/assign';
 import { AddonModAssignHelperProvider } from '../../providers/helper';
 import { AddonModAssignOfflineProvider } from '../../providers/assign-offline';
 import { AddonModAssignSyncProvider } from '../../providers/assign-sync';
-import * as moment from 'moment';
 import { AddonModAssignSubmissionComponent } from '../submission/submission';
 
 /**
@@ -178,10 +177,8 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
                             if (this.assign.cutoffdate) {
                                 if (this.assign.cutoffdate > time) {
-                                    const dateFormat = this.translate.instant('core.dfmediumdate');
-
                                     this.lateSubmissions = this.translate.instant('addon.mod_assign.latesubmissionsaccepted',
-                                            {$a: moment(this.assign.cutoffdate * 1000).format(dateFormat)});
+                                            {$a: this.timeUtils.userDate(this.assign.cutoffdate * 1000)});
                                 } else {
                                     this.lateSubmissions = this.translate.instant('addon.mod_assign.nomoresubmissionsaccepted');
                                 }

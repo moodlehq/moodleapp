@@ -22,9 +22,9 @@ import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/cour
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreConstants } from '@core/constants';
-import * as moment from 'moment';
 
 /**
  * Handler to support resource modules.
@@ -51,7 +51,7 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
     constructor(protected resourceProvider: AddonModResourceProvider, private courseProvider: CoreCourseProvider,
             protected mimetypeUtils: CoreMimetypeUtilsProvider, private resourceHelper: AddonModResourceHelperProvider,
             protected prefetchDelegate: CoreCourseModulePrefetchDelegate, protected textUtils: CoreTextUtilsProvider,
-            protected translate: TranslateService) {
+            protected translate: TranslateService, protected timeUtils: CoreTimeUtilsProvider) {
     }
 
     /**
@@ -185,18 +185,18 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
                 if (options.showdate) {
                     if (options.filedetails && options.filedetails.modifieddate) {
                         extra.push(this.translate.instant('addon.mod_resource.modifieddate',
-                            {$a: moment(options.filedetails.modifieddate * 1000).format('LLL')}));
+                            {$a: this.timeUtils.userDate(options.filedetails.modifieddate * 1000, 'core.strftimedatetimeshort') }));
                     } else if (options.filedetails && options.filedetails.uploadeddate) {
                         extra.push(this.translate.instant('addon.mod_resource.uploadeddate',
-                            {$a: moment(options.filedetails.uploadeddate * 1000).format('LLL')}));
+                            {$a: this.timeUtils.userDate(options.filedetails.uploadeddate * 1000, 'core.strftimedatetimeshort') }));
                     } else if (file.timemodified > file.timecreated + CoreConstants.SECONDS_MINUTE * 5) {
                         /* Modified date may be up to several minutes later than uploaded date just because
                            teacher did not submit the form promptly. Give teacher up to 5 minutes to do it. */
                         extra.push(this.translate.instant('addon.mod_resource.modifieddate',
-                            {$a: moment(file.timemodified * 1000).format('LLL')}));
+                            {$a: this.timeUtils.userDate(file.timemodified * 1000, 'core.strftimedatetimeshort') }));
                     } else {
                         extra.push(this.translate.instant('addon.mod_resource.uploadeddate',
-                            {$a: moment(file.timecreated * 1000).format('LLL')}));
+                            {$a: this.timeUtils.userDate(file.timecreated * 1000, 'core.strftimedatetimeshort') }));
                     }
                 }
             }

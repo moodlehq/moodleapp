@@ -19,7 +19,6 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { AddonModLessonProvider } from './lesson';
-import * as moment from 'moment';
 
 /**
  * Helper service that provides some features for quiz.
@@ -430,7 +429,7 @@ export class AddonModLessonHelperProvider {
             if (hasGrade) {
                 data.grade = this.translate.instant('core.percentagenumber', {$a: retake.grade});
             }
-            data.timestart = moment(retake.timestart * 1000).format('LLL');
+            data.timestart = this.timeUtils.userDate(retake.timestart * 1000);
             if (includeDuration) {
                 data.duration = this.timeUtils.formatTime(retake.timeend - retake.timestart);
             }
@@ -438,7 +437,7 @@ export class AddonModLessonHelperProvider {
             // The user has not completed the retake.
             data.grade = this.translate.instant('addon.mod_lesson.notcompleted');
             if (retake.timestart) {
-                data.timestart = moment(retake.timestart * 1000).format('LLL');
+                data.timestart = this.timeUtils.userDate(retake.timestart * 1000);
             }
         }
 

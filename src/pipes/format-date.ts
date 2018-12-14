@@ -13,9 +13,8 @@
 // limitations under the License.
 
 import { Pipe, PipeTransform } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import * as moment from 'moment';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 
 /**
  * Filter to format a date.
@@ -26,20 +25,21 @@ import * as moment from 'moment';
 export class CoreFormatDatePipe implements PipeTransform {
     protected logger;
 
-    constructor(logger: CoreLoggerProvider, private translate: TranslateService) {
-        this.logger = logger.getInstance('CoreDateDayOrTimePipe');
+    constructor(logger: CoreLoggerProvider, private timeUtils: CoreTimeUtilsProvider) {
+        this.logger = logger.getInstance('CoreFormatDatePipe');
     }
 
     /**
      * Format a date.
      *
      * @param {string|number} timestamp Timestamp to format (in milliseconds). If not defined, use current time.
-     * @param {string} format Format to use. It should be a string code to handle i18n (e.g. core.dftimedate). If the code
-     *                        doesn't have a prefix, 'core' will be used by default. E.g. 'dftimedate' -> 'core.dftimedate'.
+     * @param {string} [format] Format to use. It should be a string code to handle i18n (e.g. core.strftimetime).
+     *                          Defaults to strftimedaydatetime.
      * @return {string} Formatted date.
      */
-    transform(timestamp: string | number, format: string): string {
+    transform(timestamp: string | number, format?: string): string {
         timestamp = timestamp || Date.now();
+        format = format || 'strftimedaydatetime';
 
         if (typeof timestamp == 'string') {
             // Convert the value to a number.
@@ -52,12 +52,11 @@ export class CoreFormatDatePipe implements PipeTransform {
             timestamp = numberTimestamp;
         }
 
-        if (format.indexOf('df') == 0) {
-            format = this.translate.instant('core.' + format);
-        } else if (format.indexOf('.') > 0) {
-            format = this.translate.instant(format);
+        // Add "core." if needed.
+        if (format.indexOf('strf') == 0 || format.indexOf('df') == 0) {
+            format = 'core.' + format;
         }
 
-        return moment(timestamp).format(format);
+        return this.timeUtils.userDate(timestamp, format);
     }
 }

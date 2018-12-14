@@ -18,7 +18,7 @@ import { CoreSyncProvider } from '@providers/sync';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreAppProvider } from '@providers/app';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import * as moment from 'moment';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 
 /**
  * Base class to create sync providers. It provides some common functions.
@@ -51,7 +51,8 @@ export class CoreSyncBaseProvider {
 
     constructor(component: string, loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
             protected appProvider: CoreAppProvider, protected syncProvider: CoreSyncProvider,
-            protected textUtils: CoreTextUtilsProvider, protected translate: TranslateService) {
+            protected textUtils: CoreTextUtilsProvider, protected translate: TranslateService,
+            protected timeUtils: CoreTimeUtilsProvider) {
 
         this.logger = loggerProvider.getInstance(component);
         this.component = component;
@@ -122,7 +123,7 @@ export class CoreSyncBaseProvider {
         if (!timestamp) {
             return this.translate.instant('core.never');
         } else {
-            return moment(timestamp).format('LLL');
+            return this.timeUtils.userDate(timestamp);
         }
     }
 

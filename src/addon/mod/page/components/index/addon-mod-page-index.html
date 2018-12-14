@@ -17,7 +17,7 @@
     <div padding>
         <core-format-text [component]="component" [componentId]="componentId" [text]="contents"></core-format-text>
         <p padding-bottom class="addon-mod_page-timemodified" *ngIf="displayTimemodified && page && page.timemodified">
-            {{ 'core.lastmodified' | translate}}: {{ page.timemodified * 1000 | coreFormatDate: "dfmediumdate" }}
+            {{ 'core.lastmodified' | translate}}: {{ page.timemodified * 1000 | coreFormatDate }}
         </p>
     </div>
 

@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Component, OnInit, Injector } from '@angular/core';
-import * as moment from 'moment';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCoursesHelperProvider } from '@core/courses/providers/helper';
@@ -51,7 +51,8 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
 
     constructor(injector: Injector, private coursesProvider: CoreCoursesProvider, private utils: CoreUtilsProvider,
             private timelineProvider: AddonBlockTimelineProvider, private courseOptionsDelegate: CoreCourseOptionsDelegate,
-            private coursesHelper: CoreCoursesHelperProvider, private sitesProvider: CoreSitesProvider) {
+            private coursesHelper: CoreCoursesHelperProvider, private sitesProvider: CoreSitesProvider,
+            private timeUtils: CoreTimeUtilsProvider) {
 
         super(injector, 'AddonBlockTimelineComponent');
     }
@@ -151,7 +152,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
      */
     protected fetchMyOverviewTimelineByCourses(): Promise<any> {
         return this.coursesHelper.getUserCoursesWithOptions().then((courses) => {
-            const today = moment().unix();
+            const today = this.timeUtils.timestamp();
             courses = courses.filter((course) => {
                 return course.startdate <= today && (!course.enddate || course.enddate >= today);
             });

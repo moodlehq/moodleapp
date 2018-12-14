@@ -20,6 +20,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreQuestionProvider } from '@core/question/providers/question';
 import { CoreQuestionDelegate } from '@core/question/providers/delegate';
@@ -57,12 +58,13 @@ export class AddonModQuizSyncProvider extends CoreSyncBaseProvider {
 
     constructor(loggerProvider: CoreLoggerProvider, sitesProvider: CoreSitesProvider, appProvider: CoreAppProvider,
             syncProvider: CoreSyncProvider, textUtils: CoreTextUtilsProvider, translate: TranslateService,
-            courseProvider: CoreCourseProvider, private eventsProvider: CoreEventsProvider,
+            courseProvider: CoreCourseProvider, private eventsProvider: CoreEventsProvider, timeUtils: CoreTimeUtilsProvider,
             private quizProvider: AddonModQuizProvider, private quizOfflineProvider: AddonModQuizOfflineProvider,
             private prefetchHandler: AddonModQuizPrefetchHandler, private questionProvider: CoreQuestionProvider,
             private questionDelegate: CoreQuestionDelegate) {
 
-        super('AddonModQuizSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate);
+        super('AddonModQuizSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
+                timeUtils);
 
         this.componentTranslate = courseProvider.translateModuleName('quiz');
     }
