@@ -49,6 +49,10 @@ export class CoreCoursesDashboardPage implements OnDestroy {
     userId: number;
     dashboardLoaded = false;
 
+    downloadEnabled: boolean;
+    downloadEnabledIcon = 'square-outline'; // Disabled by default.
+    downloadCourseEnabled: boolean;
+
     protected isDestroyed;
     protected updateSiteObserver;
 
@@ -64,10 +68,15 @@ export class CoreCoursesDashboardPage implements OnDestroy {
      */
     ionViewDidLoad(): void {
         this.searchEnabled = !this.coursesProvider.isSearchCoursesDisabledInSite();
+        this.downloadCourseEnabled = !this.coursesProvider.isDownloadCourseDisabledInSite();
 
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, () => {
             this.searchEnabled = !this.coursesProvider.isSearchCoursesDisabledInSite();
+            this.downloadCourseEnabled = !this.coursesProvider.isDownloadCourseDisabledInSite();
+
+            this.switchDownload(this.downloadEnabled);
+
             this.loadSiteName();
         }, this.sitesProvider.getCurrentSiteId());
 
@@ -172,6 +181,24 @@ export class CoreCoursesDashboardPage implements OnDestroy {
                 refresher.complete();
             });
         });
+    }
+
+    /**
+     * Toggle download enabled.
+     */
+    toggleDownload(): void {
+        this.switchDownload(!this.downloadEnabled);
+    }
+
+    /**
+     * Convenience function to switch download enabled.
+     *
+     * @param {boolean} enable If enable or disable.
+     */
+    protected switchDownload(enable: boolean): void {
+        this.downloadEnabled = this.downloadCourseEnabled && enable;
+        this.downloadEnabledIcon = this.downloadEnabled ? 'checkbox-outline' : 'square-outline';
+        this.eventsProvider.trigger(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, {enabled: this.downloadEnabled});
     }
 
     /**

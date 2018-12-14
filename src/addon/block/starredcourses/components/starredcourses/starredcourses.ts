@@ -40,7 +40,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
 
     protected prefetchIconsInitialized = false;
     protected isDestroyed;
-    protected updateSiteObserver;
+    protected downloadButtonObserver;
     protected coursesObserver;
     protected courseIds = [];
     protected fetchContentDefaultError = 'Error getting starred courses data.';
@@ -58,19 +58,18 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.downloadAllCoursesEnabled = !this.coursesProvider.isDownloadCoursesDisabledInSite();
-
-        // Refresh the enabled flags if site is updated.
-        this.updateSiteObserver = this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, () => {
+        // Refresh the enabled flags if enabled.
+        this.downloadButtonObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED,
+                (data) => {
             const wasEnabled = this.downloadAllCoursesEnabled;
 
-            this.downloadAllCoursesEnabled = !this.coursesProvider.isDownloadCoursesDisabledInSite();
+            this.downloadAllCoursesEnabled = data.enabled;
 
             if (!wasEnabled && this.downloadAllCoursesEnabled && this.loaded) {
                 // Download all courses is enabled now, initialize it.
                 this.initPrefetchCoursesIcons();
             }
-        }, this.sitesProvider.getCurrentSiteId());
+        });
 
         this.coursesObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, () => {
             this.refreshContent();
@@ -155,6 +154,6 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     ngOnDestroy(): void {
         this.isDestroyed = true;
         this.coursesObserver && this.coursesObserver.off();
-        this.updateSiteObserver && this.updateSiteObserver.off();
+        this.downloadButtonObserver && this.downloadButtonObserver.off();
     }
 }

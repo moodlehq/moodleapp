@@ -39,6 +39,7 @@ import { CoreCoursesCourseOptionsMenuComponent } from '../course-options-menu/co
 export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
     @Input() course: any; // The course to render.
     @Input() showAll = false; // If true, will show all actions, options, star and progress.
+    @Input() showDownload = true; // If true, will show download button. Only works if the options menu is not shown.
 
     isDownloading: boolean;
     prefetchCourseData = {

@@ -26,6 +26,7 @@ export class CoreCoursesProvider {
     static ENROL_INVALID_KEY = 'CoreCoursesEnrolInvalidKey';
     static EVENT_MY_COURSES_UPDATED = 'courses_my_courses_updated';
     static EVENT_MY_COURSES_REFRESHED = 'courses_my_courses_refreshed';
+    static EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED = 'dashboard_download_enabled_changed';
     protected ROOT_CACHE_KEY = 'mmCourses:';
     protected logger;
 
