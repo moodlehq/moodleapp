@@ -928,6 +928,8 @@ export class CoreLoginHelperProvider {
     protected showLegacyNoticeModal(message: string): void {
         const isAndroid = this.platform.is('android'),
             isIOS = this.platform.is('ios'),
+            isWindows = this.appProvider.isWindows(),
+            isLinux = this.appProvider.isLinux(),
             buttons: any[] = [
                 {
                     text: this.translate.instant('core.ok'),
@@ -935,12 +937,22 @@ export class CoreLoginHelperProvider {
                 }
             ];
 
-        if (isAndroid || isIOS) {
+        if (isAndroid || isIOS || isWindows || isLinux) {
             buttons.push({
                 text: this.translate.instant('core.download'),
                 handler: (): void => {
-                    const link = isAndroid ? 'market://details?id=com.moodle.classic' :
-                            'itms-apps://itunes.apple.com/app/id1403448117';
+                    let link;
+
+                    if (isWindows) {
+                        link = 'https://download.moodle.org/desktop/download.php?platform=windows&version=342';
+                    } else if (isLinux) {
+                        link = 'https://download.moodle.org/desktop/download.php?platform=linux&version=342&arch=' +
+                                (this.appProvider.is64Bits() ? '64' : '32');
+                    } else if (isAndroid) {
+                        link = 'market://details?id=com.moodle.classic';
+                    } else {
+                        link = 'itms-apps://itunes.apple.com/app/id1403448117';
+                    }
 
                     this.utils.openInBrowser(link);
                 }
