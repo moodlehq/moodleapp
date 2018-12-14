@@ -44,15 +44,21 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     contactRequestsCount = 0;
     favourites: any = {
         type: null,
-        favourites: true
+        favourites: true,
+        count: 0,
+        unread: 0
     };
     group: any = {
         type: AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP,
-        favourites: false
+        favourites: false,
+        count: 0,
+        unread: 0
     };
     individual: any = {
         type: AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL,
-        favourites: false
+        favourites: false,
+        count: 0,
+        unread: 0
     };
     typeIndividual = AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL;
 
@@ -70,9 +76,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     protected contactRequestsCountObserver: any;
     protected memberInfoObserver: any;
 
-    constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, translate: TranslateService,
+    constructor(eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, translate: TranslateService,
             private messagesProvider: AddonMessagesProvider, private domUtils: CoreDomUtilsProvider, navParams: NavParams,
-            private navCtrl: NavController, platform: Platform, utils: CoreUtilsProvider,
+            private navCtrl: NavController, platform: Platform, private utils: CoreUtilsProvider,
             pushNotificationsDelegate: AddonPushNotificationsDelegate, private messagesOffline: AddonMessagesOfflineProvider,
             private userProvider: CoreUserProvider) {
 
@@ -119,15 +125,11 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                     // A conversation has been read reset counter.
                     conversation.unreadcount = 0;
 
-                    // Conversations changed, invalidate them.
+                    // Conversations changed, invalidate them and refresh unread counts.
                     this.messagesProvider.invalidateConversations();
+                    this.messagesProvider.refreshUnreadConversationCounts();
                 }
             }
-        }, this.siteId);
-
-        // Update conversations when cron read is executed.
-        this.cronObserver = eventsProvider.on(AddonMessagesProvider.READ_CRON_EVENT, (data) => {
-            this.refreshData();
         }, this.siteId);
 
         // Load a discussion if we receive an event to do so.
@@ -157,9 +159,17 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         this.pushObserver = pushNotificationsDelegate.on('receive').subscribe((notification) => {
             // New message received. If it's from current site, refresh the data.
             if (utils.isFalseOrZero(notification.notif) && notification.site == this.siteId) {
-                this.refreshData();
+                // Don't refresh unread counts, it's refreshed from the main menu handler in this case.
+                this.refreshData(null, false);
             }
         });
+
+        // Update unread conversation counts.
+        this.cronObserver = eventsProvider.on(AddonMessagesProvider.UNREAD_CONVERSATION_COUNTS_EVENT, (data) => {
+            this.favourites.unread = data.favourites;
+            this.individual.unread = data.individual;
+            this.group.unread = data.group;
+         }, this.siteId);
 
         // Update the contact requests badge.
         this.contactRequestsCountObserver = eventsProvider.on(AddonMessagesProvider.CONTACT_REQUESTS_COUNT_EVENT, (data) => {
@@ -215,8 +225,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 }
             }
         });
-
-        this.messagesProvider.getContactRequestsCount(this.siteId); // Badge is updated by the observer.
     }
 
     /**
@@ -234,6 +242,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         promises.push(this.fetchDataForOption(this.favourites, false));
         promises.push(this.fetchDataForOption(this.group, false));
         promises.push(this.fetchDataForOption(this.individual, false));
+        promises.push(this.fetchConversationCounts());
+        promises.push(this.messagesProvider.getUnreadConversationCounts()); // View updated by the event observer.
+        promises.push(this.messagesProvider.getContactRequestsCount());  // View updated by the event observer.
         promises.push(this.messagesOffline.getAllMessages().then((messages) => {
             offlineMessages = messages;
         }));
@@ -289,12 +300,24 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             if (loadingMore) {
                 option.conversations = option.conversations.concat(data.conversations);
             } else {
-                option.count = data.canLoadMore ? AddonMessagesProvider.LIMIT_MESSAGES + '+' : data.conversations.length;
                 option.conversations = data.conversations;
             }
 
             option.unread = 0; // @todo.
             option.canLoadMore = data.canLoadMore;
+        });
+    }
+
+    /**
+     * Fetch conversation counts.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected fetchConversationCounts(): Promise<void> {
+        return this.messagesProvider.getConversationCounts().then((counts) => {
+            this.favourites.count = counts.favourites;
+            this.individual.count = counts.individual;
+            this.group.count = counts.group;
         });
     }
 
@@ -494,15 +517,23 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * Refresh the data.
      *
      * @param {any} [refresher] Refresher.
+     * @param {booleam} [refreshUnreadCounts=true] Whether to refresh unread counts.
      * @return {Promise<any>} Promise resolved when done.
      */
-    refreshData(refresher?: any): Promise<any> {
-        return this.messagesProvider.invalidateConversations().then(() => {
+    refreshData(refresher?: any, refreshUnreadCounts: boolean = true): Promise<any> {
+        const promises = [
+            this.messagesProvider.invalidateConversations(),
+            this.messagesProvider.invalidateConversationCounts(),
+            this.messagesProvider.invalidateContactRequestsCountCache()
+        ];
+
+        if (refreshUnreadCounts) {
+            promises.push(this.messagesProvider.invalidateUnreadConversationCounts());
+        }
+
+        return this.utils.allPromises(promises).finally(() => {
             return this.fetchData().finally(() => {
                 if (refresher) {
-                    // Actions to take if refresh comes from the user.
-                    this.eventsProvider.trigger(AddonMessagesProvider.READ_CHANGED_EVENT, undefined, this.siteId);
-                    this.messagesProvider.refreshContactRequestsCount(this.siteId);
                     refresher.complete();
                 }
             });

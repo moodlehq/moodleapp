@@ -53,7 +53,7 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
 
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, translate: TranslateService,
             private messagesProvider: AddonMessagesProvider, private domUtils: CoreDomUtilsProvider, navParams: NavParams,
-            private appProvider: CoreAppProvider, platform: Platform, utils: CoreUtilsProvider,
+            private appProvider: CoreAppProvider, platform: Platform, private utils: CoreUtilsProvider,
             pushNotificationsDelegate: AddonPushNotificationsDelegate) {
 
         this.search.loading =  translate.instant('core.searching');
@@ -91,15 +91,11 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
                     // A discussion has been read reset counter.
                     discussion.unread = false;
 
-                    // Discussions changed, invalidate them.
-                    this.messagesProvider.invalidateDiscussionsCache();
+                    // Conversations changed, invalidate them and refresh unread counts.
+                    this.messagesProvider.invalidateConversations();
+                    this.messagesProvider.refreshUnreadConversationCounts();
                 }
             }
-        }, this.siteId);
-
-        // Update discussions when cron read is executed.
-        this.cronObserver = eventsProvider.on(AddonMessagesProvider.READ_CRON_EVENT, (data) => {
-            this.refreshData();
         }, this.siteId);
 
         // Refresh the view when the app is resumed.
@@ -117,7 +113,8 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
         this.pushObserver = pushNotificationsDelegate.on('receive').subscribe((notification) => {
             // New message received. If it's from current site, refresh the data.
             if (utils.isFalseOrZero(notification.notif) && notification.site == this.siteId) {
-                this.refreshData();
+                // Don't refresh unread counts, it's refreshed from the main menu handler in this case.
+                this.refreshData(null, false);
             }
         });
     }
@@ -143,14 +140,20 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
      * Refresh the data.
      *
      * @param {any} [refresher] Refresher.
+     * @param {boolean} [refreshUnreadCounts=true] Whteher to refresh unread counts.
      * @return {Promise<any>} Promise resolved when done.
      */
-    refreshData(refresher?: any): Promise<any> {
-        return this.messagesProvider.invalidateDiscussionsCache().then(() => {
+    refreshData(refresher?: any, refreshUnreadCounts: boolean = true): Promise<any> {
+        const promises = [];
+        promises.push(this.messagesProvider.invalidateDiscussionsCache());
+
+        if (refreshUnreadCounts) {
+            promises.push(this.messagesProvider.invalidateUnreadConversationCounts());
+        }
+
+        return this.utils.allPromises(promises).finally(() => {
             return this.fetchData().finally(() => {
                 if (refresher) {
-                    // Actions to take if refresh comes from the user.
-                    this.eventsProvider.trigger(AddonMessagesProvider.READ_CHANGED_EVENT, undefined, this.siteId);
                     refresher.complete();
                 }
             });
@@ -166,7 +169,9 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
         this.loadingMessage = this.loadingMessages;
         this.search.enabled = this.messagesProvider.isSearchMessagesEnabled();
 
-        return this.messagesProvider.getDiscussions().then((discussions) => {
+        const promises = [];
+
+        promises.push(this.messagesProvider.getDiscussions().then((discussions) => {
             // Convert to an array for sorting.
             const discussionsSorted = [];
             for (const userId in discussions) {
@@ -177,7 +182,11 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
             this.discussions = discussionsSorted.sort((a, b) => {
                 return b.message.timecreated - a.message.timecreated;
             });
-        }).catch((error) => {
+        }));
+
+        promises.push(this.messagesProvider.getUnreadConversationCounts());
+
+        return Promise.all(promises).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
         }).finally(() => {
             this.loaded = true;

@@ -1,7 +1,10 @@
 <ion-header>
     <ion-navbar core-back-button>
         <ion-title>{{ 'addon.messages.messages' | translate }}</ion-title>
-        <ion-buttons end></ion-buttons>
+        <ion-buttons end>
+            <!-- Add an empty context menu so discussion page can add items in split view, otherwise the menu disappears in some cases. -->
+            <core-context-menu></core-context-menu>
+        </ion-buttons>
     </ion-navbar>
 </ion-header>
 <core-split-view>

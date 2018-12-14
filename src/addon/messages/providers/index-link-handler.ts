@@ -44,8 +44,13 @@ export class AddonMessagesIndexLinkHandler extends CoreContentLinksHandlerBase {
             CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: (siteId, navCtrl?): void => {
+                let pageName = 'AddonMessagesIndexPage';
+                if (this.messagesProvider.isGroupMessagingEnabled()) {
+                    pageName = 'AddonMessagesGroupConversationsPage';
+                }
+
                 // Always use redirect to make it the new history root (to avoid "loops" in history).
-                this.linkHelper.goInSite(navCtrl, 'AddonMessagesIndexPage', undefined, siteId);
+                this.linkHelper.goInSite(navCtrl, pageName, undefined, siteId);
             }
         }];
     }

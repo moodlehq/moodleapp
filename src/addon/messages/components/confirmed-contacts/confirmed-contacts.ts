@@ -55,6 +55,8 @@ export class AddonMessagesConfirmedContactsComponent implements OnInit, OnDestro
                 if (index >= 0) {
                     this.contacts.splice(index, 1);
                 }
+            } else if (data.contactRequestConfirmed) {
+                this.refreshData();
             }
         }, sitesProvider.getCurrentSiteId());
     }

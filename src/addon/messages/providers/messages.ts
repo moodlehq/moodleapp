@@ -33,11 +33,11 @@ export class AddonMessagesProvider {
     protected LIMIT_MESSAGES = AddonMessagesProvider.LIMIT_MESSAGES;
     static NEW_MESSAGE_EVENT = 'addon_messages_new_message_event';
     static READ_CHANGED_EVENT = 'addon_messages_read_changed_event';
-    static READ_CRON_EVENT = 'addon_messages_read_cron_event';
     static OPEN_CONVERSATION_EVENT = 'addon_messages_open_conversation_event'; // Notify that a conversation should be opened.
     static SPLIT_VIEW_LOAD_EVENT = 'addon_messages_split_view_load_event';
     static UPDATE_CONVERSATION_LIST_EVENT = 'addon_messages_update_conversation_list_event';
     static MEMBER_INFO_CHANGED_EVENT = 'addon_messages_member_changed_event';
+    static UNREAD_CONVERSATION_COUNTS_EVENT = 'addon_messages_unread_conversation_counts_event';
     static CONTACT_REQUESTS_COUNT_EVENT = 'addon_messages_contact_requests_count_event';
     static POLL_INTERVAL = 10000;
     static PUSH_SIMULATION_COMPONENT = 'AddonMessagesPushSimulation';
@@ -385,6 +385,15 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Get the cache key for unread conversation counts.
+     *
+     * @return {string} Cache key.
+     */
+    protected getCacheKeyForUnreadConversationCounts(): string {
+        return this.ROOT_CACHE_KEY + 'unreadConversationCounts';
+    }
+
+    /**
      * Get the cache key for the list of discussions.
      *
      * @return {string} Cache key.
@@ -447,6 +456,15 @@ export class AddonMessagesProvider {
      */
     protected getCacheKeyForConversations(userId: number, type?: number, favourites?: boolean): string {
         return this.getCommonCacheKeyForUserConversations(userId) + ':' + type + ':' + favourites;
+    }
+
+    /**
+     * Get cache key for conversation counts.
+     *
+     * @return {string} Cache key.
+     */
+    protected getCacheKeyForConversationCounts(): string {
+        return this.ROOT_CACHE_KEY + 'conversationCounts';
     }
 
     /**
@@ -944,6 +962,31 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Get conversation counts by type.
+     *
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<any>} Promise resolved with favourite, individual and group conversation counts.
+     * @since 3.6
+     */
+    getConversationCounts(siteId?: string): Promise<{favourites: number, individual: number, group: number}> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const preSets = {
+                cacheKey: this.getCacheKeyForConversationCounts(),
+            };
+
+            return site.read('core_message_get_conversation_counts', {}, preSets).then((result) => {
+                const counts = {
+                    favourites: result.favourites,
+                    individual: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL],
+                    group: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP]
+                };
+
+                return counts;
+            });
+        });
+    }
+
+    /**
      * Return the current user's discussion with another user.
      *
      * @param  {number} userId               The ID of the other user.
@@ -1292,58 +1335,77 @@ export class AddonMessagesProvider {
     }
 
     /**
-     * Get unread conversations count. Do not cache calls.
+     * Get unread conversation counts by type.
      *
-     * @param  {number} [userId] The user id who received the message. If not defined, use current user.
-     * @param  {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any>}    Promise resolved with the message unread count.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<any>} Resolved with the unread favourite, individual and group conversation counts.
      */
-    getUnreadConversationsCount(userId?: number, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            userId = userId || site.getUserId();
+    getUnreadConversationCounts(siteId?: string):
+            Promise<{favourites: number, individual: number, group: number, orMore?: boolean}> {
 
-            // @since 3.2
-            if (site.wsAvailable('core_message_get_unread_conversations_count')) {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            let promise: Promise<{favourites: number, individual: number, group: number, orMore?: boolean}>;
+
+            if (this.isGroupMessagingEnabled()) {
+                // @since 3.6
+                const preSets = {
+                    cacheKey: this.getCacheKeyForUnreadConversationCounts(),
+                };
+
+                promise = site.read('core_message_get_unread_conversation_counts', {}, preSets).then((result) => {
+                    return {
+                        favourites: result.favourites,
+                        individual: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL],
+                        group: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP]
+                    };
+                });
+
+            } else if (this.isMessageCountEnabled()) {
+                // @since 3.2
                 const params = {
-                        useridto: userId
+                        useridto: site.getUserId(),
                     },
                     preSets = {
-                        cacheKey: this.getCacheKeyForMessageCount(userId),
-                        getFromCache: false,
-                        emergencyCache: true,
-                        saveToCache: true,
+                        cacheKey: this.getCacheKeyForMessageCount(site.getUserId()),
                         typeExpected: 'number'
                     };
 
-                return site.read('core_message_get_unread_conversations_count', params, preSets).catch(() => {
-                    // Return no messages if the call fails.
-                    return 0;
+                promise = site.read('core_message_get_unread_conversations_count', params, preSets).then((count) => {
+                    return { favourites: 0, individual: count, group: 0 };
+                });
+            } else {
+                // Fallback call.
+                const params = {
+                    read: 0,
+                    limitfrom: 0,
+                    limitnum: this.LIMIT_MESSAGES + 1,
+                    useridto: site.getUserId(),
+                    useridfrom: 0,
+                };
+
+                promise = this.getMessages(params, undefined, false, siteId).then((response) => {
+                    // Count the discussions by filtering same senders.
+                    const discussions = {};
+                    response.messages.forEach((message) => {
+                        discussions[message.useridto] = 1;
+                    });
+
+                    const count = Object.keys(discussions).length;
+
+                    return {
+                        favourites: 0,
+                        individual: count,
+                        group: 0,
+                        orMore: count > this.LIMIT_MESSAGES
+                    };
                 });
             }
 
-            // Fallback call.
-            const params = {
-                read: 0,
-                limitfrom: 0,
-                limitnum: this.LIMIT_MESSAGES + 1,
-                useridto: userId,
-                useridfrom: 0,
-            };
+            return promise.then((counts) => {
+                // Notify the new counts so all views are updated.
+                this.eventsProvider.trigger(AddonMessagesProvider.UNREAD_CONVERSATION_COUNTS_EVENT, counts, site.id);
 
-            return this.getMessages(params, undefined, false, siteId).then((response) => {
-                // Count the discussions by filtering same senders.
-                const discussions = {};
-
-                response.messages.forEach((message) => {
-                    discussions[message.useridto] = 1;
-                });
-                const count = Object.keys(discussions).length;
-
-                // Add + sign if there are more than the limit reachable.
-                return (count > this.LIMIT_MESSAGES) ? count + '+' : count;
-            }).catch(() => {
-                // Return no messages if the call fails.
-                return 0;
+                return counts;
             });
         });
     }
@@ -1536,6 +1598,18 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Invalidate conversation counts cache.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Resolved when done.
+     */
+    invalidateConversationCounts(siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getCacheKeyForConversationCounts());
+        });
+    }
+
+    /**
      * Invalidate discussion cache.
      *
      * @param {number} userId    The user ID with whom the current user is having the discussion.
@@ -1617,6 +1691,25 @@ export class AddonMessagesProvider {
                 // The conversation does not exist or we can't fetch it now, ignore it.
             })
         ]);
+    }
+
+    /**
+     * Invalidate unread conversation counts cache.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Resolved when done.
+     */
+    invalidateUnreadConversationCounts(siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            if (this.isGroupMessagingEnabled()) {
+                // @since 3.6
+                return site.invalidateWsCacheForKey(this.getCacheKeyForUnreadConversationCounts());
+
+            } else if (this.isMessageCountEnabled()) {
+                // @since 3.2
+                return site.invalidateWsCacheForKey(this.getCacheKeyForMessageCount(site.getUserId()));
+            }
+        });
     }
 
     /**
@@ -1813,6 +1906,23 @@ export class AddonMessagesProvider {
 
         return this.invalidateContactRequestsCountCache(siteId).then(() => {
             return this.getContactRequestsCount(siteId);
+        });
+    }
+
+    /**
+     * Refresh unread conversation counts and trigger event.
+     *
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @param {number} [conversationId] ID of the conversation that was read.
+     * @param {number} [userId] ID of ther other user of the conversation that was read.
+     * @return {Promise<any>} Resolved with the unread favourite, individual and group conversation counts.
+     */
+    refreshUnreadConversationCounts(siteId?: string, conversationId?: number, userId?: number):
+            Promise<{favourites: number, individual: number, group: number, orMore?: boolean}> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        return this.invalidateUnreadConversationCounts(siteId).then(() => {
+            return this.getUnreadConversationCounts(siteId);
         });
     }
 
