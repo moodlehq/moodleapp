@@ -64,9 +64,16 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
     canUseCheckUpdates(module: any, courseId: number): boolean | Promise<boolean> {
         // Teachers cannot use the WS because it doesn't check student submissions.
         return this.assignProvider.getAssignment(courseId, module.id).then((assign) => {
-            return this.assignProvider.getSubmissions(assign.id);
-        }).then((data) => {
-            return !data.canviewsubmissions;
+            return this.assignProvider.getSubmissions(assign.id).then((data) => {
+                if (data.canviewsubmissions) {
+                    return false;
+                }
+
+                // Check if the user can view their own submission.
+                return this.assignProvider.getSubmissionStatus(assign.id).then(() => {
+                    return true;
+                });
+            });
         }).catch(() => {
             return false;
         });
@@ -322,10 +329,16 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                 }));
             } else {
                 // Student.
-                promises.push(this.assignProvider.getSubmissionStatus(assign.id, userId, false, true, false, siteId)
-                        .then((subm) => {
-                    return this.prefetchSubmission(assign, courseId, moduleId, subm, userId, siteId);
-                }));
+                promises.push(
+                    this.assignProvider.getSubmissionStatus(assign.id, userId, false, true, false, siteId).then((subm) => {
+                        return this.prefetchSubmission(assign, courseId, moduleId, subm, userId, siteId);
+                    }).catch((error) => {
+                        // Ignore if the user can't view their own submission.
+                        if (error.errorcode != 'nopermission') {
+                            return Promise.reject(error);
+                        }
+                    })
+                );
             }
 
             promises.push(this.groupsProvider.activityHasGroups(assign.cmid));

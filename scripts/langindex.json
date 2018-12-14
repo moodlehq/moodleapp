@@ -1517,6 +1517,7 @@
   "core.nograde": "moodle",
   "core.none": "moodle",
   "core.nopasswordchangeforced": "local_moodlemobileapp",
+  "core.nopermissionerror": "local_moodlemobileapp",
   "core.nopermissions": "error",
   "core.noresults": "moodle",
   "core.notapplicable": "local_moodlemobileapp",
