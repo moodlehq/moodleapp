@@ -54,11 +54,15 @@ ion-app.app-root core-courses-course-progress {
             .core-course-title {
                 margin: 5px 0;
                 flex-grow: 1;
-                max-width: calc(100% - 50px);
+                max-width: calc(100% - 5px);
 
                 h2 ion-icon {
                     margin-right: 4px;
                     color: $core-star-color;
+                }
+
+                &.core-course-with-buttons {
+                    max-width: calc(100% - 50px);
                 }
             }
 
@@ -112,13 +116,16 @@ ion-app.app-root .core-horizontal-scroll core-courses-course-progress {
 
             .core-course-title {
                 margin: 3px 0;
-                max-width: calc(100% - 40px);
 
                 h2 {
                     font-size: 1.5rem;
                     ion-icon {
                         margin-right: 2px;
                     }
+                }
+
+                &.core-course-with-buttons {
+                    max-width: calc(100% - 40px);
                 }
             }
             .core-button-spinner {

@@ -3,7 +3,7 @@
         <img *ngIf="course.courseImage" [src]="course.courseImage" core-external-content alt=""/>
     </div>
     <ion-item tappable text-wrap detail-none (click)="openCourse(course)" [title]="course.displayname || course.fullname" class="core-course-link" [class.item-disabled]="course.visible == 0" [class.core-course-more-than-title]="(course.progress != null && course.progress >= 0)">
-        <div class="core-course-title">
+        <div class="core-course-title" [class.core-course-with-buttons]="courseOptionMenuEnabled || (downloadCourseEnabled && showDownload)">
             <p *ngIf="course.displayname && course.shortname && course.fullname != course.displayname" class="core-course-shortname"><core-format-text [text]="course.shortname"></core-format-text></p>
             <h2>
                 <core-icon name="fa-star" *ngIf="course.isfavourite"></core-icon>
@@ -11,7 +11,7 @@
             </h2>
         </div>
 
-        <div class="core-button-spinner" *ngIf="downloadCourseEnabled && !courseOptionMenuEnabled">
+        <div class="core-button-spinner" *ngIf="downloadCourseEnabled && !courseOptionMenuEnabled && showDownload">
             <!-- Download course. -->
             <button *ngIf="prefetchCourseData.prefetchCourseIcon != 'spinner'" ion-button icon-only clear color="dark" (click)="prefetchCourse($event)" [attr.aria-label]="prefetchCourseData.title | translate">
                 <core-icon [name]="prefetchCourseData.prefetchCourseIcon"></core-icon>
