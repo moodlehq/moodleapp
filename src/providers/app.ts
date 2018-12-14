@@ -123,7 +123,7 @@ export class CoreAppProvider {
      */
     closeKeyboard(): void {
         if (this.isMobile()) {
-            this.keyboard.close();
+            this.keyboard.hide();
         }
     }
 

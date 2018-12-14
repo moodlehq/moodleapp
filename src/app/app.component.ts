@@ -35,9 +35,9 @@ export class MoodleMobileApp implements OnInit {
     protected lastUrls = {};
 
     constructor(private platform: Platform, statusBar: StatusBar, logger: CoreLoggerProvider, keyboard: Keyboard,
-        private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider, private zone: NgZone,
-        private appProvider: CoreAppProvider, private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider,
-        private screenOrientation: ScreenOrientation) {
+            private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider, private zone: NgZone,
+            private appProvider: CoreAppProvider, private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider,
+            private screenOrientation: ScreenOrientation) {
         this.logger = logger.getInstance('AppComponent');
 
         platform.ready().then(() => {
@@ -49,7 +49,7 @@ export class MoodleMobileApp implements OnInit {
                 statusBar.styleDefault();
             }
 
-            keyboard.hideKeyboardAccessoryBar(false);
+            keyboard.hideFormAccessoryBar(false);
         });
 
     }
