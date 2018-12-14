@@ -38,7 +38,8 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     moduleName = 'assign';
 
     assign: any; // The assign object.
-    canViewSubmissions: boolean; // Whether the user can view all submissions.
+    canViewAllSubmissions: boolean; // Whether the user can view all submissions.
+    canViewOwnSubmission: boolean; // Whether the user can view their own submission.
     timeRemaining: string; // Message about time remaining to submit.
     lateSubmissions: string; // Message about late submissions.
     showNumbers = true; // Whether to show number of submissions with each status.
@@ -80,14 +81,14 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
                 // Ignore errors.
             });
 
-            if (!this.canViewSubmissions) {
-                // User can only see his submission, log view the user submission.
-                this.assignProvider.logSubmissionView(this.assign.id).catch(() => {
-                    // Ignore errors.
-                });
-            } else {
+            if (this.canViewAllSubmissions) {
                 // User can see all submissions, log grading view.
                 this.assignProvider.logGradingView(this.assign.id).catch(() => {
+                    // Ignore errors.
+                });
+            } else if (this.canViewOwnSubmission) {
+                // User can only see their own submission, log view the user submission.
+                this.assignProvider.logSubmissionView(this.assign.id).catch(() => {
                     // Ignore errors.
                 });
             }
@@ -165,7 +166,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             return this.assignProvider.getSubmissions(this.assign.id).then((data) => {
                 const time = this.timeUtils.timestamp();
 
-                this.canViewSubmissions = data.canviewsubmissions;
+                this.canViewAllSubmissions = data.canviewsubmissions;
 
                 if (data.canviewsubmissions) {
 
@@ -206,6 +207,17 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
                         });
                     });
                 }
+
+                // Check if the user can view their own submission.
+                return this.assignProvider.getSubmissionStatus(this.assign.id).then(() => {
+                    this.canViewOwnSubmission = true;
+                }).catch((error) => {
+                    this.canViewOwnSubmission = false;
+
+                    if (error.errorcode !== 'nopermission') {
+                        return Promise.reject(error);
+                    }
+                });
             });
         }).then(() => {
             // All data obtained, now fill the context menu.
@@ -263,7 +275,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         if (this.assign) {
             promises.push(this.assignProvider.invalidateAllSubmissionData(this.assign.id));
 
-            if (this.canViewSubmissions) {
+            if (this.canViewAllSubmissions) {
                 promises.push(this.assignProvider.invalidateSubmissionStatusData(this.assign.id));
             }
         }
