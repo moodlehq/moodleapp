@@ -279,8 +279,11 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
     /**
      * The selected courses sort filter have changed.
+     *
+     * @param {string} sort New sorting.
      */
-    switchSort(): void {
+    switchSort(sort: string): void {
+        this.sort = sort;
         this.currentSite.setLocalSiteConfig('AddonBlockMyOverviewSort', this.sort);
         const courses = this.courses.all.concat(this.courses.hidden);
 

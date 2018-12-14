@@ -209,8 +209,11 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
 
     /**
      * Change timeline sort being viewed.
+     *
+     * @param {string} sort New sorting.
      */
-    switchSort(): void {
+    switchSort(sort: string): void {
+        this.sort = sort;
         this.currentSite.setLocalSiteConfig('AddonBlockTimelineSort', this.sort);
         if (!this.timeline.loaded && this.sort == 'sortbydates') {
             this.fetchContent();

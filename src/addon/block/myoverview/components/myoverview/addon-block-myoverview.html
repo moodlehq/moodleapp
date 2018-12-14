@@ -10,28 +10,21 @@
     </div>
     <core-context-menu item-end>
         <core-context-menu-item *ngIf="loaded && showFilterSwitchButton()" [priority]="1000" [content]="'core.courses.filtermycourses' | translate" (action)="switchFilter()" iconAction="funnel"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && showSortFilter && sort == 'lastaccess'" [priority]="900" content="{{('core.sortby' | translate) + ': ' + ('addon.block_myoverview.title' | translate)}}" (action)="switchSort('fullname')" iconAction="fa-sort"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && showSortFilter && sort == 'fullname'" [priority]="800" content="{{('core.sortby' | translate) + ': ' + ('addon.block_myoverview.lastaccessed' | translate)}}" (action)="switchSort('lastaccess')" iconAction="fa-sort"></core-context-menu-item>
     </core-context-menu>
 </ion-item-divider>
 <core-loading [hideUntil]="loaded" class="core-loading-center">
-    <div padding ion-row justify-content-end [hidden]="showFilter" class="safe-padding-horizontal">
+    <div padding [hidden]="showFilter || !showSelectorFilter" class="safe-padding-horizontal">
         <!-- "Time" selector. -->
-        <ion-col [hidden]="!showSelectorFilter">
-            <ion-select text-start [title]="'core.show' | translate" [(ngModel)]="selectedFilter" ion-col (ngModelChange)="selectedChanged()" interface="popover" class="core-button-select">
-                <ion-option value="all">{{ 'addon.block_myoverview.all' | translate }}</ion-option>∫
-                <ion-option value="inprogress">{{ 'addon.block_myoverview.inprogress' | translate }}</ion-option>
-                <ion-option value="future">{{ 'addon.block_myoverview.future' | translate }}</ion-option>
-                <ion-option value="past">{{ 'addon.block_myoverview.past' | translate }}</ion-option>
-                <ion-option value="favourite" *ngIf="showFavourite">{{ 'addon.block_myoverview.favourites' | translate }}</ion-option>
-                <ion-option value="hidden" *ngIf="showHidden">{{ 'addon.block_myoverview.hiddencourses' | translate }}</ion-option>
-            </ion-select>
-        </ion-col>
-        <!-- "Sort" selector. -->
-        <ion-col [hidden]="!showSortFilter">
-            <ion-select text-start [(ngModel)]="sort" (ngModelChange)="switchSort()" interface="popover" class="core-button-select">
-                <ion-option value="fullname">{{ 'addon.block_myoverview.title' | translate }}</ion-option>
-                <ion-option value="lastaccess">{{ 'addon.block_myoverview.lastaccessed' | translate }}</ion-option>
-            </ion-select>
-        </ion-col>
+        <ion-select text-start [title]="'core.show' | translate" [(ngModel)]="selectedFilter" ion-col (ngModelChange)="selectedChanged()" interface="popover" class="core-button-select">
+            <ion-option value="all">{{ 'addon.block_myoverview.all' | translate }}</ion-option>∫
+            <ion-option value="inprogress">{{ 'addon.block_myoverview.inprogress' | translate }}</ion-option>
+            <ion-option value="future">{{ 'addon.block_myoverview.future' | translate }}</ion-option>
+            <ion-option value="past">{{ 'addon.block_myoverview.past' | translate }}</ion-option>
+            <ion-option value="favourite" *ngIf="showFavourite">{{ 'addon.block_myoverview.favourites' | translate }}</ion-option>
+            <ion-option value="hidden" *ngIf="showHidden">{{ 'addon.block_myoverview.hiddencourses' | translate }}</ion-option>
+        </ion-select>
     </div>
     <core-empty-box *ngIf="courses[selectedFilter].length == 0" image="assets/img/icons/courses.svg" [message]="'addon.block_myoverview.nocourses' | translate"></core-empty-box>
 
