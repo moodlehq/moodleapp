@@ -335,15 +335,15 @@ export class CoreLoginHelperProvider {
      */
     getSitePolicy(siteId?: string): Promise<string> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            // Check if it's stored in the site config.
-            const sitePolicy = site.getStoredConfig('sitepolicy');
-            if (typeof sitePolicy != 'undefined') {
+            // Try to get the latest config, maybe the site policy was just added or has changed.
+            return site.getConfig('sitepolicy', true).then((sitePolicy) => {
                 return sitePolicy ? sitePolicy : Promise.reject(null);
-            }
-
-            // Not in the config, try to get it using auth_email_get_signup_settings.
-            return this.wsProvider.callAjax('auth_email_get_signup_settings', {}, { siteUrl: site.getURL() }).then((settings) => {
-                return settings.sitepolicy ? settings.sitepolicy : Promise.reject(null);
+            }, () => {
+                // Cannot get config, try to get the site policy using auth_email_get_signup_settings.
+                return this.wsProvider.callAjax('auth_email_get_signup_settings', {}, { siteUrl: site.getURL() })
+                        .then((settings) => {
+                    return settings.sitepolicy ? settings.sitepolicy : Promise.reject(null);
+                });
             });
         });
     }
