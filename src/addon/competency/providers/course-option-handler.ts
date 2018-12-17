@@ -24,7 +24,7 @@ import { AddonCompetencyProvider } from '../providers/competency';
 @Injectable()
 export class AddonCompetencyCourseOptionHandler implements CoreCourseOptionsHandler {
     name = 'AddonCompetency';
-    priority = 700;
+    priority = 300;
 
     constructor(private competencyProvider: AddonCompetencyProvider) {}
 
