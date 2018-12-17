@@ -162,6 +162,17 @@ ion-app.app-root page-addon-messages-discussion {
         }
         display: flex;
         align-items: center;
+
+        core-format-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex-shrink: 1;
+        }
+
+        ion-icon {
+            @include margin-horizontal(6px, null);
+        }
     }
 }
 
