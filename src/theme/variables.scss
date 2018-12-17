@@ -107,6 +107,7 @@ $tabs-background:            $gray-darker !default;
 $tabs-border-color:          #b2b2b2 !default;
 $tabs-tab-color-active:      $core-color !default;
 $tabs-tab-color-inactive:    $white !default;
+$ion-tabs-badge-color:       $tabs-tab-color-active !default;
 
 $text-input-highlight-color-valid: $green !default;
 $text-input-highlight-color-invalid: $red !default;
@@ -147,6 +148,8 @@ $core-login-box-background-border: $gray !default;
 $core-login-box-text-color: $text-color !default;
 $core-login-button-outline: false !default;
 $core-login-loading-color: false !default;
+$core-login-item-inner-background-color: $white !default;
+$core-login-item-background-color: $white !default;
 
 // App iOS Variables
 // --------------------------------------------------
@@ -241,6 +244,7 @@ $core-top-tabs-background: $white !default;
 $core-top-tabs-color: $gray-dark !default;
 $core-top-tabs-border: $gray !default;
 $core-top-tabs-color-active: $core-color !default;
+$core-top-tabs-border-active: $core-top-tabs-color-active !default;
 
 $core-splitview-selected: $core-color-light !default;
 $core-progressbar-color: $core-color-light !default;

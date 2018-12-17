@@ -44,7 +44,7 @@ ion-app.app-root .core-tabs-bar {
         &[aria-selected=true] {
             color: $core-top-tabs-color-active !important;
             border: 0 !important;
-            border-bottom: 2px solid $core-top-tabs-color-active !important;
+            border-bottom: 2px solid $core-top-tabs-border-active !important;
         }
     }
 
