@@ -17,6 +17,10 @@ ion-app.app-root core-block {
     height: auto;
   }
 
+  .item-divider {
+    @include safe-area-padding-horizontal(null, 0px);
+  }
+
   .item-divider .core-button-spinner {
     margin: 0;
   }
