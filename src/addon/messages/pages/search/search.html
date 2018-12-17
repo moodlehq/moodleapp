@@ -39,7 +39,10 @@
         <ion-note *ngIf="result.lastmessagedate > 0">
             {{result.lastmessagedate | coreDateDayOrTime}}
         </ion-note>
-        <core-format-text *ngIf="result.lastmessage" clean="true" singleLine="true" [text]="result.lastmessage"></core-format-text>
+        <p class="addon-message-last-message">
+            <span *ngIf="result.sentfromcurrentuser" class="addon-message-last-message-user">{{ 'addon.messages.you' | translate }}</span>
+            <core-format-text clean="true" singleLine="true" [text]="result.lastmessage" class="addon-message-last-message-text"></core-format-text>
+        </p>
     </a>
 
     <!-- Load more button for contacts and non-contacts -->
