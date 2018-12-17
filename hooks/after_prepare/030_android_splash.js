@@ -8,7 +8,7 @@ var filesToCopy = [{
     }, {
         'resources/android/splash/drawable-land-ldpi-screen.png': 'platforms/android/app/src/main/res/drawable-land-ldpi/screen.png'
     }, {
-        'resources/android/splash/drawable-land-mdpi-screen.png.png': 'platforms/android/app/src/main/res/drawable-land-mdpi/screen.png'
+        'resources/android/splash/drawable-land-mdpi-screen.png': 'platforms/android/app/src/main/res/drawable-land-mdpi/screen.png'
     }, {
         'resources/android/splash/drawable-land-xhdpi-screen.png': 'platforms/android/app/src/main/res/drawable-land-xhdpi/screen.png'
     }, {
