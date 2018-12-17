@@ -24,6 +24,7 @@ import { CoreAppProvider } from '../app';
 import { CoreConfigProvider } from '../config';
 import { CoreUrlUtilsProvider } from './url';
 import { CoreConstants } from '@core/constants';
+import { Md5 } from 'ts-md5/dist/md5';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -41,6 +42,7 @@ export class CoreDomUtilsProvider {
     protected instances: {[id: string]: any} = {}; // Store component/directive instances by id.
     protected lastInstanceId = 0;
     protected debugDisplay = false; // Whether to display debug messages. Store it in a variable to make it synchronous.
+    protected displayedAlerts = {}; // To prevent duplicated alerts.
 
     constructor(private translate: TranslateService, private loadingCtrl: LoadingController, private toastCtrl: ToastController,
             private alertCtrl: AlertController, private textUtils: CoreTextUtilsProvider, private appProvider: CoreAppProvider,
@@ -898,6 +900,12 @@ export class CoreDomUtilsProvider {
         }
 
         return promise.then((message) => {
+            const alertId = <string> Md5.hashAsciiStr((title || '') + '#' + (message || ''));
+
+            if (this.displayedAlerts[alertId]) {
+                // There's already an alert with the same message and title. Return it.
+                return this.displayedAlerts[alertId];
+            }
 
             const alert = this.alertCtrl.create({
                 title: title,
@@ -911,6 +919,13 @@ export class CoreDomUtilsProvider {
                     const alertMessageEl: HTMLElement = alert.pageRef().nativeElement.querySelector('.alert-message');
                     this.treatAnchors(alertMessageEl);
                 }
+            });
+
+            // Store the alert and remove it when dismissed.
+            this.displayedAlerts[alertId] = alert;
+
+            alert.onDidDismiss(() => {
+                delete this.displayedAlerts[alertId];
             });
 
             if (autocloseTime > 0) {
