@@ -20,12 +20,12 @@ ion-app.app-root page-core-login-reconnect {
         color: $core-login-box-text-color;
 
         .item {
-            background: $core-login-item-background-color;
+            background-color: $core-login-item-background-color;
             @include padding-horizontal(0);
         }
 
         .item-inner {
-            background: $core-login-item-inner-background-color;
+            background-color: $core-login-item-inner-background-color;
             @include padding-horizontal(0);
         }
     }
