@@ -1,9 +1,9 @@
 {
-    "alignment": "Competencies alignment",
+    "alignment": "Competency",
     "badgedetails": "Badge details",
     "badges": "Badges",
     "bendorsement": "Endorsement",
-    "claimcomment": "Endorsement Comment",
+    "claimcomment": "Endorsement comment",
     "claimid": "Claim URL",
     "contact": "Contact",
     "dateawarded": "Date issued",
@@ -15,15 +15,15 @@
     "imagecaption": "Image caption",
     "issuancedetails": "Badge expiry",
     "issuerdetails": "Issuer details",
-    "issuername": "Issuer name",
     "issueremail": "Email",
+    "issuername": "Issuer name",
+    "issuerurl": "Issuer URL",
     "language": "Language",
-    "noalignment": "This badge does not have a competencies alignment.",
+    "noalignment": "This badge does not have any competencies specified.",
     "nobadges": "There are no badges available.",
-    "noendorsement": "This badge does not have an endorsement.",
-    "norelated": "This badge does not have related badges.",
+    "norelated": "This badge does not have any related badges.",
     "recipientdetails": "Recipient details",
     "relatedbages": "Related badges",
     "version": "Version",
-    "warnexpired": " (This badge has expired!)"
+    "warnexpired": "(This badge has expired!)"
 }
