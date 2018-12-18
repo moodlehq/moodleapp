@@ -58,7 +58,7 @@
                 </ion-item>
             </ng-container>
         </ion-list>
-        <core-empty-box *ngIf="!messages || messages.length <= 0" icon="chatbubbles" [message]="'addon.messages.nomessages' | translate"></core-empty-box>
+        <core-empty-box *ngIf="!messages || messages.length <= 0" icon="chatbubbles" [message]="'addon.messages.nomessagesfound' | translate"></core-empty-box>
     </core-loading>
 </ion-content>
 <ion-footer color="light" class="footer-adjustable" *ngIf="loaded && (!conversationId || conversation)">
