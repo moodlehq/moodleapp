@@ -7,6 +7,7 @@ information provided here is intended especially for developers.
   It's also recommended to update ionic cli to v4, otherwise some errors could be raised while building: npm install -g ionic
 - The value of the constant CoreCourseProvider.ALL_SECTIONS_ID has changed from -1 to -2.
 - Use of completionstatus on the module object has been deprecated, use completiondata instead.
+- The function CoreSitesProvider.loadSite has changed, now it will trigger SESSION_EXPIRED event if the site is logged out. Its params and return value have changed.
 - The following strings have been deprecated:
     core.dfdaymonthyear. Please use core.strftimedatefullshort instead.
     core.dfdayweekmonth. Please use core.strftimedayshort instead.

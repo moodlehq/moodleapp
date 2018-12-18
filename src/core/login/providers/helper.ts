@@ -591,8 +591,8 @@ export class CoreLoginHelperProvider {
             this.appProvider.getRootNavController().setRoot(page, params);
         } else {
             const modal = this.domUtils.showModalLoading();
-            this.sitesProvider.loadSite(siteId).then(() => {
-                if (!this.isSiteLoggedOut(page, params)) {
+            this.sitesProvider.loadSite(siteId, page, params).then((loggedIn) => {
+                if (loggedIn) {
                     this.loadPageInMainMenu(page, params);
                 }
             }).catch(() => {

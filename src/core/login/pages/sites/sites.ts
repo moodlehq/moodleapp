@@ -113,8 +113,8 @@ export class CoreLoginSitesPage {
     login(siteId: string): void {
         const modal = this.domUtils.showModalLoading();
 
-        this.sitesProvider.loadSite(siteId).then(() => {
-            if (!this.loginHelper.isSiteLoggedOut()) {
+        this.sitesProvider.loadSite(siteId).then((loggedIn) => {
+            if (loggedIn) {
                 return this.loginHelper.goToSiteInitialPage();
             }
         }).catch((error) => {
