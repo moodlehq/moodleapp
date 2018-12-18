@@ -665,27 +665,42 @@ export class CoreSitesProvider {
      * Login a user to a site from the list of sites.
      *
      * @param {string} siteId ID of the site to load.
-     * @return {Promise}      Promise to be resolved when the site is loaded.
+     * @param {string} [pageName] Name of the page to go once authenticated if logged out. If not defined, site initial page.
+     * @param {any} [params] Params of the page to go once authenticated if logged out.
+     * @return {Promise<boolean>} Promise resolved with true if site is loaded, resolved with false if cannot login.
      */
-    loadSite(siteId: string): Promise<any> {
+    loadSite(siteId: string, pageName?: string, params?: any): Promise<boolean> {
         this.logger.debug(`Load site ${siteId}`);
 
         return this.getSite(siteId).then((site) => {
             this.currentSite = site;
-            this.login(siteId);
 
             if (site.isLoggedOut()) {
-                // Logged out, nothing else to do.
-                return;
+                // Logged out, trigger session expired event and stop.
+                this.eventsProvider.trigger(CoreEventsProvider.SESSION_EXPIRED, {
+                    pageName: pageName,
+                    params: params
+                }, site.getId());
+
+                return false;
             }
 
             // Check if local_mobile was installed to Moodle.
             return site.checkIfLocalMobileInstalledAndNotUsed().then(() => {
                 // Local mobile was added. Throw invalid session to force reconnect and create a new token.
-                this.eventsProvider.trigger(CoreEventsProvider.SESSION_EXPIRED, {}, siteId);
+                this.eventsProvider.trigger(CoreEventsProvider.SESSION_EXPIRED, {
+                    pageName: pageName,
+                    params: params
+                }, siteId);
+
+                return false;
             }, () => {
+                this.login(siteId);
+
                 // Update site info. We don't block the UI.
                 this.updateSiteInfo(siteId);
+
+                return true;
             });
         });
     }
