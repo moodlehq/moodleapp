@@ -37,6 +37,7 @@ export class CoreMainMenuPage implements OnDestroy {
 
     protected subscription;
     protected redirectObs: any;
+    protected pendingRedirect: any;
 
     @ViewChild('mainTabs') mainTabs: CoreIonTabsComponent;
 
@@ -57,24 +58,13 @@ export class CoreMainMenuPage implements OnDestroy {
         this.showTabs = true;
 
         this.redirectObs = this.eventsProvider.on(CoreEventsProvider.LOAD_PAGE_MAIN_MENU, (data) => {
-            // Check if the redirect page is the root page of any of the tabs.
-            const i = this.tabs.findIndex((tab, i) => {
-                return tab.page == data.redirectPage;
-            });
-
-            if (i >= 0) {
-                // Tab found. Set the params.
-                this.tabs[i].pageParams = Object.assign({}, data.redirectParams);
+            if (!this.loaded) {
+                // View isn't ready yet, wait for it to be ready.
+                this.pendingRedirect = data;
             } else {
-                // Tab not found, use a phantom tab.
-                this.redirectPage = data.redirectPage;
-                this.redirectParams = data.redirectParams;
+                delete this.pendingRedirect;
+                this.handleRedirect(data);
             }
-
-            setTimeout(() => {
-                // Let the tab load the params before navigating.
-                this.mainTabs.selectTabRootByIndex(i + 1);
-            });
         });
 
         this.subscription = this.menuDelegate.getHandlers().subscribe((handlers) => {
@@ -106,6 +96,42 @@ export class CoreMainMenuPage implements OnDestroy {
             });
 
             this.loaded = this.menuDelegate.areHandlersLoaded();
+
+            if (this.loaded && this.pendingRedirect) {
+                // Wait for tabs to be initialized and then handle the redirect.
+                setTimeout(() => {
+                    if (this.pendingRedirect) {
+                        this.handleRedirect(this.pendingRedirect);
+                        delete this.pendingRedirect;
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * Handle a redirect.
+     *
+     * @param {any} data Data received.
+     */
+    protected handleRedirect(data: any): void {
+        // Check if the redirect page is the root page of any of the tabs.
+        const i = this.tabs.findIndex((tab, i) => {
+            return tab.page == data.redirectPage;
+        });
+
+        if (i >= 0) {
+            // Tab found. Set the params.
+            this.tabs[i].pageParams = Object.assign({}, data.redirectParams);
+        } else {
+            // Tab not found, use a phantom tab.
+            this.redirectPage = data.redirectPage;
+            this.redirectParams = data.redirectParams;
+        }
+
+        setTimeout(() => {
+            // Let the tab load the params before navigating.
+            this.mainTabs.selectTabRootByIndex(i + 1);
         });
     }
 
