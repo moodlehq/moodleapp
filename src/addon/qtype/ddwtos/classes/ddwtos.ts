@@ -14,6 +14,7 @@
 
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 
 /**
  * Set of functions to get the CSS selectors.
@@ -59,7 +60,8 @@ export class AddonQtypeDdwtosQuestion {
      * @param {string[]} inputIds Ids of the inputs of the question (where the answers will be stored).
      */
     constructor(logger: CoreLoggerProvider, protected domUtils: CoreDomUtilsProvider, protected container: HTMLElement,
-            protected question: any, protected readOnly: boolean, protected inputIds: string[]) {
+            protected question: any, protected readOnly: boolean, protected inputIds: string[],
+            protected textUtils: CoreTextUtilsProvider) {
         this.logger = logger.getInstance('AddonQtypeDdwtosQuestion');
 
         this.initializer(question);
@@ -406,7 +408,7 @@ export class AddonQtypeDdwtosQuestion {
     protected padToWidthHeight(node: HTMLElement, width: number, height: number): void {
         node.style.width = width + 'px';
         node.style.height = height + 'px';
-        node.style.lineHeight = height + 'px';
+        // Originally lineHeight was set as height to center the text but it comes on too height lines on multiline elements.
     }
 
     /**
@@ -528,6 +530,7 @@ export class AddonQtypeDdwtosQuestion {
 
             // Find max height and width.
             groupItems.forEach((item) => {
+                item.innerHTML = this.textUtils.decodeHTML(item.innerHTML);
                 maxWidth = Math.max(maxWidth, Math.ceil(item.offsetWidth));
                 maxHeight = Math.max(maxHeight, Math.ceil(item.offsetHeight));
             });
