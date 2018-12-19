@@ -49,7 +49,7 @@ export class CoreCourseFormatSingleActivityHandler implements CoreCourseFormatHa
     }
 
     /**
-     * Get the title to use in course page. If not defined, course fullname.
+     * Get the title to use in course page. If not defined, course displayname or fullname.
      * This function will be called without sections first, and then call it again when the sections are retrieved.
      *
      * @param {any} course The course.
@@ -61,7 +61,13 @@ export class CoreCourseFormatSingleActivityHandler implements CoreCourseFormatHa
             return sections[0].modules[0].name;
         }
 
-        return course.fullname || '';
+        if (course.displayname) {
+            return course.displayname;
+        } else if (course.fullname) {
+            return course.fullname;
+        } else {
+            return '';
+        }
     }
 
     /**
