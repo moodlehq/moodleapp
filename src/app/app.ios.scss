@@ -1,6 +1,10 @@
 ion-app.app-root.ios {
   .button-ios {
-    min-height: $button-ios-height
+    min-height: $button-ios-height;
+  }
+
+  ion-searchbar.searchbar-ios .button-ios {
+      min-height: auto;
   }
 
   // Light buttons color.
