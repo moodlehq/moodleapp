@@ -42,7 +42,7 @@ import * as moment from 'moment';
 export class AddonMessagesDiscussionPage implements OnDestroy {
     @ViewChild(Content) content: Content;
 
-    protected siteId: string;
+    siteId: string;
     protected fetching: boolean;
     protected polling;
     protected logger;

@@ -1,7 +1,7 @@
 <ion-header>
     <ion-navbar core-back-button>
         <ion-title>
-            <img *ngIf="conversationImage" class="core-bar-button-image" [src]="conversationImage">
+            <img *ngIf="conversationImage" class="core-bar-button-image" [src]="conversationImage" alt="" onError="this.src='assets/img/user-avatar.png'" core-external-content role="presentation" [siteId]="siteId || null">
             <core-format-text [text]="title"></core-format-text>
             <core-icon *ngIf="conversation && conversation.isfavourite" name="fa-star"></core-icon>
         </ion-title>
