@@ -93,7 +93,7 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
             this.domUtils.waitForImages(this.questionTextEl.nativeElement).then(() => {
                 // Create the instance.
                 this.questionInstance = new AddonQtypeDdwtosQuestion(this.loggerProvider, this.domUtils, this.element,
-                        this.question, this.question.readOnly, this.inputIds);
+                        this.question, this.question.readOnly, this.inputIds, this.textUtils);
 
                 this.questionHelper.treatCorrectnessIconsClicks(this.element, this.component, this.componentId);
 
