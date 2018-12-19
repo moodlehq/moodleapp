@@ -27,10 +27,10 @@
                             <span *ngIf="assign.preventsubmissionnotingroup && !submission.groupname && submission.manyGroups && !submission.blindid">{{ 'addon.mod_assign.multipleteams' | translate }}</span>
                             <span *ngIf="!assign.preventsubmissionnotingroup && !submission.groupname">{{ 'addon.mod_assign.defaultteam' | translate }}</span>
                         </p>
-                        <ion-badge text-center [color]="submission.statusColor" *ngIf="submission.statusTranslated">
+                        <ion-badge text-center text-wrap [color]="submission.statusColor" *ngIf="submission.statusTranslated">
                             {{ submission.statusTranslated }}
                         </ion-badge>
-                        <ion-badge text-center [color]="submission.gradingColor" *ngIf="submission.gradingStatusTranslationId">
+                        <ion-badge text-center text-wrap [color]="submission.gradingColor" *ngIf="submission.gradingStatusTranslationId">
                             {{ submission.gradingStatusTranslationId | translate }}
                         </ion-badge>
                     </a>
