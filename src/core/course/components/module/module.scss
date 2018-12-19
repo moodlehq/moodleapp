@@ -50,7 +50,8 @@ ion-app.app-root core-course-module {
         }
     }
 
-    .core-not-clickable:active {
+    .core-not-clickable:active,
+    .core-not-clickable.activated {
         background-color: $list-background-color;
     }
 }
