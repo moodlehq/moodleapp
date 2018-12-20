@@ -102,7 +102,7 @@
     "cordova-plugin-statusbar": "2.4.2",
     "cordova-plugin-whitelist": "1.3.3",
     "cordova-plugin-zip": "3.1.0",
-    "cordova-sqlite-evcore-extbuild-free": "0.9.9",
+    "cordova-sqlite-storage": "2.6.0",
     "es6-promise-plugin": "4.2.2",
     "font-awesome": "4.7.0",
     "ionic-angular": "3.9.2",
@@ -167,7 +167,7 @@
       "cordova-plugin-statusbar": {},
       "cordova-plugin-whitelist": {},
       "cordova-plugin-zip": {},
-      "cordova-sqlite-evcore-extbuild-free": {},
+      "cordova-sqlite-storage": {},
       "nl.kingsquare.cordova.background-audio": {},
       "phonegap-plugin-push": {
         "SENDER_ID": "694767596569"
