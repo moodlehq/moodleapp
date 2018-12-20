@@ -24,6 +24,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreConfigConstants } from '../../../configconstants';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CoreEventsProvider } from '@providers/events';
 
 /**
  * Handler of a site plugin.
@@ -65,13 +66,19 @@ export class CoreSitePluginsProvider {
 
     protected logger;
     protected sitePlugins: {[name: string]: CoreSitePluginsHandler} = {}; // Site plugins registered.
+    protected sitePluginPromises: {[name: string]: Promise<any>} = {}; // Promises of loading plugins.
     hasSitePluginsLoaded = false;
+    sitePluginsFinishedLoading = false;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
             private langProvider: CoreLangProvider, private appProvider: CoreAppProvider, private platform: Platform,
             private filepoolProvider: CoreFilepoolProvider, private coursesProvider: CoreCoursesProvider,
-            private textUtils: CoreTextUtilsProvider) {
+            private textUtils: CoreTextUtilsProvider, private eventsProvider: CoreEventsProvider) {
         this.logger = logger.getInstance('CoreUserProvider');
+        const observer = this.eventsProvider.on(CoreEventsProvider.SITE_PLUGINS_LOADED, () => {
+            this.sitePluginsFinishedLoading = true;
+            observer && observer.off();
+        });
     }
 
     /**
@@ -512,5 +519,35 @@ export class CoreSitePluginsProvider {
      */
     setSitePluginHandler(name: string, handler: CoreSitePluginsHandler): void {
         this.sitePlugins[name] = handler;
+    }
+
+    /**
+     * Store the promise for a plugin that is being initialised.
+     *
+     * @param {String} component
+     * @param {Promise<any>} promise
+     */
+    registerSitePluginPromise(component: string, promise: Promise<any>): void {
+        this.sitePluginPromises[component] = promise;
+    }
+
+    /**
+     * Is a plugin being initialised for the specified component?
+     *
+     * @param {String} component
+     * @return {boolean}
+     */
+    sitePluginPromiseExists(component: string): boolean {
+        return this.sitePluginPromises.hasOwnProperty(component);
+    }
+
+    /**
+     * Get the promise for a plugin that is being initialised.
+     *
+     * @param {String} component
+     * @return {Promise<any>}
+     */
+    sitePluginLoaded(component: string): Promise<any> {
+        return this.sitePluginPromises[component];
     }
 }

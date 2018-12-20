@@ -18,7 +18,6 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
-import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 
@@ -49,7 +48,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
     protected siteUpdatedObserver;
 
     constructor(@Optional() private navCtrl: NavController, private courseHelper: CoreCourseHelperProvider,
-            private courseFormatDelegate: CoreCourseFormatDelegate, private domUtils: CoreDomUtilsProvider,
+            private domUtils: CoreDomUtilsProvider,
             private courseProvider: CoreCourseProvider, private eventsProvider: CoreEventsProvider,
             private sitesProvider: CoreSitesProvider, private coursesProvider: CoreCoursesProvider) { }
 
@@ -57,6 +56,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      * Component being initialized.
      */
     ngOnInit(): void {
+
         this.downloadCourseEnabled = !this.coursesProvider.isDownloadCourseDisabledInSite();
 
         if (this.downloadCourseEnabled) {
@@ -122,7 +122,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      * @param {any} course The course to open.
      */
     openCourse(course: any): void {
-        this.courseFormatDelegate.openCourse(this.navCtrl, course);
+        this.courseHelper.openCourse(this.navCtrl, course);
     }
 
     /**
