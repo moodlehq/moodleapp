@@ -102,7 +102,9 @@ export class CoreSitePluginsHelperProvider {
                 // Plugins fetched, check that site hasn't changed.
                 if (data.siteId == this.sitesProvider.getCurrentSiteId() && plugins.length) {
                     // Site is still the same. Load the plugins and trigger the event.
-                    this.loadSitePlugins(plugins).then(() => {
+                    this.loadSitePlugins(plugins).catch((error) => {
+                        this.logger.error(error);
+                    }).finally(() => {
                         eventsProvider.trigger(CoreEventsProvider.SITE_PLUGINS_LOADED, {}, data.siteId);
                     });
 
@@ -367,7 +369,9 @@ export class CoreSitePluginsHelperProvider {
         const promises = [];
 
         plugins.forEach((plugin) => {
-            promises.push(this.loadSitePlugin(plugin));
+            const pluginPromise = this.loadSitePlugin(plugin);
+            promises.push(pluginPromise);
+            this.sitePluginsProvider.registerSitePluginPromise(plugin.component, pluginPromise);
         });
 
         return this.utils.allPromises(promises);
@@ -510,7 +514,7 @@ export class CoreSitePluginsHelperProvider {
                 }
             });
         }).catch((err) => {
-            this.logger.error('Error executing init method', handlerSchema.init, err);
+            return Promise.reject('Error executing init method ' + handlerSchema.init + ': ' + err.message);
         });
     }
 
