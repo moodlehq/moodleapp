@@ -242,7 +242,7 @@ export class CoreTimeUtilsProvider {
         }
 
         if (fixHour) {
-            format = format.replace('%I', 'H');
+            format = format.replace('%I', 'h');
         }
 
         // Format could be in PHP format, convert it to moment.
