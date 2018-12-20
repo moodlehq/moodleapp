@@ -809,7 +809,8 @@ export class AddonMessagesProvider {
                     conversationid: conversationId,
                     limitfrom: limitFrom,
                     limitnum: limitTo < 1 ? limitTo : limitTo + 1, // If there is a limit, get 1 more than requested.
-                    includecontactrequests: includeContactRequests ? 1 : 0
+                    includecontactrequests: includeContactRequests ? 1 : 0,
+                    includeprivacyinfo: 1,
                 };
 
             return site.read('core_message_get_conversation_members', params, preSets).then((members) => {

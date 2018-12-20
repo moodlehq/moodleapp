@@ -81,8 +81,8 @@
 <ng-template #conversationsTemplate let-conversations="conversations">
     <a ion-item text-wrap *ngFor="let conversation of conversations" [title]="conversation.name" (click)="gotoConversation(conversation.id, conversation.userid)" [class.core-split-item-selected]="(conversation.id && conversation.id == selectedConversationId) || (conversation.userid && conversation.userid == selectedUserId)" class="addon-message-discussion" id="addon-message-conversation-{{ conversation.id ? conversation.id : 'user-' + conversation.userid }}">
         <!-- Group conversation image. -->
-        <ion-avatar item-start *ngIf="conversation.type != typeIndividual && conversation.imageurl">
-            <img [src]="conversation.imageurl" [alt]="conversation.name" core-external-content>
+        <ion-avatar item-start *ngIf="conversation.type != typeIndividual">
+            <img [src]="conversation.imageurl" [alt]="conversation.name" core-external-content onError="this.src='assets/img/group-avatar.png'">
         </ion-avatar>
 
         <!-- Avatar for individual conversations. -->

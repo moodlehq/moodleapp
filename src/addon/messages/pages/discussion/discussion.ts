@@ -393,7 +393,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         if (conversationId) {
             promise = Promise.resolve(conversationId);
         } else {
-            promise = this.messagesProvider.getConversationBetweenUsers(userId).then((conversation) => {
+            promise = this.messagesProvider.getConversationBetweenUsers(userId, undefined, true).then((conversation) => {
                 fallbackConversation = conversation;
 
                 return conversation.id;

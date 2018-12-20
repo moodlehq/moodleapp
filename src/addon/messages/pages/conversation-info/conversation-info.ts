@@ -56,7 +56,7 @@ export class AddonMessagesConversationInfoPage implements OnInit {
      */
     protected fetchData(): Promise<any> {
         // Get the conversation data first.
-        return this.messagesProvider.getConversation(this.conversationId, false, false, 0, 0).then((conversation) => {
+        return this.messagesProvider.getConversation(this.conversationId, false, true, 0, 0).then((conversation) => {
             this.conversation = conversation;
 
             // Now get the members.
