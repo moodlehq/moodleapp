@@ -229,6 +229,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                                 this.conversationImage = member.profileimageurl;
                                 this.title = member.fullname;
                             }
+                            this.blockIcon = this.otherMember && this.otherMember.isblocked ? 'close-circle' : 'checkmark-circle';
+                            this.addRemoveIcon = this.otherMember && this.otherMember.iscontact ? 'remove' : 'add';
                         }));
                     } else {
                         this.otherMember = null;
@@ -403,7 +405,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             return this.messagesProvider.invalidateConversation(conversationId).catch(() => {
                 // Ignore errors.
             }).then(() => {
-                return this.messagesProvider.getConversation(conversationId);
+                return this.messagesProvider.getConversation(conversationId, undefined, true);
             }).catch((error) => {
                 // Get conversation failed, use the fallback one if we have it.
                 if (fallbackConversation) {
@@ -422,8 +424,6 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                     this.favouriteIcon = conversation.isfavourite ? 'fa-star-o' : 'fa-star';
                     if (!this.isGroup) {
                         this.userId = conversation.userid;
-                        this.blockIcon = this.otherMember && this.otherMember.isblocked ? 'close-circle' : 'checkmark-circle';
-                        this.addRemoveIcon = this.otherMember && this.otherMember.iscontact ? 'remove' : 'add';
                     }
 
                     return true;
@@ -1022,7 +1022,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             this.conversation.isfavourite = !this.conversation.isfavourite;
 
             // Get the conversation data so it's cached. Don't block the user for this.
-            this.messagesProvider.getConversation(this.conversation.id);
+            this.messagesProvider.getConversation(this.conversation.id, undefined, true);
 
             this.eventsProvider.trigger(AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT, {
                 conversationId: this.conversation.id,
