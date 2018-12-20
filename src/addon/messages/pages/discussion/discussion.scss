@@ -120,6 +120,7 @@ ion-app.app-root page-addon-messages-discussion {
             -ms-flex-item-align: end;
             align-self: flex-end;
             vertical-align: middle;
+            @include float('end');
 
             .icon {
                 font-size: 1.4em;
