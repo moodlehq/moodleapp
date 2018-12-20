@@ -79,6 +79,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     members: any = {}; // Members that wrote a message, indexed by ID.
     favouriteIcon = 'fa-star';
     deleteIcon = 'trash';
+    blockIcon = 'close-circle';
+    addRemoveIcon = 'add';
     otherMember: any; // Other member information (individual conversations only).
     footerType: 'message' | 'blocked' | 'requiresContact' | 'requestSent' | 'requestReceived' | 'unable';
     requestContactSent = false;
@@ -420,6 +422,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                     this.favouriteIcon = conversation.isfavourite ? 'fa-star-o' : 'fa-star';
                     if (!this.isGroup) {
                         this.userId = conversation.userid;
+                        this.blockIcon = this.otherMember && this.otherMember.isblocked ? 'close-circle' : 'checkmark-circle';
+                        this.addRemoveIcon = this.otherMember && this.otherMember.iscontact ? 'remove' : 'add';
                     }
 
                     return true;
@@ -1086,6 +1090,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         const okText = this.translate.instant('addon.messages.blockuser');
 
         return this.domUtils.showConfirm(template, undefined, okText).then(() => {
+            this.blockIcon = 'spinner';
+
             const modal = this.domUtils.showModalLoading('core.sending', true);
             this.showLoadingModal = true;
 
@@ -1095,6 +1101,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.error', true);
+        }).finally(() => {
+            this.blockIcon = this.otherMember.isblocked ? 'close-circle' : 'checkmark-circle';
         });
     }
 
@@ -1140,6 +1148,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         const okText = this.translate.instant('addon.messages.unblockuser');
 
         return this.domUtils.showConfirm(template, undefined, okText).then(() => {
+            this.blockIcon = 'spinner';
+
             const modal = this.domUtils.showModalLoading('core.sending', true);
             this.showLoadingModal = true;
 
@@ -1149,6 +1159,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.error', true);
+        }).finally(() => {
+            this.blockIcon = this.otherMember.isblocked ? 'close-circle' : 'checkmark-circle';
         });
     }
 
@@ -1167,6 +1179,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         const okText = this.translate.instant('core.add');
 
         return this.domUtils.showConfirm(template, undefined, okText).then(() => {
+            this.addRemoveIcon = 'spinner';
+
             const modal = this.domUtils.showModalLoading('core.sending', true);
             this.showLoadingModal = true;
 
@@ -1176,6 +1190,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.error', true);
+        }).finally(() => {
+            this.addRemoveIcon = this.otherMember.iscontact ? 'remove' : 'add';
         });
     }
 
@@ -1238,6 +1254,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         const okText = this.translate.instant('core.remove');
 
         return this.domUtils.showConfirm(template, undefined, okText).then(() => {
+            this.addRemoveIcon = 'spinner';
+
             const modal = this.domUtils.showModalLoading('core.sending', true);
             this.showLoadingModal = true;
 
@@ -1247,6 +1265,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.error', true);
+        }).finally(() => {
+            this.addRemoveIcon = this.otherMember.iscontact ? 'remove' : 'add';
         });
     }
 
