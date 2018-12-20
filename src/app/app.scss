@@ -554,7 +554,8 @@ ion-app.app-root {
     }
   }
 
-  .toolbar .core-bar-button-image {
+  .toolbar img.core-bar-button-image,
+  .toolbar .core-bar-button-image img {
     padding: 0;
     width: 100%;
     height: 100%;

@@ -1,7 +1,8 @@
 <ion-header>
     <ion-navbar core-back-button>
         <ion-title>
-            <img *ngIf="conversationImage" class="core-bar-button-image" [src]="conversationImage">
+            <img *ngIf="!otherMember && conversationImage" class="core-bar-button-image" [src]="conversationImage" alt="" onError="this.src='assets/img/user-avatar.png'" core-external-content role="presentation" [siteId]="siteId || null">
+            <ion-avatar *ngIf="otherMember" class="core-bar-button-image" core-user-avatar [user]="otherMember" [linkProfile]="false" [checkOnline]="otherMember.showonlinestatus" item-start></ion-avatar>
             <core-format-text [text]="title"></core-format-text>
             <core-icon *ngIf="conversation && conversation.isfavourite" name="fa-star"></core-icon>
         </ion-title>
@@ -9,15 +10,15 @@
     </ion-navbar>
     <core-navbar-buttons end>
         <core-context-menu>
-            <core-context-menu-item [hidden]="!showInfo || isGroup" [priority]="1000" [content]="'addon.messages.info' | translate" (action)="viewInfo()"></core-context-menu-item>
-            <core-context-menu-item [hidden]="!showInfo || !isGroup" [priority]="1000" [content]="'addon.messages.groupinfo' | translate" (action)="viewInfo()"></core-context-menu-item>
-            <core-context-menu-item [hidden]="!groupMessagingEnabled || !conversation" [priority]="800" [content]="(conversation && conversation.isfavourite ? 'addon.messages.removefromfavourites' : 'addon.messages.addtofavourites') | translate" (action)="changeFavourite($event)" [closeOnClick]="false"></core-context-menu-item>
-            <core-context-menu-item [hidden]="!otherMember || otherMember.isblocked" [priority]="700" [content]="'addon.messages.blockuser' | translate" (action)="blockUser()"></core-context-menu-item>
-            <core-context-menu-item [hidden]="!otherMember || !otherMember.isblocked" [priority]="700" [content]="'addon.messages.unblockuser' | translate" (action)="unblockUser()"></core-context-menu-item>
-            <core-context-menu-item [hidden]="!canDelete" [priority]="400" [content]="'addon.messages.showdeletemessages' | translate" (action)="toggleDelete()"></core-context-menu-item>
-            <core-context-menu-item [hidden]="!groupMessagingEnabled || !conversationId || isGroup" [priority]="200" [content]="'addon.messages.deleteconversation' | translate" (action)="deleteConversation($event)" [closeOnClick]="false"></core-context-menu-item>
-            <core-context-menu-item [hidden]="!otherMember || otherMember.iscontact || requestContactSent || requestContactReceived" [priority]="100" [content]="'addon.messages.addtoyourcontacts' | translate" (action)="createContactRequest()"></core-context-menu-item>
-            <core-context-menu-item [hidden]="!otherMember || !otherMember.iscontact" [priority]="100" [content]="'addon.messages.removefromyourcontacts' | translate" (action)="removeContact()"></core-context-menu-item>
+            <core-context-menu-item [hidden]="!showInfo || isGroup" [priority]="1000" [content]="'addon.messages.info' | translate" (action)="viewInfo()" iconAction="information-circle"></core-context-menu-item>
+            <core-context-menu-item [hidden]="!showInfo || !isGroup" [priority]="1000" [content]="'addon.messages.groupinfo' | translate" (action)="viewInfo()" iconAction="information-circle"></core-context-menu-item>
+            <core-context-menu-item [hidden]="!groupMessagingEnabled || !conversation" [priority]="800" [content]="(conversation && conversation.isfavourite ? 'addon.messages.removefromfavourites' : 'addon.messages.addtofavourites') | translate" (action)="changeFavourite($event)" [closeOnClick]="false" [iconAction]="favouriteIcon"></core-context-menu-item>
+            <core-context-menu-item [hidden]="!otherMember || otherMember.isblocked" [priority]="700" [content]="'addon.messages.blockuser' | translate" (action)="blockUser()" [iconAction]="blockIcon"></core-context-menu-item>
+            <core-context-menu-item [hidden]="!otherMember || !otherMember.isblocked" [priority]="700" [content]="'addon.messages.unblockuser' | translate" (action)="unblockUser()" [iconAction]="blockIcon"></core-context-menu-item>
+            <core-context-menu-item [hidden]="!canDelete" [priority]="400" [content]="'addon.messages.showdeletemessages' | translate" (action)="toggleDelete()" [iconAction]="(showDelete ? 'checkbox-outline' : 'square-outline')"></core-context-menu-item>
+            <core-context-menu-item [hidden]="!groupMessagingEnabled || !conversationId || isGroup" [priority]="200" [content]="'addon.messages.deleteconversation' | translate" (action)="deleteConversation($event)" [closeOnClick]="false" [iconAction]="deleteIcon"></core-context-menu-item>
+            <core-context-menu-item [hidden]="!otherMember || otherMember.iscontact || requestContactSent || requestContactReceived" [priority]="100" [content]="'addon.messages.addtoyourcontacts' | translate" (action)="createContactRequest()" [iconAction]="addRemoveIcon"></core-context-menu-item>
+            <core-context-menu-item [hidden]="!otherMember || !otherMember.iscontact" [priority]="100" [content]="'addon.messages.removefromyourcontacts' | translate" (action)="removeContact()" [iconAction]="addRemoveIcon"></core-context-menu-item>
         </core-context-menu>
     </core-navbar-buttons>
 </ion-header>

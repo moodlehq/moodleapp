@@ -177,17 +177,17 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      */
     filterChanged(event: any): void {
         const newValue = event.target.value && event.target.value.trim().toLowerCase();
-        if (!newValue || !this.courses[this.selectedFilter]) {
-            this.filteredCourses = this.courses[this.selectedFilter];
+        if (!newValue || !this.courses['all']) {
+            this.filteredCourses = this.courses['all'];
         } else {
             // Use displayname if avalaible, or fullname if not.
-            if (this.courses[this.selectedFilter].length > 0 &&
-                    typeof this.courses[this.selectedFilter][0].displayname != 'undefined') {
-                this.filteredCourses = this.courses[this.selectedFilter].filter((course) => {
+            if (this.courses['all'].length > 0 &&
+                    typeof this.courses['all'][0].displayname != 'undefined') {
+                this.filteredCourses = this.courses['all'].filter((course) => {
                     return course.displayname.toLowerCase().indexOf(newValue) > -1;
                 });
             } else {
-                this.filteredCourses = this.courses[this.selectedFilter].filter((course) => {
+                this.filteredCourses = this.courses['all'].filter((course) => {
                     return course.fullname.toLowerCase().indexOf(newValue) > -1;
                 });
             }
@@ -311,7 +311,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     switchFilter(): void {
         this.showFilter = !this.showFilter;
         this.courses.filter = '';
-        this.filteredCourses = this.courses[this.selectedFilter];
+        this.filteredCourses = this.courses[this.showFilter ? 'all' : this.selectedFilter];
         if (this.showFilter) {
             setTimeout(() => {
                 this.searchbar.setFocus();
@@ -325,7 +325,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @return {boolean} If switch button that enables the filter input is shown or not.
      */
     showFilterSwitchButton(): boolean {
-        return this.loaded && this.courses[this.selectedFilter] && this.courses[this.selectedFilter].length > 5;
+        return this.loaded && this.courses['all'] && this.courses['all'].length > 5;
     }
 
     /**

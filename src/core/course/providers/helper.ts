@@ -1083,7 +1083,7 @@ export class CoreCourseHelperProvider {
             }
 
             const sectionWithModules = sections.find((section) => {
-                    return section.modules.length > 0;
+                    return section.modules && section.modules.length > 0;
             });
             if (!sectionWithModules || typeof sectionWithModules.modules[0].completion == 'undefined') {
                 promises.push(this.courseProvider.getActivitiesCompletionStatus(course.id));
