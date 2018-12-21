@@ -243,6 +243,21 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @param {any[]} courses Courses to filter.
      */
     initCourseFilters(courses: any[]): void {
+        if (this.showSortFilter) {
+                if (this.sort == 'lastaccess') {
+                courses.sort((a, b) => {
+                    return b.lastaccess - a.lastaccess;
+                });
+            } else if (this.sort == 'fullname') {
+                courses.sort((a, b) => {
+                    const compareA = a.fullname.toLowerCase(),
+                        compareB = b.fullname.toLowerCase();
+
+                    return compareA.localeCompare(compareB);
+                });
+            }
+        }
+
         this.courses.all = [];
         this.courses.past = [];
         this.courses.inprogress = [];
@@ -285,24 +300,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     switchSort(sort: string): void {
         this.sort = sort;
         this.currentSite.setLocalSiteConfig('AddonBlockMyOverviewSort', this.sort);
-        const courses = this.courses.all.concat(this.courses.hidden);
-
-        if (this.showSortFilter) {
-            if (this.sort == 'lastaccess') {
-                courses.sort((a, b) => {
-                    return b.lastaccess - a.lastaccess;
-                });
-            } else if (this.sort == 'fullname') {
-                courses.sort((a, b) => {
-                    const compareA = a.fullname.toLowerCase(),
-                        compareB = b.fullname.toLowerCase();
-
-                    return compareA.localeCompare(compareB);
-                });
-            }
-        }
-
-        this.initCourseFilters(courses);
+        this.initCourseFilters(this.courses.all.concat(this.courses.hidden));
     }
 
     /**
