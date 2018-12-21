@@ -13,3 +13,8 @@ ion-avatar[core-user-avatar] {
         }
     }
 }
+
+.toolbar ion-avatar[core-user-avatar] .contact-status {
+    width: 10px;
+    height: 10px;
+}

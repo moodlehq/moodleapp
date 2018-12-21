@@ -15,6 +15,7 @@
 import { Component, Input, OnInit, OnChanges, SimpleChange } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreAppProvider } from '@providers/app';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
@@ -42,7 +43,8 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges {
     protected myUser = false;
     protected currentUserId: number;
 
-    constructor(private navCtrl: NavController, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider) {
+    constructor(private navCtrl: NavController, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
+            private appProvider: CoreAppProvider) {
         this.currentUserId = this.sitesProvider.getCurrentSiteUserId();
     }
 
@@ -100,7 +102,8 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges {
 
             return this.user.lastaccess * 1000 >= time;
         } else {
-            return this.user.isonline;
+            // You have to have Internet access first.
+            return this.user.isonline && this.appProvider.isOnline();
         }
     }
 

@@ -15,8 +15,8 @@
 
     <core-loading [hideUntil]="loaded">
         <ion-item text-center *ngIf="conversation">
-            <div class="item-avatar-center" *ngIf="conversation.imageurl">
-                <img class="avatar" [src]="conversation.imageurl" core-external-content [alt]="conversation.name" role="presentation">
+            <div class="item-avatar-center">
+                <img class="avatar" [src]="conversation.imageurl" core-external-content [alt]="conversation.name" role="presentation" onError="this.src='assets/img/group-avatar.png'">
             </div>
             <h2><core-format-text [text]="conversation.name"></core-format-text></h2>
             <p><core-format-text *ngIf="conversation.subname" [text]="conversation.subname"></core-format-text></p>
