@@ -35,9 +35,10 @@ export class CoreFormatDatePipe implements PipeTransform {
      * @param {string|number} timestamp Timestamp to format (in milliseconds). If not defined, use current time.
      * @param {string} [format] Format to use. It should be a string code to handle i18n (e.g. core.strftimetime).
      *                          Defaults to strftimedaydatetime.
+     * @param {boolean} [convert] If true, convert the format from PHP to Moment. Set it to false for Moment formats.
      * @return {string} Formatted date.
      */
-    transform(timestamp: string | number, format?: string): string {
+    transform(timestamp: string | number, format?: string, convert?: boolean): string {
         timestamp = timestamp || Date.now();
         format = format || 'strftimedaydatetime';
 
@@ -57,6 +58,11 @@ export class CoreFormatDatePipe implements PipeTransform {
             format = 'core.' + format;
         }
 
-        return this.timeUtils.userDate(timestamp, format);
+        if (typeof convert == 'undefined') {
+            // Initialize convert param. Set it to false if it's a core.df format, set it to true otherwise.
+            convert = format.indexOf('core.df') != 0;
+        }
+
+        return this.timeUtils.userDate(timestamp, format, convert);
     }
 }

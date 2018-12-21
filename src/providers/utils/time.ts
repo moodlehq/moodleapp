@@ -81,16 +81,38 @@ export class CoreTimeUtilsProvider {
             return '';
         }
 
-        let converted = '';
+        let converted = '',
+            escaping = false;
 
         for (let i = 0; i < format.length; i++) {
             let char = format[i];
+
             if (char == '%') {
+                // It's a PHP format, try to convert it.
                 i++;
                 char += format[i] || '';
-            }
 
-            converted += typeof this.FORMAT_REPLACEMENTS[char] != 'undefined' ? this.FORMAT_REPLACEMENTS[char] : char;
+                if (escaping) {
+                    // We were escaping some characters, stop doing it now.
+                    escaping = false;
+                    converted += ']';
+                }
+
+                converted += typeof this.FORMAT_REPLACEMENTS[char] != 'undefined' ? this.FORMAT_REPLACEMENTS[char] : char;
+            } else {
+                // Not a PHP format. We need to escape them, otherwise the letters could be confused with Moment formats.
+                if (!escaping) {
+                    escaping = true;
+                    converted += '[';
+                }
+
+                converted += char;
+            }
+        }
+
+        if (escaping) {
+            // Finish escaping.
+            converted += ']';
         }
 
         return converted;
@@ -230,23 +252,26 @@ export class CoreTimeUtilsProvider {
      *
      * @param {number} timestamp Timestamp in milliseconds.
      * @param {string} [format] The format to use (lang key). Defaults to core.strftimedaydatetime.
+     * @param {boolean} [convert=true] If true (default), convert the format from PHP to Moment. Set it to false for Moment formats.
      * @param {boolean} [fixDay=true] If true (default) then the leading zero from %d is removed.
      * @param {boolean} [fixHour=true] If true (default) then the leading zero from %I is removed.
      * @return {string} Readable date.
      */
-    userDate(timestamp: number, format?: string, fixDay: boolean = true, fixHour: boolean = true): string {
+    userDate(timestamp: number, format?: string, convert: boolean = true, fixDay: boolean = true, fixHour: boolean = true): string {
         format = this.translate.instant(format ? format : 'core.strftimedaydatetime');
 
         if (fixDay) {
-            format = format.replace(/%d/g, 'D');
+            format = format.replace(/%d/g, '%e');
         }
 
         if (fixHour) {
-            format = format.replace('%I', 'h');
+            format = format.replace('%I', '%l');
         }
 
         // Format could be in PHP format, convert it to moment.
-        format = this.convertPHPToMoment(format);
+        if (convert) {
+            format = this.convertPHPToMoment(format);
+        }
 
         return moment(timestamp).format(format);
     }
