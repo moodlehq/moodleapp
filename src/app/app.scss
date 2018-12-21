@@ -900,10 +900,13 @@ body.keyboard-is-open {
   }
 }
 
-.safe-padding-horizontal,
+.safe-padding-horizontal{
+  @include safe-area-padding-horizontal(0px, 0px);
+}
+
 [padding].safe-padding-horizontal,
 ion-app.ios [padding].safe-padding-horizontal {
-  @include safe-area-padding-horizontal(0px, 0px);
+  @include safe-area-padding-horizontal($content-padding, $content-padding);
 }
 
 ion-app.ios .split-pane-side,

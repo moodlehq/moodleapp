@@ -229,7 +229,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                                 this.conversationImage = member.profileimageurl;
                                 this.title = member.fullname;
                             }
-                            this.blockIcon = this.otherMember && this.otherMember.isblocked ? 'close-circle' : 'checkmark-circle';
+                            this.blockIcon = this.otherMember && this.otherMember.isblocked ? 'checkmark-circle' : 'close-circle';
                             this.addRemoveIcon = this.otherMember && this.otherMember.iscontact ? 'remove' : 'add';
                         }));
                     } else {

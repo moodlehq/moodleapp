@@ -266,7 +266,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                     const conversation = this.findConversation(this.conversationId);
                     if (conversation) {
                         const option = this.getConversationOption(conversation);
-                        option.expanded = true;
+                        this.expandOption(option);
 
                         return;
                     }
@@ -336,11 +336,13 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             return conversations.find((conv) => {
                 return conv.id == conversationId;
             });
-        } else if (this.individual.conversations) {
-            return this.individual.conversations.find((conv) => {
-                return conv.userid == userId;
-            });
         }
+
+        const conversations = (this.favourites.conversations || []).concat(this.individual.conversations || []);
+
+        return conversations.find((conv) => {
+            return conv.userid == userId;
+        });
     }
 
     /**

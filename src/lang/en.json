@@ -2,6 +2,7 @@
     "accounts": "Accounts",
     "add": "Add",
     "agelocationverification": "Age and location verification",
+    "ago": "{{$a}} ago",
     "all": "All",
     "allparticipants": "All participants",
     "android": "Android",
