@@ -158,6 +158,7 @@ export class CoreSiteHomeIndexComponent implements OnInit {
                 if (canGetBlocks) {
                     this.domUtils.showErrorModal(error);
                 }
+                this.blocks = [];
 
                 // Cannot get the blocks, just show site main menu if needed.
                 if (sections[0] && this.courseHelper.sectionHasContent(sections[0])) {
@@ -166,7 +167,6 @@ export class CoreSiteHomeIndexComponent implements OnInit {
                     });
                     this.hasSupportedBlock = true;
                 } else {
-                    this.blocks = [];
                     this.hasSupportedBlock = false;
                 }
             });
