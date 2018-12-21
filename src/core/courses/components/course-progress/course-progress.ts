@@ -219,6 +219,10 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
             this.course.hidden = hide;
             this.eventsProvider.trigger(
                 CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {course: this.course}, this.sitesProvider.getCurrentSiteId());
+        }).catch((error) => {
+            if (!this.isDestroyed) {
+                this.domUtils.showErrorModalDefault(error, 'Error changing course visibility.');
+            }
         }).finally(() => {
             this.showSpinner = false;
         });
@@ -236,6 +240,10 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
             this.course.isfavourite = favourite;
             this.eventsProvider.trigger(
                 CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {course: this.course}, this.sitesProvider.getCurrentSiteId());
+        }).catch((error) => {
+            if (!this.isDestroyed) {
+                this.domUtils.showErrorModalDefault(error, 'Error changing course favourite attribute.');
+            }
         }).finally(() => {
             this.showSpinner = false;
         });
