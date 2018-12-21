@@ -488,7 +488,7 @@ export class CoreSitesProvider {
                     this.sites[siteId] = candidateSite;
                     // Store session.
                     this.login(siteId);
-                    this.eventsProvider.trigger(CoreEventsProvider.SITE_ADDED, {}, siteId);
+                    this.eventsProvider.trigger(CoreEventsProvider.SITE_ADDED, info, siteId);
 
                     if (this.siteTablesSchemas.length) {
                         // Create tables in the site's database.

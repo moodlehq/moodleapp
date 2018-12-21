@@ -154,6 +154,16 @@ export class MoodleMobileApp implements OnInit {
             }
         });
 
+        this.eventsProvider.on(CoreEventsProvider.SITE_ADDED, (data) => {
+            if (data.siteId == this.sitesProvider.getCurrentSiteId()) {
+                loadCustomStrings();
+
+                // Add version classes to body.
+                this.removeVersionClass();
+                this.addVersionClass(this.sitesProvider.getReleaseNumber(data.release || ''));
+            }
+        });
+
         // Pause Youtube videos in Android when app is put in background or screen is locked.
         this.platform.pause.subscribe(() => {
             if (!this.platform.is('android')) {
