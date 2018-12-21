@@ -29,6 +29,7 @@ import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from './
 import { CoreSiteHomeProvider } from '@core/sitehome/providers/sitehome';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCourseProvider } from './course';
+import { CoreCourseOfflineProvider } from './course-offline';
 import { CoreCourseModuleDelegate } from './module-delegate';
 import { CoreCourseModulePrefetchDelegate } from './module-prefetch-delegate';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
@@ -122,7 +123,7 @@ export class CoreCourseHelperProvider {
         private courseOptionsDelegate: CoreCourseOptionsDelegate, private siteHomeProvider: CoreSiteHomeProvider,
         private eventsProvider: CoreEventsProvider, private fileHelper: CoreFileHelperProvider,
         private appProvider: CoreAppProvider, private fileProvider: CoreFileProvider, private injector: Injector,
-        private coursesProvider: CoreCoursesProvider) { }
+        private coursesProvider: CoreCoursesProvider, private courseOffline: CoreCourseOfflineProvider) { }
 
     /**
      * This function treats every module on the sections provided to load the handler data, treat completion
@@ -773,6 +774,56 @@ export class CoreCourseHelperProvider {
             prefetch.icon = icon;
 
             return prefetch;
+        });
+    }
+
+    /**
+     * Load offline completion into a list of sections.
+     * This should be used in 3.6 sites or higher, where the course contents already include the completion.
+     *
+     * @param {number} courseId The course to get the completion.
+     * @param {any[]} sections List of sections of the course.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    loadOfflineCompletion(courseId: number, sections: any[], siteId?: string): Promise<any> {
+        return this.courseOffline.getCourseManualCompletions(courseId, siteId).then((offlineCompletions) => {
+            if (!offlineCompletions || !offlineCompletions.length) {
+                // No offline completion.
+                return;
+            }
+
+            const totalOffline = offlineCompletions.length;
+            let loaded = 0;
+
+            offlineCompletions = this.utils.arrayToObject(offlineCompletions, 'cmid');
+
+            // Load the offline data in the modules.
+            for (let i = 0; i < sections.length; i++) {
+                const section = sections[i];
+                if (!section.modules || !section.modules.length) {
+                    // Section has no modules, ignore it.
+                    continue;
+                }
+
+                for (let j = 0; j < section.modules.length; j++) {
+                    const module = section.modules[j],
+                        offlineCompletion = offlineCompletions[module.id];
+
+                    if (offlineCompletion && typeof module.completiondata != 'undefined' &&
+                            offlineCompletion.timecompleted >= module.completiondata.timecompleted * 1000) {
+                        // The module has offline completion. Load it.
+                        module.completiondata.state = offlineCompletion.completed;
+                        module.completiondata.offline = true;
+
+                        // If all completions have been loaded, stop.
+                        loaded++;
+                        if (loaded == totalOffline) {
+                            break;
+                        }
+                    }
+                }
+            }
         });
     }
 

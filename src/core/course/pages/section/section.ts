@@ -219,8 +219,14 @@ export class CoreCourseSectionPage implements OnDestroy {
                     const sectionWithModules = sections.find((section) => {
                             return section.modules.length > 0;
                     });
+
                     if (sectionWithModules && typeof sectionWithModules.modules[0].completion != 'undefined') {
-                        promise = Promise.resolve({});
+                        // The module already has completion (3.6 onwards). Load the offline completion.
+                        promise = this.courseHelper.loadOfflineCompletion(this.course.id, sections).catch(() => {
+                            // It shouldn't happen.
+                        }).then(() => {
+                            return {};
+                        });
                     } else {
                         promise = this.courseProvider.getActivitiesCompletionStatus(this.course.id).catch(() => {
                             // It failed, don't use completion.
