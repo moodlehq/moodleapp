@@ -1156,6 +1156,7 @@
   "core.accounts": "admin",
   "core.add": "moodle",
   "core.agelocationverification": "moodle",
+  "core.ago": "message",
   "core.all": "moodle",
   "core.allparticipants": "moodle",
   "core.android": "local_moodlemobileapp",

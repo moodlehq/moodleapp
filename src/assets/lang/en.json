@@ -1156,6 +1156,7 @@
     "core.accounts": "Accounts",
     "core.add": "Add",
     "core.agelocationverification": "Age and location verification",
+    "core.ago": "{{$a}} ago",
     "core.all": "All",
     "core.allparticipants": "All participants",
     "core.android": "Android",
