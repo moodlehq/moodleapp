@@ -38,7 +38,7 @@
         </ion-item>
         <ion-item text-wrap *ngIf="compilationTime || lastCommit">
             <h2>{{ 'core.settings.compilationinfo' | translate }}</h2>
-            <p *ngIf="compilationTime">{{ compilationTime | coreFormatDate: "LLL Z" }}</p>
+            <p *ngIf="compilationTime">{{ compilationTime | coreFormatDate: "LLL Z": false }}</p>
             <p *ngIf="lastCommit">{{ lastCommit }}</p>
         </ion-item>
         <ion-item text-wrap *ngIf="fileSystemRoot">
