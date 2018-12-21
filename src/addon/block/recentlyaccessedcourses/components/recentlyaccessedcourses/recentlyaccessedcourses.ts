@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Injector } from '@angular/core';
+import { Component, OnInit, OnDestroy, Injector, Input } from '@angular/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitesProvider } from '@providers/sites';
@@ -31,12 +31,13 @@ import { CoreBlockBaseComponent } from '@core/block/classes/base-block-component
     templateUrl: 'addon-block-recentlyaccessedcourses.html'
 })
 export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy {
+    @Input() downloadEnabled: boolean;
+
     courses = [];
     prefetchCoursesData = {
         icon: '',
         badge: ''
     };
-    downloadAllCoursesEnabled: boolean;
 
     protected prefetchIconsInitialized = false;
     protected isDestroyed;
@@ -61,11 +62,11 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
         // Refresh the enabled flags if enabled.
         this.downloadButtonObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED,
                 (data) => {
-            const wasEnabled = this.downloadAllCoursesEnabled;
+            const wasEnabled = this.downloadEnabled;
 
-            this.downloadAllCoursesEnabled = data.enabled;
+            this.downloadEnabled = data.enabled;
 
-            if (!wasEnabled && this.downloadAllCoursesEnabled && this.loaded) {
+            if (!wasEnabled && this.downloadEnabled && this.loaded) {
                 // Download all courses is enabled now, initialize it.
                 this.initPrefetchCoursesIcons();
             }
@@ -120,7 +121,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
      * Initialize the prefetch icon for selected courses.
      */
     protected initPrefetchCoursesIcons(): void {
-        if (this.prefetchIconsInitialized || !this.downloadAllCoursesEnabled) {
+        if (this.prefetchIconsInitialized || !this.downloadEnabled) {
             // Already initialized.
             return;
         }
