@@ -1,6 +1,6 @@
 <ion-item-divider color="light">
     <h2>{{ 'addon.block_recentlyaccessedcourses.pluginname' | translate }}</h2>
-    <div *ngIf="downloadAllCoursesEnabled && courses && courses.length > 1" class="core-button-spinner" item-end>
+    <div *ngIf="downloadEnabled && courses && courses.length > 1" class="core-button-spinner" item-end>
         <button *ngIf="prefetchCoursesData.icon && prefetchCoursesData.icon != 'spinner'" ion-button icon-only clear color="dark" (click)="prefetchCourses()">
             <core-icon [name]="prefetchCoursesData.icon"></core-icon>
         </button>
@@ -14,7 +14,7 @@
     <div class="safe-area-page">
          <div class="core-horizontal-scroll">
             <ng-container *ngFor="let course of courses">
-                <core-courses-course-progress [course]="course" class="core-recentlyaccessedcourses" [showDownload]="downloadAllCoursesEnabled"></core-courses-course-progress>
+                <core-courses-course-progress [course]="course" class="core-recentlyaccessedcourses" [showDownload]="downloadEnabled"></core-courses-course-progress>
             </ng-container>
         </div>
     </div>

@@ -37,7 +37,7 @@
                         <ion-list>
                             <!-- Dashboard blocks. -->
                             <ng-container *ngFor="let block of blocks">
-                                <core-block [block]="block" contextLevel="user" [instanceId]="userId"></core-block>
+                                <core-block [block]="block" contextLevel="user" [instanceId]="userId" [extraData]="{'downloadEnabled': downloadEnabled}"></core-block>
                             </ng-container>
                         </ion-list>
 
