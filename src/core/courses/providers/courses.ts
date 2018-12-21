@@ -118,6 +118,11 @@ export class CoreCoursesProvider {
 
                         // Always add the site home ID.
                         courseIds.push(siteHomeId);
+
+                        // Sort the course IDs.
+                        courseIds.sort((a, b) => {
+                           return b - a;
+                        });
                     }
 
                     return courseIds;
@@ -129,6 +134,11 @@ export class CoreCoursesProvider {
                 if (courseIds.length > 1 && courseIds.indexOf(siteHomeId) == -1) {
                     courseIds.push(siteHomeId);
                 }
+
+                // Sort the course IDs.
+                courseIds.sort((a, b) => {
+                   return b - a;
+                });
 
                 return courseIds;
             }

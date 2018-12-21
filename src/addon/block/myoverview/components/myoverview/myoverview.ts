@@ -150,6 +150,10 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      */
     protected fetchContent(): Promise<any> {
         return this.coursesHelper.getUserCoursesWithOptions(this.sort).then((courses) => {
+            this.courseIds = courses.map((course) => {
+                    return course.id;
+                });
+
             this.showSortFilter = courses.length > 0 && typeof courses[0].lastaccess != 'undefined';
 
             this.initCourseFilters(courses);
