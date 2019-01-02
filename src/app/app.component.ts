@@ -140,7 +140,18 @@ export class MoodleMobileApp implements OnInit {
             }
         };
 
-        this.eventsProvider.on(CoreEventsProvider.LOGIN, () => {
+        this.eventsProvider.on(CoreEventsProvider.LOGIN, (data) => {
+            if (data.siteId) {
+                this.sitesProvider.getSite(data.siteId).then((site) => {
+                    const info = site.getInfo();
+                    if (info) {
+                        // Add version classes to body.
+                        this.removeVersionClass();
+                        this.addVersionClass(this.sitesProvider.getReleaseNumber(info.release || ''));
+                    }
+                });
+            }
+
             loadCustomStrings();
         });
 
