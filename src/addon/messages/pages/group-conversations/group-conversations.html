@@ -20,12 +20,12 @@
         </ion-refresher>
 
         <core-loading [hideUntil]="loaded" [message]="loadingMessage">
-            <a ion-item text-wrap (click)="gotoContacts($event)" [attr.aria-label]="'addon.messages.contacts' | translate" class="addon-message-discussion">
-                <ion-icon name="person" item-start></ion-icon>
-                <h2>{{ 'addon.messages.contacts' | translate }}</h2>
-                <ion-badge *ngIf="contactRequestsCount > 0" item-end>{{contactRequestsCount}}</ion-badge>
-            </a>
             <ion-list>
+                <a ion-item text-wrap (click)="gotoContacts($event)" [attr.aria-label]="'addon.messages.contacts' | translate" class="addon-message-discussion">
+                    <ion-icon name="person" item-start></ion-icon>
+                    <h2>{{ 'addon.messages.contacts' | translate }}</h2>
+                    <ion-badge *ngIf="contactRequestsCount > 0" item-end>{{contactRequestsCount}}</ion-badge>
+                </a>
                 <!-- Favourite conversations. -->
                 <ion-item-divider text-wrap *ngIf="favourites.conversations" (click)="toggle(favourites)" class="core-expandable">
                     <core-icon *ngIf="!favourites.expanded" name="fa-caret-right" item-start></core-icon>
