@@ -53,7 +53,7 @@
         <ion-list *ngIf="identityProviders && identityProviders.length" padding-top>
             <ion-list-header text-wrap>{{ 'core.login.potentialidps' | translate }}</ion-list-header>
             <button ion-item *ngFor="let provider of identityProviders" text-wrap class="core-oauth-icon" (click)="oauthClicked(provider)" title="{{provider.name}}">
-                <img [src]="provider.iconurl" alt="{{provider.name}}" item-start>
+                <img [src]="provider.iconurl" alt="" width="32" height="32" item-start>
                 {{provider.name}}
             </button>
         </ion-list>
