@@ -881,6 +881,12 @@ ion-app.app-root {
   .text-#{$color-name} {
     color: $color-contrast;
   }
+
+  .item-divider-md-#{$color-name} h2,
+  .item-divider-wp-#{$color-name} h2,
+  .item-divider-ios-#{$color-name} h2 {
+    color: $color-contrast;
+  }
 }
 
 [dir="ltr"] body, [dir="rtl"] body {
