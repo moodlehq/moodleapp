@@ -16,6 +16,7 @@ import { Injectable, Injector } from '@angular/core';
 import { CoreCourseOptionsHandler, CoreCourseOptionsHandlerData } from '@core/course/providers/options-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreGradesProvider } from './grades';
+import { CoreGradesHelperProvider } from './helper';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreGradesCourseComponent } from '../components/course/course';
 
@@ -27,7 +28,8 @@ export class CoreGradesCourseOptionHandler implements CoreCourseOptionsHandler {
     name = 'CoreGrades';
     priority = 400;
 
-    constructor(private gradesProvider: CoreGradesProvider, private coursesProvider: CoreCoursesProvider) {}
+    constructor(private gradesProvider: CoreGradesProvider, private coursesProvider: CoreCoursesProvider,
+            private gradesHelper: CoreGradesHelperProvider) {}
 
     /**
      * Should invalidate the data to determine if the handler is enabled for a certain course.
@@ -89,5 +91,29 @@ export class CoreGradesCourseOptionHandler implements CoreCourseOptionsHandler {
             class: 'core-grades-course-handler',
             component: CoreGradesCourseComponent
         };
+    }
+
+    /**
+     * Called when a course is downloaded. It should prefetch all the data to be able to see the addon in offline.
+     *
+     * @param {any} course The course.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetch(course: any): Promise<any> {
+        return this.gradesProvider.getCourseGradesTable(course.id, undefined, undefined, true).then((table) => {
+            const promises = [];
+
+            table = this.gradesHelper.formatGradesTable(table);
+
+            if (table && table.rows) {
+                table.rows.forEach((row) => {
+                    if (row.itemtype != 'category') {
+                        promises.push(this.gradesHelper.getGradeItem(course.id, row.id, undefined, undefined, true));
+                    }
+                });
+            }
+
+            return Promise.all(promises);
+        });
     }
 }

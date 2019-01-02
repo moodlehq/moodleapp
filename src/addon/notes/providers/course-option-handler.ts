@@ -71,4 +71,14 @@ export class AddonNotesCourseOptionHandler implements CoreCourseOptionsHandler {
             component: AddonNotesListComponent,
         };
     }
+
+    /**
+     * Called when a course is downloaded. It should prefetch all the data to be able to see the addon in offline.
+     *
+     * @param {any} course The course.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetch(course: any): Promise<any> {
+        return this.notesProvider.getNotes(course.id, true);
+    }
 }
