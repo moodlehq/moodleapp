@@ -89,8 +89,16 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
         // Update conversations when new message is received.
         this.newMessagesObserver = eventsProvider.on(AddonMessagesProvider.NEW_MESSAGE_EVENT, (data) => {
+            // Check if the new message belongs to the option that is currently expanded.
+            const expandedOption = this.getExpandedOption(),
+                messageOption = this.getConversationOption(data);
+
+            if (expandedOption != messageOption) {
+                return; // Message doesn't belong to current list, stop.
+            }
+
             // Search the conversation to update.
-            const conversation = this.findConversation(data.conversationId, data.userId);
+            const conversation = this.findConversation(data.conversationId, data.userId, expandedOption);
 
             if (typeof conversation == 'undefined') {
                 // Probably a new conversation, refresh the list.
@@ -135,7 +143,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         // Load a discussion if we receive an event to do so.
         this.openConversationObserver = eventsProvider.on(AddonMessagesProvider.OPEN_CONVERSATION_EVENT, (data) => {
             if (data.conversationId || data.userId) {
-                this.gotoConversation(data.conversationId, data.userId, undefined, true);
+                this.gotoConversation(data.conversationId, data.userId);
             }
         }, this.siteId);
 
@@ -183,18 +191,17 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 return;
             }
 
-            const updateConversations = (conversations: any[]): void => {
-                if (!conversations || conversations.length <= 0) {
+            const expandedOption = this.getExpandedOption();
+            if (expandedOption == this.individual || expandedOption == this.favourites) {
+                if (!expandedOption.conversations || expandedOption.conversations.length <= 0) {
                     return;
                 }
-                const conversation = conversations.find((conv) => conv.userid == data.userId);
+
+                const conversation = this.findConversation(undefined, data.userId, expandedOption);
                 if (conversation) {
                     conversation.isblocked = data.userBlocked;
                 }
-            };
-
-            updateConversations(this.individual.conversations);
-            updateConversations(this.favourites.conversations);
+            }
         }, this.siteId);
     }
 
@@ -211,13 +218,10 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             if (!this.conversationId && this.splitviewCtrl.isOn()) {
                 // Load the first conversation.
                 let conversation;
+                const expandedOption = this.getExpandedOption();
 
-                if (this.favourites.expanded) {
-                    conversation = this.favourites.conversations[0];
-                } else if (this.group.expanded) {
-                    conversation = this.group.conversations[0];
-                } else if (this.individual.expanded) {
-                    conversation = this.individual.conversations[0];
+                if (expandedOption) {
+                    conversation = expandedOption.conversations[0];
                 }
 
                 if (conversation) {
@@ -230,53 +234,53 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     /**
      * Fetch conversations.
      *
+     * @param {booleam} [refreshUnreadCounts=true] Whether to refresh unread counts.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected fetchData(): Promise<any> {
+    protected fetchData(refreshUnreadCounts: boolean = true): Promise<any> {
         this.loadingMessage = this.loadingString;
 
-        // Load the first conversations of each type.
+        // Load the amount of conversations and contact requests.
         const promises = [];
-        let offlineMessages;
 
-        promises.push(this.fetchDataForOption(this.favourites, false));
-        promises.push(this.fetchDataForOption(this.group, false));
-        promises.push(this.fetchDataForOption(this.individual, false));
         promises.push(this.fetchConversationCounts());
-        promises.push(this.messagesProvider.getUnreadConversationCounts()); // View updated by the event observer.
         promises.push(this.messagesProvider.getContactRequestsCount());  // View updated by the event observer.
-        promises.push(this.messagesOffline.getAllMessages().then((messages) => {
-            offlineMessages = messages;
-        }));
 
         return Promise.all(promises).then(() => {
-            return this.loadOfflineMessages(offlineMessages);
-        }).then(() => {
-            if (offlineMessages && offlineMessages.length) {
-                // Sort the conversations, the offline messages could affect the order.
-                this.favourites.conversations = this.messagesProvider.sortConversations(this.favourites.conversations);
-                this.group.conversations = this.messagesProvider.sortConversations(this.group.conversations);
-                this.individual.conversations = this.messagesProvider.sortConversations(this.individual.conversations);
-            }
-
             if (typeof this.favourites.expanded == 'undefined') {
                 // The expanded status hasn't been initialized. Do it now.
                 if (this.conversationId) {
-                    // A certain conversation should be opened, expand its option.
-                    const conversation = this.findConversation(this.conversationId);
-                    if (conversation) {
-                        const option = this.getConversationOption(conversation);
-                        this.expandOption(option);
+                    // A certain conversation should be opened.
+                    // We don't know which option it belongs to, so we need to fetch the data for all of them.
+                    const promises = [];
 
-                        return;
-                    }
+                    promises.push(this.fetchDataForOption(this.favourites, false, refreshUnreadCounts));
+                    promises.push(this.fetchDataForOption(this.group, false, refreshUnreadCounts));
+                    promises.push(this.fetchDataForOption(this.individual, false, refreshUnreadCounts));
+
+                    return Promise.all(promises).then(() => {
+                        // All conversations have been loaded, find the one we need to load and expand its option.
+                        const conversation = this.findConversation(this.conversationId);
+                        if (conversation) {
+                            const option = this.getConversationOption(conversation);
+
+                            return this.expandOption(option, refreshUnreadCounts);
+                        } else {
+                            // Conversation not found, just open the default option.
+                            this.calculateExpandedStatus();
+
+                            // Now load the data for the expanded option.
+                            return this.fetchDataForExpandedOption(refreshUnreadCounts);
+                        }
+                    });
                 }
 
                 // No conversation specified or not found, determine which one should be expanded.
-                this.favourites.expanded = this.favourites.count != 0;
-                this.group.expanded = this.favourites.count == 0 && this.group.count != 0;
-                this.individual.expanded = this.favourites.count == 0 && this.group.count == 0;
+                this.calculateExpandedStatus();
             }
+
+            // Now load the data for the expanded option.
+            return this.fetchDataForExpandedOption(refreshUnreadCounts);
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
         }).finally(() => {
@@ -285,26 +289,90 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     }
 
     /**
+     * Calculate which option should be expanded initially.
+     */
+    protected calculateExpandedStatus(): void {
+        this.favourites.expanded = this.favourites.count != 0;
+        this.group.expanded = this.favourites.count == 0 && this.group.count != 0;
+        this.individual.expanded = this.favourites.count == 0 && this.group.count == 0;
+    }
+
+    /**
+     * Fetch data for the expanded option.
+     *
+     * @param {booleam} [refreshUnreadCounts=true] Whether to refresh unread counts.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected fetchDataForExpandedOption(refreshUnreadCounts: boolean = true): Promise<any> {
+        const expandedOption = this.getExpandedOption();
+
+        if (expandedOption) {
+            return this.fetchDataForOption(expandedOption, false, refreshUnreadCounts);
+        } else {
+            // All options are collapsed, update the counts.
+            const promises = [];
+
+            promises.push(this.fetchConversationCounts());
+            if (refreshUnreadCounts) {
+                promises.push(this.messagesProvider.refreshUnreadConversationCounts()); // View updated by the event observer.
+            }
+
+            return Promise.all(promises);
+        }
+    }
+
+    /**
      * Fetch data for a certain option.
      *
      * @param {any} option The option to fetch data for.
      * @param {boolean} [loadingMore} Whether we are loading more data or just the first ones.
+     * @param {booleam} [refreshUnreadCounts=true] Whether to refresh unread counts.
      * @return {Promise<any>} Promise resolved when done.
      */
-    fetchDataForOption(option: any, loadingMore?: boolean): Promise<void> {
+    fetchDataForOption(option: any, loadingMore?: boolean, refreshUnreadCounts: boolean = true): Promise<void> {
         option.loadMoreError = false;
 
-        const limitFrom = loadingMore ? option.conversations.length : 0;
+        const limitFrom = loadingMore ? option.conversations.length : 0,
+            promises = [];
+        let data,
+            offlineMessages;
 
-        return this.messagesProvider.getConversations(option.type, option.favourites, limitFrom).then((data) => {
+        // Get the conversations and, if needed, the offline messages. Always try to get the latest data.
+        promises.push(this.messagesProvider.invalidateConversations().catch(() => {
+            // Shouldn't happen.
+        }).then(() => {
+            return this.messagesProvider.getConversations(option.type, option.favourites, limitFrom);
+        }).then((result) => {
+            data = result;
+        }));
+
+        if (!loadingMore) {
+            promises.push(this.messagesOffline.getAllMessages().then((data) => {
+                offlineMessages = data;
+            }));
+
+            promises.push(this.fetchConversationCounts());
+            if (refreshUnreadCounts) {
+                promises.push(this.messagesProvider.refreshUnreadConversationCounts()); // View updated by the event observer.
+            }
+        }
+
+        return Promise.all(promises).then(() => {
             if (loadingMore) {
                 option.conversations = option.conversations.concat(data.conversations);
+                option.canLoadMore = data.canLoadMore;
             } else {
                 option.conversations = data.conversations;
+                option.canLoadMore = data.canLoadMore;
+
+                if (offlineMessages && offlineMessages.length) {
+                    return this.loadOfflineMessages(option, offlineMessages).then(() => {
+                        // Sort the conversations, the offline messages could affect the order.
+                        option.conversations = this.messagesProvider.sortConversations(option.conversations);
+                    });
+                }
             }
 
-            option.unread = 0; // @todo.
-            option.canLoadMore = data.canLoadMore;
         });
     }
 
@@ -314,7 +382,12 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @return {Promise<any>} Promise resolved when done.
      */
     protected fetchConversationCounts(): Promise<void> {
-        return this.messagesProvider.getConversationCounts().then((counts) => {
+        // Always try to get the latest data.
+        return this.messagesProvider.invalidateConversationCounts().catch(() => {
+            // Shouldn't happen.
+        }).then(() => {
+            return this.messagesProvider.getConversationCounts();
+        }).then((counts) => {
             this.favourites.count = counts.favourites;
             this.individual.count = counts.individual;
             this.group.count = counts.group;
@@ -326,23 +399,40 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      *
      * @param {number} conversationId The conversation ID to search.
      * @param {number} userId User ID to search (if no conversationId).
+     * @param {any} [option] The option to search in. If not defined, search in all options.
      * @return {any} Conversation.
      */
-    protected findConversation(conversationId: number, userId?: number): any {
+    protected findConversation(conversationId: number, userId?: number, option?: any): any {
         if (conversationId) {
-            const conversations = (this.favourites.conversations || []).concat(this.group.conversations || [])
-                    .concat(this.individual.conversations || []);
+            const conversations = option ? (option.conversations || []) : ((this.favourites.conversations || [])
+                    .concat(this.group.conversations || []).concat(this.individual.conversations || []));
 
             return conversations.find((conv) => {
                 return conv.id == conversationId;
             });
         }
 
-        const conversations = (this.favourites.conversations || []).concat(this.individual.conversations || []);
+        const conversations = option ? (option.conversations || []) :
+                ((this.favourites.conversations || []).concat(this.individual.conversations || []));
 
         return conversations.find((conv) => {
             return conv.userid == userId;
         });
+    }
+
+    /**
+     * Get the option that is currently expanded, undefined if they are all collapsed.
+     *
+     * @return {any} Option currently expanded.
+     */
+    protected getExpandedOption(): any {
+        if (this.favourites.expanded) {
+            return this.favourites;
+        } else if (this.group.expanded) {
+            return this.group;
+        } else if (this.individual.expanded) {
+            return this.individual;
+        }
     }
 
     /**
@@ -358,9 +448,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @param {number} conversationId Conversation Id to load.
      * @param {number} userId User of the conversation. Only if there is no conversationId.
      * @param {number} [messageId] Message to scroll after loading the discussion. Used when searching.
-     * @param {boolean} [scrollToConversation] Whether to scroll to the conversation.
      */
-    gotoConversation(conversationId: number, userId?: number, messageId?: number, scrollToConversation?: boolean): void {
+    gotoConversation(conversationId: number, userId?: number, messageId?: number): void {
         this.selectedConversationId = conversationId;
         this.selectedUserId = userId;
 
@@ -372,23 +461,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             params['message'] = messageId;
         }
         this.splitviewCtrl.push('AddonMessagesDiscussionPage', params);
-
-        if (scrollToConversation) {
-            // Search the conversation.
-            const conversation = this.findConversation(conversationId, userId);
-            if (conversation) {
-                // First expand the option if it isn't expanded.
-                const option = this.getConversationOption(conversation);
-                this.expandOption(option);
-
-                // Wait for the view to expand the option.
-                setTimeout(() => {
-                    // Now scroll to the conversation.
-                    this.domUtils.scrollToElementBySelector(this.content, '#addon-message-conversation-' +
-                            (conversation.id ? conversation.id : 'user-' + conversation.userid));
-                });
-            }
-        }
     }
 
     /**
@@ -417,16 +489,17 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     /**
      * Load offline messages into the conversations.
      *
+     * @param {any} option The option where the messages should be loaded.
      * @param {any[]} messages Offline messages.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected loadOfflineMessages(messages: any[]): Promise<any> {
+    protected loadOfflineMessages(option: any, messages: any[]): Promise<any> {
         const promises = [];
 
         messages.forEach((message) => {
             if (message.conversationid) {
-                // It's an existing conversation. Search it.
-                let conversation = this.findConversation(message.conversationid);
+                // It's an existing conversation. Search it in the current option.
+                let conversation = this.findConversation(message.conversationid, undefined, option);
 
                 if (conversation) {
                     // Check if it's the last message. Offline messages are considered more recent than sent messages.
@@ -436,16 +509,19 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                         this.addLastOfflineMessage(conversation, message);
                     }
                 } else {
-                    // Conversation not found, it's probably an old one. Add it.
+                    // Conversation not found, it could be an old one or the message could belong to another option.
                     conversation = message.conversation || {};
                     conversation.id = message.conversationid;
 
-                    this.addLastOfflineMessage(conversation, message);
-                    this.addOfflineConversation(conversation);
+                    if (this.getConversationOption(conversation) == option) {
+                        // Message belongs to current option, add the conversation.
+                        this.addLastOfflineMessage(conversation, message);
+                        this.addOfflineConversation(conversation);
+                    }
                 }
-            } else {
-                // Its a new conversation. Check if we already created it (there is more than one message for the same user).
-                const conversation = this.findConversation(undefined, message.touserid);
+            } else if (option == this.individual) {
+                // It's a new conversation. Check if we already created it (there is more than one message for the same user).
+                const conversation = this.findConversation(undefined, message.touserid, option);
 
                 message.text = message.smallmessage;
 
@@ -455,7 +531,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                         this.addLastOfflineMessage(conversation, message);
                     }
                 } else {
-                    // Get the user data and create a new conversation.
+                    // Get the user data and create a new conversation if it belongs to the current option.
                     promises.push(this.userProvider.getProfile(message.touserid, undefined, true).catch(() => {
                         // User not found.
                     }).then((user) => {
@@ -523,18 +599,13 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @return {Promise<any>} Promise resolved when done.
      */
     refreshData(refresher?: any, refreshUnreadCounts: boolean = true): Promise<any> {
+        // Don't invalidate conversations and so, they always try to get latest data.
         const promises = [
-            this.messagesProvider.invalidateConversations(),
-            this.messagesProvider.invalidateConversationCounts(),
             this.messagesProvider.invalidateContactRequestsCountCache()
         ];
 
-        if (refreshUnreadCounts) {
-            promises.push(this.messagesProvider.invalidateUnreadConversationCounts());
-        }
-
         return this.utils.allPromises(promises).finally(() => {
-            return this.fetchData().finally(() => {
+            return this.fetchData(refreshUnreadCounts).finally(() => {
                 if (refresher) {
                     refresher.complete();
                 }
@@ -552,7 +623,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             // Already expanded, close it.
             option.expanded = false;
         } else {
-            this.expandOption(option);
+            this.expandOption(option).catch((error) => {
+                this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
+            });
         }
     }
 
@@ -560,13 +633,25 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * Expand a certain option.
      *
      * @param {any} option The option to expand.
+     * @param {booleam} [refreshUnreadCounts=true] Whether to refresh unread counts.
+     * @return {Promise<any>} Promise resolved when done.
      */
-    protected expandOption(option: any): void {
+    protected expandOption(option: any, refreshUnreadCounts: boolean = true): Promise<any> {
         // Collapse all and expand the right one.
         this.favourites.expanded = false;
         this.group.expanded = false;
         this.individual.expanded = false;
+
         option.expanded = true;
+        option.loading = true;
+
+        return this.fetchDataForOption(option, false, refreshUnreadCounts).catch((error) => {
+            option.expanded = false;
+
+            return Promise.reject(error);
+        }).finally(() => {
+            option.loading = false;
+        });
     }
 
     /**

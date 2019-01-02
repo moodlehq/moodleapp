@@ -630,7 +630,9 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                 conversationId: this.conversationId,
                 userId: this.userId,
                 message: this.lastMessage.text,
-                timecreated: this.lastMessage.timecreated
+                timecreated: this.lastMessage.timecreated,
+                isfavourite: this.conversation && this.conversation.isfavourite,
+                type: this.conversation && this.conversation.type
             }, this.siteId);
 
             // Update navBar links and buttons.
