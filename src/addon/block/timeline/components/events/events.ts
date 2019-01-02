@@ -122,19 +122,14 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
      * Action clicked.
      *
      * @param {Event} e     Click event.
-     * @param {any} event   Calendar event info.
+     * @param {string} url  Url of the action.
      */
-    action(e: Event, event: any): void {
+    action(e: Event, url: string): void {
         e.preventDefault();
         e.stopPropagation();
-        let url;
 
-        if (event.action.actionable) {
-            // Fix URL format.
-            url = this.textUtils.decodeHTMLEntities(event.action.url);
-        } else {
-            url = this.textUtils.decodeHTMLEntities(event.url);
-        }
+        // Fix URL format.
+        url = this.textUtils.decodeHTMLEntities(url);
 
         const modal = this.domUtils.showModalLoading();
         this.contentLinksHelper.handleLink(url, undefined, this.navCtrl).then((treated) => {
