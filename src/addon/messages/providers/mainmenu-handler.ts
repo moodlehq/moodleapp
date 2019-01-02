@@ -187,7 +187,13 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
      * @return {number} Time between consecutive executions (in ms).
      */
     getInterval(): number {
-        return this.appProvider.isDesktop() ? 60000 : 600000; // 1 or 10 minutes.
+        if (this.appProvider.isDesktop()) {
+            return 60000; // Desktop usually has a WiFi connection, check it every minute.
+        } else if (this.messagesProvider.isGroupMessagingEnabled() || this.messagesProvider.isMessageCountEnabled()) {
+            return 300000; // We have a WS to check the number, check it every 5 minutes.
+        } else {
+            return 600000; // Check it every 10 minutes.
+        }
     }
 
     /**
