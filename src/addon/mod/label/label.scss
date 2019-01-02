@@ -1,3 +1,19 @@
 a.core-course-module-handler.addon-mod-label-handler {
     align-items: center;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.md a.core-course-module-handler.addon-mod-label-handler .item-inner {
+    padding-bottom: $item-md-padding-bottom;
+}
+
+.ios a.core-course-module-handler.addon-mod-label-handler .item-inner {
+    padding-bottom: $item-ios-padding-bottom;
+}
+
+.wp a.core-course-module-handler.addon-mod-label-handler .item-inner {
+    padding-bottom: $item-wp-padding-bottom;
 }

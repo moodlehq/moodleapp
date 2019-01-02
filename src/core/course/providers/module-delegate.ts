@@ -99,6 +99,12 @@ export interface CoreCourseModuleHandlerData {
     title: string;
 
     /**
+     * The accessibility title to use in the module. If not provided, title will be used.
+     * @type {string}
+     */
+    a11yTitle?: string;
+
+    /**
      * The image to use as icon (path to the image).
      * @type {string}
      */

@@ -94,6 +94,9 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
                 }
             }, this.sitesProvider.getCurrentSiteId());
         }
+
+        this.module.handlerData.a11yTitle = typeof this.module.handlerData.a11yTitle != 'undefined' ?
+            this.module.handlerData.a11yTitle : this.module.handlerData.title;
     }
 
     /**
