@@ -20,7 +20,7 @@
                 <core-format-text [text]="competency.competency.competency.description"></core-format-text>
             </ion-item>
             <ion-item text-wrap>
-                <strong>{{ 'addon.competency.path' | translate }}</strong>:
+                <strong>{{ 'addon.competency.path' | translate }}</strong>
                 {{ competency.competency.comppath.framework.name }}
                 <span *ngFor="let ancestor of competency.competency.comppath.ancestors">
                     &nbsp;/&nbsp;<a (click)="openCompetencySummary(ancestor.id)">{{ ancestor.name }}</a>
@@ -42,7 +42,7 @@
                 <span *ngIf="coursemodules.length == 0">
                     {{ 'addon.competency.noactivities' | translate }}
                 </span>
-                <a ion-item text-wrap *ngFor="let activity of coursemodules" [href]="activity.url" [title]="activity.name">
+                <a ion-item text-wrap *ngFor="let activity of coursemodules" [href]="activity.url" [title]="activity.name" core-link capture="true">
                     <img item-start core-external-content [src]="activity.iconurl" alt="" role="presentation" *ngIf="activity.iconurl" class="core-module-icon">
                     <core-format-text [text]="activity.name"></core-format-text>
                 </a>
