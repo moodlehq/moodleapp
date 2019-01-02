@@ -12,7 +12,7 @@
 
         <!-- Site home items: news, categories, courses, etc. -->
         <ng-container *ngIf="items.length > 0">
-            <ion-item-divider color="light" *ngIf="section && section.hasContent"></ion-item-divider>
+            <ion-item-divider *ngIf="section && section.hasContent"></ion-item-divider>
             <ng-container *ngFor="let item of items">
                 <core-sitehome-all-course-list class="item" *ngIf="item == 'all-course-list'"></core-sitehome-all-course-list>
                 <core-sitehome-categories  *ngIf="item == 'categories'"></core-sitehome-categories>

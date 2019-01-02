@@ -8,7 +8,7 @@
         <h2>{{ appName }} {{ versionName }}</h2>
     </ion-item>
     <ion-item-group>
-        <ion-item-divider text-wrap color="light">
+        <ion-item-divider text-wrap>
             {{ 'core.settings.license' | translate }}
         </ion-item-divider>
         <ion-item text-wrap>
@@ -17,7 +17,7 @@
         </ion-item>
     </ion-item-group>
     <ion-item-group *ngIf="privacyPolicy">
-        <ion-item-divider text-wrap color="light">
+        <ion-item-divider text-wrap>
             {{ 'core.settings.privacypolicy' | translate }}
         </ion-item-divider>
         <ion-item text-wrap>
@@ -25,7 +25,7 @@
         </ion-item>
     </ion-item-group>
     <ion-item-group>
-        <ion-item-divider text-wrap color="light">
+        <ion-item-divider text-wrap>
             {{ 'core.settings.deviceinfo' | translate }}
         </ion-item-divider>
         <ion-item text-wrap *ngIf="versionName">

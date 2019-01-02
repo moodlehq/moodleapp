@@ -33,7 +33,7 @@
         <core-loading [hideUntil]="loaded" class="core-loading-center">
 
             <ion-list *ngIf="viewMode != 'search' && offlineEntries.length > 0">
-                <ion-item-divider color="light">
+                <ion-item-divider>
                     {{ 'addon.mod_glossary.entriestobesynced' | translate }}
                 </ion-item-divider>
                 <a ion-item *ngFor="let entry of offlineEntries" (click)="openNewEntry(entry)" detail-none>
@@ -44,7 +44,7 @@
             <ion-list *ngIf="entries.length > 0">
                 <ng-container *ngFor="let entry of entries; let index = index">
 
-                    <ion-item-divider color="light" *ngIf="showDivider(entry, entries[index - 1])">
+                    <ion-item-divider *ngIf="showDivider(entry, entries[index - 1])">
                         {{getDivider(entry)}}
                     </ion-item-divider>
 

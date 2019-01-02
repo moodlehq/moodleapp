@@ -17,7 +17,7 @@
         </ion-item>
 
         <div *ngIf="categories.length > 0">
-            <ion-item-divider color="light">{{ 'core.courses.categories' | translate }}</ion-item-divider>
+            <ion-item-divider>{{ 'core.courses.categories' | translate }}</ion-item-divider>
             <section *ngFor="let category of categories">
                 <a ion-item text-wrap (click)="openCategory(category.id)" [title]="category.name">
                     <ion-icon name="folder" item-start></ion-icon>
@@ -28,7 +28,7 @@
         </div>
 
         <div *ngIf="courses.length > 0">
-            <ion-item-divider color="light">{{ 'core.courses.courses' | translate }}</ion-item-divider>
+            <ion-item-divider>{{ 'core.courses.courses' | translate }}</ion-item-divider>
             <core-courses-course-list-item *ngFor="let course of courses" [course]="course"></core-courses-course-list-item>
         </div>
         <core-empty-box *ngIf="!categories.length && !courses.length" icon="ionic" [message]="'core.courses.nocoursesyet' | translate">

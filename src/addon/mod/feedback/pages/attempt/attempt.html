@@ -18,7 +18,7 @@
             </ion-item >
             <ng-container *ngIf="items && items.length">
                 <ng-container *ngFor="let item of items">
-                    <ion-item-divider *ngIf="item.typ == 'pagebreak'" color="light"></ion-item-divider>
+                    <ion-item-divider *ngIf="item.typ == 'pagebreak'"></ion-item-divider>
                     <ion-item text-wrap *ngIf="item.typ != 'pagebreak'" [color]="item.dependitem > 0 ? 'light' : ''">
                         <h2 *ngIf="item.name" [core-mark-required]="item.required">
                             <span *ngIf="feedback.autonumbering && item.itemnumber">{{item.itemnumber}}. </span><core-format-text  [component]="component" [componentId]="componentId" [text]="item.name"></core-format-text>
