@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, Platform, NavController, NavParams, Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
@@ -36,6 +36,9 @@ import { CoreUserProvider } from '@core/user/providers/user';
 export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     @ViewChild(CoreSplitViewComponent) splitviewCtrl: CoreSplitViewComponent;
     @ViewChild(Content) content: Content;
+    @ViewChild('favlist') favListEl: ElementRef;
+    @ViewChild('grouplist') groupListEl: ElementRef;
+    @ViewChild('indlist') indListEl: ElementRef;
 
     loaded = false;
     loadingMessage: string;
@@ -61,6 +64,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         unread: 0
     };
     typeIndividual = AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL;
+    currentListEl: HTMLElement;
 
     protected loadingString: string;
     protected siteId: string;
@@ -295,6 +299,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         this.favourites.expanded = this.favourites.count != 0;
         this.group.expanded = this.favourites.count == 0 && this.group.count != 0;
         this.individual.expanded = this.favourites.count == 0 && this.group.count == 0;
+
+        this.loadCurrentListElement();
     }
 
     /**
@@ -622,6 +628,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         if (option.expanded) {
             // Already expanded, close it.
             option.expanded = false;
+            this.loadCurrentListElement();
         } else {
             this.expandOption(option).catch((error) => {
                 this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
@@ -645,13 +652,30 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         option.expanded = true;
         option.loading = true;
 
-        return this.fetchDataForOption(option, false, refreshUnreadCounts).catch((error) => {
+        return this.fetchDataForOption(option, false, refreshUnreadCounts).then(() => {
+            this.loadCurrentListElement();
+        }).catch((error) => {
             option.expanded = false;
 
             return Promise.reject(error);
         }).finally(() => {
             option.loading = false;
         });
+    }
+
+    /**
+     * Load the current list element based on the expanded list.
+     */
+    protected loadCurrentListElement(): void {
+        if (this.favourites.expanded) {
+            this.currentListEl = this.favListEl && this.favListEl.nativeElement;
+        } else if (this.group.expanded) {
+            this.currentListEl = this.groupListEl && this.groupListEl.nativeElement;
+        } else if (this.individual.expanded) {
+            this.currentListEl = this.indListEl && this.indListEl.nativeElement;
+        } else {
+            this.currentListEl = undefined;
+        }
     }
 
     /**

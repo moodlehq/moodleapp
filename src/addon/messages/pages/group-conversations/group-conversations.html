@@ -15,7 +15,7 @@
 </ion-header>
 <core-split-view>
     <ion-content class="core-expand-max">
-        <ion-refresher [enabled]="loaded" (ionRefresh)="refreshData($event)">
+        <ion-refresher [enabled]="loaded && (!currentListEl || currentListEl.scrollTop < 5)" (ionRefresh)="refreshData($event)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
 
@@ -33,11 +33,11 @@
                     {{ 'core.favourites' | translate }} ({{ favourites.count }})
                     <ion-badge item-end *ngIf="favourites.unread">{{ favourites.unread }}</ion-badge>
                 </ion-item-divider>
-                <div *ngIf="favourites.conversations && favourites.expanded && !favourites.loading">
+                <div [hidden]="!favourites.conversations || !favourites.expanded || favourites.loading" #favlist>
                     <ng-container *ngTemplateOutlet="conversationsTemplate; context: {conversations: favourites.conversations}"></ng-container>
                     <!-- The infinite loading cannot be inside the ng-template, it fails because it doesn't find ion-content. -->
                     <core-infinite-loading [enabled]="favourites.canLoadMore" (action)="loadMoreConversations(favourites, $event)" [error]="favourites.loadMoreError"></core-infinite-loading>
-                    <ion-item text-wrap *ngIf="favourites.conversations.length == 0">
+                    <ion-item text-wrap *ngIf="favourites.conversations && favourites.conversations.length == 0">
                         <p>{{ 'addon.messages.nofavourites' | translate }}</p>
                     </ion-item>
                 </div>
@@ -52,11 +52,11 @@
                     {{ 'addon.messages.groupconversations' | translate }} ({{ group.count }})
                     <ion-badge item-end *ngIf="group.unread">{{ group.unread }}</ion-badge>
                 </ion-item-divider>
-                <div *ngIf="group.conversations && group.expanded && !group.loading">
+                <div [hidden]="!group.conversations || !group.expanded || group.loading" #grouplist>
                     <ng-container *ngTemplateOutlet="conversationsTemplate; context: {conversations: group.conversations}"></ng-container>
                     <!-- The infinite loading cannot be inside the ng-template, it fails because it doesn't find ion-content. -->
                     <core-infinite-loading [enabled]="group.canLoadMore" (action)="loadMoreConversations(group, $event)" [error]="group.loadMoreError"></core-infinite-loading>
-                    <ion-item text-wrap *ngIf="group.conversations.length == 0">
+                    <ion-item text-wrap *ngIf="group.conversations && group.conversations.length == 0">
                         <p>{{ 'addon.messages.nogroupconversations' | translate }}</p>
                     </ion-item>
                 </div>
@@ -70,11 +70,11 @@
                     {{ 'addon.messages.individualconversations' | translate }} ({{ individual.count }})
                     <ion-badge item-end *ngIf="individual.unread">{{ individual.unread }}</ion-badge>
                 </ion-item-divider>
-                <div *ngIf="individual.conversations && individual.expanded && !individual.loading">
+                <div [hidden]="!individual.conversations || !individual.expanded || individual.loading" #indlist>
                     <ng-container *ngTemplateOutlet="conversationsTemplate; context: {conversations: individual.conversations}"></ng-container>
                     <!-- The infinite loading cannot be inside the ng-template, it fails because it doesn't find ion-content. -->
                     <core-infinite-loading [enabled]="individual.canLoadMore" (action)="loadMoreConversations(individual, $event)" [error]="individual.loadMoreError"></core-infinite-loading>
-                    <ion-item text-wrap *ngIf="individual.conversations.length == 0">
+                    <ion-item text-wrap *ngIf="individual.conversations && individual.conversations.length == 0">
                         <p>{{ 'addon.messages.noindividualconversations' | translate }}</p>
                     </ion-item>
                 </div>
