@@ -1,4 +1,4 @@
-<ion-item-divider color="light">
+<ion-item-divider>
     <h2>{{ 'addon.block_timeline.pluginname' | translate }}</h2>
     <core-context-menu item-end>
         <core-context-menu-item *ngIf="loaded" [priority]="900" [content]="'addon.block_timeline.sortbydates' | translate" (action)="switchSort('sortbydates')" [iconAction]="sort == 'sortbydates' ? 'radio-button-on' : 'radio-button-off'"></core-context-menu-item>

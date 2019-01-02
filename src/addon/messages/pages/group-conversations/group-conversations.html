@@ -20,14 +20,14 @@
         </ion-refresher>
 
         <core-loading [hideUntil]="loaded" [message]="loadingMessage">
-            <a ion-item text-wrap (click)="gotoContacts($event)" [attr.aria-label]="'addon.messages.contacts' | translate" class="addon-message-discussion">
-                <ion-icon name="person" item-start></ion-icon>
-                <h2>{{ 'addon.messages.contacts' | translate }}</h2>
-                <ion-badge *ngIf="contactRequestsCount > 0" item-end>{{contactRequestsCount}}</ion-badge>
-            </a>
             <ion-list>
+                <a ion-item text-wrap (click)="gotoContacts($event)" [attr.aria-label]="'addon.messages.contacts' | translate" class="addon-message-discussion">
+                    <ion-icon name="person" item-start></ion-icon>
+                    <h2>{{ 'addon.messages.contacts' | translate }}</h2>
+                    <ion-badge *ngIf="contactRequestsCount > 0" item-end>{{contactRequestsCount}}</ion-badge>
+                </a>
                 <!-- Favourite conversations. -->
-                <ion-item-divider color="light" text-wrap *ngIf="favourites.conversations" (click)="toggle(favourites)" class="core-expandable">
+                <ion-item-divider text-wrap *ngIf="favourites.conversations" (click)="toggle(favourites)" class="core-expandable">
                     <core-icon *ngIf="!favourites.expanded" name="fa-caret-right" item-start></core-icon>
                     <core-icon *ngIf="favourites.expanded" name="fa-caret-down" item-start></core-icon>
                     {{ 'core.favourites' | translate }} ({{ favourites.count }})
@@ -43,7 +43,7 @@
                 </div>
 
                 <!-- Group conversations. -->
-                <ion-item-divider color="light" text-wrap *ngIf="group.conversations" (click)="toggle(group)" class="core-expandable">
+                <ion-item-divider text-wrap *ngIf="group.conversations" (click)="toggle(group)" class="core-expandable">
                     <core-icon *ngIf="!group.expanded" name="fa-caret-right" item-start></core-icon>
                     <core-icon *ngIf="group.expanded" name="fa-caret-down" item-start></core-icon>
                     {{ 'addon.messages.groupconversations' | translate }} ({{ group.count }})
@@ -58,7 +58,7 @@
                     </ion-item>
                 </div>
 
-                <ion-item-divider color="light" text-wrap *ngIf="individual.conversations" (click)="toggle(individual)" class="core-expandable">
+                <ion-item-divider text-wrap *ngIf="individual.conversations" (click)="toggle(individual)" class="core-expandable">
                     <core-icon *ngIf="!individual.expanded" name="fa-caret-right" item-start></core-icon>
                     <core-icon *ngIf="individual.expanded" name="fa-caret-down" item-start></core-icon>
                     {{ 'addon.messages.individualconversations' | translate }} ({{ individual.count }})

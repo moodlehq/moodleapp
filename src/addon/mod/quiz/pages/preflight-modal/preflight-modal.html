@@ -16,7 +16,7 @@
                 <core-dynamic-component [component]="data.component" [data]="data.data">
                     <p padding>Couldn't find the directive to render this access rule.</p>
                 </core-dynamic-component>
-                <ion-item-divider color="light" *ngIf="!last"></ion-item-divider>
+                <ion-item-divider *ngIf="!last"></ion-item-divider>
             </ng-container>
 
             <button ion-button block type="submit">

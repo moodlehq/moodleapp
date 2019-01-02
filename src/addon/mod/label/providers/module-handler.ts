@@ -66,6 +66,7 @@ export class AddonModLabelModuleHandler implements CoreCourseModuleHandler {
         return {
             icon: '',
             title: title,
+            a11yTitle: '',
             class: 'addon-mod-label-handler'
         };
     }

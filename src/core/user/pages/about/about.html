@@ -10,7 +10,7 @@
     <core-loading [hideUntil]="userLoaded">
         <div *ngIf="user">
             <ion-item-group *ngIf="hasContact">
-                <ion-item-divider color="light">{{ 'core.user.contact' | translate}}</ion-item-divider>
+                <ion-item-divider>{{ 'core.user.contact' | translate}}</ion-item-divider>
                 <ion-item text-wrap *ngIf="user.email">
                     <h2>{{ 'core.user.email' | translate }}</h2>
                     <p><a href="mailto:{{user.email}}" core-link auto-login="no">
@@ -46,7 +46,7 @@
                 </ion-item>
             </ion-item-group>
             <ion-item-group *ngIf="hasDetails">
-                <ion-item-divider color="light">{{ 'core.userdetails' | translate}}</ion-item-divider>
+                <ion-item-divider>{{ 'core.userdetails' | translate}}</ion-item-divider>
                 <ion-item text-wrap *ngIf="user.url">
                     <h2>{{ 'core.user.webpage' | translate}}</h2>
                     <p><a href="{{user.url}}" core-link>
@@ -60,7 +60,7 @@
                 <core-user-profile-field *ngFor="let field of user.customfields" [field]="field"></core-user-profile-field>
             </ion-item-group>
             <ion-item-group *ngIf="user.description">
-                <ion-item-divider color="light">{{ 'core.user.description' | translate}}</ion-item-divider>
+                <ion-item-divider>{{ 'core.user.description' | translate}}</ion-item-divider>
                 <ion-item text-wrap>
                     <p><core-format-text [text]="user.description"></core-format-text></p>
                 </ion-item>

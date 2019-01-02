@@ -16,7 +16,7 @@
                     <ion-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">{{groupOpt.name}}</ion-option>
                 </ion-select>
             </ion-item>
-            <ion-item-divider color="light">
+            <ion-item-divider>
                 {{ 'addon.mod_feedback.non_respondents_students' | translate : {$a: total } }}
             </ion-item-divider>
             <ng-container *ngIf="total > 0">

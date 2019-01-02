@@ -12,7 +12,7 @@
 
         <ion-list *ngFor="let contactType of contactTypes" no-margin>
             <ng-container *ngIf="contacts[contactType] && (contacts[contactType].length > 0 || contactType === searchType)">
-                <ion-item-divider color="light">
+                <ion-item-divider>
                     <h2>{{ 'addon.messages.type_' + contactType | translate }}</h2>
                     <ion-note item-end>{{ contacts[contactType].length }}</ion-note>
                 </ion-item-divider>

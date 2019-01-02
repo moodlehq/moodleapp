@@ -17,7 +17,8 @@ ion-app.app-root .core-tabs-bar {
         color: $core-top-tabs-color !important;
         font-size: 1.6rem;
         border: 0;
-        padding: 0 !important;
+        padding: 0 5px 0 5px !important;
+        margin: 0 auto !important;
         display: flex;
         flex-direction: row;
 
@@ -45,6 +46,7 @@ ion-app.app-root .core-tabs-bar {
             color: $core-top-tabs-color-active !important;
             border: 0 !important;
             border-bottom: 2px solid $core-top-tabs-border-active !important;
+            padding: 0 !important;
         }
     }
 

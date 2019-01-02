@@ -19,7 +19,7 @@
         </ion-item-group>
 
         <ion-item-group *ngIf="user.fullname">
-            <ion-item-divider color="light">
+            <ion-item-divider>
                 <h2>{{ 'addon.badges.recipientdetails' | translate}}</h2>
             </ion-item-divider>
             <ion-item text-wrap>
@@ -31,7 +31,7 @@
         </ion-item-group>
 
         <ion-item-group>
-            <ion-item-divider color="light">
+            <ion-item-divider>
                 <h2>{{ 'addon.badges.issuerdetails' | translate}}</h2>
             </ion-item-divider>
             <ion-item text-wrap *ngIf="badge.issuername">
@@ -49,7 +49,7 @@
         </ion-item-group>
 
         <ion-item-group>
-            <ion-item-divider color="light">
+            <ion-item-divider>
                 <h2>{{ 'addon.badges.badgedetails' | translate}}</h2>
             </ion-item-divider>
             <ion-item text-wrap *ngIf="badge.name">
@@ -100,7 +100,7 @@
         </ion-item-group>
 
         <ion-item-group>
-            <ion-item-divider color="light">
+            <ion-item-divider>
                 <h2>{{ 'addon.badges.issuancedetails' | translate}}</h2>
             </ion-item-divider>
             <ion-item text-wrap *ngIf="badge.dateissued">
@@ -121,7 +121,7 @@
 
         <!-- Endorsement -->
         <ion-item-group *ngIf="badge.endorsement">
-            <ion-item-divider color="light">
+            <ion-item-divider>
                 <h2>{{ 'addon.badges.bendorsement' | translate}}</h2>
             </ion-item-divider>
             <ion-item text-wrap *ngIf="badge.endorsement.issuername">
@@ -160,7 +160,7 @@
 
         <!-- Related badges -->
         <ion-item-group *ngIf="badge.relatedbadges">
-            <ion-item-divider color="light">
+            <ion-item-divider>
                 <h2>{{ 'addon.badges.relatedbages' | translate}}</h2>
             </ion-item-divider>
             <ion-item text-wrap *ngFor="let relatedBadge of badge.relatedbadges">
@@ -173,7 +173,7 @@
 
         <!-- Competencies alignment -->
         <ion-item-group *ngIf="badge.competencies">
-            <ion-item-divider color="light">
+            <ion-item-divider>
                 <h2>{{ 'addon.badges.alignment' | translate}}</h2>
             </ion-item-divider>
             <a ion-item text-wrap *ngFor="let competency of badge.competencies" [href]="competency.targeturl" core-link auto-login="no">

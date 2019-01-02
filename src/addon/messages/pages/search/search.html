@@ -24,7 +24,7 @@
 
 <!-- Template to render a list of results -->
 <ng-template #resultsTemplate let-item="item">
-    <ion-item-divider color="light" text-wrap>{{ item.titleString | translate }}</ion-item-divider>
+    <ion-item-divider text-wrap>{{ item.titleString | translate }}</ion-item-divider>
     <ion-item text-wrap *ngIf="item.results.length == 0">
         {{ item.emptyString | translate }}
     </ion-item>

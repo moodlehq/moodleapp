@@ -27,10 +27,10 @@
                 <ion-label stacked id="addon-mod-glossary-aliases-label">{{ 'addon.mod_glossary.aliases' | translate }}</ion-label>
                 <ion-textarea [(ngModel)]="options.aliases" rows="1" core-auto-rows aria-labelledby="addon-mod-glossary-aliases-label"></ion-textarea>
             </ion-item>
-            <ion-item-divider color="light">{{ 'addon.mod_glossary.attachment' | translate }}</ion-item-divider>
+            <ion-item-divider>{{ 'addon.mod_glossary.attachment' | translate }}</ion-item-divider>
             <core-attachments [files]="attachments" [component]="component" [componentId]="glossary.cmid" [allowOffline]="true"></core-attachments>
             <ng-container *ngIf="glossary.usedynalink">
-                <ion-item-divider color="light">{{ 'addon.mod_glossary.linking' | translate }}</ion-item-divider>
+                <ion-item-divider>{{ 'addon.mod_glossary.linking' | translate }}</ion-item-divider>
                 <ion-item text-wrap>
                     <ion-label>{{ 'addon.mod_glossary.entryusedynalink' | translate }}</ion-label>
                     <ion-toggle [(ngModel)]="options.usedynalink"></ion-toggle>

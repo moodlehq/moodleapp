@@ -13,13 +13,13 @@
         <ion-list>
             <!-- Media file. -->
             <ng-container *ngIf="pageInstance.mediaFile">
-                <ion-item-divider color="light"><h2>{{ 'addon.mod_lesson.linkedmedia' | translate }}</h2></ion-item-divider>
+                <ion-item-divider><h2>{{ 'addon.mod_lesson.linkedmedia' | translate }}</h2></ion-item-divider>
                 <core-file [file]="pageInstance.mediaFile" [component]="pageInstance.component" [componentId]="pageInstance.lesson.coursemodule"></core-file>
             </ng-container>
 
             <!-- Lesson menu. -->
             <ng-container *ngIf="pageInstance.displayMenu">
-                <ion-item-divider color="light"><h2>{{ 'addon.mod_lesson.lessonmenu' | translate }}</h2></ion-item-divider>
+                <ion-item-divider><h2>{{ 'addon.mod_lesson.lessonmenu' | translate }}</h2></ion-item-divider>
                 <ion-item text-center *ngIf="pageInstance.loadingMenu">
                     <ion-spinner></ion-spinner>
                 </ion-item>

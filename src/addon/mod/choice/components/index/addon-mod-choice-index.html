@@ -62,7 +62,7 @@
 
     <!-- Choice results -->
     <div *ngIf="canSeeResults">
-        <ion-item-divider color="light" text-center>
+        <ion-item-divider text-center>
             {{ 'addon.mod_choice.responses' | translate }}
         </ion-item-divider>
         <ion-grid no-padding>
@@ -77,7 +77,7 @@
                 </ion-col>
                 <ion-col *ngIf="choice.publish && results" col-12 col-lg-7>
                     <ion-item-group *ngFor="let result of results">
-                        <ion-item-divider text-wrap color="light">
+                        <ion-item-divider text-wrap>
                             <h2><core-format-text [text]="result.text"></core-format-text></h2>
                             <p>{{ 'addon.mod_choice.numberofuser' | translate }}: {{ result.numberofuser }} ({{ 'core.percentagenumber' | translate: {$a: result.percentageamount} }})</p>
                         </ion-item-divider>

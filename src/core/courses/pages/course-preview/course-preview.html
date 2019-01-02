@@ -25,12 +25,12 @@
             </ion-item>
 
             <ng-container text-wrap *ngIf="course.contacts && course.contacts.length">
-                <ion-item-divider color="light">{{ 'core.teachers' | translate }}</ion-item-divider>
+                <ion-item-divider>{{ 'core.teachers' | translate }}</ion-item-divider>
                 <a ion-item text-wrap *ngFor="let contact of course.contacts" core-user-link [userId]="contact.id" [courseId]="isEnrolled ? course.id : null" [attr.aria-label]="'core.viewprofile' | translate">
                     <ion-avatar core-user-avatar [user]="contact" item-start [userId]="contact.id" [courseId]="isEnrolled ? course.id : null"></ion-avatar>
                     <h2>{{contact.fullname}}</h2>
                 </a>
-                <ion-item-divider color="light"></ion-item-divider>
+                <ion-item-divider></ion-item-divider>
             </ng-container>
             <core-file *ngFor="let file of course.overviewfiles" [file]="file" [component]="component" [componentId]="course.id"></core-file>
             <div *ngIf="!isEnrolled" detail-none>

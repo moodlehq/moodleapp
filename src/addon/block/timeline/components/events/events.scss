@@ -21,4 +21,8 @@ ion-app.app-root core-courses-course-progress {
     }
 }
 
-
+ion-app.app-root addon-block-timeline-events {
+    a button {
+        pointer-events: auto;
+    }
+}

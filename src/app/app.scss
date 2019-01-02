@@ -50,6 +50,7 @@ ion-app.app-root {
       align-items: center !important;
       > * {
         margin: 0 auto;
+        width: 100%;
         max-width: 600px;
       }
     }
@@ -879,6 +880,12 @@ ion-app.app-root {
   // If there is text with a color it should use this color
   // and override whatever item sets it to
   .text-#{$color-name} {
+    color: $color-contrast;
+  }
+
+  .item-divider-md-#{$color-name} h2,
+  .item-divider-wp-#{$color-name} h2,
+  .item-divider-ios-#{$color-name} h2 {
     color: $color-contrast;
   }
 }

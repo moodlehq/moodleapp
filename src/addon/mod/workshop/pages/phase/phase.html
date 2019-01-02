@@ -11,7 +11,7 @@
 <ion-content>
     <ion-list>
         <ng-container *ngFor="let phase of phases">
-            <ion-item-divider color="light" [class.core-workshop-phase-selected]="workshopPhase == phase.code">
+            <ion-item-divider [class.core-workshop-phase-selected]="workshopPhase == phase.code">
                 <h2>{{ phase.title }}</h2>
                 <p text-wrap *ngIf="workshopPhase == phase.code">{{ 'addon.mod_workshop.userplancurrentphase' | translate }}</p>
             </ion-item-divider>

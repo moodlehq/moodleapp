@@ -8,7 +8,7 @@
     <core-loading [hideUntil]="loaded" [message]="loadingMessage">
 
         <ion-list *ngIf="search.showResults" no-margin>
-            <ion-item-divider color="light">
+            <ion-item-divider>
                 <h2>{{ 'core.searchresults' | translate }}</h2>
                 <ion-note item-end>{{ search.results.length }}</ion-note>
             </ion-item-divider>

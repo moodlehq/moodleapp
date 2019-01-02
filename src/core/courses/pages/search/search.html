@@ -7,7 +7,7 @@
     <core-search-box (onSubmit)="search($event)" [placeholder]="'core.courses.search' | translate" [searchLabel]="'core.courses.search' | translate" autoFocus="true" showClear="false"></core-search-box>
 
     <div *ngIf="courses">
-        <ion-item-divider color="light">{{ 'core.courses.totalcoursesearchresults' | translate:{$a: total} }}</ion-item-divider>
+        <ion-item-divider>{{ 'core.courses.totalcoursesearchresults' | translate:{$a: total} }}</ion-item-divider>
         <core-empty-box *ngIf="total == 0" icon="search" [message]="'core.courses.nosearchresults' | translate"></core-empty-box>
         <core-courses-course-list-item *ngFor="let course of courses" [course]="course"></core-courses-course-list-item>
         <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreResults($event)" [error]="loadMoreError"></core-infinite-loading>

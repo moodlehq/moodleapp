@@ -58,7 +58,7 @@
             <ng-template>
                 <ion-list>
                     <ng-container *ngFor="let letter of map">
-                        <ion-item-divider color="light" *ngIf="letter.label">
+                        <ion-item-divider *ngIf="letter.label">
                             {{ letter.label }}
                         </ion-item-divider>
                         <a ion-item text-wrap *ngFor="let page of letter.pages" (click)="goToPage(page)">

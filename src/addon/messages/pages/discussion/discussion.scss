@@ -129,7 +129,6 @@ ion-app.app-root page-addon-messages-discussion {
         }
     }
 
-    .addon-messages-discussion-group .addon-message + .addon-message-no-user,
     .addon-message.addon-message-mine + .addon-message-no-user.addon-message-mine,
     .addon-message.addon-message-not-mine + .addon-message-no-user.addon-message-not-mine {
         h2 {

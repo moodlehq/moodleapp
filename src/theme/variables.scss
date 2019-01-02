@@ -123,6 +123,8 @@ $item-avatar-size: 54px !default;
 $input-select-opacity: .5 !default;
 $note-color: $gray-dark !default;
 $popover-width: 280px !default;
+$item-divider-background: $gray-lighter !default;
+$item-divider-color: $black !default;
 
 
 // Moodle Mobile variables
@@ -169,6 +171,8 @@ $checkbox-ios-disabled-opacity: $input-select-opacity !default;
 $toggle-ios-disabled-opacity: $input-select-opacity !default;
 $note-ios-color: $note-color;
 $popover-ios-width: $popover-width;
+$item-ios-divider-background: $item-divider-background;
+$item-ios-divider-color: $item-divider-color;
 
 // App Material Design Variables
 // --------------------------------------------------
@@ -190,6 +194,8 @@ $toggle-md-disabled-opacity: $input-select-opacity !default;
 $note-md-color: $note-color;
 $popover-md-width: $popover-width;
 $action-sheet-md-title-color: $core-color;
+$item-md-divider-background: $item-divider-background;
+$item-md-divider-color: $item-divider-color;
 
 // App Windows Variables
 // --------------------------------------------------
@@ -209,6 +215,8 @@ $checkbox-wp-disabled-opacity: $input-select-opacity !default;
 $toggle-wp-disabled-opacity: $input-select-opacity !default;
 $note-wp-color: $note-color;
 $popover-wp-width: $popover-width;
+$item-wp-divider-background: $item-divider-background;
+$item-wp-divider-color: $item-divider-color;
 
 // App Theme
 // --------------------------------------------------
