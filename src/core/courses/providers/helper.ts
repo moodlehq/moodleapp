@@ -137,12 +137,12 @@ export class CoreCoursesHelperProvider {
                         break;
                     case 'lastaccess':
                         courses.sort((a, b) => {
-                            return b.lastaccess - b.lastaccess;
+                            return b.lastaccess - a.lastaccess;
                         });
                         break;
                     case 'timemodified':
                         courses.sort((a, b) => {
-                            return b.timemodified - b.timemodified;
+                            return b.timemodified - a.timemodified;
                         });
                         break;
                     default:
