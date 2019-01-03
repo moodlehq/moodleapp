@@ -254,14 +254,14 @@ export class CoreWSProvider {
             if (!data || typeof data != 'object') {
                 return rejectWithError(this.createFakeWSError('core.serverconnection', true));
             } else if (data.error) {
-                return rejectWithError(data.error);
+                return rejectWithError(data);
             }
 
             // Get the first response since only one request was done.
             data = data[0];
 
             if (data.error) {
-                return rejectWithError(data.exception);
+                return rejectWithError(data);
             }
 
             return data.data;
