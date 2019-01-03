@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, NgZone } from '@angular/core';
-import { Platform } from 'ionic-angular';
+import { Platform, IonicApp } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
@@ -37,7 +37,7 @@ export class MoodleMobileApp implements OnInit {
     constructor(private platform: Platform, statusBar: StatusBar, logger: CoreLoggerProvider, keyboard: Keyboard,
             private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider, private zone: NgZone,
             private appProvider: CoreAppProvider, private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider,
-            private screenOrientation: ScreenOrientation) {
+            private screenOrientation: ScreenOrientation, app: IonicApp) {
         this.logger = logger.getInstance('AppComponent');
 
         platform.ready().then(() => {
@@ -50,6 +50,12 @@ export class MoodleMobileApp implements OnInit {
             }
 
             keyboard.hideFormAccessoryBar(false);
+
+            let desktopClass = this.appProvider.isDesktop() ? 'platform-desktop' : '';
+            desktopClass += this.appProvider.isMac() ? ' platform-mac' : '';
+            desktopClass += this.appProvider.isLinux() ? ' platform-linux' : '';
+            desktopClass += this.appProvider.isWindows() ? ' platform-windows' : '';
+            app.setElementClass(desktopClass, true);
         });
 
     }
