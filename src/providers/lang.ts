@@ -241,6 +241,43 @@ export class CoreLangProvider {
     }
 
     /**
+     * Get the default language.
+     *
+     * @return {string} Default language.
+     */
+    getDefaultLanguage(): string {
+        return this.defaultLanguage;
+    }
+
+    /**
+     * Get the fallback language.
+     *
+     * @return {string} Fallback language.
+     */
+    getFallbackLanguage(): string {
+        return this.fallbackLanguage;
+    }
+
+    /**
+     * Get the full list of translations for a certain language.
+     *
+     * @param {string} lang The language to check.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    getTranslationTable(lang: string): Promise<any> {
+        // Create a promise to convert the observable into a promise.
+        return new Promise((resolve, reject): void => {
+            const observer = this.translate.getTranslation(lang).subscribe((table) => {
+                resolve(table);
+                observer.unsubscribe();
+            }, (err) => {
+                reject(err);
+                observer.unsubscribe();
+            });
+        });
+    }
+
+    /**
      * Load certain custom strings.
      *
      * @param {string} strings Custom strings to load (tool_mobile_customlangstrings).
