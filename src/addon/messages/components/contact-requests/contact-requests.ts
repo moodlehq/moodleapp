@@ -78,8 +78,20 @@ export class AddonMessagesContactRequestsComponent implements OnInit, OnDestroy 
         this.loadMoreError = false;
 
         const limitFrom = refresh ? 0 : this.requests.length;
+        let promise;
 
-        return this.messagesProvider.getContactRequests(limitFrom).then((result) => {
+        if (limitFrom === 0) {
+            // Always try to get latest data from server.
+            promise = this.messagesProvider.invalidateContactRequestsCache().catch(() => {
+                // Shouldn't happen.
+            });
+        } else {
+            promise = Promise.resolve();
+        }
+
+        return promise.then(() => {
+            return this.messagesProvider.getContactRequests(limitFrom);
+        }).then((result) => {
             this.requests = refresh ? result.requests : this.requests.concat(result.requests);
             this.canLoadMore = result.canLoadMore;
         }).catch((error) => {
@@ -98,9 +110,8 @@ export class AddonMessagesContactRequestsComponent implements OnInit, OnDestroy 
         // Refresh the number of contacts requests to update badges.
         this.messagesProvider.refreshContactRequestsCount();
 
-        return this.messagesProvider.invalidateContactRequestsCache().then(() => {
-            return this.fetchData(true);
-        }).finally(() => {
+        // No need to invalidate contact requests, we always try to get the latest.
+        return this.fetchData(true).finally(() => {
             refresher && refresher.complete();
         });
     }
