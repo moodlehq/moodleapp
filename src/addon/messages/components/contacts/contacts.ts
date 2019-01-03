@@ -47,6 +47,8 @@ export class AddonMessagesContactsComponent {
     };
     searchString = '';
 
+    protected memberInfoObserver;
+
     constructor(sitesProvider: CoreSitesProvider, translate: TranslateService, private appProvider: CoreAppProvider,
             private messagesProvider: AddonMessagesProvider, private domUtils: CoreDomUtilsProvider, navParams: NavParams,
             private eventsProvider: CoreEventsProvider) {
@@ -58,6 +60,13 @@ export class AddonMessagesContactsComponent {
         this.loadingMessage = this.loadingMessages;
 
         this.discussionUserId = navParams.get('discussionUserId') || false;
+
+        // Refresh the list when a contact request is confirmed.
+        this.memberInfoObserver = eventsProvider.on(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, (data) => {
+            if (data.contactRequestConfirmed) {
+                this.refreshData();
+            }
+        }, sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -216,5 +225,12 @@ export class AddonMessagesContactsComponent {
             onlyWithSplitView: onlyWithSplitView
         };
         this.eventsProvider.trigger(AddonMessagesProvider.SPLIT_VIEW_LOAD_EVENT, params, this.siteId);
+    }
+
+    /**
+     * Component destroyed.
+     */
+    ngOnDestroy(): void {
+        this.memberInfoObserver && this.memberInfoObserver.off();
     }
 }

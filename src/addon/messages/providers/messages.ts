@@ -917,10 +917,10 @@ export class AddonMessagesProvider {
      * Get the discussions of a certain user. This function is used in Moodle sites higher than 3.6.
      * If the site is older than 3.6, please use getDiscussions.
      *
-     * @param {number} [limitFrom=0] The offset to start at.
      * @param {number} [type] Filter by type.
      * @param {boolean} [favourites] Whether to restrict the results to contain NO favourite conversations (false), ONLY favourite
      *                               conversation (true), or ignore any restriction altogether (undefined or null).
+     * @param {number} [limitFrom=0] The offset to start at.
      * @param {string} [siteId] Site ID. If not defined, use current site.
      * @param {number} [userId] User ID. If not defined, current user in the site.
      * @return {Promise<any>} Promise resolved with the conversations.
@@ -966,13 +966,15 @@ export class AddonMessagesProvider {
      * Get conversation counts by type.
      *
      * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved with favourite, individual and group conversation counts.
+     * @return {Promise<favourites: number, individual: number, group: number>} Promise resolved with favourite, individual and
+     *                                      group conversation counts.
      * @since 3.6
      */
     getConversationCounts(siteId?: string): Promise<{favourites: number, individual: number, group: number}> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const preSets = {
-                cacheKey: this.getCacheKeyForConversationCounts(),
+                cacheKey: this.getCacheKeyForConversationCounts()
             };
 
             return site.read('core_message_get_conversation_counts', {}, preSets).then((result) => {
@@ -1350,7 +1352,7 @@ export class AddonMessagesProvider {
             if (this.isGroupMessagingEnabled()) {
                 // @since 3.6
                 const preSets = {
-                    cacheKey: this.getCacheKeyForUnreadConversationCounts(),
+                    cacheKey: this.getCacheKeyForUnreadConversationCounts()
                 };
 
                 promise = site.read('core_message_get_unread_conversation_counts', {}, preSets).then((result) => {
@@ -1914,12 +1916,11 @@ export class AddonMessagesProvider {
      * Refresh unread conversation counts and trigger event.
      *
      * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @param {number} [conversationId] ID of the conversation that was read.
-     * @param {number} [userId] ID of ther other user of the conversation that was read.
      * @return {Promise<any>} Resolved with the unread favourite, individual and group conversation counts.
      */
-    refreshUnreadConversationCounts(siteId?: string, conversationId?: number, userId?: number):
+    refreshUnreadConversationCounts(siteId?: string):
             Promise<{favourites: number, individual: number, group: number, orMore?: boolean}> {
+
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         return this.invalidateUnreadConversationCounts(siteId).then(() => {

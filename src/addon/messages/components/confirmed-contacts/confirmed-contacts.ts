@@ -87,8 +87,20 @@ export class AddonMessagesConfirmedContactsComponent implements OnInit, OnDestro
         this.loadMoreError = false;
 
         const limitFrom = refresh ? 0 : this.contacts.length;
+        let promise;
 
-        return this.messagesProvider.getUserContacts(limitFrom).then((result) => {
+        if (limitFrom === 0) {
+            // Always try to get latest data from server.
+            promise = this.messagesProvider.invalidateUserContacts().catch(() => {
+                // Shouldn't happen.
+            });
+        } else {
+            promise = Promise.resolve();
+        }
+
+        return promise.then(() => {
+            return this.messagesProvider.getUserContacts(limitFrom);
+        }).then((result) => {
             this.contacts = refresh ? result.contacts : this.contacts.concat(result.contacts);
             this.canLoadMore = result.canLoadMore;
         }).catch((error) => {
@@ -104,9 +116,8 @@ export class AddonMessagesConfirmedContactsComponent implements OnInit, OnDestro
      * @return {Promise<any>} Promise resolved when done.
      */
     refreshData(refresher?: any): Promise<any> {
-        return this.messagesProvider.invalidateUserContacts().then(() => {
-            return this.fetchData(true);
-        }).finally(() => {
+        // No need to invalidate contacts, we always try to get the latest.
+        return this.fetchData(true).finally(() => {
             refresher && refresher.complete();
         });
     }

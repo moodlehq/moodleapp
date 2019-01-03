@@ -223,7 +223,12 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                     }
 
                     if (this.userId) {
-                        promises.push(this.messagesProvider.getMemberInfo(this.userId).then((member) => {
+                        // Get the member info. Invalidate first to make sure we get the latest status.
+                        promises.push(this.messagesProvider.invalidateMemberInfo(this.userId).catch(() => {
+                            // Shouldn't happen.
+                        }).then(() => {
+                            return this.messagesProvider.getMemberInfo(this.userId);
+                        }).then((member) => {
                             this.otherMember = member;
                             if (!exists && member) {
                                 this.conversationImage = member.profileimageurl;
@@ -630,7 +635,9 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                 conversationId: this.conversationId,
                 userId: this.userId,
                 message: this.lastMessage.text,
-                timecreated: this.lastMessage.timecreated
+                timecreated: this.lastMessage.timecreated,
+                isfavourite: this.conversation && this.conversation.isfavourite,
+                type: this.conversation && this.conversation.type
             }, this.siteId);
 
             // Update navBar links and buttons.
