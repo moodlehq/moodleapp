@@ -1770,7 +1770,7 @@ export class AddonMessagesProvider {
     /**
      * Returns whether or not group messaging is supported.
      *
-     * @return {boolean} If related WS is avalaible on current site.
+     * @return {boolean} If related WS is available on current site.
      * @since 3.6
      */
     isGroupMessagingEnabled(): boolean {
@@ -1778,9 +1778,24 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Returns whether or not group messaging is supported in a certain site.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<boolean>} Promise resolved with boolean: whether related WS is available on a certain site.
+     * @since 3.6
+     */
+    isGroupMessagingEnabledInSite(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.wsAvailable('core_message_get_conversations');
+        }).catch(() => {
+            return false;
+        });
+    }
+
+    /**
      * Returns whether or not we can mark all messages as read.
      *
-     * @return {boolean} If related WS is avalaible on current site.
+     * @return {boolean} If related WS is available on current site.
      * @since  3.2
      */
     isMarkAllMessagesReadEnabled(): boolean {

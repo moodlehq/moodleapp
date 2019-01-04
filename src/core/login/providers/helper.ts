@@ -587,18 +587,24 @@ export class CoreLoginHelperProvider {
      * @param {string} siteId Site to load.
      */
     protected loadSiteAndPage(page: string, params: any, siteId: string): void {
+        const navCtrl = this.appProvider.getRootNavController();
+
         if (siteId == CoreConstants.NO_SITE_ID) {
             // Page doesn't belong to a site, just load the page.
-            this.appProvider.getRootNavController().setRoot(page, params);
+            navCtrl.setRoot(page, params);
         } else {
             const modal = this.domUtils.showModalLoading();
             this.sitesProvider.loadSite(siteId, page, params).then((loggedIn) => {
                 if (loggedIn) {
-                    this.loadPageInMainMenu(page, params);
+                    // Due to DeepLinker, we need to remove the path from the URL before going to main menu.
+                    // IonTabs checks the URL to determine which path to load for deep linking, so we clear the URL.
+                    this.location.replaceState('');
+
+                    navCtrl.setRoot('CoreMainMenuPage', { redirectPage: page, redirectParams: params });
                 }
-            }).catch(() => {
+            }).catch((error) => {
                 // Site doesn't exist.
-                this.appProvider.getRootNavController().setRoot('CoreLoginSitesPage');
+                navCtrl.setRoot('CoreLoginSitesPage');
             }).finally(() => {
                 modal.dismiss();
             });

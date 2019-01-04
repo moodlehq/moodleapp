@@ -107,11 +107,14 @@ export class AddonMessagesModule {
                     }
 
                     messagesProvider.invalidateDiscussionsCache(notification.site).finally(() => {
-                        let pageName = 'AddonMessagesIndexPage';
-                        if (messagesProvider.isGroupMessagingEnabled()) {
-                            pageName = 'AddonMessagesGroupConversationsPage';
-                        }
-                        linkHelper.goInSite(undefined, pageName, undefined, notification.site);
+                        // Check if group messaging is enabled, to determine which page should be loaded.
+                        messagesProvider.isGroupMessagingEnabledInSite(notification.site).then((enabled) => {
+                            let pageName = 'AddonMessagesIndexPage';
+                            if (enabled) {
+                                pageName = 'AddonMessagesGroupConversationsPage';
+                            }
+                            linkHelper.goInSite(undefined, pageName, undefined, notification.site);
+                        });
                     });
                 });
             });
@@ -125,7 +128,10 @@ export class AddonMessagesModule {
         // Register push notification clicks.
         pushNotificationsDelegate.on('click').subscribe((notification) => {
             if (utils.isFalseOrZero(notification.notif)) {
-                notificationClicked(notification);
+                // Execute the callback in the Angular zone, so change detection doesn't stop working.
+                zone.run(() => {
+                    notificationClicked(notification);
+                });
 
                 return true;
             }

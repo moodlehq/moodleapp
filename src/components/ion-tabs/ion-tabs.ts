@@ -14,9 +14,11 @@
 
 import { Component, Optional, ElementRef, Renderer, ViewEncapsulation, forwardRef, ViewChild, Input,
     OnDestroy } from '@angular/core';
-import { Tabs, NavController, ViewController, App, Config, Platform, DeepLinker, Keyboard, RootNode } from 'ionic-angular';
+import {
+    Tabs, Tab, NavController, ViewController, App, Config, Platform, DeepLinker, Keyboard, RootNode, NavOptions
+} from 'ionic-angular';
 import { CoreIonTabComponent } from './ion-tab';
-import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreUtilsProvider, PromiseDefer } from '@providers/utils/utils';
 import { CoreAppProvider } from '@providers/app';
 
 /**
@@ -66,6 +68,7 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
 
     protected firstSelectedTab: string;
     protected unregisterBackButtonAction: any;
+    protected selectTabPromiseDefer: PromiseDefer;
 
     constructor(protected utils: CoreUtilsProvider, protected appProvider: CoreAppProvider, @Optional() parent: NavController,
             @Optional() viewCtrl: ViewController, _app: App, config: Config, elementRef: ElementRef, _plt: Platform,
@@ -148,20 +151,18 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
                 // Tabs initialized. Force select the tab if it's not enabled.
                 if (this.selectedDisabled && typeof this.selectedIndex != 'undefined') {
                     const tab = this.getByIndex(this.selectedIndex);
-                    if (tab && (!tab.enabled)) {
-                        this.select(tab);
-                    }
-                } else {
-                    // Select first tab on init.
-                    const tab = this._tabs.find((tab) => {
-                        return tab.enabled;
-                    });
-                    if (tab) {
+                    if (tab && !tab.enabled) {
                         this.select(tab);
                     }
                 }
 
                 this.firstSelectedTab = this._selectHistory[0] || null;
+            }).finally(() => {
+                // If there was a select promise pending to be resolved, do it now.
+                if (this.selectTabPromiseDefer) {
+                    this.selectTabPromiseDefer.resolve();
+                    delete this.selectTabPromiseDefer;
+                }
             });
         } else {
             // Tabs not loaded yet. Set the tab bar position so the tab bar is shown, it'll have a spinner.
@@ -266,19 +267,61 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
     }
 
     /**
+     * Select a tab.
+     *
+     * @param {number|Tab} tabOrIndex Index, or the Tab instance, of the tab to select.
+     * @param {NavOptions} Nav options.
+     * @param {boolean} [fromUrl=true] Whether to load from a URL.
+     * @return {Promise<any>} Promise resolved when selected.
+     */
+    select(tabOrIndex: number | Tab, opts: NavOptions = {}, fromUrl: boolean = false): Promise<any> {
+
+        if (this.initialized) {
+            // Tabs have been initialized, select the tab.
+            return super.select(tabOrIndex, opts, fromUrl);
+        } else {
+            // Tabs not initialized yet. Mark it as "selectedIndex" input so it's treated when the tabs are initialized.
+            if (typeof tabOrIndex == 'number') {
+                this.selectedIndex = tabOrIndex;
+            } else {
+                this.selectedIndex = this.getIndex(tabOrIndex);
+            }
+
+            // Don't resolve the Promise until the tab is really selected (tabs are initialized).
+            this.selectTabPromiseDefer = this.selectTabPromiseDefer || this.utils.promiseDefer();
+
+            return this.selectTabPromiseDefer.promise;
+        }
+    }
+
+    /**
      * Select a tab by Index. First it will reset the status of the tab.
      *
      * @param {number} index Index of the tab.
+     * @return {Promise<any>} Promise resolved when selected.
      */
-    selectTabRootByIndex(index: number): void {
-        const tab = this.getByIndex(index);
-        if (tab) {
-            tab.goToRoot({animate: false, updateUrl: true, isNavRoot: true}).then(() => {
-                // Tab not previously selected. Select it after going to root.
-                if (!tab.isSelected) {
-                    this.select(tab, {animate: false, updateUrl: true, isNavRoot: true});
-                }
-            });
+    selectTabRootByIndex(index: number): Promise<any> {
+        if (this.initialized) {
+            const tab = this.getByIndex(index);
+            if (tab) {
+                return tab.goToRoot({animate: false, updateUrl: true, isNavRoot: true}).then(() => {
+                    // Tab not previously selected. Select it after going to root.
+                    if (!tab.isSelected) {
+                        return this.select(tab, {animate: false, updateUrl: true, isNavRoot: true});
+                    }
+                });
+            }
+
+            // Not found.
+            return Promise.reject(null);
+        } else {
+            // Tabs not initialized yet. Mark it as "selectedIndex" input so it's treated when the tabs are initialized.
+            this.selectedIndex = index;
+
+            // Don't resolve the Promise until the tab is really selected (tabs are initialized).
+            this.selectTabPromiseDefer = this.selectTabPromiseDefer || this.utils.promiseDefer();
+
+            return this.selectTabPromiseDefer.promise;
         }
     }
 
