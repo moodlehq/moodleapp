@@ -55,7 +55,7 @@ export class MoodleMobileApp implements OnInit {
             desktopClass += this.appProvider.isMac() ? ' platform-mac' : '';
             desktopClass += this.appProvider.isLinux() ? ' platform-linux' : '';
             desktopClass += this.appProvider.isWindows() ? ' platform-windows' : '';
-            app.setElementClass(desktopClass, true);
+            desktopClass != '' ? app.setElementClass(desktopClass, true) : false;
         });
 
     }

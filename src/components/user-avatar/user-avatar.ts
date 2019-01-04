@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnChanges, SimpleChange } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChange } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreAppProvider } from '@providers/app';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreUserProvider } from '@core/user/providers/user';
 
 /**
  * Component to display a "user avatar".
@@ -27,7 +29,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
     selector: 'ion-avatar[core-user-avatar]',
     templateUrl: 'core-user-avatar.html'
 })
-export class CoreUserAvatarComponent implements OnInit, OnChanges {
+export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
     @Input() user: any;
     // The following params will override the ones in user object.
     @Input() profileUrl?: string;
@@ -42,10 +44,17 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges {
     protected timetoshowusers = 300000; // Miliseconds default.
     protected myUser = false;
     protected currentUserId: number;
+    protected pictureObs;
 
     constructor(private navCtrl: NavController, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
-            private appProvider: CoreAppProvider) {
+            private appProvider: CoreAppProvider, eventsProvider: CoreEventsProvider) {
         this.currentUserId = this.sitesProvider.getCurrentSiteUserId();
+
+        this.pictureObs = eventsProvider.on(CoreUserProvider.PROFILE_PICTURE_UPDATED, (data) => {
+            if (data.userId == this.userId) {
+                this.profileUrl = data.picture;
+            }
+        }, this.sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -69,11 +78,11 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges {
      * Set fields from user.
      */
     protected setFields(): void {
-        this.profileUrl = this.profileUrl || (this.user && (this.user.profileimageurl || this.user.userprofileimageurl ||
+        const profileUrl = this.profileUrl || (this.user && (this.user.profileimageurl || this.user.userprofileimageurl ||
             this.user.userpictureurl || this.user.profileimageurlsmall));
 
-        if (typeof this.profileUrl != 'string') {
-            this.profileUrl = '';
+        if (typeof profileUrl == 'string') {
+            this.profileUrl = profileUrl;
         }
 
         this.fullname = this.fullname || (this.user && (this.user.fullname || this.user.userfullname));
@@ -116,5 +125,12 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges {
             event.stopPropagation();
             this.navCtrl.push('CoreUserProfilePage', { userId: this.userId, courseId: this.courseId });
         }
+    }
+
+    /**
+     * Component destroyed.
+     */
+    ngOnDestroy(): void {
+        this.pictureObs && this.pictureObs.off();
     }
 }

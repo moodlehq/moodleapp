@@ -148,7 +148,7 @@ export class CoreUserProfilePage {
                 this.eventsProvider.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
                     userId: this.userId,
                     picture: profileImageURL
-                });
+                }, this.site.getId());
                 this.sitesProvider.updateSiteInfo(this.site.getId());
                 this.refreshUser();
             }).finally(() => {

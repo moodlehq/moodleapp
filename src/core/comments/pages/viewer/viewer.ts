@@ -78,20 +78,16 @@ export class CoreCommentsViewerPage {
                 // Get the user profile image.
                 this.userProvider.getProfile(comment.userid, undefined, true).then((user) => {
                     comment.profileimageurl = user.profileimageurl;
+                }).catch(() => {
+                    // Ignore errors.
                 });
             });
         }).catch((error) => {
-            if (error) {
-                if (this.component == 'assignsubmission_comments') {
-                    this.domUtils.showAlertTranslated('core.notice', 'core.commentsnotworking');
-                } else {
-                    this.domUtils.showErrorModal(error);
-                }
+            if (error && this.component == 'assignsubmission_comments') {
+                this.domUtils.showAlertTranslated('core.notice', 'core.commentsnotworking');
             } else {
-                this.domUtils.showErrorModal(this.translate.instant('core.error') + ': get_comments');
+                this.domUtils.showErrorModalDefault(error, this.translate.instant('core.error') + ': get_comments');
             }
-
-            return Promise.reject(null);
         });
     }
 

@@ -411,6 +411,10 @@ ion-app.app-root {
     }
   }
 
+  .col > .button-block {
+    contain: content;
+  }
+
 
   // File uploader.
   // -------------------------

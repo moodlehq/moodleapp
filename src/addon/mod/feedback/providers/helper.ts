@@ -138,7 +138,7 @@ export class AddonModFeedbackHelperProvider {
                         responses[name] = value;
                     });
                 } else {
-                    if (itemData.typ == 'multichoice') {
+                    if (itemData.typ == 'multichoice' && itemData.subtype != 'r') {
                         name = nameTemp + '[0]';
                     } else {
                         name = nameTemp;

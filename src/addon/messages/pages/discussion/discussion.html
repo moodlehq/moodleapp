@@ -1,8 +1,8 @@
 <ion-header>
     <ion-navbar core-back-button>
         <ion-title>
-            <img *ngIf="!otherMember && conversationImage" class="core-bar-button-image" [src]="conversationImage" alt="" onError="this.src='assets/img/group-avatar.png'" core-external-content role="presentation" [siteId]="siteId || null">
-            <ion-avatar *ngIf="otherMember" class="core-bar-button-image" core-user-avatar [user]="otherMember" [linkProfile]="false" [checkOnline]="otherMember.showonlinestatus" item-start (click)="showInfo && viewInfo()"></ion-avatar>
+            <img *ngIf="loaded && !otherMember && conversationImage" class="core-bar-button-image" [src]="conversationImage" alt="" onError="this.src='assets/img/group-avatar.png'" core-external-content role="presentation" [siteId]="siteId || null">
+            <ion-avatar *ngIf="loaded && otherMember" class="core-bar-button-image" core-user-avatar [user]="otherMember" [linkProfile]="false" [checkOnline]="otherMember.showonlinestatus" item-start (click)="showInfo && viewInfo()"></ion-avatar>
             <core-format-text [text]="title" (click)="showInfo && !isGroup && viewInfo()"></core-format-text>
             <core-icon *ngIf="conversation && conversation.isfavourite" name="fa-star"></core-icon>
         </ion-title>
