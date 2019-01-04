@@ -113,7 +113,7 @@
                                 {{ 'addon.mod_feedback.preview' | translate }}
                             </button>
                         </ion-col>
-                        <ion-col *ngIf="access.cancomplete && access.cansubmit">
+                        <ion-col *ngIf="access.cancomplete && access.cansubmit && access.isopen">
                             <button ion-button block icon-end *ngIf="!goPage" (click)="gotoAnswerQuestions()">
                                 {{ 'addon.mod_feedback.complete_the_form' | translate }}
                                 <ion-icon name="arrow-forward"></ion-icon>
