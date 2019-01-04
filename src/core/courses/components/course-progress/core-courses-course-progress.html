@@ -22,7 +22,7 @@
 
         <div class="core-button-spinner" *ngIf="courseOptionMenuEnabled">
             <!-- Download course spinner. -->
-            <ion-spinner *ngIf="prefetchCourseData.prefetchCourseIcon == 'spinner' || showSpinner"></ion-spinner>
+            <ion-spinner *ngIf="(downloadCourseEnabled && prefetchCourseData.prefetchCourseIcon == 'spinner') || showSpinner"></ion-spinner>
 
             <!-- Options menu. -->
             <button ion-button icon-only clear color="dark" (click)="showCourseOptionsMenu($event)" *ngIf="!showSpinner">
