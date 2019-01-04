@@ -139,13 +139,15 @@ export class AddonNotificationsListPage {
         this.loadingMarkAllNotificationsAsRead = true;
         this.notificationsProvider.markAllNotificationsAsRead().catch(() => {
             // Omit failure.
-        }).finally(() => {
+        }).then(() => {
             const siteId = this.sitesProvider.getCurrentSiteId();
             this.eventsProvider.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, null, siteId);
 
-            this.notificationsProvider.getUnreadNotificationsCount().then((unread) => {
-                this.canMarkAllNotificationsAsRead = unread > 0;
-                this.loadingMarkAllNotificationsAsRead = false;
+            // All marked as read, refresh the list.
+            this.notificationsLoaded = false;
+
+            return this.refreshNotifications().finally(() => {
+                this.notificationsLoaded = true;
             });
         });
     }
@@ -182,6 +184,7 @@ export class AddonNotificationsListPage {
 
                 return this.notificationsProvider.getUnreadNotificationsCount().then((unread) => {
                     this.canMarkAllNotificationsAsRead = unread > 0;
+                }).finally(() => {
                     this.loadingMarkAllNotificationsAsRead = false;
                 });
             }
@@ -193,9 +196,10 @@ export class AddonNotificationsListPage {
      * Refresh notifications.
      *
      * @param {any} [refresher] Refresher.
+     * @return Promise<any> Promise resolved when done.
      */
-    refreshNotifications(refresher?: any): void {
-        this.notificationsProvider.invalidateNotificationsList().finally(() => {
+    refreshNotifications(refresher?: any): Promise<any> {
+        return this.notificationsProvider.invalidateNotificationsList().finally(() => {
             return this.fetchNotifications(true).finally(() => {
                 if (refresher) {
                     refresher.complete();

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { NgModule, NgZone } from '@angular/core';
 import { AddonNotificationsProvider } from './providers/notifications';
 import { AddonNotificationsMainMenuHandler } from './providers/mainmenu-handler';
 import { AddonNotificationsSettingsHandler } from './providers/settings-handler';
@@ -47,7 +47,7 @@ export const ADDON_NOTIFICATIONS_PROVIDERS: any[] = [
 export class AddonNotificationsModule {
     constructor(mainMenuDelegate: CoreMainMenuDelegate, mainMenuHandler: AddonNotificationsMainMenuHandler,
             settingsDelegate: CoreSettingsDelegate, settingsHandler: AddonNotificationsSettingsHandler,
-            cronDelegate: CoreCronDelegate, cronHandler: AddonNotificationsCronHandler,
+            cronDelegate: CoreCronDelegate, cronHandler: AddonNotificationsCronHandler, zone: NgZone,
             appProvider: CoreAppProvider, utils: CoreUtilsProvider, sitesProvider: CoreSitesProvider,
             notificationsProvider: AddonNotificationsProvider, localNotifications: CoreLocalNotificationsProvider,
             linkHelper: CoreContentLinksHelperProvider, pushNotificationsDelegate: AddonPushNotificationsDelegate) {
@@ -76,7 +76,10 @@ export class AddonNotificationsModule {
         // Register push notification clicks.
         pushNotificationsDelegate.on('click').subscribe((notification) => {
             if (utils.isTrueOrOne(notification.notif)) {
-                notificationClicked(notification);
+                // Execute the callback in the Angular zone, so change detection doesn't stop working.
+                zone.run(() => {
+                    notificationClicked(notification);
+                });
 
                 return true;
             }

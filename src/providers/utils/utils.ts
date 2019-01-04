@@ -561,29 +561,68 @@ export class CoreUtilsProvider {
      * @return {Promise<any>} Promise resolved with the list of countries.
      */
     getCountryList(): Promise<any> {
-        // Get the current language.
-        return this.langProvider.getCurrentLanguage().then((lang) => {
-            // Get the full list of translations. Create a promise to convert the observable into a promise.
-            return new Promise((resolve, reject): void => {
-                const observer = this.translate.getTranslation(lang).subscribe((table) => {
-                    resolve(table);
-                    observer.unsubscribe();
-                }, (err) => {
-                    reject(err);
-                    observer.unsubscribe();
-                });
-            });
-        }).then((table) => {
+        // Get the keys of the countries.
+        return this.getCountryKeysList().then((keys) => {
+            // Now get the code and the translated name.
             const countries = {};
+
+            keys.forEach((key) => {
+                if (key.indexOf('assets.countries.') === 0) {
+                    const code = key.replace('assets.countries.', '');
+                    countries[code] = this.translate.instant(key);
+                }
+            });
+
+            return countries;
+        });
+    }
+
+    /**
+     * Get the list of language keys of the countries.
+     *
+     * @return {Promise<string[]>} Promise resolved with the countries list. Rejected if not translated.
+     */
+    protected getCountryKeysList(): Promise<string[]> {
+        // It's possible that the current language isn't translated, so try with default language first.
+        const defaultLang = this.langProvider.getDefaultLanguage();
+
+        return this.getCountryKeysListForLanguage(defaultLang).catch(() => {
+            // Not translated, try to use the fallback language.
+            const fallbackLang = this.langProvider.getFallbackLanguage();
+
+            if (fallbackLang === defaultLang) {
+                // Same language, just reject.
+                return Promise.reject('Countries not found.');
+            }
+
+            return this.getCountryKeysListForLanguage(fallbackLang);
+        });
+    }
+
+    /**
+     * Get the list of language keys of the countries, based on the translation table for a certain language.
+     *
+     * @param {string} lang Language to check.
+     * @return {Promise<string[]>} Promise resolved with the countries list. Rejected if not translated.
+     */
+    protected getCountryKeysListForLanguage(lang: string): Promise<string[]> {
+        // Get the translation table for the language.
+        return this.langProvider.getTranslationTable(lang).then((table): any => {
+            // Gather all the keys for countries,
+            const keys = [];
 
             for (const name in table) {
                 if (name.indexOf('assets.countries.') === 0) {
-                    const code = name.replace('assets.countries.', '');
-                    countries[code] = table[name];
+                    keys.push(name);
                 }
             }
 
-            return countries;
+            if (keys.length === 0) {
+                // Not translated, reject.
+                return Promise.reject('Countries not found.');
+            }
+
+            return keys;
         });
     }
 

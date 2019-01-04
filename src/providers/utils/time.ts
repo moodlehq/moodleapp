@@ -278,6 +278,7 @@ export class CoreTimeUtilsProvider {
 
     /**
      * Return the localized ISO format (i.e DDMMYY) from the localized moment format. Useful for translations.
+     * DO NOT USE this function for ion-datetime format. Moment escapes characters with [], but ion-datetime doesn't support it.
      *
      * @param {any} localizedFormat Format to use.
      * @return {string} Localized ISO format

@@ -152,6 +152,22 @@ export class CoreFileComponent implements OnInit, OnDestroy {
             return;
         }
 
+        if (!this.canDownload) {
+            // File cannot be downloaded, just open it.
+            if (this.file.toURL) {
+                // Local file.
+                this.utils.openFile(this.file.toURL());
+            } else if (this.fileUrl) {
+                if (this.fileUrl.indexOf('http') === 0) {
+                    this.utils.openOnlineFile(this.fileUrl);
+                } else {
+                    this.utils.openFile(this.fileUrl);
+                }
+            }
+
+            return;
+        }
+
         if (!this.appProvider.isOnline() && (!openAfterDownload || (openAfterDownload && !this.isDownloaded))) {
             this.domUtils.showErrorModal('core.networkerrormsg', true);
 

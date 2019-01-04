@@ -43,6 +43,15 @@ export class CoreMainMenuPage implements OnDestroy {
 
     constructor(private menuDelegate: CoreMainMenuDelegate, private sitesProvider: CoreSitesProvider, navParams: NavParams,
             private navCtrl: NavController, private eventsProvider: CoreEventsProvider) {
+
+        // Check if the menu was loaded with a redirect.
+        const redirectPage = navParams.get('redirectPage');
+        if (redirectPage) {
+            this.pendingRedirect = {
+                redirectPage: redirectPage,
+                redirectParams: navParams.get('redirectParams')
+            };
+        }
     }
 
     /**

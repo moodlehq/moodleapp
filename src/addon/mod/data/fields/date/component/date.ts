@@ -13,6 +13,7 @@
 // limitations under the License.
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
+import { TranslateService } from '@ngx-translate/core';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
 
@@ -27,7 +28,7 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginCompo
 
     format: string;
 
-    constructor(protected fb: FormBuilder, protected timeUtils: CoreTimeUtilsProvider) {
+    constructor(protected fb: FormBuilder, protected timeUtils: CoreTimeUtilsProvider, protected translate: TranslateService) {
         super(fb);
     }
 
@@ -40,7 +41,10 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginCompo
         }
 
         let val;
-        this.format = this.timeUtils.getLocalizedDateFormat('LL');
+
+        // Calculate format to use. ion-datetime doesn't support escaping characters ([]), so we remove them.
+        this.format = this.timeUtils.convertPHPToMoment(this.translate.instant('core.strftimedatefullshort'))
+                .replace(/[\[\]]/g, '');
 
         if (this.mode == 'search') {
             this.addControl('f_' + this.field.id + '_z');
