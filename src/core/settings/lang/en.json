@@ -11,7 +11,7 @@
     "cordovaversion": "Cordova version",
     "currentlanguage": "Current language",
     "debugdisplay": "Display debug messages",
-    "debugdisplaydescription": "If enabled, error modals will display more data about the error if possible.",
+    "debugdisplaydescription": "If enabled, additional information about errors will be displayed.",
     "deletesitefiles": "Are you sure that you want to delete the downloaded files from the site '{{sitename}}'?",
     "deletesitefilestitle": "Delete site files",
     "deviceinfo": "Device info",
