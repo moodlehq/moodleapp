@@ -16,7 +16,7 @@
 
 <!-- Content. -->
 <core-split-view>
-    <ion-content [class.has-fab]="canAdd">
+    <ion-content>
         <ion-refresher [enabled]="loaded" (ionRefresh)="doRefresh($event)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
@@ -59,7 +59,7 @@
             <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreEntries($event)" [error]="loadMoreError"></core-infinite-loading>
         </core-loading>
 
-        <ion-fab bottom end *ngIf="canAdd">
+        <ion-fab core-fab bottom end *ngIf="canAdd">
             <button ion-fab (click)="openNewEntry()" [attr.aria-label]="'addon.mod_glossary.addentry' | translate">
                 <ion-icon name="add"></ion-icon>
             </button>

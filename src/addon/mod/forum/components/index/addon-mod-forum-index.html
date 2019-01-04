@@ -12,7 +12,7 @@
 
 <!-- Content. -->
 <core-split-view>
-    <ion-content [class.has-fab]="forum && forum.cancreatediscussions">
+    <ion-content>
         <ion-refresher [enabled]="loaded" (ionRefresh)="doRefresh($event)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
@@ -87,7 +87,7 @@
             <core-infinite-loading [enabled]="canLoadMore" (action)="fetchMoreDiscussions($event)" [error]="loadMoreError"></core-infinite-loading>
         </core-loading>
 
-        <ion-fab bottom end *ngIf="forum && forum.cancreatediscussions">
+        <ion-fab core-fab bottom end *ngIf="forum && forum.cancreatediscussions">
             <button ion-fab (click)="openNewDiscussion()" [attr.aria-label]="addDiscussionText">
                 <ion-icon name="add"></ion-icon>
             </button>
