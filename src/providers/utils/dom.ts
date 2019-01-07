@@ -1034,6 +1034,9 @@ export class CoreDomUtilsProvider {
                 if (error.backtrace) {
                     extraInfo += '<br><br>' + this.textUtils.replaceNewLines(this.textUtils.escapeHTML(error.backtrace), '<br>');
                 }
+
+                // tslint:disable-next-line
+                console.error(error);
             }
 
             // We received an object instead of a string. Search for common properties.

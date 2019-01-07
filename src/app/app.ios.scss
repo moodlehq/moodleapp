@@ -70,15 +70,6 @@ ion-app.app-root.ios {
     }
   }
 
-  // Recover borders on items inside cards.
-  .card-ios.with-borders  .item-ios.item-block .item-inner {
-    border-bottom: $hairlines-width solid $list-ios-border-color;
-  }
-  .card-ios.with-borders .item-ios:last-child .item-inner {
-    border-bottom: 0;
-  }
-
-
   .radio-ios .radio-icon {
     @include position(0, null, null, 0);
     @include margin(0);

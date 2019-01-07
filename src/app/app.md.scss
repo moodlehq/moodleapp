@@ -48,14 +48,6 @@ ion-app.app-root.md {
     }
   }
 
-  // Recover borders on items inside cards.
-  .card-md.with-borders .item-md.item-block .item-inner {
-    border-bottom: 1px solid $list-md-border-color;
-  }
-  .card-md.with-borders .item-md:last-child .item-inner {
-    border-bottom: 0;
-  }
-
   .action-sheet-md {
     .action-sheet-title,
     .action-sheet-container > .action-sheet-group:first-child {

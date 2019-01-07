@@ -433,6 +433,42 @@ $core-question-state-incorrect-color: $red-light !default;
   }
 }
 
+@mixin core-as-items() {
+  .item-md.item-block > .item-inner {
+    border-bottom: 1px solid $list-md-border-color;
+  }
+
+  .item-ios.item-block > .item-inner {
+    border-bottom: $hairlines-width solid $list-ios-border-color;
+  }
+
+  .item-wp.item-block > .item-inner {
+    border-bottom: 1px solid $list-wp-border-color;
+  }
+
+  &:last-child .item > .item-inner {
+    border-bottom: 0;
+  }
+}
+
+@mixin core-items() {
+  &.item-md.item-block > .item-inner {
+    border-bottom: 1px solid $list-md-border-color;
+  }
+
+  &.item-ios.item-block > .item-inner {
+    border-bottom: $hairlines-width solid $list-ios-border-color;
+  }
+
+  &.item-wp.item-block > .item-inner {
+    border-bottom: 1px solid $list-wp-border-color;
+  }
+
+  &:last-child > .item-inner {
+    border-bottom: 0;
+  }
+}
+
 // Font Awesome
 $fa-font-path: $font-path;
 @import "font-awesome";

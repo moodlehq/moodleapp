@@ -5,7 +5,7 @@
                 <ion-icon *ngIf="showPrevButton" name="arrow-back" md="ios-arrow-back"></ion-icon>
             </ion-col>
             <ion-col no-padding col-10>
-                <ion-slides (ionSlideDidChange)="slideChanged()" [slidesPerView]="slidesShown">
+                <ion-slides (ionSlideDidChange)="slideChanged()" [slidesPerView]="slidesShown" [dir]="direction">
                     <ng-container *ngFor="let tab of tabs; let idx = index">
                         <ion-slide *ngIf="tab.show">
                             <a [attr.aria-selected]="selected == idx" (click)="selectTab(idx)" class="tab-slide">

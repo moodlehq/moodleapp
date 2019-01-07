@@ -96,6 +96,16 @@ ion-app.app-root {
     border: 0;
   }
 
+  // Recover borders on items inside cards.
+  .card.with-borders .core-as-item,
+  .core-as-item {
+    @include core-as-items();
+  }
+
+  .card.with-borders .item {
+    @include core-items();
+  }
+
   .core-oauth-icon, .item.core-oauth-icon, .list .item.core-oauth-icon {
     min-height: 32px;
     img, .label {
@@ -842,7 +852,6 @@ ion-app.app-root {
 
     core-loading {
       flex-grow: 1;
-      position: relative !important;
 
       .core-loading-content {
         position: absolute;
