@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreEventsProvider } from '@providers/events';
@@ -42,7 +42,7 @@ export class CoreMainMenuPage implements OnDestroy {
     @ViewChild('mainTabs') mainTabs: CoreIonTabsComponent;
 
     constructor(private menuDelegate: CoreMainMenuDelegate, private sitesProvider: CoreSitesProvider, navParams: NavParams,
-            private navCtrl: NavController, private eventsProvider: CoreEventsProvider) {
+            private navCtrl: NavController, private eventsProvider: CoreEventsProvider, private cdr: ChangeDetectorRef) {
 
         // Check if the menu was loaded with a redirect.
         const redirectPage = navParams.get('redirectPage');
@@ -137,6 +137,9 @@ export class CoreMainMenuPage implements OnDestroy {
             this.redirectPage = data.redirectPage;
             this.redirectParams = data.redirectParams;
         }
+
+        // Force change detection, otherwise sometimes the tab was selected before the params were applied.
+        this.cdr.detectChanges();
 
         setTimeout(() => {
             // Let the tab load the params before navigating.
