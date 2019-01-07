@@ -535,6 +535,8 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             const preventReason = this.lessonProvider.getPreventAccessReason(this.accessInfo, true);
             if (preventReason) {
                 this.preventMessages = [preventReason];
+            } else {
+                this.preventMessages = [];
             }
 
             // Log view now that we have the password.
