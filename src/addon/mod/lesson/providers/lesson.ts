@@ -2336,6 +2336,38 @@ export class AddonModLessonProvider {
     }
 
     /**
+     * Get the prevent access reason to display for a certain lesson.
+     *
+     * @param {any} info Lesson access info.
+     * @param {boolean} [ignorePassword] Whether password protected reason should be ignored (user already entered the password).
+     * @return {any} Prevent access reason.
+     */
+    getPreventAccessReason(info: any, ignorePassword?: boolean): any {
+        let result;
+
+        if (info && info.preventaccessreasons) {
+            for (let i = 0; i < info.preventaccessreasons.length; i++) {
+                const entry = info.preventaccessreasons[i];
+
+                if (entry.reason == 'lessonopen' || entry.reason == 'lessonclosed') {
+                    // Time restrictions are the most prioritary, return it.
+                    return entry;
+                } else if (entry.reason == 'passwordprotectedlesson') {
+                    if (!ignorePassword) {
+                        // Treat password before all other reasons.
+                        result = entry;
+                    }
+                } else if (!result) {
+                    // Rest of cases, just return any of them.
+                    result = entry;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Check if a jump is correct.
      * Based in Moodle's jumpto_is_correct.
      *
