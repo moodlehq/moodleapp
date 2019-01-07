@@ -41,6 +41,25 @@ export class AddonModDataFieldUrlHandler extends AddonModDataFieldTextHandler {
     }
 
     /**
+     * Get field edit data in the input data.
+     *
+     * @param  {any} field      Defines the field to be rendered.
+     * @param  {any} inputData  Data entered in the edit form.
+     * @return {any}            With name and value of the data to be sent.
+     */
+    getFieldEditData(field: any, inputData: any, originalFieldData: any): any {
+        const fieldName = 'f_' + field.id;
+
+        return [
+            {
+                fieldid: field.id,
+                subfield: '0',
+                value: inputData[fieldName] || ''
+            }
+        ];
+    }
+
+    /**
      * Check and get field requeriments.
      *
      * @param  {any} field               Defines the field to be rendered.
