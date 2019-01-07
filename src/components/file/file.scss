@@ -13,4 +13,8 @@ ion-app.app-root {
     core-file + core-file > .item-wp.item-block > .item-inner {
         border-top: 1px solid $list-wp-border-color;
     }
+
+    core-file > .item.item-block > .item-inner {
+        border-bottom: 0;
+    }
 }
