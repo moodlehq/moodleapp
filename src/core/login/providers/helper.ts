@@ -697,7 +697,9 @@ export class CoreLoginHelperProvider {
      */
     openChangePassword(siteUrl: string, error: string): void {
         this.domUtils.showAlert(this.translate.instant('core.notice'), error, undefined, 3000).then((alert) => {
-            alert.onDidDismiss(() => {
+            const subscription = alert.didDismiss.subscribe(() => {
+                subscription && subscription.unsubscribe();
+
                 this.utils.openInApp(siteUrl + '/login/change_password.php');
             });
         });
