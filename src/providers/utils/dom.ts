@@ -25,6 +25,24 @@ import { CoreConfigProvider } from '../config';
 import { CoreUrlUtilsProvider } from './url';
 import { CoreConstants } from '@core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
+import { Subject } from 'rxjs';
+
+/**
+ * Interface that defines an extension of the Ionic Alert class, to support multiple listeners.
+ */
+export interface CoreAlert extends Alert {
+    /**
+     * Observable that will notify when the alert is dismissed.
+     * @type {Subject<{data: any, role: string}>}
+     */
+    didDismiss: Subject<{data: any, role: string}>;
+
+    /**
+     * Observable that will notify when the alert will be dismissed.
+     * @type {Subject<{data: any, role: string}>}
+     */
+    willDismiss: Subject<{data: any, role: string}>;
+}
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -886,9 +904,9 @@ export class CoreDomUtilsProvider {
      * @param {string} message Message to show.
      * @param {string} [buttonText] Text of the button.
      * @param {number} [autocloseTime] Number of milliseconds to wait to close the modal. If not defined, modal won't be closed.
-     * @return {Promise<Alert>} Promise resolved with the alert modal.
+     * @return {Promise<CoreAlert>} Promise resolved with the alert modal.
      */
-    showAlert(title: string, message: string, buttonText?: string, autocloseTime?: number): Promise<Alert> {
+    showAlert(title: string, message: string, buttonText?: string, autocloseTime?: number): Promise<CoreAlert> {
         const hasHTMLTags = this.textUtils.hasHTMLTags(message);
         let promise;
 
@@ -907,7 +925,7 @@ export class CoreDomUtilsProvider {
                 return this.displayedAlerts[alertId];
             }
 
-            const alert = this.alertCtrl.create({
+            const alert: CoreAlert = <any> this.alertCtrl.create({
                 title: title,
                 message: message,
                 buttons: [buttonText || this.translate.instant('core.ok')]
@@ -924,8 +942,19 @@ export class CoreDomUtilsProvider {
             // Store the alert and remove it when dismissed.
             this.displayedAlerts[alertId] = alert;
 
-            alert.onDidDismiss(() => {
+            // Define the observables to extend the Alert class. This will allow several callbacks instead of just one.
+            alert.didDismiss = new Subject();
+            alert.willDismiss = new Subject();
+
+            // Set the callbacks to trigger an observable event.
+            alert.onDidDismiss((data: any, role: string) => {
                 delete this.displayedAlerts[alertId];
+
+                alert.didDismiss.next({data: data, role: role});
+            });
+
+            alert.onWillDismiss((data: any, role: string) => {
+                alert.willDismiss.next({data: data, role: role});
             });
 
             if (autocloseTime > 0) {

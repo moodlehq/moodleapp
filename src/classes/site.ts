@@ -1273,7 +1273,9 @@ export class CoreSite {
             return this.domUtils.showAlert(this.translate.instant('core.notice'), alertMessage, undefined, 3000).then((alert) => {
 
                 return new Promise<InAppBrowserObject | void>((resolve, reject): void => {
-                    alert.onDidDismiss(() => {
+                    const subscription = alert.didDismiss.subscribe(() => {
+                        subscription && subscription.unsubscribe();
+
                         if (inApp) {
                             resolve(this.utils.openInApp(url, options));
                         } else {
