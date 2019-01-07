@@ -276,10 +276,7 @@ export class AddonModDataEditPage {
             });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'Cannot edit entry', true);
-
-            return Promise.reject(null);
         });
-
     }
 
     /**
