@@ -22,7 +22,7 @@
             </ion-select>
         </ion-item>
 
-        <div class="addon-data-contents {{cssClass}}">
+        <div class="addon-data-contents {{cssClass}}" *ngIf="entry">
             <style *ngIf="cssTemplate">
                 {{ cssTemplate }}
             </style>

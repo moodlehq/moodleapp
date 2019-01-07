@@ -215,6 +215,7 @@ export class AddonModDataEntryPage implements OnDestroy {
      */
     gotoEntry(entry: number): Promise<any> {
         this.entryId = entry;
+        this.entry = null;
         this.page = null;
         this.entryLoaded = false;
 
