@@ -16,7 +16,9 @@ import {
     Component, Input, Output, EventEmitter, OnInit, OnChanges, OnDestroy, AfterViewInit, ViewChild, ElementRef,
     SimpleChange
 } from '@angular/core';
-import { Content, Slides } from 'ionic-angular';
+import { Content, Slides, Platform } from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreAppProvider } from '@providers/app';
 import { CoreTabComponent } from './tab';
@@ -59,6 +61,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     maxSlides = 3;
     slidesShown = this.maxSlides;
     numTabsShown = 0;
+    direction = 'ltr';
 
     protected originalTabsContainer: HTMLElement; // The container of the original tabs. It will include each tab's content.
     protected initialized = false;
@@ -77,10 +80,20 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     protected firstSelectedTab: number;
     protected unregisterBackButtonAction: any;
+    protected languageChangedSubscription: Subscription;
 
     constructor(element: ElementRef, protected content: Content, protected domUtils: CoreDomUtilsProvider,
-            protected appProvider: CoreAppProvider) {
+            protected appProvider: CoreAppProvider, platform: Platform, translate: TranslateService) {
         this.tabBarElement = element.nativeElement;
+
+        this.direction = platform.isRTL ? 'rtl' : 'ltr';
+
+        // Change the side when the language changes.
+        this.languageChangedSubscription = translate.onLangChange.subscribe((event: any) => {
+            setTimeout(() => {
+                this.direction = platform.isRTL ? 'rtl' : 'ltr';
+            });
+        });
     }
 
     /**
