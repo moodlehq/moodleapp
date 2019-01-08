@@ -253,6 +253,10 @@ export class AddonModForumDiscussionPage implements OnDestroy {
             const posts = offlineReplies.concat(onlinePosts);
             this.discussion = this.forumProvider.extractStartingPost(posts);
 
+            if (!this.discussion) {
+                return Promise.reject('Invalid forum discussion');
+            }
+
             // If sort type is nested, normal sorting is disabled and nested posts will be displayed.
             if (this.sort == 'nested') {
                 // Sort first by creation date to make format tree work.
