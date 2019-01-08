@@ -131,9 +131,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     ionViewDidEnter(): void {
         this.isCurrentView = true;
 
-        if (this.initialized) {
-            this.calculateSlides();
-        }
+        this.calculateSlides();
 
         this.registerBackButtonAction();
     }
@@ -188,6 +186,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         if (this.getIndex(tab) == -1) {
             this.tabs.push(tab);
             this.sortTabs();
+
             this.calculateSlides();
 
             if (this.initialized && this.tabs.length > 1 && this.tabBarHeight == 0) {
@@ -204,7 +203,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
      * Calculate slides.
      */
     calculateSlides(): void {
-        if (!this.isCurrentView || !this.tabsShown) {
+        if (!this.isCurrentView || !this.tabsShown || !this.initialized) {
             // Don't calculate if component isn't in current view, the calculations are wrong.
             return;
         }
@@ -288,10 +287,10 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             }
         }
 
+        this.initialized = true;
+
         // Check which arrows should be shown.
         this.calculateSlides();
-
-        this.initialized = true;
     }
 
     /**
