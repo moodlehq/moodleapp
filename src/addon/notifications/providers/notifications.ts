@@ -19,6 +19,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
+import { AddonMessagesProvider } from '@addon/messages/providers/messages';
 
 /**
  * Service to handle notifications.
@@ -36,7 +37,7 @@ export class AddonNotificationsProvider {
 
     constructor(logger: CoreLoggerProvider, private appProvider: CoreAppProvider, private sitesProvider: CoreSitesProvider,
             private timeUtils: CoreTimeUtilsProvider, private userProvider: CoreUserProvider,
-            private emulatorHelper: CoreEmulatorHelperProvider) {
+            private emulatorHelper: CoreEmulatorHelperProvider, private messageProvider: AddonMessagesProvider) {
         this.logger = logger.getInstance('AddonNotificationsProvider');
     }
 
@@ -44,9 +45,10 @@ export class AddonNotificationsProvider {
      * Function to format notification data.
      *
      * @param {any[]} notifications List of notifications.
+     * @return {Promise<any[]>} Promise resolved with notifications.
      */
-    protected formatNotificationsData(notifications: any[]): void {
-        notifications.forEach((notification) => {
+    protected formatNotificationsData(notifications: any[]): Promise<any> {
+        const promises = notifications.map((notification) => {
             // Set message to show.
             if (notification.contexturl && notification.contexturl.indexOf('/mod/forum/') >= 0) {
                 notification.mobiletext = notification.smallmessage;
@@ -60,13 +62,19 @@ export class AddonNotificationsProvider {
             }
             if (notification.useridfrom > 0) {
                 // Try to get the profile picture of the user.
-                this.userProvider.getProfile(notification.useridfrom, notification.courseid, true).then((user) => {
+                return this.userProvider.getProfile(notification.useridfrom, notification.courseid, true).then((user) => {
                     notification.profileimageurlfrom = user.profileimageurl;
+
+                    return notification;
                 }).catch(() => {
                     // Error getting user. This can happen if device is offline or the user is deleted.
                 });
             }
+
+            return Promise.resolve(notification);
         });
+
+        return Promise.all(promises);
     }
 
     /**
@@ -145,14 +153,16 @@ export class AddonNotificationsProvider {
             return site.read('core_message_get_messages', data, preSets).then((response) => {
                 if (response.messages) {
                     const notifications = response.messages;
-                    this.formatNotificationsData(notifications);
-                    if (this.appProvider.isDesktop() && toDisplay && !read && limitFrom === 0) {
-                        // Store the last received notification. Don't block the user for this.
-                        this.emulatorHelper.storeLastReceivedNotification(
-                            AddonNotificationsProvider.PUSH_SIMULATION_COMPONENT, notifications[0], siteId);
-                    }
 
-                    return notifications;
+                    return this.formatNotificationsData(notifications).then(() => {
+                        if (this.appProvider.isDesktop() && toDisplay && !read && limitFrom === 0) {
+                            // Store the last received notification. Don't block the user for this.
+                            this.emulatorHelper.storeLastReceivedNotification(
+                                AddonNotificationsProvider.PUSH_SIMULATION_COMPONENT, notifications[0], siteId);
+                        }
+
+                        return notifications;
+                    });
                 } else {
                     return Promise.reject(null);
                 }
@@ -249,18 +259,26 @@ export class AddonNotificationsProvider {
     }
 
     /**
-     * Mark message notification as read.
+     * Mark a single notification as read.
      *
      * @param {number} notificationId ID of notification to mark as read
      * @returns {Promise<any>} Resolved when done.
+     * @since 3.5
      */
     markNotificationRead(notificationId: number): Promise<any> {
-        const params = {
-            messageid: notificationId,
-            timeread: this.timeUtils.timestamp()
-        };
+        const currentSite = this.sitesProvider.getCurrentSite();
 
-        return this.sitesProvider.getCurrentSite().write('core_message_mark_message_read', params);
+        if (currentSite.wsAvailable('core_message_mark_notification_read')) {
+            const params = {
+                notificationid: notificationId,
+                timeread: this.timeUtils.timestamp()
+            };
+
+            return currentSite.write('core_message_mark_notification_read', params);
+        } else {
+            // Fallback for versions prior to 3.5.
+            return this.messageProvider.markMessageRead(notificationId);
+        }
     }
 
     /**
