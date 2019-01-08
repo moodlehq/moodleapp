@@ -314,10 +314,10 @@ export class AddonModLessonProvider {
      * @param {boolean} [review] If the user wants to review just after finishing (1 hour margin).
      * @param {any} [pageIndex] Object containing all the pages indexed by ID. If not defined, it will be calculated.
      * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<{reviewMode: boolean, progress: number, ongoingScore: string}>} Promise resolved with the data.
+     * @return {Promise<{reviewmode: boolean, progress: number, ongoingscore: string}>} Promise resolved with the data.
      */
     protected calculateOfflineData(lesson: any, accessInfo?: any, password?: string, review?: boolean, pageIndex?: any,
-            siteId?: string): Promise<{reviewMode: boolean, progress: number, ongoingScore: string}> {
+            siteId?: string): Promise<{reviewmode: boolean, progress: number, ongoingscore: string}> {
 
         accessInfo = accessInfo || {};
 
@@ -342,9 +342,9 @@ export class AddonModLessonProvider {
 
         return Promise.all(promises).then(() => {
             return {
-                reviewMode: reviewMode,
+                reviewmode: reviewMode,
                 progress: progress,
-                ongoingScore: ongoingMessage
+                ongoingscore: ongoingMessage
             };
         });
     }

@@ -73,6 +73,11 @@ export class AddonMessagesContactsPage implements OnDestroy {
      * User entered the page.
      */
     ionViewDidEnter(): void {
+        if (!this.splitviewCtrl.isOn()) {
+            this.selectedUserId.contacts = null;
+            this.selectedUserId.requests = null;
+        }
+
         this.tabsComponent && this.tabsComponent.ionViewDidEnter();
     }
 
