@@ -1,5 +1,9 @@
 // Style ddmarker content a bit. Almost all these styles are copied from Moodle.
 addon-qtype-ddmarker {
+    .ddarea, .ddform {
+        user-select: none;
+    }
+
     .qtext {
         margin-bottom: 0.5em;
         display: block;
