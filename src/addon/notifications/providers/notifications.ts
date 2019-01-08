@@ -19,6 +19,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
+import { AddonMessagesProvider } from '@addon/messages/providers/messages';
 
 /**
  * Service to handle notifications.
@@ -36,7 +37,7 @@ export class AddonNotificationsProvider {
 
     constructor(logger: CoreLoggerProvider, private appProvider: CoreAppProvider, private sitesProvider: CoreSitesProvider,
             private timeUtils: CoreTimeUtilsProvider, private userProvider: CoreUserProvider,
-            private emulatorHelper: CoreEmulatorHelperProvider) {
+            private emulatorHelper: CoreEmulatorHelperProvider, private messageProvider: AddonMessagesProvider) {
         this.logger = logger.getInstance('AddonNotificationsProvider');
     }
 
@@ -258,18 +259,26 @@ export class AddonNotificationsProvider {
     }
 
     /**
-     * Mark message notification as read.
+     * Mark a single notification as read.
      *
      * @param {number} notificationId ID of notification to mark as read
      * @returns {Promise<any>} Resolved when done.
+     * @since 3.5
      */
     markNotificationRead(notificationId: number): Promise<any> {
-        const params = {
-            messageid: notificationId,
-            timeread: this.timeUtils.timestamp()
-        };
+        const currentSite = this.sitesProvider.getCurrentSite();
 
-        return this.sitesProvider.getCurrentSite().write('core_message_mark_message_read', params);
+        if (currentSite.wsAvailable('core_message_mark_notification_read')) {
+            const params = {
+                notificationid: notificationId,
+                timeread: this.timeUtils.timestamp()
+            };
+
+            return currentSite.write('core_message_mark_notification_read', params);
+        } else {
+            // Fallback for versions prior to 3.5.
+            return this.messageProvider.markMessageRead(notificationId);
+        }
     }
 
     /**
