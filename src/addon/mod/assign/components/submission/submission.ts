@@ -504,7 +504,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             // Do not override already loaded grade.
             if (feedback.grade && feedback.grade.grade && !this.grade.grade) {
                 const parsedGrade = parseFloat(feedback.grade.grade);
-                this.grade.grade = parsedGrade || parsedGrade == 0 ? parsedGrade : null;
+                this.grade.grade = parsedGrade >= 0 ? parsedGrade : null;
                 this.grade.gradebookGrade = this.utils.formatFloat(this.grade.grade);
                 this.originalGrades.grade = this.grade.grade;
             }
