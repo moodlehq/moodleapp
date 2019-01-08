@@ -261,7 +261,7 @@ export class CoreWSProvider {
             data = data[0];
 
             if (data.error) {
-                return rejectWithError(data);
+                return rejectWithError(data.exception);
             }
 
             return data.data;
