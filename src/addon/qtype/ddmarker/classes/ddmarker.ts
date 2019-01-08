@@ -645,7 +645,7 @@ export class AddonQtypeDdMarkerQuestion {
 
         // Wait the DOM to be rendered.
         setTimeout(() => {
-            this.pollForImageLoad();
+            this.pollForImageLoad(question.scriptsCode, question.slot);
         });
 
         this.resizeFunction = this.redrawDragsAndDrops.bind(this);
@@ -706,26 +706,38 @@ export class AddonQtypeDdMarkerQuestion {
 
     /**
      * Wait for the background image to be loaded.
+     *
+     * @param {string} scriptsCode Scripts code to fetch background image.
+     * @param {number} slot        Question number also named slot.
      */
-    pollForImageLoad(): void {
+    pollForImageLoad(scriptsCode?: string, slot?: number): void {
         if (this.afterImageLoadDone) {
             // Already treated.
             return;
         }
 
-        const bgImg = this.doc.bgImg(),
-            imgLoaded = (): void => {
-                bgImg.removeEventListener('load', imgLoaded);
+        const bgImg = this.doc.bgImg();
 
-                this.makeImageDropable();
+        if (scriptsCode && !bgImg.src) {
+            const regExp = RegExp('amd\\.init\\("q' + slot + '",[ ]*"([^"]*)"', 'g'),
+                match = regExp.exec(scriptsCode);
+            if (match && match.length > 1) {
+                bgImg.src = match[1];
+            }
+        }
 
-                setTimeout(() => {
-                    this.redrawDragsAndDrops();
-                });
+        const imgLoaded = (): void => {
+            bgImg.removeEventListener('load', imgLoaded);
 
-                this.afterImageLoadDone = true;
-                this.question.loaded = true;
-            };
+            this.makeImageDropable();
+
+            setTimeout(() => {
+                this.redrawDragsAndDrops();
+            });
+
+            this.afterImageLoadDone = true;
+            this.question.loaded = true;
+        };
 
         bgImg.addEventListener('load', imgLoaded);
 
@@ -787,7 +799,7 @@ export class AddonQtypeDdMarkerQuestion {
         }
 
         // Re-draw drop zones.
-        if (this.dropZones.length !== 0) {
+        if (this.dropZones && this.dropZones.length !== 0) {
             this.graphics.clear();
             this.restartColours();
 
