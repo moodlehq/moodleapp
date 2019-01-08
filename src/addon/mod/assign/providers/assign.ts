@@ -269,6 +269,11 @@ export class AddonModAssignProvider {
                         return assignment.grades;
                     }
                 } else if (response.warnings && response.warnings.length) {
+                    if (response.warnings[0].warningcode == 3) {
+                        // No grades found.
+                        return [];
+                    }
+
                     return Promise.reject(response.warnings[0]);
                 }
 
