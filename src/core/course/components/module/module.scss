@@ -139,3 +139,7 @@ ion-app.app-root.wp core-course-module {
         margin-bottom: 8px;
     }
 }
+
+ion-app.app-root a.core-course-module-handler.item [item-start] + .item-inner {
+    @include margin-horizontal(4px, null);
+}
