@@ -107,6 +107,14 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      * @return {boolean} Whether sequencecheck is valid.
      */
     validateSequenceCheck?(question: any, offlineSequenceCheck: string): boolean;
+
+    /**
+     * Get the list of files that needs to be downloaded in addition to the files embedded in the HTML.
+     *
+     * @param {any} question Question.
+     * @return {string[]} List of URLs.
+     */
+    getAdditionalDownloadableFiles?(question: any): string[];
 }
 
 /**
@@ -260,5 +268,17 @@ export class CoreQuestionDelegate extends CoreDelegate {
         const type = this.getTypeName(question);
 
         return this.executeFunctionOnEnabled(type, 'validateSequenceCheck', [question, offlineSequenceCheck]);
+    }
+
+    /**
+     * Get the list of files that needs to be downloaded in addition to the files embedded in the HTML.
+     *
+     * @param {any} question Question.
+     * @return {string[]} List of URLs.
+     */
+    getAdditionalDownloadableFiles(question: any): string[] {
+        const type = this.getTypeName(question);
+
+        return this.executeFunctionOnEnabled(type, 'getAdditionalDownloadableFiles', [question]) || [];
     }
 }

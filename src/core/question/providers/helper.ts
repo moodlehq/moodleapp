@@ -242,7 +242,8 @@ export class CoreQuestionHelperProvider {
      */
     extractQuestionScripts(question: any): void {
         question.scriptsCode = '';
-        question.initObjects = [];
+        question.initObjects = null;
+        question.amdArgs = null;
 
         if (question.html) {
             // Search the scripts.
@@ -267,7 +268,15 @@ export class CoreQuestionHelperProvider {
                     initMatch = initMatch.substr(0, initMatch.length - 2);
 
                     // Try to convert it to an object and add it to the question.
-                    question.initObjects = this.textUtils.parseJSON(initMatch);
+                    question.initObjects = this.textUtils.parseJSON(initMatch, null);
+                }
+
+                const amdRegExp = new RegExp('require\\(\\["qtype_' + question.type + '/question"\\], ' +
+                    'function\\(amd\\) \\{ amd\.init\\(("q' + question.slot + '".*?)\\); \\}\\);;', 'm');
+                const amdMatch = match.match(amdRegExp);
+                if (amdMatch) {
+                    // Try to convert the arguments to an array and add them to the question.
+                    question.amdArgs = this.textUtils.parseJSON('[' + amdMatch[1] + ']', null);
                 }
             });
         }
@@ -506,6 +515,8 @@ export class CoreQuestionHelperProvider {
             component = CoreQuestionProvider.COMPONENT;
             componentId = question.id;
         }
+
+        urls.push(...this.questionDelegate.getAdditionalDownloadableFiles(question));
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const promises = [];
