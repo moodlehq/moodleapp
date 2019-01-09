@@ -26,6 +26,7 @@ import { CoreCoursePickerMenuPopoverComponent } from '@components/course-picker-
 import { CoreEventsProvider } from '@providers/events';
 import { CoreAppProvider } from '@providers/app';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import * as moment from 'moment';
 
 /**
  * Page that displays the list of calendar events.
@@ -147,6 +148,10 @@ export class AddonCalendarListPage implements OnDestroy {
             } else {
                 // Sort the events by timestart, they're ordered by id.
                 events.sort((a, b) => {
+                    if (a.timestart == b.timestart) {
+                        return a.timeduration - b.timeduration;
+                    }
+
                     return a.timestart - b.timestart;
                 });
 
@@ -160,6 +165,12 @@ export class AddonCalendarListPage implements OnDestroy {
                     this.events = this.utils.mergeArraysWithoutDuplicates(this.events, events, 'id');
                 }
                 this.filteredEvents = this.getFilteredEvents();
+
+                // Calculate which evemts need to display the date.
+                this.filteredEvents.forEach((event, index): any => {
+                    event.showDate = this.showDate(event, this.filteredEvents[index - 1]);
+                    event.endsSameDay = this.endsSameDay(event);
+                });
                 this.canLoadMore = true;
 
                 // Schedule notifications for the events retrieved (might have new events).
@@ -306,6 +317,40 @@ export class AddonCalendarListPage implements OnDestroy {
                 refresher.complete();
             });
         });
+    }
+
+    /**
+     * Check date should be shown on event list for the current event.
+     * If date has changed from previous to current event it should be shown.
+     *
+     * @param {any} event       Current event where to show the date.
+     * @param {any} [prevEvent] Previous event where to compare the date with.
+     * @return {boolean}  If date has changed and should be shown.
+     */
+    protected showDate(event: any, prevEvent?: any): boolean {
+        if (!prevEvent) {
+            // First event, show it.
+            return true;
+        }
+
+        // Check if day has changed.
+        return !moment(event.timestart * 1000).isSame(prevEvent.timestart * 1000, 'day');
+    }
+
+    /**
+     * Check if event ends the same date or not.
+     *
+     * @param {any} event Event info.
+     * @return {boolean}  If date has changed and should be shown.
+     */
+    protected endsSameDay(event: any): boolean {
+        if (!event.timeduration) {
+            // No duration.
+            return true;
+        }
+
+        // Check if day has changed.
+        return moment(event.timestart * 1000).isSame((event.timestart + event.timeduration) * 1000, 'day');
     }
 
     /**
