@@ -139,6 +139,37 @@ export class AddonCalendarProvider {
     }
 
     /**
+     * Removes expired events from local DB.
+     *
+     * @param {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
+     * @return {Promise<void>} Promise resolved when done.
+     */
+    cleanExpiredEvents(siteId?: string): Promise<void> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            let promise;
+
+            // Cancel expired events notifications first.
+            if (this.localNotificationsProvider.isAvailable()) {
+                promise = site.getDb().getRecordsSelect(AddonCalendarProvider.EVENTS_TABLE, 'timestart < ?',
+                        [this.timeUtils.timestamp()]).then((events) => {
+                    events.forEach((event) => {
+                        return this.localNotificationsProvider.cancel(event.id, AddonCalendarProvider.COMPONENT, site.getId());
+                    });
+                }).catch(() => {
+                    // Ignore errors.
+                });
+            } else {
+                promise = Promise.resolve();
+            }
+
+            return promise.then(() => {
+                return site.getDb().deleteRecordsSelect(AddonCalendarProvider.EVENTS_TABLE, 'timestart < ?',
+                    [this.timeUtils.timestamp()]);
+            });
+        });
+    }
+
+    /**
      * Get all calendar events from local Db.
      *
      * @param {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
@@ -442,27 +473,29 @@ export class AddonCalendarProvider {
      * @return {Promise}         Promise resolved when all the notifications have been scheduled.
      */
     scheduleAllSitesEventsNotifications(): Promise<any[]> {
-        if (this.localNotificationsProvider.isAvailable()) {
-            return this.sitesProvider.getSitesIds().then((siteIds) => {
-                const promises = [];
+        const notificationsEnabled = this.localNotificationsProvider.isAvailable();
 
-                siteIds.forEach((siteId) => {
-                    // Check if calendar is disabled for the site.
-                    promises.push(this.isDisabled(siteId).then((disabled) => {
-                        if (!disabled) {
-                            // Get first events.
-                            return this.getEventsList(undefined, undefined, siteId).then((events) => {
-                                return this.scheduleEventsNotifications(events, siteId);
-                            });
-                        }
-                    }));
-                });
+        return this.sitesProvider.getSitesIds().then((siteIds) => {
+            const promises = [];
 
-                return Promise.all(promises);
+            siteIds.forEach((siteId) => {
+                promises.push(this.cleanExpiredEvents(siteId).then(() => {
+                    if (notificationsEnabled) {
+                        // Check if calendar is disabled for the site.
+                        return this.isDisabled(siteId).then((disabled) => {
+                            if (!disabled) {
+                                // Get first events.
+                                return this.getEventsList(undefined, undefined, siteId).then((events) => {
+                                    return this.scheduleEventsNotifications(events, siteId);
+                                });
+                            }
+                        });
+                    }
+                }));
             });
-        } else {
-            return Promise.resolve([]);
-        }
+
+            return Promise.all(promises);
+        });
     }
 
     /**

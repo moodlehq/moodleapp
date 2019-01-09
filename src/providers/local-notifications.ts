@@ -489,7 +489,9 @@ export class CoreLocalNotificationsProvider {
 
                     // Remove from triggered, since the notification could be in there with a different time.
                     this.removeTriggered(notification.id);
-                    this.localNotifications.schedule(notification);
+                    this.localNotifications.cancel(notification.id).finally(() => {
+                        this.localNotifications.schedule(notification);
+                    });
                 });
             }
         });
