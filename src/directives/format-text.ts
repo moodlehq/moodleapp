@@ -80,6 +80,7 @@ export class CoreFormatTextDirective implements OnChanges {
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.text) {
+            this.hideShowMore();
             this.formatAndRenderContents();
         }
     }
