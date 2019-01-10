@@ -298,10 +298,6 @@ export class AddonModDataEditPage {
      * @return {string}  Generated HTML.
      */
     protected displayEditFields(): string {
-        if (!this.data.addtemplate) {
-            return '';
-        }
-
         this.jsData = {
             fields: this.fields,
             contents: this.utils.clone(this.entry.contents),
@@ -312,7 +308,7 @@ export class AddonModDataEditPage {
 
         let replace,
             render,
-            template = this.data.addtemplate;
+            template = this.data.addtemplate || this.dataHelper.getDefaultTemplate('add', this.fieldsArray);
 
         // Replace the fields found on template.
         this.fieldsArray.forEach((field) => {

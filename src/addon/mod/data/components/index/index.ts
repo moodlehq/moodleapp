@@ -313,13 +313,14 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                         this.firstEntry = entries[0].id;
                     }
 
+                    const template = this.data.listtemplate || this.dataHelper.getDefaultTemplate('list', this.fieldsArray);
+
                     entries.forEach((entry) => {
                         this.entries[entry.id] = entry;
 
                         const actions = this.dataHelper.getActions(this.data, this.access, entry);
 
-                        entriesHTML += this.dataHelper.displayShowFields(this.data.listtemplate, this.fieldsArray, entry, 'list',
-                            actions);
+                        entriesHTML += this.dataHelper.displayShowFields(template, this.fieldsArray, entry, 'list', actions);
                     });
                     entriesHTML += this.data.listtemplatefooter || '';
 
