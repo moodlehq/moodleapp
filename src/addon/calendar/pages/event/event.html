@@ -16,11 +16,11 @@
                 </ion-card-title>
                 <ion-item text-wrap>
                     <h2>{{ 'addon.calendar.eventstarttime' | translate}}</h2>
-                    <p>{{ event.timestart | coreToLocaleString }}</p>
+                    <p>{{ event.timestart * 1000 | coreFormatDate }}</p>
                 </ion-item>
                 <ion-item text-wrap *ngIf="event.timeduration > 0">
                     <h2>{{ 'addon.calendar.eventendtime' | translate}}</h2>
-                    <p>{{ (event.timestart + event.timeduration) |  coreToLocaleString }}</p>
+                    <p>{{ (event.timestart + event.timeduration) * 1000 | coreFormatDate }}</p>
                 </ion-item>
                 <a ion-item text-wrap *ngIf="courseName" [href]="courseUrl" core-link capture="true">
                     <h2>{{ 'core.course' | translate}}</h2>

@@ -17,6 +17,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 
 /**
  * Filter to format a timestamp to a locale string. Timestamp can be in seconds or milliseconds.
+ * @deprecated since 3.6. Use coreFormatDate instead.
  */
 @Pipe({
     name: 'coreToLocaleString',
