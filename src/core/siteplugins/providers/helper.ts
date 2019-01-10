@@ -97,14 +97,13 @@ export class CoreSitePluginsHelperProvider {
         this.logger = logger.getInstance('CoreSitePluginsHelperProvider');
 
         // Fetch the plugins on login.
-        eventsProvider.on(CoreEventsProvider.LOGIN, () => {
-            const siteId = this.sitesProvider.getCurrentSiteId();
-            this.fetchSitePlugins(siteId).then((plugins) => {
+        eventsProvider.on(CoreEventsProvider.LOGIN, (data) => {
+            this.fetchSitePlugins(data.siteId).then((plugins) => {
                 // Plugins fetched, check that site hasn't changed.
-                if (siteId == this.sitesProvider.getCurrentSiteId() && plugins.length) {
+                if (data.siteId == this.sitesProvider.getCurrentSiteId() && plugins.length) {
                     // Site is still the same. Load the plugins and trigger the event.
                     this.loadSitePlugins(plugins).then(() => {
-                        eventsProvider.trigger(CoreEventsProvider.SITE_PLUGINS_LOADED, {}, siteId);
+                        eventsProvider.trigger(CoreEventsProvider.SITE_PLUGINS_LOADED, {}, data.siteId);
                     });
 
                 }
