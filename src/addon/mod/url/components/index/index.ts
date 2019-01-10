@@ -57,7 +57,12 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
 
         this.canGetUrl = this.urlProvider.isGetUrlWSAvailable();
 
-        this.loadContent();
+        this.loadContent().then(() => {
+            if ((this.shouldIframe || (this.shouldEmbed && this.isOther)) ||
+                    (!this.shouldIframe && (!this.shouldEmbed || !this.isOther))) {
+                this.logView();
+            }
+        });
     }
 
     /**
@@ -168,14 +173,23 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     }
 
     /**
-     * Opens a file.
+     * Log view into the site and checks module completion.
+     *
+     * @return {Promise<void>} Promise resolved when done.
      */
-    go(): void {
-        this.urlProvider.logView(this.module.instance).then(() => {
+    protected logView(): Promise<void> {
+        return this.urlProvider.logView(this.module.instance).then(() => {
             this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
         }).catch(() => {
             // Ignore errors.
         });
+    }
+
+    /**
+     * Opens a file.
+     */
+    go(): void {
+        this.logView();
         this.urlHelper.open(this.url);
     }
 }

@@ -52,19 +52,19 @@
             </ion-card-content>
         </ion-card>
 
-        <ion-card list *ngIf="notificationsEnabled">
+        <ion-card list *ngIf="notificationsEnabled && event.timestart - 600 > currentTime">
             <ion-item>
                 <ion-label>{{ 'addon.calendar.notifications' | translate }}</ion-label>
                 <ion-select [(ngModel)]="notificationTime" (ionChange)="updateNotificationTime($event)" interface="action-sheet">
-                    <ion-option value="-1">{{ 'core.defaultvalue' | translate :{$a: defaultTimeReadable} }}</ion-option>
+                    <ion-option value="-1" *ngIf="event.timestart - defaultTime > currentTime">{{ 'core.defaultvalue' | translate :{$a: defaultTimeReadable} }}</ion-option>
                     <ion-option value="0">{{ 'core.settings.disabled' | translate }}</ion-option>
                     <ion-option value="10">{{ 600 | coreDuration }}</ion-option>
-                    <ion-option value="30">{{ 1800 | coreDuration }}</ion-option>
-                    <ion-option value="60">{{ 3600 | coreDuration }}</ion-option>
-                    <ion-option value="120">{{ 7200 | coreDuration }}</ion-option>
-                    <ion-option value="360">{{ 21600 | coreDuration }}</ion-option>
-                    <ion-option value="720">{{ 43200 | coreDuration }}</ion-option>
-                    <ion-option value="1440">{{ 86400 | coreDuration }}</ion-option>
+                    <ion-option value="30" *ngIf="event.timestart - 1800 > currentTime">{{ 1800 | coreDuration }}</ion-option>
+                    <ion-option value="60" *ngIf="event.timestart - 3600 > currentTime">{{ 3600 | coreDuration }}</ion-option>
+                    <ion-option value="120" *ngIf="event.timestart - 7200 > currentTime">{{ 7200 | coreDuration }}</ion-option>
+                    <ion-option value="360" *ngIf="event.timestart - 21600 > currentTime">{{ 21600 | coreDuration }}</ion-option>
+                    <ion-option value="720" *ngIf="event.timestart - 43200 > currentTime">{{ 43200 | coreDuration }}</ion-option>
+                    <ion-option value="1440" *ngIf="event.timestart - 86400 > currentTime">{{ 86400 | coreDuration }}</ion-option>
                 </ion-select>
             </ion-item>
         </ion-card>
