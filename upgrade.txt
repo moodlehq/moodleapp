@@ -9,6 +9,7 @@ information provided here is intended especially for developers.
 - Use of completionstatus on the module object has been deprecated, use completiondata instead.
 - The function CoreSitesProvider.loadSite has changed, now it will trigger SESSION_EXPIRED event if the site is logged out. Its params and return value have changed.
 - When using CoreDomUtils.showAlert, please use alert.didDismiss.subscribe() instead of alert.onDidDismiss().
+- The page CoreSharedFilesChooseSitePage now expects to receive the full path to the file (file.toURL()) instead of the relative path.
 - The following strings have been deprecated:
     core.dfdaymonthyear. Please use core.strftimedatefullshort instead.
     core.dfdayweekmonth. Please use core.strftimedayshort instead.

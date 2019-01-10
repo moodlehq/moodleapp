@@ -1052,7 +1052,7 @@ export class CoreFileProvider {
 
             // Index the files by name.
             entries.forEach((entry) => {
-                files[entry.name] = entry;
+                files[entry.name.toLowerCase()] = entry;
             });
 
             // Format extension.
@@ -1063,7 +1063,7 @@ export class CoreFileProvider {
             }
 
             newName = fileNameWithoutExtension + extension;
-            if (typeof files[newName] == 'undefined') {
+            if (typeof files[newName.toLowerCase()] == 'undefined') {
                 // No file with the same name.
                 return newName;
             } else {
