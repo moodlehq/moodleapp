@@ -265,6 +265,11 @@ export class CoreCourseSectionPage implements OnDestroy {
                 });
             }));
 
+            // Get the overview files.
+            if (this.course.overviewfiles) {
+                this.course.imageThumb = this.course.overviewfiles[0] && this.course.overviewfiles[0].fileurl;
+            }
+
             // Load the course handlers.
             promises.push(this.courseOptionsDelegate.getHandlersToDisplay(this.injector, this.course, refresh, false)
                     .then((handlers) => {
