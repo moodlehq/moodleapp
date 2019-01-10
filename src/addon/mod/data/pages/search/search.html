@@ -20,7 +20,7 @@
             </ion-item>
             <ion-item text-wrap>
                 <ion-label stacked>{{ 'core.sortby' | translate }}</ion-label>
-                <ion-select interface="action-sheet" name="sortBy" formControlName="sortBy">
+                <ion-select interface="action-sheet" name="sortBy" formControlName="sortBy" [placeholder]="'core.sortby' | translate">
                     <optgroup *ngIf="fieldsArray.length" label="{{ 'addon.mod_data.fields' | translate }}">
                         <ion-option *ngFor="let field of fieldsArray" [value]="field.id">{{field.name}}</ion-option>
                     </optgroup>

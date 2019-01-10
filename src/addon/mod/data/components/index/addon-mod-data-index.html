@@ -54,9 +54,16 @@
         {{ 'addon.mod_data.entrieslefttoadd' | translate:{$a: {entriesleft: access.entrieslefttoadd} } }}
     </div>
 
-    <ion-item class="item" *ngIf="search.searching && !isEmpty">
-        <a (click)="searchReset()">{{ 'addon.mod_data.resetsettings' | translate}}</a>
-    </ion-item>
+    <!-- Reset search. -->
+    <ng-container *ngIf="search.searching && !isEmpty">
+        <ion-item class="item" *ngIf="!foundRecordsData">
+            <a (click)="searchReset()">{{ 'addon.mod_data.resetsettings' | translate}}</a>
+        </ion-item>
+
+        <div class="core-success-card" *ngIf="foundRecordsData" (click)="searchReset()">
+            <p [innerHTML]="'addon.mod_data.foundrecords' | translate:{$a: foundRecordsData}"></p>
+        </div>
+    </ng-container>
 
     <div class="addon-data-contents addon-data-entries-{{data.id}}" *ngIf="!isEmpty">
         <style *ngIf="cssTemplate">
