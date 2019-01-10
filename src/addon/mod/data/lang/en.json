@@ -18,6 +18,7 @@
     "errormustsupplyvalue": "You must supply a value here.",
     "expired": "Sorry, this activity closed on {{$a}} and is no longer available",
     "fields": "Fields",
+    "foundrecords": "Found records: {{$a.num}}/{{$a.max}} (<a href=\"{{$a.reseturl}}\">Reset filters</a>)",
     "latlongboth": "Both latitude and longitude are required.",
     "menuchoose": "Choose...",
     "modulenameplural": "Databases",

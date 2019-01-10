@@ -67,6 +67,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     cssTemplate = '';
     extraImports = [AddonModDataComponentsModule];
     jsData;
+    foundRecordsData;
 
     protected syncEventName = AddonModDataSyncProvider.AUTO_SYNCED;
     protected entryChangedObserver: any;
@@ -262,6 +263,16 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             this.hasNextPage = numEntries >= AddonModDataProvider.PER_PAGE && ((this.search.page + 1) *
                 AddonModDataProvider.PER_PAGE) < entries.totalcount;
             this.entriesRendered = '';
+
+            if (typeof entries.maxcount != 'undefined') {
+                this.foundRecordsData = {
+                    num: entries.totalcount,
+                    max: entries.maxcount,
+                    reseturl: '#'
+                };
+            } else {
+                this.foundRecordsData = undefined;
+            }
 
             if (!this.isEmpty) {
                 this.cssTemplate = this.dataHelper.prefixCSS(this.data.csstemplate, '.addon-data-entries-' + this.data.id);
