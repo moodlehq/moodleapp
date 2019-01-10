@@ -32,7 +32,7 @@
                         <p>
                             {{ event.timestart * 1000 | coreFormatDate: "strftimetime" }}
                             <span *ngIf="event.timeduration && event.endsSameDay"> - {{ (event.timestart + event.timeduration) * 1000 | coreFormatDate: "strftimetime" }}</span>
-                            <span *ngIf="event.timeduration && !event.endsSameDay"> - {{ (event.timestart + event.timeduration) | coreToLocaleString }}</span>
+                            <span *ngIf="event.timeduration && !event.endsSameDay"> - {{ (event.timestart + event.timeduration) * 1000 | coreFormatDate: "strftimedatetimeshort" }}</span>
                         </p>
                     </a>
                 </ng-container>
