@@ -48,12 +48,14 @@ export class AddonCalendarEventPage {
     notificationsEnabled = false;
     moduleUrl = '';
     categoryPath = '';
+    currentTime: number;
+    defaultTime: number;
 
     constructor(private translate: TranslateService, private calendarProvider: AddonCalendarProvider, navParams: NavParams,
-            private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider, timeUtils: CoreTimeUtilsProvider,
+            private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider,
             private calendarHelper: AddonCalendarHelperProvider, private sitesProvider: CoreSitesProvider,
             localNotificationsProvider: CoreLocalNotificationsProvider, private courseProvider: CoreCourseProvider,
-            private textUtils: CoreTextUtilsProvider) {
+            private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider) {
 
         this.eventId = navParams.get('id');
         this.notificationsEnabled = localNotificationsProvider.isAvailable();
@@ -61,9 +63,12 @@ export class AddonCalendarEventPage {
         if (this.notificationsEnabled) {
             this.calendarProvider.getEventNotificationTimeOption(this.eventId).then((notificationTime) => {
                 this.notificationTime = notificationTime;
+                this.loadNotificationTime();
             });
 
             this.calendarProvider.getDefaultNotificationTime().then((defaultTime) => {
+                this.defaultTime = defaultTime * 60;
+                this.loadNotificationTime();
                 if (defaultTime === 0) {
                     // Disabled by default.
                     this.defaultTimeReadable = this.translate.instant('core.settings.disabled');
@@ -110,6 +115,9 @@ export class AddonCalendarEventPage {
 
             this.calendarHelper.formatEventData(event);
             this.event = event;
+
+            this.currentTime = this.timeUtils.timestamp();
+            this.loadNotificationTime();
 
             // Reset some of the calculated data.
             this.categoryPath = '';
@@ -176,6 +184,19 @@ export class AddonCalendarEventPage {
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevent', true);
         });
+    }
+
+    /**
+     * Loads notification time by discarding options not in the list.
+     */
+    loadNotificationTime(): void {
+        if (typeof this.notificationTime != 'undefined') {
+            if (this.notificationTime > 0 && this.event.timestart - this.notificationTime * 60 < this.currentTime) {
+                this.notificationTime = 0;
+            } else if (this.notificationTime < 0 && this.event.timestart - this.defaultTime < this.currentTime) {
+                this.notificationTime = 0;
+            }
+        }
     }
 
     /**
