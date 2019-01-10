@@ -1,134 +1,193 @@
-<?xml version='1.0' encoding='utf-8'?>
-<widget id="com.moodle.moodlemobile" version="3.5.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Moodle</name>
-    <description>Moodle official app</description>
-    <author email="mobile@moodle.com" href="http://moodle.com">Moodle Mobile team</author>
-    <content src="index.html" />
-    <access launch-external="yes" origin="tel:*" />
-    <access launch-external="yes" origin="mailto:*" />
-    <access launch-external="yes" origin="geo:*" />
-    <allow-navigation href="cdvfile:*" />
-    <allow-navigation href="content:*" />
-    <allow-navigation href="data:*" />
-    <allow-navigation href="*" />
-    <allow-intent href="*" />
-    <allow-intent href="tel:*" />
-    <allow-intent href="sms:*" />
-    <allow-intent href="mailto:*" />
-    <allow-intent href="geo:*" />
-    <preference name="orientation" value="default" />
-    <preference name="target-device" value="universal" />
-    <preference name="fullscreen" value="false" />
-    <preference name="webviewbounce" value="false" />
-    <preference name="AppendUserAgent" value="MoodleMobile" />
-    <preference name="android-minSdkVersion" value="19" />
-    <preference name="android-targetSdkVersion" value="26" />
-    <preference name="UIWebViewBounce" value="false" />
-    <preference name="DisallowOverscroll" value="true" />
-    <preference name="BackupWebStorage" value="none" />
-    <preference name="ScrollEnabled" value="false" />
-    <preference name="KeyboardDisplayRequiresUserAction" value="false" />
-    <preference name="AllowInlineMediaPlayback" value="true" />
+<?xml version="1.0" encoding="UTF-8"?>
+
+<widget xmlns     = "http://www.w3.org/ns/widgets"
+
+        xmlns:gap = "http://phonegap.com/ns/1.0"
+
+        xmlns:android = "http://schemas.android.com/apk/res/android"
+
+        id        = "net.onlinelearning.32online"
+
+        versionCode = "1"
+
+        version   = "1.0">
+
+    <name>32BelajarOnline</name>
+
+
+
+    <description>
+
+        Integrated Online Learning for PKBM 32 Duren Sawit Innovational Education
+
+    </description>
+
+
+
+    <author href="http://moodle.com" email="mega.ciel06@gmail.com">
+
+        Mega Kusuma
+
+    </author>
+
+
+
+    <gap:config-file platform="ios" parent="CFBundleShortVersionString">
+
+        <string>1.0</string>
+
+    </gap:config-file>
+
+
+
+    <feature name="http://api.phonegap.com/1.0/device" />
+
+    <feature name="http://api.phonegap.com/1.0/network"/>
+
+    <!-- The following phonegap camera feature block Google Play to install the app on Nexus 7.
+
+         Nothing is broken without it, so we disable it.
+
+         Note that at the current moment we don't use phonegap video capture plugin - MOBILE-296.
+
+         -->
+
+    <!-- feature name="http://api.phonegap.com/1.0/camera"/ -->
+
+    <feature name="http://api.phonegap.com/1.0/contacts"/>
+
+    <feature name="http://api.phonegap.com/1.0/media"/>
+
+    <feature name="http://api.phonegap.com/1.0/file"/>
+
+
+
+    <preference name="phonegap-version" value="3.6.3" />
+
+    <preference name="orientation"      value="default" />
+
+    <preference name="target-device"    value="universal" />
+
+    <preference name="fullscreen"       value="false" />
+
+    <preference name="stay-in-webview"  value="false" />
+
+    <preference name="webviewbounce"    value="false" />
+
+    <preference name="prerendered-icon" value="true" />
+
+    <preference name="load-url-timeout" value="60000" />
+
+
+
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
+
     <preference name="iosPersistentFileLocation" value="Compatibility" />
-    <preference name="SplashScreen" value="screen" />
-    <preference name="SplashScreenDelay" value="15000" />
-    <preference name="SplashMaintainAspectRatio" value="true" />
-    <preference name="SplashShowOnlyFirstTime" value="false" />
-    <preference name="LoadUrlTimeoutValue" value="60000" />
-    <feature name="StatusBar">
-        <param name="ios-package" onload="true" value="CDVStatusBar" />
-    </feature>
-    <platform name="android">
-        <splash qualifier="land-ldpi" src="resources/android/splash/drawable-land-ldpi-screen.png" />
-        <splash qualifier="land-mdpi" src="resources/android/splash/drawable-land-mdpi-screen.png" />
-        <splash qualifier="land-hdpi" src="resources/android/splash/drawable-land-hdpi-screen.png" />
-        <splash qualifier="land-xhdpi" src="resources/android/splash/drawable-land-xhdpi-screen.png" />
-        <splash qualifier="land-xxhdpi" src="resources/android/splash/drawable-land-xxhdpi-screen.png" />
-        <splash qualifier="land-xxxhdpi" src="resources/android/splash/drawable-land-xxxhdpi-screen.png" />
-        <splash qualifier="port-ldpi" src="resources/android/splash/drawable-port-ldpi-screen.png" />
-        <splash qualifier="port-mdpi" src="resources/android/splash/drawable-port-mdpi-screen.png" />
-        <splash qualifier="port-hdpi" src="resources/android/splash/drawable-port-hdpi-screen.png" />
-        <splash qualifier="port-xhdpi" src="resources/android/splash/drawable-port-xhdpi-screen.png" />
-        <splash qualifier="port-xxhdpi" src="resources/android/splash/drawable-port-xxhdpi-screen.png" />
-        <splash qualifier="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
-        <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
-        <icon density="mdpi" src="resources/android/icon/drawable-mdpi-icon.png" />
-        <icon density="hdpi" src="resources/android/icon/drawable-hdpi-icon.png" />
-        <icon density="xhdpi" src="resources/android/icon/drawable-xhdpi-icon.png" />
-        <icon density="xxhdpi" src="resources/android/icon/drawable-xxhdpi-icon.png" />
-        <icon density="xxxhdpi" src="resources/android/icon/drawable-xxxhdpi-icon.png" />
-    </platform>
-    <platform name="ios">
-        <icon height="57" src="resources/ios/icon/icon.png" width="57" />
-        <icon height="114" src="resources/ios/icon/icon@2x.png" width="114" />
-        <icon height="40" src="resources/ios/icon/icon-40.png" width="40" />
-        <icon height="80" src="resources/ios/icon/icon-40@2x.png" width="80" />
-        <icon height="120" src="resources/ios/icon/icon-40@3x.png" width="120" />
-        <icon height="50" src="resources/ios/icon/icon-50.png" width="50" />
-        <icon height="100" src="resources/ios/icon/icon-50@2x.png" width="100" />
-        <icon height="60" src="resources/ios/icon/icon-60.png" width="60" />
-        <icon height="120" src="resources/ios/icon/icon-60@2x.png" width="120" />
-        <icon height="180" src="resources/ios/icon/icon-60@3x.png" width="180" />
-        <icon height="72" src="resources/ios/icon/icon-72.png" width="72" />
-        <icon height="144" src="resources/ios/icon/icon-72@2x.png" width="144" />
-        <icon height="76" src="resources/ios/icon/icon-76.png" width="76" />
-        <icon height="152" src="resources/ios/icon/icon-76@2x.png" width="152" />
-        <icon height="167" src="resources/ios/icon/icon-83.5@2x.png" width="167" />
-        <icon height="29" src="resources/ios/icon/icon-small.png" width="29" />
-        <icon height="58" src="resources/ios/icon/icon-small@2x.png" width="58" />
-        <icon height="87" src="resources/ios/icon/icon-small@3x.png" width="87" />
-        <splash height="1136" src="resources/ios/splash/Default-568h@2x~iphone.png" width="640" />
-        <splash height="1334" src="resources/ios/splash/Default-667h.png" width="750" />
-        <splash height="2208" src="resources/ios/splash/Default-736h.png" width="1242" />
-        <splash height="1242" src="resources/ios/splash/Default-Landscape-736h.png" width="2208" />
-        <splash height="1536" src="resources/ios/splash/Default-Landscape@2x~ipad.png" width="2048" />
-        <splash height="2048" src="resources/ios/splash/Default-Landscape@~ipadpro.png" width="2732" />
-        <splash height="768" src="resources/ios/splash/Default-Landscape~ipad.png" width="1024" />
-        <splash height="2048" src="resources/ios/splash/Default-Portrait@2x~ipad.png" width="1536" />
-        <splash height="2732" src="resources/ios/splash/Default-Portrait@~ipadpro.png" width="2048" />
-        <splash height="1024" src="resources/ios/splash/Default-Portrait~ipad.png" width="768" />
-        <splash height="960" src="resources/ios/splash/Default@2x~iphone.png" width="640" />
-        <splash height="480" src="resources/ios/splash/Default~iphone.png" width="320" />
-        <icon height="1024" src="resources/ios/icon/icon-1024.png" width="1024" />
-        <splash height="2732" src="resources/ios/splash/Default@2x~universal~anyany.png" width="2732" />
-    </platform>
-    <plugin name="cordova-plugin-file" spec="^6.0.1" />
-    <plugin name="cordova-plugin-file-transfer" spec="^1.7.1" />
-    <plugin name="cordova-plugin-camera" spec="^4.0.3">
-        <variable name="CAMERA_USAGE_DESCRIPTION" value="We need camera access to take pictures so you can attach them as part of your submissions." />
-        <variable name="PHOTOLIBRARY_USAGE_DESCRIPTION" value="We need photo library access to get pictures from there so you can attach them as part of your submissions." />
-    </plugin>
-    <plugin name="cordova-plugin-media-capture" spec="^3.0.2">
-        <variable name="CAMERA_USAGE_DESCRIPTION" value="We need camera access to take pictures so you can attach them as part of your submissions." />
-        <variable name="PHOTOLIBRARY_USAGE_DESCRIPTION" value="We need photo library access to get pictures from there so you can attach them as part of your submissions." />
-        <variable name="MICROPHONE_USAGE_DESCRIPTION" value="We need microphone access to record sounds so you can attach them as part of your submissions." />
-    </plugin>
-    <plugin name="cordova-plugin-device" spec="^2.0.2" />
-    <plugin name="cordova-plugin-globalization" spec="^1.11.0" />
-    <plugin name="cordova-plugin-inappbrowser" spec="^3.0.0" />
-    <plugin name="cordova-plugin-network-information" spec="^2.0.1" />
-    <plugin name="cordova-plugin-statusbar" spec="^2.4.2" />
-    <plugin name="cordova-plugin-whitelist" spec="^1.3.3" />
-    <plugin name="cordova-plugin-splashscreen" spec="^5.0.2" />
-    <plugin name="cordova-clipboard" spec="^1.2.1" />
-    <plugin name="nl.kingsquare.cordova.background-audio" spec="^1.0.1" />
-    <plugin name="phonegap-plugin-push" spec="https://github.com/moodlemobile/phonegap-plugin-push.git#moodle">
-        <variable name="SENDER_ID" value="694767596569" />
-    </plugin>
-    <plugin name="cordova-plugin-customurlscheme" spec="^4.3.0">
-        <variable name="URL_SCHEME" value="moodlemobile" />
-    </plugin>
-    <plugin name="ionic-plugin-keyboard" spec="^2.2.1" />
-    <plugin name="cordova-plugin-zip" spec="^3.1.0" />
-    <plugin name="cordova-plugin-local-notifications-mm" spec="^1.0.13" />
-    <plugin name="cordova-plugin-file-opener2" spec="^2.0.19" />
-    <plugin name="com-darryncampbell-cordova-plugin-intent" spec="^1.1.0" />
-    <plugin name="cordova-sqlite-evcore-extbuild-free" spec="^0.9.7" />
-    <plugin name="cordova-plugin-badge" spec="^0.8.7" />
-    <plugin name="cordova-android-support-gradle-release" spec="^1.4.4">
-        <variable name="ANDROID_SUPPORT_VERSION" value="27.1.0" />
-    </plugin>
-    <engine name="android" spec="7.0.0" />
-    <engine name="ios" spec="4.5.4" />
+
+
+
+    <icon src="icon.png" />
+
+    <icon src="img/icon/android/icon-36-ldpi.png"   gap:platform="android"    gap:density="ldpi" />
+
+    <icon src="img/icon/android/icon-48-mdpi.png"   gap:platform="android"    gap:density="mdpi" />
+
+    <icon src="img/icon/android/icon-72-hdpi.png"   gap:platform="android"    gap:density="hdpi" />
+
+    <icon src="img/icon/android/icon-96-xhdpi.png"  gap:platform="android"    gap:density="xhdpi" />
+
+    <icon src="img/icon/ios/icon-57.png"            gap:platform="ios"        width="57" height="57" />
+
+    <icon src="img/icon/ios/icon-72.png"            gap:platform="ios"        width="72" height="72" />
+
+    <icon src="img/icon/ios/icon-76.png"            gap:platform="ios"        width="76" height="76" />
+
+    <icon src="img/icon/ios/icon-120.png"           gap:platform="ios"        width="120" height="120" />
+
+    <icon src="img/icon/ios/icon-152.png"           gap:platform="ios"        width="152" height="152" />
+
+    <icon src="img/icon/ios/icon-57-2x.png"         gap:platform="ios"        width="114" height="114" />
+
+    <icon src="img/icon/ios/icon-72-2x.png"         gap:platform="ios"        width="144" height="144" />
+
+
+
+    <gap:splash src="img/splash/android/android_ldpi_portrait.png.png" gap:platform="android" gap:density="ldpi"/>
+
+    <gap:splash src="img/splash/android/android_mdpi_portrait.png" gap:platform="android" gap:density="mdpi"/>
+
+    <gap:splash src="img/splash/android/android_hdpi_portrait.png" gap:platform="android" gap:density="hdpi"/>
+
+    <gap:splash src="img/splash/android/android_xhdpi_portrait.png" gap:platform="android" gap:density="xhdpi"/>
+
+
+
+    <gap:splash src="img/splash/ios/iphone_portrait.png" gap:platform="ios" width="320" height="480"/>
+
+    <gap:splash src="img/splash/ios/iphone_retina_portrait.png" gap:platform="ios" width="640" height="960"/>
+
+    <gap:splash src="img/splash/ios/iphone5.png" gap:platform="ios" width="640" height="1136" />
+
+
+
+    <gap:splash src="img/splash/ios/ipad_portrait.png" gap:platform="ios" width="768" height="1004"/>
+
+    <gap:splash src="img/splash/ios/ipad_landscape.png" gap:platform="ios" width="1024" height="748"/>
+
+    <gap:splash src="img/splash/ios/ipad_retina_portrait.png" gap:platform="ios" width="1536" height="2008"/>
+
+    <gap:splash src="img/splash/ios/ipad_retina_landscape.png" gap:platform="ios" width="2048" height="1496"/>
+
+
+
+    <gap:platform name="ios" />
+
+    <gap:platform name="android" />
+
+
+
+    <gap:plugin name="org.apache.cordova.camera" />
+
+    <gap:plugin name="org.apache.cordova.media-capture" />
+
+    <gap:plugin name="org.apache.cordova.console" />
+
+    <gap:plugin name="org.apache.cordova.contacts" />
+
+    <gap:plugin name="org.apache.cordova.device" />
+
+    <gap:plugin name="org.apache.cordova.file" />
+
+    <gap:plugin name="org.apache.cordova.file-transfer" />
+
+    <gap:plugin name="org.apache.cordova.globalization" />
+
+    <gap:plugin name="org.apache.cordova.inappbrowser" />
+
+    <gap:plugin name="org.apache.cordova.network-information" />
+
+    <gap:plugin name="org.apache.cordova.splashscreen" />
+
+    <gap:plugin name="com.phonegap.plugin.statusbar" />
+
+
+
+    <gap:plugin name="com.phonegap.plugins.pushplugin" />
+
+    <gap:plugin name="net.tunts.webintent" />
+
+    <gap:plugin name="nl.x-services.plugins.launchmyapp">
+
+        <param name="URL_SCHEME" value="mootes14" />
+
+    </gap:plugin>
+
+    <gap:plugin name="com.ionic.keyboard" version="1.0.3" />
+
+
+
+    <access origin="*" />
+
+
+
 </widget>
