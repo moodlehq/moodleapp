@@ -1062,7 +1062,9 @@ export class CoreSitesProvider {
     updateSiteToken(siteUrl: string, username: string, token: string, privateToken: string = ''): Promise<any> {
         const siteId = this.createSiteID(siteUrl, username);
 
-        return this.updateSiteTokenBySiteId(siteId, token, privateToken);
+        return this.updateSiteTokenBySiteId(siteId, token, privateToken).then(() => {
+            return this.login(siteId);
+        });
     }
 
     /**

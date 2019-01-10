@@ -23,8 +23,11 @@
 
         <!-- Course summary. By default we only display the course progress. -->
         <core-dynamic-component [component]="courseSummaryComponent" [data]="data">
-            <ion-list no-lines *ngIf="selectedSection && selectedSection.id == allSectionsId && course.progress != null && course.progress >= 0" class="core-format-progress-list">
-                <ion-item class="core-course-progress">
+            <ion-list no-lines *ngIf="course.imageThumb || (selectedSection && selectedSection.id == allSectionsId && course.progress != null && course.progress >= 0)" class="core-format-progress-list">
+                <div *ngIf="course.imageThumb" class="core-course-thumb">
+                    <img [src]="course.imageThumb" core-external-content alt=""/>
+                </div>
+                <ion-item class="core-course-progress" *ngIf="selectedSection && selectedSection.id == allSectionsId && course.progress != null && course.progress >= 0">
                     <core-progress-bar [progress]="course.progress"></core-progress-bar>
                 </ion-item>
             </ion-list>
