@@ -33,6 +33,9 @@ ion-app.app-root {
   .img-responsive {
     display: block;
     max-width: 100%;
+    &[height] {
+      height: auto;
+    }
   }
 
   .opacity-hide { opacity: 0; }
