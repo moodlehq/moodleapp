@@ -65,9 +65,11 @@ export class AddonQtypeDdMarkerQuestion {
      * @param {any} question The question instance.
      * @param {boolean} readOnly Whether it's read only.
      * @param {any[]} dropZones The drop zones received in the init object of the question.
+     * @param {string} [imgSrc] Background image source (3.6+ sites).
      */
     constructor(logger: CoreLoggerProvider, protected domUtils: CoreDomUtilsProvider, protected textUtils: CoreTextUtilsProvider,
-            protected container: HTMLElement, protected question: any, protected readOnly: boolean, protected dropZones: any[]) {
+            protected container: HTMLElement, protected question: any, protected readOnly: boolean, protected dropZones: any[],
+            protected imgSrc?: string) {
         this.logger = logger.getInstance('AddonQtypeDdMarkerQuestion');
 
         this.graphics = new AddonQtypeDdMarkerGraphicsApi(this, this.domUtils);
@@ -645,7 +647,7 @@ export class AddonQtypeDdMarkerQuestion {
 
         // Wait the DOM to be rendered.
         setTimeout(() => {
-            this.pollForImageLoad(question.scriptsCode, question.slot);
+            this.pollForImageLoad();
         });
 
         this.resizeFunction = this.redrawDragsAndDrops.bind(this);
@@ -706,24 +708,16 @@ export class AddonQtypeDdMarkerQuestion {
 
     /**
      * Wait for the background image to be loaded.
-     *
-     * @param {string} scriptsCode Scripts code to fetch background image.
-     * @param {number} slot        Question number also named slot.
      */
-    pollForImageLoad(scriptsCode?: string, slot?: number): void {
+    pollForImageLoad(): void {
         if (this.afterImageLoadDone) {
             // Already treated.
             return;
         }
 
         const bgImg = this.doc.bgImg();
-
-        if (scriptsCode && !bgImg.src) {
-            const regExp = RegExp('amd\\.init\\("q' + slot + '",[ ]*"([^"]*)"', 'g'),
-                match = regExp.exec(scriptsCode);
-            if (match && match.length > 1) {
-                bgImg.src = match[1];
-            }
+        if (!bgImg.src && this.imgSrc) {
+            bgImg.src = this.imgSrc;
         }
 
         const imgLoaded = (): void => {
