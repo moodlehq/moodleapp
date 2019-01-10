@@ -297,6 +297,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             setTimeout(() => {
                 this.domUtils.scrollToElementBySelector(this.content, '#core-course-module-' + this.moduleId);
             }, 200);
+        } else {
+            this.domUtils.scrollToTop(this.content, 0);
         }
     }
 
