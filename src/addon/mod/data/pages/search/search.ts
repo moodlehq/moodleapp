@@ -176,9 +176,11 @@ export class AddonModDataSearchPage {
 
     /**
      * Toggles between advanced to normal search.
+     *
+     * @param {boolean} advanced True for advanced, false for basic.
      */
-    toggleAdvanced(): void {
-        this.search.searchingAdvanced = !this.search.searchingAdvanced;
+    changeAdvanced(advanced: boolean): void {
+        this.search.searchingAdvanced = advanced;
     }
 
     /**
