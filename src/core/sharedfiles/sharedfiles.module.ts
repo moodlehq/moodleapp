@@ -18,6 +18,7 @@ import { CoreSharedFilesProvider } from './providers/sharedfiles';
 import { CoreSharedFilesHelperProvider } from './providers/helper';
 import { CoreSharedFilesUploadHandler } from './providers/upload-handler';
 import { CoreFileUploaderDelegate } from '@core/fileuploader/providers/delegate';
+import { CoreEventsProvider } from '@providers/events';
 
 // List of providers (without handlers).
 export const CORE_SHAREDFILES_PROVIDERS: any[] = [
@@ -38,7 +39,7 @@ export const CORE_SHAREDFILES_PROVIDERS: any[] = [
 })
 export class CoreSharedFilesModule {
     constructor(platform: Platform, delegate: CoreFileUploaderDelegate, handler: CoreSharedFilesUploadHandler,
-            helper: CoreSharedFilesHelperProvider) {
+            helper: CoreSharedFilesHelperProvider, eventsProvider: CoreEventsProvider) {
         // Register the handler.
         delegate.registerHandler(handler);
 
@@ -47,6 +48,13 @@ export class CoreSharedFilesModule {
             helper.searchIOSNewSharedFiles();
             platform.resume.subscribe(() => {
                 helper.searchIOSNewSharedFiles();
+            });
+
+            eventsProvider.on(CoreEventsProvider.APP_LAUNCHED_URL, (url) => {
+                if (url && url.indexOf('file://') === 0) {
+                    // We received a file in iOS, it's probably a shared file. Treat it.
+                    helper.searchIOSNewSharedFiles(url);
+                }
             });
         }
     }

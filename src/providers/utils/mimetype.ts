@@ -455,7 +455,7 @@ export class CoreMimetypeUtilsProvider {
 
         if (position > -1) {
             // Check extension corresponds to a mimetype to know if it's valid.
-            extension = path.substr(position + 1);
+            extension = path.substr(position + 1).toLowerCase();
             if (typeof this.getMimeType(extension) != 'undefined') {
                 return path.substr(0, position); // Remove extension.
             }
