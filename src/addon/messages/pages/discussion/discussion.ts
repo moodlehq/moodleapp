@@ -132,8 +132,11 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      * @param {boolean} [keep=true] If set the keep flag or not.
      */
     protected addMessage(message: any, keep: boolean = true): void {
-        // Use text instead of message ID because ID changes when a message is read.
-        message.hash = Md5.hashAsciiStr(message.text || '') + '#' + message.timecreated + '#' + message.useridfrom;
+        /* Create a hash to identify the message. The text of online messages isn't reliable because it can have random data
+           like VideoJS ID. Try to use id and fallback to text for offline messages. */
+        message.hash = Md5.hashAsciiStr(String(message.id || message.text || '')) + '#' + message.timecreated + '#' +
+                message.useridfrom;
+
         if (typeof this.keepMessageMap[message.hash] === 'undefined') {
             // Message not added to the list. Add it now.
             this.messages.push(message);
