@@ -36,7 +36,7 @@
                     <ion-col><core-format-text clean="true" [text]="criteria.details.requirement"></core-format-text></ion-col>
                     <ion-col><core-format-text [text]="criteria.details.status"></core-format-text></ion-col>
                     <ion-col>{{ criteria.status }}</ion-col>
-                    <ion-col *ngIf="criteria.timecompleted">{{ criteria.timecompleted | coreToLocaleString }}</ion-col>
+                    <ion-col *ngIf="criteria.timecompleted">{{ criteria.timecompleted * 1000 | coreFormatDate :'strftimedatetimeshort' }}</ion-col>
                     <ion-col *ngIf="!criteria.timecompleted"></ion-col>
                 </ion-row>
             </ion-item>
