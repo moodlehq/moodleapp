@@ -391,6 +391,7 @@
   "addon.mod_data.errormustsupplyvalue": "data",
   "addon.mod_data.expired": "data",
   "addon.mod_data.fields": "data",
+  "addon.mod_data.foundrecords": "data",
   "addon.mod_data.latlongboth": "data",
   "addon.mod_data.menuchoose": "data",
   "addon.mod_data.modulenameplural": "data",
