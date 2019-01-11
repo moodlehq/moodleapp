@@ -1,0 +1,16 @@
+ion-app.app-root core-courses-course-progress {
+
+    .core-course-module-handler.item {
+        @include core-items();
+    }
+
+    .core-course-module-handler.item .item-heading:first-child {
+        margin-top: 0;
+    }
+}
+
+ion-app.app-root addon-block-timeline-events {
+    a button {
+        pointer-events: auto;
+    }
+}

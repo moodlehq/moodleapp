@@ -18,10 +18,14 @@
   tr {
     @extend .row;
     padding: 0;
+    @include media-breakpoint-down(sm) {
+      flex-direction: column;
+    }
   }
 
   td, th {
     @extend .col;
+    min-height: auto;
   }
 }
 

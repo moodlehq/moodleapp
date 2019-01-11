@@ -45,6 +45,7 @@ export class CoreAttachmentsComponent implements OnInit {
     @Input() componentId: string | number; // Component ID.
     @Input() allowOffline: boolean | string; // Whether to allow selecting files in offline.
     @Input() acceptedTypes: string; // List of supported filetypes. If undefined, all types supported.
+    @Input() required: boolean; // Whether to display the required mark.
 
     maxSizeReadable: string;
     maxSubmissionsReadable: string;

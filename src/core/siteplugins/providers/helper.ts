@@ -97,14 +97,15 @@ export class CoreSitePluginsHelperProvider {
         this.logger = logger.getInstance('CoreSitePluginsHelperProvider');
 
         // Fetch the plugins on login.
-        eventsProvider.on(CoreEventsProvider.LOGIN, () => {
-            const siteId = this.sitesProvider.getCurrentSiteId();
-            this.fetchSitePlugins(siteId).then((plugins) => {
+        eventsProvider.on(CoreEventsProvider.LOGIN, (data) => {
+            this.fetchSitePlugins(data.siteId).then((plugins) => {
                 // Plugins fetched, check that site hasn't changed.
-                if (siteId == this.sitesProvider.getCurrentSiteId() && plugins.length) {
+                if (data.siteId == this.sitesProvider.getCurrentSiteId() && plugins.length) {
                     // Site is still the same. Load the plugins and trigger the event.
-                    this.loadSitePlugins(plugins).then(() => {
-                        eventsProvider.trigger(CoreEventsProvider.SITE_PLUGINS_LOADED, {}, siteId);
+                    this.loadSitePlugins(plugins).catch((error) => {
+                        this.logger.error(error);
+                    }).finally(() => {
+                        eventsProvider.trigger(CoreEventsProvider.SITE_PLUGINS_LOADED, {}, data.siteId);
                     });
 
                 }
@@ -368,7 +369,9 @@ export class CoreSitePluginsHelperProvider {
         const promises = [];
 
         plugins.forEach((plugin) => {
-            promises.push(this.loadSitePlugin(plugin));
+            const pluginPromise = this.loadSitePlugin(plugin);
+            promises.push(pluginPromise);
+            this.sitePluginsProvider.registerSitePluginPromise(plugin.component, pluginPromise);
         });
 
         return this.utils.allPromises(promises);
@@ -443,7 +446,7 @@ export class CoreSitePluginsHelperProvider {
                     break;
 
                 case 'CoreCourseModuleDelegate':
-                    promise = Promise.resolve(this.registerModuleHandler(plugin, handlerName, handlerSchema));
+                    promise = Promise.resolve(this.registerModuleHandler(plugin, handlerName, handlerSchema, result));
                     break;
 
                 case 'CoreUserDelegate':
@@ -511,7 +514,7 @@ export class CoreSitePluginsHelperProvider {
                 }
             });
         }).catch((err) => {
-            this.logger.error('Error executing init method', handlerSchema.init, err);
+            return Promise.reject('Error executing init method ' + handlerSchema.init + ': ' + err.message);
         });
     }
 
@@ -720,9 +723,10 @@ export class CoreSitePluginsHelperProvider {
      * @param {any} plugin Data of the plugin.
      * @param {string} handlerName Name of the handler in the plugin.
      * @param {any} handlerSchema Data about the handler.
+     * @param {any} initResult Result of the init WS call.
      * @return {string} A string to identify the handler.
      */
-    protected registerModuleHandler(plugin: any, handlerName: string, handlerSchema: any): string {
+    protected registerModuleHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any): string {
         if (!handlerSchema.displaydata) {
             // Required data not provided, stop.
             this.logger.warn('Ignore site plugin because it doesn\'t provide displaydata', plugin, handlerSchema);
@@ -730,13 +734,13 @@ export class CoreSitePluginsHelperProvider {
             return;
         }
 
-        this.logger.debug('Register site plugin in module delegate:', plugin, handlerSchema);
+        this.logger.debug('Register site plugin in module delegate:', plugin, handlerSchema, initResult);
 
         // Create and register the handler.
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
             modName = plugin.component.replace('mod_', '');
 
-        this.moduleDelegate.registerHandler(new CoreSitePluginsModuleHandler(uniqueName, modName, handlerSchema));
+        this.moduleDelegate.registerHandler(new CoreSitePluginsModuleHandler(uniqueName, modName, handlerSchema, initResult));
 
         if (handlerSchema.offlinefunctions && Object.keys(handlerSchema.offlinefunctions).length) {
             // Register the prefetch handler.

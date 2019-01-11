@@ -15,18 +15,18 @@
 import { NgModule } from '@angular/core';
 import { CoreCoursesProvider } from './providers/courses';
 import { CoreCoursesHelperProvider } from './providers/helper';
-import { CoreCoursesMainMenuHandler } from './providers/mainmenu-handler';
-import { CoreCoursesMyOverviewProvider } from './providers/my-overview';
+import { CoreDashboardMainMenuHandler } from './providers/mainmenu-handler';
+import { CoreCoursesDashboardProvider } from './providers/dashboard';
 import { CoreCoursesCourseLinkHandler } from './providers/course-link-handler';
 import { CoreCoursesIndexLinkHandler } from './providers/courses-index-link-handler';
-import { CoreCoursesMyOverviewLinkHandler } from './providers/my-overview-link-handler';
+import { CoreCoursesDashboardLinkHandler } from './providers/dashboard-link-handler';
 import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 
 // List of providers (without handlers).
 export const CORE_COURSES_PROVIDERS: any[] = [
     CoreCoursesProvider,
-    CoreCoursesMyOverviewProvider,
+    CoreCoursesDashboardProvider,
     CoreCoursesHelperProvider
 ];
 
@@ -36,23 +36,23 @@ export const CORE_COURSES_PROVIDERS: any[] = [
     ],
     providers: [
         CoreCoursesProvider,
-        CoreCoursesMyOverviewProvider,
+        CoreCoursesDashboardProvider,
         CoreCoursesHelperProvider,
-        CoreCoursesMainMenuHandler,
+        CoreDashboardMainMenuHandler,
         CoreCoursesCourseLinkHandler,
         CoreCoursesIndexLinkHandler,
-        CoreCoursesMyOverviewLinkHandler
+        CoreCoursesDashboardLinkHandler
     ],
     exports: []
 })
 export class CoreCoursesModule {
     constructor(mainMenuDelegate: CoreMainMenuDelegate, contentLinksDelegate: CoreContentLinksDelegate,
-            mainMenuHandler: CoreCoursesMainMenuHandler, courseLinkHandler: CoreCoursesCourseLinkHandler,
-            indexLinkHandler: CoreCoursesIndexLinkHandler, myOverviewLinkHandler: CoreCoursesMyOverviewLinkHandler) {
+            mainMenuHandler: CoreDashboardMainMenuHandler, courseLinkHandler: CoreCoursesCourseLinkHandler,
+            indexLinkHandler: CoreCoursesIndexLinkHandler, dashboardLinkHandler: CoreCoursesDashboardLinkHandler) {
         mainMenuDelegate.registerHandler(mainMenuHandler);
 
         contentLinksDelegate.registerHandler(courseLinkHandler);
         contentLinksDelegate.registerHandler(indexLinkHandler);
-        contentLinksDelegate.registerHandler(myOverviewLinkHandler);
+        contentLinksDelegate.registerHandler(dashboardLinkHandler);
     }
 }

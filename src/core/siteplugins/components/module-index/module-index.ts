@@ -15,6 +15,7 @@
 import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { CoreCourseModuleMainComponent } from '@core/course/providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
@@ -46,6 +47,12 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     prefetchStatusIcon: string;
     prefetchText: string;
     size: string;
+    displayOpenInBrowser = true;
+    displayDescription = true;
+    displayRefresh = true;
+    displayPrefetch = true;
+    displaySize = true;
+
     jsData: any; // Data to pass to the component.
 
     protected isDestroyed = false;
@@ -53,7 +60,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
 
     constructor(protected sitePluginsProvider: CoreSitePluginsProvider, protected courseHelper: CoreCourseHelperProvider,
             protected prefetchDelegate: CoreCourseModulePrefetchDelegate, protected textUtils: CoreTextUtilsProvider,
-            protected translate: TranslateService) { }
+            protected translate: TranslateService, protected utils: CoreUtilsProvider) { }
 
     /**
      * Component being initialized.
@@ -75,6 +82,12 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
                     module: this.module,
                     courseId: this.courseId
                 };
+
+                this.displayOpenInBrowser = !this.utils.isFalseOrZero(handler.handlerSchema.displayopeninbrowser);
+                this.displayDescription = !this.utils.isFalseOrZero(handler.handlerSchema.displaydescription);
+                this.displayRefresh = !this.utils.isFalseOrZero(handler.handlerSchema.displayrefresh);
+                this.displayPrefetch = !this.utils.isFalseOrZero(handler.handlerSchema.displayprefetch);
+                this.displaySize = !this.utils.isFalseOrZero(handler.handlerSchema.displaysize);
             }
 
             // Get the data for the context menu.

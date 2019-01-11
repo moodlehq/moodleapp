@@ -19,6 +19,7 @@ import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreAppProvider } from '@providers/app';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { AddonModFeedbackOfflineProvider } from './offline';
 import { AddonModFeedbackProvider } from './feedback';
 import { CoreEventsProvider } from '@providers/events';
@@ -39,8 +40,10 @@ export class AddonModFeedbackSyncProvider extends CoreSyncBaseProvider {
             protected appProvider: CoreAppProvider, private feedbackOffline: AddonModFeedbackOfflineProvider,
             private eventsProvider: CoreEventsProvider,  private feedbackProvider: AddonModFeedbackProvider,
             protected translate: TranslateService, private utils: CoreUtilsProvider, protected textUtils: CoreTextUtilsProvider,
-            courseProvider: CoreCourseProvider, syncProvider: CoreSyncProvider) {
-        super('AddonModFeedbackSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate);
+            courseProvider: CoreCourseProvider, syncProvider: CoreSyncProvider, timeUtils: CoreTimeUtilsProvider) {
+        super('AddonModFeedbackSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
+                timeUtils);
+
         this.componentTranslate = courseProvider.translateModuleName('feedback');
     }
 
@@ -251,12 +254,12 @@ export class AddonModFeedbackSyncProvider extends CoreSyncBaseProvider {
                     result.warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
                         component: this.componentTranslate,
                         name: feedback.name,
-                        error: error.error
+                        error: this.textUtils.getErrorMessageFromError(error)
                     }));
                 });
             } else {
                 // Couldn't connect to server, reject.
-                return Promise.reject(error && error.error);
+                return Promise.reject(error);
             }
         });
     }

@@ -12,9 +12,7 @@
         <ion-list *ngIf="student">
             <!-- Student data. -->
             <a ion-item text-wrap core-user-link [userId]="student.id" [courseId]="courseId" [title]="student.fullname">
-                <ion-avatar *ngIf="student.profileimageurl" item-start>
-                    <img [src]="student.profileimageurl" [alt]="'core.pictureof' | translate:{$a: student.fullname}" core-external-content role="presentation">
-                </ion-avatar>
+                <ion-avatar core-user-avatar [user]="student" item-start [userId]="student.id" [courseId]="courseId"></ion-avatar>
                 <h2>{{student.fullname}}</h2>
                 <core-progress-bar [progress]="student.bestgrade"></core-progress-bar>
             </a>
@@ -22,7 +20,7 @@
             <!-- Retake selector if there is more than one retake. -->
             <ion-item text-wrap *ngIf="student.attempts && student.attempts.length > 1">
                 <ion-label id="addon-mod_lesson-retakeslabel">{{ 'addon.mod_lesson.attemptheader' | translate }}</ion-label>
-                <ion-select [(ngModel)]="selectedRetake" (ionChange)="changeRetake(selectedRetake)" aria-labelledby="addon-mod_lesson-retakeslabel" interface="popover">
+                <ion-select [(ngModel)]="selectedRetake" (ionChange)="changeRetake(selectedRetake)" aria-labelledby="addon-mod_lesson-retakeslabel" interface="action-sheet">
                     <ion-option *ngFor="let retake of student.attempts" [value]="retake.try">{{retake.label}}</ion-option>
                 </ion-select>
             </ion-item>
@@ -48,7 +46,7 @@
                 </ion-item>
                 <ion-item text-wrap>
                     <p class="item-heading">{{ 'addon.mod_lesson.completed' | translate }}</p>
-                    <p>{{ retake.userstats.completed * 1000 | coreFormatDate:"dfmediumdate" }}</p>
+                    <p>{{ retake.userstats.completed * 1000 | coreFormatDate }}</p>
                 </ion-item>
             </div>
 

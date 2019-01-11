@@ -20,6 +20,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { AddonModDataComponentsModule } from '../../components/components.module';
 import { AddonModDataFieldsDelegate } from '../../providers/fields-delegate';
+import { AddonModDataHelperProvider } from '../../providers/helper';
 
 /**
  * Page that displays the search modal.
@@ -41,7 +42,7 @@ export class AddonModDataSearchPage {
 
     constructor(params: NavParams, private viewCtrl: ViewController, fb: FormBuilder, protected utils: CoreUtilsProvider,
             protected domUtils: CoreDomUtilsProvider, protected fieldsDelegate: AddonModDataFieldsDelegate,
-            protected textUtils: CoreTextUtilsProvider) {
+            protected textUtils: CoreTextUtilsProvider, protected dataHelper: AddonModDataHelperProvider) {
         this.search = params.get('search');
         this.fields = params.get('fields');
         this.data = params.get('data');
@@ -82,17 +83,13 @@ export class AddonModDataSearchPage {
      * @return {string}         Generated HTML.
      */
     protected renderAdvancedSearchFields(): string {
-        if (!this.data.asearchtemplate) {
-            return '';
-        }
-
         this.jsData = {
             fields: this.fields,
             form: this.searchForm,
             search: this.search.advanced
         };
 
-        let template = this.data.asearchtemplate,
+        let template = this.data.asearchtemplate || this.dataHelper.getDefaultTemplate('asearch', this.fieldsArray),
             replace, render;
 
         // Replace the fields found on template.
@@ -176,15 +173,22 @@ export class AddonModDataSearchPage {
 
     /**
      * Toggles between advanced to normal search.
+     *
+     * @param {boolean} advanced True for advanced, false for basic.
      */
-    toggleAdvanced(): void {
-        this.search.searchingAdvanced = !this.search.searchingAdvanced;
+    changeAdvanced(advanced: boolean): void {
+        this.search.searchingAdvanced = advanced;
     }
 
     /**
      * Done editing.
+     *
+     * @param {Event} e Event.
      */
-    searchEntries(): void {
+    searchEntries(e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+
         const searchedData = this.searchForm.value;
 
         if (this.search.searchingAdvanced) {

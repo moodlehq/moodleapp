@@ -23,7 +23,100 @@ import { CoreConstants } from '@core/constants';
 @Injectable()
 export class CoreTimeUtilsProvider {
 
+    protected FORMAT_REPLACEMENTS = { // To convert PHP strf format to Moment format.
+        '%a': 'ddd',
+        '%A': 'dddd',
+        '%d': 'DD',
+        '%e': 'D', // Not exactly the same. PHP adds a space instead of leading zero, Moment doesn't.
+        '%j': 'DDDD',
+        '%u': 'E',
+        '%w': 'e', // It might not behave exactly like PHP, the first day could be calculated differently.
+        '%U': 'ww', // It might not behave exactly like PHP, the first week could be calculated differently.
+        '%V': 'WW',
+        '%W': 'ww', // It might not behave exactly like PHP, the first week could be calculated differently.
+        '%b': 'MMM',
+        '%B': 'MMMM',
+        '%h': 'MMM',
+        '%m': 'MM',
+        '%C' : '', // Not supported by Moment.
+        '%g': 'GG',
+        '%G': 'GGGG',
+        '%y': 'YY',
+        '%Y': 'YYYY',
+        '%H': 'HH',
+        '%k': 'H', // Not exactly the same. PHP adds a space instead of leading zero, Moment doesn't.
+        '%I': 'hh',
+        '%l': 'h', // Not exactly the same. PHP adds a space instead of leading zero, Moment doesn't.
+        '%M': 'mm',
+        '%p': 'A',
+        '%P': 'a',
+        '%r': 'hh:mm:ss A',
+        '%R': 'HH:mm',
+        '%S': 'ss',
+        '%T': 'HH:mm:ss',
+        '%X': 'LTS',
+        '%z': 'ZZ',
+        '%Z': 'ZZ', // Not supported by Moment, it was deprecated. Use the same as %z.
+        '%c': 'LLLL',
+        '%D': 'MM/DD/YY',
+        '%F': 'YYYY-MM-DD',
+        '%s': 'X',
+        '%x': 'L',
+        '%n': '\n',
+        '%t': '\t',
+        '%%': '%'
+    };
+
     constructor(private translate: TranslateService) { }
+
+    /**
+     * Convert a PHP format to a Moment format.
+     *
+     * @param {string} format PHP format.
+     * @return {string} Converted format.
+     */
+    convertPHPToMoment(format: string): string {
+        if (typeof format != 'string') {
+            // Not valid.
+            return '';
+        }
+
+        let converted = '',
+            escaping = false;
+
+        for (let i = 0; i < format.length; i++) {
+            let char = format[i];
+
+            if (char == '%') {
+                // It's a PHP format, try to convert it.
+                i++;
+                char += format[i] || '';
+
+                if (escaping) {
+                    // We were escaping some characters, stop doing it now.
+                    escaping = false;
+                    converted += ']';
+                }
+
+                converted += typeof this.FORMAT_REPLACEMENTS[char] != 'undefined' ? this.FORMAT_REPLACEMENTS[char] : char;
+            } else {
+                // Not a PHP format. We need to escape them, otherwise the letters could be confused with Moment formats.
+                if (!escaping) {
+                    escaping = true;
+                    converted += '[';
+                }
+
+                converted += char;
+            }
+        }
+
+        if (escaping) {
+            // Finish escaping.
+            converted += ']';
+        }
+
+        return converted;
+    }
 
     /**
      * Returns hours, minutes and seconds in a human readable format
@@ -155,12 +248,59 @@ export class CoreTimeUtilsProvider {
     }
 
     /**
+     * Convert a timestamp into a readable date.
+     *
+     * @param {number} timestamp Timestamp in milliseconds.
+     * @param {string} [format] The format to use (lang key). Defaults to core.strftimedaydatetime.
+     * @param {boolean} [convert=true] If true (default), convert the format from PHP to Moment. Set it to false for Moment formats.
+     * @param {boolean} [fixDay=true] If true (default) then the leading zero from %d is removed.
+     * @param {boolean} [fixHour=true] If true (default) then the leading zero from %I is removed.
+     * @return {string} Readable date.
+     */
+    userDate(timestamp: number, format?: string, convert: boolean = true, fixDay: boolean = true, fixHour: boolean = true): string {
+        format = this.translate.instant(format ? format : 'core.strftimedaydatetime');
+
+        if (fixDay) {
+            format = format.replace(/%d/g, '%e');
+        }
+
+        if (fixHour) {
+            format = format.replace('%I', '%l');
+        }
+
+        // Format could be in PHP format, convert it to moment.
+        if (convert) {
+            format = this.convertPHPToMoment(format);
+        }
+
+        return moment(timestamp).format(format);
+    }
+
+    /**
      * Return the localized ISO format (i.e DDMMYY) from the localized moment format. Useful for translations.
+     * DO NOT USE this function for ion-datetime format. Moment escapes characters with [], but ion-datetime doesn't support it.
      *
      * @param {any} localizedFormat Format to use.
      * @return {string} Localized ISO format
      */
     getLocalizedDateFormat(localizedFormat: any): string {
         return moment.localeData().longDateFormat(localizedFormat);
+    }
+
+    /**
+     * For a given timestamp get the midnight value in the user's timezone.
+     *
+     * The calculation is performed relative to the user's midnight timestamp
+     * for today to ensure that timezones are preserved.
+     *
+     * @param {number} [timestamp] The timestamp to calculate from. If not defined, return today's midnight.
+     * @return {number} The midnight value of the user's timestamp.
+     */
+    getMidnightForTimestamp(timestamp?: number): number {
+        if (timestamp) {
+            return moment(timestamp * 1000).startOf('day').unix();
+        } else {
+            return moment().startOf('day').unix();
+        }
     }
 }

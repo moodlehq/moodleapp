@@ -64,11 +64,20 @@ export class AddonQtypeDdImageOrTextComponent extends CoreQuestionBaseComponent 
         this.question.readOnly = false;
 
         if (this.question.initObjects) {
+            // Moodle version <= 3.5.
             if (typeof this.question.initObjects.drops != 'undefined') {
                 this.drops = this.question.initObjects.drops;
             }
             if (typeof this.question.initObjects.readonly != 'undefined') {
                 this.question.readOnly = this.question.initObjects.readonly;
+            }
+        } else if (this.question.amdArgs) {
+            // Moodle version >= 3.6.
+            if (typeof this.question.amdArgs[1] != 'undefined') {
+                this.question.readOnly = this.question.amdArgs[1];
+            }
+            if (typeof this.question.amdArgs[2] != 'undefined') {
+                this.drops = this.question.amdArgs[2];
             }
         }
 

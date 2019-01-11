@@ -1,0 +1,19 @@
+<ion-item-divider>
+    <h2>{{ 'addon.block_recentlyaccesseditems.pluginname' | translate }}</h2>
+</ion-item-divider>
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+    <div class="core-horizontal-scroll" *ngIf="items && items.length > 0">
+        <div *ngFor="let item of items">
+            <ion-card>
+                <a ion-item text-wrap detail-none class="core-course-module-handler item-media" (click)="action($event, item)" [title]="item.name">
+                    <img item-start [src]="item.iconUrl" alt="" role="presentation" *ngIf="item.iconUrl" class="core-module-icon">
+                    <h2><core-format-text [text]="item.name"></core-format-text></h2>
+                    <p><core-format-text [text]="item.coursename"></core-format-text></p>
+                </a>
+            </ion-card>
+        </div>
+    </div>
+
+    <core-empty-box *ngIf="items.length <= 0" image="assets/img/icons/activities.svg" [message]="'addon.block_recentlyaccesseditems.noitems' | translate"></core-empty-box>
+
+</core-loading>

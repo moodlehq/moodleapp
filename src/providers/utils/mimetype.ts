@@ -186,7 +186,7 @@ export class CoreMimetypeUtilsProvider {
             }
         }
 
-        return 'assets/img/files/' + icon + '-64.png';
+        return this.getFileIconForType(icon);
     }
 
     /**
@@ -196,6 +196,16 @@ export class CoreMimetypeUtilsProvider {
      */
     getFolderIcon(): string {
         return 'assets/img/files/folder-64.png';
+    }
+
+    /**
+     * Given a type (audio, video, html, ...), return its file icon path.
+     *
+     * @param {string} type The type to get the icon.
+     * @return {string} The icon path.
+     */
+    getFileIconForType(type: string): string {
+        return 'assets/img/files/' + type + '-64.png';
     }
 
     /**
@@ -445,7 +455,7 @@ export class CoreMimetypeUtilsProvider {
 
         if (position > -1) {
             // Check extension corresponds to a mimetype to know if it's valid.
-            extension = path.substr(position + 1);
+            extension = path.substr(position + 1).toLowerCase();
             if (typeof this.getMimeType(extension) != 'undefined') {
                 return path.substr(0, position); // Remove extension.
             }

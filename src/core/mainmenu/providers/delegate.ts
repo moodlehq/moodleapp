@@ -88,6 +88,12 @@ export interface CoreMainMenuHandlerData {
      * @type {any}
      */
     pageParams?: any;
+
+    /**
+     * Whether the handler should only appear in More menu.
+     * @type {boolean}
+     */
+    onlyInMore?: boolean;
 }
 
 /**

@@ -298,7 +298,7 @@ export class CoreLocalNotificationsProvider {
         return this.appDB.getRecord(this.TRIGGERED_TABLE, { id: notification.id }).then((stored) => {
             return stored.at === notification.at.getTime() / 1000;
         }).catch(() => {
-            return false;
+            return this.localNotifications.isTriggered(notification.id);
         });
     }
 
@@ -478,20 +478,23 @@ export class CoreLocalNotificationsProvider {
     protected scheduleNotification(notification: CoreILocalNotification): Promise<any> {
         // Check if the notification has been triggered already.
         return this.isTriggered(notification).then((triggered) => {
-            if (!triggered) {
-                // Check if sound is enabled for notifications.
-                return this.configProvider.get(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true).then((soundEnabled) => {
-                    if (!soundEnabled) {
-                        notification.sound = null;
-                    } else {
-                        delete notification.sound; // Use default value.
-                    }
+            // Cancel the current notification in case it gets scheduled twice.
+            return this.localNotifications.cancel(notification.id).finally(() => {
+                if (!triggered) {
+                    // Check if sound is enabled for notifications.
+                    return this.configProvider.get(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true).then((soundEnabled) => {
+                        if (!soundEnabled) {
+                            notification.sound = null;
+                        } else {
+                            delete notification.sound; // Use default value.
+                        }
 
-                    // Remove from triggered, since the notification could be in there with a different time.
-                    this.removeTriggered(notification.id);
-                    this.localNotifications.schedule(notification);
-                });
-            }
+                        // Remove from triggered, since the notification could be in there with a different time.
+                        this.removeTriggered(notification.id);
+                        this.localNotifications.schedule(notification);
+                    });
+                }
+            });
         });
     }
 

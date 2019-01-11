@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, NgZone } from '@angular/core';
-import { Platform } from 'ionic-angular';
+import { Platform, IonicApp } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
@@ -22,6 +22,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { Keyboard } from '@ionic-native/keyboard';
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
 
 @Component({
     templateUrl: 'app.html'
@@ -34,8 +35,9 @@ export class MoodleMobileApp implements OnInit {
     protected lastUrls = {};
 
     constructor(private platform: Platform, statusBar: StatusBar, logger: CoreLoggerProvider, keyboard: Keyboard,
-        private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider, private zone: NgZone,
-        private appProvider: CoreAppProvider, private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider) {
+            private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider, private zone: NgZone,
+            private appProvider: CoreAppProvider, private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider,
+            private screenOrientation: ScreenOrientation, app: IonicApp) {
         this.logger = logger.getInstance('AppComponent');
 
         platform.ready().then(() => {
@@ -47,7 +49,13 @@ export class MoodleMobileApp implements OnInit {
                 statusBar.styleDefault();
             }
 
-            keyboard.hideKeyboardAccessoryBar(false);
+            keyboard.hideFormAccessoryBar(false);
+
+            let desktopClass = this.appProvider.isDesktop() ? 'platform-desktop' : '';
+            desktopClass += this.appProvider.isMac() ? ' platform-mac' : '';
+            desktopClass += this.appProvider.isLinux() ? ' platform-linux' : '';
+            desktopClass += this.appProvider.isWindows() ? ' platform-windows' : '';
+            desktopClass != '' ? app.setElementClass(desktopClass, true) : false;
         });
 
     }
@@ -62,6 +70,9 @@ export class MoodleMobileApp implements OnInit {
 
             // Unload lang custom strings.
             this.langProvider.clearCustomStrings();
+
+            // Remove version classes from body.
+            this.removeVersionClass();
         });
 
         // Listen for session expired events.
@@ -135,13 +146,38 @@ export class MoodleMobileApp implements OnInit {
             }
         };
 
-        this.eventsProvider.on(CoreEventsProvider.LOGIN, () => {
+        this.eventsProvider.on(CoreEventsProvider.LOGIN, (data) => {
+            if (data.siteId) {
+                this.sitesProvider.getSite(data.siteId).then((site) => {
+                    const info = site.getInfo();
+                    if (info) {
+                        // Add version classes to body.
+                        this.removeVersionClass();
+                        this.addVersionClass(this.sitesProvider.getReleaseNumber(info.release || ''));
+                    }
+                });
+            }
+
             loadCustomStrings();
         });
 
         this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, (data) => {
             if (data.siteId == this.sitesProvider.getCurrentSiteId()) {
                 loadCustomStrings();
+
+                // Add version classes to body.
+                this.removeVersionClass();
+                this.addVersionClass(this.sitesProvider.getReleaseNumber(data.release || ''));
+            }
+        });
+
+        this.eventsProvider.on(CoreEventsProvider.SITE_ADDED, (data) => {
+            if (data.siteId == this.sitesProvider.getCurrentSiteId()) {
+                loadCustomStrings();
+
+                // Add version classes to body.
+                this.removeVersionClass();
+                this.addVersionClass(this.sitesProvider.getReleaseNumber(data.release || ''));
             }
         });
 
@@ -167,6 +203,57 @@ export class MoodleMobileApp implements OnInit {
             };
 
             pauseVideos(window);
+        });
+
+        // Detect orientation changes.
+        this.screenOrientation.onChange().subscribe(
+            () => {
+                if (this.platform.is('ios')) {
+                    // Force ios to recalculate safe areas when rotating.
+                    // This can be erased when https://issues.apache.org/jira/browse/CB-13448 issue is solved or
+                    // After switching to WkWebview.
+                    const viewport = document.querySelector('meta[name=viewport]');
+                    viewport.setAttribute('content', viewport.getAttribute('content').replace('viewport-fit=cover,', ''));
+
+                    setTimeout(() => {
+                        viewport.setAttribute('content', 'viewport-fit=cover,' + viewport.getAttribute('content'));
+                    });
+                }
+
+                this.eventsProvider.trigger(CoreEventsProvider.ORIENTATION_CHANGE);
+            }
+        );
+    }
+
+    /**
+     * Convenience function to add version to body classes.
+     *
+     * @param {string} release Current release number of the site.
+     */
+    protected addVersionClass(release: string): void {
+        const parts = release.split('.');
+
+        parts[1] = parts[1] || '0';
+        parts[2] = parts[2] || '0';
+
+        document.body.classList.add('version-' + parts[0], 'version-' + parts[0] + '-' + parts[1],
+            'version-' + parts[0] + '-' + parts[1] + '-' + parts[2]);
+
+    }
+
+    /**
+     * Convenience function to remove all version classes form body.
+     */
+    protected removeVersionClass(): void {
+        const remove = [];
+        Array.from(document.body.classList).forEach((tempClass) => {
+            if (tempClass.substring(0, 8) == 'version-') {
+                remove.push(tempClass);
+            }
+        });
+
+        remove.forEach((tempClass) => {
+            document.body.classList.remove(tempClass);
         });
     }
 }

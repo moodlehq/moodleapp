@@ -98,8 +98,13 @@ export class AddonModQuizPreflightModalPage implements OnInit {
 
     /**
      * Check that the data is valid and send it back.
+     *
+     * @param {Event} e Event.
      */
-    sendData(): void {
+    sendData(e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+
         if (!this.preflightForm.valid) {
             // Form not valid. Scroll to the first element with errors.
             if (!this.domUtils.scrollToInputError(this.content)) {

@@ -167,35 +167,55 @@ export class CoreSite {
 
     // Variables for the database.
     protected WS_CACHE_TABLE = 'wscache';
-    protected tableSchema = {
-        name: this.WS_CACHE_TABLE,
-        columns: [
-            {
-                name: 'id',
-                type: 'TEXT',
-                primaryKey: true
-            },
-            {
-                name: 'data',
-                type: 'TEXT'
-            },
-            {
-                name: 'key',
-                type: 'TEXT'
-            },
-            {
-                name: 'expirationTime',
-                type: 'INTEGER'
-            }
-        ]
-    };
+    protected CONFIG_TABLE = 'core_site_config';
+    protected tableSchemas = [
+        {
+            name: this.WS_CACHE_TABLE,
+            columns: [
+                {
+                    name: 'id',
+                    type: 'TEXT',
+                    primaryKey: true
+                },
+                {
+                    name: 'data',
+                    type: 'TEXT'
+                },
+                {
+                    name: 'key',
+                    type: 'TEXT'
+                },
+                {
+                    name: 'expirationTime',
+                    type: 'INTEGER'
+                }
+            ]
+        },
+        {
+            name: this.CONFIG_TABLE,
+            columns: [
+                {
+                    name: 'name',
+                    type: 'TEXT',
+                    unique: true,
+                    notNull: true
+                },
+                {
+                    name: 'value'
+                }
+            ]
+        }
+
+    ];
 
     // Versions of Moodle releases.
     protected MOODLE_RELEASES = {
         3.1: 2016052300,
         3.2: 2016120500,
         3.3: 2017051503,
-        3.4: 2017111300
+        3.4: 2017111300,
+        3.5: 2018051700,
+        3.6: 2018120300
     };
 
     // Rest of variables.
@@ -247,7 +267,7 @@ export class CoreSite {
      */
     initDB(): void {
         this.db = this.dbProvider.getDB('Site-' + this.id);
-        this.db.createTableFromSchema(this.tableSchema);
+        this.db.createTablesFromSchema(this.tableSchemas);
     }
 
     /**
@@ -638,7 +658,7 @@ export class CoreSite {
                 } else if (error.errorcode === 'sitepolicynotagreed') {
                     // Site policy not agreed, trigger event.
                     this.eventsProvider.trigger(CoreEventsProvider.SITE_POLICY_NOT_AGREED, {}, this.id);
-                    error.message = this.translate.instant('core.sitepolicynotagreederror');
+                    error.message = this.translate.instant('core.login.sitepolicynotagreederror');
 
                     return Promise.reject(error);
                 } else if (error.errorcode === 'dmlwriteexception' && this.textUtils.hasUnicodeData(data)) {
@@ -650,6 +670,16 @@ export class CoreSite {
                     }
                     // This should not happen.
                     error.message = this.translate.instant('core.unicodenotsupported');
+
+                    return Promise.reject(error);
+                } else if (error.exception === 'required_capability_exception' || error.errorcode === 'nopermission') {
+                    if (error.message === 'error/nopermission') {
+                        // This error message is returned by some web services but the string does not exist.
+                        error.message = this.translate.instant('core.nopermissionerror');
+                    }
+
+                    // Save the error instead of deleting the cache entry so the same content is displayed in offline.
+                    this.saveToCache(method, data, error, preSets);
 
                     return Promise.reject(error);
                 } else if (typeof preSets.emergencyCache !== 'undefined' && !preSets.emergencyCache) {
@@ -675,6 +705,13 @@ export class CoreSite {
                     return Promise.reject(error);
                 });
             });
+        }).then((response) => {
+            // Check if the response is an error, this happens if the error was stored in the cache.
+            if (response && typeof response.exception !== 'undefined') {
+                return Promise.reject(response);
+            }
+
+            return response;
         });
     }
 
@@ -1236,7 +1273,9 @@ export class CoreSite {
             return this.domUtils.showAlert(this.translate.instant('core.notice'), alertMessage, undefined, 3000).then((alert) => {
 
                 return new Promise<InAppBrowserObject | void>((resolve, reject): void => {
-                    alert.onDidDismiss(() => {
+                    const subscription = alert.didDismiss.subscribe(() => {
+                        subscription && subscription.unsubscribe();
+
                         if (inApp) {
                             resolve(this.utils.openInApp(url, options));
                         } else {
@@ -1542,5 +1581,45 @@ export class CoreSite {
         }
 
         return this.MOODLE_RELEASES[releases[position + 1]];
+    }
+
+    /**
+     * Deletes a site setting.
+     *
+     * @param {string} name The config name.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    deleteSiteConfig(name: string): Promise<any> {
+        return this.db.deleteRecords(this.CONFIG_TABLE, { name: name });
+    }
+
+    /**
+     * Get a site setting on local device.
+     *
+     * @param {string} name The config name.
+     * @param {any} [defaultValue] Default value to use if the entry is not found.
+     * @return {Promise<any>} Resolves upon success along with the config data. Reject on failure.
+     */
+    getLocalSiteConfig(name: string, defaultValue?: any): Promise<any> {
+        return this.db.getRecord(this.CONFIG_TABLE, { name: name }).then((entry) => {
+            return entry.value;
+        }).catch((error) => {
+            if (typeof defaultValue != 'undefined') {
+                return defaultValue;
+            }
+
+            return Promise.reject(error);
+        });
+    }
+
+    /**
+     * Set a site setting on local device.
+     *
+     * @param {string} name The config name.
+     * @param {number|string} value The config value. Can only store number or strings.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    setLocalSiteConfig(name: string, value: number | string): Promise<any> {
+        return this.db.insertRecord(this.CONFIG_TABLE, { name: name, value: value });
     }
 }

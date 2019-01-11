@@ -10,13 +10,12 @@
     <core-loading [hideUntil]="userLoaded">
         <ion-list *ngIf="user && !isDeleted">
             <ion-item text-center>
-                <div class="item-avatar-center">
-                    <img class="avatar" [src]="user.profileimageurl" core-external-content alt="{{ 'core.pictureof' | translate:{$a: user.fullname} }}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
+                <ion-avatar core-user-avatar class="item-avatar-center" [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="true">
                     <ion-icon name="create" class="core-icon-foreground" *ngIf="canChangeProfilePicture" (click)="changeProfilePicture()"></ion-icon>
-                </div>
+                </ion-avatar>
                 <h2><core-format-text [text]="user.fullname"></core-format-text></h2>
                 <p><core-format-text *ngIf="user.address" [text]="user.address"></core-format-text></p>
-                <p *ngIf="user.roles">
+                <p *ngIf="user.roles" text-wrap>
                     <strong>{{ 'core.user.roles' | translate}}</strong>{{'core.labelsep' | translate}}
                     <core-format-text [text]="user.roles"></core-format-text>
                 </p>

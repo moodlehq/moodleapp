@@ -1,6 +1,10 @@
 ion-app.app-root.ios {
   .button-ios {
-    min-height: $button-ios-height
+    min-height: $button-ios-height;
+  }
+
+  ion-searchbar.searchbar-ios .button-ios {
+      min-height: auto;
   }
 
   // Light buttons color.
@@ -65,15 +69,6 @@ ion-app.app-root.ios {
       @include padding(null, null, null, 15px * $i + $item-ios-padding-start);
     }
   }
-
-  // Recover borders on items inside cards.
-  .card-ios.with-borders  .item-ios.item-block .item-inner {
-    border-bottom: $hairlines-width solid $list-ios-border-color;
-  }
-  .card-ios.with-borders .item-ios:last-child .item-inner {
-    border-bottom: 0;
-  }
-
 
   .radio-ios .radio-icon {
     @include position(0, null, null, 0);

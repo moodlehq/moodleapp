@@ -23,6 +23,7 @@ import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
 import { AddonModLtiIndexComponent } from '../components/index/index';
 import { AddonModLtiProvider } from './lti';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Handler to support LTI modules.
@@ -31,6 +32,17 @@ import { AddonModLtiProvider } from './lti';
 export class AddonModLtiModuleHandler implements CoreCourseModuleHandler {
     name = 'AddonModLti';
     modName = 'lti';
+
+    supportedFeatures = {
+        [CoreConstants.FEATURE_GROUPS]: false,
+        [CoreConstants.FEATURE_GROUPINGS]: false,
+        [CoreConstants.FEATURE_MOD_INTRO]: true,
+        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: true,
+        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: true,
+        [CoreConstants.FEATURE_GRADE_OUTCOMES]: true,
+        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
+        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true
+    };
 
     constructor(private appProvider: CoreAppProvider,
             private courseProvider: CoreCourseProvider,
@@ -59,7 +71,7 @@ export class AddonModLtiModuleHandler implements CoreCourseModuleHandler {
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
         const data: CoreCourseModuleHandlerData = {
-            icon: this.courseProvider.getModuleIconSrc('lti'),
+            icon: this.courseProvider.getModuleIconSrc(this.modName, module.modicon),
             title: module.name,
             class: 'addon-mod_lti-handler',
             action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void {
@@ -76,7 +88,7 @@ export class AddonModLtiModuleHandler implements CoreCourseModuleHandler {
                         return this.ltiProvider.getLtiLaunchData(ltiData.id).then((launchData) => {
                             // "View" LTI.
                             this.ltiProvider.logView(ltiData.id).then(() => {
-                                this.courseProvider.checkModuleCompletion(courseId, module.completionstatus);
+                                this.courseProvider.checkModuleCompletion(courseId, module.completiondata);
                             }).catch(() => {
                                 // Ignore errors.
                             });

@@ -14,12 +14,12 @@
 
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, Content, NavParams } from 'ionic-angular';
-import { AddonBadgesProvider } from '../../providers/badges';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { AddonBadgesProvider } from '../../providers/badges';
 
 /**
  * Page that displays the list of calendar events.
@@ -32,9 +32,10 @@ import { CoreCoursesProvider } from '@core/courses/providers/courses';
 export class AddonBadgesIssuedBadgePage {
     @ViewChild(Content) content: Content;
 
-    courseId: number;
-    userId: number;
-    badgeHash: string;
+    protected badgeHash: string;
+    protected userId: number;
+    protected courseId: number;
+
     user: any = {};
     course: any = {};
     badge: any = {};
@@ -70,29 +71,29 @@ export class AddonBadgesIssuedBadgePage {
         const promises = [];
 
         this.currentTime = this.timeUtils.timestamp();
-        let promise = this.userProvider.getProfile(this.userId, this.courseId, true).then((user) => {
+        promises.push(this.userProvider.getProfile(this.userId, this.courseId, true).then((user) => {
             this.user = user;
-        });
-        promises.push(promise);
+        }));
 
-        promise = this.badgesProvider.getUserBadges(this.courseId, this.userId).then((badges) => {
-            badges.forEach((badge) => {
-                if (this.badgeHash == badge.uniquehash) {
-                    this.badge = badge;
-                    if (badge.courseid) {
-                        return this.coursesProvider.getUserCourse(badge.courseid, true).then((course) => {
-                            this.course = course;
-                        }).catch(() => {
-                            // Maybe an old deleted course.
-                            this.course = null;
-                        });
-                    }
-                }
+        promises.push(this.badgesProvider.getUserBadges(this.courseId, this.userId).then((badges) => {
+            const badge = badges.find((badge) => {
+                return this.badgeHash == badge.uniquehash;
             });
+
+            if (badge) {
+                this.badge = badge;
+                if (badge.courseid) {
+                    return this.coursesProvider.getUserCourse(badge.courseid, true).then((course) => {
+                        this.course = course;
+                    }).catch(() => {
+                        // Maybe an old deleted course.
+                        this.course = null;
+                    });
+                }
+            }
         }).catch((message) => {
             this.domUtils.showErrorModalDefault(message, 'Error getting badge data.');
-        });
-        promises.push(promise);
+        }));
 
         return Promise.all(promises);
     }

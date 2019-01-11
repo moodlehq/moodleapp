@@ -105,7 +105,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
             if (this.isMainPage) {
                 this.wikiProvider.logView(this.wiki.id).then(() => {
-                    this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                    this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
                 }).catch((error) => {
                     // Ignore errors.
                 });
@@ -213,7 +213,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * Get the wiki data.
      *
      * @param {boolean} [refresh=false] If it's refreshing content.
-     * @param {boolean} [sync=false] If the refresh is needs syncing.
+     * @param {boolean} [sync=false] If it should try to sync.
      * @param {boolean} [showErrors=false] If show errors to the user of hide them.
      * @return {Promise<any>} Promise resolved when done.
      */
@@ -341,7 +341,9 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                             this.currentPage = data.pageId;
 
                             this.showLoadingAndFetch(true, false).then(() => {
-                                this.wikiProvider.logPageView(this.currentPage);
+                                this.wikiProvider.logPageView(this.currentPage).catch(() => {
+                                    // Ignore errors.
+                                });
                             });
 
                             // Stop listening for new page events.

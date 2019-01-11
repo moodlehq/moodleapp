@@ -26,6 +26,7 @@ export class CoreCoursesProvider {
     static ENROL_INVALID_KEY = 'CoreCoursesEnrolInvalidKey';
     static EVENT_MY_COURSES_UPDATED = 'courses_my_courses_updated';
     static EVENT_MY_COURSES_REFRESHED = 'courses_my_courses_refreshed';
+    static EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED = 'dashboard_download_enabled_changed';
     protected ROOT_CACHE_KEY = 'mmCourses:';
     protected logger;
 
@@ -117,6 +118,11 @@ export class CoreCoursesProvider {
 
                         // Always add the site home ID.
                         courseIds.push(siteHomeId);
+
+                        // Sort the course IDs.
+                        courseIds.sort((a, b) => {
+                           return b - a;
+                        });
                     }
 
                     return courseIds;
@@ -128,6 +134,11 @@ export class CoreCoursesProvider {
                 if (courseIds.length > 1 && courseIds.indexOf(siteHomeId) == -1) {
                     courseIds.push(siteHomeId);
                 }
+
+                // Sort the course IDs.
+                courseIds.sort((a, b) => {
+                   return b - a;
+                });
 
                 return courseIds;
             }
@@ -390,6 +401,7 @@ export class CoreCoursesProvider {
      * @param {any} [value] The value to match.
      * @param {string} [siteId] Site ID. If not defined, use current site.
      * @return {Promise<any[]>} Promise resolved with the courses.
+     * @since 3.2
      */
     getCoursesByField(field?: string, value?: any, siteId?: string): Promise<any[]> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -473,6 +485,7 @@ export class CoreCoursesProvider {
      * Check if get courses by field WS is available.
      *
      * @return {boolean} Whether get courses by field is available.
+     * @since 3.2
      */
     isGetCoursesByFieldAvailable(): boolean {
         return this.sitesProvider.wsAvailableInCurrentSite('core_course_get_courses_by_field');
@@ -934,6 +947,29 @@ export class CoreCoursesProvider {
 
                 return Promise.reject(null);
             });
+        });
+    }
+
+    /**
+     * Set favourite property on a course.
+     *
+     * @param {number} courseId   Course ID.
+     * @param {boolean} favourite If favourite or unfavourite.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    setFavouriteCourse(courseId: number, favourite: boolean, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params: any = {
+                    courses: [
+                        {
+                            id: courseId,
+                            favourite: favourite ? 1 : 0
+                        }
+                    ]
+                };
+
+            return site.write('core_course_set_favourite_courses', params);
         });
     }
 }

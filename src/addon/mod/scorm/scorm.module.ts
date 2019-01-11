@@ -25,6 +25,7 @@ import { AddonModScormPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModScormSyncCronHandler } from './providers/sync-cron-handler';
 import { AddonModScormIndexLinkHandler } from './providers/index-link-handler';
 import { AddonModScormGradeLinkHandler } from './providers/grade-link-handler';
+import { AddonModScormListLinkHandler } from './providers/list-link-handler';
 import { AddonModScormSyncProvider } from './providers/scorm-sync';
 import { AddonModScormComponentsModule } from './components/components.module';
 import { CoreUpdateManagerProvider } from '@providers/update-manager';
@@ -52,7 +53,8 @@ export const ADDON_MOD_SCORM_PROVIDERS: any[] = [
         AddonModScormPrefetchHandler,
         AddonModScormSyncCronHandler,
         AddonModScormIndexLinkHandler,
-        AddonModScormGradeLinkHandler
+        AddonModScormGradeLinkHandler,
+        AddonModScormListLinkHandler
     ]
 })
 export class AddonModScormModule {
@@ -60,13 +62,14 @@ export class AddonModScormModule {
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModScormPrefetchHandler,
             cronDelegate: CoreCronDelegate, syncHandler: AddonModScormSyncCronHandler, linksDelegate: CoreContentLinksDelegate,
             indexHandler: AddonModScormIndexLinkHandler, gradeHandler: AddonModScormGradeLinkHandler,
-            updateManager: CoreUpdateManagerProvider) {
+            updateManager: CoreUpdateManagerProvider, listLinkHandler: AddonModScormListLinkHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         cronDelegate.register(syncHandler);
         linksDelegate.registerHandler(indexHandler);
         linksDelegate.registerHandler(gradeHandler);
+        linksDelegate.registerHandler(listLinkHandler);
 
         // Allow migrating the tables from the old app to the new schema.
         updateManager.registerSiteTablesMigration([

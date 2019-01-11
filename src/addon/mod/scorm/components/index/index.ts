@@ -94,7 +94,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * Check the completion.
      */
     protected checkCompletion(): void {
-        this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+        this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
     }
 
     /**
@@ -137,7 +137,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * Get the SCORM data.
      *
      * @param {boolean} [refresh=false] If it's refreshing content.
-     * @param {boolean} [sync=false] If the refresh is needs syncing.
+     * @param {boolean} [sync=false] If it should try to sync.
      * @param {boolean} [showErrors=false] If show errors to the user of hide them.
      * @return {Promise<any>} Promise resolved when done.
      */
@@ -207,7 +207,9 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
                 this.scorm.numAttempts = this.attempts.total;
                 this.scorm.gradeMethodReadable = this.scormProvider.getScormGradeMethod(this.scorm);
                 this.scorm.attemptsLeft = this.scormProvider.countAttemptsLeft(this.scorm, this.attempts.lastAttempt.number);
-                if (this.scorm.forceattempt && this.scorm.incomplete) {
+
+                if (this.scorm.forcenewattempt == AddonModScormProvider.SCORM_FORCEATTEMPT_ALWAYS ||
+                        (this.scorm.forcenewattempt && !this.scorm.incomplete)) {
                     this.scormOptions.newAttempt = true;
                 }
 

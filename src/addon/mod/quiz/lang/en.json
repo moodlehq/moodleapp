@@ -33,6 +33,7 @@
     "grademethod": "Grading method",
     "gradesofar": "{{$a.method}}: {{$a.mygrade}} / {{$a.quizgrade}}.",
     "marks": "Marks",
+    "modulenameplural": "Quizzes",
     "mustbesubmittedby": "This attempt must be submitted by {{$a}}.",
     "noquestions": "No questions have been added yet",
     "noreviewattempt": "You are not allowed to review this attempt.",

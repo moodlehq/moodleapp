@@ -12,10 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, ElementRef, Renderer, ViewEncapsulation, forwardRef, ViewChild, Input } from '@angular/core';
-import { Tabs, NavController, ViewController, App, Config, Platform, DeepLinker, Keyboard, RootNode } from 'ionic-angular';
+import { Component, Optional, ElementRef, Renderer, ViewEncapsulation, forwardRef, ViewChild, Input,
+    OnDestroy } from '@angular/core';
+import {
+    Tabs, Tab, NavController, ViewController, App, Config, Platform, DeepLinker, Keyboard, RootNode, NavOptions
+} from 'ionic-angular';
 import { CoreIonTabComponent } from './ion-tab';
-import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreUtilsProvider, PromiseDefer } from '@providers/utils/utils';
+import { CoreAppProvider } from '@providers/app';
 
 /**
  * Equivalent to ion-tabs. It has 2 improvements:
@@ -28,7 +32,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
     encapsulation: ViewEncapsulation.None,
     providers: [{provide: RootNode, useExisting: forwardRef(() => CoreIonTabsComponent) }]
 })
-export class CoreIonTabsComponent extends Tabs {
+export class CoreIonTabsComponent extends Tabs implements OnDestroy {
 
     /**
      * Whether the tabs have been loaded. If defined, tabs won't be initialized until it's set to true.
@@ -62,9 +66,13 @@ export class CoreIonTabsComponent extends Tabs {
     protected viewInit = false; // Whether the view has been initialized.
     protected initialized = false; // Whether tabs have been initialized.
 
-    constructor(protected utils: CoreUtilsProvider, @Optional() parent: NavController, @Optional() viewCtrl: ViewController,
-            _app: App, config: Config, elementRef: ElementRef, _plt: Platform, renderer: Renderer, _linker: DeepLinker,
-            keyboard?: Keyboard) {
+    protected firstSelectedTab: string;
+    protected unregisterBackButtonAction: any;
+    protected selectTabPromiseDefer: PromiseDefer;
+
+    constructor(protected utils: CoreUtilsProvider, protected appProvider: CoreAppProvider, @Optional() parent: NavController,
+            @Optional() viewCtrl: ViewController, _app: App, config: Config, elementRef: ElementRef, _plt: Platform,
+            renderer: Renderer, _linker: DeepLinker, keyboard?: Keyboard) {
         super(parent, viewCtrl, _app, config, elementRef, _plt, renderer, _linker, keyboard);
     }
 
@@ -75,6 +83,8 @@ export class CoreIonTabsComponent extends Tabs {
         this.viewInit = true;
 
         super.ngAfterViewInit();
+
+        this.registerBackButtonAction();
     }
 
     /**
@@ -141,10 +151,17 @@ export class CoreIonTabsComponent extends Tabs {
                 // Tabs initialized. Force select the tab if it's not enabled.
                 if (this.selectedDisabled && typeof this.selectedIndex != 'undefined') {
                     const tab = this.getByIndex(this.selectedIndex);
-
-                    if (tab && (!tab.enabled || !tab.show)) {
+                    if (tab && !tab.enabled) {
                         this.select(tab);
                     }
+                }
+
+                this.firstSelectedTab = this._selectHistory[0] || null;
+            }).finally(() => {
+                // If there was a select promise pending to be resolved, do it now.
+                if (this.selectTabPromiseDefer) {
+                    this.selectTabPromiseDefer.resolve();
+                    delete this.selectTabPromiseDefer;
                 }
             });
         } else {
@@ -153,6 +170,50 @@ export class CoreIonTabsComponent extends Tabs {
 
             return Promise.resolve();
         }
+    }
+
+    /**
+     * Register back button action.
+     */
+    protected registerBackButtonAction(): void {
+        this.unregisterBackButtonAction = this.appProvider.registerBackButtonAction(() => {
+            let tab = this.previousTab(true);
+
+            if (tab) {
+                const selectedTab = this.getSelected();
+
+                // It can happen when the previous is a phantom tab.
+                if (tab.id == selectedTab.id) {
+                    tab = this.previousTab(true);
+                }
+
+                if (tab) {
+                    // Remove curent and previous tabs from history.
+                    this._selectHistory = this._selectHistory.filter((tabId) => {
+                        return selectedTab.id != tabId && tab.id != tabId;
+                    });
+
+                    this.select(tab);
+
+                    return true;
+                }
+            } else  {
+                const selected = this.getSelected();
+                if (selected && this.firstSelectedTab && selected.id != this.firstSelectedTab) {
+                    // All history is gone but we are not in the first selected tab.
+                    this._selectHistory = [];
+
+                    tab = this._tabs.find((t) => { return t.id === this.firstSelectedTab; });
+                    if (tab && tab.enabled) {
+                        this.select(tab);
+
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }, 250);
     }
 
     /**
@@ -203,5 +264,72 @@ export class CoreIonTabsComponent extends Tabs {
                 return typeof id != 'undefined';
             });
         }
+    }
+
+    /**
+     * Select a tab.
+     *
+     * @param {number|Tab} tabOrIndex Index, or the Tab instance, of the tab to select.
+     * @param {NavOptions} Nav options.
+     * @param {boolean} [fromUrl=true] Whether to load from a URL.
+     * @return {Promise<any>} Promise resolved when selected.
+     */
+    select(tabOrIndex: number | Tab, opts: NavOptions = {}, fromUrl: boolean = false): Promise<any> {
+
+        if (this.initialized) {
+            // Tabs have been initialized, select the tab.
+            return super.select(tabOrIndex, opts, fromUrl);
+        } else {
+            // Tabs not initialized yet. Mark it as "selectedIndex" input so it's treated when the tabs are initialized.
+            if (typeof tabOrIndex == 'number') {
+                this.selectedIndex = tabOrIndex;
+            } else {
+                this.selectedIndex = this.getIndex(tabOrIndex);
+            }
+
+            // Don't resolve the Promise until the tab is really selected (tabs are initialized).
+            this.selectTabPromiseDefer = this.selectTabPromiseDefer || this.utils.promiseDefer();
+
+            return this.selectTabPromiseDefer.promise;
+        }
+    }
+
+    /**
+     * Select a tab by Index. First it will reset the status of the tab.
+     *
+     * @param {number} index Index of the tab.
+     * @return {Promise<any>} Promise resolved when selected.
+     */
+    selectTabRootByIndex(index: number): Promise<any> {
+        if (this.initialized) {
+            const tab = this.getByIndex(index);
+            if (tab) {
+                return tab.goToRoot({animate: false, updateUrl: true, isNavRoot: true}).then(() => {
+                    // Tab not previously selected. Select it after going to root.
+                    if (!tab.isSelected) {
+                        return this.select(tab, {animate: false, updateUrl: true, isNavRoot: true});
+                    }
+                });
+            }
+
+            // Not found.
+            return Promise.reject(null);
+        } else {
+            // Tabs not initialized yet. Mark it as "selectedIndex" input so it's treated when the tabs are initialized.
+            this.selectedIndex = index;
+
+            // Don't resolve the Promise until the tab is really selected (tabs are initialized).
+            this.selectTabPromiseDefer = this.selectTabPromiseDefer || this.utils.promiseDefer();
+
+            return this.selectTabPromiseDefer.promise;
+        }
+    }
+
+    /**
+     * Component destroyed.
+     */
+    ngOnDestroy(): void {
+        // Unregister the custom back button action for this page
+        this.unregisterBackButtonAction && this.unregisterBackButtonAction();
     }
 }

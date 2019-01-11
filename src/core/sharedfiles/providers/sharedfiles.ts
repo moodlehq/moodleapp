@@ -229,7 +229,7 @@ export class CoreSharedFilesProvider {
 
         // Create dir if it doesn't exist already.
         return this.fileProvider.createDir(sharedFilesFolder).then(() => {
-            return this.fileProvider.moveFile(entry.fullPath, newPath).then((newFile) => {
+            return this.fileProvider.moveExternalFile(entry.toURL(), newPath).then((newFile) => {
                 this.eventsProvider.trigger(CoreEventsProvider.FILE_SHARED, { siteId: siteId, name: newName });
 
                 return newFile;

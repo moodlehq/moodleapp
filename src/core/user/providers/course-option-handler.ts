@@ -89,4 +89,30 @@ export class CoreUserParticipantsCourseOptionHandler implements CoreCourseOption
             component: CoreUserParticipantsComponent
         };
     }
+
+    /**
+     * Called when a course is downloaded. It should prefetch all the data to be able to see the addon in offline.
+     *
+     * @param {any} course The course.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetch(course: any): Promise<any> {
+        return this.getParticipantsPage(course.id, 0);
+    }
+
+    /**
+     * Get a participant page and, if there are more participants, call the function again to get it too.
+     *
+     * @param {number} courseId Course ID.
+     * @param {number} limitFrom The number of participants already loaded.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected getParticipantsPage(courseId: number, limitFrom: number): Promise<any> {
+        return this.userProvider.getParticipants(courseId, limitFrom, undefined, undefined, true).then((result) => {
+            if (result.canLoadMore) {
+                // There are more participants, load the next ones.
+                return this.getParticipantsPage(courseId, limitFrom + result.participants.length);
+            }
+        });
+    }
 }

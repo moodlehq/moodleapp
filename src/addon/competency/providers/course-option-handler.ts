@@ -24,7 +24,7 @@ import { AddonCompetencyProvider } from '../providers/competency';
 @Injectable()
 export class AddonCompetencyCourseOptionHandler implements CoreCourseOptionsHandler {
     name = 'AddonCompetency';
-    priority = 700;
+    priority = 300;
 
     constructor(private competencyProvider: AddonCompetencyProvider) {}
 
@@ -89,5 +89,31 @@ export class AddonCompetencyCourseOptionHandler implements CoreCourseOptionsHand
         }
 
         return this.competencyProvider.invalidateCourseCompetencies(courseId);
+    }
+
+    /**
+     * Called when a course is downloaded. It should prefetch all the data to be able to see the addon in offline.
+     *
+     * @param {any} course The course.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetch(course: any): Promise<any> {
+        // Get the competencies in the course.
+        return this.competencyProvider.getCourseCompetencies(course.id, undefined, undefined, true).then((competencies) => {
+            const promises = [];
+
+            // Prefetch all the competencies.
+            if (competencies && competencies.competencies) {
+                competencies.competencies.forEach((competency) => {
+                    promises.push(this.competencyProvider.getCompetencyInCourse(course.id, competency.competency.id, undefined,
+                            undefined, true));
+
+                    promises.push(this.competencyProvider.getCompetencySummary(competency.competency.id, undefined, undefined,
+                            true));
+                });
+            }
+
+            return Promise.all(promises);
+        });
     }
 }

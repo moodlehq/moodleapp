@@ -1,4 +1,4 @@
-<div class="core-empty-box" [class.core-empty-box-inline]="!image && !icon">
+<div class="core-empty-box" [class.core-empty-box-inline]="(!image && !icon) || inline">
     <div class="core-empty-box-content" padding>
         <img *ngIf="image && !icon" [src]="image" role="presentation">
         <core-icon *ngIf="icon" [name]="icon"></core-icon>

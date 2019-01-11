@@ -201,7 +201,6 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
             promises.push(this.wikiProvider.getWiki(courseId, module.id, false, siteId).then((wiki) => {
                 return this.courseHelper.getModuleCourseIdByInstance(wiki.id, 'wiki', siteId);
             }));
-            promises.push(this.courseProvider.getModuleBasicInfo(module.id, siteId));
 
             // Get related page files and fetch them.
             promises.push(this.getFiles(module, courseId, single, siteId).then((files) => {

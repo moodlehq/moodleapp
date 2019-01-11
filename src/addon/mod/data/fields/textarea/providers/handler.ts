@@ -50,32 +50,32 @@ export class AddonModDataFieldTextareaHandler extends AddonModDataFieldTextHandl
      */
     getFieldEditData(field: any, inputData: any, originalFieldData: any): any {
         const fieldName = 'f_' + field.id;
+        const files = this.getFieldEditFiles(field, inputData, originalFieldData);
+        let text = this.textUtils.restorePluginfileUrls(inputData[fieldName] || '', files);
+        // Add some HTML to the text if needed.
+        text = this.textUtils.formatHtmlLines(text);
 
-        if (inputData[fieldName]) {
-            const files = this.getFieldEditFiles(field, inputData, originalFieldData);
-            let text = this.textUtils.restorePluginfileUrls(inputData[fieldName], files);
-
-            // Add some HTML to the text if needed.
-            text = this.textUtils.formatHtmlLines(text);
-
-            return [{
-                    fieldid: field.id,
-                    value: text
-                },
-                {
-                    fieldid: field.id,
-                    subfield: 'content1',
-                    value: 1
-                },
-                {
-                    fieldid: field.id,
-                    subfield: 'itemid',
-                    files: files
-                }
-            ];
+        // WS does not properly check if HTML content is blank when the field is required.
+        if (this.textUtils.htmlIsBlank(text)) {
+            text = '';
         }
 
-        return false;
+        return [
+            {
+                fieldid: field.id,
+                value: text
+            },
+            {
+                fieldid: field.id,
+                subfield: 'content1',
+                value: 1
+            },
+            {
+                fieldid: field.id,
+                subfield: 'itemid',
+                files: files
+            }
+        ];
     }
 
     /**
@@ -104,11 +104,7 @@ export class AddonModDataFieldTextareaHandler extends AddonModDataFieldTextHandl
             }
 
             const found = inputData.some((input) => {
-                if (!input.subfield) {
-                    return !!input.value;
-                }
-
-                return false;
+                return !input.subfield && this.textUtils.htmlIsBlank(input.value);
             });
 
             if (!found) {

@@ -1,0 +1,31 @@
+ion-app.app-root core-block {
+  position: relative;
+
+  core-loading.core-loading-center {
+    display: block;
+
+    .core-loading-container {
+        margin-top: 10px;
+        position: relative;
+    }
+  }
+
+  core-empty-box .core-empty-box {
+    position: relative;
+    z-index: initial;
+    @include position(initial, initial, null, initial);
+    height: auto;
+  }
+
+  .item-divider {
+    @include safe-area-padding-horizontal(null, 0px);
+  }
+
+  .item-divider .core-button-spinner {
+    margin: 0;
+  }
+
+  .item-divider .icon {
+    color: $black;
+  }
+}

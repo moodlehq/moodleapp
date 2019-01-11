@@ -41,8 +41,13 @@ export class AddonNotesAddPage {
 
     /**
      * Send the note or store it offline.
+     *
+     * @param {Event} e Event.
      */
-    addNote(): void {
+    addNote(e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+
         this.appProvider.closeKeyboard();
         const loadingModal = this.domUtils.showModalLoading('core.sending', true);
         // Freeze the add note button.

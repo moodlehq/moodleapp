@@ -23,6 +23,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseResourcePrefetchHandlerBase } from '@core/course/classes/resource-prefetch-handler';
 import { AddonModResourceProvider } from './resource';
 import { AddonModResourceHelperProvider } from './helper';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Handler to prefetch resources.
@@ -39,6 +40,26 @@ export class AddonModResourcePrefetchHandler extends CoreCourseResourcePrefetchH
             protected resourceHelper: AddonModResourceHelperProvider) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
+    }
+
+    /**
+     * Return the status to show based on current status.
+     *
+     * @param {any} module Module.
+     * @param {string} status The current status.
+     * @param {boolean} canCheck Whether the site allows checking for updates.
+     * @return {string} Status to display.
+     */
+    determineStatus(module: any, status: string, canCheck: boolean): string {
+        if (status == CoreConstants.DOWNLOADED && module && module.contents) {
+            // If the first file is an external file, always display the module as outdated.
+            const mainFile = module.contents[0];
+            if (mainFile && mainFile.isexternalfile) {
+                return CoreConstants.OUTDATED;
+            }
+        }
+
+        return status;
     }
 
     /**
@@ -70,11 +91,6 @@ export class AddonModResourcePrefetchHandler extends CoreCourseResourcePrefetchH
                 promises.push(this.resourceProvider.getResourceData(courseId, module.id));
             }
 
-            /* When prefetching we usually use ignoreCache=true. However, this WS call can return a lot of data, so if
-               a user downloads resources 1 by 1 we would be downloading the same data over and over again. Since
-               this data won't change often it's probably better to use ignoreCache=false. */
-            promises.push(this.courseProvider.getModule(module.id, courseId, undefined, false, false, undefined, this.modName));
-
             return Promise.all(promises);
         });
     }
@@ -104,6 +120,20 @@ export class AddonModResourcePrefetchHandler extends CoreCourseResourcePrefetchH
         promises.push(this.courseProvider.invalidateModule(module.id, undefined, this.modName));
 
         return Promise.all(promises);
+    }
+
+    /**
+     * Check if a resource is downloadable.
+     *
+     * @param {any} module Module to check.
+     * @param {number} courseId Course ID the module belongs to.
+     * @return {Promise<boolean>} Promise resolved with true if downloadable, resolved with false otherwise.
+     */
+    isDownloadable(module: any, courseId: number): Promise<boolean> {
+        // Don't allow downloading Nextcloud files for now.
+        return this.loadContents(module, courseId, false).then(() => {
+            return !this.resourceHelper.isNextcloudFile(module);
+        });
     }
 
     /**

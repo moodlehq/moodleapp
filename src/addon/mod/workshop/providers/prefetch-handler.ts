@@ -224,9 +224,9 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
      * @param  {number}  workshopId Workshop ID.
      * @param  {any[]}   groups     Array of groups in the activity.
      * @param  {string}  siteId     Site ID. If not defined, current site.
-     * @return {Promise<any>}       All unique entries.
+     * @return {Promise<any[]>}       All unique entries.
      */
-    protected getAllGradesReport(workshopId: number, groups: any[], siteId: string): Promise<any> {
+    protected getAllGradesReport(workshopId: number, groups: any[], siteId: string): Promise<any[]> {
         const promises = [];
 
         groups.forEach((group) => {
@@ -245,7 +245,7 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
                 });
             });
 
-            return uniqueGrades;
+            return this.utils.objectToArray(uniqueGrades);
         });
     }
 
@@ -297,13 +297,13 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
                                     userIds.push(grade.userid);
                                     userIds.push(grade.gradeoverby);
 
-                                    grade.reviewedby.forEach((assessment) => {
+                                    grade.reviewedby && grade.reviewedby.forEach((assessment) => {
                                         userIds.push(assessment.userid);
                                         userIds.push(assessment.gradinggradeoverby);
                                         assessments[assessment.assessmentid] = assessment;
                                     });
 
-                                    grade.reviewerof.forEach((assessment) => {
+                                    grade.reviewerof && grade.reviewerof.forEach((assessment) => {
                                         userIds.push(assessment.userid);
                                         userIds.push(assessment.gradinggradeoverby);
                                         assessments[assessment.assessmentid] = assessment;

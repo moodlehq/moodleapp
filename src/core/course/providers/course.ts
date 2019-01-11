@@ -14,22 +14,34 @@
 
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSiteWSPreSets, CoreSite } from '@classes/site';
 import { CoreConstants } from '../../constants';
+import { CoreCourseOfflineProvider } from './course-offline';
 
 /**
  * Service that provides some features regarding a course.
  */
 @Injectable()
 export class CoreCourseProvider {
-    static ALL_SECTIONS_ID = -1;
+    static ALL_SECTIONS_ID = -2;
+    static STEALTH_MODULES_SECTION_ID = -1;
     static ACCESS_GUEST = 'courses_access_guest';
     static ACCESS_DEFAULT = 'courses_access_default';
+
+    static COMPLETION_TRACKING_NONE = 0;
+    static COMPLETION_TRACKING_MANUAL = 1;
+    static COMPLETION_TRACKING_AUTOMATIC = 2;
+
+    static COMPLETION_INCOMPLETE = 0;
+    static COMPLETION_COMPLETE = 1;
+    static COMPLETION_COMPLETE_PASS = 2;
+    static COMPLETION_COMPLETE_FAIL = 3;
 
     protected ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -75,10 +87,34 @@ export class CoreCourseProvider {
     ];
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private eventsProvider: CoreEventsProvider,
-            private utils: CoreUtilsProvider, private timeUtils: CoreTimeUtilsProvider, private translate: TranslateService) {
+            private utils: CoreUtilsProvider, private timeUtils: CoreTimeUtilsProvider, private translate: TranslateService,
+            private courseOffline: CoreCourseOfflineProvider, private appProvider: CoreAppProvider) {
         this.logger = logger.getInstance('CoreCourseProvider');
 
         this.sitesProvider.createTableFromSchema(this.courseStatusTableSchema);
+    }
+
+    /**
+     * Check if the get course blocks WS is available in current site.
+     *
+     * @return {boolean} Whether it's available.
+     * @since 3.3
+     */
+    canGetCourseBlocks(): boolean {
+        return this.sitesProvider.wsAvailableInCurrentSite('core_block_get_course_blocks');
+    }
+
+    /**
+     * Check whether the site supports requesting stealth modules.
+     *
+     * @param {CoreSite} [site] Site. If not defined, current site.
+     * @return {boolean} Whether the site supports requesting stealth modules.
+     * @since 3.4.6, 3.5.3, 3.6
+     */
+    canRequestStealthModules(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.isVersionGreaterEqualThan(['3.4.6', '3.5.3']);
     }
 
     /**
@@ -118,9 +154,14 @@ export class CoreCourseProvider {
      * @param {number} courseId Course ID.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @param {number} [userId] User ID. If not defined, current user.
+     * @param {boolean} [forceCache] True if it should return cached data. Has priority over ignoreCache.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param {boolean} [includeOffline=true] True if it should load offline data in the completion status.
      * @return {Promise<any>} Promise resolved with the completion statuses: object where the key is module ID.
      */
-    getActivitiesCompletionStatus(courseId: number, siteId?: string, userId?: number): Promise<any> {
+    getActivitiesCompletionStatus(courseId: number, siteId?: string, userId?: number, forceCache: boolean = false,
+            ignoreCache: boolean = false, includeOffline: boolean = true): Promise<any> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
@@ -130,9 +171,16 @@ export class CoreCourseProvider {
                     courseid: courseId,
                     userid: userId
                 },
-                preSets = {
+                preSets: CoreSiteWSPreSets = {
                     cacheKey: this.getActivitiesCompletionCacheKey(courseId, userId)
                 };
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
+            }
 
             return site.read('core_completion_get_activities_completion_status', params, preSets).then((data) => {
                 if (data && data.statuses) {
@@ -140,6 +188,31 @@ export class CoreCourseProvider {
                 }
 
                 return Promise.reject(null);
+            }).then((completionStatus) => {
+                if (!includeOffline) {
+                    return completionStatus;
+                }
+
+                // Now get the offline completion (if any).
+                return this.courseOffline.getCourseManualCompletions(courseId, site.id).then((offlineCompletions) => {
+                    offlineCompletions.forEach((offlineCompletion) => {
+
+                        if (offlineCompletion && typeof completionStatus[offlineCompletion.cmid] != 'undefined') {
+                            const onlineCompletion = completionStatus[offlineCompletion.cmid];
+
+                            // If the activity uses manual completion, override the value with the offline one.
+                            if (onlineCompletion.tracking === 1) {
+                                onlineCompletion.state = offlineCompletion.completed;
+                                onlineCompletion.offline = true;
+                            }
+                        }
+                    });
+
+                    return completionStatus;
+                }).catch(() => {
+                    // Ignore errors.
+                    return completionStatus;
+                });
             });
         });
     }
@@ -153,6 +226,39 @@ export class CoreCourseProvider {
      */
     protected getActivitiesCompletionCacheKey(courseId: number, userId: number): string {
         return this.ROOT_CACHE_KEY + 'activitiescompletion:' + courseId + ':' + userId;
+    }
+
+    /**
+     * Get course blocks.
+     *
+     * @param {number} courseId Course ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any[]>} Promise resolved with the list of blocks.
+     * @since 3.3
+     */
+    getCourseBlocks(courseId: number, siteId?: string): Promise<any[]> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                    courseid: courseId
+                },
+                preSets: CoreSiteWSPreSets = {
+                    cacheKey: this.getCourseBlocksCacheKey(courseId)
+                };
+
+            return site.read('core_block_get_course_blocks', params, preSets).then((result) => {
+                return result.blocks || [];
+            });
+        });
+    }
+
+    /**
+     * Get cache key for course blocks WS calls.
+     *
+     * @param {number} courseId Course ID.
+     * @return {string} Cache key.
+     */
+    protected getCourseBlocksCacheKey(courseId: number): string {
+        return this.ROOT_CACHE_KEY + 'courseblocks:' + courseId;
     }
 
     /**
@@ -206,33 +312,23 @@ export class CoreCourseProvider {
             siteId?: string, modName?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        let promise;
+        // Helper function to do the WS request without processing the result.
+        const doRequest = (site: CoreSite, moduleId: number, modName: string, includeStealth: boolean, preferCache: boolean):
+                Promise<any> => {
+            const params: any = {
+                courseid: courseId,
+                options: []
+            };
+            const preSets: CoreSiteWSPreSets = {
+                omitExpires: preferCache
+            };
 
-        if (!courseId) {
-            // No courseId passed, try to retrieve it.
-            promise = this.getModuleBasicInfo(moduleId, siteId).then((module) => {
-                return module.course;
-            });
-        } else {
-            promise = Promise.resolve(courseId);
-        }
-
-        return promise.then((cid) => {
-            courseId = cid;
-
-            // Get the site.
-            return this.sitesProvider.getSite(siteId);
-        }).then((site) => {
-            // We have courseId, we can use core_course_get_contents for compatibility.
-            this.logger.debug(`Getting module ${moduleId} in course ${courseId}`);
-
-            const params = {
-                    courseid: courseId,
-                    options: []
-                },
-                preSets: any = {
-                    omitExpires: preferCache
-                };
+            if (includeStealth) {
+                params.options.push({
+                    name: 'includestealthmodules',
+                    value: 1
+                });
+            }
 
             // If modName is set, retrieve all modules of that type. Otherwise get only the module.
             if (modName) {
@@ -250,35 +346,74 @@ export class CoreCourseProvider {
             }
 
             if (!preferCache && ignoreCache) {
-                preSets.getFromCache = 0;
-                preSets.emergencyCache = 0;
-            }
-
-            if (sectionId) {
-                params.options.push({
-                    name: 'sectionid',
-                    value: sectionId
-                });
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
             }
 
             return site.read('core_course_get_contents', params, preSets).catch(() => {
-                // Error getting the module. Try to get all contents (without filtering by module).
-                return this.getSections(courseId, false, false, preSets, siteId);
-            }).then((sections) => {
-                for (let i = 0; i < sections.length; i++) {
-                    const section = sections[i];
-                    for (let j = 0; j < section.modules.length; j++) {
-                        const module = section.modules[j];
-                        if (module.id == moduleId) {
-                            module.course = courseId;
-
-                            return module;
-                        }
+                // The module might still be cached by a request with different parameters.
+                if (!ignoreCache && !this.appProvider.isOnline()) {
+                    if (includeStealth) {
+                        // Older versions didn't include the includestealthmodules option.
+                        return doRequest(site, moduleId, modName, false, true);
+                    } else if (modName) {
+                        // Falback to the request for the given moduleId only.
+                        return doRequest(site, moduleId, undefined, this.canRequestStealthModules(site), true);
                     }
                 }
 
                 return Promise.reject(null);
             });
+        };
+
+        let promise;
+        if (!courseId) {
+            // No courseId passed, try to retrieve it.
+            promise = this.getModuleBasicInfo(moduleId, siteId).then((module) => {
+                courseId = module.course;
+            });
+        } else {
+            promise = Promise.resolve();
+        }
+
+        return promise.then(() => {
+            return this.sitesProvider.getSite(siteId);
+        }).then((site) => {
+            // We have courseId, we can use core_course_get_contents for compatibility.
+            this.logger.debug(`Getting module ${moduleId} in course ${courseId}`);
+
+            return doRequest(site, moduleId, modName, this.canRequestStealthModules(site), preferCache);
+        }).catch(() => {
+            // Error getting the module. Try to get all contents (without filtering by module).
+            const preSets: CoreSiteWSPreSets = {
+                omitExpires: preferCache
+            };
+
+            if (!preferCache && ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
+            }
+
+            return this.getSections(courseId, false, false, preSets, siteId);
+        }).then((sections) => {
+            for (let i = 0; i < sections.length; i++) {
+                const section = sections[i];
+                if (sectionId != null && !isNaN(sectionId) && section.id != CoreCourseProvider.STEALTH_MODULES_SECTION_ID &&
+                        sectionId != section.id) {
+                    continue;
+                }
+
+                for (let j = 0; j < section.modules.length; j++) {
+                    const module = section.modules[j];
+                    if (module.id == moduleId) {
+                        module.course = courseId;
+
+                        return module;
+                    }
+                }
+            }
+
+            return Promise.reject(null);
         });
     }
 
@@ -401,10 +536,18 @@ export class CoreCourseProvider {
      * Returns the source to a module icon.
      *
      * @param {string} moduleName The module name.
+     * @param {string} [modicon] The mod icon string to use in case we are not using a core activity.
      * @return {string} The IMG src.
      */
-    getModuleIconSrc(moduleName: string): string {
+    getModuleIconSrc(moduleName: string, modicon?: string): string {
+        // @TODO: Check modicon url theme to apply other theme icons.
+
+        // Use default icon on core themes.
         if (this.CORE_MODULES.indexOf(moduleName) < 0) {
+            if (modicon) {
+                return modicon;
+            }
+
             moduleName = 'external-tool';
         }
 
@@ -461,15 +604,15 @@ export class CoreCourseProvider {
      * @param {boolean} [excludeContents] Do not return module contents (i.e: files inside a resource).
      * @param {CoreSiteWSPreSets} [preSets] Presets to use.
      * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {boolean} [includeStealthModules] Whether to include stealth modules. Defaults to true.
      * @return {Promise}                The reject contains the error message, else contains the sections.
      */
     getSections(courseId?: number, excludeModules?: boolean, excludeContents?: boolean, preSets?: CoreSiteWSPreSets,
-        siteId?: string): Promise<any[]> {
+        siteId?: string, includeStealthModules: boolean = true): Promise<any[]> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             preSets = preSets || {};
             preSets.cacheKey = this.getSectionsCacheKey(courseId);
-            preSets.getCacheUsingCacheKey = true; // This is to make sure users don't lose offline access when updating.
 
             const params = {
                 courseid: courseId,
@@ -485,7 +628,21 @@ export class CoreCourseProvider {
                 ]
             };
 
-            return site.read('core_course_get_contents', params, preSets).then((sections) => {
+            if (this.canRequestStealthModules(site)) {
+                params.options.push({
+                    name: 'includestealthmodules',
+                    value: includeStealthModules ? 1 : 0
+                });
+            }
+
+            return site.read('core_course_get_contents', params, preSets).catch(() => {
+                // Error getting the data, it could fail because we added a new parameter and the call isn't cached.
+                // Retry without the new parameter and forcing cache.
+                preSets.omitExpires = true;
+                params.options.splice(-1, 1);
+
+                return site.read('core_course_get_contents', params, preSets);
+            }).then((sections) => {
                 const siteHomeId = site.getSiteHomeId();
                 let showSections = true;
 
@@ -532,6 +689,19 @@ export class CoreCourseProvider {
         });
 
         return modules;
+    }
+
+    /**
+     * Invalidates course blocks WS call.
+     *
+     * @param {number} courseId Course ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateCourseBlocks(courseId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getCourseBlocksCacheKey(courseId));
+        });
     }
 
     /**
@@ -645,6 +815,80 @@ export class CoreCourseProvider {
                 }
             });
         });
+    }
+
+    /**
+     * Offline version for manually marking a module as completed.
+     *
+     * @param {number} cmId The module ID.
+     * @param {number} completed Whether the module is completed or not.
+     * @param {number} courseId Course ID the module belongs to.
+     * @param {string} [courseName] Course name. Recommended, it is used to display a better warning message.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when completion is successfully sent or stored.
+     */
+    markCompletedManually(cmId: number, completed: number, courseId: number, courseName?: string, siteId?: string)
+            : Promise<any> {
+
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        // Convenience function to store a completion to be synchronized later.
+        const storeOffline = (): Promise<any> => {
+            return this.courseOffline.markCompletedManually(cmId, completed, courseId, courseName, siteId);
+        };
+
+        // The offline function requires a courseId and it could be missing because it's a calculated field.
+        if (!this.appProvider.isOnline() && courseId) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
+
+        // Try to send it to server.
+        return this.markCompletedManuallyOnline(cmId, completed, siteId).then((result) => {
+            // Data sent to server, if there is some offline data delete it now.
+            return this.courseOffline.deleteManualCompletion(cmId, siteId).catch(() => {
+                // Ignore errors, shouldn't happen.
+            }).then(() => {
+                return result;
+            });
+        }).catch((error) => {
+            if (this.utils.isWebServiceError(error) || !courseId) {
+                // The WebService has thrown an error, this means that responses cannot be submitted.
+                return Promise.reject(error);
+            } else {
+                // Couldn't connect to server, store it offline.
+                return storeOffline();
+            }
+        });
+    }
+
+    /**
+     * Offline version for manually marking a module as completed.
+     *
+     * @param {number} cmId The module ID.
+     * @param {number} completed Whether the module is completed or not.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when completion is successfully sent.
+     */
+    markCompletedManuallyOnline(cmId: number, completed: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                    cmid: cmId,
+                    completed: completed
+                };
+
+            return site.write('core_completion_update_activity_completion_status_manually', params);
+        });
+    }
+
+    /**
+     * Check if a module has a view page. E.g. labels don't have a view page.
+     *
+     * @param {any} module The module object.
+     * @return {boolean} Whether the module has a view page.
+     */
+    moduleHasView(module: any): boolean {
+        return !!module.url;
     }
 
     /**

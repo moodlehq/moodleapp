@@ -7,6 +7,7 @@ addon-qtype-ddwtos {
 
     .draghome {
         margin-bottom: 1em;
+        max-width: calc(100%);
     }
 
     .answertext {
@@ -25,6 +26,9 @@ addon-qtype-ddwtos {
         text-align: center;
         background: transparent;
         border: 0;
+        white-space: normal;
+        overflow: visible;
+        word-wrap: break-word;
     }
     .draghome, .drag.unplaced{
         border: 1px solid $gray-darker;
@@ -105,4 +109,16 @@ addon-qtype-ddwtos {
     sub {
         bottom: -0.2em;
     }
+}
+
+addon-qtype-ddwtos .item-md .draghome {
+    max-width: calc(100% - #{($item-md-padding-start)});
+}
+
+addon-qtype-ddwtos .item-ios .draghome {
+    max-width: calc(100% - #{($item-ios-padding-start)});
+}
+
+addon-qtype-ddwtos .item-wp .draghome {
+    max-width: calc(100% - #{($item-wp-padding-start)});
 }

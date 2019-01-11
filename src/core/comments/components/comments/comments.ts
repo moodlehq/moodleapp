@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChange } from '@angular/core';
 import { NavParams, NavController } from 'ionic-angular';
 import { CoreCommentsProvider } from '../../providers/comments';
 
@@ -23,7 +23,7 @@ import { CoreCommentsProvider } from '../../providers/comments';
     selector: 'core-comments',
     templateUrl: 'core-comments.html',
 })
-export class CoreCommentsCommentsComponent {
+export class CoreCommentsCommentsComponent implements OnChanges {
     @Input() contextLevel: string;
     @Input() instanceId: number;
     @Input() component: string;
@@ -41,6 +41,22 @@ export class CoreCommentsCommentsComponent {
      * View loaded.
      */
     ngOnInit(): void {
+        this.fetchData();
+    }
+
+    /**
+     * Listen to changes.
+     */
+    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
+        // If something change, update the fields.
+        if (changes) {
+            this.fetchData();
+        }
+    }
+
+    protected fetchData(): void {
+        this.commentsLoaded = false;
+
         this.commentsProvider.getComments(this.contextLevel, this.instanceId, this.component, this.itemId, this.area, this.page)
             .then((comments) => {
                 this.commentsCount = comments && comments.length ? comments.length : 0;

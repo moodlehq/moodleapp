@@ -51,8 +51,10 @@ export class CoreLoginInitPage {
                 if (Date.now() - redirectData.timemodified < 20000) {
                     if (redirectData.siteId != CoreConstants.NO_SITE_ID) {
                         // The redirect is pointing to a site, load it.
-                        return this.sitesProvider.loadSite(redirectData.siteId).then(() => {
-                            if (!this.loginHelper.isSiteLoggedOut(redirectData.page, redirectData.params)) {
+                        return this.sitesProvider.loadSite(redirectData.siteId, redirectData.page, redirectData.params)
+                                .then((loggedIn) => {
+
+                            if (loggedIn) {
                                 return this.navCtrl.setRoot(redirectData.page, redirectData.params, { animate: false });
                             }
                         }).catch(() => {

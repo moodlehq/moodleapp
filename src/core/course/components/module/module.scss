@@ -7,7 +7,7 @@ ion-app.app-root core-course-module {
         min-height: 52px;
 
         &.item .item-inner {
-            @include padding(null, 0, null, null);
+            @include safe-area-padding(null, 0px, null, null);
         }
         .label {
             @include margin(0, 0, 0, null);
@@ -48,6 +48,11 @@ ion-app.app-root core-course-module {
             @include position(null, 13px, null, null);
             position: absolute;
         }
+    }
+
+    .core-not-clickable:active,
+    .core-not-clickable.activated {
+        background-color: $list-background-color;
     }
 }
 
@@ -94,6 +99,8 @@ ion-app.app-root.ios core-course-module {
     a.core-course-module-handler .core-module-icon {
         margin-top: $label-ios-margin-top;
         margin-bottom: $label-ios-margin-bottom;
+        width: 24px;
+        height: 24px;
     }
 
     .core-module-title core-format-text {
@@ -119,6 +126,8 @@ ion-app.app-root.wp core-course-module {
     a.core-course-module-handler .core-module-icon {
         margin-top: $item-wp-padding-top;
         margin-bottom: $item-wp-padding-bottom;
+        width: 24px;
+        height: 24px;
     }
 
     .core-module-title core-format-text {
@@ -129,4 +138,8 @@ ion-app.app-root.wp core-course-module {
         margin-top: 8px;
         margin-bottom: 8px;
     }
+}
+
+ion-app.app-root a.core-course-module-handler.item [item-start] + .item-inner {
+    @include margin-horizontal(4px, null);
 }

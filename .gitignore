@@ -22,12 +22,12 @@ dist/
 node_modules/
 tmp/
 temp/
-hooks/
 platforms/
 /plugins/
 /plugins/android.json
 /plugins/ios.json
 www/
+!www/README.md
 $RECYCLE.BIN/
 
 .DS_Store
@@ -39,4 +39,3 @@ e2e/build
 !/desktop/assets/
 !/desktop/electron.js
 src/configconstants.ts
-src/assets/lang

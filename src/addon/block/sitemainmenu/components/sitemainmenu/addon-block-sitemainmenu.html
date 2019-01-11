@@ -1,0 +1,10 @@
+<ion-item-divider>
+    <h2>{{ 'addon.block_sitemainmenu.pluginname' | translate }}</h2>
+</ion-item-divider>
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+    <ion-item text-wrap *ngIf="block.summary">
+        <core-format-text [text]="block.summary"></core-format-text>
+    </ion-item>
+
+    <core-course-module *ngFor="let module of block.modules" [module]="module" [courseId]="siteHomeId" [downloadEnabled]="true" [section]="block"></core-course-module>
+</core-loading>

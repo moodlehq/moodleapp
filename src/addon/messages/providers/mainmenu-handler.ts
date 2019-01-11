@@ -43,22 +43,32 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
         loading: true
     };
 
+    protected unreadCount = 0;
+    protected contactRequestsCount = 0;
+    protected orMore = false;
+
     constructor(private messagesProvider: AddonMessagesProvider, private sitesProvider: CoreSitesProvider,
-            private eventsProvider: CoreEventsProvider, private appProvider: CoreAppProvider,
+            eventsProvider: CoreEventsProvider, private appProvider: CoreAppProvider,
             private localNotificationsProvider: CoreLocalNotificationsProvider, private textUtils: CoreTextUtilsProvider,
             private pushNotificationsProvider: AddonPushNotificationsProvider, utils: CoreUtilsProvider,
             pushNotificationsDelegate: AddonPushNotificationsDelegate, private emulatorHelper: CoreEmulatorHelperProvider) {
 
-        eventsProvider.on(AddonMessagesProvider.READ_CHANGED_EVENT, (data) => {
+        eventsProvider.on(AddonMessagesProvider.UNREAD_CONVERSATION_COUNTS_EVENT, (data) => {
+            this.unreadCount = data.favourites + data.individual + data.group;
+            this.orMore = data.orMore;
             this.updateBadge(data.siteId);
         });
 
-        eventsProvider.on(AddonMessagesProvider.READ_CRON_EVENT, (data) => {
+        eventsProvider.on(AddonMessagesProvider.CONTACT_REQUESTS_COUNT_EVENT, (data) => {
+            this.contactRequestsCount = data.count;
             this.updateBadge(data.siteId);
         });
 
         // Reset info on logout.
         eventsProvider.on(CoreEventsProvider.LOGOUT, (data) => {
+            this.unreadCount = 0;
+            this.contactRequestsCount = 0;
+            this.orMore = false;
             this.handler.badge = '';
             this.handler.loading = true;
         });
@@ -67,7 +77,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
         pushNotificationsDelegate.on('receive').subscribe((notification) => {
             // New message received. If it's from current site, refresh the data.
             if (utils.isFalseOrZero(notification.notif) && this.sitesProvider.isCurrentSite(notification.site)) {
-                this.updateBadge(notification.site);
+                this.refreshBadge(notification.site);
             }
         });
 
@@ -90,34 +100,64 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
      * @return {CoreMainMenuHandlerToDisplay} Data needed to render the handler.
      */
     getDisplayData(): CoreMainMenuHandlerToDisplay {
+        this.handler.page = this.messagesProvider.isGroupMessagingEnabled() ?
+                'AddonMessagesGroupConversationsPage' : 'AddonMessagesIndexPage';
+
         if (this.handler.loading) {
-            this.updateBadge();
+            this.refreshBadge();
         }
 
         return this.handler;
     }
 
     /**
-     * Triggers an update for the badge number and loading status. Mandatory if showBadge is enabled.
+     * Refreshes badge number.
      *
-     * @param {string} siteId Site ID or current Site if undefined.
+     * @param {string} [siteId] Site ID or current Site if undefined.
+     * @param {boolean} [unreadOnly] If true only the unread conversations count is refreshed.
+     * @return {Promise<any>} Resolve when done.
      */
-    updateBadge(siteId?: string): void {
+    refreshBadge(siteId?: string, unreadOnly?: boolean): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
         if (!siteId) {
             return;
         }
 
-        this.messagesProvider.getUnreadConversationsCount(undefined, siteId).then((unread) => {
-            // Leave badge enter if there is a 0+ or a 0.
-            this.handler.badge = parseInt(unread, 10) > 0 ? unread : '';
-            // Update badge.
-            this.pushNotificationsProvider.updateAddonCounter('AddonMessages', unread, siteId);
-        }).catch(() => {
-            this.handler.badge = '';
-        }).finally(() => {
+        const promises = [];
+
+        promises.push(this.messagesProvider.refreshUnreadConversationCounts(siteId).catch(() => {
+            this.unreadCount = 0;
+            this.orMore = false;
+        }));
+
+        // Refresh the number of contact requests in 3.6+ sites.
+        if (!unreadOnly && this.messagesProvider.isGroupMessagingEnabled()) {
+            promises.push(this.messagesProvider.refreshContactRequestsCount(siteId).catch(() => {
+                this.contactRequestsCount = 0;
+            }));
+        }
+
+        return Promise.all(promises).finally(() => {
+            this.updateBadge(siteId);
             this.handler.loading = false;
         });
+    }
+
+    /**
+     * Update badge number and push notifications counter from loaded data.
+     *
+     * @param {string} siteId Site ID.
+     */
+    updateBadge(siteId: string): void {
+        const totalCount = this.unreadCount + (this.contactRequestsCount || 0);
+        if (totalCount > 0) {
+            this.handler.badge = totalCount + (this.orMore ? '+' : '');
+        } else {
+            this.handler.badge = '';
+        }
+
+        // Update push notifications badge.
+        this.pushNotificationsProvider.updateAddonCounter('AddonMessages', totalCount, siteId);
     }
 
     /**
@@ -129,7 +169,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
      */
     execute(siteId?: string): Promise<any> {
         if (this.sitesProvider.isCurrentSite(siteId)) {
-            this.eventsProvider.trigger(AddonMessagesProvider.READ_CRON_EVENT, {}, siteId);
+            this.refreshBadge();
         }
 
         if (this.appProvider.isDesktop() && this.localNotificationsProvider.isAvailable()) {
@@ -147,7 +187,13 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
      * @return {number} Time between consecutive executions (in ms).
      */
     getInterval(): number {
-        return this.appProvider.isDesktop() ? 60000 : 600000; // 1 or 10 minutes.
+        if (this.appProvider.isDesktop()) {
+            return 60000; // Desktop usually has a WiFi connection, check it every minute.
+        } else if (this.messagesProvider.isGroupMessagingEnabled() || this.messagesProvider.isMessageCountEnabled()) {
+            return 300000; // We have a WS to check the number, check it every 5 minutes.
+        } else {
+            return 600000; // Check it every 10 minutes.
+        }
     }
 
     /**
@@ -157,8 +203,13 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
      */
     isSync(): boolean {
         // This is done to use only wifi if using the fallback function.
-        // In desktop it is always sync, since it fetches messages to see if there's a new one.
-        return !this.messagesProvider.isMessageCountEnabled() || this.appProvider.isDesktop();
+
+        if (this.appProvider.isDesktop()) {
+            // In desktop it is always sync, since it fetches messages to see if there's a new one.
+            return true;
+        }
+
+        return !this.messagesProvider.isMessageCountEnabled() && !this.messagesProvider.isGroupMessagingEnabled();
     }
 
     /**

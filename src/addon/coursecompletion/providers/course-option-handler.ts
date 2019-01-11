@@ -86,4 +86,17 @@ export class AddonCourseCompletionCourseOptionHandler implements CoreCourseOptio
     invalidateEnabledForCourse(courseId: number, navOptions?: any, admOptions?: any): Promise<any> {
         return this.courseCompletionProvider.invalidateCourseCompletion(courseId);
     }
+
+    /**
+     * Called when a course is downloaded. It should prefetch all the data to be able to see the addon in offline.
+     *
+     * @param {any} course The course.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetch(course: any): Promise<any> {
+        return this.courseCompletionProvider.getCompletion(course.id, undefined, {
+            getFromCache: false,
+            emergencyCache: false
+        });
+    }
 }

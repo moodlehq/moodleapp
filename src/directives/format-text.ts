@@ -80,6 +80,7 @@ export class CoreFormatTextDirective implements OnChanges {
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.text) {
+            this.hideShowMore();
             this.formatAndRenderContents();
         }
     }
@@ -137,6 +138,12 @@ export class CoreFormatTextDirective implements OnChanges {
             container.classList.add('atto_image_button_right');
         } else if (img.classList.contains('atto_image_button_left')) {
             container.classList.add('atto_image_button_left');
+        } else if (img.classList.contains('atto_image_button_text-top')) {
+            container.classList.add('atto_image_button_text-top');
+        } else if (img.classList.contains('atto_image_button_middle')) {
+            container.classList.add('atto_image_button_middle');
+        } else if (img.classList.contains('atto_image_button_text-bottom')) {
+            container.classList.add('atto_image_button_text-bottom');
         }
 
         this.domUtils.wrapElement(img, container);
@@ -296,7 +303,7 @@ export class CoreFormatTextDirective implements OnChanges {
                 this.calculateHeight();
 
                 // Wait for images to load and calculate the height again if needed.
-                this.waitForImages().then((hasImgToLoad) => {
+                this.domUtils.waitForImages(this.element).then((hasImgToLoad) => {
                     if (hasImgToLoad) {
                         this.calculateHeight();
                     }
@@ -382,7 +389,7 @@ export class CoreFormatTextDirective implements OnChanges {
                 images.forEach((img: HTMLElement) => {
                     this.addMediaAdaptClass(img);
                     this.addExternalContent(img);
-                    if (this.utils.isTrueOrOne(this.adaptImg)) {
+                    if (this.utils.isTrueOrOne(this.adaptImg) && !img.classList.contains('icon')) {
                         this.adaptImage(elWidth, img);
                     }
                 });
@@ -502,16 +509,16 @@ export class CoreFormatTextDirective implements OnChanges {
         }
 
         const data = this.textUtils.parseJSON(video.getAttribute('data-setup') || video.getAttribute('data-setup-lazy') || '{}'),
-            youtubeId = data.techOrder && data.techOrder[0] && data.techOrder[0] == 'youtube' && data.sources && data.sources[0] &&
-                data.sources[0].src && this.youtubeGetId(data.sources[0].src);
+            youtubeData = data.techOrder && data.techOrder[0] && data.techOrder[0] == 'youtube' &&
+                    this.parseYoutubeUrl(data.sources && data.sources[0] && data.sources[0].src);
 
-        if (!youtubeId) {
+        if (!youtubeData || !youtubeData.videoId) {
             return;
         }
 
         const iframe = document.createElement('iframe');
         iframe.id = video.id;
-        iframe.src = 'https://www.youtube.com/embed/' + youtubeId;
+        iframe.src = 'https://www.youtube.com/embed/' + youtubeData.videoId; // Don't apply other params to align with Moodle web.
         iframe.setAttribute('frameborder', '0');
         iframe.setAttribute('allowfullscreen', '1');
         iframe.width = '100%';
@@ -519,6 +526,8 @@ export class CoreFormatTextDirective implements OnChanges {
 
         // Replace video tag by the iframe.
         video.parentNode.replaceChild(iframe, video);
+
+        this.iframeUtils.treatFrame(iframe);
     }
 
     /**
@@ -554,7 +563,7 @@ export class CoreFormatTextDirective implements OnChanges {
      *
      * @param {HTMLIFrameElement} iframe Iframe to treat.
      * @param {CoreSite} site Site instance.
-     * @param  {Boolean} canTreatVimeo Whether Vimeo videos can be treated in the site.
+     * @param {boolean} canTreatVimeo Whether Vimeo videos can be treated in the site.
      */
     protected treatIframe(iframe: HTMLIFrameElement, site: CoreSite, canTreatVimeo: boolean): void {
         const src = iframe.src,
@@ -571,8 +580,9 @@ export class CoreFormatTextDirective implements OnChanges {
             });
 
             return;
+        }
 
-        } else if (src && canTreatVimeo) {
+        if (src && canTreatVimeo) {
             // Check if it's a Vimeo video. If it is, use the wsplayer script instead to make restricted videos work.
             const matches = iframe.src.match(/https?:\/\/player\.vimeo\.com\/video\/([0-9]+)/);
             if (matches && matches[1]) {
@@ -620,8 +630,6 @@ export class CoreFormatTextDirective implements OnChanges {
                         }
                     });
                 }
-
-                return;
             }
         }
 
@@ -629,48 +637,52 @@ export class CoreFormatTextDirective implements OnChanges {
     }
 
     /**
-     * Wait for images to load.
-     *
-     * @return {Promise<boolean>} Promise resolved with a boolean: whether there was any image to load.
-     */
-    protected waitForImages(): Promise<boolean> {
-        const imgs = Array.from(this.element.querySelectorAll('img')),
-            promises = [];
-        let hasImgToLoad = false;
-
-        imgs.forEach((img) => {
-            if (img && !img.complete) {
-                hasImgToLoad = true;
-
-                // Wait for image to load or fail.
-                promises.push(new Promise((resolve, reject): void => {
-                    const imgLoaded = (): void => {
-                        resolve();
-                        img.removeEventListener('loaded', imgLoaded);
-                        img.removeEventListener('error', imgLoaded);
-                    };
-
-                    img.addEventListener('load', imgLoaded);
-                    img.addEventListener('error', imgLoaded);
-                }));
-            }
-        });
-
-        return Promise.all(promises).then(() => {
-            return hasImgToLoad;
-        });
-    }
-
-    /**
-     * Convenience function to extract YouTube Id to translate to embedded video.
-     * Based on http://stackoverflow.com/questions/3452546/javascript-regex-how-to-get-youtube-video-id-from-url
+     * Parse a YouTube URL.
+     * Based on Youtube.parseUrl from Moodle media/player/videojs/amd/src/Youtube-lazy.js
      *
      * @param {string} url URL of the video.
      */
-    protected youtubeGetId(url: string): string {
-        const regExp = /^.*(?:(?:youtu.be\/)|(?:v\/)|(?:\/u\/\w\/)|(?:embed\/)|(?:watch\?))\??v?=?([^#\&\?]*).*/,
-            match = url.match(regExp);
+    protected parseYoutubeUrl(url: string): {videoId: string, listId?: string, start?: number} {
+        const result = {
+            videoId: null,
+            listId: null,
+            start: null
+        };
 
-        return (match && match[1].length == 11) ? match[1] : '';
+        if (!url) {
+            return result;
+        }
+
+        url = this.textUtils.decodeHTML(url);
+
+        // Get the video ID.
+        let match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+
+        if (match && match[2].length === 11) {
+            result.videoId = match[2];
+        }
+
+        // Now get the playlist (if any).
+        match = url.match(/[?&]list=([^#\&\?]+)/);
+
+        if (match && match[1]) {
+            result.listId = match[1];
+        }
+
+        // Now get the start time (if any).
+        match = url.match(/[?&]start=(\d+)/);
+
+        if (match && match[1]) {
+            result.start = parseInt(match[1], 10);
+        } else {
+            // No start param, but it could have a time param.
+            match = url.match(/[?&]t=(\d+h)?(\d+m)?(\d+s)?/);
+            if (match) {
+                result.start = (match[1] ? parseInt(match[1], 10) * 3600 : 0) + (match[2] ? parseInt(match[2], 10) * 60 : 0) +
+                        (match[3] ? parseInt(match[3], 10) : 0);
+            }
+        }
+
+        return result;
     }
 }

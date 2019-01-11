@@ -26,7 +26,6 @@ import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
 import { CoreQuestionDelegate } from '@core/question/providers/delegate';
 import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
 import { AddonModQuizOfflineProvider } from './quiz-offline';
-import * as moment from 'moment';
 
 /**
  * Service that provides some features for quiz.
@@ -287,9 +286,9 @@ export class AddonModQuizProvider {
         const dueDate = this.getAttemptDueDate(quiz, attempt);
 
         if (attempt.state === AddonModQuizProvider.ATTEMPT_OVERDUE) {
-            return this.translate.instant('addon.mod_quiz.overduemustbesubmittedby', {$a: moment(dueDate).format('LLL')});
+            return this.translate.instant('addon.mod_quiz.overduemustbesubmittedby', {$a: this.timeUtils.userDate(dueDate)});
         } else if (dueDate) {
-            return this.translate.instant('addon.mod_quiz.mustbesubmittedby', {$a: moment(dueDate).format('LLL')});
+            return this.translate.instant('addon.mod_quiz.mustbesubmittedby', {$a: this.timeUtils.userDate(dueDate)});
         }
     }
 
@@ -317,7 +316,7 @@ export class AddonModQuizProvider {
 
                 if (dueDate) {
                     sentences.push(this.translate.instant('addon.mod_quiz.stateoverduedetails',
-                            {$a: moment(dueDate).format('LLL')}));
+                            {$a: this.timeUtils.userDate(dueDate)}));
                 }
 
                 return sentences;
@@ -326,7 +325,7 @@ export class AddonModQuizProvider {
                 return [
                     this.translate.instant('addon.mod_quiz.statefinished'),
                     this.translate.instant('addon.mod_quiz.statefinisheddetails',
-                            {$a: moment(attempt.timefinish * 1000).format('LLL')})
+                            {$a: this.timeUtils.userDate(attempt.timefinish * 1000)})
                 ];
 
             case AddonModQuizProvider.ATTEMPT_ABANDONED:

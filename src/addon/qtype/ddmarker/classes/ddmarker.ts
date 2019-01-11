@@ -65,9 +65,11 @@ export class AddonQtypeDdMarkerQuestion {
      * @param {any} question The question instance.
      * @param {boolean} readOnly Whether it's read only.
      * @param {any[]} dropZones The drop zones received in the init object of the question.
+     * @param {string} [imgSrc] Background image source (3.6+ sites).
      */
     constructor(logger: CoreLoggerProvider, protected domUtils: CoreDomUtilsProvider, protected textUtils: CoreTextUtilsProvider,
-            protected container: HTMLElement, protected question: any, protected readOnly: boolean, protected dropZones: any[]) {
+            protected container: HTMLElement, protected question: any, protected readOnly: boolean, protected dropZones: any[],
+            protected imgSrc?: string) {
         this.logger = logger.getInstance('AddonQtypeDdMarkerQuestion');
 
         this.graphics = new AddonQtypeDdMarkerGraphicsApi(this, this.domUtils);
@@ -713,19 +715,23 @@ export class AddonQtypeDdMarkerQuestion {
             return;
         }
 
-        const bgImg = this.doc.bgImg(),
-            imgLoaded = (): void => {
-                bgImg.removeEventListener('load', imgLoaded);
+        const bgImg = this.doc.bgImg();
+        if (!bgImg.src && this.imgSrc) {
+            bgImg.src = this.imgSrc;
+        }
 
-                this.makeImageDropable();
+        const imgLoaded = (): void => {
+            bgImg.removeEventListener('load', imgLoaded);
 
-                setTimeout(() => {
-                    this.redrawDragsAndDrops();
-                });
+            this.makeImageDropable();
 
-                this.afterImageLoadDone = true;
-                this.question.loaded = true;
-            };
+            setTimeout(() => {
+                this.redrawDragsAndDrops();
+            });
+
+            this.afterImageLoadDone = true;
+            this.question.loaded = true;
+        };
 
         bgImg.addEventListener('load', imgLoaded);
 
@@ -787,7 +793,7 @@ export class AddonQtypeDdMarkerQuestion {
         }
 
         // Re-draw drop zones.
-        if (this.dropZones.length !== 0) {
+        if (this.dropZones && this.dropZones.length !== 0) {
             this.graphics.clear();
             this.restartColours();
 

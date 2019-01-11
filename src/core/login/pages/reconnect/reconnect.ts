@@ -110,8 +110,13 @@ export class CoreLoginReconnectPage {
 
     /**
      * Tries to authenticate the user.
+     *
+     * @param {Event} e Event.
      */
-    login(): void {
+    login(e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+
         this.appProvider.closeKeyboard();
 
         // Get input data.
@@ -154,7 +159,7 @@ export class CoreLoginReconnectPage {
                 });
             });
         }).catch((error) => {
-            this.loginHelper.treatUserTokenError(siteUrl, error);
+            this.loginHelper.treatUserTokenError(siteUrl, error, username, password);
         }).finally(() => {
             modal.dismiss();
         });

@@ -139,6 +139,37 @@ export class AddonCalendarProvider {
     }
 
     /**
+     * Removes expired events from local DB.
+     *
+     * @param {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
+     * @return {Promise<void>} Promise resolved when done.
+     */
+    cleanExpiredEvents(siteId?: string): Promise<void> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            let promise;
+
+            // Cancel expired events notifications first.
+            if (this.localNotificationsProvider.isAvailable()) {
+                promise = site.getDb().getRecordsSelect(AddonCalendarProvider.EVENTS_TABLE, 'timestart < ?',
+                        [this.timeUtils.timestamp()]).then((events) => {
+                    events.forEach((event) => {
+                        return this.localNotificationsProvider.cancel(event.id, AddonCalendarProvider.COMPONENT, site.getId());
+                    });
+                }).catch(() => {
+                    // Ignore errors.
+                });
+            } else {
+                promise = Promise.resolve();
+            }
+
+            return promise.then(() => {
+                return site.getDb().deleteRecordsSelect(AddonCalendarProvider.EVENTS_TABLE, 'timestart < ?',
+                    [this.timeUtils.timestamp()]);
+            });
+        });
+    }
+
+    /**
      * Get all calendar events from local Db.
      *
      * @param {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
@@ -196,6 +227,30 @@ export class AddonCalendarProvider {
                 return event || this.getEventFromLocalDb(id);
             }).catch(() => {
                 return this.getEventFromLocalDb(id);
+            });
+        });
+    }
+
+    /**
+     * Get a calendar event by ID. This function returns more data than getEvent, but it isn't available in all Moodles.
+     *
+     * @param {number} id Event ID.
+     * @param {boolean} [refresh] True when we should update the event data.
+     * @param {string} [siteId] ID of the site. If not defined, use current site.
+     * @return {Promise<any>} Promise resolved when the event data is retrieved.
+     * @since 3.4
+     */
+    getEventById(id: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const preSets = {
+                    cacheKey: this.getEventCacheKey(id)
+                },
+                data = {
+                    eventid: id
+                };
+
+            return site.read('core_calendar_get_calendar_event_by_id', data, preSets).then((response) => {
+                return response.event;
             });
         });
     }
@@ -273,46 +328,51 @@ export class AddonCalendarProvider {
             : Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             siteId = site.getId();
+            const promises = [];
+            let courses, groups;
 
-            return this.coursesProvider.getUserCourses(false, siteId).then((courses) => {
+            promises.push(this.coursesProvider.getUserCourses(false, siteId).then((data) => {
+                courses = data;
                 courses.push({ id: site.getSiteHomeId() }); // Add front page.
+            }));
+            promises.push(this.groupsProvider.getAllUserGroups(siteId).then((data) => {
+                groups = data;
+            }));
 
-                return this.groupsProvider.getUserGroups(courses, siteId).then((groups) => {
-                    const now = this.timeUtils.timestamp(),
-                        start = now + (CoreConstants.SECONDS_DAY * daysToStart),
-                        end = start + (CoreConstants.SECONDS_DAY * daysInterval),
-                        data = {
-                            options: {
-                                userevents: 1,
-                                siteevents: 1,
-                                timestart: start,
-                                timeend: end
-                            },
-                            events: {
-                                courseids: [],
-                                groupids: []
-                            }
-                        };
-
-                    courses.forEach((course, index) => {
-                        data.events.courseids[index] = course.id;
-                    });
-
-                    groups.forEach((group, index) => {
-                        data.events.groupids[index] = group.id;
-                    });
-
-                    // We need to retrieve cached data using cache key because we have timestamp in the params.
-                    const preSets = {
-                        cacheKey: this.getEventsListCacheKey(daysToStart, daysInterval),
-                        getCacheUsingCacheKey: true
+            return Promise.all(promises).then(() => {
+                const now = this.timeUtils.timestamp(),
+                    start = now + (CoreConstants.SECONDS_DAY * daysToStart),
+                    end = start + (CoreConstants.SECONDS_DAY * daysInterval),
+                    data = {
+                        options: {
+                            userevents: 1,
+                            siteevents: 1,
+                            timestart: start,
+                            timeend: end
+                        },
+                        events: {
+                            courseids: [],
+                            groupids: []
+                        }
                     };
 
-                    return site.read('core_calendar_get_calendar_events', data, preSets).then((response) => {
-                        this.storeEventsInLocalDB(response.events, siteId);
+                data.events.courseids = courses.map((course) => {
+                    return course.id;
+                });
+                data.events.groupids = groups.map((group) => {
+                    return group.id;
+                });
 
-                        return response.events;
-                    });
+                // We need to retrieve cached data using cache key because we have timestamp in the params.
+                const preSets = {
+                    cacheKey: this.getEventsListCacheKey(daysToStart, daysInterval),
+                    getCacheUsingCacheKey: true
+                };
+
+                return site.read('core_calendar_get_calendar_events', data, preSets).then((response) => {
+                    this.storeEventsInLocalDB(response.events, siteId);
+
+                    return response.events;
                 });
             });
         });
@@ -341,18 +401,17 @@ export class AddonCalendarProvider {
     /**
      * Invalidates events list and all the single events and related info.
      *
-     * @param {any[]} courses List of courses or course ids.
      * @param {string} [siteId] Site Id. If not defined, use current site.
      * @return {Promise<any[]>} Promise resolved when the list is invalidated.
      */
-    invalidateEventsList(courses: any[], siteId?: string): Promise<any[]> {
+    invalidateEventsList(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             siteId = site.getId();
 
             const promises = [];
 
             promises.push(this.coursesProvider.invalidateUserCourses(siteId));
-            promises.push(this.groupsProvider.invalidateUserGroups(courses, siteId));
+            promises.push(this.groupsProvider.invalidateAllUserGroups(siteId));
             promises.push(site.invalidateWsCacheForKeyStartingWith(this.getEventsListPrefixCacheKey()));
 
             return Promise.all(promises);
@@ -397,6 +456,16 @@ export class AddonCalendarProvider {
     }
 
     /**
+     * Check if the get event by ID WS is available.
+     *
+     * @return {boolean} Whether it's available.
+     * @since 3.4
+     */
+    isGetEventByIdAvailable(): boolean {
+        return this.sitesProvider.wsAvailableInCurrentSite('core_calendar_get_calendar_event_by_id');
+    }
+
+    /**
      * Get the next events for all the sites and schedules their notifications.
      * If an event notification time is 0, cancel its scheduled notification (if any).
      * If local notification plugin is not enabled, resolve the promise.
@@ -404,27 +473,29 @@ export class AddonCalendarProvider {
      * @return {Promise}         Promise resolved when all the notifications have been scheduled.
      */
     scheduleAllSitesEventsNotifications(): Promise<any[]> {
-        if (this.localNotificationsProvider.isAvailable()) {
-            return this.sitesProvider.getSitesIds().then((siteIds) => {
-                const promises = [];
+        const notificationsEnabled = this.localNotificationsProvider.isAvailable();
 
-                siteIds.forEach((siteId) => {
-                    // Check if calendar is disabled for the site.
-                    promises.push(this.isDisabled(siteId).then((disabled) => {
-                        if (!disabled) {
-                            // Get first events.
-                            return this.getEventsList(undefined, undefined, siteId).then((events) => {
-                                return this.scheduleEventsNotifications(events, siteId);
-                            });
-                        }
-                    }));
-                });
+        return this.sitesProvider.getSitesIds().then((siteIds) => {
+            const promises = [];
 
-                return Promise.all(promises);
+            siteIds.forEach((siteId) => {
+                promises.push(this.cleanExpiredEvents(siteId).then(() => {
+                    if (notificationsEnabled) {
+                        // Check if calendar is disabled for the site.
+                        return this.isDisabled(siteId).then((disabled) => {
+                            if (!disabled) {
+                                // Get first events.
+                                return this.getEventsList(undefined, undefined, siteId).then((events) => {
+                                    return this.scheduleEventsNotifications(events, siteId);
+                                });
+                            }
+                        });
+                    }
+                }));
             });
-        } else {
-            return Promise.resolve([]);
-        }
+
+            return Promise.all(promises);
+        });
     }
 
     /**
@@ -456,11 +527,10 @@ export class AddonCalendarProvider {
                 }
 
                 const dateTriggered = new Date((event.timestart - (time * 60)) * 1000),
-                    startDate = new Date(event.timestart * 1000),
                     notification = {
                         id: event.id,
                         title: event.name,
-                        text: startDate.toLocaleString(),
+                        text: this.timeUtils.userDate(event.timestart * 1000, 'core.strftimedaydatetime', true),
                         at: dateTriggered,
                         channelParams: {
                             channelID: 'notifications',

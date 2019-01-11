@@ -24,6 +24,25 @@ import { CoreAppProvider } from '../app';
 import { CoreConfigProvider } from '../config';
 import { CoreUrlUtilsProvider } from './url';
 import { CoreConstants } from '@core/constants';
+import { Md5 } from 'ts-md5/dist/md5';
+import { Subject } from 'rxjs';
+
+/**
+ * Interface that defines an extension of the Ionic Alert class, to support multiple listeners.
+ */
+export interface CoreAlert extends Alert {
+    /**
+     * Observable that will notify when the alert is dismissed.
+     * @type {Subject<{data: any, role: string}>}
+     */
+    didDismiss: Subject<{data: any, role: string}>;
+
+    /**
+     * Observable that will notify when the alert will be dismissed.
+     * @type {Subject<{data: any, role: string}>}
+     */
+    willDismiss: Subject<{data: any, role: string}>;
+}
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -40,11 +59,19 @@ export class CoreDomUtilsProvider {
     protected matchesFn: string; // Name of the "matches" function to use when simulating a closest call.
     protected instances: {[id: string]: any} = {}; // Store component/directive instances by id.
     protected lastInstanceId = 0;
+    protected debugDisplay = false; // Whether to display debug messages. Store it in a variable to make it synchronous.
+    protected displayedAlerts = {}; // To prevent duplicated alerts.
 
     constructor(private translate: TranslateService, private loadingCtrl: LoadingController, private toastCtrl: ToastController,
             private alertCtrl: AlertController, private textUtils: CoreTextUtilsProvider, private appProvider: CoreAppProvider,
             private platform: Platform, private configProvider: CoreConfigProvider, private urlUtils: CoreUrlUtilsProvider,
-            private modalCtrl: ModalController, private sanitizer: DomSanitizer) { }
+            private modalCtrl: ModalController, private sanitizer: DomSanitizer) {
+
+        // Check if debug messages should be displayed.
+        configProvider.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false).then((debugDisplay) => {
+            this.debugDisplay = !!debugDisplay;
+        });
+    }
 
     /**
      * Equivalent to element.closest(). If the browser doesn't support element.closest, it will
@@ -340,6 +367,17 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Returns the attribute value of a string element. Only the first element will be selected.
+     *
+     * @param  {string} html      HTML element in string.
+     * @param  {string} attribute Attribute to get.
+     * @return {string}           Attribute value.
+     */
+    getHTMLElementAttribute(html: string, attribute: string): string {
+        return this.convertToElement(html).children[0].getAttribute('src');
+    }
+
+    /**
      * Returns height of an element.
      *
      * @param {any} element DOM element to measure.
@@ -423,6 +461,18 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Get the HTML code to render a connection warning icon.
+     *
+     * @return {string} HTML Code.
+     */
+    getConnectionWarningIconHtml(): string {
+        return '<div text-center><span class="core-icon-with-badge">' +
+                '<ion-icon role="img" class="icon fa fa-wifi" aria-label="wifi"></ion-icon>' +
+                '<ion-icon class="icon fa fa-exclamation-triangle core-icon-badge"></ion-icon>' +
+            '</span></div>';
+    }
+
+    /**
      * Returns width of an element.
      *
      * @param {any} element DOM element to measure.
@@ -493,12 +543,9 @@ export class CoreDomUtilsProvider {
      */
     private getErrorTitle(message: string): any {
         if (message == this.translate.instant('core.networkerrormsg') ||
-            message == this.translate.instant('core.fileuploader.errormustbeonlinetoupload')) {
-            return this.sanitizer.bypassSecurityTrustHtml('<div text-center><span class="core-icon-with-badge">' +
-                    '<ion-icon role="img" class="icon fa fa-wifi" aria-label="wifi"></ion-icon>' +
-                    '<ion-icon class="icon fa fa-exclamation-triangle core-icon-badge"></ion-icon>' +
-                '</span></div>');
+                message == this.translate.instant('core.fileuploader.errormustbeonlinetoupload')) {
 
+            return this.sanitizer.bypassSecurityTrustHtml(this.getConnectionWarningIconHtml());
         }
 
         return this.textUtils.decodeHTML(this.translate.instant('core.error'));
@@ -842,15 +889,24 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Set whether debug messages should be displayed.
+     *
+     * @param {boolean} value Whether to display or not.
+     */
+    setDebugDisplay(value: boolean): void {
+        this.debugDisplay = value;
+    }
+
+    /**
      * Show an alert modal with a button to close it.
      *
      * @param {string} title Title to show.
      * @param {string} message Message to show.
      * @param {string} [buttonText] Text of the button.
      * @param {number} [autocloseTime] Number of milliseconds to wait to close the modal. If not defined, modal won't be closed.
-     * @return {Promise<Alert>} Promise resolved with the alert modal.
+     * @return {Promise<CoreAlert>} Promise resolved with the alert modal.
      */
-    showAlert(title: string, message: string, buttonText?: string, autocloseTime?: number): Promise<Alert> {
+    showAlert(title: string, message: string, buttonText?: string, autocloseTime?: number): Promise<CoreAlert> {
         const hasHTMLTags = this.textUtils.hasHTMLTags(message);
         let promise;
 
@@ -862,8 +918,14 @@ export class CoreDomUtilsProvider {
         }
 
         return promise.then((message) => {
+            const alertId = <string> Md5.hashAsciiStr((title || '') + '#' + (message || ''));
 
-            const alert = this.alertCtrl.create({
+            if (this.displayedAlerts[alertId]) {
+                // There's already an alert with the same message and title. Return it.
+                return this.displayedAlerts[alertId];
+            }
+
+            const alert: CoreAlert = <any> this.alertCtrl.create({
                 title: title,
                 message: message,
                 buttons: [buttonText || this.translate.instant('core.ok')]
@@ -875,6 +937,24 @@ export class CoreDomUtilsProvider {
                     const alertMessageEl: HTMLElement = alert.pageRef().nativeElement.querySelector('.alert-message');
                     this.treatAnchors(alertMessageEl);
                 }
+            });
+
+            // Store the alert and remove it when dismissed.
+            this.displayedAlerts[alertId] = alert;
+
+            // Define the observables to extend the Alert class. This will allow several callbacks instead of just one.
+            alert.didDismiss = new Subject();
+            alert.willDismiss = new Subject();
+
+            // Set the callbacks to trigger an observable event.
+            alert.onDidDismiss((data: any, role: string) => {
+                delete this.displayedAlerts[alertId];
+
+                alert.didDismiss.next({data: data, role: role});
+            });
+
+            alert.onWillDismiss((data: any, role: string) => {
+                alert.willDismiss.next({data: data, role: role});
             });
 
             if (autocloseTime > 0) {
@@ -972,22 +1052,33 @@ export class CoreDomUtilsProvider {
      * @return {Promise<Alert>} Promise resolved with the alert modal.
      */
     showErrorModal(error: any, needsTranslate?: boolean, autocloseTime?: number): Promise<Alert> {
+        let extraInfo = '';
+
         if (typeof error == 'object') {
+            if (this.debugDisplay) {
+                // Get the debug info. Escape the HTML so it is displayed as it is in the view.
+                if (error.debuginfo) {
+                    extraInfo = '<br><br>' + this.textUtils.escapeHTML(error.debuginfo);
+                }
+                if (error.backtrace) {
+                    extraInfo += '<br><br>' + this.textUtils.replaceNewLines(this.textUtils.escapeHTML(error.backtrace), '<br>');
+                }
+
+                // tslint:disable-next-line
+                console.error(error);
+            }
+
             // We received an object instead of a string. Search for common properties.
             if (error.coreCanceled) {
                 // It's a canceled error, don't display an error.
                 return;
-            } else if (typeof error.content != 'undefined') {
-                error = error.content;
-            } else if (typeof error.body != 'undefined') {
-                error = error.body;
-            } else if (typeof error.message != 'undefined') {
-                error = error.message;
-            } else if (typeof error.error != 'undefined') {
-                error = error.error;
-            } else {
+            }
+
+            error = this.textUtils.getErrorMessageFromError(error);
+            if (!error) {
                 // No common properties found, just stringify it.
                 error = JSON.stringify(error);
+                extraInfo = ''; // No need to add extra info because it's already in the error.
             }
 
             // Try to remove tokens from the contents.
@@ -1002,7 +1093,11 @@ export class CoreDomUtilsProvider {
             return;
         }
 
-        const message = this.textUtils.decodeHTML(needsTranslate ? this.translate.instant(error) : error);
+        let message = this.textUtils.decodeHTML(needsTranslate ? this.translate.instant(error) : error);
+
+        if (extraInfo) {
+            message += extraInfo;
+        }
 
         return this.showAlert(this.getErrorTitle(message), message, undefined, autocloseTime);
     }
@@ -1022,13 +1117,13 @@ export class CoreDomUtilsProvider {
             return;
         }
 
+        let errorMessage = error;
+
         if (error && typeof error != 'string') {
-            error = error.message || error.error || error.content || error.body;
+            errorMessage = this.textUtils.getErrorMessageFromError(error);
         }
 
-        error = typeof error == 'string' ? error : defaultError;
-
-        return this.showErrorModal(error, needsTranslate, autocloseTime);
+        return this.showErrorModal(typeof errorMessage == 'string' ? error : defaultError, needsTranslate, autocloseTime);
     }
 
     /**
@@ -1256,6 +1351,40 @@ export class CoreDomUtilsProvider {
             modal.present();
         }
 
+    }
+
+    /**
+     * Wait for images to load.
+     *
+     * @param {HTMLElement} element The element to search in.
+     * @return {Promise<boolean>} Promise resolved with a boolean: whether there was any image to load.
+     */
+    waitForImages(element: HTMLElement): Promise<boolean> {
+        const imgs = Array.from(element.querySelectorAll('img')),
+            promises = [];
+        let hasImgToLoad = false;
+
+        imgs.forEach((img) => {
+            if (img && !img.complete) {
+                hasImgToLoad = true;
+
+                // Wait for image to load or fail.
+                promises.push(new Promise((resolve, reject): void => {
+                    const imgLoaded = (): void => {
+                        resolve();
+                        img.removeEventListener('load', imgLoaded);
+                        img.removeEventListener('error', imgLoaded);
+                    };
+
+                    img.addEventListener('load', imgLoaded);
+                    img.addEventListener('error', imgLoaded);
+                }));
+            }
+        });
+
+        return Promise.all(promises).then(() => {
+            return hasImgToLoad;
+        });
     }
 
     /**

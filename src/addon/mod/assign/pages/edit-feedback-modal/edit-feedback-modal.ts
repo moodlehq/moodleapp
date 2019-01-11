@@ -72,8 +72,13 @@ export class AddonModAssignEditFeedbackModalPage {
 
     /**
      * Done editing.
+     *
+     * @param {Event} e Click event.
      */
-    done(): void {
+    done(e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+
         // Close the modal, sending the input data.
         this.forceLeave = true;
         this.closeModal(this.getInputData());

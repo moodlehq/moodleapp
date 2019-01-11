@@ -1,6 +1,22 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 3.6.0 ===
+
+- gulp was updated to v4. In order for gulp to work, you need to install gulp-cli: npm install -g gulp-cli
+  It's also recommended to update ionic cli to v4, otherwise some errors could be raised while building: npm install -g ionic
+- The value of the constant CoreCourseProvider.ALL_SECTIONS_ID has changed from -1 to -2.
+- Use of completionstatus on the module object has been deprecated, use completiondata instead.
+- The function CoreSitesProvider.loadSite has changed, now it will trigger SESSION_EXPIRED event if the site is logged out. Its params and return value have changed.
+- When using CoreDomUtils.showAlert, please use alert.didDismiss.subscribe() instead of alert.onDidDismiss().
+- The page CoreSharedFilesChooseSitePage now expects to receive the full path to the file (file.toURL()) instead of the relative path.
+- The following strings have been deprecated:
+    core.dfdaymonthyear. Please use core.strftimedatefullshort instead.
+    core.dfdayweekmonth. Please use core.strftimedayshort instead.
+    core.dffulldate. Please use core.strftimedaydatetime instead.
+    core.dfmediumdate. Please use core.strftimedaydatetime instead.
+    core.dftimedate. Please use core.strftimetime instead.
+
 === 3.5.2 ===
 
 - CoreChartDirective changed from directive to component (CoreChartComponent) and the selector to use it changed from canvas[core-chart] to core-chart.

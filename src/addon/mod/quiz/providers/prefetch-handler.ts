@@ -51,18 +51,62 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
     }
 
     /**
-     * Get the download size of a module.
+     * Get list of files. If not defined, we'll assume they're in module.contents.
      *
      * @param {any} module Module.
      * @param {Number} courseId Course ID the module belongs to.
      * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @return {Promise<{size: number, total: boolean}>} Promise resolved with the size and a boolean indicating if it was able
-     *                                                   to calculate the total size.
+     * @return {Promise<any[]>} Promise resolved with the list of files.
      */
-    getDownloadSize(module: any, courseId: any, single?: boolean): Promise<{ size: number, total: boolean }> {
-        return Promise.resolve({
-            size: -1,
-            total: false
+    getFiles(module: any, courseId: number, single?: boolean): Promise<any[]> {
+        return this.quizProvider.getQuiz(courseId, module.id).then((quiz) => {
+            const files = this.getIntroFilesFromInstance(module, quiz);
+
+            return this.quizProvider.getUserAttempts(quiz.id, 'all', true, false, true).then((attempts) => {
+                return this.getAttemptsFeedbackFiles(quiz, attempts).then((attemptFiles) => {
+                    return files.concat(attemptFiles);
+                });
+            });
+        }).catch(() => {
+            // Quiz not found, return empty list.
+            return [];
+        });
+    }
+
+    /**
+     * Get the list of downloadable files on feedback attemptss.
+     *
+     * @param  {any}   quiz     Quiz.
+     * @param  {any[]} attempts Quiz user attempts.
+     * @return {Promise<any[]>} List of Files.
+     */
+    protected getAttemptsFeedbackFiles(quiz: any, attempts: any[]): Promise<any[]> {
+        // We have quiz data, now we'll get specific data for each attempt.
+        const promises = [],
+            getInlineFiles = this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.2');
+        let files = [];
+
+        attempts.forEach((attempt) => {
+            if (this.quizProvider.isAttemptFinished(attempt.state)) {
+                // Attempt is finished, get feedback and review data.
+
+                const attemptGrade = this.quizProvider.rescaleGrade(attempt.sumgrades, quiz, false);
+                if (typeof attemptGrade != 'undefined') {
+                    promises.push(this.quizProvider.getFeedbackForGrade(quiz.id, Number(attemptGrade), true)
+                        .then((feedback) => {
+                            if (getInlineFiles && feedback.feedbackinlinefiles && feedback.feedbackinlinefiles.length) {
+                                files = files.concat(feedback.feedbackinlinefiles);
+                            } else if (feedback.feedbacktext && !getInlineFiles) {
+                                files = files.concat(
+                                    this.domUtils.extractDownloadableFilesFromHtmlAsFakeFileObjects(feedback.feedbacktext));
+                            }
+                    }));
+                }
+            }
+        });
+
+        return Promise.all(promises).then(() => {
+            return files;
         });
     }
 
@@ -213,6 +257,10 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
             promises.push(this.quizProvider.getQuizRequiredQtypes(quiz.id, true, siteId));
             promises.push(this.quizProvider.getUserAttempts(quiz.id, 'all', true, false, true, siteId).then((atts) => {
                 attempts = atts;
+
+                return this.getAttemptsFeedbackFiles(quiz, attempts).then((attemptFiles) => {
+                    return this.filepoolProvider.addFilesToQueue(siteId, attemptFiles, AddonModQuizProvider.COMPONENT, module.id);
+                });
             }));
             promises.push(this.quizProvider.getAttemptAccessInformation(quiz.id, 0, false, true, siteId).then((info) => {
                 attemptAccessInfo = info;
@@ -246,6 +294,11 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
                 // Re-fetch user attempts since we created a new one.
                 promises.push(this.quizProvider.getUserAttempts(quiz.id, 'all', true, false, true, siteId).then((atts) => {
                     attempts = atts;
+
+                    return this.getAttemptsFeedbackFiles(quiz, attempts).then((attemptFiles) => {
+                        return this.filepoolProvider.addFilesToQueue(siteId, attemptFiles, AddonModQuizProvider.COMPONENT,
+                            module.id);
+                    });
                 }));
 
                 // Update the download time to prevent detecting the new attempt as an update.

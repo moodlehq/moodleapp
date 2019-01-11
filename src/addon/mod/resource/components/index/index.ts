@@ -14,6 +14,7 @@
 
 import { Component, Injector } from '@angular/core';
 import { CoreAppProvider } from '@providers/app';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
 import { AddonModResourceProvider } from '../../providers/resource';
@@ -37,7 +38,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
 
     constructor(injector: Injector, private resourceProvider: AddonModResourceProvider, private courseProvider: CoreCourseProvider,
             private appProvider: CoreAppProvider, private prefetchHandler: AddonModResourcePrefetchHandler,
-            private resourceHelper: AddonModResourceHelperProvider) {
+            private resourceHelper: AddonModResourceHelperProvider, private sitesProvider: CoreSitesProvider) {
         super(injector);
     }
 
@@ -51,7 +52,9 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
 
         this.loadContent().then(() => {
             this.resourceProvider.logView(this.module.instance).then(() => {
-                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
+            }).catch(() => {
+                // Ignore errors.
             });
         });
     }
@@ -140,6 +143,13 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
      * Opens a file.
      */
     open(): void {
-        this.resourceHelper.openModuleFile(this.module, this.courseId);
+        this.prefetchHandler.isDownloadable(this.module, this.courseId).then((downloadable) => {
+            if (downloadable) {
+                this.resourceHelper.openModuleFile(this.module, this.courseId);
+            } else {
+                // The resource cannot be downloaded, open the activity in browser.
+                return this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(this.module.url);
+            }
+        });
     }
 }

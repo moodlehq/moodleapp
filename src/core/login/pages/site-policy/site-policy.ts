@@ -88,7 +88,7 @@ export class CoreLoginSitePolicyPage {
                 this.policyLoaded = true;
             });
         }).catch((error) => {
-            this.domUtils.showErrorModalDefault(error && error.error, 'Error getting site policy.');
+            this.domUtils.showErrorModalDefault(error, 'Error getting site policy.');
             this.cancel();
         });
     }
@@ -118,7 +118,7 @@ export class CoreLoginSitePolicyPage {
                 return this.loginHelper.goToSiteInitialPage();
             });
         }).catch((error) => {
-            this.domUtils.showErrorModalDefault(error.message, 'Error accepting site policy.');
+            this.domUtils.showErrorModalDefault(error, 'Error accepting site policy.');
         }).finally(() => {
             modal.dismiss();
         });

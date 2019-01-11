@@ -36,6 +36,7 @@ export class AddonNotificationsListPage {
     notifications = [];
     notificationsLoaded = false;
     canLoadMore = false;
+    loadMoreError = false;
     canMarkAllNotificationsAsRead = false;
     loadingMarkAllNotificationsAsRead = false;
 
@@ -76,6 +77,8 @@ export class AddonNotificationsListPage {
      * @return {Promise<any>} Resolved when done.
      */
     protected fetchNotifications(refresh?: boolean): Promise<any> {
+        this.loadMoreError = false;
+
         if (refresh) {
             this.readCount = 0;
             this.unreadCount = 0;
@@ -107,7 +110,7 @@ export class AddonNotificationsListPage {
                 }).catch((error) => {
                     if (unread.length == 0) {
                         this.domUtils.showErrorModalDefault(error, 'addon.notifications.errorgetnotifications', true);
-                        this.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
+                        this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
                     }
                 }));
             } else {
@@ -125,7 +128,7 @@ export class AddonNotificationsListPage {
             });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.notifications.errorgetnotifications', true);
-            this.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
+            this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
         });
     }
 
@@ -136,13 +139,15 @@ export class AddonNotificationsListPage {
         this.loadingMarkAllNotificationsAsRead = true;
         this.notificationsProvider.markAllNotificationsAsRead().catch(() => {
             // Omit failure.
-        }).finally(() => {
+        }).then(() => {
             const siteId = this.sitesProvider.getCurrentSiteId();
             this.eventsProvider.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, null, siteId);
 
-            this.notificationsProvider.getUnreadNotificationsCount().then((unread) => {
-                this.canMarkAllNotificationsAsRead = unread > 0;
-                this.loadingMarkAllNotificationsAsRead = false;
+            // All marked as read, refresh the list.
+            this.notificationsLoaded = false;
+
+            return this.refreshNotifications().finally(() => {
+                this.notificationsLoaded = true;
             });
         });
     }
@@ -179,6 +184,7 @@ export class AddonNotificationsListPage {
 
                 return this.notificationsProvider.getUnreadNotificationsCount().then((unread) => {
                     this.canMarkAllNotificationsAsRead = unread > 0;
+                }).finally(() => {
                     this.loadingMarkAllNotificationsAsRead = false;
                 });
             }
@@ -190,9 +196,10 @@ export class AddonNotificationsListPage {
      * Refresh notifications.
      *
      * @param {any} [refresher] Refresher.
+     * @return Promise<any> Promise resolved when done.
      */
-    refreshNotifications(refresher?: any): void {
-        this.notificationsProvider.invalidateNotificationsList().finally(() => {
+    refreshNotifications(refresher?: any): Promise<any> {
+        return this.notificationsProvider.invalidateNotificationsList().finally(() => {
             return this.fetchNotifications(true).finally(() => {
                 if (refresher) {
                     refresher.complete();
@@ -204,11 +211,11 @@ export class AddonNotificationsListPage {
     /**
      * Load more results.
      *
-     * @param {any} infiniteScroll The infinit scroll instance.
+     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
      */
-    loadMoreNotifications(infiniteScroll: any): void {
+    loadMoreNotifications(infiniteComplete?: any): void {
         this.fetchNotifications().finally(() => {
-            infiniteScroll.complete();
+            infiniteComplete && infiniteComplete();
         });
     }
 

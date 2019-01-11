@@ -32,7 +32,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
     @Input() icon?: string; // Icon to be shown on the navigation bar. Default: Kebab menu icon.
     @Input() title?: string; // Aria label and text to be shown on the top of the popover.
 
-    hideMenu: boolean;
+    hideMenu = true; // It will be unhidden when items are added.
     ariaLabel: string;
     protected items: CoreContextMenuItemComponent[] = [];
     protected itemsMovedToParent: CoreContextMenuItemComponent[] = [];

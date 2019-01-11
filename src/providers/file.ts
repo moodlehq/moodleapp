@@ -23,6 +23,29 @@ import { CoreTextUtilsProvider } from './utils/text';
 import { Zip } from '@ionic-native/zip';
 
 /**
+ * Progress event used when writing a file data into a file.
+ */
+export interface CoreFileProgressEvent {
+    /**
+     * Whether the values are reliabñe.
+     * @type {boolean}
+     */
+    lengthComputable?: boolean;
+
+    /**
+     * Number of treated bytes.
+     * @type {number}
+     */
+    loaded?: number;
+
+    /**
+     * Total of bytes.
+     * @type {number}
+     */
+    total?: number;
+}
+
+/**
  * Factory to interact with the file system.
  */
 @Injectable()
@@ -41,10 +64,75 @@ export class CoreFileProvider {
     protected initialized = false;
     protected basePath = '';
     protected isHTMLAPI = false;
+    protected CHUNK_SIZE = 10485760; // 10 MB.
 
     constructor(logger: CoreLoggerProvider, private platform: Platform, private file: File, private appProvider: CoreAppProvider,
             private textUtils: CoreTextUtilsProvider, private zip: Zip, private mimeUtils: CoreMimetypeUtilsProvider) {
         this.logger = logger.getInstance('CoreFileProvider');
+
+        if (platform.is('android') && !Object.getOwnPropertyDescriptor(FileReader.prototype, 'onloadend')) {
+            // Cordova File plugin creates some getters and setter for FileReader, but Ionic's polyfills override them in Android.
+            // Create the getters and setters again. This code comes from FileReader.js in cordova-plugin-file.
+            this.defineGetterSetter(FileReader.prototype, 'readyState', function(): any {
+                return this._localURL ? this._readyState : this._realReader.readyState;
+            });
+
+            this.defineGetterSetter(FileReader.prototype, 'error', function(): any {
+                return this._localURL ? this._error : this._realReader.error;
+            });
+
+            this.defineGetterSetter(FileReader.prototype, 'result', function(): any {
+                return this._localURL ? this._result : this._realReader.result;
+            });
+
+            this.defineEvent('onloadstart');
+            this.defineEvent('onprogress');
+            this.defineEvent('onload');
+            this.defineEvent('onerror');
+            this.defineEvent('onloadend');
+            this.defineEvent('onabort');
+        }
+    }
+
+    /**
+     * Define an event for FileReader.
+     *
+     * @param {string} eventName Name of the event.
+     */
+    protected defineEvent(eventName: string): void {
+        this.defineGetterSetter(FileReader.prototype, eventName, function(): any {
+            return this._realReader[eventName] || null;
+        }, function(value: any): void {
+            this._realReader[eventName] = value;
+        });
+    }
+
+    /**
+     * Define a getter and, optionally, a setter for a certain property in an object.
+     *
+     * @param {any} obj Object to set the getter/setter for.
+     * @param {string} key Name of the property where to set them.
+     * @param {Function} getFunc The getter function.
+     * @param {Function} [setFunc] The setter function.
+     */
+    protected defineGetterSetter(obj: any, key: string, getFunc: Function, setFunc?: Function): void {
+        if (Object.defineProperty) {
+            const desc: any = {
+                get: getFunc,
+                configurable: true
+            };
+
+            if (setFunc) {
+                desc.set = setFunc;
+            }
+
+            Object.defineProperty(obj, key, desc);
+        } else {
+            obj.__defineGetter__(key, getFunc);
+            if (setFunc) {
+                obj.__defineSetter__(key, setFunc);
+            }
+        }
     }
 
     /**
@@ -79,9 +167,9 @@ export class CoreFileProvider {
         return this.platform.ready().then(() => {
 
             if (this.platform.is('android')) {
-                this.basePath = this.file.externalApplicationStorageDirectory;
+                this.basePath = this.file.externalApplicationStorageDirectory || this.basePath;
             } else if (this.platform.is('ios')) {
-                this.basePath = this.file.documentsDirectory;
+                this.basePath = this.file.documentsDirectory || this.basePath;
             } else if (!this.isAvailable() || this.basePath === '') {
                 this.logger.error('Error getting device OS.');
 
@@ -453,7 +541,7 @@ export class CoreFileProvider {
             };
             setTimeout(() => {
                 if (!hasStarted) {
-                    reject();
+                    reject('Upload cannot start.');
                 }
             }, 3000);
 
@@ -479,9 +567,10 @@ export class CoreFileProvider {
      *
      * @param {string} path Relative path to the file.
      * @param {any} data Data to write.
+     * @param {boolean} [append] Whether to append the data to the end of the file.
      * @return {Promise<any>} Promise to be resolved when the file is written.
      */
-    writeFile(path: string, data: any): Promise<any> {
+    writeFile(path: string, data: any, append?: boolean): Promise<any> {
         return this.init().then(() => {
             // Remove basePath if it's in the path.
             path = this.removeStartingSlash(path.replace(this.basePath, ''));
@@ -496,10 +585,64 @@ export class CoreFileProvider {
                     data = new Blob([data], { type: type || 'text/plain' });
                 }
 
-                return this.file.writeFile(this.basePath, path, data, { replace: true }).then(() => {
+                return this.file.writeFile(this.basePath, path, data, { replace: !append, append: !!append }).then(() => {
                     return fileEntry;
                 });
             });
+        });
+    }
+
+    /**
+     * Write some file data into a filesystem file.
+     * It's done in chunks to prevent crashing the app for big files.
+     *
+     * @param {any} file The data to write.
+     * @param {string} path Path where to store the data.
+     * @param {Function} [onProgress] Function to call on progress.
+     * @param {number} [offset=0] Offset where to start reading from.
+     * @param {boolean} [append] Whether to append the data to the end of the file.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    writeFileDataInFile(file: any, path: string, onProgress?: (event: CoreFileProgressEvent) => any, offset: number = 0,
+            append?: boolean): Promise<any> {
+
+        offset = offset || 0;
+
+        // Get the chunk to read.
+        const blob = file.slice(offset, Math.min(offset + this.CHUNK_SIZE, file.size));
+
+        return this.writeFileDataInFileChunk(blob, path, append).then((fileEntry) => {
+            offset += this.CHUNK_SIZE;
+
+            onProgress && onProgress({
+                lengthComputable: true,
+                loaded: offset,
+                total: file.size
+            });
+
+            if (offset >= file.size) {
+                // Done, stop.
+                return fileEntry;
+            }
+
+            // Read the next chunk.
+            return this.writeFileDataInFile(file, path, onProgress, offset, true);
+        });
+    }
+
+    /**
+     * Write a chunk of data into a file.
+     *
+     * @param {any} chunkData The chunk of data.
+     * @param {string} path Path where to store the data.
+     * @param {boolean} [append] Whether to append the data to the end of the file.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected writeFileDataInFileChunk(chunkData: any, path: string, append?: boolean): Promise<any> {
+        // Read the chunk data.
+        return this.readFileData(chunkData, CoreFileProvider.FORMATARRAYBUFFER).then((fileData) => {
+            // Write the data in the file.
+            return this.writeFile(path, fileData, append);
         });
     }
 
@@ -909,7 +1052,7 @@ export class CoreFileProvider {
 
             // Index the files by name.
             entries.forEach((entry) => {
-                files[entry.name] = entry;
+                files[entry.name.toLowerCase()] = entry;
             });
 
             // Format extension.
@@ -920,7 +1063,7 @@ export class CoreFileProvider {
             }
 
             newName = fileNameWithoutExtension + extension;
-            if (typeof files[newName] == 'undefined') {
+            if (typeof files[newName.toLowerCase()] == 'undefined') {
                 // No file with the same name.
                 return newName;
             } else {

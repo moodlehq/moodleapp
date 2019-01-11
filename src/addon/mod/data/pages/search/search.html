@@ -10,17 +10,17 @@
 </ion-header>
 <ion-content>
     <div class="fixed-content core-tabs-bar">
-        <a class="tab-slide" [attr.aria-selected]="!search.searchingAdvanced" (click)="toggleAdvanced()">{{ 'addon.mod_data.search' | translate}}</a>
-        <a class="tab-slide" [attr.aria-selected]="search.searchingAdvanced" (click)="toggleAdvanced()">{{ 'addon.mod_data.advancedsearch' | translate }}</a>
+        <a class="tab-slide" [attr.aria-selected]="!search.searchingAdvanced" (click)="changeAdvanced(false)">{{ 'addon.mod_data.search' | translate}}</a>
+        <a class="tab-slide" [attr.aria-selected]="search.searchingAdvanced" (click)="changeAdvanced(true)">{{ 'addon.mod_data.advancedsearch' | translate }}</a>
     </div>
-    <form (ngSubmit)="searchEntries()" [formGroup]="searchForm">
+    <form (ngSubmit)="searchEntries($event)" [formGroup]="searchForm">
         <ion-list no-margin>
             <ion-item [hidden]="search.searchingAdvanced">
                 <ion-input type="text" placeholder="{{ 'addon.mod_data.search' | translate}}" [(ngModel)]="search.text" name="text" formControlName="text"></ion-input>
             </ion-item>
             <ion-item text-wrap>
                 <ion-label stacked>{{ 'core.sortby' | translate }}</ion-label>
-                <ion-select interface="popover" name="sortBy" formControlName="sortBy">
+                <ion-select interface="action-sheet" name="sortBy" formControlName="sortBy" [placeholder]="'core.sortby' | translate">
                     <optgroup *ngIf="fieldsArray.length" label="{{ 'addon.mod_data.fields' | translate }}">
                         <ion-option *ngFor="let field of fieldsArray" [value]="field.id">{{field.name}}</ion-option>
                     </optgroup>

@@ -91,9 +91,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
 
         // Setup the editor.
         this.editorElement = this.editor.nativeElement as HTMLDivElement;
-        this.editorElement.innerHTML = this.control.value;
-        this.textarea.value = this.control.value;
-
+        this.setContent(this.control.value);
         this.editorElement.onchange = this.onChange.bind(this);
         this.editorElement.onkeyup = this.onChange.bind(this);
         this.editorElement.onpaste = this.onChange.bind(this);
@@ -102,14 +100,11 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
 
         // Listen for changes on the control to update the editor (if it is updated from outside of this component).
         this.valueChangeSubscription = this.control.valueChanges.subscribe((param) => {
-            this.editorElement.innerHTML = param;
-            this.textarea.value = param;
+            this.setContent(param);
         });
 
         // Use paragraph on enter.
         document.execCommand('DefaultParagraphSeparator', false, 'p');
-
-        this.treatExternalContent();
 
         this.resizeFunction = this.maximizeEditorSize.bind(this);
         window.addEventListener('resize', this.resizeFunction);
@@ -226,10 +221,14 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
             if (this.isNullOrWhiteSpace(this.editorElement.innerText)) {
                 this.clearText();
             } else {
+                // The textarea and the form control must receive the original URLs.
+                this.restoreExternalContent();
                 // Don't emit event so our valueChanges doesn't get notified by this change.
                 this.control.setValue(this.editorElement.innerHTML, {emitEvent: false});
                 this.control.markAsDirty();
                 this.textarea.value = this.editorElement.innerHTML;
+                // Treat URLs again for the editor.
+                this.treatExternalContent();
             }
         } else {
             if (this.isNullOrWhiteSpace(this.textarea.value)) {
@@ -379,13 +378,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         $event.preventDefault();
         $event.stopPropagation();
 
-        const isNull = this.isNullOrWhiteSpace(this.control.value);
-        if (isNull) {
-            this.clearText();
-        } else {
-            this.editorElement.innerHTML = this.control.value;
-            this.textarea.value = this.control.value;
-        }
+        this.setContent(this.control.value);
 
         this.rteEnabled = !this.rteEnabled;
 
@@ -414,6 +407,11 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
             siteId = this.sitesProvider.getCurrentSiteId(),
             canDownloadFiles = this.sitesProvider.getCurrentSite().canDownloadFiles();
         elements.forEach((el) => {
+            if (el.getAttribute('data-original-src')) {
+                // Already treated.
+                return;
+            }
+
             const url = el.src;
 
             if (!url || !this.urlUtils.isDownloadableUrl(url) || (!canDownloadFiles && this.urlUtils.isPluginFileUrl(url))) {
@@ -423,8 +421,26 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
 
             // Check if it's downloaded.
             return this.filepoolProvider.getSrcByUrl(siteId, url, this.component, this.componentId).then((finalUrl) => {
-                el.setAttribute('src', finalUrl);
+                // Check again if it's already treated, this function can be called concurrently more than once.
+                if (!el.getAttribute('data-original-src')) {
+                    el.setAttribute('data-original-src', el.src);
+                    el.setAttribute('src', finalUrl);
+                }
             });
+        });
+    }
+
+    /**
+     * Reverts changes made by treatExternalContent.
+     */
+    protected restoreExternalContent(): void {
+        const elements = Array.from(this.editorElement.querySelectorAll('img'));
+        elements.forEach((el) => {
+            const originalUrl = el.getAttribute('data-original-src');
+            if (originalUrl) {
+                el.setAttribute('src', originalUrl);
+                el.removeAttribute('data-original-src');
+            }
         });
     }
 
@@ -444,11 +460,26 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     }
 
     /**
+     * Set the content of the textarea and the editor element.
+     *
+     * @param {string} value New content.
+     */
+    protected setContent(value: string): void {
+        if (this.isNullOrWhiteSpace(value)) {
+            this.editorElement.innerHTML = '<p></p>';
+            this.textarea.value = '';
+        } else {
+            this.editorElement.innerHTML = value;
+            this.textarea.value = value;
+            this.treatExternalContent();
+        }
+    }
+
+    /**
      * Clear the text.
      */
     clearText(): void {
-        this.editorElement.innerHTML = '<p></p>';
-        this.textarea.value = '';
+        this.setContent(null);
 
         // Don't emit event so our valueChanges doesn't get notified by this change.
         this.control.setValue(null, {emitEvent: false});

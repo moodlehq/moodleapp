@@ -24,7 +24,6 @@ import { AddonModDataHelperProvider } from '../../providers/helper';
 import { AddonModDataOfflineProvider } from '../../providers/offline';
 import { AddonModDataSyncProvider } from '../../providers/sync';
 import { AddonModDataComponentsModule } from '../components.module';
-import * as moment from 'moment';
 
 /**
  * Component that displays a data index page.
@@ -68,6 +67,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     cssTemplate = '';
     extraImports = [AddonModDataComponentsModule];
     jsData;
+    foundRecordsData;
 
     protected syncEventName = AddonModDataSyncProvider.AUTO_SYNCED;
     protected entryChangedObserver: any;
@@ -104,7 +104,9 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             }
 
             this.dataProvider.logView(this.data.id).then(() => {
-                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
+            }).catch(() => {
+                // Ignore errors.
             });
         });
 
@@ -154,7 +156,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      * Download data contents.
      *
      * @param  {boolean}      [refresh=false]    If it's refreshing content.
-     * @param  {boolean}      [sync=false]       If the refresh is needs syncing.
+     * @param  {boolean}      [sync=false]       If it should try to sync.
      * @param  {boolean}      [showErrors=false] If show errors to the user of hide them.
      * @return {Promise<any>} Promise resolved when done.
      */
@@ -184,11 +186,10 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
                 this.timeAvailableFrom = this.data.timeavailablefrom && time < this.data.timeavailablefrom ?
                     parseInt(this.data.timeavailablefrom, 10) * 1000 : false;
-                this.timeAvailableFromReadable = this.timeAvailableFrom ?
-                    moment(this.timeAvailableFrom).format('LLL') : false;
+                this.timeAvailableFromReadable = this.timeAvailableFrom ? this.timeUtils.userDate(this.timeAvailableFrom) : false;
                 this.timeAvailableTo = this.data.timeavailableto && time > this.data.timeavailableto ?
                     parseInt(this.data.timeavailableto, 10) * 1000 : false;
-                this.timeAvailableToReadable = this.timeAvailableTo ? moment(this.timeAvailableTo).format('LLL') : false;
+                this.timeAvailableToReadable = this.timeAvailableTo ? this.timeUtils.userDate(this.timeAvailableTo) : false;
 
                 this.isEmpty = true;
                 this.groupInfo = null;
@@ -263,6 +264,16 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                 AddonModDataProvider.PER_PAGE) < entries.totalcount;
             this.entriesRendered = '';
 
+            if (typeof entries.maxcount != 'undefined') {
+                this.foundRecordsData = {
+                    num: entries.totalcount,
+                    max: entries.maxcount,
+                    reseturl: '#'
+                };
+            } else {
+                this.foundRecordsData = undefined;
+            }
+
             if (!this.isEmpty) {
                 this.cssTemplate = this.dataHelper.prefixCSS(this.data.csstemplate, '.addon-data-entries-' + this.data.id);
 
@@ -313,13 +324,14 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                         this.firstEntry = entries[0].id;
                     }
 
+                    const template = this.data.listtemplate || this.dataHelper.getDefaultTemplate('list', this.fieldsArray);
+
                     entries.forEach((entry) => {
                         this.entries[entry.id] = entry;
 
                         const actions = this.dataHelper.getActions(this.data, this.access, entry);
 
-                        entriesHTML += this.dataHelper.displayShowFields(this.data.listtemplate, this.fieldsArray, entry, 'list',
-                            actions);
+                        entriesHTML += this.dataHelper.displayShowFields(template, this.fieldsArray, entry, 'list', actions);
                     });
                     entriesHTML += this.data.listtemplatefooter || '';
 

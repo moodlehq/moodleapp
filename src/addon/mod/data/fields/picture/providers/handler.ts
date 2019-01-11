@@ -70,27 +70,21 @@ export class AddonModDataFieldPictureHandler implements AddonModDataFieldHandler
      * @return {any}            With name and value of the data to be sent.
      */
     getFieldEditData(field: any, inputData: any, originalFieldData: any): any {
-        const files = this.getFieldEditFiles(field),
-            values = [],
-            fieldName = 'f_' + field.id + '_alttext';
+        const files = this.getFieldEditFiles(field);
+        const fieldName = 'f_' + field.id + '_alttext';
 
-        if (files.length) {
-            values.push({
+        return [
+            {
                 fieldid: field.id,
                 subfield: 'file',
                 files: files
-            });
-        }
-
-        if (inputData[fieldName]) {
-            values.push({
+            },
+            {
                 fieldid: field.id,
                 subfield: 'alttext',
                 value: inputData[fieldName]
-            });
-        }
-
-        return values;
+            }
+        ];
     }
 
     /**

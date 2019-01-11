@@ -25,6 +25,7 @@ import { CoreCronDelegate } from '@providers/cron';
 import { AddonMessagesSendMessageUserHandler } from './providers/user-send-message-handler';
 import { AddonMessagesAddContactUserHandler } from './providers/user-add-contact-handler';
 import { AddonMessagesBlockContactUserHandler } from './providers/user-block-contact-handler';
+import { AddonMessagesContactRequestLinkHandler } from './providers/contact-request-link-handler';
 import { AddonMessagesDiscussionLinkHandler } from './providers/discussion-link-handler';
 import { AddonMessagesIndexLinkHandler } from './providers/index-link-handler';
 import { AddonMessagesSyncCronHandler } from './providers/sync-cron-handler';
@@ -58,6 +59,7 @@ export const ADDON_MESSAGES_PROVIDERS: any[] = [
         AddonMessagesSendMessageUserHandler,
         AddonMessagesAddContactUserHandler,
         AddonMessagesBlockContactUserHandler,
+        AddonMessagesContactRequestLinkHandler,
         AddonMessagesDiscussionLinkHandler,
         AddonMessagesIndexLinkHandler,
         AddonMessagesSyncCronHandler,
@@ -74,11 +76,13 @@ export class AddonMessagesModule {
             sitesProvider: CoreSitesProvider, linkHelper: CoreContentLinksHelperProvider, updateManager: CoreUpdateManagerProvider,
             settingsHandler: AddonMessagesSettingsHandler, settingsDelegate: CoreSettingsDelegate,
             pushNotificationsDelegate: AddonPushNotificationsDelegate, utils: CoreUtilsProvider,
-            addContactHandler: AddonMessagesAddContactUserHandler, blockContactHandler: AddonMessagesBlockContactUserHandler) {
+            addContactHandler: AddonMessagesAddContactUserHandler, blockContactHandler: AddonMessagesBlockContactUserHandler,
+            contactRequestLinkHandler: AddonMessagesContactRequestLinkHandler) {
         // Register handlers.
         mainMenuDelegate.registerHandler(mainmenuHandler);
         contentLinksDelegate.registerHandler(indexLinkHandler);
         contentLinksDelegate.registerHandler(discussionLinkHandler);
+        contentLinksDelegate.registerHandler(contactRequestLinkHandler);
         userDelegate.registerHandler(sendMessageHandler);
         userDelegate.registerHandler(addContactHandler);
         userDelegate.registerHandler(blockContactHandler);
@@ -103,7 +107,14 @@ export class AddonMessagesModule {
                     }
 
                     messagesProvider.invalidateDiscussionsCache(notification.site).finally(() => {
-                        linkHelper.goInSite(undefined, 'AddonMessagesIndexPage', undefined, notification.site);
+                        // Check if group messaging is enabled, to determine which page should be loaded.
+                        messagesProvider.isGroupMessagingEnabledInSite(notification.site).then((enabled) => {
+                            let pageName = 'AddonMessagesIndexPage';
+                            if (enabled) {
+                                pageName = 'AddonMessagesGroupConversationsPage';
+                            }
+                            linkHelper.goInSite(undefined, pageName, undefined, notification.site);
+                        });
                     });
                 });
             });
@@ -117,7 +128,10 @@ export class AddonMessagesModule {
         // Register push notification clicks.
         pushNotificationsDelegate.on('click').subscribe((notification) => {
             if (utils.isFalseOrZero(notification.notif)) {
-                notificationClicked(notification);
+                // Execute the callback in the Angular zone, so change detection doesn't stop working.
+                zone.run(() => {
+                    notificationClicked(notification);
+                });
 
                 return true;
             }

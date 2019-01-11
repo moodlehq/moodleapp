@@ -31,7 +31,7 @@
     </div>
 
     <!-- User can view all submissions (teacher). -->
-    <ion-card *ngIf="assign && canViewSubmissions" class="core-list-align-detail-right">
+    <ion-card *ngIf="assign && canViewAllSubmissions" class="core-list-align-detail-right">
         <ion-item text-wrap *ngIf="timeRemaining">
             <h2>{{ 'addon.mod_assign.timeremaining' | translate }}</h2>
             <p>{{ timeRemaining }}</p>
@@ -82,6 +82,6 @@
     </ion-card>
 
     <!-- If it's a student, display his submission. -->
-    <addon-mod-assign-submission *ngIf="loaded && !canViewSubmissions" [courseId]="courseId" [moduleId]="module.id"></addon-mod-assign-submission>
+    <addon-mod-assign-submission *ngIf="loaded && !canViewAllSubmissions && canViewOwnSubmission" [courseId]="courseId" [moduleId]="module.id"></addon-mod-assign-submission>
 
 </core-loading>

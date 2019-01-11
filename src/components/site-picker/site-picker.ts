@@ -57,6 +57,12 @@ export class CoreSitePickerComponent implements OnInit {
                 }));
             });
 
+            if (!this.selectedSite && sites.length) {
+                // There is no current site, select the first one.
+                this.selectedSite = sites[0].id;
+                this.siteSelected.emit(this.selectedSite);
+            }
+
             return Promise.all(promises).then(() => {
                 this.sites = sites;
             });

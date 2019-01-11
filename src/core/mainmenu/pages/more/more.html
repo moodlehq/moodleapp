@@ -5,13 +5,11 @@
 </ion-header>
 <ion-content>
     <ion-list>
-        <a ion-item core-user-link userId="{{siteInfo.userid}}">
-            <ion-avatar item-start>
-                <img [src]="siteInfo.userpictureurl" core-external-content alt="{{ 'core.pictureof' | translate:{$a: siteInfo.fullname} }}" role="presentation">
-            </ion-avatar>
+        <a ion-item core-user-link [userId]="siteInfo.userid">
+            <ion-avatar core-user-avatar [user]="siteInfo" item-start></ion-avatar>
             <p>{{siteInfo.fullname}}</p>
         </a>
-        <ion-item-divider color="light"></ion-item-divider>
+        <ion-item-divider></ion-item-divider>
         <ion-item text-center *ngIf="(!handlers || !handlers.length) && !handlersLoaded">
             <ion-spinner></ion-spinner>
         </ion-item>

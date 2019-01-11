@@ -1,0 +1,18 @@
+<ion-content>
+    <ion-refresher [enabled]="loaded" (ionRefresh)="refreshData($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded" class="core-loading-center">
+        <ion-list no-margin>
+            <a ion-item text-wrap *ngFor="let contact of contacts" [title]="contact.fullname" (click)="selectUser(contact.id)" [class.core-split-item-selected]="contact.id == selectedUserId" class="addon-messages-conversation-item">
+                <ion-avatar item-start core-user-avatar [user]="contact" [checkOnline]="contact.showonlinestatus" [linkProfile]="false"></ion-avatar>
+                <h2>
+                    <core-format-text [text]="contact.fullname"></core-format-text>
+                    <core-icon *ngIf="contact.isblocked" name="fa-ban" item-end></core-icon>
+                </h2>
+            </a>
+        </ion-list>
+        <core-empty-box *ngIf="!contacts.length" icon="person" [message]="'addon.messages.nocontactsgetstarted' | translate"></core-empty-box>
+        <core-infinite-loading [enabled]="canLoadMore" (action)="loadMore($event)" [error]="loadMoreError" position="bottom"></core-infinite-loading>
+    </core-loading>
+</ion-content>

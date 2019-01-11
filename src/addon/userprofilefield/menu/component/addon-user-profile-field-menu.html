@@ -6,7 +6,7 @@
 <!-- Edit. -->
 <ion-item *ngIf="edit && field && field.shortname" text-wrap [formGroup]="form">
     <ion-label stacked [core-mark-required]="field.required">{{ field.name }}</ion-label>
-    <ion-select [formControlName]="field.modelName" [placeholder]="'core.choosedots' | translate" interface="popover">
+    <ion-select [formControlName]="field.modelName" [placeholder]="'core.choosedots' | translate" interface="action-sheet">
         <ion-option value="">{{ 'core.choosedots' | translate }}</ion-option>
         <ion-option *ngFor="let option of field.options" [value]="option">{{option}}</ion-option>
     </ion-select>

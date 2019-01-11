@@ -1,0 +1,19 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="loaded" (ionRefresh)="refreshData($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded">
+        <core-empty-box *ngIf="!modules || !modules.length" icon="qr-scanner" [message]="'core.course.nocontentavailable' | translate"></core-empty-box>
+
+        <ion-list>
+            <ng-container *ngFor="let module of modules">
+                <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [courseId]="courseId" downloadEnabled="true"></core-course-module>
+            </ng-container>
+        </ion-list>
+    </core-loading>
+</ion-content>

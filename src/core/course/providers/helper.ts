@@ -29,12 +29,15 @@ import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from './
 import { CoreSiteHomeProvider } from '@core/sitehome/providers/sitehome';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCourseProvider } from './course';
+import { CoreCourseOfflineProvider } from './course-offline';
 import { CoreCourseModuleDelegate } from './module-delegate';
 import { CoreCourseModulePrefetchDelegate } from './module-prefetch-delegate';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { CoreConstants } from '@core/constants';
 import { CoreSite } from '@classes/site';
 import * as moment from 'moment';
+import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
+import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
 
 /**
  * Prefetch info of a module.
@@ -122,7 +125,8 @@ export class CoreCourseHelperProvider {
         private courseOptionsDelegate: CoreCourseOptionsDelegate, private siteHomeProvider: CoreSiteHomeProvider,
         private eventsProvider: CoreEventsProvider, private fileHelper: CoreFileHelperProvider,
         private appProvider: CoreAppProvider, private fileProvider: CoreFileProvider, private injector: Injector,
-        private coursesProvider: CoreCoursesProvider) { }
+        private coursesProvider: CoreCoursesProvider, private courseOffline: CoreCourseOfflineProvider,
+        private courseFormatDelegate: CoreCourseFormatDelegate, private sitePluginsProvider: CoreSitePluginsProvider) { }
 
     /**
      * This function treats every module on the sections provided to load the handler data, treat completion
@@ -131,9 +135,10 @@ export class CoreCourseHelperProvider {
      * @param {any[]} sections List of sections to treat modules.
      * @param {number} courseId Course ID of the modules.
      * @param {any[]} [completionStatus] List of completion status.
+     * @param {string} [courseName] Course name. Recommended if completionStatus is supplied.
      * @return {boolean} Whether the sections have content.
      */
-    addHandlerDataForModules(sections: any[], courseId: number, completionStatus?: any): boolean {
+    addHandlerDataForModules(sections: any[], courseId: number, completionStatus?: any, courseName?: string): boolean {
         let hasContent = false;
 
         sections.forEach((section) => {
@@ -146,10 +151,22 @@ export class CoreCourseHelperProvider {
             section.modules.forEach((module) => {
                 module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, section.id);
 
-                if (completionStatus && typeof completionStatus[module.id] != 'undefined') {
-                    // Check if activity has completions and if it's marked.
-                    module.completionstatus = completionStatus[module.id];
-                    module.completionstatus.courseId = courseId;
+                if (module.completiondata && module.completion > 0) {
+                    module.completiondata.courseId = courseId;
+                    module.completiondata.courseName = courseName;
+                    module.completiondata.tracking = module.completion;
+                    module.completiondata.cmid = module.id;
+
+                    // Use of completionstatus is deprecated, use completiondata instead.
+                    module.completionstatus = module.completiondata;
+                } else if (completionStatus && typeof completionStatus[module.id] != 'undefined') {
+                    // Should not happen on > 3.6. Check if activity has completions and if it's marked.
+                    module.completiondata = completionStatus[module.id];
+                    module.completiondata.courseId = courseId;
+                    module.completiondata.courseName = courseName;
+
+                    // Use of completionstatus is deprecated, use completiondata instead.
+                    module.completionstatus = module.completiondata;
                 }
 
                 // Check if the module is stealth.
@@ -613,7 +630,7 @@ export class CoreCourseHelperProvider {
                 return this.filepoolProvider.getPackageStatus(siteId, component, componentId).then((status) => {
                     result.status = status;
 
-                    const isWifi = !this.appProvider.isNetworkAccessLimited(),
+                    const isWifi = this.appProvider.isWifi(),
                         isOnline = this.appProvider.isOnline();
 
                     if (status === CoreConstants.DOWNLOADED) {
@@ -642,7 +659,7 @@ export class CoreCourseHelperProvider {
                             });
                         }, () => {
                             // Start the download if in wifi, but return the URL right away so the file is opened.
-                            if (isWifi && isOnline) {
+                            if (isWifi) {
                                 this.downloadModule(module, courseId, component, componentId, files, siteId);
                             }
 
@@ -733,6 +750,103 @@ export class CoreCourseHelperProvider {
                     }
                 }, this.sitesProvider.getCurrentSiteId());
             }
+        });
+    }
+
+    /**
+     * Initialize the prefetch icon for selected courses.
+     *
+     * @param  {any[]}        courses  Courses array to get info from.
+     * @param  {any}          prefetch Prefetch information.
+     * @return {Promise<any>}          Resolved with the prefetch information updated when done.
+     */
+    initPrefetchCoursesIcons(courses: any[], prefetch: any): Promise<any> {
+        if (!courses || courses.length < 2) {
+            // Not enough courses.
+            prefetch.icon = '';
+
+            return Promise.resolve(prefetch);
+        }
+
+        return this.determineCoursesStatus(courses).then((status) => {
+            let icon = this.getCourseStatusIconAndTitleFromStatus(status).icon;
+            if (icon == 'spinner') {
+                // It seems all courses are being downloaded, show a download button instead.
+                icon = 'cloud-download';
+            }
+            prefetch.icon = icon;
+
+            return prefetch;
+        });
+    }
+
+    /**
+     * Load offline completion into a list of sections.
+     * This should be used in 3.6 sites or higher, where the course contents already include the completion.
+     *
+     * @param {number} courseId The course to get the completion.
+     * @param {any[]} sections List of sections of the course.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    loadOfflineCompletion(courseId: number, sections: any[], siteId?: string): Promise<any> {
+        return this.courseOffline.getCourseManualCompletions(courseId, siteId).then((offlineCompletions) => {
+            if (!offlineCompletions || !offlineCompletions.length) {
+                // No offline completion.
+                return;
+            }
+
+            const totalOffline = offlineCompletions.length;
+            let loaded = 0;
+
+            offlineCompletions = this.utils.arrayToObject(offlineCompletions, 'cmid');
+
+            // Load the offline data in the modules.
+            for (let i = 0; i < sections.length; i++) {
+                const section = sections[i];
+                if (!section.modules || !section.modules.length) {
+                    // Section has no modules, ignore it.
+                    continue;
+                }
+
+                for (let j = 0; j < section.modules.length; j++) {
+                    const module = section.modules[j],
+                        offlineCompletion = offlineCompletions[module.id];
+
+                    if (offlineCompletion && typeof module.completiondata != 'undefined' &&
+                            offlineCompletion.timecompleted >= module.completiondata.timecompleted * 1000) {
+                        // The module has offline completion. Load it.
+                        module.completiondata.state = offlineCompletion.completed;
+                        module.completiondata.offline = true;
+
+                        // If all completions have been loaded, stop.
+                        loaded++;
+                        if (loaded == totalOffline) {
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Prefetch all the courses in the array.
+     *
+     * @param  {any[]}        courses  Courses array to prefetch.
+     * @param  {any}          prefetch Prefetch information to be updated.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetchCourses(courses: any[], prefetch: any): Promise<any> {
+        prefetch.icon = 'spinner';
+        prefetch.badge = '';
+
+        return this.confirmAndPrefetchCourses(courses, (progress) => {
+            prefetch.badge = progress.count + ' / ' + progress.total;
+        }).then(() => {
+            prefetch.icon = 'refresh';
+        }).finally(() => {
+            prefetch.badge = '';
         });
     }
 
@@ -1021,7 +1135,13 @@ export class CoreCourseHelperProvider {
             if (this.coursesProvider.isGetCoursesByFieldAvailable()) {
                 promises.push(this.coursesProvider.getCoursesByField('id', course.id));
             }
-            promises.push(this.courseProvider.getActivitiesCompletionStatus(course.id));
+
+            const sectionWithModules = sections.find((section) => {
+                    return section.modules && section.modules.length > 0;
+            });
+            if (!sectionWithModules || typeof sectionWithModules.modules[0].completion == 'undefined') {
+                promises.push(this.courseProvider.getActivitiesCompletionStatus(course.id));
+            }
 
             return this.utils.allPromises(promises);
         }).then(() => {
@@ -1191,5 +1311,43 @@ export class CoreCourseHelperProvider {
 
         return (typeof section.availabilityinfo != 'undefined' && section.availabilityinfo != '') ||
             section.summary != '' || (section.modules && section.modules.length > 0);
+    }
+
+    /**
+     * Wait for any course format plugin to load, and open the course page.
+     *
+     * If the plugin's promise is resolved, the course page will be opened.  If it is rejected, they will see an error.
+     * If the promise for the plugin is still in progress when the user tries to open the course, a loader
+     * will be displayed until it is complete, before the course page is opened.  If the promise is already complete,
+     * they will see the result immediately.
+     *
+     * @param {NavController} navCtrl The nav controller to use.
+     * @param {any} course Course to open
+     */
+    openCourse(navCtrl: NavController, course: any): void {
+        if (this.sitePluginsProvider.sitePluginPromiseExists('format_' + course.format)) {
+            // This course uses a custom format plugin, wait for the format plugin to finish loading.
+            const loading = this.domUtils.showModalLoading();
+            this.sitePluginsProvider.sitePluginLoaded('format_' + course.format).then(() => {
+                // The format loaded successfully, but the handlers wont be registered until all site plugins have loaded.
+                if (this.sitePluginsProvider.sitePluginsFinishedLoading) {
+                    loading.dismiss();
+                    this.courseFormatDelegate.openCourse(navCtrl, course);
+                } else {
+                    const observer = this.eventsProvider.on(CoreEventsProvider.SITE_PLUGINS_LOADED, () => {
+                        loading.dismiss();
+                        this.courseFormatDelegate.openCourse(navCtrl, course);
+                        observer && observer.off();
+                    });
+                }
+            }).catch(() => {
+                // The site plugin failed to load. The user needs to restart the app to try loading it again.
+                loading.dismiss();
+                this.domUtils.showErrorModal('core.courses.errorloadplugins', true);
+            });
+        } else {
+            // No custom format plugin. We don't need to wait for anything.
+            this.courseFormatDelegate.openCourse(navCtrl, course);
+        }
     }
 }

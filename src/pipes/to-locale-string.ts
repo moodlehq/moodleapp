@@ -14,9 +14,11 @@
 
 import { Pipe, PipeTransform } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 
 /**
  * Filter to format a timestamp to a locale string. Timestamp can be in seconds or milliseconds.
+ * @deprecated since 3.6. Use coreFormatDate instead.
  */
 @Pipe({
     name: 'coreToLocaleString',
@@ -24,7 +26,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 export class CoreToLocaleStringPipe implements PipeTransform {
     protected logger;
 
-    constructor(logger: CoreLoggerProvider) {
+    constructor(logger: CoreLoggerProvider, private timeUtils: CoreTimeUtilsProvider) {
         this.logger = logger.getInstance('CoreToLocaleStringPipe');
     }
 
@@ -55,6 +57,6 @@ export class CoreToLocaleStringPipe implements PipeTransform {
             timestamp = timestamp * 1000;
         }
 
-        return new Date(timestamp).toLocaleString();
+        return this.timeUtils.userDate(timestamp, 'core.strftimedatetimeshort');
     }
 }

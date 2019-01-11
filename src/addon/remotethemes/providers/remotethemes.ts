@@ -61,7 +61,9 @@ export class AddonRemoteThemesProvider {
             hash: ''
         };
 
-        return this.load(siteId, true);
+        return this.load(siteId, true).catch((error) => {
+            this.logger.error('Error loading site after site init', error);
+        });
     }
 
     /**

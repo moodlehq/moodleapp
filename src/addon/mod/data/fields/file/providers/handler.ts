@@ -72,15 +72,11 @@ export class AddonModDataFieldFileHandler implements AddonModDataFieldHandler {
     getFieldEditData(field: any, inputData: any, originalFieldData: any): any {
         const files = this.getFieldEditFiles(field);
 
-        if (files.length) {
-            return [{
-                fieldid: field.id,
-                subfield: 'file',
-                files: files
-            }];
-        }
-
-        return false;
+        return [{
+            fieldid: field.id,
+            subfield: 'file',
+            files: files
+        }];
     }
 
     /**

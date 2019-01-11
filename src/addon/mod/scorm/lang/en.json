@@ -33,6 +33,7 @@
     "incomplete": "Incomplete",
     "lastattempt": "Last completed attempt",
     "mode": "Mode",
+    "modulenameplural": "SCORM packages",
     "newattempt": "Start a new attempt",
     "noattemptsallowed": "Number of attempts allowed",
     "noattemptsmade": "Number of attempts you have made",

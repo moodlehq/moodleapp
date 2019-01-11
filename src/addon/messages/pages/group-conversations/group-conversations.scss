@@ -1,0 +1,45 @@
+ion-app.app-root .addon-messages-conversation-item,
+ion-app.app-root .addon-message-discussion {
+    h2 {
+        core-format-text {
+            font-weight: bold;
+        }
+
+        ion-icon {
+            @include margin(null, null, null, 2px);
+        }
+    }
+
+    .note {
+        position: absolute;
+        @include position(0, 0, null, null);
+        margin:  4px 8px;
+        font-size: 1.3rem;
+    }
+
+    .addon-message-last-message {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .addon-message-last-message-user {
+        white-space: nowrap;
+        color: $black;
+        @include margin(null, 2px, null, null);
+    }
+
+    .addon-message-last-message-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex-shrink: 1;
+    }
+}
+
+ion-app.app-root .addon-message-discussion {
+    h2 {
+        margin-top: 6px;
+    }
+}

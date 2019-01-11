@@ -34,6 +34,9 @@ export class AddonModWorkshopProvider {
     static EXAMPLES_VOLUNTARY: 0;
     static EXAMPLES_BEFORE_SUBMISSION: 1;
     static EXAMPLES_BEFORE_ASSESSMENT: 2;
+    static SUBMISSION_TYPE_DISABLED = 0;
+    static SUBMISSION_TYPE_AVAILABLE = 1;
+    static SUBMISSION_TYPE_REQUIRED = 2;
 
     static SUBMISSION_CHANGED = 'addon_mod_workshop_submission_changed';
     static ASSESSMENT_SAVED = 'addon_mod_workshop_assessment_saved';
@@ -223,6 +226,19 @@ export class AddonModWorkshopProvider {
                 }
 
                 return Promise.reject(null);
+            }).then((workshop) => {
+                // Set submission types for Moodle 3.5 and older.
+                if (typeof workshop.submissiontypetext == 'undefined') {
+                    if (workshop.nattachments > 0) {
+                        workshop.submissiontypetext = AddonModWorkshopProvider.SUBMISSION_TYPE_AVAILABLE;
+                        workshop.submissiontypefile = AddonModWorkshopProvider.SUBMISSION_TYPE_AVAILABLE;
+                    } else {
+                        workshop.submissiontypetext = AddonModWorkshopProvider.SUBMISSION_TYPE_REQUIRED;
+                        workshop.submissiontypefile = AddonModWorkshopProvider.SUBMISSION_TYPE_DISABLED;
+                    }
+                }
+
+                return workshop;
             });
         });
     }

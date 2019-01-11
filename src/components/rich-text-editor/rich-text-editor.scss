@@ -22,9 +22,6 @@ ion-app.app-root core-rich-text-editor {
         resize: none;
         background-color: $white;
         flex-grow: 1;
-        * {
-            overflow: hidden;
-        }
     }
 
     .core-rte-editor {
@@ -47,28 +44,6 @@ ion-app.app-root core-rich-text-editor {
         // Make empty elements selectable (to move the cursor).
         *:empty:after {
             content: '\200B';
-        }
-
-        ul {
-            list-style-type: disc;
-        }
-        ol {
-            list-style-type: decimal;
-        }
-        ul, ol {
-            -webkit-padding-start: 15px;
-            list-style-position: inside;
-
-            ul {
-                list-style-type: circle;
-            }
-            ol {
-                list-style-type: lower-latin;
-            }
-            ul, ol {
-                list-style-position: inside;
-                @include margin(null, null, null, 15px);
-            }
         }
     }
 

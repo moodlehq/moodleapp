@@ -23,6 +23,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { AddonModGlossaryProvider } from './glossary';
 import { AddonModGlossaryHelperProvider } from './helper';
@@ -46,13 +47,15 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
             sitesProvider: CoreSitesProvider,
             syncProvider: CoreSyncProvider,
             textUtils: CoreTextUtilsProvider,
+            timeUtils: CoreTimeUtilsProvider,
             private uploaderProvider: CoreFileUploaderProvider,
             private utils: CoreUtilsProvider,
             private glossaryProvider: AddonModGlossaryProvider,
             private glossaryHelper: AddonModGlossaryHelperProvider,
             private glossaryOffline: AddonModGlossaryOfflineProvider) {
 
-        super('AddonModGlossarySyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate);
+        super('AddonModGlossarySyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
+                timeUtils);
 
         this.componentTranslate = courseProvider.translateModuleName('glossary');
     }
@@ -198,7 +201,7 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
                             result.warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
                                 component: this.componentTranslate,
                                 name: data.concept,
-                                error: error.error
+                                error: this.textUtils.getErrorMessageFromError(error)
                             }));
                         });
                     } else {

@@ -85,7 +85,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
 
             // Update the text and save it as draft.
             this.isSent = false;
-            this.text = text;
+            this.text = this.replacePluginfileUrls(text);
             this.feedbackDelegate.saveFeedbackDraft(this.assign.id, this.userId, this.plugin, {
                 text: text,
                 format: 1
@@ -106,7 +106,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
             if (draft) {
                 this.isSent = false;
 
-                return draft.text;
+                return this.replacePluginfileUrls(draft.text);
             } else {
                 // There is no draft saved. Check if we have anything offline.
                 return this.assignOfflineProvider.getSubmissionGrade(this.assign.id, this.userId).catch(() => {
@@ -118,7 +118,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
                         this.feedbackDelegate.saveFeedbackDraft(this.assign.id, this.userId, this.plugin,
                                 offlineData.plugindata.assignfeedbackcomments_editor);
 
-                        return offlineData.plugindata.assignfeedbackcomments_editor.text;
+                        return this.replacePluginfileUrls(offlineData.plugindata.assignfeedbackcomments_editor.text);
                     }
 
                     // No offline data found, return online text.
@@ -128,5 +128,17 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
                 });
             }
         });
+    }
+
+    /**
+     * Replace @@PLUGINFILE@@ wildcards with the real URL of embedded files.
+     *
+     * @param {string} Text to treat.
+     * @return {string} Treated text.
+     */
+    replacePluginfileUrls(text: string): string {
+        const files = this.plugin.fileareas && this.plugin.fileareas[0] && this.plugin.fileareas[0].files;
+
+        return this.textUtils.replacePluginfileUrls(text, files || []);
     }
 }

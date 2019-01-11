@@ -1,0 +1,10 @@
+addon-mod-page-index {
+    /* Solves iframe height */
+    .core-loading-content > div[padding] {
+        height: 100%;
+    }
+
+    core-format-text > .no-overflow {
+        display: inline;
+    }
+}

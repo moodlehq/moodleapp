@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { CoreAutoFocusDirective } from './auto-focus';
 import { CoreDownloadFileDirective } from './download-file';
 import { CoreExternalContentDirective } from './external-content';
+import { CoreFabDirective } from './fab';
 import { CoreFormatTextDirective } from './format-text';
 import { CoreLinkDirective } from './link';
 import { CoreKeepKeyboardDirective } from './keep-keyboard';
@@ -30,6 +31,7 @@ import { CoreSupressEventsDirective } from './supress-events';
         CoreAutoFocusDirective,
         CoreDownloadFileDirective,
         CoreExternalContentDirective,
+        CoreFabDirective,
         CoreFormatTextDirective,
         CoreKeepKeyboardDirective,
         CoreLinkDirective,
@@ -44,6 +46,7 @@ import { CoreSupressEventsDirective } from './supress-events';
         CoreAutoFocusDirective,
         CoreDownloadFileDirective,
         CoreExternalContentDirective,
+        CoreFabDirective,
         CoreFormatTextDirective,
         CoreKeepKeyboardDirective,
         CoreLinkDirective,

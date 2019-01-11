@@ -1,21 +1,28 @@
+$core-star-color: $core-color !default;
+
 ion-app.app-root core-courses-course-progress {
     ion-card.card {
         display: flex;
         flex-direction: column;
+        align-self: stretch;
+
+        @for $i from 0 to length($core-course-image-background) {
+            &[course-color="#{$i}"] {
+                .core-course-thumb {
+                    background: nth($core-course-image-background, $i + 1);
+                }
+            }
+        }
 
         .core-course-thumb {
-            height: 150px;
+            padding-top: 40%;
             width: 100%;
             overflow: hidden;
             cursor: pointer;
             pointer-events: auto;
             position: relative;
-
-            @for $i from 0 to length($core-course-image-background) {
-                &.core-course-color-#{$i} {
-                    background: nth($core-course-image-background, $i + 1);
-                }
-            }
+            background-position: center;
+            background-size: cover;
 
             &.core-course-color-img {
                 background: white;
@@ -29,9 +36,12 @@ ion-app.app-root core-courses-course-progress {
             }
         }
 
+        .core-course-shortname {
+            margin-bottom: 8px;
+        }
+
         .core-course-link {
-            padding-top: 8px;
-            padding-bottom: 8px;
+            @include padding(8px, 0px, 8px, 16px);
             .item-inner {
                 @include padding(null, 0, null, null);
             }
@@ -39,18 +49,104 @@ ion-app.app-root core-courses-course-progress {
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
+                flex-wrap: wrap;
             }
-            h2 {
-                margins: 6px 0;
+            .core-course-title {
+                margin: 5px 0;
                 flex-grow: 1;
+                max-width: calc(100% - 5px);
+
+                h2 ion-icon {
+                    margin-right: 4px;
+                    color: $core-star-color;
+                }
+
+                &.core-course-with-buttons {
+                    max-width: calc(100% - 50px);
+                }
+            }
+
+            &.core-course-more-than-title {
+                padding-bottom: 0;
+            }
+
+            .core-button-spinner .spinner {
+                vertical-align: middle;
+            }
+
+            .item-button[icon-only] {
+                min-width: 50px;
+                width: 50px;
             }
         }
         .label {
             @include margin(0, 0, 0, null);
+        }
+        ion-item-divider .label-md {
+            @extend .label-md;
+        }
+        ion-item-divider .label-wp {
+            @extend .label-wp;
+        }
+        ion-item-divider .label-ios {
+            @extend .label-ios;
         }
     }
 
     button {
         z-index: 1;
     }
+}
+
+
+ion-app.app-root .core-horizontal-scroll core-courses-course-progress {
+    @include horizontal_scroll_item(80%, 250px, 300px);
+
+    ion-card.card {
+        .core-course-thumb {
+            padding-top: 30%;
+        }
+
+        .core-course-link {
+            @include padding(4px, 0px, 4px, 8px);
+            .core-course-shortname {
+                font-size: 1.2rem;
+            }
+
+            .core-course-title {
+                margin: 3px 0;
+
+                h2 {
+                    font-size: 1.5rem;
+                    ion-icon {
+                        margin-right: 2px;
+                    }
+                }
+
+                &.core-course-with-buttons {
+                    max-width: calc(100% - 40px);
+                }
+            }
+            .core-button-spinner {
+                min-height: 40px;
+                min-width: 40px;
+
+                ion-spinner {
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+            .item-button[icon-only] {
+                min-width: 40px;
+                width: 40px;
+                font-size: 1.5rem;
+                padding: 8px;
+            }
+
+        }
+    }
+}
+
+body.version-3-1 .core-course-thumb{
+    display: none;
 }

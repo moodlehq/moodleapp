@@ -113,7 +113,7 @@ export class AddonModResourceHelperProvider {
      * @return {boolean}         Whether the resource should be displayed embeded.
      */
     isDisplayedEmbedded(module: any, display: number): boolean {
-        if (!module.contents.length || !this.fileProvider.isAvailable()) {
+        if (!module.contents.length || !this.fileProvider.isAvailable() || this.isNextcloudFile(module)) {
             return false;
         }
 
@@ -140,6 +140,16 @@ export class AddonModResourceHelperProvider {
     }
 
     /**
+     * Check if the resource is a Nextcloud file.
+     *
+     * @param {any} module Module to check.
+     * @return {boolean} Whether it's a Nextcloud file.
+     */
+    isNextcloudFile(module: any): boolean {
+        return module.contents && module.contents[0] && module.contents[0].repositorytype == 'nextcloud';
+    }
+
+    /**
      * Opens a file of the resource activity.
      *
      * @param  {any} module        Module where to get the contents.
@@ -153,7 +163,9 @@ export class AddonModResourceHelperProvider {
         return this.courseHelper.downloadModuleAndOpenFile(module, courseId, AddonModResourceProvider.COMPONENT, module.id,
                 module.contents).then(() => {
             this.resourceProvider.logView(module.instance).then(() => {
-                this.courseProvider.checkModuleCompletion(courseId, module.completionstatus);
+                this.courseProvider.checkModuleCompletion(courseId, module.completiondata);
+            }).catch(() => {
+                // Ignore errors.
             });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.mod_resource.errorwhileloadingthecontent', true);

@@ -14,6 +14,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { TranslateService } from '@ngx-translate/core';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 
@@ -30,7 +31,8 @@ export class AddonUserProfileFieldDatetimeComponent implements OnInit {
     @Input() disabled = false; // True if disabled. Defaults to false.
     @Input() form?: FormGroup; // Form where to add the form control.
 
-    constructor(private fb: FormBuilder, private timeUtils: CoreTimeUtilsProvider, protected utils: CoreUtilsProvider) { }
+    constructor(private fb: FormBuilder, private timeUtils: CoreTimeUtilsProvider, protected utils: CoreUtilsProvider,
+            private translate: TranslateService) { }
 
     /**
      * Component being initialized.
@@ -44,7 +46,10 @@ export class AddonUserProfileFieldDatetimeComponent implements OnInit {
 
             // Check if it's only date or it has time too.
             const hasTime = this.utils.isTrueOrOne(field.param3);
-            field.format = hasTime ? this.timeUtils.getLocalizedDateFormat('LLL') : this.timeUtils.getLocalizedDateFormat('LL');
+
+            // Calculate format to use. ion-datetime doesn't support escaping characters ([]), so we remove them.
+            field.format = this.timeUtils.convertPHPToMoment(this.translate.instant('core.' +
+                    (hasTime ? 'strftimedatetimeshort' : 'strftimedatefullshort'))).replace(/[\[\]]/g, '');
 
             // Check min value.
             if (field.param1) {

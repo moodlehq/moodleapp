@@ -34,6 +34,7 @@ export class CoreUserParticipantsComponent implements OnInit {
     participantId: number;
     participants = [];
     canLoadMore = false;
+    loadMoreError = false;
     participantsLoaded = false;
 
     constructor(private userProvider: CoreUserProvider, private domUtils: CoreDomUtilsProvider) { }
@@ -68,6 +69,7 @@ export class CoreUserParticipantsComponent implements OnInit {
      */
     fetchData(refresh: boolean = false): Promise<any> {
         const firstToGet = refresh ? 0 : this.participants.length;
+        this.loadMoreError = false;
 
         return this.userProvider.getParticipants(this.courseId, firstToGet).then((data) => {
             if (refresh) {
@@ -78,7 +80,19 @@ export class CoreUserParticipantsComponent implements OnInit {
             this.canLoadMore = data.canLoadMore;
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'Error loading participants');
-            this.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
+            this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
+        });
+    }
+
+    /**
+     * Function to load more data.
+     *
+     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
+     * @return {Promise<any>} Resolved when done.
+     */
+    loadMoreData(infiniteComplete?: any): Promise<any> {
+        return this.fetchData().finally(() => {
+            infiniteComplete && infiniteComplete();
         });
     }
 

@@ -106,7 +106,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
             }
 
             this.workshopProvider.logView(this.workshop.id).then(() => {
-                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch((error) => {
                 // Ignore errors.
             });
@@ -123,7 +123,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
             this.showLoadingAndRefresh(true);
 
             // Check completion since it could be configured to complete once the user adds a new discussion or replies.
-            this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+            this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
         }
     }
 
@@ -177,7 +177,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
      * Download feedback contents.
      *
      * @param  {boolean}      [refresh=false]    If it's refreshing content.
-     * @param  {boolean}      [sync=false]       If the refresh is needs syncing.
+     * @param  {boolean}      [sync=false]       If it should try to sync.
      * @param  {boolean}      [showErrors=false] If show errors to the user of hide them.
      * @return {Promise<any>} Promise resolved when done.
      */

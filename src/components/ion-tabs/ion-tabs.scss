@@ -16,7 +16,10 @@ ion-app.app-root core-ion-tabs {
                 }
             }
         }
+    }
 
+    .tab-badge.badge {
+        background-color: $ion-tabs-badge-color;
     }
 }
 

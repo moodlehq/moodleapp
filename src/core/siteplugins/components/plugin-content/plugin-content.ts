@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input, Output, EventEmitter, Optional, DoCheck, KeyValueDiffers } from '@angular/core';
+import {
+    Component, OnInit, Input, Output, EventEmitter, Optional, DoCheck, KeyValueDiffers, ViewChild, ElementRef
+} from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
@@ -26,11 +28,15 @@ import { Subject } from 'rxjs';
     templateUrl: 'core-siteplugins-plugin-content.html',
 })
 export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
+    // Get the compile element. Don't set the right type to prevent circular dependencies.
+    @ViewChild('compile') compileComponent: ElementRef;
+
     @Input() component: string;
     @Input() method: string;
     @Input() args: any;
     @Input() initResult: any; // Result of the init WS call of the handler.
     @Input() data: any; // Data to pass to the component.
+    @Input() preSets: any; // The preSets for the WS call.
     @Output() onContentLoaded?: EventEmitter<boolean>; // Emits an event when the content is loaded.
     @Output() onLoadingContent?: EventEmitter<boolean>; // Emits an event when starts to load the content.
 
@@ -40,6 +46,7 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
     dataLoaded: boolean;
     invalidateObservable: Subject<void>; // An observable to notify observers when to invalidate data.
     jsData: any; // Data to pass to the component.
+    forceCompile: boolean; // Force compilation on PTR.
 
     protected differ: any; // To detect changes in the data input.
 
@@ -82,11 +89,14 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
     fetchContent(refresh?: boolean): Promise<any> {
         this.onLoadingContent.emit(refresh);
 
-        return this.sitePluginsProvider.getContent(this.component, this.method, this.args).then((result) => {
+        this.forceCompile = false;
+
+        return this.sitePluginsProvider.getContent(this.component, this.method, this.args, this.preSets).then((result) => {
             this.content = result.templates.length ? result.templates[0].html : ''; // Load first template.
             this.javascript = result.javascript;
             this.otherData = result.otherdata;
             this.data = this.data || {};
+            this.forceCompile = true;
 
             this.jsData = Object.assign(this.data, this.sitePluginsProvider.createDataForJS(this.initResult, result));
 
@@ -112,8 +122,9 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
      * @param {string} [method] New method. If not provided, current method
      * @param {any} [jsData] JS variables to pass to the new view so they can be used in the template or JS.
      *                       If true is supplied instead of an object, all initial variables from current page will be copied.
+     * @param {any} [preSets] The preSets for the WS call of the new content.
      */
-    openContent(title: string, args: any, component?: string, method?: string, jsData?: any): void {
+    openContent(title: string, args: any, component?: string, method?: string, jsData?: any, preSets?: any): void {
         if (jsData === true) {
             jsData = this.data;
         }
@@ -124,7 +135,8 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
             method: method || this.method,
             args: args,
             initResult: this.initResult,
-            jsData: jsData
+            jsData: jsData,
+            preSets: preSets
         });
     }
 

@@ -110,6 +110,12 @@ export interface CoreCourseOptionsHandlerToDisplay {
     data: CoreCourseOptionsHandlerData;
 
     /**
+     * Name of the handler, or name and sub context (AddonMessages, AddonMessages:blockContact, ...).
+     * @type {string}
+     */
+    name: string;
+
+    /**
      * The highest priority is displayed first.
      * @type {number}
      */
@@ -255,8 +261,9 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
         course.id = parseInt(course.id, 10);
 
         const accessData = {
-            type: isGuest ? CoreCourseProvider.ACCESS_GUEST : CoreCourseProvider.ACCESS_DEFAULT
-        };
+                type: isGuest ? CoreCourseProvider.ACCESS_GUEST : CoreCourseProvider.ACCESS_DEFAULT
+            },
+            handlersToDisplay: CoreCourseOptionsHandlerToDisplay[] = [];
 
         if (navOptions) {
             course.navOptions = navOptions;
@@ -269,20 +276,23 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
             // Call getHandlersForAccess to make sure the handlers have been loaded.
             return this.getHandlersForAccess(course.id, refresh, accessData, course.navOptions, course.admOptions);
         }).then(() => {
-            const handlersToDisplay: CoreCourseOptionsHandlerToDisplay[] = [],
-                promises = [];
+            const promises = [];
 
             this.coursesHandlers[course.id].enabledHandlers.forEach((handler) => {
                 promises.push(Promise.resolve(handler.getDisplayData(injector, course)).then((data) => {
                     handlersToDisplay.push({
                         data: data,
                         priority: handler.priority,
-                        prefetch: handler.prefetch
+                        prefetch: handler.prefetch && handler.prefetch.bind(handler),
+                        name: handler.name
                     });
                 }).catch((err) => {
                     this.logger.error('Error getting data for handler', handler.name, err);
                 }));
             });
+
+            return Promise.all(promises);
+        }).then(() => {
 
             // Sort them by priority.
             handlersToDisplay.sort((a, b) => {

@@ -26,6 +26,7 @@ import { CoreLoggerProvider } from '../logger';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
 import { CoreWSProvider, CoreWSError } from '../ws';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Deferred promise. It's similar to the result of $q.defer() in AngularJS.
@@ -180,6 +181,43 @@ export class CoreUtilsProvider {
      */
     blockLeaveView(): void {
         return;
+    }
+
+    /**
+     * Check if a URL has a redirect.
+     *
+     * @param {string} url The URL to check.
+     * @return {Promise<boolean>} Promise resolved with boolean_ whether there is a redirect.
+     */
+    checkRedirect(url: string): Promise<boolean> {
+        if (window.fetch) {
+            const win = <any> window, // Convert to <any> to be able to use AbortController (not supported by our TS version).
+                initOptions: any = {
+                    redirect: 'follow'
+                };
+            let controller;
+
+            // Some browsers implement fetch but no AbortController.
+            if (win.AbortController) {
+                controller = new win.AbortController();
+                initOptions.signal = controller.signal;
+            }
+
+            return this.timeoutPromise(window.fetch(url, initOptions), CoreConstants.WS_TIMEOUT).then((response: Response) => {
+                return response.redirected;
+            }).catch((error) => {
+                if (error.timeout && controller) {
+                    // Timeout, abort the request.
+                    controller.abort();
+                }
+
+                // There was a timeout, cannot determine if there's a redirect. Assume it's false.
+                return false;
+            });
+        } else {
+            // Cannot check if there is a redirect, assume it's false.
+            return Promise.resolve(false);
+        }
     }
 
     /**
@@ -433,7 +471,7 @@ export class CoreUtilsProvider {
      * @return {string} Locale float.
      */
     formatFloat(float: any): string {
-        if (typeof float == 'undefined') {
+        if (typeof float == 'undefined' || float === null || typeof float == 'boolean') {
             return '';
         }
 
@@ -523,29 +561,68 @@ export class CoreUtilsProvider {
      * @return {Promise<any>} Promise resolved with the list of countries.
      */
     getCountryList(): Promise<any> {
-        // Get the current language.
-        return this.langProvider.getCurrentLanguage().then((lang) => {
-            // Get the full list of translations. Create a promise to convert the observable into a promise.
-            return new Promise((resolve, reject): void => {
-                const observer = this.translate.getTranslation(lang).subscribe((table) => {
-                    resolve(table);
-                    observer.unsubscribe();
-                }, (err) => {
-                    reject(err);
-                    observer.unsubscribe();
-                });
-            });
-        }).then((table) => {
+        // Get the keys of the countries.
+        return this.getCountryKeysList().then((keys) => {
+            // Now get the code and the translated name.
             const countries = {};
+
+            keys.forEach((key) => {
+                if (key.indexOf('assets.countries.') === 0) {
+                    const code = key.replace('assets.countries.', '');
+                    countries[code] = this.translate.instant(key);
+                }
+            });
+
+            return countries;
+        });
+    }
+
+    /**
+     * Get the list of language keys of the countries.
+     *
+     * @return {Promise<string[]>} Promise resolved with the countries list. Rejected if not translated.
+     */
+    protected getCountryKeysList(): Promise<string[]> {
+        // It's possible that the current language isn't translated, so try with default language first.
+        const defaultLang = this.langProvider.getDefaultLanguage();
+
+        return this.getCountryKeysListForLanguage(defaultLang).catch(() => {
+            // Not translated, try to use the fallback language.
+            const fallbackLang = this.langProvider.getFallbackLanguage();
+
+            if (fallbackLang === defaultLang) {
+                // Same language, just reject.
+                return Promise.reject('Countries not found.');
+            }
+
+            return this.getCountryKeysListForLanguage(fallbackLang);
+        });
+    }
+
+    /**
+     * Get the list of language keys of the countries, based on the translation table for a certain language.
+     *
+     * @param {string} lang Language to check.
+     * @return {Promise<string[]>} Promise resolved with the countries list. Rejected if not translated.
+     */
+    protected getCountryKeysListForLanguage(lang: string): Promise<string[]> {
+        // Get the translation table for the language.
+        return this.langProvider.getTranslationTable(lang).then((table): any => {
+            // Gather all the keys for countries,
+            const keys = [];
 
             for (const name in table) {
                 if (name.indexOf('assets.countries.') === 0) {
-                    const code = name.replace('assets.countries.', '');
-                    countries[code] = table[name];
+                    keys.push(name);
                 }
             }
 
-            return countries;
+            if (keys.length === 0) {
+                // Not translated, reject.
+                return Promise.reject('Countries not found.');
+            }
+
+            return keys;
         });
     }
 
@@ -893,10 +970,11 @@ export class CoreUtilsProvider {
      * @param {object} obj Object to convert.
      * @param {string} keyName Name of the properties where to store the keys.
      * @param {string} valueName Name of the properties where to store the values.
-     * @param {boolean} [sort] True to sort keys alphabetically, false otherwise.
+     * @param {boolean} [sortByKey] True to sort keys alphabetically, false otherwise. Has priority over sortByValue.
+     * @param {boolean} [sortByValue] True to sort values alphabetically, false otherwise.
      * @return {any[]} Array of objects with the name & value of each property.
      */
-    objectToArrayOfObjects(obj: object, keyName: string, valueName: string, sort?: boolean): any[] {
+    objectToArrayOfObjects(obj: object, keyName: string, valueName: string, sortByKey?: boolean, sortByValue?: boolean): any[] {
         // Get the entries from an object or primitive value.
         const getEntries = (elKey, value): any[] | any => {
             if (typeof value == 'object') {
@@ -926,9 +1004,13 @@ export class CoreUtilsProvider {
 
         // "obj" will always be an object, so "entries" will always be an array.
         const entries = <any[]> getEntries('', obj);
-        if (sort) {
+        if (sortByKey || sortByValue) {
             return entries.sort((a, b) => {
-                return a.name >= b.name ? 1 : -1;
+                if (sortByKey) {
+                    return a[keyName] >= b[keyName] ? 1 : -1;
+                } else {
+                    return a[valueName] >= b[valueName] ? 1 : -1;
+                }
             });
         }
 
@@ -942,7 +1024,7 @@ export class CoreUtilsProvider {
      * @param {object[]} objects List of objects to convert.
      * @param {string} keyName Name of the properties where the keys are stored.
      * @param {string} valueName Name of the properties where the values are stored.
-     * @param [keyPrefix] Key prefix if neededs to delete it.
+     * @param {string} [keyPrefix] Key prefix if neededs to delete it.
      * @return {object} Object.
      */
     objectToKeyValueMap(objects: object[], keyName: string, valueName: string, keyPrefix?: string): object {
@@ -1059,6 +1141,23 @@ export class CoreUtilsProvider {
     }
 
     /**
+     * Given an object, sort its values. Values need to be primitive values, it cannot have subobjects.
+     *
+     * @param {object} obj The object to sort. If it isn't an object, the original value will be returned.
+     * @return {object} Sorted object.
+     */
+    sortValues(obj: object): object {
+        if (typeof obj == 'object' && !Array.isArray(obj)) {
+            // It's an object, sort it. Convert it to an array to be able to sort it and then convert it back to object.
+            const array = this.objectToArrayOfObjects(obj, 'name', 'value', false, true);
+
+            return this.objectToKeyValueMap(array, 'name', 'value');
+        } else {
+            return obj;
+        }
+    }
+
+    /**
      * Sum the filesizes from a list of files checking if the size will be partial or totally calculated.
      *
      * @param {any[]} files List of files to sum its filesize.
@@ -1083,14 +1182,35 @@ export class CoreUtilsProvider {
     }
 
     /**
+     * Set a timeout to a Promise. If the time passes before the Promise is resolved or rejected, it will be automatically
+     * rejected.
+     *
+     * @param {Promise<T>} promise The promise to timeout.
+     * @param {number} time Number of milliseconds of the timeout.
+     * @return {Promise<T>} Promise with the timeout.
+     */
+    timeoutPromise<T>(promise: Promise<T>, time: number): Promise<T> {
+        return new Promise((resolve, reject): void => {
+            const timeout = setTimeout(() => {
+                reject({timeout: true});
+            }, time);
+
+            promise.then(resolve).catch(reject).finally(() => {
+                clearTimeout(timeout);
+            });
+        });
+    }
+
+    /**
      * Converts locale specific floating point/comma number back to standard PHP float value.
      * Do NOT try to do any math operations before this conversion on any user submitted floats!
      * Based on Moodle's unformat_float function.
      *
      * @param {any} localeFloat Locale aware float representation.
+     * @param {boolean} [strict] If true, then check the input and return false if it is not a valid number.
      * @return {any} False if bad format, empty string if empty value or the parsed float if not.
      */
-    unformatFloat(localeFloat: any): any {
+    unformatFloat(localeFloat: any, strict?: boolean): any {
         // Bad format on input type number.
         if (typeof localeFloat == 'undefined') {
             return false;
@@ -1109,18 +1229,17 @@ export class CoreUtilsProvider {
             return '';
         }
 
-        const localeSeparator = this.translate.instant('core.decsep');
-
         localeFloat = localeFloat.replace(' ', ''); // No spaces - those might be used as thousand separators.
-        localeFloat = localeFloat.replace(localeSeparator, '.');
+        localeFloat = localeFloat.replace(this.translate.instant('core.decsep'), '.');
 
-        localeFloat = parseFloat(localeFloat);
+        const parsedFloat = parseFloat(localeFloat);
+
         // Bad format.
-        if (isNaN(localeFloat)) {
+        if (strict && (!isFinite(localeFloat) || isNaN(parsedFloat))) {
             return false;
         }
 
-        return localeFloat;
+        return parsedFloat;
     }
 
     /**

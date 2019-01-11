@@ -18,6 +18,16 @@ ion-app.app-root page-core-login-reconnect {
         background: $core-login-box-background-color;
         border: 1px solid $core-login-box-background-border;
         color: $core-login-box-text-color;
+
+        .item {
+            background-color: $core-login-item-background-color;
+            @include padding-horizontal(0);
+        }
+
+        .item-inner {
+            background-color: $core-login-item-inner-background-color;
+            @include padding-horizontal(0);
+        }
     }
 
     .core-sitename, .core-siteurl {
@@ -41,14 +51,11 @@ ion-app.app-root page-core-login-reconnect {
     }
 
     .list .core-username {
-        &.item-md {
-            @include padding-horizontal($item-md-padding-start, $content-padding);
+        &.item {
+            @include padding-horizontal(0);
         }
-        &.item-ios {
-            @include padding-horizontal($item-ios-padding-start, $content-padding);
-        }
-        &.item-wp {
-            @include padding-horizontal($item-wp-padding-start, $content-padding);
+        .item-heading {
+            margin-top: 0;
         }
 
         .item-inner {

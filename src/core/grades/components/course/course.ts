@@ -53,7 +53,9 @@ export class CoreGradesCourseComponent {
             }
 
             // Add log in Moodle.
-            return this.gradesProvider.logCourseGradesView(this.courseId, this.userId);
+            return this.gradesProvider.logCourseGradesView(this.courseId, this.userId).catch(() => {
+                // Ignore errors.
+            });
         }).finally(() => {
             this.gradesLoaded = true;
         });

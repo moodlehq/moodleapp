@@ -105,7 +105,7 @@ export class AddonModLessonReportLinkHandler extends CoreContentLinksHandlerBase
                 module: module,
                 courseId: Number(courseId),
                 action: 'report',
-                group: groupId
+                group: isNaN(groupId) ? null : groupId
             };
 
             this.linkHelper.goInSite(navCtrl, 'AddonModLessonIndexPage', pageParams, siteId);

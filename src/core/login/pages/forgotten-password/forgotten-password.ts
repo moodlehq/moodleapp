@@ -43,8 +43,13 @@ export class CoreLoginForgottenPasswordPage {
 
     /**
      * Request to reset the password.
+     *
+     * @param {Event} e Event.
      */
-    resetPassword(): void {
+    resetPassword(e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+
         const field = this.myForm.value.field,
             value = this.myForm.value.value;
 
@@ -70,7 +75,7 @@ export class CoreLoginForgottenPasswordPage {
                 this.navCtrl.pop();
             }
         }).catch((error) => {
-            this.domUtils.showErrorModal(error.error);
+            this.domUtils.showErrorModal(error);
         }).finally(() => {
             modal.dismiss();
         });

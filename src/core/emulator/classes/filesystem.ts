@@ -592,13 +592,22 @@ export class FileWriterMock {
      * @param {Buffer} data The data to write.
      */
     protected writeFile(data: Buffer): void {
-        this.fs.writeFile(this.localURL, data, (err) => {
-            if (err) {
-                this.onerror && this.onerror(err);
-            } else {
-                this.onwrite && this.onwrite();
-            }
+        /* Create a write stream so we can specify where to start writing. Node's Writable stream doesn't allow specifying the
+           position once it's been created, that's why we need to create it everytime write is called. */
+        const stream = this.fs.createWriteStream(this.localURL, {flags: 'r+', start: this.position});
+
+        stream.on('error', (err) => {
+            this.onerror && this.onerror(err);
+        });
+
+        stream.end(data, () => {
+            // Update the position.
+            this.position += data.length;
+
+            this.onwrite && this.onwrite();
             this.onwriteend && this.onwriteend();
+
+            stream.destroy();
         });
 
         this.onwritestart && this.onwritestart();

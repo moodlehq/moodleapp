@@ -166,8 +166,10 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
             this.bookProvider.logView(this.module.instance, chapterId).then(() => {
                 // Module is completed when last chapter is viewed, so we only check completion if the last is reached.
                 if (!this.nextChapter) {
-                    this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                    this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
                 }
+            }).catch(() => {
+                // Ignore errors.
             });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.mod_book.errorchapter', true);

@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreIonTabsComponent } from '@components/ion-tabs/ion-tabs';
 import { CoreMainMenuProvider } from '../../providers/mainmenu';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from '../../providers/delegate';
 
@@ -31,16 +33,25 @@ export class CoreMainMenuPage implements OnDestroy {
     loaded = false;
     redirectPage: string;
     redirectParams: any;
-    initialTab: number;
     showTabs = false;
 
     protected subscription;
-    protected redirectPageLoaded = false;
+    protected redirectObs: any;
+    protected pendingRedirect: any;
+
+    @ViewChild('mainTabs') mainTabs: CoreIonTabsComponent;
 
     constructor(private menuDelegate: CoreMainMenuDelegate, private sitesProvider: CoreSitesProvider, navParams: NavParams,
-            private navCtrl: NavController) {
-        this.redirectPage = navParams.get('redirectPage');
-        this.redirectParams = navParams.get('redirectParams');
+            private navCtrl: NavController, private eventsProvider: CoreEventsProvider, private cdr: ChangeDetectorRef) {
+
+        // Check if the menu was loaded with a redirect.
+        const redirectPage = navParams.get('redirectPage');
+        if (redirectPage) {
+            this.pendingRedirect = {
+                redirectPage: redirectPage,
+                redirectParams: navParams.get('redirectParams')
+            };
+        }
     }
 
     /**
@@ -55,10 +66,21 @@ export class CoreMainMenuPage implements OnDestroy {
 
         this.showTabs = true;
 
-        const site = this.sitesProvider.getCurrentSite(),
-            displaySiteHome = site.getInfo() && site.getInfo().userhomepage === 0;
+        this.redirectObs = this.eventsProvider.on(CoreEventsProvider.LOAD_PAGE_MAIN_MENU, (data) => {
+            if (!this.loaded) {
+                // View isn't ready yet, wait for it to be ready.
+                this.pendingRedirect = data;
+            } else {
+                delete this.pendingRedirect;
+                this.handleRedirect(data);
+            }
+        });
 
         this.subscription = this.menuDelegate.getHandlers().subscribe((handlers) => {
+            // Remove the handlers that should only appear in the More menu.
+            handlers = handlers.filter((handler) => {
+                return !handler.onlyInMore;
+            });
             handlers = handlers.slice(0, CoreMainMenuProvider.NUM_MAIN_HANDLERS); // Get main handlers.
 
             // Re-build the list of tabs. If a handler is already in the list, use existing object to prevent re-creating the tab.
@@ -82,37 +104,46 @@ export class CoreMainMenuPage implements OnDestroy {
                 return b.priority - a.priority;
             });
 
-            if (typeof this.initialTab == 'undefined' && !this.loaded) {
-                // Calculate the tab to load.
-                if (this.redirectPage) {
-                    // Check if the redirect page is the root page of any of the tabs.
-                    this.initialTab = 0;
-
-                    for (let i = 0; i < this.tabs.length; i++) {
-                        const tab = this.tabs[i];
-                        if (tab.page == this.redirectPage) {
-                            // Tab found. Set the params and unset the redirect page.
-                            this.initialTab = i + 1;
-                            tab.pageParams = Object.assign(tab.pageParams || {}, this.redirectParams);
-                            this.redirectPage = null;
-                            this.redirectParams = null;
-                            break;
-                        }
-                    }
-                } else {
-                    // By default, course overview will be loaded (3.3+). Check if we need to select Site Home or My Courses.
-                    for (let i = 0; i < this.tabs.length; i++) {
-                        const handler = handlers[i];
-                        if ((displaySiteHome && handler.name == 'CoreSiteHome') ||
-                                (!displaySiteHome && handler.name == 'CoreCourses')) {
-                            this.initialTab = i;
-                            break;
-                        }
-                    }
-                }
-            }
-
             this.loaded = this.menuDelegate.areHandlersLoaded();
+
+            if (this.loaded && this.pendingRedirect) {
+                // Wait for tabs to be initialized and then handle the redirect.
+                setTimeout(() => {
+                    if (this.pendingRedirect) {
+                        this.handleRedirect(this.pendingRedirect);
+                        delete this.pendingRedirect;
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * Handle a redirect.
+     *
+     * @param {any} data Data received.
+     */
+    protected handleRedirect(data: any): void {
+        // Check if the redirect page is the root page of any of the tabs.
+        const i = this.tabs.findIndex((tab, i) => {
+            return tab.page == data.redirectPage;
+        });
+
+        if (i >= 0) {
+            // Tab found. Set the params.
+            this.tabs[i].pageParams = Object.assign({}, data.redirectParams);
+        } else {
+            // Tab not found, use a phantom tab.
+            this.redirectPage = data.redirectPage;
+            this.redirectParams = data.redirectParams;
+        }
+
+        // Force change detection, otherwise sometimes the tab was selected before the params were applied.
+        this.cdr.detectChanges();
+
+        setTimeout(() => {
+            // Let the tab load the params before navigating.
+            this.mainTabs.selectTabRootByIndex(i + 1);
         });
     }
 
@@ -121,5 +152,6 @@ export class CoreMainMenuPage implements OnDestroy {
      */
     ngOnDestroy(): void {
         this.subscription && this.subscription.unsubscribe();
+        this.redirectObs && this.redirectObs.off();
     }
 }

@@ -52,7 +52,7 @@ export class CoreChronoComponent implements OnChanges, OnDestroy {
     }
 
     /**
-     * Component being initialized.
+     * Component being changed.
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes && changes.running) {

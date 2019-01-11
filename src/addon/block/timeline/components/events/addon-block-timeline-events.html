@@ -1,0 +1,36 @@
+<ion-item-group *ngFor="let dayEvents of filteredEvents">
+    <ion-item-divider [color]="dayEvents.color">
+        <h2>{{ dayEvents.dayTimestamp * 1000 | coreFormatDate:"strftimedayshort" }}</h2>
+    </ion-item-divider>
+    <ng-container *ngFor="let event of dayEvents.events">
+        <a ion-item text-wrap detail-none class="core-course-module-handler item-media" (click)="action($event, event.url)" [title]="event.name">
+            <img item-start [src]="event.iconUrl" core-external-content alt="" role="presentation" *ngIf="event.iconUrl" class="core-module-icon">
+            <h2><core-format-text [text]="event.name"></core-format-text></h2>
+            <p *ngIf="showCourse">
+                <core-format-text [text]="event.course.fullnamedisplay"></core-format-text>
+            </p>
+
+            <button ion-button clear class="hidden-tablet" (click)="action($event, event.action.url)" [title]="event.action.name" [disabled]="!event.action.actionable" *ngIf="event.action">
+                {{event.action.name}}
+                <ion-badge item-end margin-start *ngIf="event.action.showitemcount">{{event.action.itemcount}}</ion-badge>
+            </button>
+
+            <ion-badge color="light" item-end>{{event.timesort * 1000 | coreFormatDate:"strftimetime24" }}</ion-badge>
+
+            <button ion-button clear item-end class="hidden-phone" (click)="action($event, event.action.url)" [title]="event.action.name" [disabled]="!event.action.actionable" *ngIf="event.action">
+                {{event.action.name}}
+                <ion-badge item-end margin-start *ngIf="event.action.showitemcount">{{event.action.itemcount}}</ion-badge>
+            </button>
+        </a>
+    </ng-container>
+</ion-item-group>
+
+<div padding text-center *ngIf="canLoadMore && !empty">
+    <!-- Button and spinner to show more attempts. -->
+    <button ion-button block (click)="loadMoreEvents()" color="light" *ngIf="!loadingMore">
+        {{ 'core.loadmore' | translate }}
+    </button>
+    <ion-spinner *ngIf="loadingMore"></ion-spinner>
+</div>
+
+<core-empty-box *ngIf="empty" image="assets/img/icons/activities.svg" [message]="'addon.block_timeline.noevents' | translate" [inline]="!showCourse"></core-empty-box>

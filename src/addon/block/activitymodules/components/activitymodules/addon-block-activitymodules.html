@@ -1,0 +1,9 @@
+<ion-item-divider>
+    <h2>{{ 'addon.block_activitymodules.pluginname' | translate }}</h2>
+</ion-item-divider>
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+    <a ion-item text-wrap *ngFor="let entry of entries" class="item-media" detail-none [navPush]="'CoreCourseListModTypePage'" [navParams]="{title: entry.name, courseId: instanceId, modName: entry.modName}">
+        <img item-start [src]="entry.icon" alt="" role="presentation" class="core-module-icon">
+        <core-format-text [text]="entry.name"></core-format-text>
+    </a>
+</core-loading>

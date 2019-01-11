@@ -10,12 +10,7 @@
     <core-loading [hideUntil]="competencyLoaded">
         <ion-card *ngIf="user">
             <ion-item text-wrap>
-                <ion-avatar *ngIf="user.profileimageurl && user.profileimageurl !== true" item-start>
-                    <img  [src]="user.profileimageurl" [alt]="'core.pictureof' | translate:{$a: user.fullname}" core-external-content>
-                </ion-avatar>
-                <span *ngIf="user.profileimageurl === true" item-start>
-                    <ion-icon name="person"></ion-icon>
-                </span>
+                <ion-avatar core-user-avatar [user]="user" item-start></ion-avatar>
                 <h2><core-format-text [text]="user.fullname"></core-format-text></h2>
             </ion-item>
         </ion-card>
@@ -25,7 +20,7 @@
                 <core-format-text [text]="competency.competency.competency.description"></core-format-text>
             </ion-item>
             <ion-item text-wrap>
-                <strong>{{ 'addon.competency.path' | translate }}</strong>:
+                <strong>{{ 'addon.competency.path' | translate }}</strong>
                 {{ competency.competency.comppath.framework.name }}
                 <span *ngFor="let ancestor of competency.competency.comppath.ancestors">
                     &nbsp;/&nbsp;<a (click)="openCompetencySummary(ancestor.id)">{{ ancestor.name }}</a>
@@ -47,7 +42,7 @@
                 <span *ngIf="coursemodules.length == 0">
                     {{ 'addon.competency.noactivities' | translate }}
                 </span>
-                <a ion-item text-wrap *ngFor="let activity of coursemodules" [href]="activity.url" [title]="activity.name">
+                <a ion-item text-wrap *ngFor="let activity of coursemodules" [href]="activity.url" [title]="activity.name" core-link capture="true">
                     <img item-start core-external-content [src]="activity.iconurl" alt="" role="presentation" *ngIf="activity.iconurl" class="core-module-icon">
                     <core-format-text [text]="activity.name"></core-format-text>
                 </a>
@@ -78,11 +73,9 @@
             </p>
             <ion-card *ngFor="let evidence of competency.evidence">
                 <a ion-item text-wrap *ngIf="evidence.actionuser" (click)="openUserProfile(evidence.actionuser.id)">
-                    <ion-avatar item-start>
-                        <img core-external-content [src]="evidence.actionuser.profileimageurlsmall" [alt]="'core.pictureof' | translate:{$a: evidence.actionuser.fullname}" role="presentation">
-                    </ion-avatar>
+                    <ion-avatar core-user-avatar [user]="evidence.actionuser" item-start></ion-avatar>
                     <h2>{{ evidence.actionuser.fullname }}</h2>
-                    <p>{{ evidence.timemodified | coreToLocaleString }}</p>
+                    <p>{{ evidence.timemodified * 1000 | coreFormatDate }}</p>
                 </a>
                 <ion-item text-wrap>
                     <p><ion-badge color="dark">{{ evidence.gradename }}</ion-badge></p>

@@ -19,11 +19,13 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '../../providers/course';
 import { CoreCourseHelperProvider } from '../../providers/helper';
 import { CoreCourseFormatDelegate } from '../../providers/format-delegate';
 import { CoreCourseModulePrefetchDelegate } from '../../providers/module-prefetch-delegate';
 import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from '../../providers/options-delegate';
+import { CoreCourseSyncProvider } from '../../providers/sync';
 import { CoreCourseFormatComponent } from '../../components/format/format';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreTabsComponent } from '@components/tabs/tabs';
@@ -62,6 +64,8 @@ export class CoreCourseSectionPage implements OnDestroy {
     protected module: any;
     protected completionObserver;
     protected courseStatusObserver;
+    protected syncObserver;
+    protected firstTabName: string;
     protected isDestroyed = false;
 
     constructor(navParams: NavParams, private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
@@ -69,11 +73,13 @@ export class CoreCourseSectionPage implements OnDestroy {
             private translate: TranslateService, private courseHelper: CoreCourseHelperProvider, eventsProvider: CoreEventsProvider,
             private textUtils: CoreTextUtilsProvider, private coursesProvider: CoreCoursesProvider,
             sitesProvider: CoreSitesProvider, private navCtrl: NavController, private injector: Injector,
-            private prefetchDelegate: CoreCourseModulePrefetchDelegate) {
+            private prefetchDelegate: CoreCourseModulePrefetchDelegate, private syncProvider: CoreCourseSyncProvider,
+            private utils: CoreUtilsProvider) {
         this.course = navParams.get('course');
         this.sectionId = navParams.get('sectionId');
         this.sectionNumber = navParams.get('sectionNumber');
         this.module = navParams.get('module');
+        this.firstTabName = navParams.get('selectedTab');
 
         // Get the title to display. We dont't have sections yet.
         this.title = courseFormatDelegate.getCourseTitle(this.course);
@@ -85,7 +91,17 @@ export class CoreCourseSectionPage implements OnDestroy {
             if (shouldRefresh) {
                 this.completionObserver = eventsProvider.on(CoreEventsProvider.COMPLETION_MODULE_VIEWED, (data) => {
                     if (data && data.courseId == this.course.id) {
-                        this.refreshAfterCompletionChange();
+                        this.refreshAfterCompletionChange(true);
+                    }
+                });
+
+                this.syncObserver = eventsProvider.on(CoreCourseSyncProvider.AUTO_SYNCED, (data) => {
+                    if (data && data.courseId == this.course.id) {
+                        this.refreshAfterCompletionChange(false);
+
+                        if (data.warnings && data.warnings[0]) {
+                            this.domUtils.showErrorModal(data.warnings[0]);
+                        }
                     }
                 });
             }
@@ -111,7 +127,7 @@ export class CoreCourseSectionPage implements OnDestroy {
             this.courseHelper.openModule(this.navCtrl, this.module, this.course.id, this.sectionId);
         }
 
-        this.loadData().finally(() => {
+        this.loadData(false, true).finally(() => {
             this.dataLoaded = true;
 
             if (!this.downloadCourseEnabled) {
@@ -144,46 +160,83 @@ export class CoreCourseSectionPage implements OnDestroy {
 
     /**
      * Fetch and load all the data required for the view.
+     *
+     * @param {boolean} [refresh] If it's refreshing content.
+     * @param {boolean} [sync] If it should try to sync.
+     * @return {Promise<any>} Promise resolved when done.
      */
-    protected loadData(refresh?: boolean): Promise<any> {
+    protected loadData(refresh?: boolean, sync?: boolean): Promise<any> {
         // First of all, get the course because the data might have changed.
         return this.coursesProvider.getUserCourse(this.course.id).catch(() => {
             // Error getting the course, probably guest access.
         }).then((course) => {
-            const promises = [];
-            let promise;
-
             if (course) {
+                if (this.course.id === course.id && this.course.hasOwnProperty('displayname')
+                        && !course.hasOwnProperty('displayname')) {
+                    course.displayname = this.course.displayname;
+                }
                 this.course = course;
             }
 
-            // Get the completion status.
-            if (this.course.enablecompletion === false) {
-                // Completion not enabled.
-                promise = Promise.resolve({});
-            } else {
-                promise = this.courseProvider.getActivitiesCompletionStatus(this.course.id).catch(() => {
-                    // It failed, don't use completion.
-                    return {};
+            if (sync) {
+                // Try to synchronize the course data.
+                return this.syncProvider.syncCourse(this.course.id).then((result) => {
+                    if (result.warnings && result.warnings.length) {
+                        this.domUtils.showErrorModal(result.warnings[0]);
+                    }
+                }).catch(() => {
+                    // For now we don't allow manual syncing, so ignore errors.
                 });
             }
+        }).then(() => {
+            const promises = [];
 
-            promises.push(promise.then((completionStatus) => {
-                // Get all the sections.
-                return this.courseProvider.getSections(this.course.id, false, true).then((sections) => {
-                    if (refresh) {
-                        // Invalidate the recently downloaded module list. To ensure info can be prefetched.
-                        const modules = this.courseProvider.getSectionsModules(sections);
+            // Get all the sections.
+            promises.push(this.courseProvider.getSections(this.course.id, false, true).then((sections) => {
+                if (refresh) {
+                    // Invalidate the recently downloaded module list. To ensure info can be prefetched.
+                    const modules = this.courseProvider.getSectionsModules(sections);
 
-                        return this.prefetchDelegate.invalidateModules(modules, this.course.id).then(() => {
-                            return sections;
+                    return this.prefetchDelegate.invalidateModules(modules, this.course.id).then(() => {
+                        return sections;
+                    });
+                } else {
+                    return sections;
+                }
+            }).then((sections) => {
+                let promise;
+
+                // Add log in Moodle.
+                this.courseProvider.logView(this.course.id, this.sectionNumber).catch(() => {
+                    // Ignore errors.
+                });
+
+                 // Get the completion status.
+                if (this.course.enablecompletion === false) {
+                    // Completion not enabled.
+                    promise = Promise.resolve({});
+                } else {
+                    const sectionWithModules = sections.find((section) => {
+                            return section.modules.length > 0;
+                    });
+
+                    if (sectionWithModules && typeof sectionWithModules.modules[0].completion != 'undefined') {
+                        // The module already has completion (3.6 onwards). Load the offline completion.
+                        promise = this.courseHelper.loadOfflineCompletion(this.course.id, sections).catch(() => {
+                            // It shouldn't happen.
+                        }).then(() => {
+                            return {};
                         });
                     } else {
-                        return sections;
+                        promise = this.courseProvider.getActivitiesCompletionStatus(this.course.id).catch(() => {
+                            // It failed, don't use completion.
+                            return {};
+                        });
                     }
-                }).then((sections) => {
+                }
 
-                    this.courseHelper.addHandlerDataForModules(sections, this.course.id, completionStatus);
+                return promise.then((completionStatus) => {
+                    this.courseHelper.addHandlerDataForModules(sections, this.course.id, completionStatus, this.course.fullname);
 
                     // Format the name of each section and check if it has content.
                     this.sections = sections.map((section) => {
@@ -215,27 +268,48 @@ export class CoreCourseSectionPage implements OnDestroy {
             // Get the overview files.
             if (this.course.overviewfiles) {
                 this.course.imageThumb = this.course.overviewfiles[0] && this.course.overviewfiles[0].fileurl;
-            } else if (this.coursesProvider.isGetCoursesByFieldAvailable()) {
-                promises.push(this.coursesProvider.getCoursesByField('id', this.course.id).then((coursesInfo) => {
-                    if (coursesInfo[0] && coursesInfo[0].overviewfiles && coursesInfo[0].overviewfiles[0]) {
-                        this.course.imageThumb = coursesInfo[0].overviewfiles[0].fileurl;
-                    } else {
-                        this.course.imageThumb = false;
-                    }
-                }));
             }
 
             // Load the course handlers.
             promises.push(this.courseOptionsDelegate.getHandlersToDisplay(this.injector, this.course, refresh, false)
                     .then((handlers) => {
+                let tabToLoad;
+
                 // Add the courseId to the handler component data.
-                handlers.forEach((handler) => {
+                handlers.forEach((handler, index) => {
                     handler.data.componentData = handler.data.componentData || {};
                     handler.data.componentData.courseId = this.course.id;
+
+                    // Check if this handler should be the first selected tab.
+                    if (this.firstTabName && handler.name == this.firstTabName) {
+                        tabToLoad = index + 1;
+                    }
                 });
 
                 this.courseHandlers = handlers;
+
+                // Select the tab if needed.
+                this.firstTabName = undefined;
+                if (tabToLoad) {
+                    setTimeout(() => {
+                        this.tabsComponent.selectTab(tabToLoad);
+                    });
+                }
             }));
+
+            // Load the course format options when course completion is enabled to show completion progress on sections.
+            if (this.course.enablecompletion && this.coursesProvider.isGetCoursesByFieldAvailable()) {
+                promises.push(this.coursesProvider.getCoursesByField('id', this.course.id).catch(() => {
+                    // Ignore errors.
+                }).then((courses) => {
+                    courses && courses[0] && Object.assign(this.course, courses[0]);
+
+                    if (this.course.courseformatoptions) {
+                        this.course.courseformatoptions = this.utils.objectToKeyValueMap(this.course.courseformatoptions,
+                            'name', 'value');
+                    }
+                }));
+            }
 
             return Promise.all(promises).catch((error) => {
                 this.domUtils.showErrorModalDefault(error, 'core.course.couldnotloadsectioncontent', true);
@@ -251,7 +325,7 @@ export class CoreCourseSectionPage implements OnDestroy {
      */
     doRefresh(refresher?: any): Promise<any> {
         return this.invalidateData().finally(() => {
-            return this.loadData(true).finally(() => {
+            return this.loadData(true, true).finally(() => {
                 /* Do not call doRefresh on the format component if the refresher is defined in the format component
                    to prevent an inifinite loop. */
                  let promise;
@@ -273,7 +347,7 @@ export class CoreCourseSectionPage implements OnDestroy {
      */
     onCompletionChange(): void {
         this.invalidateData().finally(() => {
-            this.refreshAfterCompletionChange();
+            this.refreshAfterCompletionChange(true);
         });
     }
 
@@ -286,7 +360,6 @@ export class CoreCourseSectionPage implements OnDestroy {
         promises.push(this.courseProvider.invalidateSections(this.course.id));
         promises.push(this.coursesProvider.invalidateUserCourses());
         promises.push(this.courseFormatDelegate.invalidateData(this.course, this.sections));
-        promises.push(this.coursesProvider.invalidateCoursesByField('id', this.course.id));
 
         if (this.sections) {
             promises.push(this.prefetchDelegate.invalidateCourseUpdates(this.course.id));
@@ -297,8 +370,10 @@ export class CoreCourseSectionPage implements OnDestroy {
 
     /**
      * Refresh list after a completion change since there could be new activities.
+     *
+     * @param {boolean} [sync] If it should try to sync.
      */
-    protected refreshAfterCompletionChange(): void {
+    protected refreshAfterCompletionChange(sync?: boolean): void {
         // Save scroll position to restore it once done.
         const scrollElement = this.content.getScrollElement(),
             scrollTop = scrollElement.scrollTop || 0,
@@ -307,7 +382,7 @@ export class CoreCourseSectionPage implements OnDestroy {
         this.dataLoaded = false;
         this.domUtils.scrollToTop(this.content); // Scroll top so the spinner is seen.
 
-        this.loadData().then(() => {
+        this.loadData(true, sync).then(() => {
             return this.formatComponent.doRefresh(undefined, undefined, true);
         }).finally(() => {
             this.dataLoaded = true;

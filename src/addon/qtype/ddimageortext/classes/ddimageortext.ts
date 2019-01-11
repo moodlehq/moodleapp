@@ -197,8 +197,33 @@ export class AddonQtypeDdImageOrTextQuestion {
      */
     docStructure(slot: number): AddonQtypeDdImageOrTextQuestionDocStructure {
         const topNode = <HTMLElement> this.container.querySelector('.addon-qtype-ddimageortext-container'),
-            dragItemsArea = <HTMLElement> topNode.querySelector('div.dragitems'),
             doc: AddonQtypeDdImageOrTextQuestionDocStructure = {};
+
+        let dragItemsArea = <HTMLElement> topNode.querySelector('div.draghomes');
+
+        if (dragItemsArea) {
+            // 3.6+ site, transform HTML so it has the same structure as in Moodle 3.5.
+
+            // Remove empty div.dragitems.
+            topNode.querySelector('div.dragitems').remove();
+
+            const ddArea = topNode.querySelector('div.ddarea');
+
+            // Move div.dropzones to div.ddarea.
+            ddArea.appendChild(topNode.querySelector('div.dropzones'));
+
+            // Move div.draghomes to div.ddarea and rename the class to .dragitems.
+            ddArea.appendChild(dragItemsArea);
+            dragItemsArea.classList.remove('draghomes');
+            dragItemsArea.classList.add('dragitems');
+
+            // Add .dragitemhomesNNN class to drag items.
+            Array.from(dragItemsArea.querySelectorAll('.draghome')).forEach((draghome, index) => {
+                draghome.classList.add('dragitemhomes' + index);
+            });
+        } else {
+            dragItemsArea = <HTMLElement> topNode.querySelector('div.dragitems');
+        }
 
         doc.topNode = (): HTMLElement => {
             return topNode;

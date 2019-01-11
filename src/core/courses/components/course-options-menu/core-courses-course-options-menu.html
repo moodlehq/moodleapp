@@ -1,0 +1,22 @@
+<ion-item text-wrap (click)="action('download')" *ngIf="downloadCourseEnabled">
+    <ion-icon *ngIf="prefetch.prefetchCourseIcon != 'spinner'" [name]="prefetch.prefetchCourseIcon" item-start></ion-icon>
+    <ion-spinner *ngIf="prefetch.prefetchCourseIcon == 'spinner'" item-start></ion-spinner>
+    <h2>{{ prefetch.title | translate }}</h2>
+</ion-item>
+<ion-item text-wrap (click)="action('hide')" *ngIf="!course.hidden">
+    <core-icon name="fa-eye" item-start></core-icon>
+    <h2>{{ 'core.courses.hidecourse' | translate }}</h2>
+</ion-item>
+<ion-item text-wrap (click)="action('show')" *ngIf="course.hidden">
+    <core-icon name="fa-eye-slash" item-start></core-icon>
+    <h2>{{ 'core.courses.show' | translate }}</h2>
+</ion-item>
+<ion-item text-wrap (click)="action('favourite')" *ngIf="!course.isfavourite">
+    <core-icon name="fa-star" item-start></core-icon>
+    <h2>{{ 'core.courses.addtofavourites' | translate }}</h2>
+</ion-item>
+<ion-item text-wrap (click)="action('unfavourite')" *ngIf="course.isfavourite">
+    <core-icon name="fa-star-o" item-start></core-icon>
+    <h2>{{ 'core.courses.removefromfavourites' | translate }}</h2>
+</ion-item>
+

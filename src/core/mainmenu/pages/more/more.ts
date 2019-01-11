@@ -57,7 +57,19 @@ export class CoreMainMenuMorePage implements OnDestroy {
     ionViewDidLoad(): void {
         // Load the handlers.
         this.subscription = this.menuDelegate.getHandlers().subscribe((handlers) => {
-            this.handlers = handlers.slice(CoreMainMenuProvider.NUM_MAIN_HANDLERS); // Remove the main handlers.
+            // Calculate the main handlers to not display them in this view.
+            const mainHandlers = handlers.filter((handler) => {
+                return !handler.onlyInMore;
+            }).slice(0, CoreMainMenuProvider.NUM_MAIN_HANDLERS);
+
+            // Get only the handlers that don't appear in the main view.
+            this.handlers = [];
+            handlers.forEach((handler) => {
+                if (mainHandlers.indexOf(handler) == -1) {
+                    this.handlers.push(handler);
+                }
+            });
+
             this.handlersLoaded = this.menuDelegate.areHandlersLoaded();
         });
     }

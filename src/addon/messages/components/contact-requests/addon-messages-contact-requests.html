@@ -1,0 +1,16 @@
+<ion-content>
+    <ion-refresher [enabled]="loaded" (ionRefresh)="refreshData($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded" class="core-loading-center">
+        <ion-list no-margin>
+            <a ion-item text-wrap *ngFor="let request of requests" [title]="request.fullname" (click)="selectUser(request.id)" [class.core-split-item-selected]="request.id == selectedUserId" class="addon-messages-conversation-item">
+                <ion-avatar item-start core-user-avatar [user]="request" [linkProfile]="false"></ion-avatar>
+                <h2><core-format-text [text]="request.fullname"></core-format-text></h2>
+                <p *ngIf="!request.iscontact && !request.confirmedOrDeclined">{{ 'addon.messages.wouldliketocontactyou' | translate }}</p>
+            </a>
+        </ion-list>
+        <core-empty-box *ngIf="!requests.length" icon="person" [message]="'addon.messages.nocontactrequests' | translate"></core-empty-box>
+        <core-infinite-loading [enabled]="canLoadMore" (action)="loadMore($event)" [error]="loadMoreError" position="bottom"></core-infinite-loading>
+    </core-loading>
+</ion-content>

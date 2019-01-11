@@ -124,13 +124,12 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginCo
             this.entryId = (value && value.recordid) || null;
             this.title = (value && value.content1) || '';
             this.imageUrl = null;
-            if (this.image) {
-                if (this.image.offline) {
-                    this.imageUrl = (this.image && this.image.toURL()) || null;
-                } else {
-                    this.imageUrl = (this.image && this.image.fileurl) || null;
+            setTimeout(() => {
+                if (this.image) {
+                    this.imageUrl = this.image.offline ? this.image.toURL() : this.image.fileurl;
                 }
-            }
+            }, 1);
+
             this.width  = this.domUtils.formatPixelsSize(this.field.param1);
             this.height = this.domUtils.formatPixelsSize(this.field.param2);
         }

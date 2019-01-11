@@ -176,8 +176,8 @@ export class AddonModDataEntryPage implements OnDestroy {
 
             const actions = this.dataHelper.getActions(this.data, this.access, this.entry);
 
-            this.entryRendered = this.dataHelper.displayShowFields(this.data.singletemplate, fieldsArray,
-                    this.entry, 'show', actions);
+            const templte = this.data.singletemplate || this.dataHelper.getDefaultTemplate('single', fieldsArray);
+            this.entryRendered = this.dataHelper.displayShowFields(templte, fieldsArray, this.entry, 'show', actions);
             this.showComments = actions.comments;
 
             const entries = {};
@@ -215,6 +215,7 @@ export class AddonModDataEntryPage implements OnDestroy {
      */
     gotoEntry(entry: number): Promise<any> {
         this.entryId = entry;
+        this.entry = null;
         this.page = null;
         this.entryLoaded = false;
 

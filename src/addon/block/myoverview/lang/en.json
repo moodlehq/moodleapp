@@ -1,0 +1,13 @@
+{
+    "all": "All",
+    "future": "Future",
+    "inprogress": "In progress",
+    "favourites" : "Starred",
+    "hiddencourses": "Hidden",
+    "lastaccessed": "Last accessed",
+    "morecourses": "More courses",
+    "nocourses": "No courses",
+    "past": "Past",
+    "pluginname": "Course overview",
+    "title": "Title"
+}

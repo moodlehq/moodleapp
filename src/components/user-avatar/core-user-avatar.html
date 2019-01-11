@@ -1,0 +1,4 @@
+<img *ngIf="profileUrl" [src]="profileUrl" [alt]="'core.pictureof' | translate:{$a: fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'" role="presentation" [siteId]="siteId || null" (click)="gotoProfile($event)">
+<img *ngIf="!profileUrl" src="assets/img/user-avatar.png" [alt]="'core.pictureof' | translate:{$a: fullname}" role="presentation" (click)="gotoProfile($event)">
+<span *ngIf="checkOnline && isOnline()" class="contact-status online"></span>
+<ng-content></ng-content>

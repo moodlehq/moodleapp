@@ -18,7 +18,7 @@ $black:           #3a3a3a; // Headings, standard text.
 $gray-darker:     #626262; // Text (emphasis-detail), placeholder, background.
 $gray-dark:       #9e9e9e; // Borders (never text).
 $gray:            #dddddd;
-$gray-light:      #eeeeee; // Background.
+$gray-light:      #e9e9e9; // Background.
 $gray-lighter:    #f5f5f5;
 $white:           #ffffff; // Background, reversed text.
 
@@ -84,7 +84,11 @@ $colors: (
   dark:       $black,
   warning:    $yellow,
   success:    $green,
-  info:       $blue
+  info:       $blue,
+  inverted: (
+    base: $white,
+    contrast: $core-color
+  )
 );
 
 $text-color:                 $black !default;
@@ -103,6 +107,7 @@ $tabs-background:            $gray-darker !default;
 $tabs-border-color:          #b2b2b2 !default;
 $tabs-tab-color-active:      $core-color !default;
 $tabs-tab-color-inactive:    $white !default;
+$ion-tabs-badge-color:       $tabs-tab-color-active !default;
 
 $text-input-highlight-color-valid: $green !default;
 $text-input-highlight-color-invalid: $red !default;
@@ -110,6 +115,16 @@ $text-input-highlight-color-invalid: $red !default;
 $button-md-box-shadow: 0 2px 2px 1px rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12) ;
 
 $refresher-icon-color: $core-color !default;
+
+$core-online-color: #5cb85c;
+
+$core-select-placeholder-color: $core-color !default;
+$item-avatar-size: 54px !default;
+$input-select-opacity: .5 !default;
+$note-color: $gray-dark !default;
+$popover-width: 280px !default;
+$item-divider-background: $gray-lighter !default;
+$item-divider-color: $black !default;
 
 
 // Moodle Mobile variables
@@ -135,14 +150,15 @@ $core-login-box-background-border: $gray !default;
 $core-login-box-text-color: $text-color !default;
 $core-login-button-outline: false !default;
 $core-login-loading-color: false !default;
-$core-select-placeholder-color: $core-color;
+$core-login-item-inner-background-color: $white !default;
+$core-login-item-background-color: $white !default;
 
 // App iOS Variables
 // --------------------------------------------------
 // iOS only Sass variables can go here
 
 $text-input-ios-show-focus-highlight: false;
-$item-ios-avatar-size: 54px;
+$item-ios-avatar-size: $item-avatar-size;
 $loading-ios-spinner-color: $core-loading-spinner-color;
 $spinner-ios-ios-color: $core-spinner-color;
 $tabs-ios-tab-color-inactive: $tabs-tab-color-inactive;
@@ -150,9 +166,13 @@ $button-ios-outline-background-color: $core-button-outline-background-color;
 $toolbar-ios-height: 44px + 8; // Avoid toolbar with different heights.
 $checkbox-ios-icon-border-radius: 0px !default;
 $select-ios-placeholder-color: $core-select-placeholder-color;
-$radio-ios-disabled-opacity: .5 !default;
-$checkbox-ios-disabled-opacity: .5 !default;
-$toggle-ios-disabled-opacity: .5 !default;
+$radio-ios-disabled-opacity: $input-select-opacity !default;
+$checkbox-ios-disabled-opacity: $input-select-opacity !default;
+$toggle-ios-disabled-opacity: $input-select-opacity !default;
+$note-ios-color: $note-color;
+$popover-ios-width: $popover-width;
+$item-ios-divider-background: $item-divider-background;
+$item-ios-divider-color: $item-divider-color;
 
 // App Material Design Variables
 // --------------------------------------------------
@@ -160,7 +180,7 @@ $toggle-ios-disabled-opacity: .5 !default;
 
 $text-input-md-show-focus-highlight: true;
 $item-md-detail-push-show: true;
-$item-md-avatar-size: 54px;
+$item-md-avatar-size: $item-avatar-size;
 $loading-md-spinner-color: $core-loading-spinner-color;
 $spinner-md-crescent-color: $core-spinner-color;
 $tabs-md-tab-color-inactive: $tabs-tab-color-inactive;
@@ -168,9 +188,14 @@ $button-md-outline-background-color: $core-button-outline-background-color;
 $font-family-md-base: "Roboto", "Noto Sans", "Helvetica Neue", sans-serif !default;
 $select-md-placeholder-color: $core-select-placeholder-color;
 $label-md-text-color: $text-color !default;
-$radio-md-disabled-opacity: .5 !default;
-$checkbox-md-disabled-opacity: .5 !default;
-$toggle-md-disabled-opacity: .5 !default;
+$radio-md-disabled-opacity: $input-select-opacity !default;
+$checkbox-md-disabled-opacity: $input-select-opacity !default;
+$toggle-md-disabled-opacity: $input-select-opacity !default;
+$note-md-color: $note-color;
+$popover-md-width: $popover-width;
+$action-sheet-md-title-color: $core-color;
+$item-md-divider-background: $item-divider-background;
+$item-md-divider-color: $item-divider-color;
 
 // App Windows Variables
 // --------------------------------------------------
@@ -178,16 +203,20 @@ $toggle-md-disabled-opacity: .5 !default;
 
 $text-input-wp-show-focus-highlight: true;
 $item-wp-detail-push-show: true;
-$item-wp-avatar-size: 54px;
+$item-wp-avatar-size: $item-avatar-size;
 $loading-wp-spinner-color: $core-loading-spinner-color;
 $spinner-wp-circles-color: $core-spinner-color;
 $tabs-wp-tab-color-inactive: $tabs-tab-color-inactive;
 $button-wp-outline-background-color: $core-button-outline-background-color;
 $select-wp-placeholder-color: $core-select-placeholder-color;
 $label-wp-text-color: $text-color !default;
-$radio-wp-disabled-opacity: .5 !default;
-$checkbox-wp-disabled-opacity: .5 !default;
-$toggle-wp-disabled-opacity: .5 !default;
+$radio-wp-disabled-opacity: $input-select-opacity !default;
+$checkbox-wp-disabled-opacity: $input-select-opacity !default;
+$toggle-wp-disabled-opacity: $input-select-opacity !default;
+$note-wp-color: $note-color;
+$popover-wp-width: $popover-width;
+$item-wp-divider-background: $item-divider-background;
+$item-wp-divider-color: $item-divider-color;
 
 // App Theme
 // --------------------------------------------------
@@ -223,6 +252,7 @@ $core-top-tabs-background: $white !default;
 $core-top-tabs-color: $gray-dark !default;
 $core-top-tabs-border: $gray !default;
 $core-top-tabs-color-active: $core-color !default;
+$core-top-tabs-border-active: $core-top-tabs-color-active !default;
 
 $core-splitview-selected: $core-color-light !default;
 $core-progressbar-color: $core-color-light !default;
@@ -286,6 +316,162 @@ $core-question-state-incorrect-color: $red-light !default;
   }
 }
 
+@mixin safe-area-border-start($px, $type, $color) {
+  $safe-area-position: calc(constant(safe-area-inset-left) + #{$px});
+  $safe-area-position-env: calc(env(safe-area-inset-left) + #{$px});
+
+  @include border-start($px, $type, $color);
+  @media screen and (orientation: landscape) {
+    @include border-start($safe-area-position, $type, $color);
+    @include border-start($safe-area-position-env, $type, $color);
+  }
+}
+
+
+@mixin safe-area-border-end($px, $type, $color) {
+  $safe-area-position: calc(constant(safe-area-inset-right) + #{$px});
+  $safe-area-position-env: calc(env(safe-area-inset-right) + #{$px});
+
+  @include border-end($px, $type, $color);
+  @media screen and (orientation: landscape) {
+    @include border-end($safe-area-position, $type, $color);
+    @include border-end($safe-area-position-env, $type, $color);
+  }
+}
+
+@mixin safe-area-padding-start($start, $end) {
+  $safe-area-start: calc(constant(safe-area-inset-left) + #{$start});
+  $safe-area-start-env: calc(env(safe-area-inset-left) + #{$start});
+
+  @include padding-horizontal($start, $end);
+
+  @media screen and (orientation: landscape) {
+    @include padding-horizontal($safe-area-start, $end);
+    @include padding-horizontal($safe-area-start-env, $end);
+  }
+}
+
+@mixin safe-area-padding-end($start, $end) {
+  $safe-area-end: calc(constant(safe-area-inset-right) + #{$end});
+  $safe-area-end-env: calc(env(safe-area-inset-right) + #{$end});
+
+  @include padding-horizontal($start, $end);
+
+  @media screen and (orientation: landscape) {
+    @include padding-horizontal($start, $safe-area-end);
+    @include padding-horizontal($start, $safe-area-end-env);
+  }
+}
+
+@mixin horizontal_scroll_item($width, $min-width, $max-width) {
+    flex: 0 0 $width;
+    min-width: $min-width;
+    max-width: $max-width;
+    align-self: stretch;
+    display: block;
+
+    &.card-md, .card-md {
+      height: calc(100% - #{($card-md-margin-bottom + $card-md-margin-top)});
+      width: calc(100% - #{($card-md-margin-end + $card-md-margin-start)});
+    }
+    &.card-ios, .card-ios {
+      height: calc(100% - #{($card-ios-margin-bottom + $card-ios-margin-top)});
+      width: calc(100% - #{($card-md-margin-end + $card-md-margin-start)});
+    }
+    &.card-wp, .card-wp {
+      height: calc(100% - #{($card-wp-margin-bottom + $card-wp-margin-top)});
+      width: calc(100% - #{($card-md-margin-end + $card-md-margin-start)});
+    }
+    &.card-md {
+      margin-top: $card-md-margin-top;
+      margin-bottom: $card-md-margin-bottom;
+    }
+    &.card-ios {
+      margin-top: $card-ios-margin-top;
+      margin-bottom: $card-ios-margin-bottom;
+    }
+    &.card-wp {
+      margin-top: $card-wp-margin-top;
+      margin-bottom: $card-wp-margin-bottom;
+    }
+
+    &.card, .card {
+      @media (max-width: 360px) {
+        margin-left: 6px;
+        margin-right: 6px;
+        width: calc(100% - 12px);
+      }
+    }
+
+    [text-wrap] .label {
+        h2, p {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+}
+
+@mixin core-headings() {
+  h1 {
+    font-size: 3rem;
+  }
+  h2 {
+    font-size: 2.8rem;
+  }
+  h3 {
+    font-size: 2.6rem;
+  }
+  h4 {
+    font-size: 2.2rem;
+  }
+  h5 {
+    font-size: 1.8rem;
+  }
+  h6 {
+    font-size: 1.4rem;
+  }
+}
+
+@mixin core-as-items() {
+  .item-md.item-block > .item-inner {
+    border-bottom: 1px solid $list-md-border-color;
+  }
+
+  .item-ios.item-block > .item-inner {
+    border-bottom: $hairlines-width solid $list-ios-border-color;
+  }
+
+  .item-wp.item-block > .item-inner {
+    border-bottom: 1px solid $list-wp-border-color;
+  }
+
+  &:last-child .item > .item-inner {
+    border-bottom: 0;
+  }
+}
+
+@mixin core-items() {
+  &.item-md.item-block > .item-inner {
+    border-bottom: 1px solid $list-md-border-color;
+  }
+
+  &.item-ios.item-block > .item-inner {
+    border-bottom: $hairlines-width solid $list-ios-border-color;
+  }
+
+  &.item-wp.item-block > .item-inner {
+    border-bottom: 1px solid $list-wp-border-color;
+  }
+
+  &:last-child > .item-inner {
+    border-bottom: 0;
+  }
+}
+
 // Font Awesome
 $fa-font-path: $font-path;
 @import "font-awesome";
+
+// Format text styles.
+@import "format-text";

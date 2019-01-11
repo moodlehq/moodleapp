@@ -196,6 +196,79 @@ export class AddonModDataHelperProvider {
     }
 
     /**
+     * Returns the default template of a certain type.
+     *
+     * Based on Moodle function data_generate_default_template.
+     *
+     * @param {string} type Type of template.
+     * @param {any[]} fields List of database fields.
+     * @return {string} Template HTML.
+     */
+    getDefaultTemplate( type: 'add' | 'list' | 'single' | 'asearch', fields: any[]): string {
+        const html = [];
+
+        if (type == 'list') {
+            html.push('##delcheck##<br />');
+        }
+
+        html.push(
+            '<div class="defaulttemplate">',
+            '<table class="mod-data-default-template ##approvalstatus##">',
+            '<tbody>'
+        );
+
+        fields.forEach((field) => {
+            html.push(
+                '<tr class="">',
+                '<td class="template-field cell c0" style="">', field.name, ': </td>',
+                '<td class="template-token cell c1 lastcol" style="">[[', field.name, ']]</td>',
+                '</tr>'
+            );
+        });
+
+        if (type == 'list') {
+            html.push(
+                '<tr class="lastrow">',
+                '<td class="controls template-field cell c0 lastcol" style="" colspan="2">',
+                '##edit##  ##more##  ##delete##  ##approve##  ##disapprove##  ##export##',
+                '</td>',
+                '</tr>'
+            );
+        } else if (type == 'single') {
+            html.push(
+                '<tr class="lastrow">',
+                '<td class="controls template-field cell c0 lastcol" style="" colspan="2">',
+                '##edit##  ##delete##  ##approve##  ##disapprove##  ##export##',
+                '</td>',
+                '</tr>'
+            );
+        } else if (type == 'asearch') {
+            html.push(
+                '<tr class="searchcontrols">',
+                '<td class="template-field cell c0" style="">Author first name: </td>',
+                '<td class="template-token cell c1 lastcol" style="">##firstname##</td>',
+                '</tr>',
+                '<tr class="searchcontrols lastrow">',
+                '<td class="template-field cell c0" style="">Author surname: </td>',
+                '<td class="template-token cell c1 lastcol" style="">##lastname##</td>',
+                '</tr>'
+            );
+        }
+
+        html.push(
+            '</tbody>',
+            '</table>',
+            '</div>'
+        );
+
+        if (type == 'list') {
+            html.push('<hr />');
+        }
+
+        return html.join('');
+    }
+
+    /**
      * Retrieve the entered data in the edit form.
      * We don't use ng-model because it doesn't detect changes done by JavaScript.
      *

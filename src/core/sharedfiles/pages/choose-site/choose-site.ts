@@ -35,11 +35,13 @@ export class CoreSharedFilesChooseSitePage implements OnInit {
 
     protected filePath: string;
     protected fileEntry: any;
+    protected isInbox: boolean; // Whether the file is in the Inbox folder.
 
     constructor(private navCtrl: NavController, navParams: NavParams, private sharedFilesHelper: CoreSharedFilesHelperProvider,
             private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
             private fileProvider: CoreFileProvider) {
         this.filePath = navParams.get('filePath');
+        this.isInbox = navParams.get('isInbox');
     }
 
     /**
@@ -57,7 +59,7 @@ export class CoreSharedFilesChooseSitePage implements OnInit {
         this.fileName = fileAndDir.name;
 
         // Get the file.
-        this.fileProvider.getFile(this.filePath).then((fe) => {
+        this.fileProvider.getExternalFile(this.filePath).then((fe) => {
             this.fileEntry = fe;
             this.fileName = this.fileEntry.name;
         }).catch(() => {
@@ -80,7 +82,7 @@ export class CoreSharedFilesChooseSitePage implements OnInit {
      */
     storeInSite(siteId: string): void {
         this.loaded = false;
-        this.sharedFilesHelper.storeSharedFileInSite(this.fileEntry, siteId).then(() => {
+        this.sharedFilesHelper.storeSharedFileInSite(this.fileEntry, siteId, this.isInbox).then(() => {
             this.navCtrl.pop();
         }).finally(() => {
             this.loaded = true;

@@ -21,6 +21,7 @@ import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/cour
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { AddonModForumProvider } from './forum';
 import { AddonModForumIndexComponent } from '../components/index/index';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Handler to support forum modules.
@@ -29,6 +30,20 @@ import { AddonModForumIndexComponent } from '../components/index/index';
 export class AddonModForumModuleHandler implements CoreCourseModuleHandler {
     name = 'AddonModForum';
     modName = 'forum';
+
+    supportedFeatures = {
+        [CoreConstants.FEATURE_GROUPS]: true,
+        [CoreConstants.FEATURE_GROUPINGS]: true,
+        [CoreConstants.FEATURE_MOD_INTRO]: true,
+        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: true,
+        [CoreConstants.FEATURE_COMPLETION_HAS_RULES]: true,
+        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: true,
+        [CoreConstants.FEATURE_GRADE_OUTCOMES]: true,
+        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
+        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
+        [CoreConstants.FEATURE_RATE]: true,
+        [CoreConstants.FEATURE_PLAGIARISM]: true
+    };
 
     constructor(private courseProvider: CoreCourseProvider, private forumProvider: AddonModForumProvider,
             private translate: TranslateService, private eventsProvider: CoreEventsProvider,
@@ -53,7 +68,7 @@ export class AddonModForumModuleHandler implements CoreCourseModuleHandler {
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
         const data: CoreCourseModuleHandlerData = {
-            icon: this.courseProvider.getModuleIconSrc('forum'),
+            icon: this.courseProvider.getModuleIconSrc(this.modName, module.modicon),
             title: module.name,
             class: 'addon-mod_forum-handler',
             showDownloadButton: true,
@@ -62,7 +77,13 @@ export class AddonModForumModuleHandler implements CoreCourseModuleHandler {
             }
         };
 
-        this.updateExtraBadge(data, courseId, module.id);
+        if (typeof module.afterlink != 'undefined') {
+            data.extraBadgeColor = '';
+            const match = />(\d+)[^<]+/.exec(module.afterlink);
+            data.extraBadge = match ? this.translate.instant('addon.mod_forum.unreadpostsnumber', {$a : match[1] }) : '';
+        } else {
+            this.updateExtraBadge(data, courseId, module.id);
+        }
 
         const event = this.eventsProvider.on(AddonModForumProvider.MARK_READ_EVENT, (eventData) => {
             if (eventData.courseId == courseId && eventData.moduleId == module.id) {

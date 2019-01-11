@@ -1,0 +1,21 @@
+<ion-item-divider>
+    <h2>{{ 'addon.block_starredcourses.pluginname' | translate }}</h2>
+    <div *ngIf="downloadEnabled && courses && courses.length > 1" class="core-button-spinner" item-end>
+        <button *ngIf="prefetchCoursesData.icon && prefetchCoursesData.icon != 'spinner'" ion-button icon-only clear color="dark" (click)="prefetchCourses()">
+            <core-icon [name]="prefetchCoursesData.icon"></core-icon>
+        </button>
+        <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData.badge">{{prefetchCoursesData.badge}}</ion-badge>
+        <ion-spinner *ngIf="!prefetchCoursesData.icon || prefetchCoursesData.icon == 'spinner'"></ion-spinner>
+    </div>
+</ion-item-divider>
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+    <core-empty-box *ngIf="courses.length == 0" image="assets/img/icons/courses.svg" [message]="'addon.block_starredcourses.nocourses' | translate"></core-empty-box>
+    <!-- List of courses. -->
+    <div class="safe-area-page">
+        <div class="core-horizontal-scroll">
+            <ng-container *ngFor="let course of courses">
+                <core-courses-course-progress [course]="course" class="core-block_starredcourses" [showDownload]="downloadEnabled"></core-courses-course-progress>
+            </ng-container>
+        </div>
+    </div>
+</core-loading>

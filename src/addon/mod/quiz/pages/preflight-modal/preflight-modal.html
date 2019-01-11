@@ -10,13 +10,13 @@
 </ion-header>
 <ion-content padding class="addon-mod_quiz-preflight-modal">
     <core-loading [hideUntil]="loaded">
-        <form ion-list [formGroup]="preflightForm" (ngSubmit)="sendData()">
+        <form ion-list [formGroup]="preflightForm" (ngSubmit)="sendData($event)">
             <!-- Access rules. -->
             <ng-container *ngFor="let data of accessRulesData; let last = last">
                 <core-dynamic-component [component]="data.component" [data]="data.data">
                     <p padding>Couldn't find the directive to render this access rule.</p>
                 </core-dynamic-component>
-                <ion-item-divider color="light" *ngIf="!last"></ion-item-divider>
+                <ion-item-divider *ngIf="!last"></ion-item-divider>
             </ng-container>
 
             <button ion-button block type="submit">

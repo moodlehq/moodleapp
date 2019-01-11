@@ -62,6 +62,10 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
     protected siteId: string;
     protected workshop: any;
     protected isDestroyed = false;
+    protected textAvailable = false;
+    protected textRequired = false;
+    protected fileAvailable = false;
+    protected fileRequired = false;
 
     constructor(navParams: NavParams, sitesProvider: CoreSitesProvider, protected fileUploaderProvider: CoreFileUploaderProvider,
             protected workshopProvider: AddonModWorkshopProvider, protected workshopOffline: AddonModWorkshopOfflineProvider,
@@ -132,6 +136,12 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
     protected fetchSubmissionData(): Promise<void> {
         return this.workshopProvider.getWorkshop(this.courseId, this.module.id).then((workshopData) => {
             this.workshop = workshopData;
+            this.textAvailable = (this.workshop.submissiontypetext != AddonModWorkshopProvider.SUBMISSION_TYPE_DISABLED);
+            this.textRequired = (this.workshop.submissiontypetext == AddonModWorkshopProvider.SUBMISSION_TYPE_REQUIRED);
+            this.fileAvailable = (this.workshop.submissiontypefile != AddonModWorkshopProvider.SUBMISSION_TYPE_DISABLED);
+            this.fileRequired = (this.workshop.submissiontypefile == AddonModWorkshopProvider.SUBMISSION_TYPE_REQUIRED);
+
+            this.editForm.controls.content.setValidators(this.textRequired ? Validators.required : null);
 
             if (this.submissionId > 0) {
                 this.editing = true;
@@ -220,8 +230,19 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
     protected getInputData(): any {
         const submissionId = this.submission.id || 'newsub';
 
-        const values = this.editForm.value;
-        values['attachmentfiles'] = this.fileSessionprovider.getFiles(this.component, this.workshopId + '_' + submissionId) || [];
+        const values = {
+            title: this.editForm.value.title,
+            content: null,
+            attachmentfiles: []
+        };
+
+        if (this.textAvailable) {
+            values.content = this.editForm.value.content || '';
+        }
+
+        if (this.fileAvailable) {
+            values.attachmentfiles = this.fileSessionprovider.getFiles(this.component, this.workshopId + '_' + submissionId) || [];
+        }
 
         return values;
     }
@@ -242,11 +263,15 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
             return false;
         }
 
-        if (this.originalData.title != inputData.title || this.originalData.content != inputData.content) {
+        if (this.originalData.title != inputData.title || this.textAvailable && this.originalData.content != inputData.content) {
             return true;
         }
 
-        return this.fileUploaderProvider.areFileListDifferent(inputData.attachmentfiles, this.originalData.attachmentfiles);
+        if (this.fileAvailable) {
+            return this.fileUploaderProvider.areFileListDifferent(inputData.attachmentfiles, this.originalData.attachmentfiles);
+        }
+
+        return false;
     }
 
     /**
@@ -300,7 +325,10 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
 
             return Promise.reject(null);
         }
-        if (!inputData.content) {
+
+        const noText = this.textUtils.htmlIsBlank(inputData.content);
+        const noFiles = !inputData.attachmentfiles.length;
+        if (this.textRequired && noText || this.fileRequired && noFiles || noText && noFiles) {
             this.domUtils.showAlertTranslated('core.notice', 'addon.mod_workshop.submissionrequiredcontent');
 
             return Promise.reject(null);
@@ -313,7 +341,9 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
             submissionId = this.submission.id;
 
         // Add some HTML to the message if needed.
-        inputData.content = this.textUtils.formatHtmlLines(inputData.content);
+        if (this.textAvailable) {
+            inputData.content = this.textUtils.formatHtmlLines(inputData.content);
+        }
 
         // Upload attachments first if any.
         allowOffline = !inputData.attachmentfiles.length;
@@ -327,6 +357,10 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
             return this.workshopHelper.uploadOrStoreSubmissionFiles(this.workshopId, this.submission.id,
                 inputData.attachmentfiles, this.editing, saveOffline);
         }).then((attachmentsId) => {
+            if (!saveOffline && !this.fileAvailable) {
+                attachmentsId = null;
+            }
+
             if (this.editing) {
                 if (saveOffline) {
                     // Save submission in offline.

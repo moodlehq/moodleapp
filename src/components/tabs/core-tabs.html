@@ -1,11 +1,11 @@
 <core-loading [hideUntil]="hideUntil" class="core-loading-center">
-    <div class="core-tabs-bar" #topTabs [hidden]="!tabs || tabs.length < 2">
+    <div class="core-tabs-bar" #topTabs [hidden]="!tabs || numTabsShown < 2">
         <ion-row>
             <ion-col class="col-with-arrow" (click)="slidePrev()" no-padding col-1>
                 <ion-icon *ngIf="showPrevButton" name="arrow-back" md="ios-arrow-back"></ion-icon>
             </ion-col>
             <ion-col no-padding col-10>
-                <ion-slides (ionSlideDidChange)="slideChanged()" [slidesPerView]="slidesShown">
+                <ion-slides (ionSlideDidChange)="slideChanged()" [slidesPerView]="slidesShown" [dir]="direction">
                     <ng-container *ngFor="let tab of tabs; let idx = index">
                         <ion-slide *ngIf="tab.show">
                             <a [attr.aria-selected]="selected == idx" (click)="selectTab(idx)" class="tab-slide">

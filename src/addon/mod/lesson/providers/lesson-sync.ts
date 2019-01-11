@@ -85,10 +85,11 @@ export class AddonModLessonSyncProvider extends CoreSyncBaseProvider {
             syncProvider: CoreSyncProvider, textUtils: CoreTextUtilsProvider, translate: TranslateService,
             courseProvider: CoreCourseProvider, private eventsProvider: CoreEventsProvider,
             private lessonProvider: AddonModLessonProvider, private lessonOfflineProvider: AddonModLessonOfflineProvider,
-            private prefetchHandler: AddonModLessonPrefetchHandler, private timeUtils: CoreTimeUtilsProvider,
+            private prefetchHandler: AddonModLessonPrefetchHandler, timeUtils: CoreTimeUtilsProvider,
             private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider) {
 
-        super('AddonModLessonSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate);
+        super('AddonModLessonSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
+                timeUtils);
 
         this.componentTranslate = courseProvider.translateModuleName('lesson');
 
@@ -401,7 +402,7 @@ export class AddonModLessonSyncProvider extends CoreSyncBaseProvider {
                                 result.warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
                                     component: this.componentTranslate,
                                     name: lesson.name,
-                                    error: error
+                                    error: this.textUtils.getErrorMessageFromError(error)
                                 }));
                             });
                         } else {
@@ -485,7 +486,7 @@ export class AddonModLessonSyncProvider extends CoreSyncBaseProvider {
                     result.warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
                         component: this.componentTranslate,
                         name: lesson.name,
-                        error: error
+                        error: this.textUtils.getErrorMessageFromError(error)
                     }));
                 });
             } else {

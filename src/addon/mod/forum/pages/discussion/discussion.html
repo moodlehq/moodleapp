@@ -36,7 +36,7 @@
 
         <ion-card *ngIf="sort != 'nested'">
             <ng-container *ngFor="let post of posts; first as first">
-                <ion-item-divider color="light" *ngIf="!first"></ion-item-divider>
+                <ion-item-divider *ngIf="!first"></ion-item-divider>
                 <addon-mod-forum-post [post]="post" [courseId]="courseId" [discussionId]="discussionId" [component]="component" [componentId]="cmId" [replyData]="replyData" [originalData]="originalData" [defaultSubject]="defaultSubject" [forum]="forum" [trackPosts]="trackPosts" (onPostChange)="postListChanged()"></addon-mod-forum-post>
             </ng-container>
         </ion-card>

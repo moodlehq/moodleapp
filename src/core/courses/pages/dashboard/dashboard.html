@@ -1,0 +1,50 @@
+    <ion-header>
+    <ion-navbar core-back-button>
+        <ion-title><core-format-text [text]="siteName"></core-format-text></ion-title>
+
+        <ion-buttons end>
+            <button *ngIf="searchEnabled" ion-button icon-only (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
+                <ion-icon name="search"></ion-icon>
+            </button>
+            <core-context-menu>
+                <core-context-menu-item *ngIf="downloadCourseEnabled || downloadCoursesEnabled" [priority]="1000" [content]="'core.settings.showdownloadoptions' | translate" (action)="toggleDownload()" [iconAction]="downloadEnabledIcon"></core-context-menu-item>
+            </core-context-menu>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <core-tabs [selectedIndex]="firstSelectedTab" [hideUntil]="tabsReady">
+        <!-- Site home tab. -->
+        <core-tab [show]="siteHomeEnabled" [title]="'core.sitehome.sitehome' | translate">
+            <ng-template>
+                <ion-content>
+                    <ion-refresher [enabled]="!!siteHomeComponent && siteHomeComponent.dataLoaded" (ionRefresh)="siteHomeComponent.doRefresh($event)">
+                        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+                    </ion-refresher>
+                    <core-sitehome-index></core-sitehome-index>
+                </ion-content>
+            </ng-template>
+        </core-tab>
+
+        <!-- Dashboard tab. -->
+        <core-tab [show]="dashboardEnabled" [title]="'core.courses.mymoodle' | translate">
+            <ng-template>
+                <ion-content>
+                    <ion-refresher [enabled]="dashboardLoaded" (ionRefresh)="refreshDashboard($event)">
+                        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+                    </ion-refresher>
+                    <core-loading [hideUntil]="dashboardLoaded" class="core-loading-center">
+                        <ion-list>
+                            <!-- Dashboard blocks. -->
+                            <ng-container *ngFor="let block of blocks">
+                                <core-block [block]="block" contextLevel="user" [instanceId]="userId" [extraData]="{'downloadEnabled': downloadEnabled}"></core-block>
+                            </ng-container>
+                        </ion-list>
+
+                        <core-empty-box *ngIf="blocks.length == 0" icon="qr-scanner" [message]="'core.course.nocontentavailable' | translate"></core-empty-box>
+                    </core-loading>
+                </ion-content>
+            </ng-template>
+        </core-tab>
+    </core-tabs>
+</ion-content>

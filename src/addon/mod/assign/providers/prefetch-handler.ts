@@ -64,9 +64,16 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
     canUseCheckUpdates(module: any, courseId: number): boolean | Promise<boolean> {
         // Teachers cannot use the WS because it doesn't check student submissions.
         return this.assignProvider.getAssignment(courseId, module.id).then((assign) => {
-            return this.assignProvider.getSubmissions(assign.id);
-        }).then((data) => {
-            return !data.canviewsubmissions;
+            return this.assignProvider.getSubmissions(assign.id).then((data) => {
+                if (data.canviewsubmissions) {
+                    return false;
+                }
+
+                // Check if the user can view their own submission.
+                return this.assignProvider.getSubmissionStatus(assign.id).then(() => {
+                    return true;
+                });
+            });
         }).catch(() => {
             return false;
         });
@@ -106,6 +113,13 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                             promises.push(this.getSubmissionFiles(assign, submission.submitid, !!submission.blindid, siteId)
                                     .then((submissionFiles) => {
                                 files = files.concat(submissionFiles);
+                            }).catch((error) => {
+                                if (error && error.errorcode == 'nopermission') {
+                                    // The user does not have persmission to view this submission, ignore it.
+                                    return Promise.resolve();
+                                }
+
+                                return Promise.reject(error);
                             }));
                         });
 
@@ -223,8 +237,6 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
 
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        promises.push(this.courseProvider.getModuleBasicInfo(module.id, siteId));
-
         // Get assignment to retrieve all its submissions.
         promises.push(this.assignProvider.getAssignment(courseId, module.id, siteId).then((assign) => {
             const subPromises = [],
@@ -257,11 +269,11 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
      * @param {any} assign Assign.
      * @param {number} courseId Course ID.
      * @param {number} moduleId Module ID.
-     * @param {number} [userId] User ID. If not defined, site's current user.
-     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {number} userId User ID. If not defined, site's current user.
+     * @param {string} siteId Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when prefetched, rejected otherwise.
      */
-    protected prefetchSubmissions(assign: any, courseId: number, moduleId: number, userId?: number, siteId?: string): Promise<any> {
+    protected prefetchSubmissions(assign: any, courseId: number, moduleId: number, userId: number, siteId: string): Promise<any> {
 
         // Get submissions.
         return this.assignProvider.getSubmissions(assign.id, siteId).then((data) => {
@@ -279,8 +291,28 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                         subPromises.push(this.assignProvider.getSubmissionStatus(assign.id, submission.submitid,
                                 !!submission.blindid, true, false, siteId).then((subm) => {
                             return this.prefetchSubmission(assign, courseId, moduleId, subm, submission.submitid, siteId);
+                        }).catch((error) => {
+                            if (error && error.errorcode == 'nopermission') {
+                                // The user does not have persmission to view this submission, ignore it.
+                                return Promise.resolve();
+                            }
+
+                            return Promise.reject(error);
                         }));
                     });
+
+                    if (!assign.markingworkflow) {
+                        // Get assignment grades only if workflow is not enabled to check grading date.
+                        subPromises.push(this.assignProvider.getAssignmentGrades(assign.id, siteId));
+                    }
+
+                    // Prefetch the submission of the current user even if it does not exist, this will be create it.
+                    if (!data.submissions || !data.submissions.find((subm) => subm.submitid == userId)) {
+                        subPromises.push(this.assignProvider.getSubmissionStatus(assign.id, userId, false, true, false, siteId)
+                                .then((subm) => {
+                            return this.prefetchSubmission(assign, courseId, moduleId, subm, userId, siteId);
+                        }));
+                    }
 
                     return Promise.all(subPromises);
                 }));
@@ -297,10 +329,16 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                 }));
             } else {
                 // Student.
-                promises.push(this.assignProvider.getSubmissionStatus(assign.id, userId, false, true, false, siteId)
-                        .then((subm) => {
-                    return this.prefetchSubmission(assign, courseId, moduleId, subm, userId, siteId);
-                }));
+                promises.push(
+                    this.assignProvider.getSubmissionStatus(assign.id, userId, false, true, false, siteId).then((subm) => {
+                        return this.prefetchSubmission(assign, courseId, moduleId, subm, userId, siteId);
+                    }).catch((error) => {
+                        // Ignore if the user can't view their own submission.
+                        if (error.errorcode != 'nopermission') {
+                            return Promise.reject(error);
+                        }
+                    })
+                );
             }
 
             promises.push(this.groupsProvider.activityHasGroups(assign.cmid));

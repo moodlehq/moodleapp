@@ -20,6 +20,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
@@ -60,9 +61,10 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
             private courseProvider: CoreCourseProvider, private eventsProvider: CoreEventsProvider,
             private assignProvider: AddonModAssignProvider, private assignOfflineProvider: AddonModAssignOfflineProvider,
             private utils: CoreUtilsProvider, private submissionDelegate: AddonModAssignSubmissionDelegate,
-            private gradesHelper: CoreGradesHelperProvider) {
+            private gradesHelper: CoreGradesHelperProvider, timeUtils: CoreTimeUtilsProvider) {
 
-        super('AddonModAssignSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate);
+        super('AddonModAssignSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
+                timeUtils);
 
         this.componentTranslate = courseProvider.translateModuleName('assign');
     }
@@ -308,7 +310,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
             }).catch((error) => {
                 if (error && this.utils.isWebServiceError(error)) {
                     // A WebService has thrown an error, this means it cannot be submitted. Discard the submission.
-                    discardError = error.message || error.error || error.content || error.body;
+                    discardError = this.textUtils.getErrorMessageFromError(error);
                 } else {
                     // Couldn't connect to server, reject.
                     return Promise.reject(error);
@@ -402,7 +404,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
                 }).catch((error) => {
                     if (error && this.utils.isWebServiceError(error)) {
                         // The WebService has thrown an error, this means it cannot be submitted. Discard the offline data.
-                        discardError = error.message || error.error || error.content || error.body;
+                        discardError = this.textUtils.getErrorMessageFromError(error);
                     } else {
                         // Couldn't connect to server, reject.
                     return Promise.reject(error);

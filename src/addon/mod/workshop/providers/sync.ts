@@ -22,6 +22,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { AddonModWorkshopProvider } from './workshop';
 import { AddonModWorkshopHelperProvider } from './helper';
@@ -46,12 +47,14 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
             sitesProvider: CoreSitesProvider,
             syncProvider: CoreSyncProvider,
             textUtils: CoreTextUtilsProvider,
+            timeUtils: CoreTimeUtilsProvider,
             private utils: CoreUtilsProvider,
             private workshopProvider: AddonModWorkshopProvider,
             private workshopHelper: AddonModWorkshopHelperProvider,
             private workshopOffline: AddonModWorkshopOfflineProvider) {
 
-        super('AddonModWorkshopSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate);
+        super('AddonModWorkshopSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
+                timeUtils);
 
         this.componentTranslate = courseProvider.translateModuleName('workshop');
     }
@@ -318,6 +321,10 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
                     }
 
                     return fileProm.then((attachmentsId) => {
+                        if (workshop.submissiontypefile == AddonModWorkshopProvider.SUBMISSION_TYPE_DISABLED) {
+                            attachmentsId = null;
+                        }
+
                         // Perform the action.
                         switch (action.action) {
                             case 'add':
@@ -336,7 +343,7 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
                     }).catch((error) => {
                         if (error && this.utils.isWebServiceError(error)) {
                             // The WebService has thrown an error, this means it cannot be performed. Discard.
-                            discardError = error.message || error.error;
+                            discardError = this.textUtils.getErrorMessageFromError(error);
                         } else {
                             // Couldn't connect to server, reject.
                             return Promise.reject(error);
@@ -417,7 +424,7 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
             }).catch((error) => {
                 if (error && this.utils.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means it cannot be performed. Discard.
-                    discardError = error.message || error.error;
+                    discardError = this.textUtils.getErrorMessageFromError(error);
                 } else {
                     // Couldn't connect to server, reject.
                     return Promise.reject(error);
@@ -476,10 +483,10 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
                 evaluate.gradeover, siteId).catch((error) => {
                 if (error && this.utils.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means it cannot be performed. Discard.
-                    discardError = error.message || error.error;
+                    discardError = this.textUtils.getErrorMessageFromError(error);
                 } else {
                     // Couldn't connect to server, reject.
-                    return Promise.reject(error && error.error);
+                    return Promise.reject(error);
                 }
             }).then(() => {
                 // Delete the offline data.
@@ -535,10 +542,10 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
                 evaluate.gradinggradeover, siteId).catch((error) => {
                 if (error && this.utils.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means it cannot be performed. Discard.
-                    discardError = error.message || error.error;
+                    discardError = this.textUtils.getErrorMessageFromError(error);
                 } else {
                     // Couldn't connect to server, reject.
-                    return Promise.reject(error && error.error);
+                    return Promise.reject(error);
                 }
             }).then(() => {
                 // Delete the offline data.

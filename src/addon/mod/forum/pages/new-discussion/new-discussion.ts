@@ -354,12 +354,14 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
      * Convenience function to update or return to discussions depending on device.
      *
      * @param {number} [discussionId] Id of the new discussion.
+     * @param {number} [discTimecreated] The time created of the discussion (if offline).
      */
-    protected returnToDiscussions(discussionId?: number): void {
+    protected returnToDiscussions(discussionId?: number, discTimecreated?: number): void {
         const data: any = {
             forumId: this.forumId,
             cmId: this.cmId,
             discussionId: discussionId,
+            discTimecreated: discTimecreated
         };
         this.eventsProvider.trigger(AddonModForumProvider.NEW_DISCUSSION_EVENT, data, this.sitesProvider.getCurrentSiteId());
 
@@ -467,7 +469,7 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
                 this.forumHelper.deleteNewDiscussionStoredFiles(this.forumId, discTimecreated);
             }
 
-            this.returnToDiscussions(discussionId);
+            this.returnToDiscussions(discussionId, discTimecreated);
         }).catch((message) => {
             this.domUtils.showErrorModalDefault(message, 'addon.mod_forum.cannotcreatediscussion', true);
         }).finally(() => {

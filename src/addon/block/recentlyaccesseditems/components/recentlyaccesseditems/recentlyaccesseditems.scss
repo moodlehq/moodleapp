@@ -1,0 +1,3 @@
+ion-app.app-root addon-block-recentlyaccesseditems .core-horizontal-scroll > div {
+    @include horizontal_scroll_item(80%, 250px, 300px);
+}

@@ -22,14 +22,18 @@ import { CoreSitesProvider } from '@providers/sites';
 @Injectable()
 export class AddonCompetencyProvider {
 
+    // Learning plan status.
     static STATUS_DRAFT = 0;
     static STATUS_ACTIVE = 1;
     static STATUS_COMPLETE = 2;
-    static STATUS_WAITIN_GFOR_REVIEW = 3;
+    static STATUS_WAITING_FOR_REVIEW = 3;
     static STATUS_IN_REVIEW = 4;
+
+    // Competency status.
     static REVIEW_STATUS_IDLE = 0;
     static REVIEW_STATUS_WAITING_FOR_REVIEW = 1;
     static REVIEW_STATUS_IN_REVIEW = 2;
+
     protected ROOT_CACHE_KEY = 'mmaCompetency:';
 
     protected logger;
@@ -216,9 +220,12 @@ export class AddonCompetencyProvider {
      * @param  {number} competencyId    ID of the competency.
      * @param  {number} [userId]    ID of the user. If not defined, current user.
      * @param  {string} [siteId]    Site ID. If not defined, current site.
+     * @param  {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @return {Promise<any>}            Promise to be resolved when the plans are retrieved.
      */
-    getCompetencyInCourse(courseId: number, competencyId: number, userId?: number, siteId?: string): Promise<any> {
+    getCompetencyInCourse(courseId: number, competencyId: number, userId?: number, siteId?: string, ignoreCache?: boolean)
+            : Promise<any> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
@@ -229,9 +236,14 @@ export class AddonCompetencyProvider {
                     competencyid: competencyId,
                     userid: userId
                 },
-                preSets = {
+                preSets: any = {
                     cacheKey: this.getCompetencyInCourseCacheKey(courseId, competencyId, userId)
                 };
+
+            if (ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
+            }
 
             return site.read('tool_lp_data_for_user_competency_summary_in_course', params, preSets).then((response) => {
                 if (response.usercompetencysummary) {
@@ -249,9 +261,10 @@ export class AddonCompetencyProvider {
      * @param  {number} competencyId    ID of the competency.
      * @param  {number} [userId]    ID of the user. If not defined, current user.
      * @param  {string} [siteId]    Site ID. If not defined, current site.
+     * @param  {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @return {Promise<any>}            Promise to be resolved when the plans are retrieved.
      */
-    getCompetencySummary(competencyId: number, userId?: number, siteId?: string): Promise<any> {
+    getCompetencySummary(competencyId: number, userId?: number, siteId?: string, ignoreCache?: boolean): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
@@ -261,9 +274,14 @@ export class AddonCompetencyProvider {
                     competencyid: competencyId,
                     userid: userId
                 },
-                preSets = {
+                preSets: any = {
                     cacheKey: this.getCompetencySummaryCacheKey(competencyId, userId)
                 };
+
+            if (ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
+            }
 
             return site.read('tool_lp_data_for_user_competency_summary', params, preSets).then((response) => {
                 if (response.competency) {
@@ -281,9 +299,10 @@ export class AddonCompetencyProvider {
      * @param  {number} courseId    ID of the course.
      * @param  {number} [userId]    ID of the user.
      * @param  {string} [siteId]    Site ID. If not defined, current site.
+     * @param  {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @return {Promise<any>}            Promise to be resolved when the course competencies are retrieved.
      */
-    getCourseCompetencies(courseId: number, userId?: number, siteId?: string): Promise<any> {
+    getCourseCompetencies(courseId: number, userId?: number, siteId?: string, ignoreCache?: boolean): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
 
             this.logger.debug('Get course competencies for course ' + courseId);
@@ -291,9 +310,14 @@ export class AddonCompetencyProvider {
             const params = {
                     courseid: courseId
                 },
-                preSets = {
+                preSets: any = {
                     cacheKey: this.getCourseCompetenciesCacheKey(courseId)
                 };
+
+            if (ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
+            }
 
             return site.read('tool_lp_data_for_course_competencies_page', params, preSets).then((response) => {
                 if (response.competencies) {

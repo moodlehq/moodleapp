@@ -29,7 +29,7 @@
     <ion-item text-wrap *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
         <ion-label id="addon-data-groupslabel" *ngIf="groupInfo.separateGroups">{{ 'core.groupsseparate' | translate }}</ion-label>
         <ion-label id="addon-data-groupslabel" *ngIf="groupInfo.visibleGroups">{{ 'core.groupsvisible' | translate }}</ion-label>
-        <ion-select [(ngModel)]="selectedGroup" (ionChange)="setGroup(selectedGroup)" aria-labelledby="addon-data-groupslabel" interface="popover">
+        <ion-select [(ngModel)]="selectedGroup" (ionChange)="setGroup(selectedGroup)" aria-labelledby="addon-data-groupslabel" interface="action-sheet">
             <ion-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">{{groupOpt.name}}</ion-option>
         </ion-select>
     </ion-item>
@@ -54,9 +54,16 @@
         {{ 'addon.mod_data.entrieslefttoadd' | translate:{$a: {entriesleft: access.entrieslefttoadd} } }}
     </div>
 
-    <ion-item class="item" *ngIf="search.searching && !isEmpty">
-        <a (click)="searchReset()">{{ 'addon.mod_data.resetsettings' | translate}}</a>
-    </ion-item>
+    <!-- Reset search. -->
+    <ng-container *ngIf="search.searching && !isEmpty">
+        <ion-item class="item" *ngIf="!foundRecordsData">
+            <a (click)="searchReset()">{{ 'addon.mod_data.resetsettings' | translate}}</a>
+        </ion-item>
+
+        <div class="core-success-card" *ngIf="foundRecordsData" (click)="searchReset()">
+            <p [innerHTML]="'addon.mod_data.foundrecords' | translate:{$a: foundRecordsData}"></p>
+        </div>
+    </ng-container>
 
     <div class="addon-data-contents addon-data-entries-{{data.id}}" *ngIf="!isEmpty">
         <style *ngIf="cssTemplate">
@@ -86,13 +93,13 @@
     <core-empty-box *ngIf="isEmpty && !search.searching" icon="archive" [message]="'addon.mod_data.norecords' | translate">
     </core-empty-box>
 
-    <core-empty-box *ngIf="isEmpty && search.searching" icon="archive" [message]="'addon.mod_data.nomatch' | translate">
+    <core-empty-box *ngIf="isEmpty && search.searching" icon="archive" [message]="'addon.mod_data.nomatch' | translate" class="core-empty-box-clickable">
         <a (click)="searchReset()">{{ 'addon.mod_data.resetsettings' | translate}}</a>
     </core-empty-box>
 
 </core-loading>
 
-<ion-fab bottom end *ngIf="canAdd">
+<ion-fab core-fab bottom end *ngIf="canAdd">
     <button ion-fab (click)="gotoAddEntries($event)" [attr.aria-label]="'addon.mod_data.addentries' | translate">
         <ion-icon name="add"></ion-icon>
     </button>

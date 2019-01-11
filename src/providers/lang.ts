@@ -40,8 +40,7 @@ export class CoreLangProvider {
 
         platform.ready().then(() => {
             this.getCurrentLanguage().then((language) => {
-                translate.use(language);
-                moment.locale(language);
+                this.changeCurrentLanguage(language);
             });
         });
 
@@ -97,7 +96,30 @@ export class CoreLangProvider {
         // Change the language, resolving the promise when we receive the first value.
         promises.push(new Promise((resolve, reject): void => {
             const subscription = this.translate.use(language).subscribe((data) => {
-                resolve(data);
+                // It's a language override, load the original one first.
+                const fallbackLang = this.translate.instant('core.parentlanguage');
+
+                if (fallbackLang != '' && fallbackLang != 'core.parentlanguage' && fallbackLang != language) {
+                    const fallbackSubs = this.translate.use(fallbackLang).subscribe((fallbackData) => {
+                        data = Object.assign(fallbackData, data);
+                        resolve(data);
+
+                        // Data received, unsubscribe. Use a timeout because we can receive a value immediately.
+                        setTimeout(() => {
+                            fallbackSubs.unsubscribe();
+                        });
+                    }, (error) => {
+                        // Resolve with the original language.
+                        resolve(data);
+
+                        // Error received, unsubscribe. Use a timeout because we can receive a value immediately.
+                        setTimeout(() => {
+                            fallbackSubs.unsubscribe();
+                        });
+                    });
+                } else {
+                    resolve(data);
+                }
 
                 // Data received, unsubscribe. Use a timeout because we can receive a value immediately.
                 setTimeout(() => {
@@ -116,7 +138,8 @@ export class CoreLangProvider {
         // Change the config.
         promises.push(this.configProvider.set('current_language', language));
 
-        moment.locale(language);
+        // Use british english when parent english is loaded.
+        moment.locale(language == 'en' ? 'en-gb' : language);
         this.currentLanguage = language;
 
         return Promise.all(promises).finally(() => {
@@ -214,6 +237,43 @@ export class CoreLangProvider {
             this.currentLanguage = language; // Save it for later.
 
             return language;
+        });
+    }
+
+    /**
+     * Get the default language.
+     *
+     * @return {string} Default language.
+     */
+    getDefaultLanguage(): string {
+        return this.defaultLanguage;
+    }
+
+    /**
+     * Get the fallback language.
+     *
+     * @return {string} Fallback language.
+     */
+    getFallbackLanguage(): string {
+        return this.fallbackLanguage;
+    }
+
+    /**
+     * Get the full list of translations for a certain language.
+     *
+     * @param {string} lang The language to check.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    getTranslationTable(lang: string): Promise<any> {
+        // Create a promise to convert the observable into a promise.
+        return new Promise((resolve, reject): void => {
+            const observer = this.translate.getTranslation(lang).subscribe((table) => {
+                resolve(table);
+                observer.unsubscribe();
+            }, (err) => {
+                reject(err);
+                observer.unsubscribe();
+            });
         });
     }
 

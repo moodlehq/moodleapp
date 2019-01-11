@@ -23,7 +23,7 @@
                 [maxSubmissions]="workshop.overallfeedbackfiles" [component]="component" [componentId]="componentId" [allowOffline]="true"></core-attachments>
             <ion-item *ngIf="edit && access && access.canallocate">
                 <ion-label stacked [core-mark-required]="true">{{ 'addon.mod_workshop.assessmentweight' | translate }}</ion-label>
-                <ion-select [(ngModel)]="weight" interface="popover">
+                <ion-select [(ngModel)]="weight" interface="action-sheet">
                     <ion-option *ngFor="let w of weights" [value]="w">{{w}}</ion-option>
                 </ion-select>
             </ion-item>
@@ -31,12 +31,14 @@
                 <core-format-text [component]="component" [componentId]="componentId" [text]="data.assessment.feedbackauthor"></core-format-text>
             </ion-item>
             <ion-item *ngIf="!edit && workshop.overallfeedbackfiles && data.assessment.feedbackattachmentfiles && data.assessment.feedbackattachmentfiles.length">
-                <ng-container *ngFor="let attachment of data.assessment.feedbackattachmentfiles">
-                    <!-- Files already attached to the submission. -->
-                    <core-file *ngIf="!attachment.name" [file]="attachment" [component]="component" [componentId]="componentId"></core-file>
-                    <!-- Files stored in offline to be sent later. -->
-                    <core-local-file *ngIf="attachment.name" [file]="attachment"></core-local-file>
-                </ng-container>
+                <div no-lines>
+                    <ng-container *ngFor="let attachment of data.assessment.feedbackattachmentfiles">
+                        <!-- Files already attached to the submission. -->
+                        <core-file *ngIf="!attachment.name" [file]="attachment" [component]="component" [componentId]="componentId"></core-file>
+                        <!-- Files stored in offline to be sent later. -->
+                        <core-local-file *ngIf="attachment.name" [file]="attachment"></core-local-file>
+                    </ng-container>
+                </div>
             </ion-item>
         </ion-card>
     </core-loading>

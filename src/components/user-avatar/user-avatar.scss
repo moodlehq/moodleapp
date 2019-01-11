@@ -1,0 +1,20 @@
+ion-avatar[core-user-avatar] {
+    position: relative;
+
+    .contact-status {
+        position: absolute;
+        @include position(null, 0, 0, null);
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        &.online {
+            border: 1px solid white;
+            background-color: $core-online-color;
+        }
+    }
+}
+
+.toolbar ion-avatar[core-user-avatar] .contact-status {
+    width: 10px;
+    height: 10px;
+}

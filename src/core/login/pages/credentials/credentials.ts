@@ -44,6 +44,7 @@ export class CoreLoginCredentialsPage {
     identityProviders: any[];
     pageLoaded = false;
     isBrowserSSO = false;
+    isFixedUrlSet = false;
 
     protected siteConfig;
     protected eventThrown = false;
@@ -72,8 +73,9 @@ export class CoreLoginCredentialsPage {
      */
     ionViewDidLoad(): void {
         this.treatSiteConfig();
+        this.isFixedUrlSet = this.loginHelper.isFixedUrlSet();
 
-        if (this.loginHelper.isFixedUrlSet()) {
+        if (this.isFixedUrlSet) {
             // Fixed URL, we need to check if it uses browser SSO login.
             this.checkSite(this.siteUrl);
         } else {
@@ -161,8 +163,15 @@ export class CoreLoginCredentialsPage {
 
     /**
      * Tries to authenticate the user.
+     *
+     * @param {Event} [e] Event.
      */
-    login(): void {
+    login(e?: Event): void {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
         this.appProvider.closeKeyboard();
 
         // Get input data.
@@ -226,7 +235,7 @@ export class CoreLoginCredentialsPage {
                 }
             });
         }).catch((error) => {
-            this.loginHelper.treatUserTokenError(siteUrl, error);
+            this.loginHelper.treatUserTokenError(siteUrl, error, username, password);
         }).finally(() => {
             modal.dismiss();
         });

@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
-import { Platform } from 'ionic-angular';
+import { Injectable, NgZone } from '@angular/core';
+import { Config, Platform } from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
+import { Network } from '@ionic-native/network';
+import { CoreAppProvider } from '../app';
 import { CoreFileProvider } from '../file';
 import { CoreLoggerProvider } from '../logger';
 import { CoreSitesProvider } from '../sites';
@@ -21,6 +24,7 @@ import { CoreDomUtilsProvider } from './dom';
 import { CoreTextUtilsProvider } from './text';
 import { CoreUrlUtilsProvider } from './url';
 import { CoreUtilsProvider } from './utils';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 
 /*
  * "Utils" service with helper functions for iframes, embed and similar.
@@ -33,8 +37,109 @@ export class CoreIframeUtilsProvider {
 
     constructor(logger: CoreLoggerProvider, private fileProvider: CoreFileProvider, private sitesProvider: CoreSitesProvider,
             private urlUtils: CoreUrlUtilsProvider, private textUtils: CoreTextUtilsProvider, private utils: CoreUtilsProvider,
-            private domUtils: CoreDomUtilsProvider, private platform: Platform) {
+            private domUtils: CoreDomUtilsProvider, private platform: Platform, private appProvider: CoreAppProvider,
+            private translate: TranslateService, private network: Network, private zone: NgZone, private config: Config,
+            private contentLinksHelper: CoreContentLinksHelperProvider) {
         this.logger = logger.getInstance('CoreUtilsProvider');
+    }
+
+    /**
+     * Check if a frame uses an online URL but the app is offline. If it does, the iframe is hidden and a warning is shown.
+     *
+     * @param {any} element The frame to check (iframe, embed, ...).
+     * @param {boolean} [isSubframe] Whether it's a frame inside another frame.
+     * @return {boolean} True if frame is online and the app is offline, false otherwise.
+     */
+    checkOnlineFrameInOffline(element: any, isSubframe?: boolean): boolean {
+        const src = element.src || element.data;
+
+        if (src && src.match(/^https?:\/\//i) && !this.appProvider.isOnline()) {
+            if (element.classList.contains('core-iframe-offline-disabled')) {
+                // Iframe already hidden, stop.
+                return true;
+            }
+
+            // The frame has an online URL but the app is offline. Show a warning, or a link if the URL can be opened in the app.
+            const div = document.createElement('div');
+
+            div.setAttribute('text-center', '');
+            div.setAttribute('padding', '');
+            div.classList.add('core-iframe-offline-warning');
+
+            const site = this.sitesProvider.getCurrentSite();
+            const username = site ? site.getInfo().username : undefined;
+            this.contentLinksHelper.canHandleLink(src, undefined, username).then((canHandleLink) => {
+                if (canHandleLink) {
+                    const link = document.createElement('a');
+
+                    if (isSubframe) {
+                        // Ionic styles are not available in subframes, adding some minimal inline styles.
+                        link.style.display = 'block';
+                        link.style.padding = '1em';
+                        link.style.fontWeight = '500';
+                        link.style.textAlign = 'center';
+                        link.style.textTransform = 'uppercase';
+                        link.style.cursor = 'pointer';
+                    } else {
+                        const mode = this.config.get('mode');
+                        link.setAttribute('ion-button', '');
+                        link.classList.add('button', 'button-' + mode,
+                                'button-default', 'button-default-' + mode,
+                                'button-block', 'button-block-' + mode);
+                    }
+
+                    const message = this.translate.instant('core.viewembeddedcontent');
+                    link.innerHTML = isSubframe ? message : '<span class="button-inner">' + message + '</span>';
+
+                    link.onclick = (event: Event): void => {
+                        this.contentLinksHelper.handleLink(src, username);
+                        event.preventDefault();
+                    };
+
+                    div.appendChild(link);
+                } else {
+                    div.innerHTML = (isSubframe ?  '' : this.domUtils.getConnectionWarningIconHtml()) +
+                        '<p>' + this.translate.instant('core.networkerroriframemsg') + '</p>';
+                }
+
+                element.parentElement.insertBefore(div, element);
+            });
+
+            // Add a class to specify that the iframe is hidden.
+            element.classList.add('core-iframe-offline-disabled');
+
+            if (isSubframe) {
+                // We cannot apply CSS styles in subframes, just hide the iframe.
+                element.style.display = 'none';
+            }
+
+            // If the network changes, check it again.
+            const subscription = this.network.onConnect().subscribe(() => {
+                // Execute the callback in the Angular zone, so change detection doesn't stop working.
+                this.zone.run(() => {
+                    if (!this.checkOnlineFrameInOffline(element, isSubframe)) {
+                        // Now the app is online, no need to check connection again.
+                        subscription.unsubscribe();
+                    }
+                });
+            });
+
+            return true;
+        } else if (element.classList.contains('core-iframe-offline-disabled')) {
+            // Reload the frame.
+            element.src = element.src;
+            element.data = element.data;
+
+            // Remove the warning and show the iframe
+            this.domUtils.removeElement(element.parentElement, 'div.core-iframe-offline-warning');
+            element.classList.remove('core-iframe-offline-disabled');
+
+            if (isSubframe) {
+                element.style.display = '';
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -90,7 +195,7 @@ export class CoreIframeUtilsProvider {
     redefineWindowOpen(element: any, contentWindow: Window, contentDocument: Document): void {
         if (contentWindow) {
             // Intercept window.open.
-            contentWindow.open = (url: string): Window => {
+            contentWindow.open = (url: string, target: string): Window => {
                 const scheme = this.urlUtils.getUrlScheme(url);
                 if (!scheme) {
                     // It's a relative URL, use the frame src to create the full URL.
@@ -102,16 +207,23 @@ export class CoreIframeUtilsProvider {
                         } else {
                             this.logger.warn('Cannot get iframe dir path to open relative url', url, element);
 
-                            return new Window(); // Return new Window object.
+                            return null;
                         }
                     } else {
                         this.logger.warn('Cannot get iframe src to open relative url', url, element);
 
-                        return new Window(); // Return new Window object.
+                        return null;
                     }
                 }
 
-                if (url.indexOf('cdvfile://') === 0 || url.indexOf('file://') === 0) {
+                if (target == '_self') {
+                    // Link should be loaded in the same frame.
+                    if (element.tagName.toLowerCase() == 'object') {
+                        element.setAttribute('data', url);
+                    } else {
+                        element.setAttribute('src', url);
+                    }
+                } else if (url.indexOf('cdvfile://') === 0 || url.indexOf('file://') === 0) {
                     // It's a local file.
                     this.utils.openFile(url).catch((error) => {
                         this.domUtils.showErrorModal(error);
@@ -126,7 +238,8 @@ export class CoreIframeUtilsProvider {
                     }
                 }
 
-                return new Window(); // Return new Window object.
+                 // We cannot create new Window objects directly, return null which is a valid return value for Window.open().
+                return null;
             };
         }
 
@@ -135,7 +248,7 @@ export class CoreIframeUtilsProvider {
             CoreIframeUtilsProvider.FRAME_TAGS.forEach((tag) => {
                 const elements = Array.from(contentDocument.querySelectorAll(tag));
                 elements.forEach((subElement) => {
-                    this.treatFrame(subElement);
+                    this.treatFrame(subElement, true);
                 });
             });
         }
@@ -146,9 +259,12 @@ export class CoreIframeUtilsProvider {
      * Search links (<a>) and open them in browser or InAppBrowser if needed.
      *
      * @param {any} element Element to treat (iframe, embed, ...).
+     * @param {boolean} [isSubframe] Whether it's a frame inside another frame.
      */
-    treatFrame(element: any): void {
+    treatFrame(element: any, isSubframe?: boolean): void {
         if (element) {
+            this.checkOnlineFrameInOffline(element, isSubframe);
+
             let winAndDoc = this.getContentWindowAndDocument(element);
             // Redefine window.open in this element and sub frames, it might have been loaded already.
             this.redefineWindowOpen(element, winAndDoc.window, winAndDoc.document);
@@ -156,6 +272,8 @@ export class CoreIframeUtilsProvider {
             this.treatFrameLinks(element, winAndDoc.document);
 
             element.addEventListener('load', () => {
+                this.checkOnlineFrameInOffline(element, isSubframe);
+
                 // Element loaded, redefine window.open and treat links again.
                 winAndDoc = this.getContentWindowAndDocument(element);
                 this.redefineWindowOpen(element, winAndDoc.window, winAndDoc.document);
@@ -183,55 +301,67 @@ export class CoreIframeUtilsProvider {
             return;
         }
 
-        const links = Array.from(contentDocument.querySelectorAll('a'));
-        links.forEach((el: HTMLAnchorElement) => {
-            const href = el.href;
+        contentDocument.addEventListener('click', (event) => {
+            if (event.defaultPrevented) {
+                // Event already prevented by some other code.
+                return;
+            }
 
-            // Check that href is not null.
-            if (href) {
-                const scheme = this.urlUtils.getUrlScheme(href);
-                if (scheme && scheme == 'javascript') {
-                    // Javascript links should be treated by the iframe's Javascript.
-                    // There's nothing to be done with these links, so they'll be ignored.
+            // Find the link being clicked.
+            let el = <Element> event.target;
+            while (el && el.tagName !== 'A') {
+                el = el.parentElement;
+            }
+            if (!el || el.tagName !== 'A') {
+                return;
+            }
+            const link = <HTMLAnchorElement> el;
+
+            const scheme = this.urlUtils.getUrlScheme(link.href);
+            if (!link.href || (scheme && scheme == 'javascript')) {
+                // Links with no URL and Javascript links are ignored.
+                return;
+            }
+
+            if (scheme && scheme != 'file' && scheme != 'filesystem') {
+                // Scheme suggests it's an external resource.
+                event.preventDefault();
+
+                const frameSrc = element.src || element.data,
+                    frameScheme = this.urlUtils.getUrlScheme(frameSrc);
+
+                // If the frame is not local, check the target to identify how to treat the link.
+                if (frameScheme && frameScheme != 'file' && frameScheme != 'filesystem' &&
+                        (!link.target || link.target == '_self')) {
+                    // Load the link inside the frame itself.
+                    if (element.tagName.toLowerCase() == 'object') {
+                        element.setAttribute('data', link.href);
+                    } else {
+                        element.setAttribute('src', link.href);
+                    }
+
                     return;
-                } else if (scheme && scheme != 'file' && scheme != 'filesystem') {
-                    // Scheme suggests it's an external resource, open it in browser.
-                    el.addEventListener('click', (e) => {
-                        // If the link's already prevented by SCORM JS then we won't open it in browser.
-                        if (!e.defaultPrevented) {
-                            e.preventDefault();
-                            if (!this.sitesProvider.isLoggedIn()) {
-                                this.utils.openInBrowser(href);
-                            } else {
-                                this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(href);
-                            }
-                        }
-                    });
-                } else if (el.target == '_parent' || el.target == '_top' || el.target == '_blank') {
-                    // Opening links with _parent, _top or _blank can break the app. We'll open it in InAppBrowser.
-                    el.addEventListener('click', (e) => {
-                        // If the link's already prevented by SCORM JS then we won't open it in InAppBrowser.
-                        if (!e.defaultPrevented) {
-                            e.preventDefault();
-                            this.utils.openFile(href).catch((error) => {
-                                this.domUtils.showErrorModal(error);
-                            });
-                        }
-                    });
-                } else if (this.platform.is('ios') && (!el.target || el.target == '_self')) {
-                    // In cordova ios 4.1.0 links inside iframes stopped working. We'll manually treat them.
-                    el.addEventListener('click', (e) => {
-                        // If the link's already prevented by SCORM JS then we won't treat it.
-                        if (!e.defaultPrevented) {
-                            if (element.tagName.toLowerCase() == 'object') {
-                                e.preventDefault();
-                                element.setAttribute('data', href);
-                            } else {
-                                e.preventDefault();
-                                element.setAttribute('src', href);
-                            }
-                        }
-                    });
+                }
+
+                // The frame is local or the link needs to be opened in a new window. Open in browser.
+                if (!this.sitesProvider.isLoggedIn()) {
+                    this.utils.openInBrowser(link.href);
+                } else {
+                    this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(link.href);
+                }
+            } else if (link.target == '_parent' || link.target == '_top' || link.target == '_blank') {
+                // Opening links with _parent, _top or _blank can break the app. We'll open it in InAppBrowser.
+                event.preventDefault();
+                this.utils.openFile(link.href).catch((error) => {
+                    this.domUtils.showErrorModal(error);
+                });
+            } else if (this.platform.is('ios') && (!link.target || link.target == '_self')) {
+                // In cordova ios 4.1.0 links inside iframes stopped working. We'll manually treat them.
+                event.preventDefault();
+                if (element.tagName.toLowerCase() == 'object') {
+                    element.setAttribute('data', link.href);
+                } else {
+                    element.setAttribute('src', link.href);
                 }
             }
         });

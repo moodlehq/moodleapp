@@ -21,6 +21,7 @@ import { CoreLoggerProvider } from './logger';
 import { CoreSitesFactoryProvider } from './sites-factory';
 import { CoreTextUtilsProvider } from './utils/text';
 import { CoreUrlUtilsProvider } from './utils/url';
+import { CoreUtilsProvider } from './utils/utils';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../configconstants';
 import { CoreSite } from '@classes/site';
@@ -211,7 +212,8 @@ export class CoreSitesProvider {
 
     constructor(logger: CoreLoggerProvider, private http: HttpClient, private sitesFactory: CoreSitesFactoryProvider,
             private appProvider: CoreAppProvider, private translate: TranslateService, private urlUtils: CoreUrlUtilsProvider,
-            private eventsProvider: CoreEventsProvider,  private textUtils: CoreTextUtilsProvider) {
+            private eventsProvider: CoreEventsProvider,  private textUtils: CoreTextUtilsProvider,
+            private utils: CoreUtilsProvider) {
         this.logger = logger.getInstance('CoreSitesProvider');
 
         this.appDB = appProvider.getDB();
@@ -258,14 +260,14 @@ export class CoreSitesProvider {
                 protocol = protocol == 'https://' ? 'http://' : 'https://';
 
                 return this.checkSiteWithProtocol(siteUrl, protocol).catch((secondError) => {
-                    // Site doesn't exist.
-                    if (secondError.error) {
+                    if (secondError.critical) {
                         return Promise.reject(secondError.error);
-                    } else if (error.error) {
-                        return Promise.reject(error.error);
                     }
 
-                    return Promise.reject(this.translate.instant('core.login.checksiteversion'));
+                    // Site doesn't exist. Return the error message.
+                    return Promise.reject(this.textUtils.getErrorMessageFromError(error) ||
+                            this.textUtils.getErrorMessageFromError(secondError) ||
+                            this.translate.instant('core.cannotconnect'));
                 });
             });
         }
@@ -286,7 +288,7 @@ export class CoreSitesProvider {
 
         return this.siteExists(siteUrl).catch((error) => {
             // Do not continue checking if WS are not enabled.
-            if (error.errorcode && error.errorcode == 'enablewsdescription') {
+            if (error.errorcode == 'enablewsdescription') {
                 return rejectWithCriticalError(error.error, error.errorcode);
             }
 
@@ -298,13 +300,13 @@ export class CoreSitesProvider {
                 siteUrl = treatedUrl;
             }).catch((secondError) => {
                 // Do not continue checking if WS are not enabled.
-                if (secondError.errorcode && secondError.errorcode == 'enablewsdescription') {
+                if (secondError.errorcode == 'enablewsdescription') {
                     return rejectWithCriticalError(secondError.error, secondError.errorcode);
                 }
 
-                error = secondError || error;
-
-                return Promise.reject({ error: typeof error == 'object' ? error.error : error });
+                // Return the error message.
+                return Promise.reject(this.textUtils.getErrorMessageFromError(error) ||
+                        this.textUtils.getErrorMessageFromError(secondError));
             });
         }).then(() => {
             // Create a temporary site to check if local_mobile is installed.
@@ -376,20 +378,11 @@ export class CoreSitesProvider {
      * @return {Promise} A promise to be resolved if the site exists.
      */
     siteExists(siteUrl: string): Promise<void> {
-        const data: any = {};
-
-        if (!this.appProvider.isMobile()) {
-            // Send fake parameters for CORS. This is only needed in browser.
-            data.username = 'a';
-            data.password = 'b';
-            data.service = 'c';
-        }
-
-        const promise = this.http.post(siteUrl + '/login/token.php', data).timeout(CoreConstants.WS_TIMEOUT).toPromise();
-
-        return promise.catch((error) => {
-            return Promise.reject(error.message);
+        return this.http.post(siteUrl + '/login/token.php', {}).timeout(CoreConstants.WS_TIMEOUT).toPromise().catch(() => {
+            // Default error messages are kinda bad, return our own message.
+            return Promise.reject({error: this.translate.instant('core.cannotconnect')});
         }).then((data: any) => {
+
             if (data.errorcode && (data.errorcode == 'enablewsdescription' || data.errorcode == 'requirecorrectaccess')) {
                 return Promise.reject({ errorcode: data.errorcode, error: data.error });
             } else if (data.error && data.error == 'Web services must be enabled in Advanced features.') {
@@ -424,7 +417,8 @@ export class CoreSitesProvider {
                 password: password,
                 service: service
             },
-            promise = this.http.post(siteUrl + '/login/token.php', params).timeout(CoreConstants.WS_TIMEOUT).toPromise();
+            loginUrl = siteUrl + '/login/token.php',
+            promise = this.http.post(loginUrl, params).timeout(CoreConstants.WS_TIMEOUT).toPromise();
 
         return promise.then((data: any): any => {
             if (typeof data == 'undefined') {
@@ -433,12 +427,22 @@ export class CoreSitesProvider {
                 if (typeof data.token != 'undefined') {
                     return { token: data.token, siteUrl: siteUrl, privateToken: data.privatetoken };
                 } else {
+
                     if (typeof data.error != 'undefined') {
                         // We only allow one retry (to avoid loops).
                         if (!retry && data.errorcode == 'requirecorrectaccess') {
                             siteUrl = this.urlUtils.addOrRemoveWWW(siteUrl);
 
                             return this.getUserToken(siteUrl, username, password, service, true);
+                        } else if (data.errorcode == 'missingparam') {
+                            // It seems the server didn't receive all required params, it could be due to a redirect.
+                            return this.utils.checkRedirect(loginUrl).then((redirect) => {
+                                if (redirect) {
+                                    return Promise.reject({ error: this.translate.instant('core.login.sitehasredirect') });
+                                } else {
+                                    return Promise.reject({ error: data.error, errorcode: data.errorcode });
+                                }
+                            });
                         } else if (typeof data.errorcode != 'undefined') {
                             return Promise.reject({ error: data.error, errorcode: data.errorcode });
                         } else {
@@ -484,7 +488,7 @@ export class CoreSitesProvider {
                     this.sites[siteId] = candidateSite;
                     // Store session.
                     this.login(siteId);
-                    this.eventsProvider.trigger(CoreEventsProvider.SITE_ADDED, {}, siteId);
+                    this.eventsProvider.trigger(CoreEventsProvider.SITE_ADDED, info, siteId);
 
                     if (this.siteTablesSchemas.length) {
                         // Create tables in the site's database.
@@ -502,8 +506,13 @@ export class CoreSitesProvider {
                     params = {$a: siteUrl};
                 }
 
+                let error = this.translate.instant(errorKey, params);
+                if (this.appProvider.isWindows() || this.appProvider.isLinux()) {
+                    error += this.translate.instant('core.login.legacymoodleversiondesktopdownloadold');
+                }
+
                 return Promise.reject({
-                    error: this.translate.instant(errorKey, params),
+                    error: error,
                     errorcode: 'legacymoodleversion'
                 });
             } else {
@@ -582,21 +591,33 @@ export class CoreSitesProvider {
         }
 
         // We couldn't validate by version number. Let's try to validate by release number.
-        if (info.release) {
-            const matches = info.release.match(/^([\d|\.]*)/);
-            if (matches && matches.length > 1) {
-                if (matches[1] >= release31) {
-                    return this.VALID_VERSION;
-                } else if (matches[1] >= release24) {
-                    return this.LEGACY_APP_VERSION;
-                } else {
-                    return this.INVALID_VERSION;
-                }
+        const release = this.getReleaseNumber(info.release || '');
+        if (release) {
+            if (release >= release31) {
+                return this.VALID_VERSION;
+            }
+            if (release >= release24) {
+                return this.LEGACY_APP_VERSION;
             }
         }
 
         // Couldn't validate it.
         return this.INVALID_VERSION;
+    }
+
+    /**
+     * Returns the release number from site release info.
+     *
+     * @param  {string}  rawRelease Raw release info text.
+     * @return {string}   Release number or empty.
+     */
+    getReleaseNumber(rawRelease: string): string {
+        const matches = rawRelease.match(/^\d(\.\d(\.\d+)?)?/);
+        if (matches) {
+            return matches[0];
+        }
+
+        return '';
     }
 
     /**
@@ -644,27 +665,42 @@ export class CoreSitesProvider {
      * Login a user to a site from the list of sites.
      *
      * @param {string} siteId ID of the site to load.
-     * @return {Promise}      Promise to be resolved when the site is loaded.
+     * @param {string} [pageName] Name of the page to go once authenticated if logged out. If not defined, site initial page.
+     * @param {any} [params] Params of the page to go once authenticated if logged out.
+     * @return {Promise<boolean>} Promise resolved with true if site is loaded, resolved with false if cannot login.
      */
-    loadSite(siteId: string): Promise<any> {
+    loadSite(siteId: string, pageName?: string, params?: any): Promise<boolean> {
         this.logger.debug(`Load site ${siteId}`);
 
         return this.getSite(siteId).then((site) => {
             this.currentSite = site;
-            this.login(siteId);
 
             if (site.isLoggedOut()) {
-                // Logged out, nothing else to do.
-                return;
+                // Logged out, trigger session expired event and stop.
+                this.eventsProvider.trigger(CoreEventsProvider.SESSION_EXPIRED, {
+                    pageName: pageName,
+                    params: params
+                }, site.getId());
+
+                return false;
             }
 
             // Check if local_mobile was installed to Moodle.
             return site.checkIfLocalMobileInstalledAndNotUsed().then(() => {
                 // Local mobile was added. Throw invalid session to force reconnect and create a new token.
-                this.eventsProvider.trigger(CoreEventsProvider.SESSION_EXPIRED, {}, siteId);
+                this.eventsProvider.trigger(CoreEventsProvider.SESSION_EXPIRED, {
+                    pageName: pageName,
+                    params: params
+                }, siteId);
+
+                return false;
             }, () => {
+                this.login(siteId);
+
                 // Update site info. We don't block the UI.
                 this.updateSiteInfo(siteId);
+
+                return true;
             });
         });
     }
@@ -1026,7 +1062,9 @@ export class CoreSitesProvider {
     updateSiteToken(siteUrl: string, username: string, token: string, privateToken: string = ''): Promise<any> {
         const siteId = this.createSiteID(siteUrl, username);
 
-        return this.updateSiteTokenBySiteId(siteId, token, privateToken);
+        return this.updateSiteTokenBySiteId(siteId, token, privateToken).then(() => {
+            return this.login(siteId);
+        });
     }
 
     /**
@@ -1084,7 +1122,7 @@ export class CoreSitesProvider {
                     }
 
                     return this.appDB.updateRecords(this.SITES_TABLE, newValues, { id: siteId }).finally(() => {
-                        this.eventsProvider.trigger(CoreEventsProvider.SITE_UPDATED, {}, siteId);
+                        this.eventsProvider.trigger(CoreEventsProvider.SITE_UPDATED, info, siteId);
                     });
                 });
             });

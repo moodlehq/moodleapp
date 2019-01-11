@@ -18,9 +18,7 @@
                 <!-- List of submissions. -->
                 <ng-container *ngFor="let submission of submissions">
                     <a ion-item text-wrap (click)="loadSubmission(submission)" [class.core-split-item-selected]="submission.id == selectedSubmissionId">
-                        <ion-avatar item-start *ngIf="submission.userprofileimageurl">
-                            <img [src]="submission.userprofileimageurl" [alt]="'core.pictureof' | translate:{$a: submission.userfullname}" core-external-content role="presentation" onError="this.src='assets/img/user-avatar.png'">
-                        </ion-avatar>
+                        <ion-avatar core-user-avatar [user]="submission" item-start></ion-avatar>
                         <h2 *ngIf="submission.userfullname">{{submission.userfullname}}</h2>
                         <h2 *ngIf="!submission.userfullname">{{ 'addon.mod_assign.hiddenuser' | translate }}{{submission.blindid}}</h2>
                         <p *ngIf="assign.teamsubmission">
@@ -29,10 +27,10 @@
                             <span *ngIf="assign.preventsubmissionnotingroup && !submission.groupname && submission.manyGroups && !submission.blindid">{{ 'addon.mod_assign.multipleteams' | translate }}</span>
                             <span *ngIf="!assign.preventsubmissionnotingroup && !submission.groupname">{{ 'addon.mod_assign.defaultteam' | translate }}</span>
                         </p>
-                        <ion-badge text-center [color]="submission.statusColor" *ngIf="submission.statusTranslated">
+                        <ion-badge text-center text-wrap [color]="submission.statusColor" *ngIf="submission.statusTranslated">
                             {{ submission.statusTranslated }}
                         </ion-badge>
-                        <ion-badge text-center [color]="submission.gradingColor" *ngIf="submission.gradingStatusTranslationId">
+                        <ion-badge text-center text-wrap [color]="submission.gradingColor" *ngIf="submission.gradingStatusTranslationId">
                             {{ submission.gradingStatusTranslationId | translate }}
                         </ion-badge>
                     </a>

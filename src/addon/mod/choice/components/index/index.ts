@@ -14,11 +14,11 @@
 
 import { Component, Optional, Injector } from '@angular/core';
 import { Content } from 'ionic-angular';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
 import { AddonModChoiceProvider } from '../../providers/choice';
 import { AddonModChoiceOfflineProvider } from '../../providers/offline';
 import { AddonModChoiceSyncProvider } from '../../providers/sync';
-import * as moment from 'moment';
 
 /**
  * Component that displays a choice.
@@ -50,7 +50,8 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     protected now: number;
 
     constructor(injector: Injector, private choiceProvider: AddonModChoiceProvider, @Optional() content: Content,
-            private choiceOffline: AddonModChoiceOfflineProvider, private choiceSync: AddonModChoiceSyncProvider) {
+            private choiceOffline: AddonModChoiceOfflineProvider, private choiceSync: AddonModChoiceSyncProvider,
+            private timeUtils: CoreTimeUtilsProvider) {
         super(injector, content);
     }
 
@@ -67,7 +68,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
                 return;
             }
             this.choiceProvider.logView(this.choice.id).then(() => {
-                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch((error) => {
                 // Ignore errors.
             });
@@ -112,7 +113,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
      * Download choice contents.
      *
      * @param  {boolean}      [refresh=false]    If it's refreshing content.
-     * @param  {boolean}      [sync=false]       If the refresh is needs syncing.
+     * @param  {boolean}      [sync=false]       If it should try to sync.
      * @param  {boolean}      [showErrors=false] If show errors to the user of hide them.
      * @return {Promise<any>} Promise resolved when done.
      */
@@ -122,9 +123,9 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
         return this.choiceProvider.getChoice(this.courseId, this.module.id).then((choice) => {
             this.choice = choice;
             this.choice.timeopen = parseInt(choice.timeopen) * 1000;
-            this.choice.openTimeReadable = moment(choice.timeopen).format('LLL');
+            this.choice.openTimeReadable = this.timeUtils.userDate(choice.timeopen);
             this.choice.timeclose = parseInt(choice.timeclose) * 1000;
-            this.choice.closeTimeReadable = moment(choice.timeclose).format('LLL');
+            this.choice.closeTimeReadable = this.timeUtils.userDate(choice.timeclose);
 
             this.description = choice.intro || choice.description;
             this.choiceNotOpenYet = choice.timeopen && choice.timeopen > this.now;
@@ -354,7 +355,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             this.choiceProvider.submitResponse(this.choice.id, this.choice.name, this.courseId, responses).then(() => {
                 // Success!
                 // Check completion since it could be configured to complete once the user answers the choice.
-                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
                 this.domUtils.scrollToTop(this.content);
 
                 // Let's refresh the data.

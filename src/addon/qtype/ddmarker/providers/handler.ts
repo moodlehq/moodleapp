@@ -16,6 +16,7 @@
 import { Injectable, Injector } from '@angular/core';
 import { CoreQuestionProvider } from '@core/question/providers/question';
 import { CoreQuestionHandler } from '@core/question/providers/delegate';
+import { CoreQuestionHelperProvider } from '@core/question/providers/helper';
 import { AddonQtypeDdMarkerComponent } from '../component/ddmarker';
 
 /**
@@ -26,7 +27,7 @@ export class AddonQtypeDdMarkerHandler implements CoreQuestionHandler {
     name = 'AddonQtypeDdMarker';
     type = 'qtype_ddmarker';
 
-    constructor(private questionProvider: CoreQuestionProvider) { }
+    constructor(private questionProvider: CoreQuestionProvider, private questionHelper: CoreQuestionHelperProvider) { }
 
     /**
      * Return the name of the behaviour to use for the question.
@@ -105,5 +106,22 @@ export class AddonQtypeDdMarkerHandler implements CoreQuestionHandler {
      */
     isSameResponse(question: any, prevAnswers: any, newAnswers: any): boolean {
         return this.questionProvider.compareAllAnswers(prevAnswers, newAnswers);
+    }
+
+    /**
+     * Get the list of files that needs to be downloaded in addition to the files embedded in the HTML.
+     *
+     * @param {any} question Question.
+     * @return {string[]} List of URLs.
+     */
+    getAdditionalDownloadableFiles(question: any): string[] {
+        this.questionHelper.extractQuestionScripts(question);
+
+        if (question.amdArgs && typeof question.amdArgs[1] !== 'undefined') {
+            // Moodle 3.6+.
+            return [question.amdArgs[1]];
+        }
+
+        return [];
     }
 }

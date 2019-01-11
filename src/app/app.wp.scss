@@ -17,7 +17,9 @@ ion-app.app-root.wp {
   }
 
   .item-wp ion-spinner[item-start] + .item-inner,
-  .item-wp ion-spinner[item-start] + .item-input {
+  .item-wp ion-spinner[item-start] + .item-input,
+  .item-wp img[item-start] + .item-inner,
+  .item-wp img[item-start] + .item-input {
     @include margin-horizontal(($item-wp-padding-start / 2), null);
   }
 
@@ -46,13 +48,5 @@ ion-app.app-root.wp {
     .core-padding-#{$i} {
       @include padding(null, null, null, 15px * $i + $item-wp-padding-start);
     }
-  }
-
-  // Recover borders on items inside cards.
-  .card-wp.with-borders  .item-wp.item-block .item-inner {
-    border-bottom: 1px solid $list-wp-border-color;
-  }
-  .card-wp.with-borders .item-wp:last-child .item-inner {
-    border-bottom: 0;
   }
 }

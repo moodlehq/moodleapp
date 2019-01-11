@@ -48,6 +48,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
         title: 'core.course.downloadcourse'
     };
     downloadCourseEnabled: boolean;
+    courseUrl: string;
 
     protected guestWSAvailable: boolean;
     protected isGuestEnabled = false;
@@ -55,7 +56,6 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     protected enrollmentMethods: any[];
     protected waitStart = 0;
     protected enrolUrl: string;
-    protected courseUrl: string;
     protected paypalReturnUrl: string;
     protected isMobile: boolean;
     protected isDesktop: boolean;
@@ -101,7 +101,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
         this.courseUrl = this.textUtils.concatenatePaths(currentSiteUrl, 'course/view.php?id=' + this.course.id);
         this.paypalReturnUrl = this.textUtils.concatenatePaths(currentSiteUrl, 'enrol/paypal/return.php');
         if (this.course.overviewfiles && this.course.overviewfiles.length > 0) {
-            this.course.imageThumb = this.course.overviewfiles[0].fileurl;
+            this.course.courseImage = this.course.overviewfiles[0].fileurl;
         }
 
         // Initialize the self enrol modal.
@@ -353,7 +353,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
                 this.refreshData().finally(() => {
                     // My courses have been updated, trigger event.
                     this.eventsProvider.trigger(
-                        CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {}, this.sitesProvider.getCurrentSiteId());
+                        CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {course: this.course}, this.sitesProvider.getCurrentSiteId());
                 });
             });
         }).catch((error) => {

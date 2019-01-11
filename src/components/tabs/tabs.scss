@@ -17,22 +17,36 @@ ion-app.app-root .core-tabs-bar {
         color: $core-top-tabs-color !important;
         font-size: 1.6rem;
         border: 0;
-        padding: 0 !important;
+        padding: 0 5px 0 5px !important;
+        margin: 0 auto !important;
+        display: flex;
+        flex-direction: row;
 
         span {
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
             word-wrap: break-word;
-            display: block;
-            width: 100%;
+            max-width: 100%;
             line-height: 1.2em;
+        }
+
+        ion-icon {
+            @include margin(null, 5px, null, null);
+        }
+
+        ion-badge.tab-badge {
+            position: relative;
+            @include position(auto, auto, auto, auto);
+            @include margin(null, null, null, 5px);
+
         }
 
         &[aria-selected=true] {
             color: $core-top-tabs-color-active !important;
             border: 0 !important;
-            border-bottom: 2px solid $core-top-tabs-color-active !important;
+            border-bottom: 2px solid $core-top-tabs-border-active !important;
+            padding: 0 !important;
         }
     }
 
@@ -46,18 +60,6 @@ ion-app.app-root .core-tabs-bar {
             justify-content: center;
             align-items: center;
 
-        }
-    }
-
-    @include rtl() {
-        .swiper-container-horizontal {
-            transform: scaleX(-1);
-            .swiper-wrapper {
-                flex-direction: row-reverse;
-                ion-slide {
-                    transform: scaleX(-1);
-                }
-            }
         }
     }
 }

@@ -19,6 +19,7 @@ import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreAppProvider } from '@providers/app';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { AddonModDataOfflineProvider } from './offline';
 import { AddonModDataProvider } from './data';
 import { AddonModDataHelperProvider } from './helper';
@@ -40,9 +41,11 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
             protected appProvider: CoreAppProvider, private dataOffline: AddonModDataOfflineProvider,
             private eventsProvider: CoreEventsProvider,  private dataProvider: AddonModDataProvider,
             protected translate: TranslateService, private utils: CoreUtilsProvider, courseProvider: CoreCourseProvider,
-            syncProvider: CoreSyncProvider, protected textUtils: CoreTextUtilsProvider,
+            syncProvider: CoreSyncProvider, protected textUtils: CoreTextUtilsProvider, timeUtils: CoreTimeUtilsProvider,
             private dataHelper: AddonModDataHelperProvider) {
-        super('AddonModDataSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate);
+        super('AddonModDataSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
+                timeUtils);
+
         this.componentTranslate = courseProvider.translateModuleName('data');
     }
 
@@ -295,10 +298,10 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
                 promises.push(actionPromise.catch((error) => {
                     if (error && error.wserror) {
                         // The WebService has thrown an error, this means it cannot be performed. Discard.
-                        discardError = error.error;
+                        discardError = this.textUtils.getErrorMessageFromError(error);
                     } else {
                         // Couldn't connect to server, reject.
-                        return Promise.reject(error && error.error);
+                        return Promise.reject(error);
                     }
                 }).then(() => {
                     // Delete the offline data.

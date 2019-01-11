@@ -10,14 +10,14 @@
     <core-loading [hideUntil]="dataLoaded">
 
         <ion-list *ngIf="course">
-            <div *ngIf="course.imageThumb" (click)="openCourse()" class="core-course-thumb">
-                <img [src]="course.imageThumb" core-external-content alt=""/>
+            <div *ngIf="course.courseImage" (click)="openCourse()" class="core-course-thumb">
+                <img [src]="course.courseImage" core-external-content alt=""/>
             </div>
             <a ion-item text-wrap (click)="openCourse()" [title]="course.fullname" [attr.detail-none]=" avoidOpenCourse || !canAccessCourse">
                 <core-icon name="fa-graduation-cap" fixed-width item-start></core-icon>
                 <h2><core-format-text [text]="course.fullname"></core-format-text></h2>
                 <p *ngIf="course.categoryname"><core-format-text [text]="course.categoryname"></core-format-text></p>
-                <p *ngIf="course.startdate">{{course.startdate * 1000 | coreFormatDate:"dfdaymonthyear"}} <span *ngIf="course.enddate"> - {{course.enddate * 1000 | coreFormatDate:"dfdaymonthyear"}}</span></p>
+                <p *ngIf="course.startdate">{{course.startdate * 1000 | coreFormatDate:"strftimedatefullshort" }} <span *ngIf="course.enddate"> - {{course.enddate * 1000 | coreFormatDate:"strftimedatefullshort" }}</span></p>
             </a>
 
             <ion-item text-wrap *ngIf="course.summary" detail-none>
@@ -25,14 +25,12 @@
             </ion-item>
 
             <ng-container text-wrap *ngIf="course.contacts && course.contacts.length">
-                <ion-item-divider color="light">{{ 'core.teachers' | translate }}</ion-item-divider>
-                <a ion-item text-wrap *ngFor="let contact of course.contacts" core-user-link userId="{{contact.id}}" courseId="{{isEnrolled ? course.id : null}}" [attr.aria-label]="'core.viewprofile' | translate">
-                    <ion-avatar item-start>
-                        <img [src]="contact.userpictureurl" onError="this.src='assets/img/user-avatar.png'" core-external-content [alt]="'core.pictureof' | translate:{$a: contact.userfullname}" role="presentation">
-                    </ion-avatar>
+                <ion-item-divider>{{ 'core.teachers' | translate }}</ion-item-divider>
+                <a ion-item text-wrap *ngFor="let contact of course.contacts" core-user-link [userId]="contact.id" [courseId]="isEnrolled ? course.id : null" [attr.aria-label]="'core.viewprofile' | translate">
+                    <ion-avatar core-user-avatar [user]="contact" item-start [userId]="contact.id" [courseId]="isEnrolled ? course.id : null"></ion-avatar>
                     <h2>{{contact.fullname}}</h2>
                 </a>
-                <ion-item-divider color="light"></ion-item-divider>
+                <ion-item-divider></ion-item-divider>
             </ng-container>
             <core-file *ngFor="let file of course.overviewfiles" [file]="file" [component]="component" [componentId]="course.id"></core-file>
             <div *ngIf="!isEnrolled" detail-none>
@@ -57,6 +55,10 @@
             <a ion-item (click)="openCourse()" [title]="course.fullname" *ngIf="!avoidOpenCourse && canAccessCourse">
                 <ion-icon name="briefcase" item-start></ion-icon>
                 <h2>{{ 'core.course.contents' | translate }}</h2>
+            </a>
+            <a ion-item [href]="courseUrl" core-link [title]="course.fullname">
+                <ion-icon name="open" item-start></ion-icon>
+                <h2>{{ 'core.openinbrowser' | translate }}</h2>
             </a>
         </ion-list>
     </core-loading>

@@ -13,14 +13,15 @@
 // limitations under the License.
 
 import { Component, Input, OnInit, OnDestroy, Optional } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, PopoverController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
-import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
+import { CoreCoursesCourseOptionsMenuComponent } from '../course-options-menu/course-options-menu';
 
 /**
  * This component is meant to display a course for a list of courses with progress.
@@ -36,32 +37,41 @@ import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 })
 export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
     @Input() course: any; // The course to render.
+    @Input() showAll = false; // If true, will show all actions, options, star and progress.
+    @Input() showDownload = true; // If true, will show download button. Only works if the options menu is not shown.
 
     isDownloading: boolean;
     prefetchCourseData = {
         prefetchCourseIcon: 'spinner',
         title: 'core.course.downloadcourse'
     };
+    showSpinner = false;
     downloadCourseEnabled: boolean;
+    courseOptionMenuEnabled: boolean;
 
     protected isDestroyed = false;
     protected courseStatusObserver;
     protected siteUpdatedObserver;
 
     constructor(@Optional() private navCtrl: NavController, private courseHelper: CoreCourseHelperProvider,
-            private courseFormatDelegate: CoreCourseFormatDelegate, private domUtils: CoreDomUtilsProvider,
+            private domUtils: CoreDomUtilsProvider,
             private courseProvider: CoreCourseProvider, private eventsProvider: CoreEventsProvider,
-            private sitesProvider: CoreSitesProvider, private coursesProvider: CoreCoursesProvider) { }
+            private sitesProvider: CoreSitesProvider, private coursesProvider: CoreCoursesProvider,
+            private popoverCtrl: PopoverController, private userProvider: CoreUserProvider) { }
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
+
         this.downloadCourseEnabled = !this.coursesProvider.isDownloadCourseDisabledInSite();
 
         if (this.downloadCourseEnabled) {
             this.initPrefetchCourse();
         }
+
+        // This field is only available from 3.6 onwards.
+        this.courseOptionMenuEnabled = this.showAll && typeof this.course.isfavourite != 'undefined';
 
         // Refresh the enabled flag if site is updated.
         this.siteUpdatedObserver = this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, () => {
@@ -122,7 +132,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      * @param {any} course The course to open.
      */
     openCourse(course: any): void {
-        this.courseFormatDelegate.openCourse(this.navCtrl, course);
+        this.courseHelper.openCourse(this.navCtrl, course);
     }
 
     /**
@@ -151,6 +161,92 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
 
         this.prefetchCourseData.prefetchCourseIcon = statusData.icon;
         this.prefetchCourseData.title = statusData.title;
+    }
+
+    /**
+     * Show the context menu.
+     *
+     * @param {Event} e Click Event.
+     */
+    showCourseOptionsMenu(e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const popover = this.popoverCtrl.create(CoreCoursesCourseOptionsMenuComponent, {
+            course: this.course,
+            prefetch: this.prefetchCourseData
+        });
+        popover.onDidDismiss((action) => {
+            if (action) {
+                switch (action) {
+                    case 'download':
+                        if (this.prefetchCourseData.prefetchCourseIcon != 'spinner') {
+                            this.prefetchCourse(e);
+                        }
+                        break;
+                    case 'hide':
+                        this.setCourseHidden(true);
+                        break;
+                    case 'show':
+                        this.setCourseHidden(false);
+                        break;
+                    case 'favourite':
+                        this.setCourseFavourite(true);
+                        break;
+                    case 'unfavourite':
+                        this.setCourseFavourite(false);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+        popover.present({
+            ev: e
+        });
+    }
+
+    /**
+     * Hide/Unhide the course from the course list.
+     *
+     * @param {boolean} hide True to hide and false to show.
+     */
+    protected setCourseHidden(hide: boolean): void {
+        this.showSpinner = true;
+
+        // We should use null to unset the preference.
+        this.userProvider.updateUserPreference('block_myoverview_hidden_course_' + this.course.id, hide ? 1 : null).then(() => {
+            this.course.hidden = hide;
+            this.eventsProvider.trigger(
+                CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {course: this.course}, this.sitesProvider.getCurrentSiteId());
+        }).catch((error) => {
+            if (!this.isDestroyed) {
+                this.domUtils.showErrorModalDefault(error, 'Error changing course visibility.');
+            }
+        }).finally(() => {
+            this.showSpinner = false;
+        });
+    }
+
+    /**
+     * Favourite/Unfavourite the course from the course list.
+     *
+     * @param {boolean} favourite True to favourite and false to unfavourite.
+     */
+    protected setCourseFavourite(favourite: boolean): void {
+        this.showSpinner = true;
+
+        this.coursesProvider.setFavouriteCourse(this.course.id, favourite).then(() => {
+            this.course.isfavourite = favourite;
+            this.eventsProvider.trigger(
+                CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {course: this.course}, this.sitesProvider.getCurrentSiteId());
+        }).catch((error) => {
+            if (!this.isDestroyed) {
+                this.domUtils.showErrorModalDefault(error, 'Error changing course favourite attribute.');
+            }
+        }).finally(() => {
+            this.showSpinner = false;
+        });
     }
 
     /**

@@ -13,7 +13,7 @@ ion-app.app-root core-grades-course {
       @include padding(10px, 10px, 10px, null);
       vertical-align: top;
       white-space: normal;
-      text-align: left;
+      @include text-align('start');
     }
     thead th {
       vertical-align: bottom;

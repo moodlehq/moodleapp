@@ -106,7 +106,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * Get the lesson data.
      *
      * @param {boolean} [refresh=false] If it's refreshing content.
-     * @param {boolean} [sync=false] If the refresh is needs syncing.
+     * @param {boolean} [sync=false] If it should try to sync.
      * @param {boolean} [showErrors=false] If show errors to the user of hide them.
      * @return {Promise<any>} Promise resolved when done.
      */
@@ -133,6 +133,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             this.accessInfo = info;
             this.canManage = info.canmanage;
             this.canViewReports = info.canviewreports;
+            this.preventMessages = [];
 
             if (this.lessonProvider.isLessonOffline(this.lesson)) {
                 // Handle status.
@@ -162,7 +163,8 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             }
 
             if (info.preventaccessreasons && info.preventaccessreasons.length) {
-                const askPassword = info.preventaccessreasons.length == 1 && this.lessonProvider.isPasswordProtected(info);
+                let preventReason = this.lessonProvider.getPreventAccessReason(info, false);
+                const askPassword = preventReason.reason == 'passwordprotectedlesson';
 
                 if (askPassword) {
                     // The lesson requires a password. Check if there is one in memory or DB.
@@ -171,15 +173,21 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
 
                     promises.push(promise.then((password) => {
                         return this.validatePassword(password);
+                    }).then(() => {
+                        // Now that we have the password, get the access reason again ignoring the password.
+                        preventReason = this.lessonProvider.getPreventAccessReason(info, true);
+                        if (preventReason) {
+                            this.preventMessages = [preventReason];
+                        }
                     }).catch(() => {
                         // No password or the validation failed. Show password form.
                         this.askPassword = true;
-                        this.preventMessages = info.preventaccessreasons;
+                        this.preventMessages = [preventReason];
                         lessonReady = false;
                     }));
                 } else  {
                     // Lesson cannot be started.
-                    this.preventMessages = info.preventaccessreasons;
+                    this.preventMessages = [preventReason];
                     lessonReady = false;
                 }
             }
@@ -293,7 +301,6 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      */
     protected lessonReady(refresh?: boolean): void {
         this.askPassword = false;
-        this.preventMessages = [];
         this.leftDuringTimed = this.hasOffline || this.lessonProvider.leftDuringTimed(this.accessInfo);
 
         if (this.password) {
@@ -310,7 +317,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      */
     protected logView(): void {
         this.lessonProvider.logViewLesson(this.lesson.id, this.password).then(() => {
-            this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+            this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
         }).catch((error) => {
             // Ignore errors.
         });
@@ -502,9 +509,13 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Submit password for password protected lessons.
      *
+     * @param {Event} e Event.
      * @param {HTMLInputElement} passwordEl The password input.
      */
-    submitPassword(passwordEl: HTMLInputElement): void {
+    submitPassword(e: Event, passwordEl: HTMLInputElement): void {
+        e.preventDefault();
+        e.stopPropagation();
+
         const password = passwordEl && passwordEl.value;
         if (!password) {
             this.domUtils.showErrorModal('addon.mod_lesson.emptypassword', true);
@@ -519,6 +530,14 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         this.validatePassword(password).then(() => {
             // Password validated.
             this.lessonReady(false);
+
+            // Now that we have the password, get the access reason again ignoring the password.
+            const preventReason = this.lessonProvider.getPreventAccessReason(this.accessInfo, true);
+            if (preventReason) {
+                this.preventMessages = [preventReason];
+            } else {
+                this.preventMessages = [];
+            }
 
             // Log view now that we have the password.
             this.logView();

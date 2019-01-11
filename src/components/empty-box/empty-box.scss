@@ -33,15 +33,22 @@ ion-app.app-root core-empty-box {
     img {
       height: 125px;
       width: 145px;
+      margin: 0 auto;
     }
     p {
       font-size: 120%;
     }
   }
 
-  @include media-breakpoint-down(sm) {
+  &.core-empty-box-clickable .core-empty-box {
+    z-index: 0;
+  }
+
+  @media (max-width: 350px) {
     .core-empty-box {
       position: relative;
+      height: auto;
+      margin-top: 50px;
 
       .icon {
         font-size: 100px;

@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Injector, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Injector, ElementRef, ViewChild } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-component';
+import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { AddonQtypeDdMarkerQuestion } from '../classes/ddmarker';
 
 /**
@@ -25,13 +28,17 @@ import { AddonQtypeDdMarkerQuestion } from '../classes/ddmarker';
     templateUrl: 'addon-qtype-ddmarker.html'
 })
 export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent implements OnInit, OnDestroy {
+    @ViewChild('questiontext') questionTextEl: ElementRef;
 
     protected element: HTMLElement;
     protected questionInstance: AddonQtypeDdMarkerQuestion;
     protected dropZones: any[]; // The drop zones received in the init object of the question.
+    protected imgSrc: string; // Background image URL.
     protected destroyed = false;
 
-    constructor(protected loggerProvider: CoreLoggerProvider, injector: Injector, element: ElementRef) {
+    constructor(protected loggerProvider: CoreLoggerProvider, injector: Injector, element: ElementRef,
+            protected sitesProvider: CoreSitesProvider, protected urlUtils: CoreUrlUtilsProvider,
+            protected filepoolProvider: CoreFilepoolProvider) {
         super(loggerProvider, 'AddonQtypeDdMarkerComponent', injector);
 
         this.element = element.nativeElement;
@@ -71,11 +78,23 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
         this.question.readOnly = false;
 
         if (this.question.initObjects) {
+            // Moodle version <= 3.5.
             if (typeof this.question.initObjects.dropzones != 'undefined') {
                 this.dropZones = this.question.initObjects.dropzones;
             }
             if (typeof this.question.initObjects.readonly != 'undefined') {
                 this.question.readOnly = this.question.initObjects.readonly;
+            }
+        } else if (this.question.amdArgs) {
+            // Moodle version >= 3.6.
+            if (typeof this.question.amdArgs[1] != 'undefined') {
+                this.imgSrc = this.question.amdArgs[1];
+            }
+            if (typeof this.question.amdArgs[2] != 'undefined') {
+                this.question.readOnly = this.question.amdArgs[2];
+            }
+            if (typeof this.question.amdArgs[3] != 'undefined') {
+                this.dropZones = this.question.amdArgs[3];
             }
         }
 
@@ -87,9 +106,22 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
      */
     questionRendered(): void {
         if (!this.destroyed) {
-            // Create the instance.
-            this.questionInstance = new AddonQtypeDdMarkerQuestion(this.loggerProvider, this.domUtils, this.textUtils, this.element,
-                    this.question, this.question.readOnly, this.dropZones);
+            // Download background image (3.6+ sites).
+            let promise = null;
+            const site = this.sitesProvider.getCurrentSite();
+            if (this.imgSrc && site.canDownloadFiles() && this.urlUtils.isPluginFileUrl(this.imgSrc)) {
+                promise = this.filepoolProvider.getSrcByUrl(site.id, this.imgSrc, this.component, this.componentId, 0, true, true);
+             } else {
+                promise = Promise.resolve(this.imgSrc);
+            }
+
+            promise.then((imgSrc) => {
+                this.domUtils.waitForImages(this.questionTextEl.nativeElement).then(() => {
+                    // Create the instance.
+                    this.questionInstance = new AddonQtypeDdMarkerQuestion(this.loggerProvider, this.domUtils, this.textUtils,
+                            this.element, this.question, this.question.readOnly, this.dropZones, imgSrc);
+                });
+            });
         }
     }
 

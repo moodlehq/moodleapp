@@ -15,8 +15,10 @@
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Service that provides some features for urls.
@@ -29,8 +31,60 @@ export class AddonModUrlProvider {
     protected logger;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private courseProvider: CoreCourseProvider,
-            private utils: CoreUtilsProvider) {
+            private utils: CoreUtilsProvider, private mimeUtils: CoreMimetypeUtilsProvider) {
         this.logger = logger.getInstance('AddonModUrlProvider');
+    }
+
+    /**
+     * Get the final display type for a certain URL. Based on Moodle's url_get_final_display_type.
+     *
+     * @param {any} url URL data.
+     * @return {number} Final display type.
+     */
+    getFinalDisplayType(url: any): number {
+        if (!url) {
+            return -1;
+        }
+
+        const extension = this.mimeUtils.guessExtensionFromUrl(url.externalurl);
+
+        // PDFs can be embedded in web, but not in the Mobile app.
+        if (url.display == CoreConstants.RESOURCELIB_DISPLAY_EMBED && extension == 'pdf') {
+            return CoreConstants.RESOURCELIB_DISPLAY_DOWNLOAD;
+        }
+
+        if (url.display != CoreConstants.RESOURCELIB_DISPLAY_AUTO) {
+            return url.display;
+        }
+
+        // Detect links to local moodle pages.
+        const currentSite = this.sitesProvider.getCurrentSite();
+        if (currentSite && currentSite.containsUrl(url.externalurl)) {
+            if (url.externalurl.indexOf('file.php') == -1 && url.externalurl.indexOf('.php') != -1) {
+                // Most probably our moodle page with navigation.
+                return CoreConstants.RESOURCELIB_DISPLAY_OPEN;
+            }
+        }
+
+        const download = ['application/zip', 'application/x-tar', 'application/g-zip', 'application/pdf', 'text/html'];
+        let mimetype = this.mimeUtils.getMimeType(extension);
+
+        if (url.externalurl.indexOf('.php') != -1 || url.externalurl.substr(-1) === '/' ||
+                (url.externalurl.indexOf('//') != -1 && url.externalurl.match(/\//g).length == 2)) {
+            // Seems to be a web, use HTML mimetype.
+            mimetype = 'text/html';
+        }
+
+        if (download.indexOf(mimetype) != -1) {
+            return CoreConstants.RESOURCELIB_DISPLAY_DOWNLOAD;
+        }
+
+        if (this.mimeUtils.canBeEmbedded(extension)) {
+            return CoreConstants.RESOURCELIB_DISPLAY_EMBED;
+        }
+
+        // Let the browser deal with it somehow.
+        return CoreConstants.RESOURCELIB_DISPLAY_OPEN;
     }
 
     /**
@@ -86,6 +140,33 @@ export class AddonModUrlProvider {
      */
     getUrl(courseId: number, cmId: number, siteId?: string): Promise<any> {
         return this.getUrlDataByKey(courseId, 'coursemodule', cmId, siteId);
+    }
+
+    /**
+     * Guess the icon for a certain URL. Based on Moodle's url_guess_icon.
+     *
+     * @param {string} url URL to check.
+     * @return {string} Icon, empty if it should use the default icon.
+     */
+    guessIcon(url: string): string {
+        url = url || '';
+
+        const matches = url.match(/\//g),
+            extension = this.mimeUtils.getFileExtension(url);
+
+        if (!matches || matches.length < 3 || url.substr(-1) === '/' || extension == 'php') {
+            // Use default icon.
+            return '';
+        }
+
+        const icon = this.mimeUtils.getFileIcon(url);
+
+        // We do not want to return those icon types, the module icon is more appropriate.
+        if (icon === this.mimeUtils.getFileIconForType('unknown') || icon === this.mimeUtils.getFileIconForType('html')) {
+            return '';
+        }
+
+        return icon;
     }
 
     /**

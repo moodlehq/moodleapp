@@ -47,7 +47,7 @@
 
                     <article [ngClass]="{'addon-mod_wiki-noedit': !canEdit}">
                         <core-format-text *ngIf="pageContent" [component]="component" [componentId]="componentId" [text]="pageContent"></core-format-text>
-                        <core-empty-box *ngIf="!pageContent" icon="document" [message]="'addon.mod_wiki.nocontent' | translate"></core-empty-box>
+                        <core-empty-box *ngIf="!pageContent" icon="document" [message]="'addon.mod_wiki.nocontent' | translate" [inline]="true"></core-empty-box>
                     </article>
                 </div>
             </ng-template>
@@ -58,7 +58,7 @@
             <ng-template>
                 <ion-list>
                     <ng-container *ngFor="let letter of map">
-                        <ion-item-divider color="light" *ngIf="letter.label">
+                        <ion-item-divider *ngIf="letter.label">
                             {{ letter.label }}
                         </ion-item-divider>
                         <a ion-item text-wrap *ngFor="let page of letter.pages" (click)="goToPage(page)">
@@ -73,7 +73,7 @@
 
 </core-loading>
 
-<ion-fab bottom end *ngIf="canEdit">
+<ion-fab core-fab bottom end *ngIf="canEdit">
     <button ion-fab (click)="goToNewPage()" [attr.aria-label]="'addon.mod_wiki.createpage' | translate">
         <ion-icon name="add"></ion-icon>
     </button>
