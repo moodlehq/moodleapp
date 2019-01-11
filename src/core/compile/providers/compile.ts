@@ -170,16 +170,20 @@ export class CoreCompileProvider {
         // Now create the module containing the component.
         const module = NgModule({imports: imports, declarations: [component]})(class {});
 
-        // Compile the module and the component.
-        return this.compiler.compileModuleAndAllComponentsAsync(module).then((factories) => {
-            // Search and return the factory of the component we just created.
-            for (const i in factories.componentFactories) {
-                const factory = factories.componentFactories[i];
-                if (factory.componentType == component) {
-                    return factory;
+        try {
+            // Compile the module and the component.
+            return this.compiler.compileModuleAndAllComponentsAsync(module).then((factories) => {
+                // Search and return the factory of the component we just created.
+                for (const i in factories.componentFactories) {
+                    const factory = factories.componentFactories[i];
+                    if (factory.componentType == component) {
+                        return factory;
+                    }
                 }
-            }
-        });
+            });
+        } catch (ex) {
+            return Promise.reject({message: 'Template has some errors and cannot be displayed.', debuginfo: ex});
+        }
     }
 
     /**
