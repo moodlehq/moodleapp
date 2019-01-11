@@ -36,6 +36,8 @@ import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { CoreConstants } from '@core/constants';
 import { CoreSite } from '@classes/site';
 import * as moment from 'moment';
+import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
+import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
 
 /**
  * Prefetch info of a module.
@@ -123,7 +125,8 @@ export class CoreCourseHelperProvider {
         private courseOptionsDelegate: CoreCourseOptionsDelegate, private siteHomeProvider: CoreSiteHomeProvider,
         private eventsProvider: CoreEventsProvider, private fileHelper: CoreFileHelperProvider,
         private appProvider: CoreAppProvider, private fileProvider: CoreFileProvider, private injector: Injector,
-        private coursesProvider: CoreCoursesProvider, private courseOffline: CoreCourseOfflineProvider) { }
+        private coursesProvider: CoreCoursesProvider, private courseOffline: CoreCourseOfflineProvider,
+        private courseFormatDelegate: CoreCourseFormatDelegate, private sitePluginsProvider: CoreSitePluginsProvider) { }
 
     /**
      * This function treats every module on the sections provided to load the handler data, treat completion
@@ -1308,5 +1311,43 @@ export class CoreCourseHelperProvider {
 
         return (typeof section.availabilityinfo != 'undefined' && section.availabilityinfo != '') ||
             section.summary != '' || (section.modules && section.modules.length > 0);
+    }
+
+    /**
+     * Wait for any course format plugin to load, and open the course page.
+     *
+     * If the plugin's promise is resolved, the course page will be opened.  If it is rejected, they will see an error.
+     * If the promise for the plugin is still in progress when the user tries to open the course, a loader
+     * will be displayed until it is complete, before the course page is opened.  If the promise is already complete,
+     * they will see the result immediately.
+     *
+     * @param {NavController} navCtrl The nav controller to use.
+     * @param {any} course Course to open
+     */
+    openCourse(navCtrl: NavController, course: any): void {
+        if (this.sitePluginsProvider.sitePluginPromiseExists('format_' + course.format)) {
+            // This course uses a custom format plugin, wait for the format plugin to finish loading.
+            const loading = this.domUtils.showModalLoading();
+            this.sitePluginsProvider.sitePluginLoaded('format_' + course.format).then(() => {
+                // The format loaded successfully, but the handlers wont be registered until all site plugins have loaded.
+                if (this.sitePluginsProvider.sitePluginsFinishedLoading) {
+                    loading.dismiss();
+                    this.courseFormatDelegate.openCourse(navCtrl, course);
+                } else {
+                    const observer = this.eventsProvider.on(CoreEventsProvider.SITE_PLUGINS_LOADED, () => {
+                        loading.dismiss();
+                        this.courseFormatDelegate.openCourse(navCtrl, course);
+                        observer && observer.off();
+                    });
+                }
+            }).catch(() => {
+                // The site plugin failed to load. The user needs to restart the app to try loading it again.
+                loading.dismiss();
+                this.domUtils.showErrorModal('core.courses.errorloadplugins', true);
+            });
+        } else {
+            // No custom format plugin. We don't need to wait for anything.
+            this.courseFormatDelegate.openCourse(navCtrl, course);
+        }
     }
 }
