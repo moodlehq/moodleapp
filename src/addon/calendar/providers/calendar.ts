@@ -527,11 +527,10 @@ export class AddonCalendarProvider {
                 }
 
                 const dateTriggered = new Date((event.timestart - (time * 60)) * 1000),
-                    startDate = new Date(event.timestart * 1000),
                     notification = {
                         id: event.id,
                         title: event.name,
-                        text: startDate.toLocaleString(),
+                        text: this.timeUtils.userDate(event.timestart * 1000, 'core.strftimedaydatetime', true),
                         at: dateTriggered,
                         channelParams: {
                             channelID: 'notifications',

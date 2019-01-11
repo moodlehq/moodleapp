@@ -103,6 +103,10 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
                 }
 
                 this.loaded = true;
+            }).catch((error) => {
+                this.domUtils.showErrorModal(error);
+
+                this.loaded = true;
             });
         }
     }
