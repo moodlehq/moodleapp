@@ -968,3 +968,16 @@ ion-modal,
 .split-pane {
   contain: size layout style;
 }
+
+// Styles for desktop apps only.
+ion-app.platform-desktop {
+  video::-webkit-media-text-track-display {
+    white-space: normal !important;
+  }
+
+  &.platform-windows {
+    video::-webkit-media-text-track-display {
+      font-size: 0.6em;
+    }
+  }
+}
