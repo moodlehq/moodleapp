@@ -206,7 +206,7 @@
       }
     ],
     "compression": "maximum",
-    "electronVersion": "2.0.4",
+    "electronVersion": "4.0.1",
     "mac": {
       "category": "public.app-category.education",
       "icon": "resources/desktop/icon.icns",
