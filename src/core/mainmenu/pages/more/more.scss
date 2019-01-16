@@ -20,6 +20,9 @@ ion-app.app-root page-core-mainmenu-more {
         &.item-ios {
             background-color: $core-more-background-ios;
             color: $core-more-color-ios;
+            p {
+                color: $core-more-color-ios;
+            }
 
             .item-inner {
                 border-bottom: $hairlines-width solid $core-more-border-ios;
@@ -28,6 +31,9 @@ ion-app.app-root page-core-mainmenu-more {
         &.item-md {
             background-color: $core-more-background-md;
             color: $core-more-color-md;
+            p {
+                color: $core-more-color-md;
+            }
 
             .item-inner {
                 border-bottom: 1px solid $core-more-border-md;
@@ -36,6 +42,9 @@ ion-app.app-root page-core-mainmenu-more {
         &.item-wp {
             background-color: $core-more-background-wp;
             color: $core-more-color-wp;
+            p {
+                color: $core-more-color-wp;
+            }
 
             .item-inner {
                 border-bottom: 1px solid $core-more-border-wp;
