@@ -1246,6 +1246,7 @@
     "core.courses.enrolme": "Enrol me",
     "core.courses.errorloadcategories": "An error occurred while loading categories.",
     "core.courses.errorloadcourses": "An error occurred while loading courses.",
+    "core.courses.errorloadplugins": "The plugins required by this course could not be loaded correctly. Please restart the app to try again.",
     "core.courses.errorsearching": "An error occurred while searching.",
     "core.courses.errorselfenrol": "An error occurred while self enrolling.",
     "core.courses.filtermycourses": "Filter my courses",
