@@ -71,9 +71,11 @@ function createWindow() {
 }
 
 // Make sure that only a single instance of the app is running.
+// For some reason, gotTheLock is always false in signed Mac apps so we should ingore it.
+// See https://github.com/electron/electron/issues/15958
 var gotTheLock = app.requestSingleInstanceLock();
 
-if (!gotTheLock) {
+if (!gotTheLock && os.platform().indexOf('darwin') == -1) {
     // It's not the main instance of the app, kill it.
     app.exit();
     return;
