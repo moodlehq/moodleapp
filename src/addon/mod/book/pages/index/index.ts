@@ -30,10 +30,12 @@ export class AddonModBookIndexPage {
     title: string;
     module: any;
     courseId: number;
+    chapterId: number;
 
     constructor(navParams: NavParams) {
         this.module = navParams.get('module') || {};
         this.courseId = navParams.get('courseId');
+        this.chapterId = navParams.get('chapterId');
         this.title = this.module.name;
     }
 

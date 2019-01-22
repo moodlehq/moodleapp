@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, Injector } from '@angular/core';
+import { Component, Optional, Injector, Input } from '@angular/core';
 import { Content, PopoverController } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreCourseProvider } from '@core/course/providers/course';
@@ -29,6 +29,8 @@ import { AddonModBookTocPopoverComponent } from '../../components/toc-popover/to
     templateUrl: 'addon-mod-book-index.html',
 })
 export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComponent {
+    @Input() initialChapterId: string; // The initial chapter ID to load.
+
     component = AddonModBookProvider.COMPONENT;
     chapterContent: string;
     previousChapter: string;
@@ -128,7 +130,19 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
             this.contentsMap = this.bookProvider.getContentsMap(this.module.contents);
             this.chapters = this.bookProvider.getTocList(this.module.contents);
 
+            if (typeof this.currentChapter == 'undefined' && typeof this.initialChapterId != 'undefined' && this.chapters) {
+                // Initial chapter set. Validate that the chapter exists.
+                const chapter = this.chapters.find((chapter) => {
+                    return chapter.id == this.initialChapterId;
+                });
+
+                if (chapter) {
+                    this.currentChapter = this.initialChapterId;
+                }
+            }
+
             if (typeof this.currentChapter == 'undefined') {
+                // Load the first chapter.
                 this.currentChapter = this.bookProvider.getFirstChapter(this.chapters);
             }
 
