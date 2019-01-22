@@ -62,6 +62,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     displayRefresher: boolean;
 
     protected module: any;
+    protected modParams: any;
     protected completionObserver;
     protected courseStatusObserver;
     protected syncObserver;
@@ -80,6 +81,7 @@ export class CoreCourseSectionPage implements OnDestroy {
         this.sectionNumber = navParams.get('sectionNumber');
         this.module = navParams.get('module');
         this.firstTabName = navParams.get('selectedTab');
+        this.modParams = navParams.get('modParams');
 
         // Get the title to display. We dont't have sections yet.
         this.title = courseFormatDelegate.getCourseTitle(this.course);
@@ -124,7 +126,7 @@ export class CoreCourseSectionPage implements OnDestroy {
 
         if (this.module) {
             this.moduleId = this.module.id;
-            this.courseHelper.openModule(this.navCtrl, this.module, this.course.id, this.sectionId);
+            this.courseHelper.openModule(this.navCtrl, this.module, this.course.id, this.sectionId, this.modParams);
         }
 
         this.loadData(false, true).finally(() => {

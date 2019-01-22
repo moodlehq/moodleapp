@@ -62,8 +62,12 @@ export class AddonModChatModuleHandler implements CoreCourseModuleHandler {
             icon: this.courseProvider.getModuleIconSrc(this.modName, module.modicon),
             title: module.name,
             class: 'addon-mod_chat-handler',
-            action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void {
-                navCtrl.push('AddonModChatIndexPage', {module: module, courseId: courseId}, options);
+            action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions, params?: any): void {
+                const pageParams = {module: module, courseId: courseId};
+                if (params) {
+                    Object.assign(pageParams, params);
+                }
+                navCtrl.push('AddonModChatIndexPage', pageParams, options);
             }
         };
     }

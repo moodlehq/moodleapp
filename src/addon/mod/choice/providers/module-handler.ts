@@ -64,8 +64,12 @@ export class AddonModChoiceModuleHandler implements CoreCourseModuleHandler {
             title: module.name,
             class: 'addon-mod_choice-handler',
             showDownloadButton: true,
-            action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void {
-                navCtrl.push('AddonModChoiceIndexPage', {module: module, courseId: courseId}, options);
+            action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions, params?: any): void {
+                const pageParams = {module: module, courseId: courseId};
+                if (params) {
+                    Object.assign(pageParams, params);
+                }
+                navCtrl.push('AddonModChoiceIndexPage', pageParams, options);
             }
         };
     }
