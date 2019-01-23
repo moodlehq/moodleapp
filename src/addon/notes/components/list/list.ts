@@ -14,11 +14,13 @@
 
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Content, ModalController } from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUserProvider } from '@core/user/providers/user';
+import { coreSlideInOut } from '@classes/animations';
 import { AddonNotesProvider } from '../../providers/notes';
 import { AddonNotesSyncProvider } from '../../providers/notes-sync';
 
@@ -28,6 +30,7 @@ import { AddonNotesSyncProvider } from '../../providers/notes-sync';
 @Component({
     selector: 'addon-notes-list',
     templateUrl: 'addon-notes-list.html',
+    animations: [coreSlideInOut]
 })
 export class AddonNotesListComponent implements OnInit, OnDestroy {
     @Input() courseId: number;
@@ -44,11 +47,14 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
     hasOffline = false;
     notesLoaded = false;
     user: any;
+    showDelete = false;
+    canDeleteNotes = false;
+    currentUserId: number;
 
     constructor(private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
             sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider, private modalCtrl: ModalController,
             private notesProvider: AddonNotesProvider, private notesSync: AddonNotesSyncProvider,
-            private userProvider: CoreUserProvider) {
+            private userProvider: CoreUserProvider, private translate: TranslateService) {
         // Refresh data if notes are synchronized automatically.
         this.syncObserver = eventsProvider.on(AddonNotesSyncProvider.AUTO_SYNCED, (data) => {
             if (data.courseId == this.courseId) {
@@ -64,6 +70,8 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
                 this.fetchNotes(false);
             }
         }, sitesProvider.getCurrentSiteId());
+
+        this.currentUserId = sitesProvider.getCurrentSiteUserId();
     }
 
     /**
@@ -111,6 +119,14 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
         }).catch((message) => {
             this.domUtils.showErrorModal(message);
         }).finally(() => {
+            let canDelete = this.notes && this.notes.length > 0;
+            if (canDelete && this.type == 'personal') {
+                canDelete = this.notes.find((note) =>  {
+                    return note.usermodified == this.currentUserId;
+                });
+            }
+            this.canDeleteNotes = canDelete;
+
             this.notesLoaded = true;
             this.refreshIcon = 'refresh';
             this.syncIcon = 'sync';
@@ -151,6 +167,7 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
 
     /**
      * Add a new Note to user and course.
+     *
      * @param {Event} e Event.
      */
     addNote(e: Event): void {
@@ -171,6 +188,38 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
             }
         });
         modal.present();
+    }
+
+    /**
+     * Delete a note.
+     *
+     * @param {Event} e Click event.
+     * @param {any} note Note to delete.
+     */
+    deleteNote(e: Event, note: any): void {
+        e.preventDefault();
+        e.stopPropagation();
+
+        this.domUtils.showConfirm(this.translate.instant('addon.notes.deleteconfirm')).then(() => {
+            this.notesProvider.deleteNote(note).then(() => {
+                this.showDelete = false;
+
+                this.refreshNotes(true);
+
+                this.domUtils.showToast('addon.notes.eventnotedeleted', true, 3000);
+            }).catch((error) => {
+                this.domUtils.showErrorModalDefault(error, 'Delete note failed.');
+            });
+        }).catch(() => {
+            // User cancelled, nothing to do.
+        });
+    }
+
+    /**
+     * Toggle delete.
+     */
+    toggleDelete(): void {
+        this.showDelete = !this.showDelete;
     }
 
     /**

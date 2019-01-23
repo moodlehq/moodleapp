@@ -134,6 +134,27 @@ export class AddonNotesProvider {
     }
 
     /**
+     * Delete a note.
+     *
+     * @param  {any} note            Note object to delete.
+     * @param  {string} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise<void>}       Promise resolved when done.
+     */
+    deleteNote(note: any, siteId?: string): Promise<void> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            if (typeof note.offline != 'undefined' && note.offline) {
+                return this.notesOffline.deleteNote(note.userid, note.content, note.created, site.id);
+            }
+
+            const data = {
+                notes: [note.id]
+            };
+
+            return site.write('core_notes_delete_notes', data);
+        });
+    }
+
+    /**
      * Returns whether or not the notes plugin is enabled for a certain site.
      *
      * This method is called quite often and thus should only perform a quick
