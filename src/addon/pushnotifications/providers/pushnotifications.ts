@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable, NgZone } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { Badge } from '@ionic-native/badge';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
 import { Device } from '@ionic-native/device';
@@ -28,6 +27,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreConfigProvider } from '@providers/config';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../../../configconstants';
+import { ILocalNotification } from '@ionic-native/local-notifications';
 
 /**
  * Service to handle push notifications.
@@ -66,8 +66,7 @@ export class AddonPushNotificationsProvider {
             protected pushNotificationsDelegate: AddonPushNotificationsDelegate, protected sitesProvider: CoreSitesProvider,
             private badge: Badge, private localNotificationsProvider: CoreLocalNotificationsProvider,
             private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider, private push: Push,
-            private configProvider: CoreConfigProvider, private device: Device, private zone: NgZone,
-            private translate: TranslateService) {
+            private configProvider: CoreConfigProvider, private device: Device, private zone: NgZone) {
         this.logger = logger.getInstance('AddonPushNotificationsProvider');
         this.appDB = appProvider.getDB();
         this.appDB.createTablesFromSchema(this.tablesSchema);
@@ -153,13 +152,10 @@ export class AddonPushNotificationsProvider {
             if (this.utils.isTrueOrOne(data.foreground)) {
                 // If the app is in foreground when the notification is received, it's not shown. Let's show it ourselves.
                 if (this.localNotificationsProvider.isAvailable()) {
-                    const localNotif = {
+                    const localNotif: ILocalNotification = {
                             id: 1,
-                            at: new Date(),
-                            channelParams: {
-                                channelID: 'notifications',
-                                channelName: this.translate.instant('addon.notifications.notifications'),
-                                importance: 4 // IMPORTANCE_HIGH
+                            trigger: {
+                                at: new Date()
                             },
                             data: {
                                 notif: data.notif,
