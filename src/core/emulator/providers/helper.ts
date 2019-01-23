@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreFileProvider } from '@providers/file';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { File } from '@ionic-native/file';
-import { LocalNotifications } from '@ionic-native/local-notifications';
+import { LocalNotifications, ILocalNotification } from '@ionic-native/local-notifications';
 import { CoreAppProvider } from '@providers/app';
 import { CoreInitDelegate, CoreInitHandler } from '@providers/init';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -157,9 +157,11 @@ export class CoreEmulatorHelperProvider implements CoreInitHandler {
 
                 // There is a new notification, show it.
                 return getDataFn(notification).then((titleAndText) => {
-                    const localNotif = {
+                    const localNotif: ILocalNotification = {
                         id: 1,
-                        at: new Date(),
+                        trigger: {
+                            at: new Date()
+                        },
                         title: titleAndText.title,
                         text: titleAndText.text,
                         data: {
