@@ -305,11 +305,12 @@ export class AddonCalendarProvider {
      *
      * @param  {number} id       Event ID.
      * @param  {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
-     * @return {Promise<number>}  Promise with wvent notification time in minutes. 0 if disabled, -1 if default time.
+     * @return {Promise<number>}  Promise with event notification time in minutes. 0 if disabled, -1 if default time.
      */
     getEventNotificationTimeOption(id: number, siteId?: string): Promise<number> {
         return this.getEventFromLocalDb(id, siteId).then((e) => {
-            return e.notificationtime || -1;
+            console.error(e.notificationtime);
+            return e.notificationtime || 0;
         }).catch(() => {
             return -1;
         });
@@ -670,7 +671,12 @@ export class AddonCalendarProvider {
 
             return site.getDb().updateRecords(AddonCalendarProvider.EVENTS_TABLE, {notificationtime: time}, {id: event.id})
                     .then(() => {
-                return this.scheduleEventNotification(event, time);
+                if (time == 0) {
+                    // No notification, cancel it.
+                    return this.localNotificationsProvider.cancel(event.id, AddonCalendarProvider.COMPONENT, site.getId());
+                } else {
+                    return this.scheduleEventNotification(event, time);
+                }
             });
         });
     }
