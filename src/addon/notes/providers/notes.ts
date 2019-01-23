@@ -104,7 +104,7 @@ export class AddonNotesProvider {
             }
 
             // A note was added, invalidate the course notes.
-            return this.invalidateNotes(courseId, siteId).catch(() => {
+            return this.invalidateNotes(courseId, undefined, siteId).catch(() => {
                 // Ignore errors.
             });
         });
@@ -184,37 +184,54 @@ export class AddonNotesProvider {
      * @return {Promise<boolean>} Promise resolved with true if enabled, resolved with false or rejected otherwise.
      */
     isPluginViewNotesEnabledForCourse(courseId: number, siteId?: string): Promise<boolean> {
-        return this.utils.promiseWorks(this.getNotes(courseId, false, true, siteId));
+        return this.utils.promiseWorks(this.getNotes(courseId, undefined, false, true, siteId));
+    }
+
+    /**
+     * Get prefix cache key for course notes.
+     *
+     * @param  {number} courseId ID of the course to get the notes from.
+     * @return {string}          Cache key.
+     */
+    getNotesPrefixCacheKey(courseId: number): string {
+        return this.ROOT_CACHE_KEY + 'notes:' + courseId + ':';
     }
 
     /**
      * Get the cache key for the get notes call.
      *
      * @param  {number} courseId ID of the course to get the notes from.
+     * @param  {number}  [userId]      ID of the user to get the notes from if requested.
      * @return {string}          Cache key.
      */
-    getNotesCacheKey(courseId: number): string {
-        return this.ROOT_CACHE_KEY + 'notes:' + courseId;
+    getNotesCacheKey(courseId: number, userId?: number): string {
+        return this.getNotesPrefixCacheKey(courseId) + (userId ? userId : '');
     }
 
     /**
      * Get users notes for a certain site, course and personal notes.
      *
      * @param  {number}  courseId      ID of the course to get the notes from.
+     * @param  {number}  [userId]      ID of the user to get the notes from if requested.
      * @param  {boolean} [ignoreCache] True when we should not get the value from the cache.
      * @param  {boolean} [onlyOnline]  True to return only online notes, false to return both online and offline.
      * @param  {string}  [siteId]      Site ID. If not defined, current site.
      * @return {Promise<any>}          Promise to be resolved when the notes are retrieved.
      */
-    getNotes(courseId: number, ignoreCache?: boolean, onlyOnline?: boolean, siteId?: string): Promise<any> {
+    getNotes(courseId: number, userId?: number, ignoreCache?: boolean, onlyOnline?: boolean, siteId?: string): Promise<any> {
         this.logger.debug('Get notes for course ' + courseId);
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const data = {
                 courseid: courseId
             };
+
+            if (userId) {
+                data['userid'] = userId;
+            }
+
             const preSets: CoreSiteWSPreSets = {
-                cacheKey: this.getNotesCacheKey(courseId)
+                cacheKey: this.getNotesCacheKey(courseId, userId)
             };
 
             if (ignoreCache) {
@@ -228,7 +245,7 @@ export class AddonNotesProvider {
                 }
 
                 // Get offline notes and add them to the list.
-                return this.notesOffline.getNotesForCourse(courseId, siteId).then((offlineNotes) => {
+                return this.notesOffline.getNotesForCourseAndUser(courseId, userId, siteId).then((offlineNotes) => {
                     offlineNotes.forEach((note) => {
                         const fieldName = note.publishstate + 'notes';
                         if (!notes[fieldName]) {
@@ -272,12 +289,17 @@ export class AddonNotesProvider {
      * Invalidate get notes WS call.
      *
      * @param  {number} courseId Course ID.
+     * @param  {number} [userId] User ID if needed.
      * @param  {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}         Promise resolved when data is invalidated.
      */
-    invalidateNotes(courseId: number, siteId?: string): Promise<any> {
+    invalidateNotes(courseId: number, userId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.invalidateWsCacheForKey(this.getNotesCacheKey(courseId));
+            if (userId) {
+                return site.invalidateWsCacheForKey(this.getNotesCacheKey(courseId, userId));
+            }
+
+            return site.invalidateWsCacheForKeyStartingWith(this.getNotesPrefixCacheKey(courseId));
         });
     }
 
@@ -285,14 +307,15 @@ export class AddonNotesProvider {
      * Report notes as being viewed.
      *
      * @param {number} courseId  ID of the course.
+     * @param {number} [userId]  User ID if needed.
      * @param {string} [siteId]  Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(courseId: number, siteId?: string): Promise<any> {
+    logView(courseId: number, userId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 courseid: courseId,
-                userid: 0
+                userid: userId || 0
             };
 
             return site.write('core_notes_view_notes', params);

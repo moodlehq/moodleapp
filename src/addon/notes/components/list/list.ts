@@ -13,11 +13,12 @@
 // limitations under the License.
 
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Content } from 'ionic-angular';
+import { Content, ModalController } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonNotesProvider } from '../../providers/notes';
 import { AddonNotesSyncProvider } from '../../providers/notes-sync';
 
@@ -30,6 +31,7 @@ import { AddonNotesSyncProvider } from '../../providers/notes-sync';
 })
 export class AddonNotesListComponent implements OnInit, OnDestroy {
     @Input() courseId: number;
+    @Input() userId?: number;
 
     @ViewChild(Content) content: Content;
 
@@ -41,10 +43,12 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
     notes: any[];
     hasOffline = false;
     notesLoaded = false;
+    user: any;
 
     constructor(private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
-            sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider,
-            private notesProvider: AddonNotesProvider, private notesSync: AddonNotesSyncProvider) {
+            sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider, private modalCtrl: ModalController,
+            private notesProvider: AddonNotesProvider, private notesSync: AddonNotesSyncProvider,
+            private userProvider: CoreUserProvider) {
         // Refresh data if notes are synchronized automatically.
         this.syncObserver = eventsProvider.on(AddonNotesSyncProvider.AUTO_SYNCED, (data) => {
             if (data.courseId == this.courseId) {
@@ -67,7 +71,7 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.fetchNotes(true).then(() => {
-            this.notesProvider.logView(this.courseId).catch(() => {
+            this.notesProvider.logView(this.courseId, this.userId).catch(() => {
                 // Ignore errors.
             });
         });
@@ -86,14 +90,23 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
         return promise.catch(() => {
             // Ignore errors.
         }).then(() => {
-            return this.notesProvider.getNotes(this.courseId).then((notes) => {
+            return this.notesProvider.getNotes(this.courseId, this.userId).then((notes) => {
                 notes = notes[this.type + 'notes'] || [];
 
                 this.hasOffline = notes.some((note) => note.offline);
 
-                return this.notesProvider.getNotesUserData(notes, this.courseId).then((notes) => {
+                if (this.userId) {
                     this.notes = notes;
-                });
+
+                    // Get the user profile to retrieve the user image.
+                    return this.userProvider.getProfile(this.userId, this.courseId, true).then((user) => {
+                        this.user = user;
+                    });
+                } else {
+                    return this.notesProvider.getNotesUserData(notes, this.courseId).then((notes) => {
+                        this.notes = notes;
+                    });
+                }
             });
         }).catch((message) => {
             this.domUtils.showErrorModal(message);
@@ -113,7 +126,7 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
     refreshNotes(showErrors: boolean, refresher?: any): void {
         this.refreshIcon = 'spinner';
         this.syncIcon = 'spinner';
-        this.notesProvider.invalidateNotes(this.courseId).finally(() => {
+        this.notesProvider.invalidateNotes(this.courseId, this.userId).finally(() => {
             this.fetchNotes(true, showErrors).finally(() => {
                 if (refresher) {
                     refresher.complete();
@@ -130,10 +143,34 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
         this.refreshIcon = 'spinner';
         this.syncIcon = 'spinner';
         this.fetchNotes(true).then(() => {
-            this.notesProvider.logView(this.courseId).catch(() => {
+            this.notesProvider.logView(this.courseId, this.userId).catch(() => {
                 // Ignore errors.
             });
         });
+    }
+
+    /**
+     * Add a new Note to user and course.
+     * @param {Event} e Event.
+     */
+    addNote(e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+        const modal = this.modalCtrl.create('AddonNotesAddPage', { userId: this.userId, courseId: this.courseId, type: this.type });
+        modal.onDidDismiss((data) => {
+            if (data && data.sent && data.type) {
+                if (data.type != this.type) {
+                    this.type = data.type;
+                    this.notesLoaded = false;
+                }
+
+                this.refreshNotes(true);
+            } else if (data && data.type && data.type != this.type) {
+                this.type = data.type;
+                this.typeChanged();
+            }
+        });
+        modal.present();
     }
 
     /**
