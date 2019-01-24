@@ -118,9 +118,9 @@
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
-    "@ionic/app-scripts": "3.1.9",
-    "electron-rebuild": "^1.8.1",
+    "@ionic/app-scripts": "^3.2.1",
     "electron-builder-lib": "^20.23.1",
+    "electron-rebuild": "^1.8.1",
     "gulp": "^4.0.0",
     "gulp-clip-empty-files": "^0.1.2",
     "gulp-flatten": "^0.4.0",
