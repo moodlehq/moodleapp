@@ -73,6 +73,10 @@ ion-app.app-root {
     }
   }
 
+  .has-refresher > .scroll-content {
+    border-top: 0 !important;
+  }
+
   // Define an alternative way to set a heading in an item without using a heading tag.
   // This is done for accessibility reasons when a heading is semantically incorrect.
   .item .item-heading {
