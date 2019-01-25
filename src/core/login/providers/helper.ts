@@ -561,8 +561,8 @@ export class CoreLoginHelperProvider {
      * @return {boolean} True if embedded browser, false othwerise.
      */
     isSSOEmbeddedBrowser(code: number): boolean {
-        if (this.appProvider.isLinux()) {
-            // In Linux desktop apps, always use embedded browser.
+        if (this.appProvider.isLinux() || this.appProvider.isMac()) {
+            // In Linux and Mac desktop apps, always use embedded browser.
             return true;
         }
 
