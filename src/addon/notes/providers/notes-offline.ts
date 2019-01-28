@@ -119,6 +119,24 @@ export class AddonNotesOfflineProvider {
     }
 
     /**
+     * Get offline notes for a certain course and user.
+     *
+     * @param  {number} courseId Course ID.
+     * @param  {number} [userId] User ID.
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any[]>}  Promise resolved with notes.
+     */
+    getNotesForCourseAndUser(courseId: number, userId?: number, siteId?: string): Promise<any[]> {
+        if (!userId) {
+            return this.getNotesForCourse(courseId, siteId);
+        }
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.getDb().getRecords(AddonNotesOfflineProvider.NOTES_TABLE, {userid: userId, courseid: courseId});
+        });
+    }
+
+    /**
      * Get offline notes for a certain course.
      *
      * @param  {number} courseId Course ID.

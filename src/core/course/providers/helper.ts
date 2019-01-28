@@ -758,10 +758,11 @@ export class CoreCourseHelperProvider {
      *
      * @param  {any[]}        courses  Courses array to get info from.
      * @param  {any}          prefetch Prefetch information.
+     * @param  {number}       [minCourses=2] Min course to show icon.
      * @return {Promise<any>}          Resolved with the prefetch information updated when done.
      */
-    initPrefetchCoursesIcons(courses: any[], prefetch: any): Promise<any> {
-        if (!courses || courses.length < 2) {
+    initPrefetchCoursesIcons(courses: any[], prefetch: any, minCourses: number = 2): Promise<any> {
+        if (!courses || courses.length < minCourses) {
             // Not enough courses.
             prefetch.icon = '';
 

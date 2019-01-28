@@ -10,6 +10,10 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="notesLoaded" class="core-loading-center">
+        <ion-item text-wrap *ngIf="user">
+            <ion-avatar core-user-avatar [user]="user" [courseId]="courseId" item-start [linkProfile]="false"></ion-avatar>
+            <h2>{{user.fullname}}</h2>
+        </ion-item>
 
         <div padding>
             <ion-select [(ngModel)]="type" (ngModelChange)="typeChanged()" interface="popover" class="core-button-select">
@@ -29,8 +33,8 @@
         <ion-list *ngIf="notes && notes.length > 0">
             <ion-card *ngFor="let note of notes">
                 <ion-item text-wrap>
-                    <ion-avatar core-user-avatar [user]="note" item-start></ion-avatar>
-                    <h2>{{note.userfullname}}</h2>
+                    <ion-avatar core-user-avatar [user]="note" [courseId]="courseId" item-start *ngIf="!userId"></ion-avatar>
+                    <h2 *ngIf="!userId">{{note.userfullname}}</h2>
                     <p *ngIf="!note.offline" item-end>{{note.lastmodified | coreDateDayOrTime}}</p>
                     <p *ngIf="note.offline" item-end><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</p>
                 </ion-item>
@@ -39,5 +43,11 @@
                 </ion-item>
             </ion-card>
         </ion-list>
+
     </core-loading>
+    <ion-fab core-fab bottom end *ngIf="userId && notesLoaded">
+        <button ion-fab (click)="addNote($event)" [attr.aria-label]="'addon.notes.addnewnote' |translate">
+            <ion-icon name="add"></ion-icon>
+        </button>
+    </ion-fab>
 </ion-content>

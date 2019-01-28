@@ -8,11 +8,11 @@
         </ion-buttons>
     </ion-navbar>
 </ion-header>
-<ion-content padding>
+<ion-content>
     <form name="itemEdit" (ngSubmit)="addNote($event)">
         <ion-item>
             <ion-label>{{ 'addon.notes.publishstate' | translate }}</ion-label>
-            <ion-select [(ngModel)]="publishState" name="publishState" interface="popover">
+            <ion-select [(ngModel)]="type" name="publishState" interface="popover">
                 <ion-option value="personal">{{ 'addon.notes.personalnotes' | translate }}</ion-option>
                 <ion-option value="course">{{ 'addon.notes.coursenotes' | translate }}</ion-option>
                 <ion-option value="site">{{ 'addon.notes.sitenotes' | translate }}</ion-option>
@@ -21,8 +21,10 @@
         <ion-item>
             <ion-textarea placeholder="{{ 'addon.notes.note' | translate }}" rows="5" [(ngModel)]="text" name="text" required="required"></ion-textarea>
         </ion-item>
-        <button ion-button block margin-vertical type="submit" [disabled]="processing || text.length < 2">
-            {{ 'addon.notes.addnewnote' | translate }}
-        </button>
+        <div padding>
+            <button ion-button block type="submit" [disabled]="processing || text.length < 2">
+                {{ 'addon.notes.addnewnote' | translate }}
+            </button>
+        </div>
     </form>
 </ion-content>

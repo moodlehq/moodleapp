@@ -1,0 +1,7 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'addon.notes.notes' | translate }}</ion-title>
+        <ion-buttons end></ion-buttons>
+    </ion-navbar>
+</ion-header>
+<addon-notes-list class="core-avoid-header" [courseId]="courseId" [userId]="userId"></addon-notes-list>
