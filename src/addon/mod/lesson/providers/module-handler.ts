@@ -65,8 +65,12 @@ export class AddonModLessonModuleHandler implements CoreCourseModuleHandler {
             title: module.name,
             class: 'addon-mod_lesson-handler',
             showDownloadButton: true,
-            action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void {
-                navCtrl.push('AddonModLessonIndexPage', {module: module, courseId: courseId}, options);
+            action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions, params?: any): void {
+                const pageParams = {module: module, courseId: courseId};
+                if (params) {
+                    Object.assign(pageParams, params);
+                }
+                navCtrl.push('AddonModLessonIndexPage', pageParams, options);
             }
         };
     }

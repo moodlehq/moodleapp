@@ -72,7 +72,7 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
             title: module.name,
             class: 'addon-mod_url-handler',
             showDownloadButton: false,
-            action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void {
+            action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions, params?: any): void {
                 const modal = handler.domUtils.showModalLoading();
 
                 // First of all, check if the URL can be handled by the app. If so, always open it directly.
@@ -100,7 +100,11 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
                     if (shouldOpen) {
                         handler.openUrl(module, courseId);
                     } else {
-                        navCtrl.push('AddonModUrlIndexPage', {module: module, courseId: courseId}, options);
+                        const pageParams = {module: module, courseId: courseId};
+                        if (params) {
+                            Object.assign(pageParams, params);
+                        }
+                        navCtrl.push('AddonModUrlIndexPage', pageParams, options);
                     }
                 }).finally(() => {
                     modal.dismiss();

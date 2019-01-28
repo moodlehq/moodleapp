@@ -31,9 +31,11 @@ export class CoreSiteHomeIndexPage {
 
     constructor(navParams: NavParams, navCtrl: NavController, courseHelper: CoreCourseHelperProvider,
             sitesProvider: CoreSitesProvider) {
-        const module = navParams.get('module');
+        const module = navParams.get('module'),
+            modParams = navParams.get('modParams');
+
         if (module) {
-            courseHelper.openModule(navCtrl, module, sitesProvider.getCurrentSite().getSiteHomeId());
+            courseHelper.openModule(navCtrl, module, sitesProvider.getCurrentSite().getSiteHomeId(), undefined, modParams);
         }
     }
 }

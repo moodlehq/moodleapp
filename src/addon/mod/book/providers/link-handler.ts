@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@core/contentlinks/classes/module-index-handler';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
+import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
 
 /**
  * Handler to treat links to book.
@@ -25,5 +26,28 @@ export class AddonModBookLinkHandler extends CoreContentLinksModuleIndexHandler 
 
     constructor(courseHelper: CoreCourseHelperProvider) {
         super(courseHelper, 'AddonModBook', 'book');
+    }
+
+    /**
+     * Get the list of actions for a link (url).
+     *
+     * @param {string[]} siteIds List of sites the URL belongs to.
+     * @param {string} url The URL to treat.
+     * @param {any} params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
+     * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
+     * @return {CoreContentLinksAction[]|Promise<CoreContentLinksAction[]>} List of (or promise resolved with list of) actions.
+     */
+    getActions(siteIds: string[], url: string, params: any, courseId?: number):
+            CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
+
+        const modParams = params.chapterid ? {chapterId: params.chapterid} : undefined;
+        courseId = courseId || params.courseid || params.cid;
+
+        return [{
+            action: (siteId, navCtrl?): void => {
+                this.courseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId, undefined,
+                    this.useModNameToGetModule ? this.modName : undefined, modParams);
+            }
+        }];
     }
 }

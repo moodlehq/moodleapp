@@ -1007,9 +1007,11 @@ export class CoreCourseHelperProvider {
      * @param {number} [sectionId] Section the module belongs to. If not defined we'll try to retrieve it from the site.
      * @param {string} [modName] If set, the app will retrieve all modules of this type with a single WS call. This reduces the
      *                           number of WS calls, but it isn't recommended for modules that can return a lot of contents.
+     * @param {any} [modParams] Params to pass to the module
      * @return {Promise<void>} Promise resolved when done.
      */
-    navigateToModule(moduleId: number, siteId?: string, courseId?: number, sectionId?: number, modName?: string): Promise<void> {
+    navigateToModule(moduleId: number, siteId?: string, courseId?: number, sectionId?: number, modName?: string, modParams?: any)
+            : Promise<void> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const modal = this.domUtils.showModalLoading();
@@ -1048,7 +1050,8 @@ export class CoreCourseHelperProvider {
             const params = {
                 course: { id: courseId },
                 module: module,
-                sectionId: sectionId
+                sectionId: sectionId,
+                modParams: modParams
             };
 
             module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, sectionId);
@@ -1075,15 +1078,16 @@ export class CoreCourseHelperProvider {
      * @param {any} module The module to open.
      * @param {number} courseId The course ID of the module.
      * @param {number} [sectionId] The section ID of the module.
+     * @param {any} [modParams] Params to pass to the module
      * @param {boolean} True if module can be opened, false otherwise.
      */
-    openModule(navCtrl: NavController, module: any, courseId: number, sectionId?: number): boolean {
+    openModule(navCtrl: NavController, module: any, courseId: number, sectionId?: number, modParams?: any): boolean {
         if (!module.handlerData) {
             module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, sectionId);
         }
 
         if (module.handlerData && module.handlerData.action) {
-            module.handlerData.action(new Event('click'), navCtrl, module, courseId, { animate: false });
+            module.handlerData.action(new Event('click'), navCtrl, module, courseId, { animate: false }, modParams);
 
             return true;
         }
