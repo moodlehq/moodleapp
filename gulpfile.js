@@ -47,7 +47,13 @@ function treatFile(file, data) {
         return; // ignore
     }
     try {
-        var path = file.path.substr(file.path.lastIndexOf('/src/') + 5);
+        var srcPos = file.path.lastIndexOf('/src/');
+        if (srcPos == -1) {
+            // It's probably a Windows environment.
+            srcPos = file.path.lastIndexOf('\\src\\');
+        }
+
+        var path = file.path.substr(srcPos + 5);
         data[path] = JSON.parse(file.contents.toString());
     } catch (err) {
         console.log('Error parsing JSON: ' + err);
@@ -65,7 +71,7 @@ function treatMergedData(data) {
     var mergedOrdered = {};
 
     for (var filepath in data) {
-        var pathSplit = filepath.split('/'),
+        var pathSplit = filepath.split(/[\/\\]/),
             prefix;
 
         pathSplit.pop();
