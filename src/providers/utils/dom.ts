@@ -140,13 +140,12 @@ export class CoreDomUtilsProvider {
             const readableSize = this.textUtils.bytesToSize(size.size, 2);
 
             return this.showConfirm(this.translate.instant('core.course.confirmpartialdownloadsize', { size: readableSize }));
-        } else if (size.size >= wifiThreshold || (this.appProvider.isNetworkAccessLimited() && size.size >= limitedThreshold)) {
+        } else if (alwaysConfirm || size.size >= wifiThreshold ||
+                (this.appProvider.isNetworkAccessLimited() && size.size >= limitedThreshold)) {
             message = message || 'core.course.confirmdownload';
             const readableSize = this.textUtils.bytesToSize(size.size, 2);
 
             return this.showConfirm(this.translate.instant(message, { size: readableSize }));
-        } else if (alwaysConfirm) {
-            return this.showConfirm(this.translate.instant('core.areyousure'));
         }
 
         return Promise.resolve();

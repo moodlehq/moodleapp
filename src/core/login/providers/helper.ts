@@ -179,10 +179,10 @@ export class CoreLoginHelperProvider {
             } else {
                 this.goToSiteInitialPage();
             }
-        }).catch((errorMessage) => {
-            if (errorMessage) {
+        }).catch((error) => {
+            if (error) {
                 // An error occurred, display the error and logout the user.
-                this.domUtils.showErrorModal(errorMessage);
+                this.treatUserTokenError(siteData.siteUrl, error);
                 this.sitesProvider.logout();
             }
         }).finally(() => {
@@ -647,8 +647,8 @@ export class CoreLoginHelperProvider {
 
         loginUrl += '&oauthsso=' + params.id;
 
-        if (this.appProvider.isLinux()) {
-            // In Linux desktop apps, always use embedded browser.
+        if (this.appProvider.isLinux() || this.appProvider.isMac()) {
+            // In Linux and Mac desktop apps, always use embedded browser.
             this.utils.openInApp(loginUrl);
         } else {
             // Always open it in browser because the user might have the session stored in there.
