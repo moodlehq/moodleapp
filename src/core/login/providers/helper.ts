@@ -179,10 +179,10 @@ export class CoreLoginHelperProvider {
             } else {
                 this.goToSiteInitialPage();
             }
-        }).catch((errorMessage) => {
-            if (errorMessage) {
+        }).catch((error) => {
+            if (error) {
                 // An error occurred, display the error and logout the user.
-                this.domUtils.showErrorModal(errorMessage);
+                this.treatUserTokenError(siteData.siteUrl, error);
                 this.sitesProvider.logout();
             }
         }).finally(() => {
