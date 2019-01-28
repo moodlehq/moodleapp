@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSite } from '@classes/site';
@@ -23,6 +22,7 @@ import { CoreGroupsProvider } from '@providers/groups';
 import { CoreConstants } from '@core/constants';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreConfigProvider } from '@providers/config';
+import { ILocalNotification } from '@ionic-native/local-notifications';
 
 /**
  * Service to handle calendar events.
@@ -132,8 +132,7 @@ export class AddonCalendarProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private groupsProvider: CoreGroupsProvider,
             private coursesProvider: CoreCoursesProvider, private timeUtils: CoreTimeUtilsProvider,
-            private localNotificationsProvider: CoreLocalNotificationsProvider, private configProvider: CoreConfigProvider,
-            private translate: TranslateService) {
+            private localNotificationsProvider: CoreLocalNotificationsProvider, private configProvider: CoreConfigProvider) {
         this.logger = logger.getInstance('AddonCalendarProvider');
         this.sitesProvider.createTablesFromSchema(this.tablesSchema);
     }
@@ -526,16 +525,12 @@ export class AddonCalendarProvider {
                     return Promise.resolve();
                 }
 
-                const dateTriggered = new Date((event.timestart - (time * 60)) * 1000),
-                    notification = {
+                const notification: ILocalNotification = {
                         id: event.id,
                         title: event.name,
                         text: this.timeUtils.userDate(event.timestart * 1000, 'core.strftimedaydatetime', true),
-                        at: dateTriggered,
-                        channelParams: {
-                            channelID: 'notifications',
-                            channelName: this.translate.instant('addon.notifications.notifications'),
-                            importance: 4 // IMPORTANCE_HIGH
+                        trigger: {
+                            at: new Date((event.timestart - (time * 60)) * 1000)
                         },
                         data: {
                             eventid: event.id,
