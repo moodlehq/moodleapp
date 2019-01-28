@@ -378,6 +378,21 @@ ion-app.app-root {
     .select-icon .select-icon-inner {
       color: $core-select-placeholder-color;
     }
+
+    &.select-disabled, .select-icon .select-icon-inner {
+        color: $text-color;
+    }
+    @each $color-name, $color-base, $color-contrast in get-colors($colors) {
+      &.select-md-#{$color-name},
+      &.select-ios-#{$color-name},
+      &.select-wp-#{$color-name} {
+         color: $color-base;
+
+        .select-icon .select-icon-inner {
+          color: $color-base;
+        }
+      }
+    }
   }
 
   ion-select.core-button-select,
@@ -454,8 +469,16 @@ ion-app.app-root {
 
   // Question.
   // -------------------------
+  .core-correct-icon {
+    padding: 0 ($content-padding / 2);
+    position: absolute;
+    @include position(null, 0, $content-padding / 2, null);
+    margin-top: 0;
+    margin-bottom: 0;
+  }
 
   .core-question-answer-correct,
+  .core-question-correct,
   .core-question-comment {
     color: $core-question-correct-color;
     background-color: $core-question-correct-color-bg;
@@ -533,7 +556,8 @@ ion-app.app-root {
   .core-question-incorrect {
     background-color: $core-question-state-incorrect-color;
   }
-  .core-question-answersaved {
+  .core-question-answersaved,
+  .core-question-requiresgrading {
     color: $text-color;
     background-color: $core-question-saved-color-bg;
   }

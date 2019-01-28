@@ -290,18 +290,13 @@ export class AddonQtypeDdMarkerQuestion {
      * @param {string} shape Name of the shape of the drop zone (circle, rectangle, polygon).
      * @param {string} coords Coordinates of the shape.
      * @param {string} colour Colour of the shape.
-     * @param {boolean} link Whether the marker should have a link in it.
      */
-    drawDropZone(dropZoneNo: number, markerText: string, shape: string, coords: string, colour: string, link: boolean): void {
+    drawDropZone(dropZoneNo: number, markerText: string, shape: string, coords: string, colour: string): void {
         let existingMarkerText: HTMLElement;
 
         const markerTexts = this.doc.markerTexts();
         // Check if there is already a marker text for this drop zone.
-        if (link) {
-            existingMarkerText = <HTMLElement> markerTexts.querySelector('span.markertext' + dropZoneNo + ' a');
-        } else {
-            existingMarkerText = <HTMLElement> markerTexts.querySelector('span.markertext' + dropZoneNo);
-        }
+        existingMarkerText = <HTMLElement> markerTexts.querySelector('span.markertext' + dropZoneNo);
 
         if (existingMarkerText) {
             // Marker text already exists. Update it or remove it if empty.
@@ -316,12 +311,7 @@ export class AddonQtypeDdMarkerQuestion {
                 span = document.createElement('span');
 
             span.className = classNames;
-
-            if (link) {
-                span.innerHTML = '<a href="#">' + markerText + '</a>';
-            } else {
-                span.innerHTML = markerText;
-            }
+            span.innerHTML = markerText;
 
             markerTexts.appendChild(span);
         }
@@ -802,7 +792,7 @@ export class AddonQtypeDdMarkerQuestion {
                     dropZone = this.dropZones[dropZoneNo],
                     dzNo = Number(dropZoneNo);
 
-                this.drawDropZone(dzNo, dropZone.markertext, dropZone.shape, dropZone.coords, colourForDropZone, true);
+                this.drawDropZone(dzNo, dropZone.markertext, dropZone.shape, dropZone.coords, colourForDropZone);
             }
         }
     }

@@ -33,7 +33,7 @@ addon-qtype-ddmarker {
 
     .dragitem.beingdragged .markertext {
         z-index: 5;
-        box-shadow: 3px 3px 4px $gray-darker;
+        box-shadow: $core-dd-question-selected-shadow;
     }
     .dragitems .draghome {
         margin: 10px;

@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { AddonModQuizNavigationModalPage } from './navigation-modal';
 import { TranslateModule } from '@ngx-translate/core';
+import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 
 @NgModule({
@@ -24,6 +25,7 @@ import { CoreDirectivesModule } from '@directives/directives.module';
     ],
     imports: [
         CoreDirectivesModule,
+        CoreComponentsModule,
         IonicPageModule.forChild(AddonModQuizNavigationModalPage),
         TranslateModule.forChild()
     ]
