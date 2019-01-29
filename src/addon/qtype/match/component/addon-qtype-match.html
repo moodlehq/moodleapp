@@ -10,7 +10,7 @@
                 </ion-col>
                 <ion-col [ngClass]='{"core-question-answer-correct": row.isCorrect === 1, "core-question-answer-incorrect": row.isCorrect === 0}'>
                     <label class="accesshide" for="{{row.id}}" *ngIf="row.accessibilityLabel">{{ row.accessibilityLabel }}</label>
-                    <ion-select id="{{row.id}}" [name]="row.name" [attr.aria-labelledby]="'addon-qtype-match-question-' + row.id" [(ngModel)]="row.selected" interface="action-sheet">
+                    <ion-select id="{{row.id}}" [name]="row.name" [attr.aria-labelledby]="'addon-qtype-match-question-' + row.id" [(ngModel)]="row.selected" interface="action-sheet" [disabled]="row.disabled">
                         <ion-option *ngFor="let option of row.options" [value]="option.value">{{option.label}}</ion-option>
                     </ion-select>
 
