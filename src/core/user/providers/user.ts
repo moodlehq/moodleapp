@@ -397,7 +397,7 @@ export class CoreUserProvider {
             userId = Number(userId); // Make sure it's a number.
 
             // Prevent repeats and errors.
-            if (!isNaN(userId) && !treated[userId]) {
+            if (!isNaN(userId) && !treated[userId] && userId > 0) {
                 treated[userId] = true;
 
                 promises.push(this.getProfile(userId, courseId, false, siteId).then((profile) => {
