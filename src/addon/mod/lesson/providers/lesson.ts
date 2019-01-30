@@ -21,6 +21,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreGradesProvider } from '@core/grades/providers/grades';
 import { CoreSiteWSPreSets } from '@classes/site';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { AddonModLessonOfflineProvider } from './lesson-offline';
 
 /**
@@ -155,7 +156,7 @@ export class AddonModLessonProvider {
 
     // Variables for database.
     static PASSWORD_TABLE = 'addon_mod_lesson_password';
-    protected tablesSchema = {
+    protected tablesSchema: SQLiteDBTableSchema = {
         name: AddonModLessonProvider.PASSWORD_TABLE,
         columns: [
             {

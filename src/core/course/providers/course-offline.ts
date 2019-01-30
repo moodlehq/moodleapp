@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to handle offline data for courses.
@@ -23,7 +24,7 @@ export class CoreCourseOfflineProvider {
 
     // Variables for database.
     static MANUAL_COMPLETION_TABLE = 'course_manual_completion';
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: CoreCourseOfflineProvider.MANUAL_COMPLETION_TABLE,
             columns: [

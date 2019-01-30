@@ -21,7 +21,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreQuestionProvider } from '@core/question/providers/question';
 import { CoreQuestionBehaviourDelegate } from '@core/question/providers/behaviour-delegate';
 import { AddonModQuizProvider } from './quiz';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to handle offline quiz.
@@ -33,7 +33,7 @@ export class AddonModQuizOfflineProvider {
 
     // Variables for database.
     static ATTEMPTS_TABLE = 'addon_mod_quiz_attempts';
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: AddonModQuizOfflineProvider.ATTEMPTS_TABLE,
             columns: [

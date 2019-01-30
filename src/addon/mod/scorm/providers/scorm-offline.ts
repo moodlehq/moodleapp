@@ -21,7 +21,7 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModScormProvider } from './scorm';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to handle offline SCORM.
@@ -34,7 +34,7 @@ export class AddonModScormOfflineProvider {
     // Variables for database.
     static ATTEMPTS_TABLE = 'addon_mod_scorm_offline_attempts';
     static TRACKS_TABLE = 'addon_mod_scorm_offline_scos_tracks';
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: AddonModScormOfflineProvider.ATTEMPTS_TABLE,
             columns: [

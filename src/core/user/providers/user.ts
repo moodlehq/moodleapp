@@ -18,6 +18,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSite } from '@classes/site';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to provide user functionalities.
@@ -31,7 +32,7 @@ export class CoreUserProvider {
 
     // Variables for database.
     protected USERS_TABLE = 'users';
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: this.USERS_TABLE,
             columns: [

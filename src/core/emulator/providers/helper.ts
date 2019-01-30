@@ -26,6 +26,7 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { FileTransferErrorMock } from './file-transfer';
 import { CoreEmulatorCaptureHelperProvider } from './capture-helper';
 import { CoreConstants } from '../../constants';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Helper service for the emulator feature. It also acts as an init handler.
@@ -40,7 +41,7 @@ export class CoreEmulatorHelperProvider implements CoreInitHandler {
 
     // Variables for database.
     protected LAST_RECEIVED_NOTIFICATION_TABLE = 'core_emulator_last_received_notification';
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: this.LAST_RECEIVED_NOTIFICATION_TABLE,
             columns: [

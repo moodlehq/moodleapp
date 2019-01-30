@@ -18,6 +18,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to handle offline assign.
@@ -30,7 +31,7 @@ export class AddonModAssignOfflineProvider {
     // Variables for database.
     static SUBMISSIONS_TABLE = 'addon_mod_assign_submissions';
     static SUBMISSIONS_GRADES_TABLE = 'addon_mod_assign_submissions_grading';
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: AddonModAssignOfflineProvider.SUBMISSIONS_TABLE,
             columns: [

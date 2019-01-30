@@ -22,7 +22,7 @@ import { CoreEventsProvider } from './events';
 import { CoreLoggerProvider } from './logger';
 import { CoreTextUtilsProvider } from './utils/text';
 import { CoreUtilsProvider } from './utils/utils';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreConstants } from '@core/constants';
 import { Subject, Subscription } from 'rxjs';
 
@@ -38,7 +38,7 @@ export class CoreLocalNotificationsProvider {
     protected SITES_TABLE = 'notification_sites'; // Store to asigne unique codes to each site.
     protected COMPONENTS_TABLE = 'notification_components'; // Store to asigne unique codes to each component.
     protected TRIGGERED_TABLE = 'notifications_triggered'; // Store to prevent re-triggering notifications.
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: this.SITES_TABLE,
             columns: [

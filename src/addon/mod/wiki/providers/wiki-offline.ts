@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to handle offline wiki.
@@ -26,7 +27,7 @@ export class AddonModWikiOfflineProvider {
 
     // Variables for database.
     static NEW_PAGES_TABLE = 'addon_mod_wiki_new_pages_store';
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: AddonModWikiOfflineProvider.NEW_PAGES_TABLE,
             columns: [

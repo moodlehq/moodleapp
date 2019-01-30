@@ -17,6 +17,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreAppProvider } from '@providers/app';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to handle Offline messages.
@@ -29,7 +30,7 @@ export class AddonMessagesOfflineProvider {
     // Variables for database.
     static MESSAGES_TABLE = 'addon_messages_offline_messages'; // When group messaging isn't available or a new conversation starts.
     static CONVERSATION_MESSAGES_TABLE = 'addon_messages_offline_conversation_messages'; // Conversation messages.
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: AddonMessagesOfflineProvider.MESSAGES_TABLE,
             columns: [

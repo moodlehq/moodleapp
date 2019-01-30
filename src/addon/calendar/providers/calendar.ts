@@ -23,6 +23,7 @@ import { CoreConstants } from '@core/constants';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreConfigProvider } from '@providers/config';
 import { ILocalNotification } from '@ionic-native/local-notifications';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to handle calendar events.
@@ -38,7 +39,7 @@ export class AddonCalendarProvider {
 
     // Variables for database.
     static EVENTS_TABLE = 'addon_calendar_events';
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: AddonCalendarProvider.EVENTS_TABLE,
             columns: [

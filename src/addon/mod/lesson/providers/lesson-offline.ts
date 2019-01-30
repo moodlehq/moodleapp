@@ -18,6 +18,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { AddonModLessonProvider } from './lesson';
 
 /**
@@ -31,7 +32,7 @@ export class AddonModLessonOfflineProvider {
     // Variables for database. We use lowercase in the names to match the WS responses.
     static RETAKES_TABLE = 'addon_mod_lesson_retakes';
     static PAGE_ATTEMPTS_TABLE = 'addon_mod_lesson_page_attempts';
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: AddonModLessonOfflineProvider.RETAKES_TABLE,
             columns: [

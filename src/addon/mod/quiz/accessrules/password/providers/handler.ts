@@ -17,6 +17,7 @@ import { Injectable, Injector } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { AddonModQuizAccessRuleHandler } from '../../../providers/access-rules-delegate';
 import { AddonModQuizAccessPasswordComponent } from '../component/password';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Handler to support password access rule.
@@ -25,7 +26,7 @@ import { AddonModQuizAccessPasswordComponent } from '../component/password';
 export class AddonModQuizAccessPasswordHandler implements AddonModQuizAccessRuleHandler {
     // Variables for database.
     static PASSWORD_TABLE = 'addon_mod_quiz_access_password';
-    protected tableSchema = {
+    protected tableSchema: SQLiteDBTableSchema = {
         name: AddonModQuizAccessPasswordHandler.PASSWORD_TABLE,
         columns: [
             {

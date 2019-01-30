@@ -25,6 +25,7 @@ import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { AddonModLessonProvider } from './lesson';
 import { AddonModLessonOfflineProvider } from './lesson-offline';
 import { AddonModLessonPrefetchHandler } from './prefetch-handler';
@@ -58,7 +59,7 @@ export class AddonModLessonSyncProvider extends CoreSyncBaseProvider {
 
     // Variables for database.
     static RETAKES_FINISHED_TABLE = 'addon_mod_lesson_retakes_finished_sync';
-    protected tablesSchema = {
+    protected tablesSchema: SQLiteDBTableSchema = {
         name: AddonModLessonSyncProvider.RETAKES_FINISHED_TABLE,
         columns: [
             {

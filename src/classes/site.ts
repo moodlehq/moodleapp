@@ -15,7 +15,7 @@
 import { Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
-import { SQLiteDB } from './sqlitedb';
+import { SQLiteDB, SQLiteDBTableSchema } from './sqlitedb';
 import { CoreAppProvider } from '@providers/app';
 import { CoreDbProvider } from '@providers/db';
 import { CoreEventsProvider } from '@providers/events';
@@ -168,7 +168,7 @@ export class CoreSite {
     // Variables for the database.
     protected WS_CACHE_TABLE = 'wscache';
     protected CONFIG_TABLE = 'core_site_config';
-    protected tableSchemas = [
+    protected tableSchemas: SQLiteDBTableSchema[] = [
         {
             name: this.WS_CACHE_TABLE,
             columns: [

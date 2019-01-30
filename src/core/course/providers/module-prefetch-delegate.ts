@@ -27,6 +27,7 @@ import { CoreConstants } from '../../constants';
 import { Md5 } from 'ts-md5/dist/md5';
 import { Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Progress of downloading a list of modules.
@@ -202,7 +203,7 @@ export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
 export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
     // Variables for database.
     protected CHECK_UPDATES_TIMES_TABLE = 'check_updates_times';
-    protected checkUpdatesTableSchema = {
+    protected checkUpdatesTableSchema: SQLiteDBTableSchema = {
         name: this.CHECK_UPDATES_TIMES_TABLE,
         columns: [
             {

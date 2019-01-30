@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to handle offline notes.
@@ -26,7 +27,7 @@ export class AddonNotesOfflineProvider {
 
     // Variables for database.
     static NOTES_TABLE = 'addon_notes_offline_notes';
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: AddonNotesOfflineProvider.NOTES_TABLE,
             columns: [

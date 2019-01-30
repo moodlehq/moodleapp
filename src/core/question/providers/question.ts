@@ -17,6 +17,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * An object to represent a question state.
@@ -63,7 +64,7 @@ export class CoreQuestionProvider {
     // Variables for database.
     protected QUESTION_TABLE = 'questions';
     protected QUESTION_ANSWERS_TABLE = 'question_answers';
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: this.QUESTION_TABLE,
             columns: [

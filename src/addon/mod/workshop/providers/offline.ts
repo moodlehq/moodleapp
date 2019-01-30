@@ -17,6 +17,7 @@ import { CoreFileProvider } from '@providers/file';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to handle offline workshop.
@@ -30,7 +31,7 @@ export class AddonModWorkshopOfflineProvider {
     static EVALUATE_SUBMISSIONS_TABLE = 'addon_mod_workshop_evaluate_submissions';
     static EVALUATE_ASSESSMENTS_TABLE = 'addon_mod_workshop_evaluate_assessments';
 
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: AddonModWorkshopOfflineProvider.SUBMISSIONS_TABLE,
             columns: [

@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreFileProvider } from '@providers/file';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to handle offline forum.
@@ -27,7 +28,7 @@ export class AddonModForumOfflineProvider {
     static DISCUSSIONS_TABLE = 'addon_mod_forum_discussions';
     static REPLIES_TABLE = 'addon_mod_forum_replies';
 
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: AddonModForumOfflineProvider.DISCUSSIONS_TABLE,
             columns: [

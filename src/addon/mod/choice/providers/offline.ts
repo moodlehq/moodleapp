@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to handle offline choices.
@@ -23,7 +24,7 @@ export class AddonModChoiceOfflineProvider {
 
     // Variables for database.
     static CHOICE_TABLE = 'addon_mod_choice_responses';
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: AddonModChoiceOfflineProvider.CHOICE_TABLE,
             columns: [

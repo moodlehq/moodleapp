@@ -25,7 +25,7 @@ import { CoreUtilsProvider } from './utils/utils';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../configconstants';
 import { CoreSite } from '@classes/site';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { Md5 } from 'ts-md5/dist/md5';
 
 /**
@@ -143,7 +143,7 @@ export class CoreSitesProvider {
     // Variables for the database.
     protected SITES_TABLE = 'sites';
     protected CURRENT_SITE_TABLE = 'current_site';
-    protected appTablesSchema = [
+    protected appTablesSchema: SQLiteDBTableSchema[] = [
         {
             name: this.SITES_TABLE,
             columns: [
@@ -1251,18 +1251,18 @@ export class CoreSitesProvider {
     /**
      * Create a table in all the sites databases.
      *
-     * @param {any} table Table schema.
+     * @param {SQLiteDBTamableSchema} table Table schema.
      */
-    createTableFromSchema(table: any): void {
+    createTableFromSchema(table: SQLiteDBTableSchema): void {
         this.createTablesFromSchema([table]);
     }
 
     /**
      * Create several tables in all the sites databases.
      *
-     * @param {any[]} tables List of tables schema.
+     * @param {SQLiteDBTamableSchema[]} tables List of tables schema.
      */
-    createTablesFromSchema(tables: any[]): void {
+    createTablesFromSchema(tables: SQLiteDBTableSchema[]): void {
         // Add the tables to the list of schemas. This list is to create all the tables in new sites.
         this.siteTablesSchemas = this.siteTablesSchemas.concat(tables);
 

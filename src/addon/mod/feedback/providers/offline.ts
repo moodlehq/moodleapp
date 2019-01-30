@@ -17,6 +17,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to handle Offline feedback.
@@ -28,7 +29,7 @@ export class AddonModFeedbackOfflineProvider {
 
     // Variables for database.
     static FEEDBACK_TABLE = 'addon_mod_feedback_answers';
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: AddonModFeedbackOfflineProvider.FEEDBACK_TABLE,
             columns: [

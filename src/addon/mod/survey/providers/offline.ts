@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to handle Offline survey.
@@ -27,7 +28,7 @@ export class AddonModSurveyOfflineProvider {
 
     // Variables for database.
     static SURVEY_TABLE = 'addon_mod_survey_answers';
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: AddonModSurveyOfflineProvider.SURVEY_TABLE,
             columns: [

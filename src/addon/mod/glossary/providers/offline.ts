@@ -17,6 +17,7 @@ import { CoreFileProvider } from '@providers/file';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to handle offline glossary.
@@ -27,7 +28,7 @@ export class AddonModGlossaryOfflineProvider {
     // Variables for database.
     static ENTRIES_TABLE = 'addon_mod_glossary_entrues';
 
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: AddonModGlossaryOfflineProvider.ENTRIES_TABLE,
             columns: [

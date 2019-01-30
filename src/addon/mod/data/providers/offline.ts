@@ -18,6 +18,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreFileProvider } from '@providers/file';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to handle Offline data.
@@ -29,7 +30,7 @@ export class AddonModDataOfflineProvider {
 
     // Variables for database.
     static DATA_ENTRY_TABLE = 'addon_mod_data_entry';
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: AddonModDataOfflineProvider.DATA_ENTRY_TABLE,
             columns: [

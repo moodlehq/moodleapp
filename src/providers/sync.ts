@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreEventsProvider } from './events';
 import { CoreSitesProvider } from './sites';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /*
  * Service that provides some features regarding synchronization.
@@ -24,7 +25,7 @@ export class CoreSyncProvider {
 
     // Variables for the database.
     protected SYNC_TABLE = 'sync';
-    protected tableSchema = {
+    protected tableSchema: SQLiteDBTableSchema = {
         name: this.SYNC_TABLE,
         columns: [
             {

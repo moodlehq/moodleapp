@@ -23,6 +23,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSiteWSPreSets, CoreSite } from '@classes/site';
 import { CoreConstants } from '../../constants';
 import { CoreCourseOfflineProvider } from './course-offline';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service that provides some features regarding a course.
@@ -47,7 +48,7 @@ export class CoreCourseProvider {
 
     // Variables for database.
     protected COURSE_STATUS_TABLE = 'course_status';
-    protected courseStatusTableSchema = {
+    protected courseStatusTableSchema: SQLiteDBTableSchema = {
         name: this.COURSE_STATUS_TABLE,
         columns: [
             {

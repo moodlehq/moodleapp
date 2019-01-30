@@ -28,6 +28,7 @@ import { CoreConfigProvider } from '@providers/config';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../../../configconstants';
 import { ILocalNotification } from '@ionic-native/local-notifications';
+import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to handle push notifications.
@@ -41,7 +42,7 @@ export class AddonPushNotificationsProvider {
 
     // Variables for database.
     static BADGE_TABLE = 'addon_pushnotifications_badge';
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: AddonPushNotificationsProvider.BADGE_TABLE,
             columns: [

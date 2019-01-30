@@ -28,7 +28,7 @@ import { CoreTextUtilsProvider } from './utils/text';
 import { CoreTimeUtilsProvider } from './utils/time';
 import { CoreUrlUtilsProvider } from './utils/url';
 import { CoreUtilsProvider } from './utils/utils';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreConstants } from '@core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
 
@@ -254,7 +254,7 @@ export class CoreFilepoolProvider {
     protected FILES_TABLE = 'filepool_files'; // Downloaded files.
     protected LINKS_TABLE = 'filepool_files_links'; // Links between downloaded files and components.
     protected PACKAGES_TABLE = 'filepool_packages'; // Downloaded packages (sets of files).
-    protected appTablesSchema = [
+    protected appTablesSchema: SQLiteDBTableSchema[] = [
         {
             name: this.QUEUE_TABLE,
             columns: [
@@ -306,7 +306,7 @@ export class CoreFilepoolProvider {
             primaryKeys: ['siteId', 'fileId']
         }
     ];
-    protected sitesTablesSchema = [
+    protected sitesTablesSchema: SQLiteDBTableSchema[] = [
         {
             name: this.FILES_TABLE,
             columns: [
