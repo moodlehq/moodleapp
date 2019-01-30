@@ -14,11 +14,11 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreFileProvider } from '@providers/file';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
-import { SQLiteDBTableSchema } from '@classes/sqlitedb';
+import { SQLiteDB } from '@classes/sqlitedb';
 
 /**
  * Service to handle Offline data.
@@ -29,48 +29,67 @@ export class AddonModDataOfflineProvider {
     protected logger;
 
     // Variables for database.
-    static DATA_ENTRY_TABLE = 'addon_mod_data_entry';
-    protected tablesSchema: SQLiteDBTableSchema[] = [
-        {
-            name: AddonModDataOfflineProvider.DATA_ENTRY_TABLE,
-            columns: [
-                {
-                    name: 'dataid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'groupid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'action',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'entryid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'fields',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER'
-                }
-            ],
-            primaryKeys: ['dataid', 'entryid']
+    static DATA_ENTRY_TABLE = 'addon_mod_data_entry_1';
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonModDataOfflineProvider',
+        version: 1,
+        tables: [
+            {
+                name: AddonModDataOfflineProvider.DATA_ENTRY_TABLE,
+                columns: [
+                    {
+                        name: 'dataid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'groupid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'action',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'entryid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'fields',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER'
+                    }
+                ],
+                primaryKeys: ['dataid', 'entryid', 'action']
+            }
+        ],
+        migrate(db: SQLiteDB, oldVersion: number): Promise<any> | void {
+            if (oldVersion == 0) {
+                // Move the records from the old table.
+                const newTable = AddonModDataOfflineProvider.DATA_ENTRY_TABLE;
+                const oldTable = 'addon_mod_data_entry';
+
+                return db.tableExists(oldTable).then(() => {
+                    return db.insertRecordsFrom(newTable, oldTable).then(() => {
+                        return db.dropTable(oldTable);
+                    });
+                }).catch(() => {
+                    // Old table does not exist, ignore.
+                });
+            }
         }
-    ];
+    };
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private textUtils: CoreTextUtilsProvider,
             private fileProvider: CoreFileProvider, private fileUploaderProvider: CoreFileUploaderProvider) {
         this.logger = logger.getInstance('AddonModDataOfflineProvider');
-        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**
