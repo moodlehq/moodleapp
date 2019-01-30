@@ -826,7 +826,7 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
     }
 
     /**
-     * Get a module status and download time. It will only return the download time if the module is downloaded and not outdated.
+     * Get a module status and download time. It will only return the download time if the module is downloaded or outdated.
      *
      * @param {any} module Module.
      * @param {number} courseId Course ID the module belongs to.
@@ -841,8 +841,8 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
             const packageId = this.filepoolProvider.getPackageId(handler.component, module.id),
                 status = this.statusCache.getValue(packageId, 'status');
 
-            if (typeof status != 'undefined' && status != CoreConstants.DOWNLOADED) {
-                // Status is different than downloaded, just return the status.
+            if (typeof status != 'undefined' && status != CoreConstants.DOWNLOADED && status != CoreConstants.OUTDATED) {
+                // Module isn't downloaded, just return the status.
                 return Promise.resolve({
                     status: status
                 });
@@ -870,6 +870,75 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
         return Promise.resolve({
             status: CoreConstants.NOT_DOWNLOADABLE
         });
+    }
+
+    /**
+     * Get updates for a certain module.
+     * It will only return the updates if the module can use check updates and it's downloaded or outdated.
+     *
+     * @param {any} module Module to check.
+     * @param {number} courseId Course the module belongs to.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with the updates.
+     */
+    getModuleUpdates(module: any, courseId: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            // Get the status and download time of the module.
+            return this.getModuleStatusAndDownloadTime(module, courseId).then((data) => {
+                if (data.status != CoreConstants.DOWNLOADED && data.status != CoreConstants.OUTDATED) {
+                    // Not downloaded, no updates.
+                    return {};
+                }
+
+                // Module is downloaded. Check if it can check updates.
+                return this.canModuleUseCheckUpdates(module, courseId).then((canUse) => {
+                    if (!canUse) {
+                        // Can't use check updates, no updates.
+                        return {};
+                    }
+
+                    const params = {
+                            courseid: courseId,
+                            tocheck: [
+                                {
+                                    contextlevel: 'module',
+                                    id: module.id,
+                                    since: data.downloadTime || 0
+                                }
+                            ]
+                        },
+                        preSets: CoreSiteWSPreSets = {
+                            cacheKey: this.getModuleUpdatesCacheKey(courseId, module.id),
+                        };
+
+                    if (ignoreCache) {
+                        preSets.getFromCache = false;
+                        preSets.emergencyCache = false;
+                    }
+
+                    return site.read('core_course_check_updates', params, preSets).then((response) => {
+                        if (!response || !response.instances || !response.instances[0]) {
+                            return Promise.reject(null);
+                        }
+
+                        return response.instances[0];
+                    });
+                });
+            });
+        });
+    }
+
+    /**
+     * Get cache key for module updates WS calls.
+     *
+     * @param {number} courseId Course ID.
+     * @param {number} moduleId Module ID.
+     * @return {string} Cache key.
+     */
+    protected getModuleUpdatesCacheKey(courseId: number, moduleId: number): string {
+        return this.getCourseUpdatesCacheKey(courseId) + ':' + moduleId;
     }
 
     /**
@@ -931,6 +1000,20 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
         if (handler) {
             this.statusCache.invalidate(this.filepoolProvider.getPackageId(handler.component, module.id));
         }
+    }
+
+    /**
+     * Invalidate check updates WS call for a certain module.
+     *
+     * @param {number} courseId Course ID.
+     * @param {number} moduleId Module ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when data is invalidated.
+     */
+    invalidateModuleUpdates(courseId: number, moduleId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getModuleUpdatesCacheKey(courseId, moduleId));
+        });
     }
 
     /**

@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreEventsProvider } from '@providers/events';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
@@ -86,6 +87,7 @@ export class AddonModScormProvider {
     static LAUNCH_PREV_SCO_EVENT = 'addon_mod_scorm_launch_prev_sco';
     static UPDATE_TOC_EVENT = 'addon_mod_scorm_update_toc';
     static GO_OFFLINE_EVENT = 'addon_mod_scorm_go_offline';
+    static DATA_SENT_EVENT = 'addon_mod_scorm_data_sent';
 
     // Protected constants.
     protected VALID_STATUSES = ['notattempted', 'passed', 'completed', 'failed', 'incomplete', 'browsed', 'suspend'];
@@ -110,7 +112,8 @@ export class AddonModScormProvider {
     constructor(logger: CoreLoggerProvider, private translate: TranslateService, private sitesProvider: CoreSitesProvider,
             private wsProvider: CoreWSProvider, private textUtils: CoreTextUtilsProvider, private utils: CoreUtilsProvider,
             private filepoolProvider: CoreFilepoolProvider, private scormOfflineProvider: AddonModScormOfflineProvider,
-            private timeUtils: CoreTimeUtilsProvider, private syncProvider: CoreSyncProvider) {
+            private timeUtils: CoreTimeUtilsProvider, private syncProvider: CoreSyncProvider,
+            private eventsProvider: CoreEventsProvider) {
         this.logger = logger.getInstance('AddonModScormProvider');
     }
 
@@ -1483,6 +1486,12 @@ export class AddonModScormProvider {
             return this.saveTracksOnline(scorm.id, scoId, attempt, tracks, siteId).then(() => {
                 // Tracks have been saved, update cached user data.
                 this.updateUserDataAfterSave(scorm.id, attempt, tracks, siteId);
+
+                this.eventsProvider.trigger(AddonModScormProvider.DATA_SENT_EVENT, {
+                    scormId: scorm.id,
+                    scoId: scoId,
+                    attempt: attempt
+                }, this.sitesProvider.getCurrentSiteId());
             });
         }
     }
@@ -1546,6 +1555,12 @@ export class AddonModScormProvider {
             if (success) {
                 // Tracks have been saved, update cached user data.
                 this.updateUserDataAfterSave(scorm.id, attempt, tracks);
+
+                this.eventsProvider.trigger(AddonModScormProvider.DATA_SENT_EVENT, {
+                    scormId: scorm.id,
+                    scoId: scoId,
+                    attempt: attempt
+                }, this.sitesProvider.getCurrentSiteId());
             }
 
             return success;
