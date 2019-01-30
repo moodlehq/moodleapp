@@ -408,6 +408,16 @@ export class SQLiteDB {
     }
 
     /**
+     * Drop a table if it exists.
+     *
+     * @param {string} name The table name.
+     * @return {Promise<any>} Promise resolved when success.
+     */
+    dropTable(name: string): Promise<any> {
+        return this.execute(`DROP TABLE IF EXISTS ${name}`);
+    }
+
+    /**
      * Execute a SQL query.
      * IMPORTANT: Use this function only if you cannot use any of the other functions in this API. Please take into account that
      * these query will be run in SQLite (Mobile) and Web SQL (desktop), so your query should work in both environments.
@@ -784,6 +794,23 @@ export class SQLiteDB {
     }
 
     /**
+     * Insert multiple records into database from another table.
+     *
+     * @param {string} table The database table to be inserted into.
+     * @param {string} source The database table to get the records from.
+     * @param {object} [conditions] The conditions to build the where clause. Must not contain numeric indexes.
+     * @param {string} [fields='*'] A comma separated list of fields to return.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    insertRecordsFrom(table: string, source: string, conditions?: object, fields: string = '*'): Promise<any> {
+        const selectAndParams = this.whereClause(conditions);
+        const select = selectAndParams[0] ? 'WHERE ' + selectAndParams[0] : '';
+        const params = selectAndParams[1];
+
+        return this.execute(`INSERT INTO ${table} SELECT ${fields} FROM ${source} ${select}`, params);
+    }
+
+    /**
      * Ensures that limit params are numeric and positive integers, to be passed to the database.
      * We explicitly treat null, '' and -1 as 0 in order to provide compatibility with how limit
      * values have been passed historically.
@@ -873,6 +900,16 @@ export class SQLiteDB {
                 return Promise.reject(null);
             }
         });
+    }
+
+    /**
+     * Test whether a table exists..
+     *
+     * @param {string} name The table name.
+     * @return {Promise<void>} Promise resolved if exists, rejected otherwise.
+     */
+    tableExists(name: string): Promise<void> {
+        return this.recordExists('sqlite_master', {type: 'table', tbl_name: name});
     }
 
     /**
