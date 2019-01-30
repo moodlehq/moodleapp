@@ -430,6 +430,8 @@ export class AddonModScormOfflineProvider {
      * @return {{[scoId: number]: string}} Launch URLs indexed by SCO ID.
      */
     protected getLaunchUrlsFromScos(scos: any[]): {[scoId: number]: string} {
+        scos = scos || [];
+
         const response = {};
 
         scos.forEach((sco) => {
@@ -487,12 +489,15 @@ export class AddonModScormOfflineProvider {
      *
      * @param {number} scormId SCORM ID.
      * @param {number} attempt Attempt number.
-     * @param {any[]} scos SCOs returned by AddonModScormProvider.getScos.
+     * @param {any[]} scos SCOs returned by AddonModScormProvider.getScos. If not supplied, this function will only return the
+     *                     SCOs that have something stored and cmi.launch_data will be undefined.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @param {number} [userId] User ID. If not defined use site's current user.
      * @return {Promise<any>} Promise resolved when the user data is retrieved.
      */
     getScormUserData(scormId: number, attempt: number, scos: any[], siteId?: string, userId?: number): Promise<any> {
+        scos = scos || [];
+
         let fullName = '',
             userName = '';
 
