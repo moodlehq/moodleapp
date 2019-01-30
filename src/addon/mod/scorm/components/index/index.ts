@@ -61,7 +61,8 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     protected lastAttempt: number; // Last attempt.
     protected lastIsOffline: boolean; // Whether the last attempt is offline.
     protected hasPlayed = false; // Whether the user has opened the player page.
-    protected syncDueToPlayerLeft = false; // Whether a sync was due to the user leaving the player.
+    protected dataSentObserver; // To detect data sent to server.
+    protected dataSent = false; // Whether some data was sent to server while playing the SCORM.
 
     constructor(injector: Injector, protected scormProvider: AddonModScormProvider, @Optional() protected content: Content,
             protected scormHelper: AddonModScormHelperProvider, protected scormOffline: AddonModScormOfflineProvider,
@@ -330,13 +331,12 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * @return {boolean}        If suceed or not.
      */
     protected hasSyncSucceed(result: any): boolean {
-        if (result.updated || this.syncDueToPlayerLeft) {
-            // Check completion status if something was sent or the user just left the player.
-            // If the user plays the SCORM in online we don't know if he sent data or not, so always check completion.
+        if (result.updated || this.dataSent) {
+            // Check completion status if something was sent.
             this.checkCompletion();
         }
 
-        this.syncDueToPlayerLeft = false;
+        this.dataSent = false;
 
         return true;
     }
@@ -349,11 +349,13 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
 
         if (this.hasPlayed) {
             this.hasPlayed = false;
-            this.syncDueToPlayerLeft = true;
             this.scormOptions.newAttempt = false; // Uncheck new attempt.
 
             // Add a delay to make sure the player has started the last writing calls so we can detect conflicts.
             setTimeout(() => {
+                this.dataSentObserver && this.dataSentObserver.off(); // Stop listening for changes.
+                this.dataSentObserver = undefined;
+
                 // Refresh data.
                 this.showLoadingAndRefresh(true, false);
             }, 500);
@@ -368,6 +370,15 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
 
         if (this.navCtrl.getActive().component.name == 'AddonModScormPlayerPage') {
             this.hasPlayed = true;
+
+            // Detect if anything was sent to server.
+            this.dataSentObserver && this.dataSentObserver.off();
+
+            this.dataSentObserver = this.eventsProvider.on(AddonModScormProvider.DATA_SENT_EVENT, (data) => {
+                if (data.scormId === this.scorm.id) {
+                    this.dataSent = true;
+                }
+            }, this.siteId);
         }
     }
 
@@ -533,6 +544,17 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * @return {Promise<any>} Promise resolved when done.
      */
     protected sync(): Promise<any> {
-        return this.scormSync.syncScorm(this.scorm);
+        return this.scormSync.syncScorm(this.scorm).then((result) => {
+            if (!result.updated && this.dataSent) {
+                // The user sent data to server, but not in the sync process. Check if we need to fetch data.
+                return this.scormSync.prefetchAfterUpdate(this.module, this.courseId).catch(() => {
+                    // Ignore errors.
+                }).then(() => {
+                    return result;
+                });
+            }
+
+            return result;
+        });
     }
 }
