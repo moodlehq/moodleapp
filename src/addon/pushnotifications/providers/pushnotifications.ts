@@ -94,7 +94,8 @@ export class AddonPushNotificationsProvider {
             return {
                 android: {
                     senderID: CoreConfigConstants.gcmpn,
-                    sound: !!soundEnabled
+                    sound: !!soundEnabled,
+                    icon: 'smallicon'
                 },
                 ios: {
                     alert: 'true',

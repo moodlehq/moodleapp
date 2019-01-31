@@ -448,7 +448,7 @@ export class CoreLocalNotificationsProvider {
 
             if (this.platform.is('android')) {
                 notification.icon = notification.icon || 'res://icon';
-                notification.smallIcon = notification.smallIcon || 'res://icon';
+                notification.smallIcon = notification.smallIcon || 'res://smallicon';
 
                 const led: any = notification.led || {};
                 notification.led = {
