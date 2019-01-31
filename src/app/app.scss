@@ -477,7 +477,22 @@ ion-app.app-root {
     margin-bottom: 0;
   }
 
-  .core-question-answer-correct,
+
+  .core-question-answer-correct {
+    color: $core-question-correct-color;
+  }
+
+  .core-question-answer-incorrect {
+    color: $core-question-incorrect-color;
+  }
+
+  input, select {
+    &.core-question-answer-correct, &.core-question-answer-incorrect {
+      background-color: $gray-lighter;
+      color: $text-color;
+    }
+  }
+
   .core-question-correct,
   .core-question-comment {
     color: $core-question-correct-color;
@@ -494,7 +509,6 @@ ion-app.app-root {
     }
   }
 
-  .core-question-answer-incorrect,
   .core-question-incorrect {
     color: $core-question-incorrect-color;
     background-color: $core-question-incorrect-color-bg;

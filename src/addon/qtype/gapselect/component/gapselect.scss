@@ -15,11 +15,5 @@ ion-app.app-root addon-qtype-gapselect {
         border-radius: 4px;
         margin-bottom: 10px;
         background: $gray-lighter;
-
-        &.core-question-answer-correct,
-        &.core-question-answer-incorrect {
-          background-color: $gray-lighter;
-          color: $text-color;
-        }
     }
 }
