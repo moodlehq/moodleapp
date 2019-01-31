@@ -289,7 +289,8 @@ export class CoreQuestionBaseComponent {
                 id: input.id,
                 name: input.name,
                 value: input.value,
-                readOnly: input.readOnly
+                readOnly: input.readOnly,
+                isInline: !!this.domUtils.closest(input, '.qtext') // The answer can be inside the question text.
             };
 
             // Check if question is marked as correct.
@@ -309,6 +310,16 @@ export class CoreQuestionBaseComponent {
                 this.question.input.correctClass = '';
                 this.question.input.correctIcon = '';
                 this.question.input.correctIconColor = '';
+            }
+
+            if (this.question.input.isInline) {
+                // Handle correct/incorrect classes and icons.
+                const content = <HTMLElement> questionEl.querySelector('.qtext');
+
+                this.questionHelper.replaceCorrectnessClasses(content);
+                this.questionHelper.treatCorrectnessIcons(content);
+
+                this.question.text = content.innerHTML;
             }
         }
 
