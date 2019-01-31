@@ -1,0 +1,45 @@
+{
+  "project_info": {
+    "project_number": "694767596569",
+    "firebase_url": "https://moodlemobile-push.firebaseio.com",
+    "project_id": "moodlemobile-push",
+    "storage_bucket": "moodlemobile-push.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:694767596569:android:a4cdad4d168c9d1a",
+        "android_client_info": {
+          "package_name": "com.moodle.moodlemobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "694767596569-icveqqa2n56oh44l6ev1dr2oh67nh8il.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCb2zogu0P_aZ2LNgdwzshWExITPKTXJyk"
+        },
+        {
+          "current_key": "AIzaSyDRT1HwT0gSsTty0whOVtoNKAh8SPrJXLE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

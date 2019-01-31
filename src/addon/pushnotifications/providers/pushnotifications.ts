@@ -94,7 +94,6 @@ export class AddonPushNotificationsProvider {
         return this.configProvider.get(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true).then((soundEnabled) => {
             return {
                 android: {
-                    senderID: CoreConfigConstants.gcmpn,
                     sound: !!soundEnabled,
                     icon: 'smallicon'
                 },
