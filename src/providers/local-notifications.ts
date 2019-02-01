@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { Platform, Alert, AlertController } from 'ionic-angular';
 import { LocalNotifications, ILocalNotification } from '@ionic-native/local-notifications';
+import { Push } from '@ionic-native/push';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from './app';
 import { CoreConfigProvider } from './config';
@@ -104,7 +105,7 @@ export class CoreLocalNotificationsProvider {
     constructor(logger: CoreLoggerProvider, private localNotifications: LocalNotifications, private platform: Platform,
             private appProvider: CoreAppProvider, private utils: CoreUtilsProvider, private configProvider: CoreConfigProvider,
             private textUtils: CoreTextUtilsProvider, private translate: TranslateService, private alertCtrl: AlertController,
-            eventsProvider: CoreEventsProvider) {
+            eventsProvider: CoreEventsProvider, private push: Push) {
 
         this.logger = logger.getInstance('CoreLocalNotificationsProvider');
         this.appDB = appProvider.getDB();
@@ -121,6 +122,14 @@ export class CoreLocalNotificationsProvider {
 
                     this.notifyClick(notification.data);
                 }
+            });
+
+            // Create the default channel for local notifications.
+            this.createDefaultChannel();
+
+            translate.onLangChange.subscribe((event: any) => {
+                // Update the channel name.
+                this.createDefaultChannel();
             });
         });
 
@@ -173,6 +182,21 @@ export class CoreLocalNotificationsProvider {
             });
 
             return this.localNotifications.cancel(ids);
+        });
+    }
+
+    /**
+     * Create the default channel. It is used to change the name.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected createDefaultChannel(): Promise<any> {
+        return this.push.createChannel({
+            id: 'default-channel-id',
+            description: this.translate.instant('addon.calendar.calendarreminders'),
+            importance: 4
+        }).catch((error) => {
+            this.logger.error('Error changing channel name', error);
         });
     }
 

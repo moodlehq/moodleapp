@@ -1,6 +1,7 @@
 {
     "calendar": "Calendar",
     "calendarevents": "Calendar events",
+    "calendarreminders": "Calendar reminders",
     "defaultnotificationtime": "Default notification time",
     "errorloadevent": "Error loading event.",
     "errorloadevents": "Error loading events.",

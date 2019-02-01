@@ -126,6 +126,7 @@
     "maxsizeandattachments": "Maximum size for new files: {{$a.size}}, maximum attachments: {{$a.attachments}}",
     "min": "min",
     "mins": "mins",
+    "misc": "Miscellaneous",
     "mod_assign": "Assignment",
     "mod_assignment": "Assignment 2.2 (Disabled)",
     "mod_book": "Book",

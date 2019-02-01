@@ -13,9 +13,11 @@
 // limitations under the License.
 
 import { Injectable, NgZone } from '@angular/core';
+import { Platform } from 'ionic-angular';
 import { Badge } from '@ionic-native/badge';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
 import { Device } from '@ionic-native/device';
+import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreInitDelegate } from '@providers/init';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -67,10 +69,21 @@ export class AddonPushNotificationsProvider {
             protected pushNotificationsDelegate: AddonPushNotificationsDelegate, protected sitesProvider: CoreSitesProvider,
             private badge: Badge, private localNotificationsProvider: CoreLocalNotificationsProvider,
             private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider, private push: Push,
-            private configProvider: CoreConfigProvider, private device: Device, private zone: NgZone) {
+            private configProvider: CoreConfigProvider, private device: Device, private zone: NgZone,
+            private translate: TranslateService, private platform: Platform) {
         this.logger = logger.getInstance('AddonPushNotificationsProvider');
         this.appDB = appProvider.getDB();
         this.appDB.createTablesFromSchema(this.tablesSchema);
+
+        platform.ready().then(() => {
+            // Create the default channel.
+            this.createDefaultChannel();
+
+            translate.onLangChange.subscribe((event: any) => {
+                // Update the channel name.
+                this.createDefaultChannel();
+            });
+        });
     }
 
     /**
@@ -82,6 +95,25 @@ export class AddonPushNotificationsProvider {
     cleanSiteCounters(siteId: string): Promise<any> {
         return this.appDB.deleteRecords(AddonPushNotificationsProvider.BADGE_TABLE, {siteid: siteId} ).finally(() => {
             this.updateAppCounter();
+        });
+    }
+
+    /**
+     * Create the default push channel. It is used to change the name.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected createDefaultChannel(): Promise<any> {
+        if (!this.platform.is('android')) {
+            return Promise.resolve();
+        }
+
+        return this.push.createChannel({
+            id: 'PushPluginChannel',
+            description: this.translate.instant('core.misc'),
+            importance: 4
+        }).catch((error) => {
+            this.logger.error('Error changing push channel name', error);
         });
     }
 
@@ -155,13 +187,7 @@ export class AddonPushNotificationsProvider {
                 if (this.localNotificationsProvider.isAvailable()) {
                     const localNotif: ILocalNotification = {
                             id: 1,
-                            trigger: {
-                                at: new Date()
-                            },
-                            data: {
-                                notif: data.notif,
-                                site: data.site
-                            },
+                            data: data,
                             title: '',
                             text: ''
                         },
@@ -193,9 +219,6 @@ export class AddonPushNotificationsProvider {
                 });
             } else {
                 // The notification was clicked.
-                // For compatibility with old push plugin implementation we'll merge all the notification data in a single object.
-                data.title = notification.title;
-                data.message = notification.message;
                 this.notificationClicked(data);
             }
         });
