@@ -555,6 +555,10 @@ export class CoreCoursesProvider {
      * @return {Promise<any>} Promise resolved with administration options for each course.
      */
     getUserAdministrationOptions(courseIds: number[], siteId?: string): Promise<any> {
+        if (!courseIds || courseIds.length == 0) {
+            return Promise.resolve({});
+        }
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     courseids: courseIds
@@ -597,6 +601,10 @@ export class CoreCoursesProvider {
      * @return {Promise<any>} Promise resolved with navigation options for each course.
      */
     getUserNavigationOptions(courseIds: number[], siteId?: string): Promise<any> {
+        if (!courseIds || courseIds.length == 0) {
+            return Promise.resolve({});
+        }
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     courseids: courseIds
