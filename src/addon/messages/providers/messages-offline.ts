@@ -14,10 +14,9 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreAppProvider } from '@providers/app';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to handle Offline messages.
@@ -30,65 +29,69 @@ export class AddonMessagesOfflineProvider {
     // Variables for database.
     static MESSAGES_TABLE = 'addon_messages_offline_messages'; // When group messaging isn't available or a new conversation starts.
     static CONVERSATION_MESSAGES_TABLE = 'addon_messages_offline_conversation_messages'; // Conversation messages.
-    protected tablesSchema: SQLiteDBTableSchema[] = [
-        {
-            name: AddonMessagesOfflineProvider.MESSAGES_TABLE,
-            columns: [
-                {
-                    name: 'touserid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'useridfrom',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'smallmessage',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'timecreated',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'deviceoffline', // If message was stored because device was offline.
-                    type: 'INTEGER'
-                }
-            ],
-            primaryKeys: ['touserid', 'smallmessage', 'timecreated']
-        },
-        {
-            name: AddonMessagesOfflineProvider.CONVERSATION_MESSAGES_TABLE,
-            columns: [
-                {
-                    name: 'conversationid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'text',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'timecreated',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'deviceoffline', // If message was stored because device was offline.
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'conversation', // Data about the conversation.
-                    type: 'TEXT'
-                }
-            ],
-            primaryKeys: ['conversationid', 'text', 'timecreated']
-        }
-    ];
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonMessagesOfflineProvider',
+        version: 1,
+        tables: [
+            {
+                name: AddonMessagesOfflineProvider.MESSAGES_TABLE,
+                columns: [
+                    {
+                        name: 'touserid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'useridfrom',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'smallmessage',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'timecreated',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'deviceoffline', // If message was stored because device was offline.
+                        type: 'INTEGER'
+                    }
+                ],
+                primaryKeys: ['touserid', 'smallmessage', 'timecreated']
+            },
+            {
+                name: AddonMessagesOfflineProvider.CONVERSATION_MESSAGES_TABLE,
+                columns: [
+                    {
+                        name: 'conversationid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'text',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'timecreated',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'deviceoffline', // If message was stored because device was offline.
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'conversation', // Data about the conversation.
+                        type: 'TEXT'
+                    }
+                ],
+                primaryKeys: ['conversationid', 'text', 'timecreated']
+            }
+        ]
+    };
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider,
             private textUtils: CoreTextUtilsProvider) {
         this.logger = logger.getInstance('AddonMessagesOfflineProvider');
-        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**

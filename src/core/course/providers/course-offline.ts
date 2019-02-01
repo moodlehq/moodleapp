@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSitesProvider } from '@providers/sites';
-import { SQLiteDBTableSchema } from '@classes/sqlitedb';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 
 /**
  * Service to handle offline data for courses.
@@ -24,37 +23,41 @@ export class CoreCourseOfflineProvider {
 
     // Variables for database.
     static MANUAL_COMPLETION_TABLE = 'course_manual_completion';
-    protected tablesSchema: SQLiteDBTableSchema[] = [
-        {
-            name: CoreCourseOfflineProvider.MANUAL_COMPLETION_TABLE,
-            columns: [
-                {
-                    name: 'cmid',
-                    type: 'INTEGER',
-                    primaryKey: true
-                },
-                {
-                    name: 'completed',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'coursename',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'timecompleted',
-                    type: 'INTEGER'
-                }
-            ]
-        }
-    ];
+    protected siteSchema: CoreSiteSchema = {
+        name: 'CoreCourseOfflineProvider',
+        version: 1,
+        tables: [
+            {
+                name: CoreCourseOfflineProvider.MANUAL_COMPLETION_TABLE,
+                columns: [
+                    {
+                        name: 'cmid',
+                        type: 'INTEGER',
+                        primaryKey: true
+                    },
+                    {
+                        name: 'completed',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'coursename',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'timecompleted',
+                        type: 'INTEGER'
+                    }
+                ]
+            }
+        ]
+    };
 
     constructor(private sitesProvider: CoreSitesProvider) {
-        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**

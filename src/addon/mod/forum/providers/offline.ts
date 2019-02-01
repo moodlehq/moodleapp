@@ -14,9 +14,8 @@
 
 import { Injectable } from '@angular/core';
 import { CoreFileProvider } from '@providers/file';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to handle offline forum.
@@ -28,101 +27,105 @@ export class AddonModForumOfflineProvider {
     static DISCUSSIONS_TABLE = 'addon_mod_forum_discussions';
     static REPLIES_TABLE = 'addon_mod_forum_replies';
 
-    protected tablesSchema: SQLiteDBTableSchema[] = [
-        {
-            name: AddonModForumOfflineProvider.DISCUSSIONS_TABLE,
-            columns: [
-                {
-                    name: 'forumid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'name',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'subject',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'message',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'options',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'groupid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'userid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'timecreated',
-                    type: 'INTEGER',
-                }
-            ],
-            primaryKeys: ['forumid', 'userid', 'timecreated']
-        },
-        {
-            name: AddonModForumOfflineProvider.REPLIES_TABLE,
-            columns: [
-                {
-                    name: 'postid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'discussionid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'forumid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'name',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'subject',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'message',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'options',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'userid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'timecreated',
-                    type: 'INTEGER',
-                }
-            ],
-            primaryKeys: ['postid', 'userid']
-        }
-    ];
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonModForumOfflineProvider',
+        version: 1,
+        tables: [
+            {
+                name: AddonModForumOfflineProvider.DISCUSSIONS_TABLE,
+                columns: [
+                    {
+                        name: 'forumid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'name',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'subject',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'message',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'options',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'groupid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'userid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'timecreated',
+                        type: 'INTEGER',
+                    }
+                ],
+                primaryKeys: ['forumid', 'userid', 'timecreated']
+            },
+            {
+                name: AddonModForumOfflineProvider.REPLIES_TABLE,
+                columns: [
+                    {
+                        name: 'postid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'discussionid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'forumid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'name',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'subject',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'message',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'options',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'userid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'timecreated',
+                        type: 'INTEGER',
+                    }
+                ],
+                primaryKeys: ['postid', 'userid']
+            }
+        ]
+    };
 
     constructor(private fileProvider: CoreFileProvider,
             private sitesProvider: CoreSitesProvider,
             private textUtils: CoreTextUtilsProvider) {
-        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**

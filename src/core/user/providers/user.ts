@@ -16,9 +16,8 @@ import { Injectable } from '@angular/core';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSite } from '@classes/site';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to provide user functionalities.
@@ -32,33 +31,37 @@ export class CoreUserProvider {
 
     // Variables for database.
     protected USERS_TABLE = 'users';
-    protected tablesSchema: SQLiteDBTableSchema[] = [
-        {
-            name: this.USERS_TABLE,
-            columns: [
-                {
-                    name: 'id',
-                    type: 'INTEGER',
-                    primaryKey: true
-                },
-                {
-                    name: 'fullname',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'profileimageurl',
-                    type: 'TEXT'
-                }
-            ]
-        }
-    ];
+    protected siteSchema: CoreSiteSchema = {
+        name: 'CoreUserProvider',
+        version: 1,
+        tables: [
+            {
+                name: this.USERS_TABLE,
+                columns: [
+                    {
+                        name: 'id',
+                        type: 'INTEGER',
+                        primaryKey: true
+                    },
+                    {
+                        name: 'fullname',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'profileimageurl',
+                        type: 'TEXT'
+                    }
+                ]
+            }
+        ]
+    };
 
     protected logger;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
             private filepoolProvider: CoreFilepoolProvider) {
         this.logger = logger.getInstance('CoreUserProvider');
-        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**

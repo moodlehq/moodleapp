@@ -14,9 +14,8 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to handle Offline survey.
@@ -28,42 +27,46 @@ export class AddonModSurveyOfflineProvider {
 
     // Variables for database.
     static SURVEY_TABLE = 'addon_mod_survey_answers';
-    protected tablesSchema: SQLiteDBTableSchema[] = [
-        {
-            name: AddonModSurveyOfflineProvider.SURVEY_TABLE,
-            columns: [
-                {
-                    name: 'surveyid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'name',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'userid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'answers',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'timecreated',
-                    type: 'INTEGER'
-                }
-            ],
-            primaryKeys: ['surveyid', 'userid']
-        }
-    ];
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonModSurveyOfflineProvider',
+        version: 1,
+        tables: [
+            {
+                name: AddonModSurveyOfflineProvider.SURVEY_TABLE,
+                columns: [
+                    {
+                        name: 'surveyid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'name',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'userid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'answers',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'timecreated',
+                        type: 'INTEGER'
+                    }
+                ],
+                primaryKeys: ['surveyid', 'userid']
+            }
+        ]
+    };
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private textUtils: CoreTextUtilsProvider) {
         this.logger = logger.getInstance('AddonModSurveyOfflineProvider');
-        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**

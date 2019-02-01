@@ -15,10 +15,9 @@
 import { Injectable } from '@angular/core';
 import { CoreFileProvider } from '@providers/file';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
-import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Service to handle offline assign.
@@ -31,105 +30,109 @@ export class AddonModAssignOfflineProvider {
     // Variables for database.
     static SUBMISSIONS_TABLE = 'addon_mod_assign_submissions';
     static SUBMISSIONS_GRADES_TABLE = 'addon_mod_assign_submissions_grading';
-    protected tablesSchema: SQLiteDBTableSchema[] = [
-        {
-            name: AddonModAssignOfflineProvider.SUBMISSIONS_TABLE,
-            columns: [
-                {
-                    name: 'assignid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'userid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'plugindata',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'onlinetimemodified',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'timecreated',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'submitted',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'submissionstatement',
-                    type: 'INTEGER'
-                }
-            ],
-            primaryKeys: ['assignid', 'userid']
-        },
-        {
-            name: AddonModAssignOfflineProvider.SUBMISSIONS_GRADES_TABLE,
-            columns: [
-                {
-                    name: 'assignid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'userid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'grade',
-                    type: 'REAL'
-                },
-                {
-                    name: 'attemptnumber',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'addattempt',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'workflowstate',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'applytoall',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'outcomes',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'plugindata',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER'
-                }
-            ],
-            primaryKeys: ['assignid', 'userid']
-        }
-    ];
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonModAssignOfflineProvider',
+        version: 1,
+        tables: [
+            {
+                name: AddonModAssignOfflineProvider.SUBMISSIONS_TABLE,
+                columns: [
+                    {
+                        name: 'assignid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'userid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'plugindata',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'onlinetimemodified',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'timecreated',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'submitted',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'submissionstatement',
+                        type: 'INTEGER'
+                    }
+                ],
+                primaryKeys: ['assignid', 'userid']
+            },
+            {
+                name: AddonModAssignOfflineProvider.SUBMISSIONS_GRADES_TABLE,
+                columns: [
+                    {
+                        name: 'assignid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'userid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'grade',
+                        type: 'REAL'
+                    },
+                    {
+                        name: 'attemptnumber',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'addattempt',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'workflowstate',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'applytoall',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'outcomes',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'plugindata',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER'
+                    }
+                ],
+                primaryKeys: ['assignid', 'userid']
+            }
+        ]
+    };
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private textUtils: CoreTextUtilsProvider,
             private fileProvider: CoreFileProvider, private timeUtils: CoreTimeUtilsProvider) {
         this.logger = logger.getInstance('AddonModAssignOfflineProvider');
-        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**

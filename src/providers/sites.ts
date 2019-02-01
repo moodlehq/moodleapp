@@ -265,6 +265,50 @@ export class CoreSitesProvider {
         }
     ];
 
+    // Site schema for this provider.
+    protected siteSchema: CoreSiteSchema = {
+        name: 'CoreSitesProvider',
+        version: 1,
+        tables: [
+            {
+                name: CoreSite.WS_CACHE_TABLE,
+                columns: [
+                    {
+                        name: 'id',
+                        type: 'TEXT',
+                        primaryKey: true
+                    },
+                    {
+                        name: 'data',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'key',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'expirationTime',
+                        type: 'INTEGER'
+                    }
+                ]
+            },
+            {
+                name: CoreSite.CONFIG_TABLE,
+                columns: [
+                    {
+                        name: 'name',
+                        type: 'TEXT',
+                        unique: true,
+                        notNull: true
+                    },
+                    {
+                        name: 'value'
+                    }
+                ]
+            }
+        ]
+    };
+
     constructor(logger: CoreLoggerProvider, private http: HttpClient, private sitesFactory: CoreSitesFactoryProvider,
             private appProvider: CoreAppProvider, private translate: TranslateService, private urlUtils: CoreUrlUtilsProvider,
             private eventsProvider: CoreEventsProvider,  private textUtils: CoreTextUtilsProvider,
@@ -273,6 +317,7 @@ export class CoreSitesProvider {
 
         this.appDB = appProvider.getDB();
         this.appDB.createTablesFromSchema(this.appTablesSchema);
+        this.registerSiteSchema(this.siteSchema);
     }
 
     /**
