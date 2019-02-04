@@ -48,7 +48,7 @@ export class AddonModGlossaryEntryPage {
      */
     ionViewDidLoad(): void {
         this.fetchEntry().then(() => {
-            this.glossaryProvider.logEntryView(this.entry.id).catch(() => {
+            this.glossaryProvider.logEntryView(this.entry.id, this.componentId).catch(() => {
                 // Ignore errors.
             });
         }).finally(() => {

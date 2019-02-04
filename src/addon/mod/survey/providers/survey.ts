@@ -18,6 +18,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModSurveyOfflineProvider } from './offline';
 
 /**
@@ -32,7 +33,7 @@ export class AddonModSurveyProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider,
             private filepoolProvider: CoreFilepoolProvider, private utils: CoreUtilsProvider,
-            private surveyOffline: AddonModSurveyOfflineProvider) {
+            private surveyOffline: AddonModSurveyOfflineProvider, private logHelper: CoreCourseLogHelperProvider) {
         this.logger = logger.getInstance('AddonModSurveyProvider');
     }
 
@@ -197,14 +198,15 @@ export class AddonModSurveyProvider {
      * Report the survey as being viewed.
      *
      * @param {number} id Module ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(id: number): Promise<any> {
+    logView(id: number, siteId?: string): Promise<any> {
         const params = {
             surveyid: id
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_survey_view_survey', params);
+        return this.logHelper.log('mod_survey_view_survey', params, AddonModSurveyProvider.COMPONENT, id, siteId);
     }
 
     /**

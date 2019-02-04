@@ -17,6 +17,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 
 /**
  * Service that provides some features for folder.
@@ -29,7 +30,7 @@ export class AddonModFolderProvider {
     protected logger;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private courseProvider: CoreCourseProvider,
-            private utils: CoreUtilsProvider) {
+            private utils: CoreUtilsProvider, private logHelper: CoreCourseLogHelperProvider) {
         this.logger = logger.getInstance('AddonModFolderProvider');
     }
 
@@ -132,13 +133,14 @@ export class AddonModFolderProvider {
      * Report a folder as being viewed.
      *
      * @param {number} id Module ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(id: number): Promise<any> {
+    logView(id: number, siteId?: string): Promise<any> {
         const params = {
             folderid: id
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_folder_view_folder', params);
+        return this.logHelper.log('mod_folder_view_folder', params, AddonModFolderProvider.COMPONENT, id, siteId);
     }
 }

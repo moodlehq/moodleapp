@@ -23,6 +23,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCommentsProvider } from '@core/comments/providers/comments';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreGradesProvider } from '@core/grades/providers/grades';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { AddonModAssignOfflineProvider } from './assign-offline';
 import { CoreSiteWSPreSets } from '@classes/site';
@@ -68,7 +69,8 @@ export class AddonModAssignProvider {
             private timeUtils: CoreTimeUtilsProvider, private appProvider: CoreAppProvider, private utils: CoreUtilsProvider,
             private userProvider: CoreUserProvider, private submissionDelegate: AddonModAssignSubmissionDelegate,
             private gradesProvider: CoreGradesProvider, private filepoolProvider: CoreFilepoolProvider,
-            private assignOffline: AddonModAssignOfflineProvider, private commentsProvider: CoreCommentsProvider) {
+            private assignOffline: AddonModAssignOfflineProvider, private commentsProvider: CoreCommentsProvider,
+            private logHelper: CoreCourseLogHelperProvider) {
         this.logger = logger.getInstance('AddonModAssignProvider');
     }
 
@@ -976,13 +978,11 @@ export class AddonModAssignProvider {
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
     logGradingView(assignId: number, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            const params = {
-                assignid: assignId
-            };
+        const params = {
+            assignid: assignId
+        };
 
-            return site.write('mod_assign_view_grading_table', params);
-        });
+        return this.logHelper.log('mod_assign_view_grading_table', params, AddonModAssignProvider.COMPONENT, assignId, siteId);
     }
 
     /**
@@ -993,13 +993,11 @@ export class AddonModAssignProvider {
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
     logView(assignId: number, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            const params = {
-                assignid: assignId
-            };
+        const params = {
+            assignid: assignId
+        };
 
-            return site.write('mod_assign_view_assign', params);
-        });
+        return this.logHelper.log('mod_assign_view_assign', params, AddonModAssignProvider.COMPONENT, assignId, siteId);
     }
 
     /**

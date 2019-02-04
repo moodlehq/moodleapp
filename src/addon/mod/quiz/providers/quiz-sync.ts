@@ -341,8 +341,8 @@ export class AddonModQuizSyncProvider extends CoreSyncBaseProvider {
 
                         // Answers sent, now set the current page if the attempt isn't finished.
                         if (!finish) {
-                            return this.quizProvider.logViewAttempt(onlineAttempt.id, offlineAttempt.currentpage, preflightData,
-                                    false).catch(() => {
+                            return this.quizProvider.logViewAttempt(onlineAttempt.id, quiz.id, offlineAttempt.currentpage,
+                                    preflightData, false).catch(() => {
                                 // Ignore errors.
                             });
                         }

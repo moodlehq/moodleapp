@@ -428,7 +428,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             });
 
             // Mark the page as viewed. We'll ignore errors in this call.
-            this.quizProvider.logViewAttempt(this.attempt.id, page, this.preflightData, this.offline).catch((error) => {
+            this.quizProvider.logViewAttempt(this.attempt.id, this.quizId, page, this.preflightData, this.offline)
+                    .catch((error) => {
                 // Ignore errors.
             });
 
@@ -455,7 +456,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             this.attempt.dueDateWarning = this.quizProvider.getAttemptDueDateWarning(this.quiz, this.attempt);
 
             // Log summary as viewed.
-            this.quizProvider.logViewAttemptSummary(this.attempt.id, this.preflightData).catch((error) => {
+            this.quizProvider.logViewAttemptSummary(this.attempt.id, this.preflightData, this.quizId).catch((error) => {
                 // Ignore errors.
             });
         });

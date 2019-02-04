@@ -20,6 +20,7 @@ import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModGlossaryOfflineProvider } from './offline';
 
 /**
@@ -43,7 +44,8 @@ export class AddonModGlossaryProvider {
             private translate: TranslateService,
             private textUtils: CoreTextUtilsProvider,
             private utils: CoreUtilsProvider,
-            private glossaryOffline: AddonModGlossaryOfflineProvider) {}
+            private glossaryOffline: AddonModGlossaryOfflineProvider,
+            private logHelper: CoreCourseLogHelperProvider) {}
 
     /**
      * Get the course glossary cache key.
@@ -860,28 +862,31 @@ export class AddonModGlossaryProvider {
      *
      * @param  {number} glossaryId Glossary ID.
      * @param  {string} mode       The mode in which the glossary was viewed.
+     * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}      Promise resolved when the WS call is successful.
      */
-    logView(glossaryId: number, mode: string): Promise<any> {
+    logView(glossaryId: number, mode: string, siteId?: string): Promise<any> {
         const params = {
             id: glossaryId,
             mode: mode
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_glossary_view_glossary', params);
+        return this.logHelper.log('mod_glossary_view_glossary', params, AddonModGlossaryProvider.COMPONENT, glossaryId, siteId);
     }
 
     /**
      * Report a glossary entry as being viewed.
      *
      * @param  {number} entryId Entry ID.
+     * @param  {number} glossaryId Glossary ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}   Promise resolved when the WS call is successful.
      */
-    logEntryView(entryId: number): Promise<any> {
+    logEntryView(entryId: number, glossaryId: number, siteId?: string): Promise<any> {
         const params = {
             id: entryId
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_glossary_view_entry', params);
+        return this.logHelper.log('mod_glossary_view_entry', params, AddonModGlossaryProvider.COMPONENT, glossaryId, siteId);
     }
 }

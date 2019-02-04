@@ -26,6 +26,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { AddonModScormOfflineProvider } from './scorm-offline';
 import { CoreSiteWSPreSets } from '@classes/site';
 import { CoreConstants } from '@core/constants';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 
 /**
  * Result of getAttemptCount.
@@ -113,7 +114,7 @@ export class AddonModScormProvider {
             private wsProvider: CoreWSProvider, private textUtils: CoreTextUtilsProvider, private utils: CoreUtilsProvider,
             private filepoolProvider: CoreFilepoolProvider, private scormOfflineProvider: AddonModScormOfflineProvider,
             private timeUtils: CoreTimeUtilsProvider, private syncProvider: CoreSyncProvider,
-            private eventsProvider: CoreEventsProvider) {
+            private eventsProvider: CoreEventsProvider, private logHelper: CoreCourseLogHelperProvider) {
         this.logger = logger.getInstance('AddonModScormProvider');
     }
 
@@ -1446,18 +1447,12 @@ export class AddonModScormProvider {
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
     logView(id: number, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            const params = {
-                scormid: id
-            };
+        const params = {
+            scormid: id
+        };
 
-            return site.write('mod_scorm_view_scorm', params).then((response) => {
-                if (!response || !response.status) {
-                    return Promise.reject(null);
-                }
-            });
-        });
-    }
+        return this.logHelper.log('mod_scorm_view_scorm', params, AddonModScormProvider.COMPONENT, id, siteId);
+}
 
     /**
      * Saves a SCORM tracking record.

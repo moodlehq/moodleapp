@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUserProvider } from '@core/user/providers/user';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 
 /**
  * Service that provides some features for chats.
@@ -24,7 +25,8 @@ export class AddonModChatProvider {
     static COMPONENT = 'mmaModChat';
     static POLL_INTERVAL = 4000;
 
-    constructor(private sitesProvider: CoreSitesProvider, private userProvider: CoreUserProvider) {}
+    constructor(private sitesProvider: CoreSitesProvider, private userProvider: CoreUserProvider,
+        private logHelper: CoreCourseLogHelperProvider) {}
 
     /**
      * Get a chat.
@@ -77,15 +79,16 @@ export class AddonModChatProvider {
     /**
      * Report a chat as being viewed.
      *
-     * @param  {number} chatId Chat instance ID.
-     * @return {Promise<any>} Promise resolved when the WS call is executed.
+     * @param  {number} id Chat instance ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(chatId: number): Promise<any> {
+    logView(id: number, siteId?: string): Promise<any> {
         const params = {
-            chatid: chatId
+            chatid: id
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_chat_view_chat', params);
+        return this.logHelper.log('mod_chat_view_chat', params, AddonModChatProvider.COMPONENT, id, siteId);
     }
 
     /**

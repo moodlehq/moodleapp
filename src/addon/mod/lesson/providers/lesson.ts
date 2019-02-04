@@ -20,6 +20,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreGradesProvider } from '@core/grades/providers/grades';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreSiteWSPreSets } from '@classes/site';
 import { AddonModLessonOfflineProvider } from './lesson-offline';
 
@@ -179,7 +180,7 @@ export class AddonModLessonProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
             private translate: TranslateService, private textUtils: CoreTextUtilsProvider, private domUtils: CoreDomUtilsProvider,
-            private lessonOfflineProvider: AddonModLessonOfflineProvider) {
+            private lessonOfflineProvider: AddonModLessonOfflineProvider, private logHelper: CoreCourseLogHelperProvider) {
         this.logger = logger.getInstance('AddonModLessonProvider');
 
         this.sitesProvider.createTableFromSchema(this.tablesSchema);
@@ -2960,14 +2961,9 @@ export class AddonModLessonProvider {
                 params.password = password;
             }
 
-            return site.write('mod_lesson_view_lesson', params).then((result) => {
-                if (!result.status) {
-                    return Promise.reject(null);
-                }
-
-                return result;
-            });
+            return this.logHelper.log('mod_lesson_view_lesson', params, AddonModLessonProvider.COMPONENT, id, siteId);
         });
+
     }
 
     /**

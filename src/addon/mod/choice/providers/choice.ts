@@ -17,6 +17,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModChoiceOfflineProvider } from './offline';
 
 /**
@@ -38,7 +39,7 @@ export class AddonModChoiceProvider {
 
     constructor(private sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider,
             private filepoolProvider: CoreFilepoolProvider, private utils: CoreUtilsProvider,
-            private choiceOffline: AddonModChoiceOfflineProvider) {}
+            private choiceOffline: AddonModChoiceOfflineProvider, private logHelper: CoreCourseLogHelperProvider) {}
 
     /**
      * Check if results can be seen by a student. The student can see the results if:
@@ -346,14 +347,15 @@ export class AddonModChoiceProvider {
      * Report the choice as being viewed.
      *
      * @param  {string} id Choice ID.
-     * @return {Promise<any>} Promise resolved when the WS call is successful.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(id: string): Promise<any> {
+    logView(id: number, siteId?: string): Promise<any> {
         const params = {
             choiceid: id
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_choice_view_choice', params);
+        return this.logHelper.log('mod_choice_view_choice', params, AddonModChoiceProvider.COMPONENT, id, siteId);
     }
 
     /**
