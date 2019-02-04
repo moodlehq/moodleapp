@@ -602,6 +602,7 @@
     "addon.mod_lti.modulenameplural": "External tools",
     "addon.mod_page.errorwhileloadingthepage": "Error while loading the page content.",
     "addon.mod_page.modulenameplural": "Pages",
+    "addon.mod_quiz.answercolon": "Answer:",
     "addon.mod_quiz.attemptfirst": "First attempt",
     "addon.mod_quiz.attemptlast": "Last attempt",
     "addon.mod_quiz.attemptnumber": "Attempt",

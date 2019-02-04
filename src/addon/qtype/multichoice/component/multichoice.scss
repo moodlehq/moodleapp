@@ -1,0 +1,13 @@
+ion-app.app-root addon-qtype-multichoice {
+    .core-correct-icon {
+        bottom: 50%;
+        margin-bottom: -7px;
+    }
+
+    .specificfeedback {
+        background-color: $core-question-feedback-color-bg;
+        color: $core-question-feedback-color;
+        display: inline;
+        padding: 0 .7em;
+    }
+}

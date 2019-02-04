@@ -1,5 +1,5 @@
 <section ion-list class="addon-qtype-multianswer-container" *ngIf="question.text || question.text === ''">
     <ion-item text-wrap>
-        <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.text" (afterRender)="questionRendered()"></core-format-text></p>
+        <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" (afterRender)="questionRendered()"></core-format-text>
     </ion-item>
 </section>

@@ -279,7 +279,11 @@ $core-question-saved-color-bg:        $gray-light !default;
 
 $core-question-state-correct-color:   $green-light !default;
 $core-question-state-partial-color:   $yellow-light !default;
+$core-question-state-partial-text:    $yellow !default;
 $core-question-state-incorrect-color: $red-light !default;
+
+$core-dd-question-selected-shadow: 2px 2px 4px $gray-dark !default;
+$core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA520, #FFD700, #F0E68C !default;
 
 // Mixins
 // -------------------------

@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreQuestionDelegate } from '@core/question/providers/delegate';
+import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { AddonQtypeShortAnswerHandler } from './providers/handler';
 import { AddonQtypeShortAnswerComponent } from './component/shortanswer';
@@ -27,6 +28,7 @@ import { AddonQtypeShortAnswerComponent } from './component/shortanswer';
     imports: [
         IonicModule,
         TranslateModule.forChild(),
+        CoreComponentsModule,
         CoreDirectivesModule
     ],
     providers: [

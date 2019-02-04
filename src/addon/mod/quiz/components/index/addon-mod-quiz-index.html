@@ -22,11 +22,11 @@
                 <p>{{ rule }}</p>
             </ion-item>
             <ion-item text-wrap *ngIf="quiz && quiz.gradeMethodReadable">
-                <p class="item-heading">{{ 'addon.mod_quiz.grademethod' | translate }}</p>
+                <h2>{{ 'addon.mod_quiz.grademethod' | translate }}</h2>
                 <p>{{ quiz.gradeMethodReadable }}</p>
             </ion-item>
             <ion-item text-wrap *ngIf="syncTime">
-                <p class="item-heading">{{ 'core.lastsync' | translate }}</p>
+                <h2>{{ 'core.lastsync' | translate }}</h2>
                 <p>{{ syncTime }}</p>
             </ion-item>
         </ion-list>

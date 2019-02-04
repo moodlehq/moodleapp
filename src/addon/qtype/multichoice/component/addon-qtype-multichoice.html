@@ -1,18 +1,20 @@
 <section ion-list *ngIf="question.text || question.text === ''">
     <!-- Question text first. -->
     <ion-item text-wrap>
-        <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text></p>
-        <p *ngIf="question.prompt"><core-format-text [component]="component" [componentId]="componentId" [text]="question.prompt"></core-format-text></p>
+        <core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text>
+        <core-format-text [component]="component" [componentId]="componentId" [text]="question.prompt" *ngIf="question.prompt"></core-format-text>
     </ion-item>
 
     <!-- Checkbox for multiple choice. -->
     <ng-container *ngIf="question.multi">
-        <ion-item text-wrap *ngFor="let option of question.options" [ngClass]="{'core-question-answer-correct': option.isCorrect === 1, 'core-question-answer-incorrect': option.isCorrect === 0}">
-            <ion-label>
+        <ion-item text-wrap *ngFor="let option of question.options">
+            <ion-label [color]='(option.isCorrect === 1 ? "success": "") +  (option.isCorrect === 0 ? "danger": "")'>
                 <core-format-text [component]="component" [componentId]="componentId" [text]="option.text"></core-format-text>
-                <p *ngIf="option.feedback" class="core-question-feedback-container"><core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback"></core-format-text></p>
+                <div *ngIf="option.feedback" class="specificfeedback"><core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback"></core-format-text></div>
             </ion-label>
-            <ion-checkbox [attr.name]="option.name" [(ngModel)]="option.checked" [disabled]="option.disabled" item-end></ion-checkbox>
+            <ion-checkbox [attr.name]="option.name" [(ngModel)]="option.checked" [disabled]="option.disabled" item-end [color]='(option.isCorrect === 1 ? "success": "") +  (option.isCorrect === 0 ? "danger": "")'></ion-checkbox>
+            <core-icon item-content *ngIf="option.isCorrect === 1" class="core-correct-icon" name="fa-check" color="success"></core-icon>
+            <core-icon item-content *ngIf="option.isCorrect === 0" class="core-correct-icon" name="fa-remove" color="danger"></core-icon>
 
             <!-- ion-checkbox doesn't use an input. Create a hidden input to hold the value. -->
             <input item-content type="hidden" [ngModel]="option.checked" [attr.name]="option.name">
@@ -21,12 +23,14 @@
 
     <!-- Radio buttons for single choice. -->
     <div *ngIf="!question.multi" radio-group [(ngModel)]="question.singleChoiceModel" [name]="question.optionsName">
-        <ion-item text-wrap *ngFor="let option of question.options" [ngClass]='{"core-question-answer-correct": option.isCorrect === 1, "core-question-answer-incorrect": option.isCorrect === 0}'>
+        <ion-item text-wrap *ngFor="let option of question.options">
             <ion-label>
                 <core-format-text [component]="component" [componentId]="componentId" [text]="option.text"></core-format-text>
-                <p *ngIf="option.feedback" class="core-question-feedback-container"><core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback"></core-format-text></p>
+                <div *ngIf="option.feedback" class="specificfeedback"><core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback"></core-format-text></div>
             </ion-label>
-            <ion-radio [value]="option.value" [disabled]="option.disabled"></ion-radio>
+            <ion-radio [value]="option.value" [disabled]="option.disabled" [color]='(option.isCorrect === 1 ? "success": "") +  (option.isCorrect === 0 ? "danger": "")'></ion-radio>
+            <core-icon item-content *ngIf="option.isCorrect === 1" class="core-correct-icon" name="fa-check" color="success"></core-icon>
+            <core-icon item-content *ngIf="option.isCorrect === 0" class="core-correct-icon" name="fa-remove" color="danger"></core-icon>
         </ion-item>
 
         <!-- ion-radio doesn't use an input. Create a hidden input to hold the selected value. -->

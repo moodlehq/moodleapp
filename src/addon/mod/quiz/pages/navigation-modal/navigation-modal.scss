@@ -14,15 +14,49 @@ ion-app.app-root page-addon-mod-quiz-navigation-modal {
         }
     }
 
-    .item.core-question-correct .item-inner {
-        @include push-arrow-color($core-question-correct-color);
+    .item.core-question-correct {
+        &.addon-mod_quiz-selected {
+            @include border-start(5px, solid, $core-question-correct-color);
+        }
+
+        .item-inner {
+            @include push-arrow-color($core-question-correct-color);
+            border-bottom-color: $core-question-correct-color;
+        }
     }
 
-    .item.core-question-incorrect .item-inner {
-        @include push-arrow-color($core-question-incorrect-color);
+    .item.core-question-incorrect,
+    .item.core-question-notanswered {
+        &.addon-mod_quiz-selected {
+            @include border-start(5px, solid, $core-question-incorrect-color);
+        }
+
+        .item-inner {
+            @include push-arrow-color($core-question-incorrect-color);
+            border-bottom-color: $core-question-incorrect-color;
+        }
     }
 
-    .item.core-question-answersaved .item-inner {
-        @include push-arrow-color($text-color);
+    .item.core-question-partiallycorrect {
+        &.addon-mod_quiz-selected {
+            @include border-start(5px, solid, $core-question-state-partial-text);
+        }
+
+        .item-inner {
+            @include push-arrow-color($core-question-state-partial-text);
+            border-bottom-color: $core-question-state-partial-text;
+        }
+    }
+
+    .item.core-question-requiresgrading,
+    .item.core-question-answersaved {
+        &.addon-mod_quiz-selected {
+            @include border-start(5px, solid, $text-color);
+        }
+
+        .item-inner {
+            @include push-arrow-color($text-color);
+            border-bottom-color: $text-color;
+        }
     }
 }
