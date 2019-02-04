@@ -485,12 +485,14 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             this.feedback = feedback;
 
             // If we have data about the grader, get its profile.
-            if (feedback.grade && feedback.grade.grader) {
+            if (feedback.grade && feedback.grade.grader > 0) {
                 this.userProvider.getProfile(feedback.grade.grader, this.courseId).then((profile) => {
                     this.grader = profile;
                 }).catch(() => {
                     // Ignore errors.
                 });
+            } else {
+                delete this.grader;
             }
 
             // Check if the grade uses advanced grading.
