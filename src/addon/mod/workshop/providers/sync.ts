@@ -353,7 +353,15 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
                         result.updated = true;
 
                         return this.workshopOffline.deleteSubmissionAction(action.workshopid, action.submissionid, action.action,
-                                siteId);
+                                siteId).then(() => {
+                            // Delete stored files.
+                            if (action.action == 'add' || action.action == 'update') {
+                                const editing = action.action == 'update';
+
+                                return this.workshopHelper.deleteSubmissionStoredFiles(action.workshopid,
+                                        action.submissionid, editing, siteId);
+                            }
+                        });
                     });
                 });
             });
@@ -433,7 +441,9 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
                 // Delete the offline data.
                 result.updated = true;
 
-                return this.workshopOffline.deleteAssessment(workshop.id, assessmentId, siteId);
+                return this.workshopOffline.deleteAssessment(workshop.id, assessmentId, siteId).then(() => {
+                    this.workshopHelper.deleteAssessmentStoredFiles(workshop.id, assessmentId, siteId);
+                });
             });
         }).then(() => {
             if (discardError) {
