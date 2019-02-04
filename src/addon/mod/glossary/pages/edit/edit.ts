@@ -232,6 +232,9 @@ export class AddonModGlossaryEditPage implements OnInit {
                     attach, timecreated, undefined, this.entry, !this.attachments.length, !this.glossary.allowduplicatedentries);
             }
         }).then((entryId) => {
+             // Delete the local files from the tmp folder.
+             this.uploaderProvider.clearTmpFiles(this.attachments);
+
             if (entryId) {
                 // Data sent to server, delete stored files (if any).
                 this.glossaryHelper.deleteStoredFiles(this.glossary.id, this.entry.concept, timecreated);
