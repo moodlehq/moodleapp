@@ -303,6 +303,9 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
                 }
 
                 return promise.then(() => {
+                    // Clear temporary data from plugins.
+                    return this.assignHelper.clearSubmissionPluginTmpData(this.assign, this.userSubmission, inputData);
+                }).then(() => {
                     // Submission saved, trigger event.
                     const params = {
                         assignmentId: this.assign.id,

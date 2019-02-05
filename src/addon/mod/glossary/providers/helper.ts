@@ -29,7 +29,7 @@ export class AddonModGlossaryHelperProvider {
             private glossaryOffline: AddonModGlossaryOfflineProvider) {}
 
     /**
-     * Delete stored attachment files for a new discussion.
+     * Delete stored attachment files for a new entry.
      *
      * @param  {number} glossaryId  Glossary ID.
      * @param  {string} entryName   The name of the entry.
