@@ -65,7 +65,7 @@ export class AddonModDataShowLinkHandler extends CoreContentLinksHandlerBase {
                     }
 
                     if (params.mode && params.mode == 'single') {
-                        pageParams['page'] = page || 1;
+                        pageParams['offset'] = page || 0;
                     } else if (rId) {
                         pageParams['entryId'] = rId;
                     }
