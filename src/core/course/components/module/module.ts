@@ -49,7 +49,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
             this.prefetchDelegate.getModuleStatus(this.module, this.courseId).then(this.showStatus.bind(this));
         }
     }
-    @Output() completionChanged?: EventEmitter<void>; // Will emit an event when the module completion changes.
+    @Output() completionChanged?: EventEmitter<any>; // Will emit an event when the module completion changes.
 
     showDownload: boolean; // Whether to display the download button.
     showRefresh: boolean; // Whether to display the refresh button.
