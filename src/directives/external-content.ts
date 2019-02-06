@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, AfterViewInit, ElementRef } from '@angular/core';
+import { Directive, Input, AfterViewInit, ElementRef, OnChanges, SimpleChange } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -35,13 +35,18 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 @Directive({
     selector: '[core-external-content]'
 })
-export class CoreExternalContentDirective implements AfterViewInit {
+export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
     @Input() siteId?: string; // Site ID to use.
     @Input() component?: string; // Component to link the file to.
     @Input() componentId?: string | number; // Component ID to use in conjunction with the component.
+    @Input() src?: string;
+    @Input() href?: string;
+    @Input('target-src') targetSrc?: string;
+    @Input() poster?: string;
 
     protected element: HTMLElement;
     protected logger;
+    protected initialized = false;
 
     constructor(element: ElementRef, logger: CoreLoggerProvider, private filepoolProvider: CoreFilepoolProvider,
             private platform: Platform, private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
@@ -55,47 +60,21 @@ export class CoreExternalContentDirective implements AfterViewInit {
      * View has been initialized
      */
     ngAfterViewInit(): void {
-        const currentSite = this.sitesProvider.getCurrentSite(),
-            siteId = this.siteId || (currentSite && currentSite.getId()),
-            tagName = this.element.tagName;
-        let targetAttr,
-            sourceAttr;
+        this.checkAndHandleExternalContent();
 
-        // Always handle inline styles (if any).
-        this.handleInlineStyles(siteId).catch((error) => {
-            this.logger.error('Error treating inline styles.', this.element);
-        });
+        this.initialized = true;
+    }
 
-        if (tagName === 'A') {
-            targetAttr = 'href';
-            sourceAttr = 'href';
-
-        } else if (tagName === 'IMG') {
-            targetAttr = 'src';
-            sourceAttr = 'src';
-
-        } else if (tagName === 'AUDIO' || tagName === 'VIDEO' || tagName === 'SOURCE' || tagName === 'TRACK') {
-            targetAttr = 'src';
-            sourceAttr = 'target-src';
-
-            if (tagName === 'VIDEO') {
-                const poster = (<HTMLVideoElement> this.element).poster;
-                if (poster) {
-                    // Handle poster.
-                    this.handleExternalContent('poster', poster, siteId).catch(() => {
-                        // Ignore errors.
-                    });
-                }
-            }
-
-        } else {
-            return;
+    /**
+     * Listen to changes.
+     *
+     * * @param {{[name: string]: SimpleChange}} changes Changes.
+     */
+    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
+        if (changes && this.initialized) {
+            // If any of the inputs changes, handle the content again.
+            this.checkAndHandleExternalContent();
         }
-
-        const url = this.element.getAttribute(sourceAttr) || this.element.getAttribute(targetAttr);
-        this.handleExternalContent(targetAttr, url, siteId).catch(() => {
-            // Ignore errors.
-        });
     }
 
     /**
@@ -122,6 +101,51 @@ export class CoreExternalContentDirective implements AfterViewInit {
             }
         }
         this.element.parentNode.insertBefore(newSource, this.element);
+    }
+
+    /**
+     * Get the URL that should be handled and, if valid, handle it.
+     */
+    protected checkAndHandleExternalContent(): void {
+        const currentSite = this.sitesProvider.getCurrentSite(),
+            siteId = this.siteId || (currentSite && currentSite.getId()),
+            tagName = this.element.tagName;
+        let targetAttr,
+            url;
+
+        // Always handle inline styles (if any).
+        this.handleInlineStyles(siteId).catch((error) => {
+            this.logger.error('Error treating inline styles.', this.element);
+        });
+
+        if (tagName === 'A') {
+            targetAttr = 'href';
+            url = this.href;
+
+        } else if (tagName === 'IMG') {
+            targetAttr = 'src';
+            url = this.src;
+
+        } else if (tagName === 'AUDIO' || tagName === 'VIDEO' || tagName === 'SOURCE' || tagName === 'TRACK') {
+            targetAttr = 'src';
+            url = this.targetSrc || this.src;
+
+            if (tagName === 'VIDEO') {
+                if (this.poster) {
+                    // Handle poster.
+                    this.handleExternalContent('poster', this.poster, siteId).catch(() => {
+                        // Ignore errors.
+                    });
+                }
+            }
+
+        } else {
+            return;
+        }
+
+        this.handleExternalContent(targetAttr, url, siteId).catch(() => {
+            // Ignore errors.
+        });
     }
 
     /**
