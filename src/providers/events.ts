@@ -58,6 +58,7 @@ export class CoreEventsProvider {
     static CORE_LOADING_CHANGED = 'core_loading_changed';
     static ORIENTATION_CHANGE = 'orientation_change';
     static LOAD_PAGE_MAIN_MENU = 'load_page_main_menu';
+    static SEND_ON_ENTER_CHANGED = 'send_on_enter_changed';
 
     protected logger;
     protected observables: { [s: string]: Subject<any> } = {};
