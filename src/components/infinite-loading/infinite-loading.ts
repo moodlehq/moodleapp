@@ -45,13 +45,13 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
      * @param {SimpleChange}} changes Changes.
      */
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
-        if (changes.enabled && this.enabled) {
+        if (changes.enabled && this.enabled && this.position == 'bottom') {
             // Infinite scroll enabled. If the list doesn't fill the full height, infinite scroll isn't triggered automatically.
             // Send a fake scroll event to make infinite scroll check if it should load more items.
             setTimeout(() => {
                 const event: any = new Event('scroll');
                 this.content.ionScroll.emit(event);
-            });
+            }, 400);
         }
     }
 
