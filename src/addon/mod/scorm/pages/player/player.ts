@@ -442,7 +442,9 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
         this.tocObserver && this.tocObserver.off();
         this.launchNextObserver && this.launchNextObserver.off();
         this.launchPrevObserver && this.launchPrevObserver.off();
-        this.goOfflineObserver && this.goOfflineObserver.off();
+        setTimeout(() => {
+            this.goOfflineObserver && this.goOfflineObserver.off();
+        }, 500);
 
         // Unblock the SCORM so it can be synced.
         this.syncProvider.unblockOperation(AddonModScormProvider.COMPONENT, this.scorm.id, 'player');
