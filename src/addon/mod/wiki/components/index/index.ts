@@ -110,7 +110,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                     // Ignore errors.
                 });
             } else {
-                this.wikiProvider.logPageView(this.pageId, this.wikiId).catch(() => {
+                this.wikiProvider.logPageView(this.pageId, this.wiki.id).catch(() => {
                     // Ignore errors.
                 });
             }
@@ -341,7 +341,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                             this.currentPage = data.pageId;
 
                             this.showLoadingAndFetch(true, false).then(() => {
-                                this.wikiProvider.logPageView(this.currentPage, this.wikiId).catch(() => {
+                                this.wikiProvider.logPageView(this.currentPage, this.wiki.id).catch(() => {
                                     // Ignore errors.
                                 });
                             });

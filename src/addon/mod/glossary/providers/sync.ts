@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { CoreAppProvider } from '@providers/app';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -52,7 +53,8 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
             private utils: CoreUtilsProvider,
             private glossaryProvider: AddonModGlossaryProvider,
             private glossaryHelper: AddonModGlossaryHelperProvider,
-            private glossaryOffline: AddonModGlossaryOfflineProvider) {
+            private glossaryOffline: AddonModGlossaryOfflineProvider,
+            private logHelper: CoreCourseLogHelperProvider) {
 
         super('AddonModGlossarySyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
                 timeUtils);
@@ -160,10 +162,13 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
             updated: false
         };
 
-        // Get offline responses to be sent.
-        const syncPromise = this.glossaryOffline.getGlossaryNewEntries(glossaryId, siteId, userId).catch(() => {
-            // No offline data found, return empty object.
-            return [];
+        // Sync offline logs.
+        const syncPromise = this.logHelper.syncIfNeeded(AddonModGlossaryProvider.COMPONENT, glossaryId, siteId).finally(() => {
+            // Get offline responses to be sent.
+            return this.glossaryOffline.getGlossaryNewEntries(glossaryId, siteId, userId).catch(() => {
+                // No offline data found, return empty object.
+                return [];
+            });
         }).then((entries) => {
             if (!entries.length) {
                 // Nothing to sync.

@@ -24,6 +24,7 @@ import { CoreSyncProvider } from '@providers/sync';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModWorkshopProvider } from './workshop';
 import { AddonModWorkshopHelperProvider } from './helper';
 import { AddonModWorkshopOfflineProvider } from './offline';
@@ -51,7 +52,8 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
             private utils: CoreUtilsProvider,
             private workshopProvider: AddonModWorkshopProvider,
             private workshopHelper: AddonModWorkshopHelperProvider,
-            private workshopOffline: AddonModWorkshopOfflineProvider) {
+            private workshopOffline: AddonModWorkshopOfflineProvider,
+            private logHelper: CoreCourseLogHelperProvider) {
 
         super('AddonModWorkshopSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
                 timeUtils);
@@ -171,6 +173,9 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
             // No offline data found, return empty array.
             return [];
         }));
+
+        // Sync offline logs.
+        syncPromises.push(this.logHelper.syncIfNeeded(AddonModWorkshopProvider.COMPONENT, workshopId, siteId));
 
         const result = {
             warnings: [],

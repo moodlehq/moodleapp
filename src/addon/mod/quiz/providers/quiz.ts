@@ -1518,31 +1518,31 @@ export class AddonModQuizProvider {
     }
 
     /**
-     * Report an attempt as being viewed.
+     * Report an attempt as being viewed. It did not store logs offline because order of the log is important.
      *
      * @param {number} attemptId Attempt ID.
      * @param {number} [page=0] Page number.
      * @param {any} [preflightData] Preflight required data (like password).
      * @param {boolean} [offline] Whether attempt is offline.
-     * @param {number} quizId Quiz ID.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logViewAttempt(attemptId: number, quizId: number, page: number = 0, preflightData: any = {}, offline?: boolean,
-            siteId?: string): Promise<any> {
-        const params = {
-                attemptid: attemptId,
-                page: page,
-                preflightdata: this.utils.objectToArrayOfObjects(preflightData, 'name', 'value', true)
-            },
-            promises = [];
+    logViewAttempt(attemptId: number, page: number = 0, preflightData: any = {}, offline?: boolean, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                    attemptid: attemptId,
+                    page: page,
+                    preflightdata: this.utils.objectToArrayOfObjects(preflightData, 'name', 'value', true)
+                },
+                promises = [];
 
-        promises.push(this.logHelper.log('mod_quiz_view_attempt', params, AddonModQuizProvider.COMPONENT, quizId, siteId));
-        if (offline) {
-            promises.push(this.quizOfflineProvider.setAttemptCurrentPage(attemptId, page));
-        }
+            promises.push(site.write('mod_quiz_view_attempt', params));
+            if (offline) {
+                promises.push(this.quizOfflineProvider.setAttemptCurrentPage(attemptId, page, site.getId()));
+            }
 
-        return Promise.all(promises);
+            return Promise.all(promises);
+        });
     }
 
     /**

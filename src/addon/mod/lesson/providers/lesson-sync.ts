@@ -24,6 +24,7 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { AddonModLessonProvider } from './lesson';
 import { AddonModLessonOfflineProvider } from './lesson-offline';
@@ -86,7 +87,8 @@ export class AddonModLessonSyncProvider extends CoreSyncBaseProvider {
             courseProvider: CoreCourseProvider, private eventsProvider: CoreEventsProvider,
             private lessonProvider: AddonModLessonProvider, private lessonOfflineProvider: AddonModLessonOfflineProvider,
             private prefetchHandler: AddonModLessonPrefetchHandler, timeUtils: CoreTimeUtilsProvider,
-            private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider) {
+            private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider,
+            private logHelper: CoreCourseLogHelperProvider) {
 
         super('AddonModLessonSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
                 timeUtils);
@@ -263,8 +265,11 @@ export class AddonModLessonSyncProvider extends CoreSyncBaseProvider {
 
         this.logger.debug('Try to sync lesson ' + lessonId + ' in site ' + siteId);
 
-        // Try to synchronize the attempts first.
-        syncPromise = this.lessonOfflineProvider.getLessonAttempts(lessonId, siteId).then((attempts) => {
+        // Sync offline logs.
+        syncPromise = this.logHelper.syncIfNeeded(AddonModLessonProvider.COMPONENT, lessonId, siteId).finally(() => {
+            // Try to synchronize the attempts first.
+            return this.lessonOfflineProvider.getLessonAttempts(lessonId, siteId);
+        }).then((attempts) => {
             if (!attempts.length) {
                 return;
             } else if (!this.appProvider.isOnline()) {

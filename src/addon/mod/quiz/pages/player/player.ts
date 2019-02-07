@@ -428,8 +428,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             });
 
             // Mark the page as viewed. We'll ignore errors in this call.
-            this.quizProvider.logViewAttempt(this.attempt.id, this.quizId, page, this.preflightData, this.offline)
-                    .catch((error) => {
+            this.quizProvider.logViewAttempt(this.attempt.id, page, this.preflightData, this.offline).catch((error) => {
                 // Ignore errors.
             });
 
