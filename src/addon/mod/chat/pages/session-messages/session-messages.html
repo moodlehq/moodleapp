@@ -1,0 +1,40 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'addon.mod_chat.messages' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="loaded" (ionRefresh)="refreshMessages($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded">
+        <div *ngFor="let message of messages; index as index; last as last">
+            <div text-center *ngIf="showDate(messages[index], messages[index - 1])" class="addon-mod-chat-notice">
+                <ion-badge text-wrap color="light">
+                    <span>{{ message.timestamp * 1000 | coreFormatDate:"strftimedayshort" }}</span>
+                </ion-badge>
+            </div>
+
+            <div text-center *ngIf="message.issystem && message.message == 'enter'" class="addon-mod-chat-notice">
+                <ion-badge text-wrap color="light">
+                    <span>{{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }} {{ 'addon.mod_chat.messageenter' | translate:{$a: message.userfullname} }}</span>
+                </ion-badge>
+            </div>
+
+            <div text-center *ngIf="message.issystem && message.message == 'exit'" class="addon-mod-chat-notice">
+                <ion-badge text-wrap color="light">
+                    <span>{{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }} {{ 'addon.mod_chat.messageexit' | translate:{$a: message.userfullname} }}</span>
+                </ion-badge>
+            </div>
+
+            <ion-item text-wrap *ngIf="!message.issystem && message.message.substr(0, 4) != 'beep'" class="addon-mod-chat-message">
+                <ion-avatar core-user-avatar [user]="message" item-start></ion-avatar>
+                <h2>
+                    <p float-end>{{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}</p>
+                    <core-format-text [text]="message.userfullname"></core-format-text>
+                </h2>
+                <core-format-text [text]="message.message"></core-format-text>
+            </ion-item>
+        </div>
+    </core-loading>
+</ion-content>
