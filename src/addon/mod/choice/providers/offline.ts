@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 
 /**
  * Service to handle offline choices.
@@ -23,45 +23,50 @@ export class AddonModChoiceOfflineProvider {
 
     // Variables for database.
     static CHOICE_TABLE = 'addon_mod_choice_responses';
-    protected tablesSchema = [
-        {
-            name: AddonModChoiceOfflineProvider.CHOICE_TABLE,
-            columns: [
-                {
-                    name: 'choiceid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'name',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'userid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'responses',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'deleting',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'timecreated',
-                    type: 'INTEGER'
-                }
-            ],
-            primaryKeys: ['choiceid', 'userid']
-        }
-    ];
+
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonModChoiceOfflineProvider',
+        version: 1,
+        tables: [
+            {
+                name: AddonModChoiceOfflineProvider.CHOICE_TABLE,
+                columns: [
+                    {
+                        name: 'choiceid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'name',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'userid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'responses',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'deleting',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'timecreated',
+                        type: 'INTEGER'
+                    }
+                ],
+                primaryKeys: ['choiceid', 'userid']
+            }
+        ]
+    };
 
     constructor(private sitesProvider: CoreSitesProvider) {
-        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**

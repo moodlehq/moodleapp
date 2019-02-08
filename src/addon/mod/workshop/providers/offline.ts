@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreFileProvider } from '@providers/file';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 
@@ -30,146 +30,150 @@ export class AddonModWorkshopOfflineProvider {
     static EVALUATE_SUBMISSIONS_TABLE = 'addon_mod_workshop_evaluate_submissions';
     static EVALUATE_ASSESSMENTS_TABLE = 'addon_mod_workshop_evaluate_assessments';
 
-    protected tablesSchema = [
-        {
-            name: AddonModWorkshopOfflineProvider.SUBMISSIONS_TABLE,
-            columns: [
-                {
-                    name: 'workshopid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'submissionid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'action',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'title',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'content',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'attachmentsid',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER',
-                }
-            ],
-            primaryKeys: ['workshopid', 'submissionid', 'action']
-        },
-        {
-            name: AddonModWorkshopOfflineProvider.ASSESSMENTS_TABLE,
-            columns: [
-                {
-                    name: 'workshopid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'assessmentid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'inputdata',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER',
-                },
-            ],
-            primaryKeys: ['workshopid', 'assessmentid']
-        },
-        {
-            name: AddonModWorkshopOfflineProvider.EVALUATE_SUBMISSIONS_TABLE,
-            columns: [
-                {
-                    name: 'workshopid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'submissionid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'feedbacktext',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'published',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'gradeover',
-                    type: 'TEXT',
-                },
-            ],
-            primaryKeys: ['workshopid', 'submissionid']
-        },
-        {
-            name: AddonModWorkshopOfflineProvider.EVALUATE_ASSESSMENTS_TABLE,
-            columns: [
-                {
-                    name: 'workshopid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'assessmentid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'feedbacktext',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'weight',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'gradinggradeover',
-                    type: 'TEXT',
-                },
-            ],
-            primaryKeys: ['workshopid', 'assessmentid']
-        }
-    ];
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonModWorkshopOfflineProvider',
+        version: 1,
+        tables: [
+            {
+                name: AddonModWorkshopOfflineProvider.SUBMISSIONS_TABLE,
+                columns: [
+                    {
+                        name: 'workshopid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'submissionid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'action',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'title',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'content',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'attachmentsid',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER',
+                    }
+                ],
+                primaryKeys: ['workshopid', 'submissionid', 'action']
+            },
+            {
+                name: AddonModWorkshopOfflineProvider.ASSESSMENTS_TABLE,
+                columns: [
+                    {
+                        name: 'workshopid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'assessmentid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'inputdata',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER',
+                    },
+                ],
+                primaryKeys: ['workshopid', 'assessmentid']
+            },
+            {
+                name: AddonModWorkshopOfflineProvider.EVALUATE_SUBMISSIONS_TABLE,
+                columns: [
+                    {
+                        name: 'workshopid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'submissionid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'feedbacktext',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'published',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'gradeover',
+                        type: 'TEXT',
+                    },
+                ],
+                primaryKeys: ['workshopid', 'submissionid']
+            },
+            {
+                name: AddonModWorkshopOfflineProvider.EVALUATE_ASSESSMENTS_TABLE,
+                columns: [
+                    {
+                        name: 'workshopid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'assessmentid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'feedbacktext',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'weight',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'gradinggradeover',
+                        type: 'TEXT',
+                    },
+                ],
+                primaryKeys: ['workshopid', 'assessmentid']
+            }
+        ]
+    };
 
     constructor(private fileProvider: CoreFileProvider,
             private sitesProvider: CoreSitesProvider,
             private textUtils: CoreTextUtilsProvider,
             private timeUtils: CoreTimeUtilsProvider) {
-        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**

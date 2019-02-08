@@ -166,47 +166,8 @@ export class CoreSite {
     protected wsProvider: CoreWSProvider;
 
     // Variables for the database.
-    protected WS_CACHE_TABLE = 'wscache';
-    protected CONFIG_TABLE = 'core_site_config';
-    protected tableSchemas = [
-        {
-            name: this.WS_CACHE_TABLE,
-            columns: [
-                {
-                    name: 'id',
-                    type: 'TEXT',
-                    primaryKey: true
-                },
-                {
-                    name: 'data',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'key',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'expirationTime',
-                    type: 'INTEGER'
-                }
-            ]
-        },
-        {
-            name: this.CONFIG_TABLE,
-            columns: [
-                {
-                    name: 'name',
-                    type: 'TEXT',
-                    unique: true,
-                    notNull: true
-                },
-                {
-                    name: 'value'
-                }
-            ]
-        }
-
-    ];
+    static WS_CACHE_TABLE = 'wscache';
+    static CONFIG_TABLE = 'core_site_config';
 
     // Versions of Moodle releases.
     protected MOODLE_RELEASES = {
@@ -267,7 +228,6 @@ export class CoreSite {
      */
     initDB(): void {
         this.db = this.dbProvider.getDB('Site-' + this.id);
-        this.db.createTablesFromSchema(this.tableSchemas);
     }
 
     /**
@@ -784,10 +744,10 @@ export class CoreSite {
         let promise;
 
         if (preSets.getCacheUsingCacheKey || (emergency && preSets.getEmergencyCacheUsingCacheKey)) {
-            promise = this.db.getRecords(this.WS_CACHE_TABLE, { key: preSets.cacheKey }).then((entries) => {
+            promise = this.db.getRecords(CoreSite.WS_CACHE_TABLE, { key: preSets.cacheKey }).then((entries) => {
                 if (!entries.length) {
                     // Cache key not found, get by params sent.
-                    return this.db.getRecord(this.WS_CACHE_TABLE, { id: id });
+                    return this.db.getRecord(CoreSite.WS_CACHE_TABLE, { id: id });
                 } else if (entries.length > 1) {
                     // More than one entry found. Search the one with same ID as this call.
                     for (let i = 0, len = entries.length; i < len; i++) {
@@ -801,13 +761,13 @@ export class CoreSite {
                 return entries[0];
             });
         } else {
-            promise = this.db.getRecord(this.WS_CACHE_TABLE, { id: id }).catch(() => {
+            promise = this.db.getRecord(CoreSite.WS_CACHE_TABLE, { id: id }).catch(() => {
                 // Entry not found, try to get it using the old ID.
                 const oldId = this.getCacheOldId(method, originalData || {});
 
-                return this.db.getRecord(this.WS_CACHE_TABLE, { id: oldId }).then((entry) => {
+                return this.db.getRecord(CoreSite.WS_CACHE_TABLE, { id: oldId }).then((entry) => {
                     // Update the entry ID to use the new one.
-                    this.db.updateRecords(this.WS_CACHE_TABLE, {id: id}, {id: oldId});
+                    this.db.updateRecords(CoreSite.WS_CACHE_TABLE, {id: id}, {id: oldId});
 
                     return entry;
                 });
@@ -877,7 +837,7 @@ export class CoreSite {
                 entry.key = preSets.cacheKey;
             }
 
-            return this.db.insertRecord(this.WS_CACHE_TABLE, entry);
+            return this.db.insertRecord(CoreSite.WS_CACHE_TABLE, entry);
         });
     }
 
@@ -898,10 +858,10 @@ export class CoreSite {
         const id = this.getCacheId(method, data);
 
         if (allCacheKey) {
-            return this.db.deleteRecords(this.WS_CACHE_TABLE, { key: preSets.cacheKey });
+            return this.db.deleteRecords(CoreSite.WS_CACHE_TABLE, { key: preSets.cacheKey });
         }
 
-        return this.db.deleteRecords(this.WS_CACHE_TABLE, { id: id });
+        return this.db.deleteRecords(CoreSite.WS_CACHE_TABLE, { id: id });
     }
 
     /*
@@ -935,7 +895,7 @@ export class CoreSite {
 
         this.logger.debug('Invalidate all the cache for site: ' + this.id);
 
-        return this.db.updateRecords(this.WS_CACHE_TABLE, { expirationTime: 0 });
+        return this.db.updateRecords(CoreSite.WS_CACHE_TABLE, { expirationTime: 0 });
     }
 
     /**
@@ -954,7 +914,7 @@ export class CoreSite {
 
         this.logger.debug('Invalidate cache for key: ' + key);
 
-        return this.db.updateRecords(this.WS_CACHE_TABLE, { expirationTime: 0 }, { key: key });
+        return this.db.updateRecords(CoreSite.WS_CACHE_TABLE, { expirationTime: 0 }, { key: key });
     }
 
     /**
@@ -997,7 +957,7 @@ export class CoreSite {
 
         this.logger.debug('Invalidate cache for key starting with: ' + key);
 
-        const sql = 'UPDATE ' + this.WS_CACHE_TABLE + ' SET expirationTime=0 WHERE key LIKE ?';
+        const sql = 'UPDATE ' + CoreSite.WS_CACHE_TABLE + ' SET expirationTime=0 WHERE key LIKE ?';
 
         return this.db.execute(sql, [key + '%']);
     }
@@ -1590,7 +1550,7 @@ export class CoreSite {
      * @return {Promise<any>} Promise resolved when done.
      */
     deleteSiteConfig(name: string): Promise<any> {
-        return this.db.deleteRecords(this.CONFIG_TABLE, { name: name });
+        return this.db.deleteRecords(CoreSite.CONFIG_TABLE, { name: name });
     }
 
     /**
@@ -1601,7 +1561,7 @@ export class CoreSite {
      * @return {Promise<any>} Resolves upon success along with the config data. Reject on failure.
      */
     getLocalSiteConfig(name: string, defaultValue?: any): Promise<any> {
-        return this.db.getRecord(this.CONFIG_TABLE, { name: name }).then((entry) => {
+        return this.db.getRecord(CoreSite.CONFIG_TABLE, { name: name }).then((entry) => {
             return entry.value;
         }).catch((error) => {
             if (typeof defaultValue != 'undefined') {
@@ -1620,6 +1580,6 @@ export class CoreSite {
      * @return {Promise<any>} Promise resolved when done.
      */
     setLocalSiteConfig(name: string, value: number | string): Promise<any> {
-        return this.db.insertRecord(this.CONFIG_TABLE, { name: name, value: value });
+        return this.db.insertRecord(CoreSite.CONFIG_TABLE, { name: name, value: value });
     }
 }

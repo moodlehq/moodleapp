@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreSite } from '@classes/site';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
@@ -38,95 +38,99 @@ export class AddonCalendarProvider {
 
     // Variables for database.
     static EVENTS_TABLE = 'addon_calendar_events';
-    protected tablesSchema = [
-        {
-            name: AddonCalendarProvider.EVENTS_TABLE,
-            columns: [
-                {
-                    name: 'id',
-                    type: 'INTEGER',
-                    primaryKey: true
-                },
-                {
-                    name: 'notificationtime',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'name',
-                    type: 'TEXT',
-                    notNull: true
-                },
-                {
-                    name: 'description',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'format',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'eventtype',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'timestart',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'timeduration',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'categoryid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'groupid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'userid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'instance',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'modulename',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'repeatid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'visible',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'uuid',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'sequence',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'subscriptionid',
-                    type: 'INTEGER'
-                }
-            ]
-        }
-    ];
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonCalendarProvider',
+        version: 1,
+        tables: [
+            {
+                name: AddonCalendarProvider.EVENTS_TABLE,
+                columns: [
+                    {
+                        name: 'id',
+                        type: 'INTEGER',
+                        primaryKey: true
+                    },
+                    {
+                        name: 'notificationtime',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'name',
+                        type: 'TEXT',
+                        notNull: true
+                    },
+                    {
+                        name: 'description',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'format',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'eventtype',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'timestart',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'timeduration',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'categoryid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'groupid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'userid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'instance',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'modulename',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'repeatid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'visible',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'uuid',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'sequence',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'subscriptionid',
+                        type: 'INTEGER'
+                    }
+                ]
+            }
+        ]
+    };
 
     protected logger;
 
@@ -134,7 +138,7 @@ export class AddonCalendarProvider {
             private coursesProvider: CoreCoursesProvider, private timeUtils: CoreTimeUtilsProvider,
             private localNotificationsProvider: CoreLocalNotificationsProvider, private configProvider: CoreConfigProvider) {
         this.logger = logger.getInstance('AddonCalendarProvider');
-        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**

@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -155,21 +155,27 @@ export class AddonModLessonProvider {
 
     // Variables for database.
     static PASSWORD_TABLE = 'addon_mod_lesson_password';
-    protected tablesSchema = {
-        name: AddonModLessonProvider.PASSWORD_TABLE,
-        columns: [
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonModLessonProvider',
+        version: 1,
+        tables: [
             {
-                name: 'lessonid',
-                type: 'INTEGER',
-                primaryKey: true
-            },
-            {
-                name: 'password',
-                type: 'TEXT'
-            },
-            {
-                name: 'timemodified',
-                type: 'INTEGER'
+                name: AddonModLessonProvider.PASSWORD_TABLE,
+                columns: [
+                    {
+                        name: 'lessonid',
+                        type: 'INTEGER',
+                        primaryKey: true
+                    },
+                    {
+                        name: 'password',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER'
+                    }
+                ]
             }
         ]
     };
@@ -182,7 +188,7 @@ export class AddonModLessonProvider {
             private lessonOfflineProvider: AddonModLessonOfflineProvider) {
         this.logger = logger.getInstance('AddonModLessonProvider');
 
-        this.sitesProvider.createTableFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**

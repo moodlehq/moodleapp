@@ -17,7 +17,7 @@ import { LocalNotifications, ILocalNotification, ILocalNotificationAction } from
 import { CoreAppProvider } from '@providers/app';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../../../configconstants';
 import * as moment from 'moment';
@@ -43,7 +43,7 @@ export class LocalNotificationsMock extends LocalNotifications {
 
     // Variables for database.
     protected DESKTOP_NOTIFS_TABLE = 'desktop_local_notifications';
-    protected tableSchema = {
+    protected tableSchema: SQLiteDBTableSchema = {
         name: this.DESKTOP_NOTIFS_TABLE,
         columns: [
             {

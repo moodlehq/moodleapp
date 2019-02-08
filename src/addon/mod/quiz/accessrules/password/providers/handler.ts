@@ -14,7 +14,7 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { AddonModQuizAccessRuleHandler } from '../../../providers/access-rules-delegate';
 import { AddonModQuizAccessPasswordComponent } from '../component/password';
 
@@ -25,21 +25,27 @@ import { AddonModQuizAccessPasswordComponent } from '../component/password';
 export class AddonModQuizAccessPasswordHandler implements AddonModQuizAccessRuleHandler {
     // Variables for database.
     static PASSWORD_TABLE = 'addon_mod_quiz_access_password';
-    protected tableSchema = {
-        name: AddonModQuizAccessPasswordHandler.PASSWORD_TABLE,
-        columns: [
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonModQuizAccessPasswordHandler',
+        version: 1,
+        tables: [
             {
-                name: 'id',
-                type: 'INTEGER',
-                primaryKey: true
-            },
-            {
-                name: 'password',
-                type: 'TEXT'
-            },
-            {
-                name: 'timemodified',
-                type: 'INTEGER'
+                name: AddonModQuizAccessPasswordHandler.PASSWORD_TABLE,
+                columns: [
+                    {
+                        name: 'id',
+                        type: 'INTEGER',
+                        primaryKey: true
+                    },
+                    {
+                        name: 'password',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER'
+                    }
+                ]
             }
         ]
     };
@@ -48,7 +54,7 @@ export class AddonModQuizAccessPasswordHandler implements AddonModQuizAccessRule
     ruleName = 'quizaccess_password';
 
     constructor(private sitesProvider: CoreSitesProvider) {
-        this.sitesProvider.createTableFromSchema(this.tableSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**

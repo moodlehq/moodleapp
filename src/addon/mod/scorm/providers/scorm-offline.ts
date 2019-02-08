@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
@@ -34,95 +34,99 @@ export class AddonModScormOfflineProvider {
     // Variables for database.
     static ATTEMPTS_TABLE = 'addon_mod_scorm_offline_attempts';
     static TRACKS_TABLE = 'addon_mod_scorm_offline_scos_tracks';
-    protected tablesSchema = [
-        {
-            name: AddonModScormOfflineProvider.ATTEMPTS_TABLE,
-            columns: [
-                {
-                    name: 'scormid',
-                    type: 'INTEGER',
-                    notNull: true
-                },
-                {
-                    name: 'attempt', // Attempt number.
-                    type: 'INTEGER',
-                    notNull: true
-                },
-                {
-                    name: 'userid',
-                    type: 'INTEGER',
-                    notNull: true
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'timecreated',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'snapshot',
-                    type: 'TEXT'
-                },
-            ],
-            primaryKeys: ['scormid', 'userid', 'attempt']
-        },
-        {
-            name: AddonModScormOfflineProvider.TRACKS_TABLE,
-            columns: [
-                {
-                    name: 'scormid',
-                    type: 'INTEGER',
-                    notNull: true
-                },
-                {
-                    name: 'attempt', // Attempt number.
-                    type: 'INTEGER',
-                    notNull: true
-                },
-                {
-                    name: 'userid',
-                    type: 'INTEGER',
-                    notNull: true
-                },
-                {
-                    name: 'scoid',
-                    type: 'INTEGER',
-                    notNull: true
-                },
-                {
-                    name: 'element',
-                    type: 'TEXT',
-                    notNull: true
-                },
-                {
-                    name: 'value',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'synced',
-                    type: 'INTEGER'
-                },
-            ],
-            primaryKeys: ['scormid', 'userid', 'attempt', 'scoid', 'element']
-        }
-    ];
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonModScormOfflineProvider',
+        version: 1,
+        tables: [
+            {
+                name: AddonModScormOfflineProvider.ATTEMPTS_TABLE,
+                columns: [
+                    {
+                        name: 'scormid',
+                        type: 'INTEGER',
+                        notNull: true
+                    },
+                    {
+                        name: 'attempt', // Attempt number.
+                        type: 'INTEGER',
+                        notNull: true
+                    },
+                    {
+                        name: 'userid',
+                        type: 'INTEGER',
+                        notNull: true
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'timecreated',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'snapshot',
+                        type: 'TEXT'
+                    },
+                ],
+                primaryKeys: ['scormid', 'userid', 'attempt']
+            },
+            {
+                name: AddonModScormOfflineProvider.TRACKS_TABLE,
+                columns: [
+                    {
+                        name: 'scormid',
+                        type: 'INTEGER',
+                        notNull: true
+                    },
+                    {
+                        name: 'attempt', // Attempt number.
+                        type: 'INTEGER',
+                        notNull: true
+                    },
+                    {
+                        name: 'userid',
+                        type: 'INTEGER',
+                        notNull: true
+                    },
+                    {
+                        name: 'scoid',
+                        type: 'INTEGER',
+                        notNull: true
+                    },
+                    {
+                        name: 'element',
+                        type: 'TEXT',
+                        notNull: true
+                    },
+                    {
+                        name: 'value',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'synced',
+                        type: 'INTEGER'
+                    },
+                ],
+                primaryKeys: ['scormid', 'userid', 'attempt', 'scoid', 'element']
+            }
+        ]
+    };
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private timeUtils: CoreTimeUtilsProvider,
             private syncProvider: CoreSyncProvider, private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider,
             private userProvider: CoreUserProvider) {
         this.logger = logger.getInstance('AddonModScormOfflineProvider');
 
-        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**

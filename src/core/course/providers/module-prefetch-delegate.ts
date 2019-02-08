@@ -17,7 +17,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreFileProvider } from '@providers/file';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from './course';
@@ -202,18 +202,24 @@ export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
 export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
     // Variables for database.
     protected CHECK_UPDATES_TIMES_TABLE = 'check_updates_times';
-    protected checkUpdatesTableSchema = {
-        name: this.CHECK_UPDATES_TIMES_TABLE,
-        columns: [
+    protected siteSchema: CoreSiteSchema = {
+        name: 'CoreCourseModulePrefetchDelegate',
+        version: 1,
+        tables: [
             {
-                name: 'courseId',
-                type: 'INTEGER',
-                primaryKey: true
-            },
-            {
-                name: 'time',
-                type: 'INTEGER',
-                notNull: true
+                name: this.CHECK_UPDATES_TIMES_TABLE,
+                columns: [
+                    {
+                        name: 'courseId',
+                        type: 'INTEGER',
+                        primaryKey: true
+                    },
+                    {
+                        name: 'time',
+                        type: 'INTEGER',
+                        notNull: true
+                    }
+                ]
             }
         ]
     };
@@ -242,7 +248,7 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
             protected eventsProvider: CoreEventsProvider) {
         super('CoreCourseModulePrefetchDelegate', loggerProvider, sitesProvider, eventsProvider);
 
-        this.sitesProvider.createTableFromSchema(this.checkUpdatesTableSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
 
         eventsProvider.on(CoreEventsProvider.LOGOUT, this.clearStatusCache.bind(this));
         eventsProvider.on(CoreEventsProvider.PACKAGE_STATUS_CHANGED, (data) => {

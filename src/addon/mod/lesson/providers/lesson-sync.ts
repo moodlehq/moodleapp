@@ -17,7 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
@@ -58,25 +58,31 @@ export class AddonModLessonSyncProvider extends CoreSyncBaseProvider {
 
     // Variables for database.
     static RETAKES_FINISHED_TABLE = 'addon_mod_lesson_retakes_finished_sync';
-    protected tablesSchema = {
-        name: AddonModLessonSyncProvider.RETAKES_FINISHED_TABLE,
-        columns: [
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonModLessonSyncProvider',
+        version: 1,
+        tables: [
             {
-                name: 'lessonid',
-                type: 'INTEGER',
-                primaryKey: true
-            },
-            {
-                name: 'retake',
-                type: 'INTEGER'
-            },
-            {
-                name: 'pageid',
-                type: 'INTEGER'
-            },
-            {
-                name: 'timefinished',
-                type: 'INTEGER'
+                name: AddonModLessonSyncProvider.RETAKES_FINISHED_TABLE,
+                columns: [
+                    {
+                        name: 'lessonid',
+                        type: 'INTEGER',
+                        primaryKey: true
+                    },
+                    {
+                        name: 'retake',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'pageid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'timefinished',
+                        type: 'INTEGER'
+                    }
+                ]
             }
         ]
     };
@@ -93,7 +99,7 @@ export class AddonModLessonSyncProvider extends CoreSyncBaseProvider {
 
         this.componentTranslate = courseProvider.translateModuleName('lesson');
 
-        this.sitesProvider.createTableFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**

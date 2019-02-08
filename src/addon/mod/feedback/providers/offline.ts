@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 
@@ -28,39 +28,43 @@ export class AddonModFeedbackOfflineProvider {
 
     // Variables for database.
     static FEEDBACK_TABLE = 'addon_mod_feedback_answers';
-    protected tablesSchema = [
-        {
-            name: AddonModFeedbackOfflineProvider.FEEDBACK_TABLE,
-            columns: [
-                {
-                    name: 'feedbackid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'page',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'responses',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER'
-                }
-            ],
-            primaryKeys: ['feedbackid', 'page']
-        }
-    ];
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonModFeedbackOfflineProvider',
+        version: 1,
+        tables: [
+            {
+                name: AddonModFeedbackOfflineProvider.FEEDBACK_TABLE,
+                columns: [
+                    {
+                        name: 'feedbackid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'page',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'responses',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER'
+                    }
+                ],
+                primaryKeys: ['feedbackid', 'page']
+            }
+        ]
+    };
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider,
         private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider) {
         this.logger = logger.getInstance('AddonModFeedbackOfflineProvider');
-        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**

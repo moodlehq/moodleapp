@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 
@@ -63,86 +63,90 @@ export class CoreQuestionProvider {
     // Variables for database.
     protected QUESTION_TABLE = 'questions';
     protected QUESTION_ANSWERS_TABLE = 'question_answers';
-    protected tablesSchema = [
-        {
-            name: this.QUESTION_TABLE,
-            columns: [
-                {
-                    name: 'component',
-                    type: 'TEXT',
-                    notNull: true
-                },
-                {
-                    name: 'attemptid',
-                    type: 'INTEGER',
-                    notNull: true
-                },
-                {
-                    name: 'slot',
-                    type: 'INTEGER',
-                    notNull: true
-                },
-                {
-                    name: 'componentid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'userid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'number',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'state',
-                    type: 'TEXT'
-                }
-            ],
-            primaryKeys: ['component', 'attemptid', 'slot']
-        },
-        {
-            name: this.QUESTION_ANSWERS_TABLE,
-            columns: [
-                {
-                    name: 'component',
-                    type: 'TEXT',
-                    notNull: true
-                },
-                {
-                    name: 'attemptid',
-                    type: 'INTEGER',
-                    notNull: true
-                },
-                {
-                    name: 'name',
-                    type: 'TEXT',
-                    notNull: true
-                },
-                {
-                    name: 'componentid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'userid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'questionslot',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'value',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER'
-                }
-            ],
-            primaryKeys: ['component', 'attemptid', 'name']
-        }
-    ];
+    protected siteSchema: CoreSiteSchema = {
+        name: 'CoreQuestionProvider',
+        version: 1,
+        tables: [
+            {
+                name: this.QUESTION_TABLE,
+                columns: [
+                    {
+                        name: 'component',
+                        type: 'TEXT',
+                        notNull: true
+                    },
+                    {
+                        name: 'attemptid',
+                        type: 'INTEGER',
+                        notNull: true
+                    },
+                    {
+                        name: 'slot',
+                        type: 'INTEGER',
+                        notNull: true
+                    },
+                    {
+                        name: 'componentid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'userid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'number',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'state',
+                        type: 'TEXT'
+                    }
+                ],
+                primaryKeys: ['component', 'attemptid', 'slot']
+            },
+            {
+                name: this.QUESTION_ANSWERS_TABLE,
+                columns: [
+                    {
+                        name: 'component',
+                        type: 'TEXT',
+                        notNull: true
+                    },
+                    {
+                        name: 'attemptid',
+                        type: 'INTEGER',
+                        notNull: true
+                    },
+                    {
+                        name: 'name',
+                        type: 'TEXT',
+                        notNull: true
+                    },
+                    {
+                        name: 'componentid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'userid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'questionslot',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'value',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER'
+                    }
+                ],
+                primaryKeys: ['component', 'attemptid', 'name']
+            }
+        ]
+    };
 
     protected QUESTION_PREFIX_REGEX = /q\d+:(\d+)_/;
     protected STATES: {[name: string]: CoreQuestionState} = {
@@ -244,7 +248,7 @@ export class CoreQuestionProvider {
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private timeUtils: CoreTimeUtilsProvider,
             private utils: CoreUtilsProvider) {
         this.logger = logger.getInstance('CoreQuestionProvider');
-        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**

@@ -19,7 +19,7 @@ import { CoreConfigProvider } from './config';
 import { CoreLoggerProvider } from './logger';
 import { CoreUtilsProvider } from './utils/utils';
 import { CoreConstants } from '@core/constants';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Interface that all cron handlers must implement.
@@ -94,7 +94,7 @@ export class CoreCronDelegate {
 
     // Variables for database.
     protected CRON_TABLE = 'cron';
-    protected tableSchema = {
+    protected tableSchema: SQLiteDBTableSchema = {
         name: this.CRON_TABLE,
         columns: [
             {
