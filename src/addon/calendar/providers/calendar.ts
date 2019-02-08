@@ -23,6 +23,7 @@ import { CoreConstants } from '@core/constants';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreConfigProvider } from '@providers/config';
 import { ILocalNotification } from '@ionic-native/local-notifications';
+import { SQLiteDB } from '@classes/sqlitedb';
 
 /**
  * Service to handle calendar events.
@@ -37,10 +38,11 @@ export class AddonCalendarProvider {
     protected ROOT_CACHE_KEY = 'mmaCalendar:';
 
     // Variables for database.
-    static EVENTS_TABLE = 'addon_calendar_events';
+    static EVENTS_TABLE = 'addon_calendar_events_1';
+    static REMINDERS_TABLE = 'addon_calendar_reminders';
     protected siteSchema: CoreSiteSchema = {
         name: 'AddonCalendarProvider',
-        version: 1,
+        version: 2,
         tables: [
             {
                 name: AddonCalendarProvider.EVENTS_TABLE,
@@ -49,10 +51,6 @@ export class AddonCalendarProvider {
                         name: 'id',
                         type: 'INTEGER',
                         primaryKey: true
-                    },
-                    {
-                        name: 'notificationtime',
-                        type: 'INTEGER'
                     },
                     {
                         name: 'name',
@@ -128,8 +126,77 @@ export class AddonCalendarProvider {
                         type: 'INTEGER'
                     }
                 ]
+            },
+            {
+                name: AddonCalendarProvider.REMINDERS_TABLE,
+                columns: [
+                    {
+                        name: 'id',
+                        type: 'INTEGER',
+                        primaryKey: true
+                    },
+                    {
+                        name: 'eventid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'time',
+                        type: 'INTEGER'
+                    }
+                ],
+                uniqueKeys: [
+                    ['eventid', 'time']
+                ]
             }
-        ]
+        ],
+        migrate(db: SQLiteDB, oldVersion: number): Promise<any> | void {
+            if (oldVersion < 2) {
+                const newTable = AddonCalendarProvider.EVENTS_TABLE;
+                const oldTable = 'addon_calendar_events';
+
+                return db.tableExists(oldTable).then(() => {
+                    return db.getAllRecords(oldTable).then((events) => {
+                        const now = Math.round(Date.now() / 1000);
+
+                        return Promise.all(events.map((event) => {
+                            if (event.notificationtime == 0) {
+                                // No reminders.
+                                return Promise.resolve();
+                            }
+
+                            let time;
+
+                            if (event.notificationtime == -1) {
+                                time = -1;
+                            } else {
+                                time = event.timestart - event.notificationtime * 60;
+
+                                if (time < now) {
+                                    // Old reminder, just not add this.
+                                    return Promise.resolve();
+                                }
+                            }
+
+                            const reminder = {
+                                eventid: event.id,
+                                time: time
+                            };
+
+                            return db.insertRecord(AddonCalendarProvider.REMINDERS_TABLE, reminder);
+                        })).then(() => {
+                            // Move the records from the old table.
+                            return db.insertRecordsFrom(newTable, oldTable, undefined, 'id, name, description, format, eventtype,\
+                                courseid, timestart, timeduration, categoryid, groupid, userid, instance, modulename, timemodified,\
+                                repeatid, visible, uuid, sequence, subscriptionid');
+                        }).then(() => {
+                            return db.dropTable(oldTable);
+                        });
+                    });
+                }).catch(() => {
+                    // Old table does not exist, ignore.
+                });
+            }
+        }
     };
 
     protected logger;
@@ -145,29 +212,42 @@ export class AddonCalendarProvider {
      * Removes expired events from local DB.
      *
      * @param {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
-     * @return {Promise<void>} Promise resolved when done.
+     * @return {Promise<any>} Promise resolved when done.
      */
-    cleanExpiredEvents(siteId?: string): Promise<void> {
+    cleanExpiredEvents(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            let promise;
+            return site.getDb().getRecordsSelect(AddonCalendarProvider.EVENTS_TABLE, 'timestart + timeduration < ?',
+                    [this.timeUtils.timestamp()]).then((events) => {
+                return Promise.all(events.map((event) => {
+                    return this.deleteEvent(event.id, siteId);
+                }));
+            });
+        });
+    }
 
-            // Cancel expired events notifications first.
-            if (this.localNotificationsProvider.isAvailable()) {
-                promise = site.getDb().getRecordsSelect(AddonCalendarProvider.EVENTS_TABLE, 'timestart < ?',
-                        [this.timeUtils.timestamp()]).then((events) => {
-                    events.forEach((event) => {
-                        return this.localNotificationsProvider.cancel(event.id, AddonCalendarProvider.COMPONENT, site.getId());
-                    });
-                }).catch(() => {
-                    // Ignore errors.
-                });
-            } else {
-                promise = Promise.resolve();
-            }
+    /**
+     * Delete event cancelling all the reminders and notifications.
+     *
+     * @param  {number}       eventId Event ID.
+     * @param  {string}       [siteId] ID of the site the event belongs to. If not defined, use current site.
+     * @return {Promise<any>}         Resolved when done.
+     */
+    protected deleteEvent(eventId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            siteId = site.getId();
 
-            return promise.then(() => {
-                return site.getDb().deleteRecordsSelect(AddonCalendarProvider.EVENTS_TABLE, 'timestart < ?',
-                    [this.timeUtils.timestamp()]);
+            const promises = [];
+
+            promises.push(site.getDb().deleteRecords(AddonCalendarProvider.EVENTS_TABLE, {id: eventId}));
+
+            promises.push(site.getDb().getRecords(AddonCalendarProvider.REMINDERS_TABLE, {eventid: eventId}).then((reminders) => {
+                return Promise.all(reminders.map((reminder) => {
+                    return this.deleteEventReminder(reminder.id, siteId);
+                }));
+            }));
+
+            return Promise.all(promises).catch(() => {
+                // Ignore errors.
             });
         });
     }
@@ -282,37 +362,60 @@ export class AddonCalendarProvider {
     }
 
     /**
-     * Get event notification time. Always returns number of minutes (0 if disabled).
+     * Adds an event reminder and schedule a new notification.
      *
-     * @param  {number} id       Event ID.
+     * @param  {any} event       Event to update its notification time.
+     * @param  {number} time     New notification setting timestamp.
      * @param  {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
-     * @return {Promise<number>}  Event notification time in minutes. 0 if disabled.
+     * @return {Promise<any>} Promise resolved when the notification is updated.
      */
-    getEventNotificationTime(id: number, siteId?: string): Promise<number> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+    addEventReminder(event: any, time: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            siteId = site.getId();
 
-        return this.getEventNotificationTimeOption(id, siteId).then((time: number) => {
-            if (time == -1) {
-                return this.getDefaultNotificationTime(siteId);
+            if (!this.sitesProvider.isLoggedIn()) {
+                // Not logged in, we can't get the site DB. User logged out or session expired while an operation was ongoing.
+                return Promise.reject(null);
             }
 
-            return time;
+            const reminder = {
+                eventid: event.id,
+                time: time
+            };
+
+            return site.getDb().insertRecord(AddonCalendarProvider.REMINDERS_TABLE, reminder).then((reminderId) => {
+                return this.scheduleEventNotification(event, reminderId, time, siteId);
+            });
         });
     }
 
     /**
-     * Get event notification time for options. Returns -1 for default time.
+     * Remove an event reminder and cancel the notification.
+     *
+     * @param  {number} id       Reminder ID.
+     * @param  {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
+     * @return {Promise<any>} Promise resolved when the notification is updated.
+     */
+    deleteEventReminder(id: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            if (this.localNotificationsProvider.isAvailable()) {
+                this.localNotificationsProvider.cancel(id, AddonCalendarProvider.COMPONENT, site.getId());
+            }
+
+            return site.getDb().deleteRecords(AddonCalendarProvider.REMINDERS_TABLE, {id: id});
+        });
+    }
+
+    /**
+     * Get a calendar reminders from local Db.
      *
      * @param  {number} id       Event ID.
      * @param  {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
-     * @return {Promise<number>}  Promise with event notification time in minutes. 0 if disabled, -1 if default time.
+     * @return {Promise<any>}    Promise resolved when the event data is retrieved.
      */
-    getEventNotificationTimeOption(id: number, siteId?: string): Promise<number> {
-        return this.getEventFromLocalDb(id, siteId).then((e) => {
-            console.error(e.notificationtime);
-            return e.notificationtime || 0;
-        }).catch(() => {
-            return -1;
+    getEventReminders(id: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.getDb().getRecords(AddonCalendarProvider.REMINDERS_TABLE, {eventid: id}, 'time ASC');
         });
     }
 
@@ -511,34 +614,35 @@ export class AddonCalendarProvider {
      * @param  {string} [siteId] Site ID the event belongs to. If not defined, use current site.
      * @return {Promise<void>}    Promise resolved when the notification is scheduled.
      */
-    scheduleEventNotification(event: any, time: number, siteId?: string): Promise<void> {
+    protected scheduleEventNotification(event: any, reminderId: number, time: number, siteId?: string): Promise<void> {
         if (this.localNotificationsProvider.isAvailable()) {
             siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
             if (time === 0) {
                 // Cancel if it was scheduled.
-                return this.localNotificationsProvider.cancel(event.id, AddonCalendarProvider.COMPONENT, siteId);
+                return this.localNotificationsProvider.cancel(reminderId, AddonCalendarProvider.COMPONENT, siteId);
             }
 
             // If time is -1, get event default time.
             const promise = time == -1 ? this.getDefaultNotificationTime(siteId) : Promise.resolve(time);
 
             return promise.then((time) => {
-                const timeEnd = (event.timestart + event.timeduration) * 1000;
-                if (timeEnd <= new Date().getTime()) {
-                    // The event has finished already, don't schedule it.
-                    return Promise.resolve();
+
+                if (time * 1000 <= new Date().getTime()) {
+                    // This reminder is over, don't schedule. Cancel if it was scheduled.
+                    return this.localNotificationsProvider.cancel(reminderId, AddonCalendarProvider.COMPONENT, siteId);
                 }
 
                 const notification: ILocalNotification = {
-                        id: event.id,
+                        id: reminderId,
                         title: event.name,
                         text: this.timeUtils.userDate(event.timestart * 1000, 'core.strftimedaydatetime', true),
                         trigger: {
-                            at: new Date((event.timestart - (time * 60)) * 1000)
+                            at: new Date(time * 1000)
                         },
                         data: {
                             eventid: event.id,
+                            reminderid: reminderId,
                             siteid: siteId
                         }
                     };
@@ -561,18 +665,27 @@ export class AddonCalendarProvider {
      * @return {Promise<any[]>}         Promise resolved when all the notifications have been scheduled.
      */
     scheduleEventsNotifications(events: any[], siteId?: string): Promise<any[]> {
-        const promises = [];
 
         if (this.localNotificationsProvider.isAvailable()) {
             siteId = siteId || this.sitesProvider.getCurrentSiteId();
-            events.forEach((e) => {
-                promises.push(this.getEventNotificationTime(e.id, siteId).then((time) => {
-                    return this.scheduleEventNotification(e, time, siteId);
-                }));
-            });
+
+            return Promise.all(events.map((event) => {
+                const timeEnd = (event.timestart + event.timeduration) * 1000;
+
+                if (timeEnd <= new Date().getTime()) {
+                    // The event has finished already, don't schedule it.
+                    return this.deleteEvent(event.id, siteId);
+                }
+
+                return this.getEventReminders(event.id, siteId).then((reminders) => {
+                    return Promise.all(reminders.map((reminder) => {
+                        return this.scheduleEventNotification(event, reminder.id, reminder.time, siteId);
+                    }));
+                });
+            }));
         }
 
-        return Promise.all(promises);
+        return Promise.resolve([]);
     }
 
     /**
@@ -599,7 +712,41 @@ export class AddonCalendarProvider {
      */
     storeEventInLocalDb(event: any, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().insertRecord(AddonCalendarProvider.EVENTS_TABLE, event);
+            siteId = site.getId();
+
+            // If event does not exists on the DB, schedule the reminder.
+            return this.getEventFromLocalDb(event.id, site.id).catch(() => {
+                // Event does not exist. Check if any reminder exists first.
+                return this.getEventReminders(event.id, siteId).then((reminders) => {
+                    if (reminders.length == 0) {
+                        this.addEventReminder(event, -1, siteId);
+                    }
+                });
+            }).then(() => {
+                const eventRecord = {
+                    id: event.id,
+                    name: event.name,
+                    description: event.description,
+                    format: event.format,
+                    eventtype: event.eventtype,
+                    courseid: event.courseid,
+                    timestart: event.timestart,
+                    timeduration: event.timeduration,
+                    categoryid: event.categoryid,
+                    groupid: event.groupid,
+                    userid: event.userid,
+                    instance: event.instance,
+                    modulename: event.modulename,
+                    timemodified: event.timemodified,
+                    repeatid: event.repeatid,
+                    visible: event.visible,
+                    uuid: event.uuid,
+                    sequence: event.sequence,
+                    subscriptionid: event.subscriptionid
+                };
+
+                return site.getDb().insertRecord(AddonCalendarProvider.EVENTS_TABLE, eventRecord);
+            });
         });
     }
 
@@ -614,70 +761,10 @@ export class AddonCalendarProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             siteId = site.getId();
 
-            const promises = [],
-                db = site.getDb();
-
-            events.forEach((event) => {
-                // Don't override event notification time if the user configured it.
-                promises.push(this.getEventFromLocalDb(event.id, siteId).catch(() => {
-                    // Event not stored, return empty object.
-                    return {};
-                }).then((e) => {
-                    const eventRecord = {
-                        id: event.id,
-                        name: event.name,
-                        description: event.description,
-                        format: event.format,
-                        eventtype: event.eventtype,
-                        courseid: event.courseid,
-                        timestart: event.timestart,
-                        timeduration: event.timeduration,
-                        categoryid: event.categoryid,
-                        groupid: event.groupid,
-                        userid: event.userid,
-                        instance: event.instance,
-                        modulename: event.modulename,
-                        timemodified: event.timemodified,
-                        repeatid: event.repeatid,
-                        visible: event.visible,
-                        uuid: event.uuid,
-                        sequence: event.sequence,
-                        subscriptionid: event.subscriptionid,
-                        notificationtime: e.notificationtime || -1
-                    };
-
-                    return db.insertRecord(AddonCalendarProvider.EVENTS_TABLE, eventRecord);
-                }));
-            });
-
-            return Promise.all(promises);
-        });
-    }
-
-    /**
-     * Updates an event notification time and schedule a new notification.
-     *
-     * @param  {any} event Event to update its notification time.
-     * @param  {number} time  New notification setting time (in minutes). E.g. 10 means "notificate 10 minutes before start".
-     * @param  {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
-     * @return {Promise<void>} Promise resolved when the notification is updated.
-     */
-    updateNotificationTime(event: any, time: number, siteId?: string): Promise<void> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            if (!this.sitesProvider.isLoggedIn()) {
-                // Not logged in, we can't get the site DB. User logged out or session expired while an operation was ongoing.
-                return Promise.reject(null);
-            }
-
-            return site.getDb().updateRecords(AddonCalendarProvider.EVENTS_TABLE, {notificationtime: time}, {id: event.id})
-                    .then(() => {
-                if (time == 0) {
-                    // No notification, cancel it.
-                    return this.localNotificationsProvider.cancel(event.id, AddonCalendarProvider.COMPONENT, site.getId());
-                } else {
-                    return this.scheduleEventNotification(event, time);
-                }
-            });
+            return Promise.all(events.map((event) => {
+                // If event does not exists on the DB, schedule the reminder.
+                return this.storeEventInLocalDb(event, siteId);
+            }));
         });
     }
 }

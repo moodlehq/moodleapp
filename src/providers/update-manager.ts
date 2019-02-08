@@ -21,6 +21,7 @@ import { CoreLocalNotificationsProvider } from './local-notifications';
 import { CoreLoggerProvider } from './logger';
 import { CoreSitesProvider } from './sites';
 import { CoreUtilsProvider } from './utils/utils';
+import { CoreTimeUtilsProvider } from './utils/time';
 import { CoreConfigConstants } from '../configconstants';
 import { AddonCalendarProvider } from '@addon/calendar/providers/calendar';
 import { SQLiteDB } from '@classes/sqlitedb';
@@ -321,7 +322,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
 
     constructor(logger: CoreLoggerProvider, private configProvider: CoreConfigProvider, private sitesProvider: CoreSitesProvider,
             private filepoolProvider: CoreFilepoolProvider, private notifProvider: CoreLocalNotificationsProvider,
-            private utils: CoreUtilsProvider, private appProvider: CoreAppProvider,
+            private utils: CoreUtilsProvider, private appProvider: CoreAppProvider, private timeUtils: CoreTimeUtilsProvider,
             private calendarProvider: AddonCalendarProvider) {
         this.logger = logger.getInstance('CoreUpdateManagerProvider');
     }
@@ -606,6 +607,8 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
             return Promise.resolve();
         }
 
+        const now = this.timeUtils.timestamp();
+
         return this.sitesProvider.getSitesIds().then((siteIds) => {
 
             const promises = [];
@@ -615,9 +618,16 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
                     const eventPromises = [];
 
                     events.forEach((event) => {
-                        if (event.notificationtime == AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME) {
-                            event.notificationtime = -1;
-                            eventPromises.push(this.calendarProvider.storeEventInLocalDb(event, siteId));
+                        if (event.notificationtime && event.notificationtime == AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME) {
+                            eventPromises.push(this.calendarProvider.addEventReminder(event, -1, siteId));
+                        } else if (event.notificationtime && event.notificationtime > 0) {
+                            const time = event.timestart - event.notificationtime * 60;
+
+                            if (time < now) {
+                                // Old reminder, just not add this.
+                                return;
+                            }
+                            eventPromises.push(this.calendarProvider.addEventReminder(event, time, siteId));
                         }
                     });
 

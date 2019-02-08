@@ -42,9 +42,7 @@ export class AddonCalendarEventPage {
     notificationFormat: string;
     notificationMin: string;
     notificationMax: string;
-    notificationTime: number;
     notificationTimeText: string;
-    timeToLoad: number;
     event: any = {};
     title: string;
     courseName: string;
@@ -54,6 +52,7 @@ export class AddonCalendarEventPage {
     categoryPath = '';
     currentTime: number;
     defaultTime: number;
+    reminders: any[];
 
     constructor(private translate: TranslateService, private calendarProvider: AddonCalendarProvider, navParams: NavParams,
             private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider,
@@ -62,16 +61,15 @@ export class AddonCalendarEventPage {
             private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider) {
 
         this.eventId = navParams.get('id');
-        this.notificationsEnabled = localNotificationsProvider.isAvailable() || true;
+        this.notificationsEnabled = localNotificationsProvider.isAvailable();
         this.siteHomeId = sitesProvider.getCurrentSite().getSiteHomeId();
         if (this.notificationsEnabled) {
-            this.calendarProvider.getEventNotificationTimeOption(this.eventId).then((notificationTime) => {
-                this.setNotificationTime(notificationTime);
+            this.calendarProvider.getEventReminders(this.eventId).then((reminders) => {
+                this.reminders = reminders;
             });
 
             this.calendarProvider.getDefaultNotificationTime().then((defaultTime) => {
                 this.defaultTime = defaultTime * 60;
-                this.setNotificationTime();
             });
 
         // Calculate format to use. ion-datetime doesn't support escaping characters ([]), so we remove them.
@@ -112,11 +110,9 @@ export class AddonCalendarEventPage {
             this.event = event;
 
             this.currentTime = this.timeUtils.timestamp();
-            this.notificationMin = this.timeUtils.userDate(this.currentTime * 1000, 'YYYY-MM-DDTHH:mm:ss', false);
+            this.notificationMin = this.timeUtils.userDate(this.currentTime * 1000, 'YYYY-MM-DDTHH:mm', false);
             this.notificationMax = this.timeUtils.userDate((event.timestart + event.timeduration) * 1000,
-                'YYYY-MM-DDTHH:mm:ss', false);
-
-            this.setNotificationTime();
+                'YYYY-MM-DDTHH:mm', false);
 
             // Reset some of the calculated data.
             this.categoryPath = '';
@@ -186,7 +182,7 @@ export class AddonCalendarEventPage {
     }
 
     /**
-     * Add a notification time for this event.
+     * Add a reminder for this event.
      *
      * @param {Event} e    Click event.
      */
@@ -195,42 +191,33 @@ export class AddonCalendarEventPage {
         e.stopPropagation();
 
         if (this.notificationTimeText && this.event && this.event.id) {
-            this.setNotificationTime(new Date(this.notificationTimeText).getTime() / 1000);
-            this.calendarProvider.updateNotificationTime(this.event, this.notificationTime);
+            const notificationTime = this.timeUtils.convertToTimestamp(this.notificationTimeText);
+
+            this.calendarProvider.addEventReminder(this.event, notificationTime).then(() => {
+                this.calendarProvider.getEventReminders(this.eventId).then((reminders) => {
+                    this.reminders = reminders;
+                });
+
+                this.notificationTimeText = null;
+            });
         }
     }
 
     /**
-     * Cancel the current notification.
+     * Cancel the selected notification.
      *
+     * @param {number} id  Reminder ID.
      * @param {Event} e    Click event.
      */
-    cancelNotification(e: Event): void {
+    cancelNotification(id: number, e: Event): void {
         e.preventDefault();
         e.stopPropagation();
 
-        this.calendarProvider.updateNotificationTime(this.event, 0);
-        this.notificationTime = 0;
-    }
-
-    /**
-     * Loads notification time.
-     *
-     * @param {number} [timeToLoad] Time to load. If not set, just recalculate.
-     */
-    setNotificationTime(timeToLoad?: number): void {
-        this.timeToLoad = typeof timeToLoad == 'undefined' ? this.timeToLoad : timeToLoad;
-
-        if (typeof this.timeToLoad != 'undefined') {
-            if (this.timeToLoad < 0) {
-                this.notificationTime = this.event.timestart - this.defaultTime * 60;
-            } else if (this.timeToLoad == 0 || this.timeToLoad > 1440) {
-                this.notificationTime = this.timeToLoad;
-            } else {
-                this.notificationTime = this.event.timestart - this.timeToLoad * 60;
-            }
-            this.notificationTimeText = new Date(this.notificationTime * 1000).toString();
-        }
+        this.calendarProvider.deleteEventReminder(id).then(() => {
+            this.calendarProvider.getEventReminders(this.eventId).then((reminders) => {
+                this.reminders = reminders;
+            });
+        });
     }
 
     /**

@@ -56,10 +56,10 @@
             <ion-item>
                 <h2>{{ 'addon.calendar.reminders' | translate }}</h2>
             </ion-item>
-            <ion-item [class.item-dimmed]="notificationTime < currentTime" *ngIf="notificationTime > 0">
-                <p *ngIf="timeToLoad == -1">{{ 'core.defaultvalue' | translate :{$a: ((event.timestart - defaultTime) * 1000) | coreFormatDate } }}</p>
-                <p *ngIf="timeToLoad > 0">{{ notificationTime * 1000 | coreFormatDate }}</p>
-                <button ion-button icon-only clear="true" (click)="cancelNotification($event)" [attr.aria-label]=" 'core.delete' | translate" item-end>
+            <ion-item [class.item-dimmed]="(reminder.time == -1 ? (event.timestart - defaultTime) : reminder.time) <= currentTime" *ngFor="let reminder of reminders">
+                <p *ngIf="reminder.time == -1">{{ 'core.defaultvalue' | translate :{$a: ((event.timestart - defaultTime) * 1000) | coreFormatDate } }}</p>
+                <p *ngIf="reminder.time > 0">{{ reminder.time * 1000 | coreFormatDate }}</p>
+                <button ion-button icon-only clear="true" (click)="cancelNotification(reminder.id, $event)" [attr.aria-label]=" 'core.delete' | translate" item-end *ngIf="(reminder.time == -1 ? (event.timestart - defaultTime) : reminder.time) > currentTime">
                     <ion-icon name="trash" color="danger"></ion-icon>
                 </button>
             </ion-item>
@@ -69,7 +69,7 @@
                 <ion-datetime [(ngModel)]="notificationTimeText" [placeholder]="'core.choosedots' | translate" [displayFormat]="notificationFormat" [min]="notificationMin" [max]="notificationMax"></ion-datetime>
             </ion-item>
             <ion-item *ngIf="event.timestart + event.timeduration > currentTime">
-                <button ion-button block color="primary" (click)="addNotificationTime($event)">{{ 'addon.calendar.setnewreminder' | translate }}</button>
+                <button ion-button block color="primary" (click)="addNotificationTime($event)" [disabled]="!notificationTimeText">{{ 'addon.calendar.setnewreminder' | translate }}</button>
             </ion-item>
         </ion-card>
     </core-loading>
