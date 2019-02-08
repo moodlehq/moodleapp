@@ -34,16 +34,16 @@
             <core-comments contextLevel="module" [instanceId]="data.coursemodule" component="mod_data" [itemId]="entry.id" area="database_entry"></core-comments>
         </ion-item>
 
-        <ion-grid *ngIf="previousId || nextId">
+        <ion-grid *ngIf="previousOffset != null || nextOffset != null">
             <ion-row align-items-center>
-                <ion-col *ngIf="previousId">
-                    <button ion-button block outline icon-start (click)="gotoEntry(previousId)">
+                <ion-col *ngIf="previousOffset != null">
+                    <button ion-button block outline icon-start (click)="gotoEntry(previousOffset)">
                         <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
                         {{ 'core.previous' | translate }}
                     </button>
                 </ion-col>
-                <ion-col *ngIf="nextId">
-                    <button ion-button block icon-end (click)="gotoEntry(nextId)">
+                <ion-col *ngIf="nextOffset != null">
+                    <button ion-button block icon-end (click)="gotoEntry(nextOffset)">
                         {{ 'core.next' | translate }}
                         <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
                     </button>

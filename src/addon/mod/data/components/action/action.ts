@@ -30,6 +30,7 @@ export class AddonModDataActionComponent implements OnInit {
     @Input() action: string; // The field to render.
     @Input() entry?: any; // The value of the field.
     @Input() database: any; // Database object.
+    @Input() offset?: number; // Offset of the entry.
 
     siteId: string;
     rootUrl: string;
@@ -67,6 +68,9 @@ export class AddonModDataActionComponent implements OnInit {
         switch (this.action) {
             case 'more':
                 this.url = this.rootUrl + '/mod/data/view.php?d= ' + this.entry.dataid + '&rid=' + this.entry.id;
+                if (typeof this.offset == 'number') {
+                    this.url += '&mode=single&page=' + this.offset;
+                }
                 break;
             case 'edit':
                 this.url = this.rootUrl + '/mod/data/edit.php?d= ' + this.entry.dataid + '&rid=' + this.entry.id;

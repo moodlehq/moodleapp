@@ -47,7 +47,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     timeAvailableToReadable: string | boolean;
     isEmpty = false;
     groupInfo: CoreGroupInfo;
-    entries = {};
+    entries = [];
     firstEntry = false;
     canAdd = false;
     canSearch = false;
@@ -317,6 +317,8 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                 });
 
                 return Promise.all(promises).then((entries) => {
+                    this.entries = entries;
+
                     let entriesHTML = this.data.listtemplateheader || '';
 
                     // Get first entry from the whole list.
@@ -326,12 +328,15 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
                     const template = this.data.listtemplate || this.dataHelper.getDefaultTemplate('list', this.fieldsArray);
 
-                    entries.forEach((entry) => {
-                        this.entries[entry.id] = entry;
+                    const entriesById = {};
+                    entries.forEach((entry, index) => {
+                        entriesById[entry.id] = entry;
 
                         const actions = this.dataHelper.getActions(this.data, this.access, entry);
+                        const offset = this.search.page * AddonModDataProvider.PER_PAGE + index;
 
-                        entriesHTML += this.dataHelper.displayShowFields(template, this.fieldsArray, entry, 'list', actions);
+                        entriesHTML += this.dataHelper.displayShowFields(template, this.fieldsArray, entry, offset, 'list',
+                                actions);
                     });
                     entriesHTML += this.data.listtemplatefooter || '';
 
@@ -340,7 +345,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                     // Pass the input data to the component.
                     this.jsData = {
                         fields: this.fields,
-                        entries: this.entries,
+                        entries: entriesById,
                         data: this.data,
                         gotoEntry: this.gotoEntry.bind(this)
                     };
@@ -440,8 +445,15 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             module: this.module,
             courseId: this.courseId,
             entryId: entryId,
-            group: this.selectedGroup
+            group: this.selectedGroup,
+            offset: null
         };
+
+        // Try to find page number and offset of the entry.
+        const pageXOffset = this.entries.findIndex((entry) => entry.id == entryId);
+        if (pageXOffset >= 0) {
+            params.offset = this.search.page * AddonModDataProvider.PER_PAGE + pageXOffset;
+        }
 
         this.navCtrl.push('AddonModDataEntryPage', params);
     }
