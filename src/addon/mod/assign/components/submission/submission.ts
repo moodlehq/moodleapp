@@ -408,7 +408,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             return Promise.all(promises);
         }).then(() => {
             // Get submission status.
-            return this.assignProvider.getSubmissionStatus(this.assign.id, this.submitId, isBlind);
+            return this.assignProvider.getSubmissionStatusWithRetry(this.assign, this.submitId, isBlind);
         }).then((response) => {
 
             const promises = [];

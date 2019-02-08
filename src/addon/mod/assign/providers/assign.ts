@@ -504,6 +504,33 @@ export class AddonModAssignProvider {
     }
 
     /**
+     * Get information about an assignment submission status for a given user.
+     * If the data doesn't include the user submission, retry ignoring cache.
+     *
+     * @param {any} assign Assignment.
+     * @param {number} [userId] User id (empty for current user).
+     * @param {boolean} [isBlind] If blind marking is enabled or not.
+     * @param {number} [filter=true] True to filter WS response and rewrite URLs, false otherwise.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param {string} [siteId] Site id (empty for current site).
+     * @return {Promise<any>} Promise always resolved with the user submission status.
+     */
+    getSubmissionStatusWithRetry(assign: any, userId?: number, isBlind?: boolean, filter: boolean = true, ignoreCache?: boolean,
+            siteId?: string): Promise<any> {
+
+        return this.getSubmissionStatus(assign.id, userId, isBlind, filter, ignoreCache, siteId).then((response) => {
+            const userSubmission = this.getSubmissionObjectFromAttempt(assign, response.lastattempt);
+
+            if (!userSubmission) {
+                // Try again, ignoring cache.
+                return this.getSubmissionStatus(assign.id, userId, isBlind, filter, true, siteId);
+            }
+
+            return response;
+        });
+    }
+
+    /**
      * Get cache key for get submission status data WS calls.
      *
      * @param {number} assignId Assignment instance id.

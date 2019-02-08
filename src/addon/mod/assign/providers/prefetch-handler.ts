@@ -156,7 +156,8 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
     protected getSubmissionFiles(assign: any, submitId: number, blindMarking: boolean, siteId?: string)
             : Promise<any[]> {
 
-        return this.assignProvider.getSubmissionStatus(assign.id, submitId, blindMarking, true, false, siteId).then((response) => {
+        return this.assignProvider.getSubmissionStatusWithRetry(assign, submitId, blindMarking, true, true, siteId)
+                .then((response) => {
             const promises = [];
 
             if (response.lastattempt) {
@@ -198,6 +199,17 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
      */
     invalidateContent(moduleId: number, courseId: number): Promise<any> {
         return this.assignProvider.invalidateContent(moduleId, courseId);
+    }
+
+    /**
+     * Invalidate WS calls needed to determine module status.
+     *
+     * @param  {any}    module   Module.
+     * @param  {number} courseId Course ID the module belongs to.
+     * @return {Promise<any>} Promise resolved when invalidated.
+     */
+    invalidateModule(module: any, courseId: number): Promise<any> {
+        return this.assignProvider.invalidateAssignmentData(courseId);
     }
 
     /**
@@ -252,10 +264,11 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
 
             subPromises.push(this.courseHelper.getModuleCourseIdByInstance(assign.id, 'assign', siteId));
 
-            // Get all files and fetch them.
-            subPromises.push(this.getFiles(module, courseId, single, siteId).then((files) => {
-                return this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id);
-            }));
+            // Download intro files and attachments. Do not call getFiles because it'd call some WS twice.
+            let files = assign.introattachments || [];
+                files = files.concat(this.getIntroFilesFromInstance(module, assign));
+
+            subPromises.push(this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id));
 
             return Promise.all(subPromises);
         }));
@@ -288,8 +301,8 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                     const subPromises = [];
 
                     submissions.forEach((submission) => {
-                        subPromises.push(this.assignProvider.getSubmissionStatus(assign.id, submission.submitid,
-                                !!submission.blindid, true, false, siteId).then((subm) => {
+                        subPromises.push(this.assignProvider.getSubmissionStatusWithRetry(assign, submission.submitid,
+                                !!submission.blindid, true, true, siteId).then((subm) => {
                             return this.prefetchSubmission(assign, courseId, moduleId, subm, submission.submitid, siteId);
                         }).catch((error) => {
                             if (error && error.errorcode == 'nopermission') {
@@ -308,7 +321,7 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
 
                     // Prefetch the submission of the current user even if it does not exist, this will be create it.
                     if (!data.submissions || !data.submissions.find((subm) => subm.submitid == userId)) {
-                        subPromises.push(this.assignProvider.getSubmissionStatus(assign.id, userId, false, true, false, siteId)
+                        subPromises.push(this.assignProvider.getSubmissionStatusWithRetry(assign, userId, false, true, true, siteId)
                                 .then((subm) => {
                             return this.prefetchSubmission(assign, courseId, moduleId, subm, userId, siteId);
                         }));
@@ -330,7 +343,7 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
             } else {
                 // Student.
                 promises.push(
-                    this.assignProvider.getSubmissionStatus(assign.id, userId, false, true, false, siteId).then((subm) => {
+                    this.assignProvider.getSubmissionStatusWithRetry(assign, userId, false, true, true, siteId).then((subm) => {
                         return this.prefetchSubmission(assign, courseId, moduleId, subm, userId, siteId);
                     }).catch((error) => {
                         // Ignore if the user can't view their own submission.
@@ -378,7 +391,16 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                 // Prefetch submission plugins data.
                 if (userSubmission.plugins) {
                     userSubmission.plugins.forEach((plugin) => {
+                        // Prefetch the plugin WS data.
                         promises.push(this.submissionDelegate.prefetch(assign, userSubmission, plugin, siteId));
+
+                        // Prefetch the plugin files.
+                        promises.push(this.submissionDelegate.getPluginFiles(assign, userSubmission, plugin, siteId)
+                                .then((files) => {
+                            return this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id);
+                        }).catch(() => {
+                            // Ignore errors.
+                        }));
                     });
                 }
 
@@ -403,7 +425,15 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
             // Prefetch feedback plugins data.
             if (submission.feedback.plugins) {
                 submission.feedback.plugins.forEach((plugin) => {
+                    // Prefetch the plugin WS data.
                     promises.push(this.feedbackDelegate.prefetch(assign, submission, plugin, siteId));
+
+                    // Prefetch the plugin files.
+                    promises.push(this.feedbackDelegate.getPluginFiles(assign, submission, plugin, siteId).then((files) => {
+                        return this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id);
+                    }).catch(() => {
+                        // Ignore errors.
+                    }));
                 });
             }
         }
