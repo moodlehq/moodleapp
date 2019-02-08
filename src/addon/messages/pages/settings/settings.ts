@@ -16,8 +16,12 @@ import { Component, OnDestroy } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
 import { AddonMessagesProvider } from '../../providers/messages';
 import { CoreUserProvider } from '@core/user/providers/user';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreAppProvider } from '@providers/app';
+import { CoreConfigProvider } from '@providers/config';
+import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Page that displays the messages settings page.
@@ -39,16 +43,27 @@ export class AddonMessagesSettingsPage implements OnDestroy {
     courseMemberValue = AddonMessagesProvider.MESSAGE_PRIVACY_COURSEMEMBER;
     siteValue = AddonMessagesProvider.MESSAGE_PRIVACY_SITE;
     groupMessagingEnabled: boolean;
+    sendOnEnter: boolean;
+    isDesktop: boolean;
+    isMac: boolean;
 
     protected previousContactableValue: number | boolean;
 
     constructor(private messagesProvider: AddonMessagesProvider, private domUtils: CoreDomUtilsProvider,
-            private userProvider: CoreUserProvider, sitesProvider: CoreSitesProvider) {
+            private userProvider: CoreUserProvider, private sitesProvider: CoreSitesProvider, appProvider: CoreAppProvider,
+            private configProvider: CoreConfigProvider, private eventsProvider: CoreEventsProvider) {
 
         const currentSite = sitesProvider.getCurrentSite();
         this.advancedContactable = currentSite && currentSite.isVersionGreaterEqualThan('3.6');
         this.allowSiteMessaging = currentSite && currentSite.canUseAdvancedFeature('messagingallusers');
         this.groupMessagingEnabled = this.messagesProvider.isGroupMessagingEnabled();
+
+        this.configProvider.get(CoreConstants.SETTINGS_SEND_ON_ENTER, !appProvider.isMobile()).then((sendOnEnter) => {
+            this.sendOnEnter = !!sendOnEnter;
+        });
+
+        this.isDesktop = !appProvider.isMobile();
+        this.isMac = appProvider.isMac();
     }
 
     /**
@@ -231,6 +246,15 @@ export class AddonMessagesSettingsPage implements OnDestroy {
                 refresher.complete();
             });
         });
+    }
+
+    sendOnEnterChanged(): void {
+        // Save the value.
+        this.configProvider.set(CoreConstants.SETTINGS_SEND_ON_ENTER, this.sendOnEnter ? 1 : 0);
+
+        // Notify the app.
+        this.eventsProvider.trigger(CoreEventsProvider.SEND_ON_ENTER_CHANGED, {sendOnEnter: !!this.sendOnEnter},
+                this.sitesProvider.getCurrentSiteId());
     }
 
     /**

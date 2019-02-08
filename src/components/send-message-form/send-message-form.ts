@@ -13,8 +13,13 @@
 // limitations under the License.
 
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { CoreAppProvider } from '@providers/app';
+import { CoreConfigProvider } from '@providers/config';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Component to display a "send message form".
@@ -37,9 +42,21 @@ export class CoreSendMessageFormComponent implements OnInit {
     @Output() onSubmit: EventEmitter<string>; // Send data when submitting the message form.
     @Output() onResize: EventEmitter<void>; // Emit when resizing the textarea.
 
-    constructor(private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider) {
+    protected sendOnEnter: boolean;
+
+    constructor(private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider, configProvider: CoreConfigProvider,
+            eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider) {
+
         this.onSubmit = new EventEmitter();
         this.onResize = new EventEmitter();
+
+        configProvider.get(CoreConstants.SETTINGS_SEND_ON_ENTER, !this.appProvider.isMobile()).then((sendOnEnter) => {
+            this.sendOnEnter = !!sendOnEnter;
+        });
+
+        eventsProvider.on(CoreEventsProvider.SEND_ON_ENTER_CHANGED, (newValue) => {
+            this.sendOnEnter = newValue;
+        }, sitesProvider.getCurrentSiteId());
     }
 
     ngOnInit(): void {
@@ -73,5 +90,23 @@ export class CoreSendMessageFormComponent implements OnInit {
      */
     textareaResized(): void {
         this.onResize.emit();
+    }
+
+    /**
+     * Enter key clicked.
+     *
+     * @param {Event} e Event.
+     * @param {string} other The name of the other key that was clicked, undefined if no other key.
+     */
+    enterClicked(e: Event, other: string): void {
+        if (this.sendOnEnter && !other) {
+            // Enter clicked, send the message.
+            this.submitForm(e);
+        } else if (!this.sendOnEnter && !this.appProvider.isMobile()) {
+            if ((this.appProvider.isMac() && other == 'meta') || (!this.appProvider.isMac() && other == 'control')) {
+                // Cmd+Enter or Ctrl+Enter, send message.
+                this.submitForm(e);
+            }
+        }
     }
 }
