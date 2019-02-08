@@ -150,14 +150,15 @@ export class AddonModAssignHelperProvider {
      * List the participants for a single assignment, with some summary info about their submissions.
      *
      * @param {any} assign Assignment object
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any[]} Promise resolved with the list of participants and summary of submissions.
      */
-    getParticipants(assign: any, siteId?: string): Promise<any[]> {
+    getParticipants(assign: any, ignoreCache?: boolean, siteId?: string): Promise<any[]> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         // Get the participants without specifying a group.
-        return this.assignProvider.listParticipants(assign.id, undefined, siteId).then((participants) => {
+        return this.assignProvider.listParticipants(assign.id, undefined, ignoreCache, siteId).then((participants) => {
             if (participants && participants.length > 0) {
                 return participants;
             }
@@ -168,7 +169,8 @@ export class AddonModAssignHelperProvider {
                     participants = {};
 
                 userGroups.forEach((userGroup) => {
-                    promises.push(this.assignProvider.listParticipants(assign.id, userGroup.id, siteId).then((parts) => {
+                    promises.push(this.assignProvider.listParticipants(assign.id, userGroup.id, ignoreCache, siteId)
+                            .then((parts) => {
                         // Do not get repeated users.
                         parts.forEach((participant) => {
                             participants[participant.id] = participant;

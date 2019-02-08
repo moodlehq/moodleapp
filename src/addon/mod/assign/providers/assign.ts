@@ -118,11 +118,12 @@ export class AddonModAssignProvider {
      *
      * @param {number} courseId Course ID the assignment belongs to.
      * @param {number} cmId Assignment module ID.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved with the assignment.
      */
-    getAssignment(courseId: number, cmId: number, siteId?: string): Promise<any> {
-        return this.getAssignmentByField(courseId, 'cmid', cmId, siteId);
+    getAssignment(courseId: number, cmId: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
+        return this.getAssignmentByField(courseId, 'cmid', cmId, ignoreCache, siteId);
     }
 
     /**
@@ -131,18 +132,26 @@ export class AddonModAssignProvider {
      * @param {number} courseId Course ID.
      * @param {string} key Name of the property to check.
      * @param {any} value Value to search.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the assignment is retrieved.
      */
-    protected getAssignmentByField(courseId: number, key: string, value: any, siteId?: string): Promise<any> {
+    protected getAssignmentByField(courseId: number, key: string, value: any, ignoreCache?: boolean, siteId?: string)
+            : Promise<any> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     courseids: [courseId],
                     includenotenrolledcourses: 1
                 },
-                preSets = {
+                preSets: CoreSiteWSPreSets = {
                     cacheKey: this.getAssignmentCacheKey(courseId)
                 };
+
+            if (ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
+            }
 
             return site.read('mod_assign_get_assignments', params, preSets).catch(() => {
                 // In 3.6 we added a new parameter includenotenrolledcourses that could cause offline data not to be found.
@@ -172,11 +181,12 @@ export class AddonModAssignProvider {
      *
      * @param {number} courseId Course ID the assignment belongs to.
      * @param {number} cmId Assignment instance ID.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved with the assignment.
      */
-    getAssignmentById(courseId: number, id: number, siteId?: string): Promise<any> {
-        return this.getAssignmentByField(courseId, 'id', id, siteId);
+    getAssignmentById(courseId: number, id: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
+        return this.getAssignmentByField(courseId, 'id', id, ignoreCache, siteId);
     }
 
     /**
@@ -194,17 +204,23 @@ export class AddonModAssignProvider {
      *
      * @param {number} assignId Assignment Id.
      * @param {number} userId User Id to be blinded.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<number>} Promise resolved with the user blind id.
      */
-    getAssignmentUserMappings(assignId: number, userId: number, siteId?: string): Promise<number> {
+    getAssignmentUserMappings(assignId: number, userId: number, ignoreCache?: boolean, siteId?: string): Promise<number> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     assignmentids: [assignId]
                 },
-                preSets = {
+                preSets: CoreSiteWSPreSets = {
                     cacheKey: this.getAssignmentUserMappingsCacheKey(assignId)
                 };
+
+            if (ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
+            }
 
             return site.read('mod_assign_get_user_mappings', params, preSets).then((response) => {
                 // Search the user.
@@ -248,17 +264,23 @@ export class AddonModAssignProvider {
      * Returns grade information from assign_grades for the requested assignment id
      *
      * @param {number} assignId Assignment Id.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}   Resolved with requested info when done.
      */
-    getAssignmentGrades(assignId: number, siteId?: string): Promise<any> {
+    getAssignmentGrades(assignId: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     assignmentids: [assignId]
                 },
-                preSets = {
+                preSets: CoreSiteWSPreSets = {
                     cacheKey: this.getAssignmentGradesCacheKey(assignId)
                 };
+
+            if (ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
+            }
 
             return site.read('mod_assign_get_grades', params, preSets).then((response) => {
                 // Search the assignment.
@@ -419,17 +441,25 @@ export class AddonModAssignProvider {
      * Get an assignment submissions.
      *
      * @param {number} assignId Assignment id.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<{canviewsubmissions: boolean, submissions?: any[]}>} Promise resolved when done.
      */
-    getSubmissions(assignId: number, siteId?: string): Promise<{canviewsubmissions: boolean, submissions?: any[]}> {
+    getSubmissions(assignId: number, ignoreCache?: boolean, siteId?: string)
+            : Promise<{canviewsubmissions: boolean, submissions?: any[]}> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     assignmentids: [assignId]
                 },
-                preSets = {
+                preSets: CoreSiteWSPreSets = {
                     cacheKey: this.getSubmissionsCacheKey(assignId)
                 };
+
+            if (ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
+            }
 
             return site.read('mod_assign_get_submissions', params, preSets).then((response): any => {
                 // Check if we can view submissions, with enough permissions.
@@ -523,7 +553,10 @@ export class AddonModAssignProvider {
 
             if (!userSubmission) {
                 // Try again, ignoring cache.
-                return this.getSubmissionStatus(assign.id, userId, isBlind, filter, true, siteId);
+                return this.getSubmissionStatus(assign.id, userId, isBlind, filter, true, siteId).catch(() => {
+                    // Error, return the first result even if it doesn't have the user submission.
+                    return response;
+                });
             }
 
             return response;
@@ -578,11 +611,12 @@ export class AddonModAssignProvider {
      * @param {number} assignId ID of the assignment the submissions belong to.
      * @param {boolean} [blind] Whether the user data need to be blinded.
      * @param {any[]} [participants] List of participants in the assignment.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site id (empty for current site).
      * @return {Promise<any[]>} Promise always resolved. Resolve param is the formatted submissions.
      */
     getSubmissionsUserData(submissions: any[], courseId: number, assignId: number, blind?: boolean, participants?: any[],
-            siteId?: string): Promise<any[]> {
+            ignoreCache?: boolean, siteId?: string): Promise<any[]> {
 
         const promises = [],
             subs = [],
@@ -619,7 +653,7 @@ export class AddonModAssignProvider {
                     // Blind but not blinded! (Moodle < 3.1.1, 3.2).
                     delete submission.userid;
 
-                    promise = this.getAssignmentUserMappings(assignId, submission.submitid, siteId).then((blindId) => {
+                    promise = this.getAssignmentUserMappings(assignId, submission.submitid, ignoreCache, siteId).then((blindId) => {
                         submission.blindid = blindId;
                     });
                 } else if (!participant) {
@@ -702,10 +736,11 @@ export class AddonModAssignProvider {
      *
      * @param {number} assignId Assignment id.
      * @param {number} [groupId] Group id. If not defined, 0.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any[]>} Promise resolved with the list of participants and summary of submissions.
      */
-    listParticipants(assignId: number, groupId?: number, siteId?: string): Promise<any[]> {
+    listParticipants(assignId: number, groupId?: number, ignoreCache?: boolean, siteId?: string): Promise<any[]> {
         groupId = groupId || 0;
 
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -719,9 +754,14 @@ export class AddonModAssignProvider {
                     groupid: groupId,
                     filter: ''
                 },
-                preSets = {
+                preSets: CoreSiteWSPreSets = {
                     cacheKey: this.listParticipantsCacheKey(assignId, groupId)
                 };
+
+            if (ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
+            }
 
             return site.read('mod_assign_list_participants', params, preSets);
         });
@@ -812,7 +852,7 @@ export class AddonModAssignProvider {
     invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        return this.getAssignment(courseId, moduleId, siteId).then((assign) => {
+        return this.getAssignment(courseId, moduleId, false, siteId).then((assign) => {
             const promises = [];
 
             // Do not invalidate assignment data before getting assignment info, we need it!
