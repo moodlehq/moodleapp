@@ -97,6 +97,14 @@ export class CoreUserProfilePage {
     fetchUser(): Promise<any> {
         return this.userProvider.getProfile(this.userId, this.courseId).then((user) => {
 
+            if (this.userId == this.site.getUserId() && user.profileimageurl != this.site.getInfo().userpictureurl) {
+                // The current user image received is different than the one stored in site info. Assume the image was updated.
+                this.eventsProvider.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
+                    userId: this.userId,
+                    picture: user.profileimageurl
+                }, this.site.getId());
+            }
+
             user.address = this.userHelper.formatAddress('', user.city, user.country);
             user.roles = this.userHelper.formatRoleList(user.roles);
 
