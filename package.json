@@ -1,5 +1,5 @@
 {
-  "name": "moodlemobile",
+  "name": "learnfuta",
   "version": "3.6.0",
   "description": "The official app for Moodle.",
   "author": {
@@ -150,7 +150,7 @@
       "cordova-plugin-badge": {},
       "cordova-plugin-camera": {},
       "cordova-plugin-customurlscheme": {
-        "URL_SCHEME": "moodlemobile"
+        "URL_SCHEME": "learnfuta"
       },
       "cordova-plugin-device": {},
       "cordova-plugin-file": {},
