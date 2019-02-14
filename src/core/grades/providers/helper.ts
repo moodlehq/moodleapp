@@ -440,13 +440,15 @@ export class CoreGradesHelperProvider {
                     this.domUtils.convertToElement(text).querySelector('img').getAttribute('src'));
             }
         } else {
-            if (row['rowspan']) {
+            if (row['rowspan'] && row['rowspan'] > 1) {
                 row['itemtype'] = 'category';
                 row['icon'] = 'fa-folder';
             } else if (text.indexOf('src=') > -1) {
+                row['itemtype'] = 'unknown';
                 const src = text.match(/src="([^"]*)"/);
                 row['image'] = src[1];
             } else if (text.indexOf('<i ') > -1) {
+                row['itemtype'] = 'unknown';
                 const src = text.match(/class="fa-([^ ]*)"/);
                 row['icon'] = src[1];
             }
