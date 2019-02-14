@@ -191,6 +191,10 @@ export class CoreLocalNotificationsProvider {
      * @return {Promise<any>} Promise resolved when done.
      */
     protected createDefaultChannel(): Promise<any> {
+        if (!this.platform.is('android')) {
+            return Promise.resolve();
+        }
+
         return this.push.createChannel({
             id: 'default-channel-id',
             description: this.translate.instant('addon.calendar.calendarreminders'),
@@ -293,7 +297,8 @@ export class CoreLocalNotificationsProvider {
     isAvailable(): boolean {
         const win = <any> window;
 
-        return this.appProvider.isDesktop() || !!(win.plugin && win.plugin.notification && win.plugin.notification.local);
+        return this.appProvider.isDesktop() || !!(win.cordova && win.cordova.plugins && win.cordova.plugins.notification &&
+                win.cordova.plugins.notification.local);
     }
 
     /**
@@ -505,6 +510,8 @@ export class CoreLocalNotificationsProvider {
                         } else {
                             delete notification.sound; // Use default value.
                         }
+
+                        notification.foreground = true;
 
                         // Remove from triggered, since the notification could be in there with a different time.
                         this.removeTriggered(notification.id);

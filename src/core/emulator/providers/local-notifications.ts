@@ -939,6 +939,8 @@ export class LocalNotificationsMock extends LocalNotifications {
 
     /**
      * Schedules or updates a single or multiple notifications.
+     * We only support using the "at" property to trigger the notification. Other properties like "in" or "every"
+     * aren't supported yet.
      *
      * @param {ILocalNotification | Array<ILocalNotification>} [options] Notification or notifications.
      * @param {string} [eventName] Name of the event: schedule or update.
@@ -978,15 +980,6 @@ export class LocalNotificationsMock extends LocalNotifications {
 
                     // Launch the trigger event.
                     this.fireEvent('trigger', notification);
-
-                    if (notification.trigger.every && this.scheduled[notification.id] &&
-                            !this.scheduled[notification.id].interval) {
-
-                        const interval = this.parseInterval(notification.trigger.every);
-                        if (interval > 0) {
-                            this.scheduled[notification.id].interval = setInterval(trigger, interval);
-                        }
-                    }
                 };
 
             this.scheduled[notification.id].timeout = setTimeout(trigger, toTriggerTime);
