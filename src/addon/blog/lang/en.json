@@ -1,0 +1,12 @@
+{
+    "blog": "Blog",
+    "blogentries": "Blog entries",
+    "errorloadentries": "Error loading blog entries.",
+    "linktooriginalentry": "Link to original blog entry",
+    "noentriesyet": "No visible entries here",
+    "publishtonoone": "Yourself (draft)",
+    "publishtosite": "Anyone on this site",
+    "publishtoworld": "Anyone in the world",
+    "showonlyyourentries": "Show only your entries",
+    "siteblogheading": "Site blog"
+}

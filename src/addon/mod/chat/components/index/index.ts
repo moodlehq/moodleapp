@@ -35,7 +35,7 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
     protected title: string;
 
     constructor(injector: Injector, private chatProvider: AddonModChatProvider, private timeUtils: CoreTimeUtilsProvider,
-            private navCtrl: NavController) {
+            protected navCtrl: NavController) {
         super(injector);
     }
 

@@ -990,7 +990,9 @@ details summary {
   pointer-events: auto;
 }
 
-.icon.fa-graduation-cap{
+.icon.fa-graduation-cap,
+.item > .icon.fa,
+.item-inner > .icon.fa {
     font-size: 21px;
     width: 21px;
     line-height: 28px;

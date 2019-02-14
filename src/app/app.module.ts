@@ -81,6 +81,7 @@ import { CoreBlockModule } from '@core/block/block.module';
 
 // Addon modules.
 import { AddonBadgesModule } from '@addon/badges/badges.module';
+import { AddonBlogModule } from '@addon/blog/blog.module';
 import { AddonCalendarModule } from '@addon/calendar/calendar.module';
 import { AddonCompetencyModule } from '@addon/competency/competency.module';
 import { AddonCourseCompletionModule } from '@addon/coursecompletion/coursecompletion.module';
@@ -198,6 +199,7 @@ export const CORE_PROVIDERS: any[] = [
         CoreCommentsModule,
         CoreBlockModule,
         AddonBadgesModule,
+        AddonBlogModule,
         AddonCalendarModule,
         AddonCompetencyModule,
         AddonCourseCompletionModule,

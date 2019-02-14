@@ -754,6 +754,25 @@ export class CoreCourseHelperProvider {
     }
 
     /**
+     * Check if the course has a block with that name.
+     *
+     * @param {number} courseId Course ID.
+     * @param {string} name     Block name to search.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<boolean>} Promise resolved with true if the block exists or false otherwise.
+     * @since 3.3
+     */
+    hasABlockNamed(courseId: number, name: string, siteId?: string): Promise<boolean> {
+        return this.courseProvider.getCourseBlocks(courseId, siteId).then((blocks) => {
+            return blocks.some((block) => {
+                return block.name == name;
+            });
+        }).catch(() => {
+            return false;
+        });
+    }
+
+    /**
      * Initialize the prefetch icon for selected courses.
      *
      * @param  {any[]}        courses  Courses array to get info from.
