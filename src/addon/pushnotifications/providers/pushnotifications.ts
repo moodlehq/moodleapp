@@ -403,7 +403,7 @@ export class AddonPushNotificationsProvider {
             appid:      CoreConfigConstants.app_id,
             name:       this.device.manufacturer || '',
             model:      this.device.model,
-            platform:   this.device.platform,
+            platform:   this.device.platform + '-fcm',
             version:    this.device.version,
             pushid:     this.pushID,
             uuid:       this.device.uuid
