@@ -67,6 +67,7 @@ export class CoreTextUtilsProvider {
         {old: /_mmaModUrl/g, new: '_AddonModUrl'},
         {old: /_mmaModWiki/g, new: '_AddonModWiki'},
         {old: /_mmaModWorkshop/g, new: '_AddonModWorkshop'},
+        {old: /remoteAddOn_/g, new: 'sitePlugin_'},
     ];
 
     protected template = document.createElement('template'); // A template element to convert HTML to element.
