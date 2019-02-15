@@ -157,9 +157,10 @@ export interface CoreSiteSchema {
      *
      * @param {SQLiteDB} db Site database.
      * @param {number} oldVersion Old version of the schema or 0 if not installed.
+     * @param {string} siteId Site Id to migrate.
      * @return {Promise<any> | void} Promise resolved when done.
      */
-    migrate?(db: SQLiteDB, oldVersion: number): Promise<any> | void;
+    migrate?(db: SQLiteDB, oldVersion: number, siteId: string): Promise<any> | void;
 }
 
 /*
@@ -1444,7 +1445,7 @@ export class CoreSitesProvider {
                         promise = promise.then(() => db.createTablesFromSchema(schema.tables));
                     }
                     if (schema.migrate) {
-                        promise = promise.then(() => schema.migrate(db, oldVersion));
+                        promise = promise.then(() => schema.migrate(db, oldVersion, site.id));
                     }
 
                     // Set installed version.

@@ -191,7 +191,15 @@ export class AddonCalendarEventPage {
         e.stopPropagation();
 
         if (this.notificationTimeText && this.event && this.event.id) {
-            const notificationTime = this.timeUtils.convertToTimestamp(this.notificationTimeText);
+            let notificationTime = this.timeUtils.convertToTimestamp(this.notificationTimeText);
+
+            const currentTime = this.timeUtils.timestamp(),
+                minute = Math.floor(currentTime / 60) * 60;
+
+            // Check if the notification time is in the same minute as we are, so the notification is triggered.
+            if (notificationTime >=  minute && notificationTime < minute + 60) {
+                notificationTime  = currentTime + 1;
+            }
 
             this.calendarProvider.addEventReminder(this.event, notificationTime).then(() => {
                 this.calendarProvider.getEventReminders(this.eventId).then((reminders) => {

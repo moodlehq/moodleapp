@@ -38,7 +38,7 @@ export class AddonCalendarProvider {
     protected ROOT_CACHE_KEY = 'mmaCalendar:';
 
     // Variables for database.
-    static EVENTS_TABLE = 'addon_calendar_events_1';
+    static EVENTS_TABLE = 'addon_calendar_events_2';
     static REMINDERS_TABLE = 'addon_calendar_reminders';
     protected siteSchema: CoreSiteSchema = {
         name: 'AddonCalendarProvider',
@@ -149,7 +149,7 @@ export class AddonCalendarProvider {
                 ]
             }
         ],
-        migrate(db: SQLiteDB, oldVersion: number): Promise<any> | void {
+        migrate(db: SQLiteDB, oldVersion: number, siteId: string): Promise<any> | void {
             if (oldVersion < 2) {
                 const newTable = AddonCalendarProvider.EVENTS_TABLE;
                 const oldTable = 'addon_calendar_events';
@@ -181,6 +181,9 @@ export class AddonCalendarProvider {
                                 eventid: event.id,
                                 time: time
                             };
+
+                            // Cancel old notification.
+                            this.localNotificationsProvider.cancel(event.id, AddonCalendarProvider.COMPONENT, siteId);
 
                             return db.insertRecord(AddonCalendarProvider.REMINDERS_TABLE, reminder);
                         })).then(() => {
@@ -371,20 +374,13 @@ export class AddonCalendarProvider {
      */
     addEventReminder(event: any, time: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            siteId = site.getId();
-
-            if (!this.sitesProvider.isLoggedIn()) {
-                // Not logged in, we can't get the site DB. User logged out or session expired while an operation was ongoing.
-                return Promise.reject(null);
-            }
-
             const reminder = {
                 eventid: event.id,
                 time: time
             };
 
             return site.getDb().insertRecord(AddonCalendarProvider.REMINDERS_TABLE, reminder).then((reminderId) => {
-                return this.scheduleEventNotification(event, reminderId, time, siteId);
+                return this.scheduleEventNotification(event, reminderId, time, site.getId());
             });
         });
     }
@@ -623,12 +619,25 @@ export class AddonCalendarProvider {
                 return this.localNotificationsProvider.cancel(reminderId, AddonCalendarProvider.COMPONENT, siteId);
             }
 
-            // If time is -1, get event default time.
-            const promise = time == -1 ? this.getDefaultNotificationTime(siteId) : Promise.resolve(time);
+            let promise;
+            if (time == -1) {
+                // If time is -1, get event default time to calculate the notification time.
+                promise = this.getDefaultNotificationTime(siteId).then((time) => {
+                    if (time == 0) {
+                        // Default notification time is disabled, do not show.
+                        return this.localNotificationsProvider.cancel(reminderId, AddonCalendarProvider.COMPONENT, siteId);
+                    }
+
+                    return event.timestart - (time * 60);
+                });
+            } else {
+                promise = Promise.resolve(time);
+            }
 
             return promise.then((time) => {
+                time = time * 1000;
 
-                if (time * 1000 <= new Date().getTime()) {
+                if (time <= new Date().getTime()) {
                     // This reminder is over, don't schedule. Cancel if it was scheduled.
                     return this.localNotificationsProvider.cancel(reminderId, AddonCalendarProvider.COMPONENT, siteId);
                 }
@@ -638,7 +647,7 @@ export class AddonCalendarProvider {
                         title: event.name,
                         text: this.timeUtils.userDate(event.timestart * 1000, 'core.strftimedaydatetime', true),
                         trigger: {
-                            at: new Date(time * 1000)
+                            at: new Date(time)
                         },
                         data: {
                             eventid: event.id,
@@ -714,7 +723,7 @@ export class AddonCalendarProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             siteId = site.getId();
 
-            // If event does not exists on the DB, schedule the reminder.
+            // If event does not exist on the DB, schedule the reminder.
             return this.getEventFromLocalDb(event.id, site.id).catch(() => {
                 // Event does not exist. Check if any reminder exists first.
                 return this.getEventReminders(event.id, siteId).then((reminders) => {
@@ -762,7 +771,7 @@ export class AddonCalendarProvider {
             siteId = site.getId();
 
             return Promise.all(events.map((event) => {
-                // If event does not exists on the DB, schedule the reminder.
+                // If event does not exist on the DB, schedule the reminder.
                 return this.storeEventInLocalDb(event, siteId);
             }));
         });
