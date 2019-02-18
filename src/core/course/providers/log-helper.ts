@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -27,39 +27,43 @@ export class CoreCourseLogHelperProvider {
 
     // Variables for database.
     static ACTIVITY_LOG_TABLE = 'course_activity_log';
-    protected tablesSchema = [
-        {
-            name: CoreCourseLogHelperProvider.ACTIVITY_LOG_TABLE,
-            columns: [
-                {
-                    name: 'component',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'componentid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'ws',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'data',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'time',
-                    type: 'INTEGER'
-                }
-            ],
-            primaryKeys: ['component', 'componentid', 'ws', 'time']
-        }
-    ];
+    protected siteSchema: CoreSiteSchema = {
+        name: 'CoreCourseOfflineProvider',
+        version: 1,
+        tables: [
+            {
+                name: CoreCourseLogHelperProvider.ACTIVITY_LOG_TABLE,
+                columns: [
+                    {
+                        name: 'component',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'componentid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'ws',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'data',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'time',
+                        type: 'INTEGER'
+                    }
+                ],
+                primaryKeys: ['component', 'componentid', 'ws', 'time']
+            }
+        ]
+    };
 
     constructor(protected sitesProvider: CoreSitesProvider, protected timeUtils: CoreTimeUtilsProvider,
             protected textUtils: CoreTextUtilsProvider, protected utils: CoreUtilsProvider,
             protected appProvider: CoreAppProvider) {
-        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**
