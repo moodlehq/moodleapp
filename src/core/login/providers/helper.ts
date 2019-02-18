@@ -561,8 +561,8 @@ export class CoreLoginHelperProvider {
      * @return {boolean} True if embedded browser, false othwerise.
      */
     isSSOEmbeddedBrowser(code: number): boolean {
-        if (this.appProvider.isLinux() || this.appProvider.isMac()) {
-            // In Linux and Mac desktop apps, always use embedded browser.
+        if (this.appProvider.isLinux()) {
+            // In Linux desktop app, always use embedded browser.
             return true;
         }
 
@@ -647,8 +647,8 @@ export class CoreLoginHelperProvider {
 
         loginUrl += '&oauthsso=' + params.id;
 
-        if (this.appProvider.isLinux() || this.appProvider.isMac()) {
-            // In Linux and Mac desktop apps, always use embedded browser.
+        if (this.appProvider.isLinux()) {
+            // In Linux desktop app, always use embedded browser.
             this.utils.openInApp(loginUrl);
         } else {
             // Always open it in browser because the user might have the session stored in there.
