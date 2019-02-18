@@ -338,7 +338,8 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
         promises.push(this.assignProvider.invalidateAssignmentData(this.courseId));
         if (this.assign) {
-            promises.push(this.assignProvider.invalidateSubmissionStatusData(this.assign.id, this.submitId, !!this.blindId));
+            promises.push(this.assignProvider.invalidateSubmissionStatusData(this.assign.id, this.submitId, undefined,
+                !!this.blindId));
             promises.push(this.assignProvider.invalidateAssignmentUserMappingsData(this.assign.id));
             promises.push(this.assignProvider.invalidateListParticipantsData(this.assign.id));
         }
@@ -408,7 +409,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             return Promise.all(promises);
         }).then(() => {
             // Get submission status.
-            return this.assignProvider.getSubmissionStatusWithRetry(this.assign, this.submitId, isBlind);
+            return this.assignProvider.getSubmissionStatusWithRetry(this.assign, this.submitId, undefined, isBlind);
         }).then((response) => {
 
             const promises = [];

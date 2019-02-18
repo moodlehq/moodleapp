@@ -18,6 +18,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreGroupsProvider, CoreGroupInfo } from '@providers/groups';
 import { AddonModAssignProvider } from '../../providers/assign';
 import { AddonModAssignOfflineProvider } from '../../providers/assign-offline';
 import { AddonModAssignHelperProvider } from '../../providers/helper';
@@ -40,19 +41,28 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
     loaded: boolean; // Whether data has been loaded.
     haveAllParticipants: boolean; // Whether all participants have been loaded.
     selectedSubmissionId: number; // Selected submission ID.
+    groupId = 0; // Group ID to show.
+
+    groupInfo: CoreGroupInfo = {
+        groups: [],
+        separateGroups: false,
+        visibleGroups: false
+    };
 
     protected moduleId: number; // Module ID the submission belongs to.
     protected courseId: number; // Course ID the assignment belongs to.
     protected selectedStatus: string; // The status to see.
     protected gradedObserver; // Observer to refresh data when a grade changes.
+    protected submissionsData: any;
 
     constructor(navParams: NavParams, sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider,
             protected domUtils: CoreDomUtilsProvider, protected translate: TranslateService,
             protected assignProvider: AddonModAssignProvider, protected assignOfflineProvider: AddonModAssignOfflineProvider,
-            protected assignHelper: AddonModAssignHelperProvider) {
+            protected assignHelper: AddonModAssignHelperProvider, protected groupsProvider: CoreGroupsProvider) {
 
         this.moduleId = navParams.get('moduleId');
         this.courseId = navParams.get('courseId');
+        this.groupId = navParams.get('groupId');
         this.selectedStatus = navParams.get('status');
 
         if (this.selectedStatus) {
@@ -98,15 +108,11 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
      * @return {Promise<any>} Promise resolved when done.
      */
     protected fetchAssignment(): Promise<any> {
-        let participants,
-            submissionsData,
-            grades;
 
         // Get assignment data.
         return this.assignProvider.getAssignment(this.courseId, this.moduleId).then((assign) => {
             this.title = assign.name || this.title;
             this.assign = assign;
-            this.haveAllParticipants = true;
 
             // Get assignment submissions.
             return this.assignProvider.getSubmissions(assign.id);
@@ -116,15 +122,39 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
                 return Promise.reject(null);
             }
 
-            submissionsData = data;
+            this.submissionsData = data;
 
-            // Get the participants.
-            return this.assignHelper.getParticipants(this.assign).then((parts) => {
-                this.haveAllParticipants = true;
-                participants = parts;
-            }).catch(() => {
-                this.haveAllParticipants = false;
+            // Check if groupmode is enabled to avoid showing wrong numbers.
+            return this.groupsProvider.getActivityGroupInfo(this.assign.cmid, false).then((groupInfo) => {
+                this.groupInfo = groupInfo;
+
+                return this.setGroup(this.groupId || (groupInfo.groups && groupInfo.groups[0] && groupInfo.groups[0].id) || 0);
             });
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'Error getting assigment data.');
+        });
+    }
+
+    /**
+     * Set group to see the summary.
+     *
+     * @param  {number}       groupId Group ID.
+     * @return {Promise<any>}         Resolved when done.
+     */
+    setGroup(groupId: number): Promise<any> {
+        let participants,
+            grades;
+
+        this.groupId = groupId;
+
+        this.haveAllParticipants = true;
+
+        // Get the participants.
+        return this.assignHelper.getParticipants(this.assign, this.groupId).then((parts) => {
+            this.haveAllParticipants = true;
+            participants = parts;
+        }).catch(() => {
+            this.haveAllParticipants = false;
         }).then(() => {
             if (!this.assign.markingworkflow) {
                 // Get assignment grades only if workflow is not enabled to check grading date.
@@ -134,16 +164,16 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
             }
         }).then(() => {
             // We want to show the user data on each submission.
-            return this.assignProvider.getSubmissionsUserData(submissionsData.submissions, this.courseId, this.assign.id,
+            return this.assignProvider.getSubmissionsUserData(this.submissionsData.submissions, this.courseId, this.assign.id,
                     this.assign.blindmarking && !this.assign.revealidentities, participants);
         }).then((submissions) => {
 
             // Filter the submissions to get only the ones with the right status and add some extra data.
             const getNeedGrading = this.selectedStatus == AddonModAssignProvider.NEED_GRADING,
                 searchStatus = getNeedGrading ? AddonModAssignProvider.SUBMISSION_STATUS_SUBMITTED : this.selectedStatus,
-                promises = [];
+                promises = [],
+                showSubmissions = [];
 
-            this.submissions = [];
             submissions.forEach((submission) => {
                 if (!searchStatus || searchStatus == submission.status) {
                     promises.push(this.assignOfflineProvider.getSubmissionGrade(this.assign.id, submission.userid).catch(() => {
@@ -203,15 +233,15 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
                                 submission.gradingStatusTranslationId = false;
                             }
 
-                            this.submissions.push(submission);
+                            showSubmissions.push(submission);
                         });
                     }));
                 }
             });
 
-            return Promise.all(promises);
-        }).catch((error) => {
-            this.domUtils.showErrorModalDefault(error, 'Error getting assigment data.');
+            return Promise.all(promises).then(() => {
+                this.submissions = showSubmissions;
+            });
         });
     }
 
@@ -221,12 +251,12 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
      * @param {any} submission The submission to load.
      */
     loadSubmission(submission: any): void {
-        if (this.selectedSubmissionId === submission.id && this.splitviewCtrl.isOn()) {
+        if (this.selectedSubmissionId === submission.submitid && this.splitviewCtrl.isOn()) {
             // Already selected.
             return;
         }
 
-        this.selectedSubmissionId = submission.id;
+        this.selectedSubmissionId = submission.submitid;
 
         this.splitviewCtrl.push('AddonModAssignSubmissionReviewPage', {
             courseId: this.courseId,

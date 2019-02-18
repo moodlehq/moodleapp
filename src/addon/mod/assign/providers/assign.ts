@@ -21,7 +21,6 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCommentsProvider } from '@core/comments/providers/comments';
-import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreGradesProvider } from '@core/grades/providers/grades';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
@@ -67,7 +66,7 @@ export class AddonModAssignProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private textUtils: CoreTextUtilsProvider,
             private timeUtils: CoreTimeUtilsProvider, private appProvider: CoreAppProvider, private utils: CoreUtilsProvider,
-            private userProvider: CoreUserProvider, private submissionDelegate: AddonModAssignSubmissionDelegate,
+            private submissionDelegate: AddonModAssignSubmissionDelegate,
             private gradesProvider: CoreGradesProvider, private filepoolProvider: CoreFilepoolProvider,
             private assignOffline: AddonModAssignOfflineProvider, private commentsProvider: CoreCommentsProvider,
             private logHelper: CoreCourseLogHelperProvider) {
@@ -495,30 +494,36 @@ export class AddonModAssignProvider {
      * Get information about an assignment submission status for a given user.
      *
      * @param {number} assignId Assignment instance id.
-     * @param {number} [userId] User id (empty for current user).
+     * @param {number} [userId] User Id (empty for current user).
+     * @param {number} [groupId] Group Id (empty for all participants).
      * @param {boolean} [isBlind] If blind marking is enabled or not.
      * @param {number} [filter=true] True to filter WS response and rewrite URLs, false otherwise.
      * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site id (empty for current site).
      * @return {Promise<any>} Promise always resolved with the user submission status.
      */
-    getSubmissionStatus(assignId: number, userId?: number, isBlind?: boolean, filter: boolean = true, ignoreCache?: boolean,
-            siteId?: string): Promise<any> {
+    getSubmissionStatus(assignId: number, userId?: number, groupId?: number, isBlind?: boolean, filter: boolean = true,
+            ignoreCache?: boolean, siteId?: string): Promise<any> {
 
         userId = userId || 0;
 
         return this.sitesProvider.getSite(siteId).then((site) => {
+            groupId = site.isVersionGreaterEqualThan('3.5') ? groupId || 0 : 0;
 
             const params = {
                     assignid: assignId,
                     userid: userId
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getSubmissionStatusCacheKey(assignId, userId, isBlind),
+                    cacheKey: this.getSubmissionStatusCacheKey(assignId, userId, groupId, isBlind),
                     getCacheUsingCacheKey: true, // We use the cache key to take isBlind into account.
                     filter: filter,
                     rewriteurls: filter
                 };
+
+            if (groupId) {
+                params['groupid'] = groupId;
+            }
 
             if (ignoreCache) {
                 preSets.getFromCache = false;
@@ -541,21 +546,22 @@ export class AddonModAssignProvider {
      *
      * @param {any} assign Assignment.
      * @param {number} [userId] User id (empty for current user).
+     * @param {number} [groupId] Group Id (empty for all participants).
      * @param {boolean} [isBlind] If blind marking is enabled or not.
      * @param {number} [filter=true] True to filter WS response and rewrite URLs, false otherwise.
      * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site id (empty for current site).
      * @return {Promise<any>} Promise always resolved with the user submission status.
      */
-    getSubmissionStatusWithRetry(assign: any, userId?: number, isBlind?: boolean, filter: boolean = true, ignoreCache?: boolean,
-            siteId?: string): Promise<any> {
+    getSubmissionStatusWithRetry(assign: any, userId?: number, groupId?: number, isBlind?: boolean, filter: boolean = true,
+            ignoreCache?: boolean, siteId?: string): Promise<any> {
 
-        return this.getSubmissionStatus(assign.id, userId, isBlind, filter, ignoreCache, siteId).then((response) => {
+        return this.getSubmissionStatus(assign.id, userId, groupId, isBlind, filter, ignoreCache, siteId).then((response) => {
             const userSubmission = this.getSubmissionObjectFromAttempt(assign, response.lastattempt);
 
             if (!userSubmission) {
                 // Try again, ignoring cache.
-                return this.getSubmissionStatus(assign.id, userId, isBlind, filter, true, siteId).catch(() => {
+                return this.getSubmissionStatus(assign.id, userId, groupId, isBlind, filter, true, siteId).catch(() => {
                     // Error, return the first result even if it doesn't have the user submission.
                     return response;
                 });
@@ -570,16 +576,17 @@ export class AddonModAssignProvider {
      *
      * @param {number} assignId Assignment instance id.
      * @param {number} [userId] User id (empty for current user).
+     * @param {number} [groupId] Group Id (empty for all participants).
      * @param {number} [isBlind] If blind marking is enabled or not.
      * @return {string} Cache key.
      */
-    protected getSubmissionStatusCacheKey(assignId: number, userId: number, isBlind?: boolean): string {
+    protected getSubmissionStatusCacheKey(assignId: number, userId: number, groupId?: number, isBlind?: boolean): string {
         if (!userId) {
             isBlind = false;
             userId = this.sitesProvider.getCurrentSiteUserId();
         }
 
-        return this.getSubmissionsCacheKey(assignId) + ':' + userId + ':' + (isBlind ? 1 : 0);
+        return this.getSubmissionsCacheKey(assignId) + ':' + userId + ':' + (isBlind ? 1 : 0) + ':' + groupId;
     }
 
     /**
@@ -624,6 +631,10 @@ export class AddonModAssignProvider {
             subs = [],
             hasParticipants = participants && participants.length > 0;
 
+        if (!hasParticipants) {
+            return Promise.resolve([]);
+        }
+
         submissions.forEach((submission) => {
             submission.submitid = submission.userid > 0 ? submission.userid : submission.blindid;
             if (submission.submitid <= 0) {
@@ -631,42 +642,30 @@ export class AddonModAssignProvider {
             }
 
             const participant = this.getParticipantFromUserId(participants, submission.submitid);
-            if (hasParticipants && !participant) {
+            if (!participant) {
                 // Avoid permission denied error. Participant not found on list.
                 return;
             }
 
-            if (participant) {
-                if (!blind) {
-                    submission.userfullname = participant.fullname;
-                    submission.userprofileimageurl = participant.profileimageurl;
-                }
+            if (!blind) {
+                submission.userfullname = participant.fullname;
+                submission.userprofileimageurl = participant.profileimageurl;
+            }
 
-                submission.manyGroups = !!participant.groups && participant.groups.length > 1;
-                if (participant.groupname) {
-                    submission.groupid = participant.groupid;
-                    submission.groupname = participant.groupname;
-                }
+            submission.manyGroups = !!participant.groups && participant.groups.length > 1;
+            if (participant.groupname) {
+                submission.groupid = participant.groupid;
+                submission.groupname = participant.groupname;
             }
 
             let promise;
-            if (submission.userid > 0) {
-                if (blind) {
-                    // Blind but not blinded! (Moodle < 3.1.1, 3.2).
-                    delete submission.userid;
+            if (submission.userid > 0 && blind) {
+                // Blind but not blinded! (Moodle < 3.1.1, 3.2).
+                delete submission.userid;
 
-                    promise = this.getAssignmentUserMappings(assignId, submission.submitid, ignoreCache, siteId).then((blindId) => {
-                        submission.blindid = blindId;
-                    });
-                } else if (!participant) {
-                    // No blind, no participant.
-                    promise = this.userProvider.getProfile(submission.userid, courseId, true).then((user) => {
-                        submission.userfullname = user.fullname;
-                        submission.userprofileimageurl = user.profileimageurl;
-                    }).catch(() => {
-                        // Error getting profile, resolve promise without adding any extra data.
-                    });
-                }
+                promise = this.getAssignmentUserMappings(assignId, submission.submitid, ignoreCache, siteId).then((blindId) => {
+                    submission.blindid = blindId;
+                });
             }
 
             promise = promise || Promise.resolve();
@@ -899,13 +898,15 @@ export class AddonModAssignProvider {
      *
      * @param {number} assignId Assignment instance id.
      * @param {number} [userId] User id (empty for current user).
+     * @param {number} [groupId] Group Id (empty for all participants).
      * @param {boolean} [isBlind] Whether blind marking is enabled or not.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
-    invalidateSubmissionStatusData(assignId: number, userId?: number, isBlind?: boolean, siteId?: string): Promise<any> {
+    invalidateSubmissionStatusData(assignId: number, userId?: number, groupId?: number, isBlind?: boolean, siteId?: string):
+            Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.invalidateWsCacheForKey(this.getSubmissionStatusCacheKey(assignId, userId, isBlind));
+            return site.invalidateWsCacheForKey(this.getSubmissionStatusCacheKey(assignId, userId, groupId, isBlind));
         });
     }
 
@@ -1087,7 +1088,7 @@ export class AddonModAssignProvider {
         }
 
         // We need more data to decide that.
-        return this.getSubmissionStatus(assignId, submission.submitid, submission.blindid).then((response) => {
+        return this.getSubmissionStatus(assignId, submission.submitid, undefined, submission.blindid).then((response) => {
             if (!response.feedback || !response.feedback.gradeddate) {
                 // Not graded.
                 return true;

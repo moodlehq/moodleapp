@@ -149,21 +149,22 @@ export class AddonModAssignHelperProvider {
     /**
      * List the participants for a single assignment, with some summary info about their submissions.
      *
-     * @param {any} assign Assignment object
+     * @param {any} assign Assignment object.
+     * @param {number} [groupId] Group Id.
      * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any[]} Promise resolved with the list of participants and summary of submissions.
      */
-    getParticipants(assign: any, ignoreCache?: boolean, siteId?: string): Promise<any[]> {
+    getParticipants(assign: any, groupId?: number, ignoreCache?: boolean, siteId?: string): Promise<any[]> {
+        groupId = groupId || 0;
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        // Get the participants without specifying a group.
-        return this.assignProvider.listParticipants(assign.id, undefined, ignoreCache, siteId).then((participants) => {
-            if (participants && participants.length > 0) {
+        return this.assignProvider.listParticipants(assign.id, groupId, ignoreCache, siteId).then((participants) => {
+            if (groupId || participants && participants.length > 0) {
                 return participants;
             }
 
-            // If no participants returned, get participants by groups.
+            // If no participants returned and all groups specified, get participants by groups.
             return this.groupsProvider.getActivityAllowedGroupsIfEnabled(assign.cmid, undefined, siteId).then((userGroups) => {
                 const promises = [],
                     participants = {};

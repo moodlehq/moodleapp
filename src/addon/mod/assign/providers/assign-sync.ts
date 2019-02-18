@@ -275,7 +275,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
         let discardError,
             submission;
 
-        return this.assignProvider.getSubmissionStatus(assign.id, userId, false, true, true, siteId).then((status) => {
+        return this.assignProvider.getSubmissionStatus(assign.id, userId, undefined, false, true, true, siteId).then((status) => {
             const promises = [];
 
             submission = this.assignProvider.getSubmissionObjectFromAttempt(assign, status.lastattempt);
@@ -310,7 +310,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
                     }
                 }).then(() => {
                     // Submission data sent, update cached data. No need to block the user for this.
-                    this.assignProvider.getSubmissionStatus(assign.id, userId, false, true, true, siteId);
+                    this.assignProvider.getSubmissionStatus(assign.id, userId, undefined, false, true, true, siteId);
                 });
             }).catch((error) => {
                 if (error && this.utils.isWebServiceError(error)) {
@@ -364,7 +364,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
         const userId = offlineData.userid;
         let discardError;
 
-        return this.assignProvider.getSubmissionStatus(assign.id, userId, false, true, true, siteId).then((status) => {
+        return this.assignProvider.getSubmissionStatus(assign.id, userId, undefined, false, true, true, siteId).then((status) => {
             const timemodified = status.feedback && (status.feedback.gradeddate || status.feedback.grade.timemodified);
 
             if (timemodified > offlineData.timemodified) {
@@ -405,7 +405,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
                         offlineData.plugindata, siteId).then(() => {
 
                     // Grades sent, update cached data. No need to block the user for this.
-                    this.assignProvider.getSubmissionStatus(assign.id, userId, false, true, true, siteId);
+                    this.assignProvider.getSubmissionStatus(assign.id, userId, undefined, false, true, true, siteId);
                 }).catch((error) => {
                     if (error && this.utils.isWebServiceError(error)) {
                         // The WebService has thrown an error, this means it cannot be submitted. Discard the offline data.

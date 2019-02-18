@@ -645,7 +645,7 @@ ion-app.app-root {
         @include padding(null, null, null, 52px);
         position: relative;
 
-        ion-icon {
+        > ion-icon {
           color: $color-base;
           position: absolute;
           @include position(0, null, null, 16px)
