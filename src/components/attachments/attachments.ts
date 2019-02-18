@@ -77,7 +77,9 @@ export class CoreAttachmentsComponent implements OnInit {
             this.maxSubmissionsReadable = String(this.maxSubmissions);
         }
 
-        if (this.acceptedTypes && this.acceptedTypes.trim()) {
+        this.acceptedTypes = this.acceptedTypes && this.acceptedTypes.trim();
+
+        if (this.acceptedTypes && this.acceptedTypes != '*') {
             this.fileTypes = this.fileUploaderProvider.prepareFiletypeList(this.acceptedTypes);
         }
     }

@@ -333,9 +333,16 @@ export class CoreFileUploaderProvider {
      * Parse filetypeList to get the list of allowed mimetypes and the data to render information.
      *
      * @param {string} filetypeList Formatted string list where the mimetypes can be checked.
-     * @return {{info: any[], mimetypes: string[]}}  Mimetypes and the filetypes informations.
+     * @return {{info: any[], mimetypes: string[]}}  Mimetypes and the filetypes informations. Undefined if all types supported.
      */
     prepareFiletypeList(filetypeList: string): { info: any[], mimetypes: string[] } {
+        filetypeList = filetypeList && filetypeList.trim();
+
+        if (!filetypeList || filetypeList == '*') {
+            // All types supported, return undefined.
+            return undefined;
+        }
+
         const filetypes = filetypeList.split(/[;, ]+/g),
             mimetypes = {}, // Use an object to prevent duplicates.
             typesInfo = [];
