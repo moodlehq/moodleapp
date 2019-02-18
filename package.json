@@ -104,7 +104,7 @@
     "cordova-sqlite-storage": "^2.6.0",
     "es6-promise-plugin": "^4.2.2",
     "font-awesome": "^4.7.0",
-    "ionic-angular": "3.9.2",
+    "ionic-angular": "3.9.3",
     "ionicons": "^3.0.0",
     "jszip": "^3.1.5",
     "moment": "^2.22.2",
@@ -118,7 +118,7 @@
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
-    "@ionic/app-scripts": "^3.2.1",
+    "@ionic/app-scripts": "^3.2.2",
     "electron-builder-lib": "^20.23.1",
     "electron-rebuild": "^1.8.1",
     "gulp": "^4.0.0",
