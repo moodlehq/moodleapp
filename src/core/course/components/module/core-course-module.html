@@ -7,7 +7,7 @@
         <!-- Buttons. -->
         <div item-end *ngIf="module.uservisible !== false" class="buttons core-module-buttons" [ngClass]="{'core-button-completion': module.completiondata}">
             <!-- Module completion. -->
-            <core-course-module-completion *ngIf="module.completiondata" [completion]="module.completiondata" [moduleName]="module.name" (completionChanged)="completionChanged.emit()"></core-course-module-completion>
+            <core-course-module-completion *ngIf="module.completiondata" [completion]="module.completiondata" [moduleName]="module.name" (completionChanged)="completionChanged.emit($event)"></core-course-module-completion>
 
             <div class="core-module-buttons-more">
                 <!-- Download button. -->

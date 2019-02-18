@@ -347,9 +347,12 @@ export class CoreCourseSectionPage implements OnDestroy {
     /**
      * The completion of any of the modules have changed.
      */
-    onCompletionChange(): void {
+    onCompletionChange(completionData: any): void {
+        const shouldReload = !completionData.hasOwnProperty('valueused') || completionData.valueused;
         this.invalidateData().finally(() => {
-            this.refreshAfterCompletionChange(true);
+            if (shouldReload) {
+                this.refreshAfterCompletionChange(true);
+            }
         });
     }
 
