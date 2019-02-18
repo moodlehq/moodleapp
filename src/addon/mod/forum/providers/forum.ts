@@ -20,6 +20,7 @@ import { CoreGroupsProvider } from '@providers/groups';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModForumOfflineProvider } from './offline';
 
 /**
@@ -43,7 +44,8 @@ export class AddonModForumProvider {
             private userProvider: CoreUserProvider,
             private translate: TranslateService,
             private utils: CoreUtilsProvider,
-            private forumOffline: AddonModForumOfflineProvider) {}
+            private forumOffline: AddonModForumOfflineProvider,
+            private logHelper: CoreCourseLogHelperProvider) {}
 
     /**
      * Get cache key for can add discussion WS calls.
@@ -596,28 +598,31 @@ export class AddonModForumProvider {
      * Report a forum as being viewed.
      *
      * @param  {number} id    Module ID.
-     * @return {Promise<any>} Promise resolved when the WS call is successful.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(id: number): Promise<any> {
+    logView(id: number, siteId?: string): Promise<any> {
         const params = {
             forumid: id
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_forum_view_forum', params);
+        return this.logHelper.log('mod_forum_view_forum', params, AddonModForumProvider.COMPONENT, id, siteId);
     }
 
     /**
      * Report a forum discussion as being viewed.
      *
      * @param  {number} id    Discussion ID.
+     * @param  {number} forumId  Forum ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logDiscussionView(id: number): Promise<any> {
+    logDiscussionView(id: number, forumId: number, siteId?: string): Promise<any> {
         const params = {
             discussionid: id
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_forum_view_forum_discussion', params);
+        return this.logHelper.log('mod_forum_view_forum_discussion', params, AddonModForumProvider.COMPONENT, forumId, siteId);
     }
 
     /**

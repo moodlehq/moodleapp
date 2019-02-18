@@ -23,6 +23,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { AddonModAssignProvider } from './assign';
@@ -61,7 +62,8 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
             private courseProvider: CoreCourseProvider, private eventsProvider: CoreEventsProvider,
             private assignProvider: AddonModAssignProvider, private assignOfflineProvider: AddonModAssignOfflineProvider,
             private utils: CoreUtilsProvider, private submissionDelegate: AddonModAssignSubmissionDelegate,
-            private gradesHelper: CoreGradesHelperProvider, timeUtils: CoreTimeUtilsProvider) {
+            private gradesHelper: CoreGradesHelperProvider, timeUtils: CoreTimeUtilsProvider,
+            private logHelper: CoreCourseLogHelperProvider) {
 
         super('AddonModAssignSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
                 timeUtils);
@@ -201,6 +203,9 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
             // No offline data found, return empty array.
             return [];
         }));
+
+        // Sync offline logs.
+        promises.push(this.logHelper.syncIfNeeded(AddonModAssignProvider.COMPONENT, assignId, siteId));
 
         syncPromise = Promise.all(promises).then((results) => {
             const submissions = results[0],

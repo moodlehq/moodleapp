@@ -23,6 +23,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { AddonModScormProvider, AddonModScormAttemptCountResult } from './scorm';
@@ -67,7 +68,8 @@ export class AddonModScormSyncProvider extends CoreSyncBaseProvider {
             private eventsProvider: CoreEventsProvider, timeUtils: CoreTimeUtilsProvider,
             private scormProvider: AddonModScormProvider, private scormOfflineProvider: AddonModScormOfflineProvider,
             private prefetchHandler: AddonModScormPrefetchHandler, private utils: CoreUtilsProvider,
-            private prefetchDelegate: CoreCourseModulePrefetchDelegate, private courseProvider: CoreCourseProvider) {
+            private prefetchDelegate: CoreCourseModulePrefetchDelegate, private courseProvider: CoreCourseProvider,
+            private logHelper: CoreCourseLogHelperProvider) {
 
         super('AddonModScormSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
                 timeUtils);
@@ -646,8 +648,11 @@ export class AddonModScormSyncProvider extends CoreSyncBaseProvider {
 
         this.logger.debug('Try to sync SCORM ' + scorm.id + ' in site ' + siteId);
 
-        // Get attempts data. We ignore cache for online attempts, so this call will fail if offline or server down.
-        syncPromise = this.scormProvider.getAttemptCount(scorm.id, false, true, siteId).then((attemptsData) => {
+        // Sync offline logs.
+        syncPromise = this.logHelper.syncIfNeeded(AddonModScormProvider.COMPONENT, scorm.id, siteId).finally(() => {
+            // Get attempts data. We ignore cache for online attempts, so this call will fail if offline or server down.
+            return this.scormProvider.getAttemptCount(scorm.id, false, true, siteId);
+        }).then((attemptsData) => {
             if (!attemptsData.offline || !attemptsData.offline.length) {
                 // Nothing to sync.
                 return this.finishSync(siteId, scorm, warnings, lastOnline, lastOnlineWasFinished);

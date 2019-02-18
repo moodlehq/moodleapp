@@ -25,6 +25,7 @@ import { AddonModChoiceProvider } from './choice';
 import { CoreEventsProvider } from '@providers/events';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreSyncProvider } from '@providers/sync';
 
 /**
@@ -40,7 +41,8 @@ export class AddonModChoiceSyncProvider extends CoreSyncBaseProvider {
             protected appProvider: CoreAppProvider, private choiceOffline: AddonModChoiceOfflineProvider,
             private eventsProvider: CoreEventsProvider,  private choiceProvider: AddonModChoiceProvider,
             translate: TranslateService, private utils: CoreUtilsProvider, protected textUtils: CoreTextUtilsProvider,
-            courseProvider: CoreCourseProvider, syncProvider: CoreSyncProvider, timeUtils: CoreTimeUtilsProvider) {
+            courseProvider: CoreCourseProvider, syncProvider: CoreSyncProvider, timeUtils: CoreTimeUtilsProvider,
+            private logHelper: CoreCourseLogHelperProvider) {
         super('AddonModChoiceSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
                 timeUtils);
 
@@ -137,10 +139,12 @@ export class AddonModChoiceSyncProvider extends CoreSyncBaseProvider {
             updated: false
         };
 
-        // Get offline responses to be sent.
-        const syncPromise = this.choiceOffline.getResponse(choiceId, siteId, userId).catch(() => {
-            // No offline data found, return empty object.
-            return {};
+        // Sync offline logs.
+        const syncPromise = this.logHelper.syncIfNeeded(AddonModChoiceProvider.COMPONENT, choiceId, siteId).finally(() => {
+            return this.choiceOffline.getResponse(choiceId, siteId, userId).catch(() => {
+                // No offline data found, return empty object.
+                return {};
+            });
         }).then((data) => {
             if (!data.choiceid) {
                 // Nothing to sync.

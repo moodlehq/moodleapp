@@ -18,6 +18,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModDataOfflineProvider } from './offline';
 import { AddonModDataFieldsDelegate } from './fields-delegate';
 
@@ -35,7 +36,8 @@ export class AddonModDataProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
             private filepoolProvider: CoreFilepoolProvider, private dataOffline: AddonModDataOfflineProvider,
-            private appProvider: CoreAppProvider, private fieldsDelegate: AddonModDataFieldsDelegate) {
+            private appProvider: CoreAppProvider, private fieldsDelegate: AddonModDataFieldsDelegate,
+            private logHelper: CoreCourseLogHelperProvider) {
         this.logger = logger.getInstance('AddonModDataProvider');
     }
 
@@ -846,14 +848,15 @@ export class AddonModDataProvider {
      * Report the database as being viewed.
      *
      * @param {number} id      Module ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(id: number): Promise<any> {
+    logView(id: number, siteId?: string): Promise<any> {
         const params = {
             databaseid: id
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_data_view_database', params);
+        return this.logHelper.log('mod_data_view_database', params, AddonModDataProvider.COMPONENT, id, siteId);
     }
 
     /**

@@ -22,6 +22,7 @@ import { CoreSyncProvider } from '@providers/sync';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreQuestionProvider } from '@core/question/providers/question';
 import { CoreQuestionDelegate } from '@core/question/providers/delegate';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
@@ -61,7 +62,7 @@ export class AddonModQuizSyncProvider extends CoreSyncBaseProvider {
             courseProvider: CoreCourseProvider, private eventsProvider: CoreEventsProvider, timeUtils: CoreTimeUtilsProvider,
             private quizProvider: AddonModQuizProvider, private quizOfflineProvider: AddonModQuizOfflineProvider,
             private prefetchHandler: AddonModQuizPrefetchHandler, private questionProvider: CoreQuestionProvider,
-            private questionDelegate: CoreQuestionDelegate) {
+            private questionDelegate: CoreQuestionDelegate, private logHelper: CoreCourseLogHelperProvider) {
 
         super('AddonModQuizSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
                 timeUtils);
@@ -259,8 +260,11 @@ export class AddonModQuizSyncProvider extends CoreSyncBaseProvider {
 
         this.logger.debug('Try to sync quiz ' + quiz.id + ' in site ' + siteId);
 
-        // Get all the offline attempts for the quiz.
-        syncPromise = this.quizOfflineProvider.getQuizAttempts(quiz.id, siteId).then((attempts) => {
+        // Sync offline logs.
+        syncPromise = this.logHelper.syncIfNeeded(AddonModQuizProvider.COMPONENT, quiz.id, siteId).finally(() => {
+            // Get all the offline attempts for the quiz.
+            return this.quizOfflineProvider.getQuizAttempts(quiz.id, siteId);
+        }).then((attempts) => {
             // Should return 0 or 1 attempt.
             if (!attempts.length) {
                 return this.finishSync(siteId, quiz, courseId, warnings);

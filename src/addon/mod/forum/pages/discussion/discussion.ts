@@ -299,7 +299,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
 
             if (forceMarkAsRead || (hasUnreadPosts && this.trackPosts)) {
                 // // Add log in Moodle and mark unread posts as readed.
-                this.forumProvider.logDiscussionView(this.discussionId).catch(() => {
+                this.forumProvider.logDiscussionView(this.discussionId, this.forumId || -1).catch(() => {
                     // Ignore errors.
                 }).finally(() => {
                     // Trigger mark read posts.

@@ -19,6 +19,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 
 /**
  * Service that provides some features for IMSCP.
@@ -31,7 +32,8 @@ export class AddonModImscpProvider {
 
     constructor(private appProvider: CoreAppProvider, private courseProvider: CoreCourseProvider,
             private filepoolProvider: CoreFilepoolProvider, private sitesProvider: CoreSitesProvider,
-            private textUtils: CoreTextUtilsProvider, private utils: CoreUtilsProvider) {}
+            private textUtils: CoreTextUtilsProvider, private utils: CoreUtilsProvider,
+            private logHelper: CoreCourseLogHelperProvider) {}
 
     /**
      * Get the IMSCP toc as an array.
@@ -307,13 +309,14 @@ export class AddonModImscpProvider {
      * Report a IMSCP as being viewed.
      *
      * @param  {string} id Module ID.
-     * @return {Promise<any>} Promise resolved when the WS call is successful.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(id: string): Promise<any> {
+    logView(id: number, siteId?: string): Promise<any> {
         const params = {
             imscpid: id
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_imscp_view_imscp', params);
+        return this.logHelper.log('mod_imscp_view_imscp', params, AddonModImscpProvider.COMPONENT, id, siteId);
     }
 }

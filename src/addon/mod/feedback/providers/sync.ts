@@ -26,6 +26,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreSyncProvider } from '@providers/sync';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 
 /**
  * Service to sync feedbacks.
@@ -40,7 +41,8 @@ export class AddonModFeedbackSyncProvider extends CoreSyncBaseProvider {
             protected appProvider: CoreAppProvider, private feedbackOffline: AddonModFeedbackOfflineProvider,
             private eventsProvider: CoreEventsProvider,  private feedbackProvider: AddonModFeedbackProvider,
             protected translate: TranslateService, private utils: CoreUtilsProvider, protected textUtils: CoreTextUtilsProvider,
-            courseProvider: CoreCourseProvider, syncProvider: CoreSyncProvider, timeUtils: CoreTimeUtilsProvider) {
+            courseProvider: CoreCourseProvider, syncProvider: CoreSyncProvider, timeUtils: CoreTimeUtilsProvider,
+            private logHelper: CoreCourseLogHelperProvider) {
         super('AddonModFeedbackSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
                 timeUtils);
 
@@ -144,10 +146,13 @@ export class AddonModFeedbackSyncProvider extends CoreSyncBaseProvider {
 
         this.logger.debug(`Try to sync feedback '${feedbackId}' in site ${siteId}'`);
 
-        // Get offline responses to be sent.
-        const syncPromise = this.feedbackOffline.getFeedbackResponses(feedbackId, siteId).catch(() => {
-            // No offline data found, return empty array.
-            return [];
+        // Sync offline logs.
+        const syncPromise = this.logHelper.syncIfNeeded(AddonModFeedbackProvider.COMPONENT, feedbackId, siteId).finally(() => {
+            // Get offline responses to be sent.
+            return this.feedbackOffline.getFeedbackResponses(feedbackId, siteId).catch(() => {
+                // No offline data found, return empty array.
+                return [];
+            });
         }).then((responses) => {
             if (!responses.length) {
                 // Nothing to sync.

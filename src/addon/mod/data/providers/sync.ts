@@ -26,6 +26,7 @@ import { AddonModDataHelperProvider } from './helper';
 import { CoreEventsProvider } from '@providers/events';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreSyncProvider } from '@providers/sync';
 
 /**
@@ -42,7 +43,7 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
             private eventsProvider: CoreEventsProvider,  private dataProvider: AddonModDataProvider,
             protected translate: TranslateService, private utils: CoreUtilsProvider, courseProvider: CoreCourseProvider,
             syncProvider: CoreSyncProvider, protected textUtils: CoreTextUtilsProvider, timeUtils: CoreTimeUtilsProvider,
-            private dataHelper: AddonModDataHelperProvider) {
+            private dataHelper: AddonModDataHelperProvider, private logHelper: CoreCourseLogHelperProvider) {
         super('AddonModDataSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
                 timeUtils);
 
@@ -149,10 +150,13 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
             updated: false
         };
 
-        // Get answers to be sent.
-        const syncPromise = this.dataOffline.getDatabaseEntries(dataId, siteId).catch(() => {
-            // No offline data found, return empty object.
-            return [];
+        // Sync offline logs.
+        const syncPromise = this.logHelper.syncIfNeeded(AddonModDataProvider.COMPONENT, dataId, siteId).finally(() => {
+            // Get answers to be sent.
+            return this.dataOffline.getDatabaseEntries(dataId, siteId).catch(() => {
+                // No offline data found, return empty object.
+                return [];
+            });
         }).then((offlineActions) => {
             if (!offlineActions.length) {
                 // Nothing to sync.

@@ -25,6 +25,7 @@ import { AddonModSurveyProvider } from './survey';
 import { CoreEventsProvider } from '@providers/events';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreSyncProvider } from '@providers/sync';
 
 /**
@@ -40,7 +41,7 @@ export class AddonModSurveySyncProvider extends CoreSyncBaseProvider {
             syncProvider: CoreSyncProvider, textUtils: CoreTextUtilsProvider, translate: TranslateService,
             courseProvider: CoreCourseProvider, private surveyOffline: AddonModSurveyOfflineProvider,
             private eventsProvider: CoreEventsProvider,  private surveyProvider: AddonModSurveyProvider,
-            private utils: CoreUtilsProvider, timeUtils: CoreTimeUtilsProvider) {
+            private utils: CoreUtilsProvider, timeUtils: CoreTimeUtilsProvider, private logHelper: CoreCourseLogHelperProvider) {
 
         super('AddonModSurveySyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
                 timeUtils);
@@ -141,10 +142,13 @@ export class AddonModSurveySyncProvider extends CoreSyncBaseProvider {
             answersSent: false
         };
 
-        // Get answers to be sent.
-        const syncPromise = this.surveyOffline.getSurveyData(surveyId, siteId, userId).catch(() => {
-            // No offline data found, return empty object.
-            return {};
+        // Sync offline logs.
+        const syncPromise = this.logHelper.syncIfNeeded(AddonModSurveyProvider.COMPONENT, surveyId, siteId).finally(() => {
+            // Get answers to be sent.
+            return this.surveyOffline.getSurveyData(surveyId, siteId, userId).catch(() => {
+                // No offline data found, return empty object.
+                return {};
+            });
         }).then((data) => {
             if (!data.answers || !data.answers.length) {
                 // Nothing to sync.

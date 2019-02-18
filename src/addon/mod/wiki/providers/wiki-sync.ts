@@ -24,6 +24,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { AddonModWikiProvider } from './wiki';
 import { AddonModWikiOfflineProvider } from './wiki-offline';
@@ -104,7 +105,8 @@ export class AddonModWikiSyncProvider extends CoreSyncBaseProvider {
             syncProvider: CoreSyncProvider, textUtils: CoreTextUtilsProvider, translate: TranslateService,
             courseProvider: CoreCourseProvider, private eventsProvider: CoreEventsProvider,
             private wikiProvider: AddonModWikiProvider, private wikiOfflineProvider: AddonModWikiOfflineProvider,
-            private utils: CoreUtilsProvider, private groupsProvider: CoreGroupsProvider, timeUtils: CoreTimeUtilsProvider) {
+            private utils: CoreUtilsProvider, private groupsProvider: CoreGroupsProvider, timeUtils: CoreTimeUtilsProvider,
+            private logHelper: CoreCourseLogHelperProvider) {
 
         super('AddonModWikiSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
                 timeUtils);
@@ -336,8 +338,13 @@ export class AddonModWikiSyncProvider extends CoreSyncBaseProvider {
     syncWiki(wikiId: number, courseId?: number, cmId?: number, siteId?: string): Promise<AddonModWikiSyncWikiResult> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        // Sync is done at subwiki level, get all the subwikis.
-        return this.wikiProvider.getSubwikis(wikiId).then((subwikis) => {
+        // Sync offline logs.
+        return this.logHelper.syncIfNeeded(AddonModWikiProvider.COMPONENT, wikiId, siteId).catch(() => {
+            // Ignore errors.
+         }).then(() => {
+            // Sync is done at subwiki level, get all the subwikis.
+            return this.wikiProvider.getSubwikis(wikiId);
+        }).then((subwikis) => {
             const promises = [],
                 result: AddonModWikiSyncWikiResult = {
                     warnings: [],

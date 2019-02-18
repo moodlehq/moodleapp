@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { CoreAppProvider } from '@providers/app';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -53,7 +54,8 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
             private utils: CoreUtilsProvider,
             private forumProvider: AddonModForumProvider,
             private forumHelper: AddonModForumHelperProvider,
-            private forumOffline: AddonModForumOfflineProvider) {
+            private forumOffline: AddonModForumOfflineProvider,
+            private logHelper: CoreCourseLogHelperProvider) {
 
         super('AddonModForumSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
                 timeUtils);
@@ -189,10 +191,13 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
             updated: false
         };
 
-        // Get offline responses to be sent.
-        const syncPromise = this.forumOffline.getNewDiscussions(forumId, siteId, userId).catch(() => {
-            // No offline data found, return empty object.
-            return [];
+        // Sync offline logs.
+        const syncPromise = this.logHelper.syncIfNeeded(AddonModForumProvider.COMPONENT, forumId, siteId).finally(() => {
+            // Get offline responses to be sent.
+            return this.forumOffline.getNewDiscussions(forumId, siteId, userId).catch(() => {
+                // No offline data found, return empty object.
+                return [];
+            });
         }).then((discussions) => {
             if (!discussions.length) {
                 // Nothing to sync.

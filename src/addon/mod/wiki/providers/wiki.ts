@@ -20,6 +20,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModWikiOfflineProvider } from './wiki-offline';
 import { CoreSiteWSPreSets } from '@classes/site';
 
@@ -70,7 +71,8 @@ export class AddonModWikiProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider,
             private filepoolProvider: CoreFilepoolProvider, private utils: CoreUtilsProvider, private translate: TranslateService,
-            private wikiOffline: AddonModWikiOfflineProvider, eventsProvider: CoreEventsProvider) {
+            private wikiOffline: AddonModWikiOfflineProvider, eventsProvider: CoreEventsProvider,
+            private logHelper: CoreCourseLogHelperProvider) {
         this.logger = logger.getInstance('AddonModWikiProvider');
 
         // Clear subwiki lists cache on logout.
@@ -651,18 +653,17 @@ export class AddonModWikiProvider {
     /**
      * Report a wiki page as being viewed.
      *
-     * @param {string} id Page ID.
+     * @param {number} id Page ID.
+     * @param {number} wikiId Wiki ID.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logPageView(id: number, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            const params = {
-                pageid: id
-            };
+    logPageView(id: number, wikiId: number, siteId?: string): Promise<any> {
+        const params = {
+            pageid: id
+        };
 
-            return site.write('mod_wiki_view_page', params);
-        });
+        return this.logHelper.log('mod_wiki_view_page', params, AddonModWikiProvider.COMPONENT, wikiId, siteId);
     }
 
     /**
@@ -673,13 +674,11 @@ export class AddonModWikiProvider {
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
     logView(id: number, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            const params = {
-                wikiid: id
-            };
+        const params = {
+            wikiid: id
+        };
 
-            return site.write('mod_wiki_view_wiki', params);
-        });
+        return this.logHelper.log('mod_wiki_view_wiki', params, AddonModWikiProvider.COMPONENT, id, siteId);
     }
 
     /**

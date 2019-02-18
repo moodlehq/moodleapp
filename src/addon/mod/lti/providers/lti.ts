@@ -20,6 +20,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 
 export interface AddonModLtiParam {
     name: string;
@@ -42,7 +43,8 @@ export class AddonModLtiProvider {
             private urlUtils: CoreUrlUtilsProvider,
             private utils: CoreUtilsProvider,
             private translate: TranslateService,
-            private appProvider: CoreAppProvider) {}
+            private appProvider: CoreAppProvider,
+            private logHelper: CoreCourseLogHelperProvider) {}
 
     /**
      * Delete launcher.
@@ -211,13 +213,14 @@ export class AddonModLtiProvider {
      * Report the LTI as being viewed.
      *
      * @param {string} id LTI id.
-     * @return {Promise<any>} Promise resolved when the WS call is successful.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(id: string): Promise<any> {
+    logView(id: number, siteId?: string): Promise<any> {
         const params: any = {
             ltiid: id
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_lti_view_lti', params);
+        return this.logHelper.log('mod_lti_view_lti', params, AddonModLtiProvider.COMPONENT, id, siteId);
     }
 }

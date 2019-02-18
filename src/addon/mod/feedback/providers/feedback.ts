@@ -18,6 +18,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreAppProvider } from '@providers/app';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModFeedbackOfflineProvider } from './offline';
 
 /**
@@ -38,7 +39,7 @@ export class AddonModFeedbackProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
             private filepoolProvider: CoreFilepoolProvider, private feedbackOffline: AddonModFeedbackOfflineProvider,
-            private appProvider: CoreAppProvider) {
+            private appProvider: CoreAppProvider, private logHelper: CoreCourseLogHelperProvider) {
         this.logger = logger.getInstance('AddonModFeedbackProvider');
     }
 
@@ -1071,15 +1072,16 @@ export class AddonModFeedbackProvider {
      *
      * @param {number} id                   Module ID.
      * @param  {boolean} [formViewed=false] True if form was viewed.
+     * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}               Promise resolved when the WS call is successful.
      */
-    logView(id: number, formViewed: boolean = false): Promise<any> {
+    logView(id: number, formViewed: boolean = false, siteId?: string): Promise<any> {
         const params = {
             feedbackid: id,
             moduleviewed: formViewed ? 1 : 0
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_feedback_view_feedback', params);
+        return this.logHelper.log('mod_feedback_view_feedback', params, AddonModFeedbackProvider.COMPONENT, id, siteId);
     }
 
     /**
