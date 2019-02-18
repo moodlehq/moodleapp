@@ -69,7 +69,7 @@ export class AddonModDataOfflineProvider {
                 primaryKeys: ['dataid', 'entryid', 'action']
             }
         ],
-        migrate(db: SQLiteDB, oldVersion: number): Promise<any> | void {
+        migrate(db: SQLiteDB, oldVersion: number, siteId: string): Promise<any> | void {
             if (oldVersion == 0) {
                 // Move the records from the old table.
                 const newTable = AddonModDataOfflineProvider.DATA_ENTRY_TABLE;

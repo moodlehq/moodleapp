@@ -39,8 +39,10 @@ export class AddonCalendarEventPage {
     protected eventId;
     protected siteHomeId: number;
     eventLoaded: boolean;
-    notificationTime: number;
-    defaultTimeReadable: string;
+    notificationFormat: string;
+    notificationMin: string;
+    notificationMax: string;
+    notificationTimeText: string;
     event: any = {};
     title: string;
     courseName: string;
@@ -50,6 +52,7 @@ export class AddonCalendarEventPage {
     categoryPath = '';
     currentTime: number;
     defaultTime: number;
+    reminders: any[];
 
     constructor(private translate: TranslateService, private calendarProvider: AddonCalendarProvider, navParams: NavParams,
             private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider,
@@ -61,21 +64,17 @@ export class AddonCalendarEventPage {
         this.notificationsEnabled = localNotificationsProvider.isAvailable();
         this.siteHomeId = sitesProvider.getCurrentSite().getSiteHomeId();
         if (this.notificationsEnabled) {
-            this.calendarProvider.getEventNotificationTimeOption(this.eventId).then((notificationTime) => {
-                this.notificationTime = notificationTime;
-                this.loadNotificationTime();
+            this.calendarProvider.getEventReminders(this.eventId).then((reminders) => {
+                this.reminders = reminders;
             });
 
             this.calendarProvider.getDefaultNotificationTime().then((defaultTime) => {
                 this.defaultTime = defaultTime * 60;
-                this.loadNotificationTime();
-                if (defaultTime === 0) {
-                    // Disabled by default.
-                    this.defaultTimeReadable = this.translate.instant('core.settings.disabled');
-                } else {
-                    this.defaultTimeReadable = timeUtils.formatTime(defaultTime * 60);
-                }
             });
+
+        // Calculate format to use. ion-datetime doesn't support escaping characters ([]), so we remove them.
+        this.notificationFormat = this.timeUtils.convertPHPToMoment(this.translate.instant('core.strftimedatetimeshort'))
+            .replace(/[\[\]]/g, '');
         }
     }
 
@@ -86,12 +85,6 @@ export class AddonCalendarEventPage {
         this.fetchEvent().finally(() => {
             this.eventLoaded = true;
         });
-    }
-
-    updateNotificationTime(): void {
-        if (!isNaN(this.notificationTime) && this.event && this.event.id) {
-            this.calendarProvider.updateNotificationTime(this.event, this.notificationTime);
-        }
     }
 
     /**
@@ -117,7 +110,9 @@ export class AddonCalendarEventPage {
             this.event = event;
 
             this.currentTime = this.timeUtils.timestamp();
-            this.loadNotificationTime();
+            this.notificationMin = this.timeUtils.userDate(this.currentTime * 1000, 'YYYY-MM-DDTHH:mm', false);
+            this.notificationMax = this.timeUtils.userDate((event.timestart + event.timeduration) * 1000,
+                'YYYY-MM-DDTHH:mm', false);
 
             // Reset some of the calculated data.
             this.categoryPath = '';
@@ -187,16 +182,50 @@ export class AddonCalendarEventPage {
     }
 
     /**
-     * Loads notification time by discarding options not in the list.
+     * Add a reminder for this event.
+     *
+     * @param {Event} e    Click event.
      */
-    loadNotificationTime(): void {
-        if (typeof this.notificationTime != 'undefined') {
-            if (this.notificationTime > 0 && this.event.timestart - this.notificationTime * 60 < this.currentTime) {
-                this.notificationTime = 0;
-            } else if (this.notificationTime < 0 && this.event.timestart - this.defaultTime < this.currentTime) {
-                this.notificationTime = 0;
+    addNotificationTime(e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (this.notificationTimeText && this.event && this.event.id) {
+            let notificationTime = this.timeUtils.convertToTimestamp(this.notificationTimeText);
+
+            const currentTime = this.timeUtils.timestamp(),
+                minute = Math.floor(currentTime / 60) * 60;
+
+            // Check if the notification time is in the same minute as we are, so the notification is triggered.
+            if (notificationTime >=  minute && notificationTime < minute + 60) {
+                notificationTime  = currentTime + 1;
             }
+
+            this.calendarProvider.addEventReminder(this.event, notificationTime).then(() => {
+                this.calendarProvider.getEventReminders(this.eventId).then((reminders) => {
+                    this.reminders = reminders;
+                });
+
+                this.notificationTimeText = null;
+            });
         }
+    }
+
+    /**
+     * Cancel the selected notification.
+     *
+     * @param {number} id  Reminder ID.
+     * @param {Event} e    Click event.
+     */
+    cancelNotification(id: number, e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+
+        this.calendarProvider.deleteEventReminder(id).then(() => {
+            this.calendarProvider.getEventReminders(this.eventId).then((reminders) => {
+                this.reminders = reminders;
+            });
+        });
     }
 
     /**
