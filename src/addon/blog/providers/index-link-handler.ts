@@ -16,18 +16,18 @@ import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
-import { AddonBadgesProvider } from './badges';
+import { AddonBlogProvider } from './blog';
 
 /**
- * Handler to treat links to user badges page.
+ * Handler to treat links to blog page.
  */
 @Injectable()
-export class AddonBadgesMyBadgesLinkHandler extends CoreContentLinksHandlerBase {
-    name = 'AddonBadgesMyBadgesLinkHandler';
-    featureName = 'CoreUserDelegate_AddonBadges';
-    pattern = /\/badges\/mybadges\.php/;
+export class AddonBlogIndexLinkHandler extends CoreContentLinksHandlerBase {
+    name = 'AddonBlogIndexLinkHandler';
+    featureName = 'CoreUserDelegate_AddonBlog';
+    pattern = /\/blog\/index\.php/;
 
-    constructor(private badgesProvider: AddonBadgesProvider, private loginHelper: CoreLoginHelperProvider) {
+    constructor(private blogProvider: AddonBlogProvider, private loginHelper: CoreLoginHelperProvider) {
         super();
     }
 
@@ -42,11 +42,19 @@ export class AddonBadgesMyBadgesLinkHandler extends CoreContentLinksHandlerBase 
      */
     getActions(siteIds: string[], url: string, params: any, courseId?: number):
             CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
+        const pageParams: any = {};
+
+        params.userid ? pageParams['userId'] = parseInt(params.userid, 10) : null;
+        params.modid ? pageParams['cmId'] = parseInt(params.modid, 10) : null;
+        params.courseid ? pageParams['courseId'] = parseInt(params.courseid, 10) : null;
+        params.entryid ? pageParams['entryId'] = parseInt(params.entryid, 10) : null;
+        params.groupid ? pageParams['groupId'] = parseInt(params.groupid, 10) : null;
+        params.tagid ? pageParams['tagId'] = parseInt(params.tagid, 10) : null;
 
         return [{
             action: (siteId, navCtrl?): void => {
                 // Always use redirect to make it the new history root (to avoid "loops" in history).
-                this.loginHelper.redirect('AddonBadgesUserBadgesPage', {}, siteId);
+                this.loginHelper.redirect('AddonBlogEntriesPage', pageParams, siteId);
             }
         }];
     }
@@ -63,6 +71,6 @@ export class AddonBadgesMyBadgesLinkHandler extends CoreContentLinksHandlerBase 
      */
     isEnabled(siteId: string, url: string, params: any, courseId?: number): boolean | Promise<boolean> {
 
-        return this.badgesProvider.isPluginEnabled(siteId);
+        return this.blogProvider.isPluginEnabled(siteId);
     }
 }
