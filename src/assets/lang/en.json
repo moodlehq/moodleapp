@@ -1550,6 +1550,7 @@
     "core.noresults": "No results",
     "core.notapplicable": "n/a",
     "core.notice": "Notice",
+    "core.notingroup": "Sorry, but you need to be part of a group to see this page.",
     "core.notsent": "Not sent",
     "core.now": "now",
     "core.numwords": "{{$a}} words",

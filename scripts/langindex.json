@@ -1551,6 +1551,7 @@
   "core.noresults": "moodle",
   "core.notapplicable": "local_moodlemobileapp",
   "core.notice": "moodle",
+  "core.notingroup": "moodle",
   "core.notsent": "local_moodlemobileapp",
   "core.now": "moodle",
   "core.numwords": "moodle",

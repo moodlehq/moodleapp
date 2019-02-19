@@ -170,6 +170,7 @@
     "noresults": "No results",
     "notapplicable": "n/a",
     "notice": "Notice",
+    "notingroup": "Sorry, but you need to be part of a group to see this page.",
     "notsent": "Not sent",
     "now": "now",
     "numwords": "{{$a}} words",
