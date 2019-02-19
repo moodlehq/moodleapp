@@ -70,7 +70,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
     constructor(injector: Injector, private feedbackProvider: AddonModFeedbackProvider, @Optional() content: Content,
             private feedbackOffline: AddonModFeedbackOfflineProvider, private groupsProvider: CoreGroupsProvider,
-            private feedbackSync: AddonModFeedbackSyncProvider, private navCtrl: NavController,
+            private feedbackSync: AddonModFeedbackSyncProvider, protected navCtrl: NavController,
             private feedbackHelper: AddonModFeedbackHelperProvider, private timeUtils: CoreTimeUtilsProvider) {
         super(injector, content);
 

@@ -67,7 +67,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
 
     constructor(injector: Injector, private workshopProvider: AddonModWorkshopProvider, @Optional() content: Content,
             private workshopOffline: AddonModWorkshopOfflineProvider, private groupsProvider: CoreGroupsProvider,
-            private navCtrl: NavController, private modalCtrl: ModalController, private utils: CoreUtilsProvider,
+            protected navCtrl: NavController, private modalCtrl: ModalController, private utils: CoreUtilsProvider,
             platform: Platform, private workshopHelper: AddonModWorkshopHelperProvider,
             private workshopSync: AddonModWorkshopSyncProvider) {
         super(injector, content);

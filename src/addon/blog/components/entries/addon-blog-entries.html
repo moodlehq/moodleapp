@@ -1,0 +1,49 @@
+<ion-content>
+    <ion-refresher [enabled]="loaded" (ionRefresh)="refresh($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded" class="core-loading-center">
+        <div class="safe-padding-horizontal">
+            <ion-item *ngIf="showMyIssuesToggle">
+                <ion-label>{{ 'addon.blog.showonlyyourentries' | translate }}</ion-label>
+                <ion-toggle [(ngModel)]="onlyMyEntries"></ion-toggle>
+            </ion-item>
+        </div>
+        <core-empty-box *ngIf="entries && entries.length == 0" icon="fa-newspaper-o" [message]="'addon.blog.noentriesyet' | translate"></core-empty-box>
+        <ng-container *ngFor="let entry of entries">
+            <ion-card *ngIf="!onlyMyEntries || entry.userid == currentUserId">
+                <ion-item text-wrap>
+                    <ion-avatar core-user-avatar [user]="entry.user" item-start [courseId]="entry.courseid"></ion-avatar>
+                    <h2>
+                        <core-format-text [text]="entry.subject"></core-format-text>
+                        <ion-note float-end padding-left text-end>
+                            {{ 'addon.blog.' + entry.publishTranslated | translate}}
+                        </ion-note>
+                    </h2>
+                    <p>
+                        <ion-note float-end padding-left text-end>
+                            {{entry.created | coreDateDayOrTime}}
+                        </ion-note>
+                        {{entry.user && entry.user.fullname}}
+                    </p>
+                </ion-item>
+                <ion-card-content>
+                    <core-format-text [text]="entry.summary" [component]="this.component" [componentId]="entry.id"></core-format-text>
+                    <ion-item>
+                        <core-comments [component]="this.component" [itemId]="entry.id" area="format_blog" [instanceId]="entry.userid" contextLevel="user"></core-comments>
+                    </ion-item>
+                    <core-file *ngFor="let file of entry.attachmentfiles" [file]="file" [component]="this.component" [componentId]="entry.id"></core-file>
+                    <a ion-item *ngIf="entry.uniquehash" [href]="entry.uniquehash" core-link>{{ 'addon.blog.linktooriginalentry' | translate }}</a>
+                </ion-card-content>
+                <ion-row text-center>
+                    <ion-col *ngIf="entry.lastmodified > entry.created">
+                        <ion-note>
+                            <ion-icon name="time"></ion-icon> {{entry.lastmodified | coreTimeAgo}}
+                        </ion-note>
+                    </ion-col>
+                </ion-row>
+            </ion-card>
+        </ng-container>
+        <core-infinite-loading [enabled]="canLoadMore" (action)="loadMore($event)" [error]="loadMoreError"></core-infinite-loading>
+    </core-loading>
+</ion-content>

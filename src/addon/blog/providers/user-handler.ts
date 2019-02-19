@@ -13,43 +13,20 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreEventsProvider } from '@providers/events';
-import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '@core/user/providers/user-delegate';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
-import { CoreSitesProvider } from '@providers/sites';
-import { AddonNotesProvider } from './notes';
+import { AddonBlogProvider } from './blog';
 
 /**
- * Profile notes handler.
+ * Profile item handler.
  */
 @Injectable()
-export class AddonNotesUserHandler implements CoreUserProfileHandler {
-    name = 'AddonNotes:notes';
-    priority = 100;
+export class AddonBlogUserHandler implements CoreUserProfileHandler {
+    name = 'AddonBlog:blogs';
+    priority = 300;
     type = CoreUserDelegate.TYPE_NEW_PAGE;
-    noteEnabledCache = {};
 
-    constructor(private linkHelper: CoreContentLinksHelperProvider, private sitesProvider: CoreSitesProvider,
-            private notesProvider: AddonNotesProvider, eventsProvider: CoreEventsProvider) {
-        eventsProvider.on(CoreEventsProvider.LOGOUT, this.clearNoteCache.bind(this));
-        eventsProvider.on(CoreUserProvider.PROFILE_REFRESHED, (data) => {
-            this.clearNoteCache(data.courseId);
-        });
-    }
-
-    /**
-     * Clear note cache.
-     * If a courseId is specified, it will only delete the entry for that course.
-     *
-     * @param {number} [courseId] Course ID.
-     */
-    private clearNoteCache(courseId?: number): void {
-        if (courseId) {
-            delete this.noteEnabledCache[courseId];
-        } else {
-            this.noteEnabledCache = {};
-        }
+    constructor(protected linkHelper: CoreContentLinksHelperProvider, protected blogProvider: AddonBlogProvider) {
     }
 
     /**
@@ -57,7 +34,7 @@ export class AddonNotesUserHandler implements CoreUserProfileHandler {
      * @return {boolean|Promise<boolean>} Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
-        return this.notesProvider.isPluginEnabled();
+        return this.blogProvider.isPluginEnabled();
     }
 
     /**
@@ -70,20 +47,7 @@ export class AddonNotesUserHandler implements CoreUserProfileHandler {
      * @return {boolean|Promise<boolean>} Promise resolved with true if enabled, resolved with false otherwise.
      */
     isEnabledForUser(user: any, courseId: number, navOptions?: any, admOptions?: any): boolean | Promise<boolean> {
-        // Active course required.
-        if (!courseId || user.id == this.sitesProvider.getCurrentSiteUserId()) {
-            return Promise.resolve(false);
-        }
-
-        if (typeof this.noteEnabledCache[courseId] != 'undefined') {
-            return this.noteEnabledCache[courseId];
-        }
-
-        return this.notesProvider.isPluginViewNotesEnabledForCourse(courseId).then((enabled) => {
-            this.noteEnabledCache[courseId] = enabled;
-
-            return enabled;
-        });
+        return true;
     }
 
     /**
@@ -93,14 +57,14 @@ export class AddonNotesUserHandler implements CoreUserProfileHandler {
      */
     getDisplayData(user: any, courseId: number): CoreUserProfileHandlerData {
         return {
-            icon: 'list',
-            title: 'addon.notes.notes',
-            class: 'addon-notes-handler',
+            icon: 'fa-newspaper-o',
+            title: 'addon.blog.blogentries',
+            class: 'addon-blog-handler',
             action: (event, navCtrl, user, courseId): void => {
                 event.preventDefault();
                 event.stopPropagation();
                 // Always use redirect to make it the new history root (to avoid "loops" in history).
-                this.linkHelper.goInSite(navCtrl, 'AddonNotesListPage', { userId: user.id, courseId: courseId });
+                this.linkHelper.goInSite(navCtrl, 'AddonBlogEntriesPage', { userId: user.id, courseId: courseId });
             }
         };
     }
