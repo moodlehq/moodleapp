@@ -39,6 +39,8 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
     @Input() protected courseId?: number;
     @Input() checkOnline = false; // If want to check and show online status.
 
+    avatarUrl?: string;
+
     // Variable to check if we consider this user online or not.
     // @TODO: Use setting when available (see MDL-63972) so we can use site setting.
     protected timetoshowusers = 300000; // Miliseconds default.
@@ -52,7 +54,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
 
         this.pictureObs = eventsProvider.on(CoreUserProvider.PROFILE_PICTURE_UPDATED, (data) => {
             if (data.userId == this.userId) {
-                this.profileUrl = data.picture;
+                this.avatarUrl = data.picture;
             }
         }, this.sitesProvider.getCurrentSiteId());
     }
@@ -82,7 +84,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
             this.user.userpictureurl || this.user.profileimageurlsmall));
 
         if (typeof profileUrl == 'string') {
-            this.profileUrl = profileUrl;
+            this.avatarUrl = profileUrl;
         }
 
         this.fullname = this.fullname || (this.user && (this.user.fullname || this.user.userfullname));
@@ -92,7 +94,6 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
 
         // If not available we cannot ensure the avatar is from the current user.
         this.myUser = this.userId && this.userId == this.currentUserId;
-
     }
 
     /**
