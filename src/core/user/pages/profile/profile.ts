@@ -97,19 +97,14 @@ export class CoreUserProfilePage {
     fetchUser(): Promise<any> {
         return this.userProvider.getProfile(this.userId, this.courseId).then((user) => {
 
-            if (this.userId == this.site.getUserId() && user.profileimageurl != this.site.getInfo().userpictureurl) {
-                // The current user image received is different than the one stored in site info. Assume the image was updated.
-                this.eventsProvider.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
-                    userId: this.userId,
-                    picture: user.profileimageurl
-                }, this.site.getId());
-            }
-
             user.address = this.userHelper.formatAddress('', user.city, user.country);
             user.roles = this.userHelper.formatRoleList(user.roles);
 
             this.user = user;
             this.title = user.fullname;
+
+            // If there's already a subscription, unsubscribe because we'll get a new one.
+            this.subscription && this.subscription.unsubscribe();
 
             this.subscription = this.userDelegate.getProfileHandlersFor(user, this.courseId).subscribe((handlers) => {
                 this.actionHandlers = [];
@@ -132,6 +127,29 @@ export class CoreUserProfilePage {
 
                 this.isLoadingHandlers = !this.userDelegate.areHandlersLoaded(user.id);
             });
+
+            if (this.userId == this.site.getUserId() && user.profileimageurl != this.site.getInfo().userpictureurl) {
+                // The current user image received is different than the one stored in site info. Assume the image was updated.
+                // Update the site info to get the right avatar in there.
+                return this.sitesProvider.updateSiteInfo(this.site.getId()).then(() => {
+                    if (user.profileimageurl != this.site.getInfo().userpictureurl) {
+                        // The image is still different, this means that the good one is the one in site info.
+                        return this.refreshUser();
+                    } else {
+                        // Now they're the same, send event to use the right avatar in the rest of the app.
+                        this.eventsProvider.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
+                            userId: this.userId,
+                            picture: user.profileimageurl
+                        }, this.site.getId());
+                    }
+                }, () => {
+                    // Cannot update site info. Assume the profile image is the right one.
+                    this.eventsProvider.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
+                        userId: this.userId,
+                        picture: user.profileimageurl
+                    }, this.site.getId());
+                });
+            }
 
         }).catch((error) => {
             // Error is null for deleted users, do not show the modal.
