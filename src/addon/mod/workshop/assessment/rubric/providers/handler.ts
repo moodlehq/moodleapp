@@ -102,16 +102,18 @@ export class AddonModWorkshopAssessmentStrategyRubricHandler implements AddonWor
         let hasErrors = false;
 
         form.fields.forEach((field, idx) => {
-            const id = parseInt(currentValues[idx].chosenlevelid, 10);
-            if (!isNaN(id) && id >= 0) {
-                data['chosenlevelid__idx_' + idx] = id;
-            } else {
-                errors['chosenlevelid_' + idx] = this.translate.instant('addon.mod_workshop_assessment_rubric.mustchooseone');
-                hasErrors = true;
-            }
+            if (idx < form.dimenssionscount) {
+                const id = parseInt(currentValues[idx].chosenlevelid, 10);
+                if (!isNaN(id) && id >= 0) {
+                    data['chosenlevelid__idx_' + idx] = id;
+                } else {
+                    errors['chosenlevelid_' + idx] = this.translate.instant('addon.mod_workshop_assessment_rubric.mustchooseone');
+                    hasErrors = true;
+                }
 
-            data['gradeid__idx_' + idx] = parseInt(form.current[idx].gradeid, 10) || 0;
-            data['dimensionid__idx_' + idx] = parseInt(field.dimensionid, 10);
+                data['gradeid__idx_' + idx] = parseInt(form.current[idx].gradeid, 10) || 0;
+                data['dimensionid__idx_' + idx] = parseInt(field.dimensionid, 10);
+            }
         });
 
         if (hasErrors) {

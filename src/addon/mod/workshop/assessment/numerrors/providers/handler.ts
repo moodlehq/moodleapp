@@ -106,21 +106,23 @@ export class AddonModWorkshopAssessmentStrategyNumErrorsHandler implements Addon
         let hasErrors = false;
 
         form.fields.forEach((field, idx) => {
-            const grade = parseInt(currentValues[idx].grade);
-            if (!isNaN(grade) && grade >= 0) {
-                data['grade__idx_' + idx] = grade;
-            } else {
-                errors['grade_' + idx] = this.translate.instant('core.required');
-                hasErrors = true;
-            }
+            if (idx < form.dimenssionscount) {
+                const grade = parseInt(currentValues[idx].grade);
+                if (!isNaN(grade) && (grade == 1 || grade == -1)) {
+                    data['grade__idx_' + idx] = grade;
+                } else {
+                    errors['grade_' + idx] = this.translate.instant('core.required');
+                    hasErrors = true;
+                }
 
-            if (currentValues[idx].peercomment) {
-                data['peercomment__idx_' + idx] = currentValues[idx].peercomment;
-            }
+                if (currentValues[idx].peercomment) {
+                    data['peercomment__idx_' + idx] = currentValues[idx].peercomment;
+                }
 
-            data['gradeid__idx_' + idx] = parseInt(form.current[idx].gradeid, 10) || 0;
-            data['dimensionid__idx_' + idx] = parseInt(field.dimensionid, 10);
-            data['weight__idx_' + idx] = parseInt(field.weight, 10) ||  0;
+                data['gradeid__idx_' + idx] = parseInt(form.current[idx].gradeid, 10) || 0;
+                data['dimensionid__idx_' + idx] = parseInt(field.dimensionid, 10);
+                data['weight__idx_' + idx] = parseInt(field.weight, 10) ||  0;
+            }
         });
 
         if (hasErrors) {
