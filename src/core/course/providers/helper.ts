@@ -192,7 +192,7 @@ export class CoreCourseHelperProvider {
         }
 
         // Get the status of this section.
-        return this.prefetchDelegate.getModulesStatus(section.modules, courseId, section.id, refresh).then((result) => {
+        return this.prefetchDelegate.getModulesStatus(section.modules, courseId, section.id, refresh, true).then((result) => {
             // Check if it's being downloaded.
             const downloadId = this.getSectionDownloadId(section);
             if (this.prefetchDelegate.isBeingDownloaded(downloadId)) {
