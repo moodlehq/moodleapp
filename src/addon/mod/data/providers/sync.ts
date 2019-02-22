@@ -151,7 +151,9 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
         };
 
         // Sync offline logs.
-        const syncPromise = this.logHelper.syncIfNeeded(AddonModDataProvider.COMPONENT, dataId, siteId).finally(() => {
+        const syncPromise = this.logHelper.syncIfNeeded(AddonModDataProvider.COMPONENT, dataId, siteId).catch(() => {
+            // Ignore errors.
+        }).then(() => {
             // Get answers to be sent.
             return this.dataOffline.getDatabaseEntries(dataId, siteId).catch(() => {
                 // No offline data found, return empty object.

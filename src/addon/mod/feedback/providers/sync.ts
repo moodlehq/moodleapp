@@ -147,7 +147,9 @@ export class AddonModFeedbackSyncProvider extends CoreSyncBaseProvider {
         this.logger.debug(`Try to sync feedback '${feedbackId}' in site ${siteId}'`);
 
         // Sync offline logs.
-        const syncPromise = this.logHelper.syncIfNeeded(AddonModFeedbackProvider.COMPONENT, feedbackId, siteId).finally(() => {
+        const syncPromise = this.logHelper.syncIfNeeded(AddonModFeedbackProvider.COMPONENT, feedbackId, siteId).catch(() => {
+            // Ignore errors.
+        }).then(() => {
             // Get offline responses to be sent.
             return this.feedbackOffline.getFeedbackResponses(feedbackId, siteId).catch(() => {
                 // No offline data found, return empty array.

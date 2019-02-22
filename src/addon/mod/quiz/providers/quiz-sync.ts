@@ -261,7 +261,9 @@ export class AddonModQuizSyncProvider extends CoreSyncBaseProvider {
         this.logger.debug('Try to sync quiz ' + quiz.id + ' in site ' + siteId);
 
         // Sync offline logs.
-        syncPromise = this.logHelper.syncIfNeeded(AddonModQuizProvider.COMPONENT, quiz.id, siteId).finally(() => {
+        syncPromise = this.logHelper.syncIfNeeded(AddonModQuizProvider.COMPONENT, quiz.id, siteId).catch(() => {
+            // Ignore errors.
+        }).then(() => {
             // Get all the offline attempts for the quiz.
             return this.quizOfflineProvider.getQuizAttempts(quiz.id, siteId);
         }).then((attempts) => {

@@ -163,7 +163,9 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
         };
 
         // Sync offline logs.
-        const syncPromise = this.logHelper.syncIfNeeded(AddonModGlossaryProvider.COMPONENT, glossaryId, siteId).finally(() => {
+        const syncPromise = this.logHelper.syncIfNeeded(AddonModGlossaryProvider.COMPONENT, glossaryId, siteId).catch(() => {
+            // Ignore errors.
+        }).then(() => {
             // Get offline responses to be sent.
             return this.glossaryOffline.getGlossaryNewEntries(glossaryId, siteId, userId).catch(() => {
                 // No offline data found, return empty object.
