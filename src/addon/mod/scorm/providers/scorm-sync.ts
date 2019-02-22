@@ -649,7 +649,9 @@ export class AddonModScormSyncProvider extends CoreSyncBaseProvider {
         this.logger.debug('Try to sync SCORM ' + scorm.id + ' in site ' + siteId);
 
         // Sync offline logs.
-        syncPromise = this.logHelper.syncIfNeeded(AddonModScormProvider.COMPONENT, scorm.id, siteId).finally(() => {
+        syncPromise = this.logHelper.syncIfNeeded(AddonModScormProvider.COMPONENT, scorm.id, siteId).catch(() => {
+            // Ignore errors.
+        }).then(() => {
             // Get attempts data. We ignore cache for online attempts, so this call will fail if offline or server down.
             return this.scormProvider.getAttemptCount(scorm.id, false, true, siteId);
         }).then((attemptsData) => {

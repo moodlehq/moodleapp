@@ -143,7 +143,9 @@ export class AddonModSurveySyncProvider extends CoreSyncBaseProvider {
         };
 
         // Sync offline logs.
-        const syncPromise = this.logHelper.syncIfNeeded(AddonModSurveyProvider.COMPONENT, surveyId, siteId).finally(() => {
+        const syncPromise = this.logHelper.syncIfNeeded(AddonModSurveyProvider.COMPONENT, surveyId, siteId).catch(() => {
+            // Ignore errors.
+        }).then(() => {
             // Get answers to be sent.
             return this.surveyOffline.getSurveyData(surveyId, siteId, userId).catch(() => {
                 // No offline data found, return empty object.

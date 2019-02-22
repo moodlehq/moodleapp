@@ -192,7 +192,9 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
         };
 
         // Sync offline logs.
-        const syncPromise = this.logHelper.syncIfNeeded(AddonModForumProvider.COMPONENT, forumId, siteId).finally(() => {
+        const syncPromise = this.logHelper.syncIfNeeded(AddonModForumProvider.COMPONENT, forumId, siteId).catch(() => {
+            // Ignore errors.
+        }).then(() => {
             // Get offline responses to be sent.
             return this.forumOffline.getNewDiscussions(forumId, siteId, userId).catch(() => {
                 // No offline data found, return empty object.

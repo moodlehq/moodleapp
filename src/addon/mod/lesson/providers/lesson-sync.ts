@@ -272,7 +272,9 @@ export class AddonModLessonSyncProvider extends CoreSyncBaseProvider {
         this.logger.debug('Try to sync lesson ' + lessonId + ' in site ' + siteId);
 
         // Sync offline logs.
-        syncPromise = this.logHelper.syncIfNeeded(AddonModLessonProvider.COMPONENT, lessonId, siteId).finally(() => {
+        syncPromise = this.logHelper.syncIfNeeded(AddonModLessonProvider.COMPONENT, lessonId, siteId).catch(() => {
+            // Ignore errors.
+        }).then(() => {
             // Try to synchronize the attempts first.
             return this.lessonOfflineProvider.getLessonAttempts(lessonId, siteId);
         }).then((attempts) => {
