@@ -19,6 +19,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreIonTabsComponent } from '@components/ion-tabs/ion-tabs';
 import { AddonModScormProvider, AddonModScormAttemptCountResult } from '../../providers/scorm';
 import { AddonModScormHelperProvider } from '../../providers/helper';
 import { AddonModScormSyncProvider } from '../../providers/scorm-sync';
@@ -68,7 +69,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
             protected sitesProvider: CoreSitesProvider, protected syncProvider: CoreSyncProvider,
             protected domUtils: CoreDomUtilsProvider, protected timeUtils: CoreTimeUtilsProvider,
             protected scormProvider: AddonModScormProvider, protected scormHelper: AddonModScormHelperProvider,
-            protected scormSyncProvider: AddonModScormSyncProvider) {
+            protected scormSyncProvider: AddonModScormSyncProvider, protected tabs: CoreIonTabsComponent) {
 
         this.scorm = navParams.get('scorm') || {};
         this.mode = navParams.get('mode') || AddonModScormProvider.MODENORMAL;
@@ -92,6 +93,8 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
         this.showToc = this.scormProvider.displayTocInPlayer(this.scorm);
 
         if (this.scorm.popup) {
+            this.tabs.changeVisibility(false);
+
             // If we receive a value <= 100 we need to assume it's a percentage.
             if (this.scorm.width <= 100) {
                 this.scorm.width = this.scorm.width + '%';
@@ -448,5 +451,6 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
 
         // Unblock the SCORM so it can be synced.
         this.syncProvider.unblockOperation(AddonModScormProvider.COMPONENT, this.scorm.id, 'player');
+        this.tabs.changeVisibility(true);
     }
 }

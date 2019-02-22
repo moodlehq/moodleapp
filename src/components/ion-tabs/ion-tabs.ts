@@ -53,6 +53,7 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
     @ViewChild('originalTabs') originalTabsRef: ElementRef;
 
     _loaded: boolean; // Whether tabs have been loaded.
+    hidden = false; // Whether to show/hide tabs.
 
     /**
      * List of tabs that haven't been initialized yet. This is required because IonTab calls add() on the constructor,
@@ -322,6 +323,22 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
             this.selectTabPromiseDefer = this.selectTabPromiseDefer || this.utils.promiseDefer();
 
             return this.selectTabPromiseDefer.promise;
+        }
+    }
+
+    /**
+     * Change tabs visibility to show/hide them from the view.
+     *
+     * @param {boolean} visible If show or hide the tabs.
+     */
+    changeVisibility(visible: boolean): void {
+        if (this.hidden == visible) {
+            // Change needed.
+            this.hidden = !visible;
+
+            setTimeout(() => {
+                this.viewCtrl.getContent().resize();
+            });
         }
     }
 
