@@ -14,7 +14,7 @@
 
 import { Component, Input, Output, Optional, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { NavController } from 'ionic-angular';
+import { NavController, Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -34,7 +34,6 @@ import { AddonModForumSyncProvider } from '../../providers/sync';
     templateUrl: 'addon-mod-forum-post.html',
 })
 export class AddonModForumPostComponent implements OnInit, OnDestroy {
-
     @Input() post: any; // Post.
     @Input() courseId: number; // Post's course ID.
     @Input() discussionId: number; // Post's' discussion ID.
@@ -64,7 +63,8 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
             private forumHelper: AddonModForumHelperProvider,
             private forumOffline: AddonModForumOfflineProvider,
             private forumSync: AddonModForumSyncProvider,
-            @Optional() private svComponent: CoreSplitViewComponent) {
+            @Optional() private svComponent: CoreSplitViewComponent,
+            @Optional() private content: Content) {
         this.onPostChange = new EventEmitter<void>();
     }
 
@@ -122,9 +122,18 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
             // User is editing a post, data needs to be resetted. Ask confirm if there is unsaved data.
             this.confirmDiscard().then(() => {
                 this.setReplyData(this.post.id);
+
+                if (this.content) {
+                    setTimeout(() => {
+                        this.content.resize();
+                        this.domUtils.scrollToElementBySelector(this.content, '#addon-forum-reply-edit-form-' + this.uniqueId);
+                    });
+                }
             }).catch(() => {
                 // Cancelled.
             });
+
+            return;
         } else if (!this.replyData.replyingTo) {
             // User isn't replying, it's a brand new reply. Initialize the data.
             this.setReplyData(this.post.id);
@@ -133,6 +142,14 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
             this.replyData.replyingTo = this.post.id;
             this.messageControl.setValue(this.replyData.message);
         }
+
+        if (this.content) {
+            setTimeout(() => {
+                this.content.resize();
+                this.domUtils.scrollToElementBySelector(this.content, '#addon-forum-reply-edit-form-' + this.uniqueId);
+            });
+        }
+
     }
 
     /**
