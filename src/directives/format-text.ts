@@ -98,6 +98,10 @@ export class CoreFormatTextDirective implements OnChanges {
         extContent.component = this.component;
         extContent.componentId = this.componentId;
         extContent.siteId = this.siteId;
+        extContent.src = element.getAttribute('src');
+        extContent.href = element.getAttribute('href');
+        extContent.targetSrc = element.getAttribute('target-src');
+        extContent.poster = element.getAttribute('poster');
 
         extContent.ngAfterViewInit();
     }
