@@ -721,13 +721,22 @@ ion-app.app-root {
     width: 100%;
   }
 
-  .core-modal-fullscreen {
-    .modal-wrapper {
-      position: absolute;
-      @include position(0 !important, null, null, 0 !important);
-      display: block;
-      width: 100% !important;
-      height: 100% !important;
+  .core-modal-fullscreen  .modal-wrapper {
+    position: absolute;
+    @include position(0 !important, null, null, 0 !important);
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  @media only screen and (min-height: 600px) and (min-width: 768px) {
+      .core-modal-lateral  .modal-wrapper {
+        position: absolute;
+        @include position(0 !important, 0 !important, 0 !important, auto);
+        display: block;
+        height: 100% !important;
+        width: auto;
+        min-width: 400px;
     }
   }
 

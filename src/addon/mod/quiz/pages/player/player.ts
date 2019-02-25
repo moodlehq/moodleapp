@@ -94,7 +94,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
         // Create the navigation modal.
         this.navigationModal = modalCtrl.create('AddonModQuizNavigationModalPage', {
             page: this
-        });
+        }, { cssClass: 'core-modal-lateral' });
     }
 
     /**
