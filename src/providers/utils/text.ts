@@ -214,10 +214,20 @@ export class CoreTextUtilsProvider {
         if (!text || typeof text != 'string') {
             return 0;
         }
+        const blockTags = ['address', 'article', 'aside', 'blockquote', 'br', ' details', 'dialog', 'dd', 'div', 'dl', 'dt',
+            'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'hgroup', 'hr',
+            'li', 'main', 'nav', 'ol', 'p', 'pre', 'section', 'table', 'ul'];
 
         // Clean HTML scripts and tags.
         text = text.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, '');
-        text = text.replace(/<\/?(?!\!)[^>]*>/gi, '');
+        // Replace block tags by space to get word count aware of line break and remove inline tags.
+        text = text.replace(/<(\/[ ]*)?([a-zA-Z0-9]+)[^>]*>/gi, (str, p1, match) => {
+            if (blockTags.indexOf(match) >= 0) {
+                return ' ';
+            }
+
+            return '';
+        });
         // Decode HTML entities.
         text = this.decodeHTMLEntities(text);
         // Replace underscores (which are classed as word characters) with spaces.
