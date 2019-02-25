@@ -664,6 +664,22 @@ ion-app.app-root {
       }
     }
 
+    .core-#{$color-name}-item.item-input {
+      border-bottom: 0 !important;
+
+      &.item-md .item-inner {
+        @include md-input-highlight($color-base);
+      }
+
+      &.item-ios .item-inner {
+        @include ios-input-highlight($color-base);
+      }
+
+      &.item-wp .item-inner {
+        border-color: $color-base;
+      }
+    }
+
     .core-#{$color-name}-selected-item {
       @include safe-area-border-start(5px, solid, $color-base);
 
