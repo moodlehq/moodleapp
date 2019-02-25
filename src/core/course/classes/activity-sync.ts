@@ -55,7 +55,7 @@ export class CoreCourseActivitySyncBaseProvider extends CoreSyncBaseProvider {
             if (result && result.updates) {
                 // Only prefetch if files haven't changed.
                 const fileChanged = !!result.updates.find((entry) => {
-                    return entry.match(regex);
+                    return entry.name.match(regex);
                 });
 
                 if (!fileChanged) {
