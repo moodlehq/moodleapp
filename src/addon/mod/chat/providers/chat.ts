@@ -154,7 +154,7 @@ export class AddonModChatProvider {
                 message.userprofileimageurl = user.profileimageurl;
             }).catch(() => {
                 // Error getting profile, most probably the user is deleted.
-                message.userfullname = this.translate.instant('core.deleteduser', {$a: message.userid});
+                message.userfullname = this.translate.instant('core.deleteduser') + ' ' + message.userid;
             });
         });
 

@@ -93,7 +93,7 @@ export class AddonModChatSessionsPage {
                             sessionUser.userfullname = user.fullname;
                         }).catch(() => {
                             // Error getting profile, most probably the user is deleted.
-                            sessionUser.userfullname = this.translate.instant('core.deleteduser', {$a: sessionUser.userid});
+                            sessionUser.userfullname = this.translate.instant('core.deleteduser') + ' ' + sessionUser.userid;
                         }));
                     }
                 });

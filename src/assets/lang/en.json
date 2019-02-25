@@ -1299,7 +1299,7 @@
     "core.defaultvalue": "Default ({{$a}})",
     "core.delete": "Delete",
     "core.deletedoffline": "Deleted offline",
-    "core.deleteduser": "Deleted user {{$a}}",
+    "core.deleteduser": "Deleted user",
     "core.deleting": "Deleting",
     "core.description": "Description",
     "core.dfdaymonthyear": "MM-DD-YYYY",

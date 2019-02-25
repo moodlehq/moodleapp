@@ -57,7 +57,7 @@
     "defaultvalue": "Default ({{$a}})",
     "delete": "Delete",
     "deletedoffline": "Deleted offline",
-    "deleteduser": "Deleted user {{$a}}",
+    "deleteduser": "Deleted user",
     "deleting": "Deleting",
     "description": "Description",
     "dfdaymonthyear": "MM-DD-YYYY",
