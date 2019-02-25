@@ -25,7 +25,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
-import { CoreSyncBaseProvider } from '@classes/base-sync';
+import { CoreCourseActivitySyncBaseProvider } from '@core/course/classes/activity-sync';
 import { AddonModScormProvider, AddonModScormAttemptCountResult } from './scorm';
 import { AddonModScormOfflineProvider } from './scorm-offline';
 import { AddonModScormPrefetchHandler } from './prefetch-handler';
@@ -57,7 +57,7 @@ export interface AddonModScormSyncResult {
  * Service to sync SCORMs.
  */
 @Injectable()
-export class AddonModScormSyncProvider extends CoreSyncBaseProvider {
+export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvider {
 
     static AUTO_SYNCED = 'addon_mod_scorm_autom_synced';
 
@@ -67,12 +67,12 @@ export class AddonModScormSyncProvider extends CoreSyncBaseProvider {
             syncProvider: CoreSyncProvider, textUtils: CoreTextUtilsProvider, translate: TranslateService,
             private eventsProvider: CoreEventsProvider, timeUtils: CoreTimeUtilsProvider,
             private scormProvider: AddonModScormProvider, private scormOfflineProvider: AddonModScormOfflineProvider,
-            private prefetchHandler: AddonModScormPrefetchHandler, private utils: CoreUtilsProvider,
-            private prefetchDelegate: CoreCourseModulePrefetchDelegate, private courseProvider: CoreCourseProvider,
+            prefetchHandler: AddonModScormPrefetchHandler, private utils: CoreUtilsProvider,
+            prefetchDelegate: CoreCourseModulePrefetchDelegate, private courseProvider: CoreCourseProvider,
             private logHelper: CoreCourseLogHelperProvider) {
 
         super('AddonModScormSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
-                timeUtils);
+                timeUtils, prefetchDelegate, prefetchHandler);
 
         this.componentTranslate = courseProvider.translateModuleName('scorm');
     }
@@ -196,7 +196,7 @@ export class AddonModScormSyncProvider extends CoreSyncBaseProvider {
         if (updated) {
             // Update downloaded data.
             promise = this.courseProvider.getModuleBasicInfoByInstance(scorm.id, 'scorm', siteId).then((module) => {
-                return this.prefetchAfterUpdate(module, scorm.course);
+                return this.prefetchAfterUpdate(module, scorm.course, undefined, siteId);
             }).catch(() => {
                 // Ignore errors.
             });
@@ -358,31 +358,6 @@ export class AddonModScormSyncProvider extends CoreSyncBaseProvider {
             return promise.then(() => {
                 return Promise.reject(error);
             });
-        });
-    }
-
-    /**
-     * Prefetch data after an update. It won't prefetch the data if the package file was updated.
-     *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
-     */
-    prefetchAfterUpdate(module: any, courseId: number, siteId?: string): Promise<any> {
-        // Get the module updates to check if the package was updated or not.
-        return this.prefetchDelegate.getModuleUpdates(module, courseId, true, siteId).then((result) => {
-
-            if (result && result.updates) {
-                // Only prefetch if the package file hasn't changed.
-                const fileChanged = !!result.updates.find((entry) => {
-                    return entry.name == 'packagefiles';
-                });
-
-                if (!fileChanged) {
-                    return this.prefetchHandler.download(module, courseId);
-                }
-            }
         });
     }
 

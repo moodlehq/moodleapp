@@ -352,14 +352,13 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             }
 
             const modal = this.domUtils.showModalLoading('core.sending', true);
-            this.choiceProvider.submitResponse(this.choice.id, this.choice.name, this.courseId, responses).then(() => {
+            this.choiceProvider.submitResponse(this.choice.id, this.choice.name, this.courseId, responses).then((online) => {
                 // Success!
                 // Check completion since it could be configured to complete once the user answers the choice.
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
                 this.domUtils.scrollToTop(this.content);
 
-                // Let's refresh the data.
-                return this.refreshContent(false);
+                return this.dataUpdated(online);
             }).catch((message) => {
                 this.domUtils.showErrorModalDefault(message, 'addon.mod_choice.cannotsubmit', true);
             }).finally(() => {
@@ -377,7 +376,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             this.choiceProvider.deleteResponses(this.choice.id, this.choice.name, this.courseId).then(() => {
                 this.domUtils.scrollToTop(this.content);
 
-                // Success! Let's refresh the data.
+                // Refresh the data. Don't call dataUpdated because deleting an answer doesn't mark the choice as outdated.
                 return this.refreshContent(false);
             }).catch((message) => {
                 this.domUtils.showErrorModalDefault(message, 'addon.mod_choice.cannotsubmit', true);
@@ -387,6 +386,28 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
         }).catch(() => {
             // Ingore cancelled modal.
         });
+    }
+
+    /**
+     * Function to call when some data has changed. It will refresh/prefetch data.
+     *
+     * @param {boolean} online Whether the data was sent to server or stored in offline.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected dataUpdated(online: boolean): Promise<any> {
+        if (online && this.isPrefetched()) {
+            // The choice is downloaded, update the data.
+            return this.choiceSync.prefetchAfterUpdate(this.module, this.courseId).then(() => {
+                // Update the view.
+                this.showLoadingAndFetch(false, false);
+            }).catch(() => {
+                // Prefetch failed, refresh the data.
+                return this.refreshContent(false);
+            });
+        } else {
+            // Not downloaded, refresh the data.
+            return this.refreshContent(false);
+        }
     }
 
     /**

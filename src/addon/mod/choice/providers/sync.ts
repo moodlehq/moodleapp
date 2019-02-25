@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreAppProvider } from '@providers/app';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -26,13 +25,16 @@ import { CoreEventsProvider } from '@providers/events';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
+import { CoreCourseActivitySyncBaseProvider } from '@core/course/classes/activity-sync';
 import { CoreSyncProvider } from '@providers/sync';
+import { AddonModChoicePrefetchHandler } from './prefetch-handler';
 
 /**
  * Service to sync choices.
  */
 @Injectable()
-export class AddonModChoiceSyncProvider extends CoreSyncBaseProvider {
+export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvider {
 
     static AUTO_SYNCED = 'addon_mod_choice_autom_synced';
     protected componentTranslate: string;
@@ -42,9 +44,11 @@ export class AddonModChoiceSyncProvider extends CoreSyncBaseProvider {
             private eventsProvider: CoreEventsProvider,  private choiceProvider: AddonModChoiceProvider,
             translate: TranslateService, private utils: CoreUtilsProvider, protected textUtils: CoreTextUtilsProvider,
             courseProvider: CoreCourseProvider, syncProvider: CoreSyncProvider, timeUtils: CoreTimeUtilsProvider,
-            private logHelper: CoreCourseLogHelperProvider) {
+            private logHelper: CoreCourseLogHelperProvider, prefetchHandler: AddonModChoicePrefetchHandler,
+            prefetchDelegate: CoreCourseModulePrefetchDelegate) {
+
         super('AddonModChoiceSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
-                timeUtils);
+                timeUtils, prefetchDelegate, prefetchHandler);
 
         this.componentTranslate = courseProvider.translateModuleName('choice');
     }
@@ -195,16 +199,8 @@ export class AddonModChoiceSyncProvider extends CoreSyncBaseProvider {
             });
         }).then(() => {
             if (courseId) {
-                const promises = [
-                    this.choiceProvider.invalidateChoiceData(courseId),
-                    choiceId ? this.choiceProvider.invalidateOptions(choiceId) : Promise.resolve(),
-                    choiceId ? this.choiceProvider.invalidateResults(choiceId) : Promise.resolve(),
-                ];
-
-                // Data has been sent to server, update choice data.
-                return Promise.all(promises).then(() => {
-                    return this.choiceProvider.getChoiceById(courseId, choiceId, siteId);
-                }).catch(() => {
+                // Data has been sent to server, prefetch choice if needed.
+                return this.prefetchAfterUpdate(module, courseId, undefined, siteId).catch(() => {
                     // Ignore errors.
                 });
             }
