@@ -1,5 +1,6 @@
 {
     "beep": "Beep",
+    "chatreport": "Chat sessions",
     "currentusers": "Current users",
     "enterchat": "Click here to enter the chat now",
     "entermessage": "Enter your message",
@@ -11,10 +12,14 @@
     "messagebeepsyou": "{{$a}} has just beeped you!",
     "messageenter": "{{$a}} has just entered this chat",
     "messageexit": "{{$a}} has left this chat",
+    "messages": "Messages",
     "modulenameplural": "Chats",
     "mustbeonlinetosendmessages": "You must be online to send messages.",
     "nomessages": "No messages yet",
+    "nosessionsfound": "No sessions found",
     "send": "Send",
     "sessionstart": "The next chat session will start on {{$a.date}}, ({{$a.fromnow}} from now)",
-    "talk": "Talk"
+    "showincompletesessions": "Show incomplete sessions",
+    "talk": "Talk",
+    "viewreport": "View past chat sessions"
 }

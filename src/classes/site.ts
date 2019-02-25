@@ -632,10 +632,13 @@ export class CoreSite {
                     error.message = this.translate.instant('core.unicodenotsupported');
 
                     return Promise.reject(error);
-                } else if (error.exception === 'required_capability_exception' || error.errorcode === 'nopermission') {
+                } else if (error.exception === 'required_capability_exception' || error.errorcode === 'nopermission' ||
+                        error.errorcode === 'notingroup') {
+                    // Translate error messages with missing strings.
                     if (error.message === 'error/nopermission') {
-                        // This error message is returned by some web services but the string does not exist.
                         error.message = this.translate.instant('core.nopermissionerror');
+                    } else if (error.message === 'error/notingroup') {
+                        error.message = this.translate.instant('core.notingroup');
                     }
 
                     // Save the error instead of deleting the cache entry so the same content is displayed in offline.
