@@ -1051,6 +1051,19 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Get the list of IDs of sites stored and not logged out.
+     *
+     * @return {Promise<string[]>} Promise resolved when the sites IDs are retrieved.
+     */
+    getLoggedInSitesIds(): Promise<string[]> {
+        return this.appDB.getRecords(this.SITES_TABLE, {loggedOut : 0}).then((sites) => {
+            return sites.map((site) => {
+                return site.id;
+            });
+        });
+    }
+
+    /**
      * Get the list of IDs of sites stored.
      *
      * @return {Promise<string[]>} Promise resolved when the sites IDs are retrieved.

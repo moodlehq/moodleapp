@@ -243,7 +243,7 @@ export class CoreSyncBaseProvider {
         if (!siteId) {
             // No site ID defined, sync all sites.
             this.logger.debug(`Try to sync '${syncFunctionLog}' in all sites.`);
-            promise = this.sitesProvider.getSitesIds();
+            promise = this.sitesProvider.getLoggedInSitesIds();
         } else {
             this.logger.debug(`Try to sync '${syncFunctionLog}' in site '${siteId}'.`);
             promise = Promise.resolve([siteId]);
