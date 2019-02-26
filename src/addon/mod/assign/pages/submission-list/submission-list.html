@@ -15,10 +15,17 @@
             </core-empty-box>
 
             <ion-list>
+                <ion-item text-wrap *ngIf="(groupInfo.separateGroups || groupInfo.visibleGroups)">
+                    <ion-label id="addon-assign-groupslabel" *ngIf="groupInfo.separateGroups">{{ 'core.groupsseparate' | translate }}</ion-label>
+                    <ion-label id="addon-assign-groupslabel" *ngIf="groupInfo.visibleGroups">{{ 'core.groupsvisible' | translate }}</ion-label>
+                    <ion-select [(ngModel)]="groupId" (ionChange)="setGroup(groupId)" aria-labelledby="addon-assign-groupslabel" interface="action-sheet">
+                        <ion-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">{{groupOpt.name}}</ion-option>
+                    </ion-select>
+                </ion-item>
                 <!-- List of submissions. -->
                 <ng-container *ngFor="let submission of submissions">
-                    <a ion-item text-wrap (click)="loadSubmission(submission)" [class.core-split-item-selected]="submission.id == selectedSubmissionId">
-                        <ion-avatar core-user-avatar [user]="submission" item-start></ion-avatar>
+                    <a ion-item text-wrap (click)="loadSubmission(submission)" [class.core-split-item-selected]="submission.submitid == selectedSubmissionId">
+                        <ion-avatar core-user-avatar [user]="submission" [linkProfile]="false" item-start></ion-avatar>
                         <h2 *ngIf="submission.userfullname">{{submission.userfullname}}</h2>
                         <h2 *ngIf="!submission.userfullname">{{ 'addon.mod_assign.hiddenuser' | translate }}{{submission.blindid}}</h2>
                         <p *ngIf="assign.teamsubmission">

@@ -14,7 +14,7 @@
 
 import { Component, Optional, Injector, ViewChild } from '@angular/core';
 import { Content, NavController } from 'ionic-angular';
-import { CoreGroupsProvider } from '@providers/groups';
+import { CoreGroupsProvider, CoreGroupInfo } from '@providers/groups';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
 import { AddonModAssignProvider } from '../../providers/assign';
@@ -44,6 +44,12 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     showNumbers = true; // Whether to show number of submissions with each status.
     summary: any; // The summary.
     needsGradingAvalaible: boolean; // Whether we can see the submissions that need grading.
+
+    groupInfo: CoreGroupInfo = {
+        groups: [],
+        separateGroups: false,
+        visibleGroups: false
+    };
 
     // Status.
     submissionStatusSubmitted = AddonModAssignProvider.SUBMISSION_STATUS_SUBMITTED;
@@ -193,15 +199,13 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
                     }
 
                     // Check if groupmode is enabled to avoid showing wrong numbers.
-                    return this.groupsProvider.activityHasGroups(this.assign.cmid).then((hasGroups) => {
-                        this.showNumbers = !hasGroups;
+                    return this.groupsProvider.getActivityGroupInfo(this.assign.cmid, false).then((groupInfo) => {
+                        this.groupInfo = groupInfo;
+                        this.showNumbers = groupInfo.groups.length == 0 ||
+                            this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.5');
 
-                        return this.assignProvider.getSubmissionStatus(this.assign.id).then((response) => {
-                            this.summary = response.gradingsummary;
-
-                            this.needsGradingAvalaible = response.gradingsummary.submissionsneedgradingcount > 0 &&
-                                    this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.2');
-                        });
+                        return this.setGroup(this.group || (groupInfo.groups && groupInfo.groups[0] && groupInfo.groups[0].id) ||
+                            0);
                     });
                 }
 
@@ -223,6 +227,23 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
+     * Set group to see the summary.
+     *
+     * @param  {number}       groupId Group ID.
+     * @return {Promise<any>}         Resolved when done.
+     */
+    setGroup(groupId: number): Promise<any> {
+        this.group = groupId;
+
+        return this.assignProvider.getSubmissionStatus(this.assign.id, undefined, this.group).then((response) => {
+            this.summary = response.gradingsummary;
+
+            this.needsGradingAvalaible = response.gradingsummary && response.gradingsummary.submissionsneedgradingcount > 0 &&
+                    this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.2');
+        });
+    }
+
+    /**
      * Go to view a list of submissions.
      *
      * @param {string} status Status to see.
@@ -232,6 +253,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         if (typeof status == 'undefined') {
             this.navCtrl.push('AddonModAssignSubmissionListPage', {
                 courseId: this.courseId,
+                groupId: this.group || 0,
                 moduleId: this.module.id,
                 moduleName: this.moduleName
             });
@@ -239,6 +261,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             this.navCtrl.push('AddonModAssignSubmissionListPage', {
                 status: status,
                 courseId: this.courseId,
+                groupId: this.group || 0,
                 moduleId: this.module.id,
                 moduleName: this.moduleName
             });
@@ -273,7 +296,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             promises.push(this.assignProvider.invalidateAllSubmissionData(this.assign.id));
 
             if (this.canViewAllSubmissions) {
-                promises.push(this.assignProvider.invalidateSubmissionStatusData(this.assign.id));
+                promises.push(this.assignProvider.invalidateSubmissionStatusData(this.assign.id, undefined, this.group));
             }
         }
 

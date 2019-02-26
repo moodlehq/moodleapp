@@ -132,7 +132,8 @@ export class AddonModAssignSubmissionReviewPage implements OnInit {
         if (this.assign) {
             promises.push(this.assignProvider.invalidateSubmissionData(this.assign.id));
             promises.push(this.assignProvider.invalidateAssignmentUserMappingsData(this.assign.id));
-            promises.push(this.assignProvider.invalidateSubmissionStatusData(this.assign.id, this.submitId, this.blindMarking));
+            promises.push(this.assignProvider.invalidateSubmissionStatusData(this.assign.id, this.submitId, undefined,
+                this.blindMarking));
         }
 
         return Promise.all(promises).finally(() => {
