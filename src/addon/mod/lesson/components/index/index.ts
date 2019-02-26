@@ -61,6 +61,8 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     protected accessInfo: any; // Lesson access info.
     protected password: string; // The password for the lesson.
     protected hasPlayed: boolean; // Whether the user has gone to the lesson player (attempted).
+    protected dataSentObserver; // To detect data sent to server.
+    protected dataSent = false; // Whether some data was sent to server while playing the lesson.
 
     constructor(injector: Injector, protected lessonProvider: AddonModLessonProvider, @Optional() content: Content,
             protected groupsProvider: CoreGroupsProvider, protected lessonOffline: AddonModLessonOfflineProvider,
@@ -228,6 +230,13 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * @return {boolean} If suceed or not.
      */
     protected hasSyncSucceed(result: any): boolean {
+        if (result.updated || this.dataSent) {
+            // Check completion status if something was sent.
+            this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
+        }
+
+        this.dataSent = false;
+
         return result.updated;
     }
 
@@ -243,6 +252,10 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         if (this.hasPlayed) {
             this.hasPlayed = false;
 
+            this.dataSentObserver && this.dataSentObserver.off(); // Stop listening for changes.
+            this.dataSentObserver = undefined;
+
+            // Refresh data.
             this.showLoadingAndRefresh(true, false);
         }
     }
@@ -257,6 +270,16 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
 
         if (this.navCtrl.getActive().component.name == 'AddonModLessonPlayerPage') {
             this.hasPlayed = true;
+
+            // Detect if anything was sent to server.
+            this.dataSentObserver && this.dataSentObserver.off();
+
+            this.dataSentObserver = this.eventsProvider.on(AddonModLessonProvider.DATA_SENT_EVENT, (data) => {
+                // Ignore launch sending because it only affects timers.
+                if (data.lessonId === this.lesson.id && data.type != 'launch') {
+                    this.dataSent = true;
+                }
+            }, this.siteId);
         }
     }
 
@@ -556,7 +579,18 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * @return {Promise<any>} Promise resolved when done.
      */
     protected sync(): Promise<any> {
-        return this.lessonSync.syncLesson(this.lesson.id, true);
+        return this.lessonSync.syncLesson(this.lesson.id, true).then((result) => {
+            if (!result.updated && this.dataSent && this.isPrefetched()) {
+                // The user sent data to server, but not in the sync process. Check if we need to fetch data.
+                return this.lessonSync.prefetchAfterUpdate(this.module, this.courseId).catch(() => {
+                    // Ignore errors.
+                }).then(() => {
+                    return result;
+                });
+            }
+
+            return result;
+        });
     }
 
     /**
@@ -574,5 +608,14 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
 
             return Promise.reject(error);
         });
+    }
+
+    /**
+     * Component being destroyed.
+     */
+    ngOnDestroy(): void {
+        super.ngOnDestroy();
+
+        this.dataSentObserver && this.dataSentObserver.off();
     }
 }

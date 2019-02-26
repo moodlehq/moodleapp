@@ -124,16 +124,17 @@ export class CoreGroupsProvider {
      * @param {number} cmId Course module ID.
      * @param {number} [userId] User ID. If not defined, use current user.
      * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @return {Promise<any[]>} Promise resolved when the groups are retrieved. If not allowed, empty array will be returned.
      */
-    getActivityAllowedGroupsIfEnabled(cmId: number, userId?: number, siteId?: string): Promise<any[]> {
+    getActivityAllowedGroupsIfEnabled(cmId: number, userId?: number, siteId?: string, ignoreCache?: boolean): Promise<any[]> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         // Get real groupmode, in case it's forced by the course.
-        return this.activityHasGroups(cmId, siteId).then((hasGroups) => {
+        return this.activityHasGroups(cmId, siteId, ignoreCache).then((hasGroups) => {
             if (hasGroups) {
                 // Get the groups available for the user.
-                return this.getActivityAllowedGroups(cmId, userId, siteId);
+                return this.getActivityAllowedGroups(cmId, userId, siteId, ignoreCache);
             }
 
             return [];
@@ -147,7 +148,7 @@ export class CoreGroupsProvider {
      * @param {boolean} [addAllParts=true] Whether to add the all participants option. Always true for visible groups.
      * @param {number} [userId] User ID. If not defined, use current user.
      * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {boolean} [ignoreCache=false] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @return {Promise<CoreGroupInfo>} Promise resolved with the group info.
      */
     getActivityGroupInfo(cmId: number, addAllParts: boolean = true, userId?: number, siteId?: string, ignoreCache?: boolean)

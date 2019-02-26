@@ -83,7 +83,7 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
             password,
             result;
 
-        return this.lessonProvider.getLesson(courseId, module.id, false, siteId).then((lessonData) => {
+        return this.lessonProvider.getLesson(courseId, module.id, false, false, siteId).then((lessonData) => {
             lesson = lessonData;
 
             // Get the lesson password if it's needed.
@@ -190,7 +190,7 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
         const siteId = this.sitesProvider.getCurrentSiteId();
 
         // Invalidate data to determine if module is downloadable.
-        return this.lessonProvider.getLesson(courseId, module.id, false, siteId).then((lesson) => {
+        return this.lessonProvider.getLesson(courseId, module.id, true, false, siteId).then((lesson) => {
             const promises = [];
 
             promises.push(this.lessonProvider.invalidateLessonData(courseId, siteId));
@@ -210,7 +210,7 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
     isDownloadable(module: any, courseId: number): boolean | Promise<boolean> {
         const siteId = this.sitesProvider.getCurrentSiteId();
 
-        return this.lessonProvider.getLesson(courseId, module.id, false, siteId).then((lesson) => {
+        return this.lessonProvider.getLesson(courseId, module.id, false, false, siteId).then((lesson) => {
             if (!this.lessonProvider.isLessonOffline(lesson)) {
                 return false;
             }
@@ -260,7 +260,7 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
             password,
             accessInfo;
 
-        return this.lessonProvider.getLesson(courseId, module.id, false, siteId).then((lessonData) => {
+        return this.lessonProvider.getLesson(courseId, module.id, false, true, siteId).then((lessonData) => {
             lesson = lessonData;
 
             // Get the lesson password if it's needed.
@@ -360,7 +360,8 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
 
             if (accessInfo.canviewreports) {
                 // Prefetch reports data.
-                promises.push(this.groupsProvider.getActivityAllowedGroupsIfEnabled(module.id, undefined, siteId).then((groups) => {
+                promises.push(this.groupsProvider.getActivityAllowedGroupsIfEnabled(module.id, undefined, siteId, true)
+                        .then((groups) => {
                     const subPromises = [];
 
                     groups.forEach((group) => {

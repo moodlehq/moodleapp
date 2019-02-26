@@ -54,6 +54,21 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
     }
 
     /**
+     * Conveniece function to prefetch data after an update.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID.
+     * @param {RegExp} [regex] If regex matches, don't download the data. Defaults to check files and timers.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetchAfterUpdate(module: any, courseId: number, regex?: RegExp, siteId?: string): Promise<any> {
+        regex = regex || /^.*files$|^timers/;
+
+        return super.prefetchAfterUpdate(module, courseId, regex, siteId);
+    }
+
+    /**
      * Try to synchronize all the feedbacks in a certain site or in all sites.
      *
      * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.

@@ -42,7 +42,7 @@ export class CoreCourseActivitySyncBaseProvider extends CoreSyncBaseProvider {
      *
      * @param {any} module Module.
      * @param {number} courseId Course ID.
-     * @param {RegExp} [regex] RegExp to check if it should download data. Defaults to check files.
+     * @param {RegExp} [regex] If regex matches, don't download the data. Defaults to check files.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when done.
      */
@@ -54,11 +54,11 @@ export class CoreCourseActivitySyncBaseProvider extends CoreSyncBaseProvider {
 
             if (result && result.updates && result.updates.length > 0) {
                 // Only prefetch if files haven't changed.
-                const fileChanged = !!result.updates.find((entry) => {
+                const shouldDownload = !result.updates.find((entry) => {
                     return entry.name.match(regex);
                 });
 
-                if (!fileChanged) {
+                if (shouldDownload) {
                     return this.prefetchHandler.download(module, courseId);
                 }
             }

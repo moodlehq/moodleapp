@@ -25,7 +25,8 @@ import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
-import { CoreSyncBaseProvider } from '@classes/base-sync';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
+import { CoreCourseActivitySyncBaseProvider } from '@core/course/classes/activity-sync';
 import { AddonModLessonProvider } from './lesson';
 import { AddonModLessonOfflineProvider } from './lesson-offline';
 import { AddonModLessonPrefetchHandler } from './prefetch-handler';
@@ -51,7 +52,7 @@ export interface AddonModLessonSyncResult {
  * Service to sync lesson.
  */
 @Injectable()
-export class AddonModLessonSyncProvider extends CoreSyncBaseProvider {
+export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvider {
 
     static AUTO_SYNCED = 'addon_mod_lesson_autom_synced';
 
@@ -92,12 +93,12 @@ export class AddonModLessonSyncProvider extends CoreSyncBaseProvider {
             syncProvider: CoreSyncProvider, textUtils: CoreTextUtilsProvider, translate: TranslateService,
             courseProvider: CoreCourseProvider, private eventsProvider: CoreEventsProvider,
             private lessonProvider: AddonModLessonProvider, private lessonOfflineProvider: AddonModLessonOfflineProvider,
-            private prefetchHandler: AddonModLessonPrefetchHandler, timeUtils: CoreTimeUtilsProvider,
+            protected prefetchHandler: AddonModLessonPrefetchHandler, timeUtils: CoreTimeUtilsProvider,
             private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider,
-            private logHelper: CoreCourseLogHelperProvider) {
+            private logHelper: CoreCourseLogHelperProvider, prefetchDelegate: CoreCourseModulePrefetchDelegate) {
 
         super('AddonModLessonSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
-                timeUtils);
+                timeUtils, prefetchDelegate, prefetchHandler);
 
         this.componentTranslate = courseProvider.translateModuleName('lesson');
 
@@ -288,7 +289,7 @@ export class AddonModLessonSyncProvider extends CoreSyncBaseProvider {
             courseId = attempts[0].courseid;
 
             // Get the info, access info and the lesson password if needed.
-            return this.lessonProvider.getLessonById(courseId, lessonId, false, siteId).then((lessonData) => {
+            return this.lessonProvider.getLessonById(courseId, lessonId, false, false, siteId).then((lessonData) => {
                 lesson = lessonData;
 
                 return this.prefetchHandler.getLessonPassword(lessonId, false, true, askPassword, siteId);
@@ -364,7 +365,7 @@ export class AddonModLessonSyncProvider extends CoreSyncBaseProvider {
                     // Data already retrieved when syncing attempts.
                     promise = Promise.resolve();
                 } else {
-                    promise = this.lessonProvider.getLessonById(courseId, lessonId, false, siteId).then((lessonData) => {
+                    promise = this.lessonProvider.getLessonById(courseId, lessonId, false, false, siteId).then((lessonData) => {
                         lesson = lessonData;
 
                         return this.prefetchHandler.getLessonPassword(lessonId, false, true, askPassword, siteId);
@@ -429,31 +430,9 @@ export class AddonModLessonSyncProvider extends CoreSyncBaseProvider {
             });
         }).then(() => {
             if (result.updated && courseId) {
-                // Data has been sent to server. Now invalidate the WS calls.
-                const promises = [];
-
-                promises.push(this.lessonProvider.invalidateAccessInformation(lessonId, siteId));
-                promises.push(this.lessonProvider.invalidateContentPagesViewed(lessonId, siteId));
-                promises.push(this.lessonProvider.invalidateQuestionsAttempts(lessonId, siteId));
-                promises.push(this.lessonProvider.invalidatePagesPossibleJumps(lessonId, siteId));
-                promises.push(this.lessonProvider.invalidateTimers(lessonId, siteId));
-
-                return this.utils.allPromises(promises).catch(() => {
+                // Data has been sent to server, update data.
+                return this.prefetchAfterUpdate(module, courseId, undefined, siteId).catch(() => {
                     // Ignore errors.
-                }).then(() => {
-                    // Sync successful, update some data that might have been modified.
-                    return this.lessonProvider.getAccessInformation(lessonId, false, false, siteId).then((info) => {
-                        const promises = [],
-                            retake = info.attemptscount;
-
-                        promises.push(this.lessonProvider.getContentPagesViewedOnline(lessonId, retake, false, false, siteId));
-                        promises.push(this.lessonProvider.getQuestionsAttemptsOnline(lessonId, retake, false, undefined, false,
-                                false, siteId));
-
-                        return Promise.all(promises);
-                    }).catch(() => {
-                        // Ignore errors.
-                    });
                 });
             }
         }).then(() => {
