@@ -16,6 +16,7 @@ import { Component, Input, OnInit, OnDestroy, ElementRef, Optional } from '@angu
 import { PopoverController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreContextMenuItemComponent } from './context-menu-item';
 import { CoreContextMenuPopoverComponent } from './context-menu-popover';
 import { CoreTabComponent } from '@components/tabs/tab';
@@ -34,14 +35,16 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
 
     hideMenu = true; // It will be unhidden when items are added.
     ariaLabel: string;
+    expanded = false;
     protected items: CoreContextMenuItemComponent[] = [];
     protected itemsMovedToParent: CoreContextMenuItemComponent[] = [];
     protected itemsChangedStream: Subject<void>; // Stream to update the hideMenu boolean when items change.
     protected instanceId: string;
     protected parentContextMenu: CoreContextMenuComponent;
+    protected uniqueId: string;
 
     constructor(private translate: TranslateService, private popoverCtrl: PopoverController, elementRef: ElementRef,
-            private domUtils: CoreDomUtilsProvider, @Optional() public coreTab: CoreTabComponent) {
+            private domUtils: CoreDomUtilsProvider, @Optional() public coreTab: CoreTabComponent, utils: CoreUtilsProvider) {
         // Create the stream and subscribe to it. We ignore successive changes during 250ms.
         this.itemsChangedStream = new Subject<void>();
         this.itemsChangedStream.auditTime(250).subscribe(() => {
@@ -55,6 +58,9 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
                 return a.priority <= b.priority ? 1 : -1;
             });
         });
+
+        // Calculate the unique ID.
+        this.uniqueId = 'core-context-menu-' + utils.getUniqueId('CoreContextMenuComponent');
 
         this.instanceId = this.domUtils.storeInstanceByElement(elementRef.nativeElement, this);
     }
@@ -170,10 +176,19 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
      * @param {MouseEvent} event Event.
      */
     showContextMenu(event: MouseEvent): void {
-        const popover = this.popoverCtrl.create(CoreContextMenuPopoverComponent, { title: this.title, items: this.items });
-        popover.present({
-            ev: event
-        });
+        if (!this.expanded) {
+            const popover = this.popoverCtrl.create(CoreContextMenuPopoverComponent,
+                { title: this.title, items: this.items, id: this.uniqueId });
+
+            popover.onDidDismiss(() => {
+                this.expanded = false;
+            });
+            popover.present({
+                ev: event
+            });
+
+            this.expanded = true;
+        }
     }
 
     /**

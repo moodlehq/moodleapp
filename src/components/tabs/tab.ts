@@ -16,6 +16,7 @@ import { Component, Input, Output, OnInit, OnDestroy, ElementRef, EventEmitter, 
 import { CoreTabsComponent } from './tabs';
 import { Content } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
 
 /**
@@ -54,6 +55,9 @@ export class CoreTabComponent implements OnInit, OnDestroy {
 
             if (this.initialized && hasChanged) {
                 this.tabs.tabVisibilityChanged();
+
+                this.tabElement = document.getElementById(this.id + '-tab');
+                this.tabElement && this.tabElement.setAttribute('aria-hidden', !this._show);
             }
         }
     }
@@ -70,17 +74,31 @@ export class CoreTabComponent implements OnInit, OnDestroy {
     loaded = false;
     initialized = false;
     _show = true;
+    tabElement: any;
 
-    constructor(protected tabs: CoreTabsComponent, element: ElementRef, protected domUtils: CoreDomUtilsProvider) {
+    constructor(protected tabs: CoreTabsComponent, element: ElementRef, protected domUtils: CoreDomUtilsProvider,
+            utils: CoreUtilsProvider) {
         this.element = element.nativeElement;
+
+        this.element.setAttribute('role', 'tabpanel');
+        this.element.setAttribute('tabindex', '0');
+        this.id = this.id || 'core-tab-' + utils.getUniqueId('CoreTabComponent');
     }
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
+        this.element.setAttribute('aria-labelledby', this.id + '-tab');
+        this.element.setAttribute('id', this.id);
+
         this.tabs.addTab(this);
         this.initialized = true;
+
+        setTimeout(() => {
+            this.tabElement = document.getElementById(this.id + '-tab');
+            this.tabElement && this.tabElement.setAttribute('aria-hidden', !this._show);
+        }, 1000);
     }
 
     /**
@@ -95,6 +113,11 @@ export class CoreTabComponent implements OnInit, OnDestroy {
      */
     selectTab(): void {
         this.element.classList.add('selected');
+
+        this.tabElement = this.tabElement || document.getElementById(this.id + '-tab');
+
+        this.tabElement && this.tabElement.setAttribute('aria-selected', true);
+        this.tabElement && this.tabElement.setAttribute('aria-hidden', !this._show);
 
         this.loaded = true;
         this.ionSelect.emit(this);
@@ -114,6 +137,9 @@ export class CoreTabComponent implements OnInit, OnDestroy {
      * Unselect tab.
      */
     unselectTab(): void {
+        this.tabElement && this.tabElement.setAttribute('aria-selected', false);
+        this.tabElement && this.tabElement.setAttribute('aria-hidden', true);
+
         this.element.classList.remove('selected');
         this.showHideNavBarButtons(false);
     }

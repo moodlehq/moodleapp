@@ -10,19 +10,20 @@ ion-app.app-root .core-tabs-bar {
         width: 100%;
     }
 
-    a.tab-slide {
+    ion-slide.tab-slide {
         @extend .tab-button;
 
         background: $core-top-tabs-background;
         color: $core-top-tabs-color !important;
         font-size: 1.6rem;
-        border: 0;
-        padding: 0 5px 0 5px !important;
+        border-bottom: 2px solid transparent !important;
+        padding: 0 2px 0 2px !important;
         margin: 0 auto !important;
         display: flex;
-        flex-direction: row;
+        flex: none;
+        min-width: 100px;
 
-        span {
+        div {
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
@@ -44,9 +45,12 @@ ion-app.app-root .core-tabs-bar {
 
         &[aria-selected=true] {
             color: $core-top-tabs-color-active !important;
-            border: 0 !important;
-            border-bottom: 2px solid $core-top-tabs-border-active !important;
-            padding: 0 !important;
+            border-bottom-color: $core-top-tabs-border-active !important;
+        }
+
+        .slide-zoom {
+            display: flex;
+            flex-direction: column;
         }
     }
 
@@ -64,7 +68,7 @@ ion-app.app-root .core-tabs-bar {
     }
 }
 
-ion-app.app-root.md .core-tabs-bar a.tab-slide {
+ion-app.app-root.md .core-tabs-bar ion-slide.tab-slide {
     // @extend .tabs-md .tab-button;
     min-height: $tabs-md-tab-min-height;
 
@@ -72,7 +76,7 @@ ion-app.app-root.md .core-tabs-bar a.tab-slide {
     color: $tabs-md-tab-text-color;
 }
 
-ion-app.app-root.ios .core-tabs-bar a.tab-slide {
+ion-app.app-root.ios .core-tabs-bar ion-slide.tab-slide {
     // @extend .tabs-ios .tab-button;
     max-width: $tabs-ios-tab-max-width;
     min-height: $tabs-ios-tab-min-height;
@@ -82,7 +86,7 @@ ion-app.app-root.ios .core-tabs-bar a.tab-slide {
     color: $tabs-ios-tab-text-color;
 }
 
-ion-app.app-root.wp .core-tabs-bar a.tab-slide {
+ion-app.app-root.wp .core-tabs-bar ion-slide.tab-slide {
     //@extend .tabs-wp .tab-button;
     @include border-radius(0);
 
@@ -124,6 +128,7 @@ ion-app.app-root core-tabs {
         display: none;
         height: 100%;
         position: relative;
+        z-index: 1;
 
         &.selected {
             display: block;
