@@ -52,7 +52,7 @@ export class CoreCourseActivitySyncBaseProvider extends CoreSyncBaseProvider {
         // Get the module updates to check if the data was updated or not.
         return this.prefetchDelegate.getModuleUpdates(module, courseId, true, siteId).then((result) => {
 
-            if (result && result.updates) {
+            if (result && result.updates && result.updates.length > 0) {
                 // Only prefetch if files haven't changed.
                 const fileChanged = !!result.updates.find((entry) => {
                     return entry.name.match(regex);

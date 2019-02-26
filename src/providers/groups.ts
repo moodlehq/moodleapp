@@ -147,19 +147,22 @@ export class CoreGroupsProvider {
      * @param {boolean} [addAllParts=true] Whether to add the all participants option. Always true for visible groups.
      * @param {number} [userId] User ID. If not defined, use current user.
      * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {boolean} [ignoreCache=false] True if it should ignore cached data (it will always fail in offline or server down).
      * @return {Promise<CoreGroupInfo>} Promise resolved with the group info.
      */
-    getActivityGroupInfo(cmId: number, addAllParts: boolean = true, userId?: number, siteId?: string): Promise<CoreGroupInfo> {
+    getActivityGroupInfo(cmId: number, addAllParts: boolean = true, userId?: number, siteId?: string, ignoreCache?: boolean)
+            : Promise<CoreGroupInfo> {
+
         const groupInfo: CoreGroupInfo = {
             groups: []
         };
 
-        return this.getActivityGroupMode(cmId, siteId).then((groupMode) => {
+        return this.getActivityGroupMode(cmId, siteId, ignoreCache).then((groupMode) => {
             groupInfo.separateGroups = groupMode === CoreGroupsProvider.SEPARATEGROUPS;
             groupInfo.visibleGroups = groupMode === CoreGroupsProvider.VISIBLEGROUPS;
 
             if (groupInfo.separateGroups || groupInfo.visibleGroups) {
-                return this.getActivityAllowedGroups(cmId, userId, siteId);
+                return this.getActivityAllowedGroups(cmId, userId, siteId, ignoreCache);
             }
 
             return [];
