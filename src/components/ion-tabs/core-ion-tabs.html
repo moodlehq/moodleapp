@@ -1,4 +1,4 @@
-<div class="tabbar" role="tablist" #tabbar>
+<div class="tabbar" role="tablist" #tabbar [hidden]="hidden">
     <a [hidden]="_loaded === false" *ngFor="let t of _tabs" [tab]="t" class="tab-button" role="tab" href="#" (ionSelect)="select(t)"></a>
     <div class="tab-highlight"></div>
     <div *ngIf="_loaded === false" class="core-ion-tabs-loading">
