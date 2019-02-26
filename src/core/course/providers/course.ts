@@ -43,6 +43,8 @@ export class CoreCourseProvider {
     static COMPLETION_COMPLETE_PASS = 2;
     static COMPLETION_COMPLETE_FAIL = 3;
 
+    static COMPONENT = 'CoreCourse';
+
     protected ROOT_CACHE_KEY = 'mmCourse:';
 
     // Variables for database.

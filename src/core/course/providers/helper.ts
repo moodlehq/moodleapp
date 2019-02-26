@@ -192,7 +192,7 @@ export class CoreCourseHelperProvider {
         }
 
         // Get the status of this section.
-        return this.prefetchDelegate.getModulesStatus(section.modules, courseId, section.id, refresh).then((result) => {
+        return this.prefetchDelegate.getModulesStatus(section.modules, courseId, section.id, refresh, true).then((result) => {
             // Check if it's being downloaded.
             const downloadId = this.getSectionDownloadId(section);
             if (this.prefetchDelegate.isBeingDownloaded(downloadId)) {
@@ -401,11 +401,15 @@ export class CoreCourseHelperProvider {
      * @return {Promise<any>} Promise resolved if the user confirms or there's no need to confirm.
      */
     confirmDownloadSizeSection(courseId: number, section?: any, sections?: any[], alwaysConfirm?: boolean): Promise<any> {
-        let sizePromise;
+        let sizePromise,
+            haveEmbeddedFiles = false;
 
         // Calculate the size of the download.
         if (section && section.id != CoreCourseProvider.ALL_SECTIONS_ID) {
             sizePromise = this.prefetchDelegate.getDownloadSize(section.modules, courseId);
+
+            // Check if the section has embedded files in the description.
+            haveEmbeddedFiles = this.domUtils.extractDownloadableFilesFromHtml(section.summary).length > 0;
         } else {
             const promises = [],
                 results = {
@@ -419,6 +423,11 @@ export class CoreCourseHelperProvider {
                         results.total = results.total && sectionSize.total;
                         results.size += sectionSize.size;
                     }));
+
+                    // Check if the section has embedded files in the description.
+                    if (!haveEmbeddedFiles && this.domUtils.extractDownloadableFilesFromHtml(s.summary).length > 0) {
+                        haveEmbeddedFiles = true;
+                    }
                 }
             });
 
@@ -428,6 +437,10 @@ export class CoreCourseHelperProvider {
         }
 
         return sizePromise.then((size) => {
+            if (haveEmbeddedFiles) {
+                size.total = false;
+            }
+
             // Show confirm modal if needed.
             return this.domUtils.confirmDownloadSize(size, undefined, undefined, undefined, undefined, alwaysConfirm);
         });
@@ -1272,10 +1285,12 @@ export class CoreCourseHelperProvider {
             return Promise.resolve();
         }
 
+        const promises = [];
+
         section.isDownloading = true;
 
         // Validate the section needs to be downloaded and calculate amount of modules that need to be downloaded.
-        return this.prefetchDelegate.getModulesStatus(section.modules, courseId, section.id).then((result) => {
+        promises.push(this.prefetchDelegate.getModulesStatus(section.modules, courseId, section.id).then((result) => {
             if (result.status == CoreConstants.DOWNLOADED || result.status == CoreConstants.NOT_DOWNLOADABLE) {
                 // Section is downloaded or not downloadable, nothing to do.
                 return;
@@ -1286,7 +1301,18 @@ export class CoreCourseHelperProvider {
             section.isDownloading = false;
 
             return Promise.reject(error);
-        });
+        }));
+
+        // Download the files in the section description.
+        const introFiles = this.domUtils.extractDownloadableFilesFromHtmlAsFakeFileObjects(section.summary),
+            siteId = this.sitesProvider.getCurrentSiteId();
+
+        promises.push(this.filepoolProvider.addFilesToQueue(siteId, introFiles, CoreCourseProvider.COMPONENT, courseId)
+                .catch(() => {
+            // Ignore errors.
+        }));
+
+        return Promise.all(promises);
     }
 
     /**

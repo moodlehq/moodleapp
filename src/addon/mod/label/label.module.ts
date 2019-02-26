@@ -13,10 +13,13 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { AddonModLabelProvider } from './providers/label';
 import { AddonModLabelModuleHandler } from './providers/module-handler';
 import { AddonModLabelLinkHandler } from './providers/link-handler';
+import { AddonModLabelPrefetchHandler } from './providers/prefetch-handler';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 
 @NgModule({
     declarations: [
@@ -24,14 +27,18 @@ import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate'
     imports: [
     ],
     providers: [
+        AddonModLabelProvider,
         AddonModLabelModuleHandler,
-        AddonModLabelLinkHandler
+        AddonModLabelLinkHandler,
+        AddonModLabelPrefetchHandler
     ]
 })
 export class AddonModLabelModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModLabelModuleHandler,
-            contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModLabelLinkHandler) {
+            contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModLabelLinkHandler,
+            prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModLabelPrefetchHandler) {
         moduleDelegate.registerHandler(moduleHandler);
         contentLinksDelegate.registerHandler(linkHandler);
+        prefetchDelegate.registerHandler(prefetchHandler);
     }
 }

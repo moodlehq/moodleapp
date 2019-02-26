@@ -57,6 +57,12 @@ export type CoreCourseModulesProgressFunction = (data: CoreCourseModulesProgress
  */
 export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
     /**
+     * Name of the handler.
+     * @type {string}
+     */
+    name: string;
+
+    /**
      * Name of the module. It should match the "modname" of the module returned in core_course_get_contents.
      * @type {string}
      */
@@ -74,6 +80,13 @@ export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
      * @type {RegExp}
      */
     updatesNames?: RegExp;
+
+    /**
+     * If true, this module will be treated as not downloadable when determining the status of a list of modules. The module will
+     * still be downloaded when downloading the section/course, it only affects whether the button should be displayed.
+     * @type {boolean}
+     */
+    skipListStatus: boolean;
 
     /**
      * Get the download size of a module.
@@ -769,6 +782,7 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
      * @param {number} courseId Course ID the modules belong to.
      * @param {number} [sectionId] ID of the section the modules belong to.
      * @param {boolean} [refresh] True if it should always check the DB (slower).
+     * @param {boolean} [onlyToDisplay] True if the status will only be used to determine which button should be displayed.
      * @return {Promise<any>} Promise resolved with an object with the following properties:
      *                                - status (string) Status of the module.
      *                                - total (number) Number of modules.
@@ -777,7 +791,7 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
      *                                - CoreConstants.DOWNLOADING (any[]) Modules with state DOWNLOADING.
      *                                - CoreConstants.OUTDATED (any[]) Modules with state OUTDATED.
      */
-    getModulesStatus(modules: any[], courseId: number, sectionId?: number, refresh?: boolean): any {
+    getModulesStatus(modules: any[], courseId: number, sectionId?: number, refresh?: boolean, onlyToDisplay?: boolean): any {
         const promises = [],
             result: any = {
                 total: 0
@@ -800,6 +814,11 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
                 // Check if the module has a prefetch handler.
                 const handler = this.getPrefetchHandlerFor(module);
                 if (handler) {
+                    if (onlyToDisplay && handler.skipListStatus) {
+                        // Skip this module.
+                        return;
+                    }
+
                     const packageId = this.filepoolProvider.getPackageId(handler.component, module.id);
 
                     promises.push(this.getModuleStatus(module, courseId, updates, refresh).then((modStatus) => {
