@@ -16,11 +16,13 @@ import { NgModule } from '@angular/core';
 import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
 import { CoreUserDelegate } from '@core/user/providers/user-delegate';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
+import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { AddonBlogProvider } from './providers/blog';
 import { AddonBlogMainMenuHandler } from './providers/mainmenu-handler';
 import { AddonBlogUserHandler } from './providers/user-handler';
 import { AddonBlogCourseOptionHandler } from './providers/course-option-handler';
 import { AddonBlogComponentsModule } from './components/components.module';
+import { AddonBlogIndexLinkHandler } from './providers/index-link-handler';
 
 @NgModule({
     declarations: [
@@ -32,15 +34,18 @@ import { AddonBlogComponentsModule } from './components/components.module';
         AddonBlogProvider,
         AddonBlogMainMenuHandler,
         AddonBlogUserHandler,
-        AddonBlogCourseOptionHandler
+        AddonBlogCourseOptionHandler,
+        AddonBlogIndexLinkHandler
     ]
 })
 export class AddonBlogModule {
     constructor(mainMenuDelegate: CoreMainMenuDelegate, menuHandler: AddonBlogMainMenuHandler,
             userHandler: AddonBlogUserHandler, userDelegate: CoreUserDelegate,
-            courseOptionHandler: AddonBlogCourseOptionHandler, courseOptionsDelegate: CoreCourseOptionsDelegate) {
+            courseOptionHandler: AddonBlogCourseOptionHandler, courseOptionsDelegate: CoreCourseOptionsDelegate,
+            linkHandler: AddonBlogIndexLinkHandler, contentLinksDelegate: CoreContentLinksDelegate) {
         mainMenuDelegate.registerHandler(menuHandler);
         userDelegate.registerHandler(userHandler);
         courseOptionsDelegate.registerHandler(courseOptionHandler);
+        contentLinksDelegate.registerHandler(linkHandler);
     }
 }

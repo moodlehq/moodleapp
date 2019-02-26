@@ -30,6 +30,9 @@ export class AddonBlogEntriesComponent implements OnInit {
     @Input() userId?: number;
     @Input() courseId?: number;
     @Input() cmId?: number;
+    @Input() entryId?: number;
+    @Input() groupId?: number;
+    @Input() tagId?: number;
 
     protected filter = {};
     protected pageLoaded = 0;
@@ -64,6 +67,18 @@ export class AddonBlogEntriesComponent implements OnInit {
 
         if (this.cmId) {
             this.filter['cmid'] = this.cmId;
+        }
+
+        if (this.entryId) {
+            this.filter['entryid'] = this.entryId;
+        }
+
+        if (this.groupId) {
+            this.filter['groupid'] = this.groupId;
+        }
+
+        if (this.tagId) {
+            this.filter['tagid'] = this.tagId;
         }
 
         this.fetchEntries().then(() => {

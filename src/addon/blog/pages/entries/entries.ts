@@ -27,14 +27,20 @@ export class AddonBlogEntriesPage {
     userId: number;
     courseId: number;
     cmId: number;
+    entryId: number;
+    groupId: number;
+    tagId: number;
     title: string;
 
     constructor(params: NavParams) {
         this.userId = params.get('userId');
         this.courseId = params.get('courseId');
         this.cmId = params.get('cmId');
+        this.entryId = params.get('entryId');
+        this.groupId = params.get('groupId');
+        this.tagId = params.get('tagId');
 
-        if (!this.userId && !this.courseId && !this.cmId) {
+        if (!this.userId && !this.courseId && !this.cmId && !this.entryId && !this.groupId && !this.tagId) {
             this.title = 'addon.blog.siteblogheading';
         } else {
             this.title = 'addon.blog.blogentries';

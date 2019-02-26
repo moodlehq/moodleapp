@@ -75,7 +75,6 @@
   "addon.calendar.eventstarttime": "calendar",
   "addon.calendar.gotoactivity": "calendar",
   "addon.calendar.noevents": "local_moodlemobileapp",
-  "addon.calendar.notifications": "local_moodlemobileapp",
   "addon.calendar.reminders": "local_moodlemobileapp",
   "addon.calendar.setnewreminder": "local_moodlemobileapp",
   "addon.calendar.typecategory": "calendar",
