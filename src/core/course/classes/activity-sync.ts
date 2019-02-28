@@ -38,7 +38,7 @@ export class CoreCourseActivitySyncBaseProvider extends CoreSyncBaseProvider {
     }
 
     /**
-     * Conveniece function to refetch data after an update.
+     * Conveniece function to prefetch data after an update.
      *
      * @param {any} module Module.
      * @param {number} courseId Course ID.
