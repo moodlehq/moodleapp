@@ -21,7 +21,7 @@
             <core-course-module-description [description]="description" [component]="component" [componentId]="componentId" [note]="descriptionNote"></core-course-module-description>
 
             <!-- Forum discussions found to be synchronized -->
-            <ion-card class="core-warning-card" icon-start *ngIf="hasOffline">
+            <ion-card class="core-warning-card" icon-start *ngIf="hasOffline || hasOfflineRatings">
                 <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: moduleName} }}
             </ion-card>
 

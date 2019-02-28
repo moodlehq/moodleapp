@@ -22,6 +22,7 @@ import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModForumOfflineProvider } from './offline';
+import { CoreRatingInfo } from '@core/rating/providers/rating';
 
 /**
  * Service that provides some features for forums.
@@ -369,9 +370,9 @@ export class AddonModForumProvider {
      *
      * @param  {number} discussionId Discussion ID.
      * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any[]>}      Promise resolved with forum posts.
+     * @return {Promise<{posts: any[], ratinginfo?: CoreRatingInfo}>} Promise resolved with forum posts and rating info.
      */
-    getDiscussionPosts(discussionId: number, siteId?: string): Promise<any> {
+    getDiscussionPosts(discussionId: number, siteId?: string): Promise<{posts: any[], ratinginfo?: CoreRatingInfo}> {
         const params = {
             discussionid: discussionId
         };
@@ -384,7 +385,7 @@ export class AddonModForumProvider {
                 if (response) {
                     this.storeUserData(response.posts);
 
-                    return response.posts;
+                    return response;
                 } else {
                     return Promise.reject(null);
                 }

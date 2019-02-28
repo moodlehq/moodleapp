@@ -23,6 +23,9 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreRatingProvider, CoreRatingInfo } from '@core/rating/providers/rating';
+import { CoreRatingOfflineProvider } from '@core/rating/providers/offline';
+import { CoreRatingSyncProvider } from '@core/rating/providers/sync';
 import { AddonModForumProvider } from '../../providers/forum';
 import { AddonModForumOfflineProvider } from '../../providers/offline';
 import { AddonModForumHelperProvider } from '../../providers/helper';
@@ -77,6 +80,11 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     protected syncObserver: any;
     protected syncManualObserver: any;
 
+    ratingInfo?: CoreRatingInfo;
+    hasOfflineRatings: boolean;
+    protected ratingOfflineObserver: any;
+    protected ratingSyncObserver: any;
+
     constructor(navParams: NavParams,
             network: Network,
             zone: NgZone,
@@ -91,6 +99,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
             private forumOffline: AddonModForumOfflineProvider,
             private forumHelper: AddonModForumHelperProvider,
             private forumSync: AddonModForumSyncProvider,
+            private ratingOffline: CoreRatingOfflineProvider,
             @Optional() private svComponent: CoreSplitViewComponent) {
         this.courseId = navParams.get('courseId');
         this.cmId = navParams.get('cmId');
@@ -147,6 +156,20 @@ export class AddonModForumDiscussionPage implements OnDestroy {
             forumId: this.forumId,
             discussion: this.discussionId
         }, this.sitesProvider.getCurrentSiteId());
+
+        // Listen for offline ratings saved and synced.
+        this.ratingOfflineObserver = this.eventsProvider.on(CoreRatingProvider.RATING_SAVED_EVENT, (data) => {
+            if (data.component == 'mod_forum' && data.ratingArea == 'post' && data.contextLevel == 'module' &&
+                    data.instanceId == this.cmId && data.itemSetId == this.discussionId) {
+                this.hasOfflineRatings = true;
+            }
+        });
+        this.ratingSyncObserver = this.eventsProvider.on(CoreRatingSyncProvider.SYNCED_EVENT, (data) => {
+            if (data.component == 'mod_forum' && data.ratingArea == 'post' && data.contextLevel == 'module' &&
+                    data.instanceId == this.cmId && data.itemSetId == this.discussionId) {
+                this.hasOfflineRatings = false;
+            }
+        });
     }
 
     /**
@@ -210,9 +233,9 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         let hasUnreadPosts = false;
 
         return syncPromise.then(() => {
-            return this.forumProvider.getDiscussionPosts(this.discussionId).then((posts) => {
-                onlinePosts = posts;
-
+            return this.forumProvider.getDiscussionPosts(this.discussionId).then((response) => {
+                onlinePosts = response.posts;
+                this.ratingInfo = response.ratinginfo;
             }).then(() => {
                 // Check if there are responses stored in offline.
                 return this.forumOffline.getDiscussionReplies(this.discussionId).then((replies) => {
@@ -290,6 +313,10 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                 // Ignore errors.
                 this.forum = {};
             });
+        }).then(() => {
+            return this.ratingOffline.hasRatings('mod_forum', 'post', 'module', this.cmId, this.discussionId).then((hasRatings) => {
+                this.hasOfflineRatings = hasRatings;
+            });
         }).catch((message) => {
             this.domUtils.showErrorModal(message);
         }).finally(() => {
@@ -319,7 +346,9 @@ export class AddonModForumDiscussionPage implements OnDestroy {
      * @return {Promise<any>} Promise resolved when done.
      */
     protected syncDiscussion(showErrors: boolean): Promise<any> {
-        return this.forumSync.syncDiscussionReplies(this.discussionId).then((result) => {
+        const promises = [];
+
+        promises.push(this.forumSync.syncDiscussionReplies(this.forumId, this.discussionId).then((result) => {
             if (result.warnings && result.warnings.length) {
                 this.domUtils.showErrorModal(result.warnings[0]);
             }
@@ -334,7 +363,15 @@ export class AddonModForumDiscussionPage implements OnDestroy {
             }
 
             return result.updated;
-        }).catch((error) => {
+        }));
+
+        promises.push(this.forumSync.syncRatings(this.cmId, this.discussionId).then((result) => {
+            if (result.warnings && result.warnings.length) {
+                this.domUtils.showErrorModal(result.warnings[0]);
+            }
+        }));
+
+        return Promise.all(promises).catch((error) => {
             if (showErrors) {
                 this.domUtils.showErrorModalDefault(error, 'core.errorsync', true);
             }
@@ -419,6 +456,8 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     ionViewWillLeave(): void {
         this.syncObserver && this.syncObserver.off();
         this.syncManualObserver && this.syncManualObserver.off();
+        this.ratingOfflineObserver && this.ratingOfflineObserver.off();
+        this.ratingSyncObserver && this.ratingSyncObserver.off();
     }
 
     /**

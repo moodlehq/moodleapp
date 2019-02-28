@@ -25,6 +25,7 @@ import { AddonModForumProvider } from '../../providers/forum';
 import { AddonModForumHelperProvider } from '../../providers/helper';
 import { AddonModForumOfflineProvider } from '../../providers/offline';
 import { AddonModForumSyncProvider } from '../../providers/sync';
+import { CoreRatingInfo } from '@core/rating/providers/rating';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -44,6 +45,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
     @Input() trackPosts: boolean; // True if post is being tracked.
     @Input() forum: any; // The forum the post belongs to. Required for attachments and offline posts.
     @Input() defaultSubject: string; // Default subject to set to new posts.
+    @Input() ratingInfo?: CoreRatingInfo; // Rating info item.
     @Output() onPostChange: EventEmitter<void>; // Event emitted when a reply is posted or modified.
 
     messageControl = new FormControl();
