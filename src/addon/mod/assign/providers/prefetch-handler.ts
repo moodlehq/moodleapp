@@ -425,7 +425,7 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
         // Prefetch feedback.
         if (submission.feedback) {
             // Get profile and image of the grader.
-            if (submission.feedback.grade && submission.feedback.grade.grader && submission.feedback.grade.grader != -1) {
+            if (submission.feedback.grade && submission.feedback.grade.grader > 0) {
                 userIds.push(submission.feedback.grade.grader);
             }
 

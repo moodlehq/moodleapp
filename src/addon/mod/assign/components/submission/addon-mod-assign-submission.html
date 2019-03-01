@@ -215,6 +215,12 @@
                     <p *ngIf="feedback.gradeddate">{{ feedback.gradeddate * 1000 | coreFormatDate }}</p>
                 </a>
 
+                <!-- Grader is hidden, display only the grade date. -->
+                <ion-item text-wrap *ngIf="!grader && feedback.gradeddate">
+                    <h2>{{ 'addon.mod_assign.gradedon' | translate }}</h2>
+                    <p>{{ feedback.gradeddate * 1000 | coreFormatDate }}</p>
+                </ion-item>
+
                 <!-- Warning message if cannot save grades. -->
                 <div *ngIf="isGrading && !canSaveGrades" class="core-warning-card" icon-start>
                     <ion-icon name="warning"></ion-icon>
