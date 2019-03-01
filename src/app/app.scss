@@ -664,6 +664,22 @@ ion-app.app-root {
       }
     }
 
+    .core-#{$color-name}-item.item-input {
+      border-bottom: 0 !important;
+
+      &.item-md .item-inner {
+        @include md-input-highlight($color-base);
+      }
+
+      &.item-ios .item-inner {
+        @include ios-input-highlight($color-base);
+      }
+
+      &.item-wp .item-inner {
+        border-color: $color-base;
+      }
+    }
+
     .core-#{$color-name}-selected-item {
       @include safe-area-border-start(5px, solid, $color-base);
 
@@ -721,13 +737,22 @@ ion-app.app-root {
     width: 100%;
   }
 
-  .core-modal-fullscreen {
-    .modal-wrapper {
-      position: absolute;
-      @include position(0 !important, null, null, 0 !important);
-      display: block;
-      width: 100% !important;
-      height: 100% !important;
+  .core-modal-fullscreen  .modal-wrapper {
+    position: absolute;
+    @include position(0 !important, null, null, 0 !important);
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  @media only screen and (min-height: 600px) and (min-width: 768px) {
+      .core-modal-lateral  .modal-wrapper {
+        position: absolute;
+        @include position(0 !important, 0 !important, 0 !important, auto);
+        display: block;
+        height: 100% !important;
+        width: auto;
+        min-width: 400px;
     }
   }
 
