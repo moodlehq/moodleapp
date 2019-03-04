@@ -20,6 +20,7 @@ import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModSurveyOfflineProvider } from './offline';
+import { CoreSiteWSPreSets } from '@classes/site';
 
 /**
  * Service that provides some features for surveys.
@@ -41,17 +42,23 @@ export class AddonModSurveyProvider {
      * Get a survey's questions.
      *
      * @param {number} surveyId Survey ID.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the questions are retrieved.
      */
-    getQuestions(surveyId: number, siteId?: string): Promise<any> {
+    getQuestions(surveyId: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     surveyid: surveyId
                 },
-                preSets = {
+                preSets: CoreSiteWSPreSets = {
                     cacheKey: this.getQuestionsCacheKey(surveyId)
                 };
+
+            if (ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
+            }
 
             return site.read('mod_survey_get_questions', params, preSets).then((response) => {
                 if (response.questions) {
@@ -87,19 +94,25 @@ export class AddonModSurveyProvider {
      * Get a survey data.
      *
      * @param {number} courseId Course ID.
-     * @param {string} key     Name of the property to check.
-     * @param {any}  value   Value to search.
+     * @param {string} key Name of the property to check.
+     * @param {any} value Value to search.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the survey is retrieved.
      */
-    protected getSurveyDataByKey(courseId: number, key: string, value: any, siteId?: string): Promise<any> {
+    protected getSurveyDataByKey(courseId: number, key: string, value: any, ignoreCache?: boolean, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     courseids: [courseId]
                 },
-                preSets = {
+                preSets: CoreSiteWSPreSets = {
                     cacheKey: this.getSurveyCacheKey(courseId)
                 };
+
+            if (ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
+            }
 
             return site.read('mod_survey_get_surveys_by_courses', params, preSets).then((response) => {
                 if (response && response.surveys) {
@@ -120,24 +133,26 @@ export class AddonModSurveyProvider {
      * Get a survey by course module ID.
      *
      * @param {number} courseId Course ID.
-     * @param {number} cmId     Course module ID.
+     * @param {number} cmId Course module ID.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}   Promise resolved when the survey is retrieved.
      */
-    getSurvey(courseId: number, cmId: number, siteId?: string): Promise<any> {
-        return this.getSurveyDataByKey(courseId, 'coursemodule', cmId, siteId);
+    getSurvey(courseId: number, cmId: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
+        return this.getSurveyDataByKey(courseId, 'coursemodule', cmId, ignoreCache, siteId);
     }
 
     /**
      * Get a survey by ID.
      *
-     * @param {number} courseId  Course ID.
-     * @param {number} id        Survey ID.
+     * @param {number} courseId Course ID.
+     * @param {number} id Survey ID.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId]  Site ID. If not defined, current site.
      * @return {Promise<any>}         Promise resolved when the survey is retrieved.
      */
-    getSurveyById(courseId: number, id: number, siteId?: string): Promise<any> {
-        return this.getSurveyDataByKey(courseId, 'id', id, siteId);
+    getSurveyById(courseId: number, id: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
+        return this.getSurveyDataByKey(courseId, 'id', id, ignoreCache, siteId);
     }
 
     /**

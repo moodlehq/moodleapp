@@ -23,6 +23,7 @@ import { CoreCourseModuleMainComponent, CoreCourseModuleDelegate } from '@core/c
 import { CoreCourseSectionPage } from '@core/course/pages/section/section.ts';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { AddonBlogProvider } from '@addon/blog/providers/blog';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Template class to easily create CoreCourseModuleMainComponent of resources (or activities without syncing).
@@ -42,6 +43,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     description: string; // Module description.
     refreshIcon: string; // Refresh icon, normally spinner or refresh.
     prefetchStatusIcon: string; // Used when calling fillContextMenu.
+    prefetchStatus: string; // Used when calling fillContextMenu.
     prefetchText: string; // Used when calling fillContextMenu.
     size: string; // Used when calling fillContextMenu.
 
@@ -220,6 +222,14 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     protected fillContextMenu(refresh: boolean = false): void {
         // All data obtained, now fill the context menu.
         this.courseHelper.fillContextMenu(this, this.module, this.courseId, refresh, this.component);
+    }
+
+    /**
+     * Check if the module is prefetched or being prefetched. To make it faster, just use the data calculated by fillContextMenu.
+     * This means that you need to call fillContextMenu to make this work.
+     */
+    protected isPrefetched(): boolean {
+        return this.prefetchStatus != CoreConstants.NOT_DOWNLOADABLE && this.prefetchStatus != CoreConstants.NOT_DOWNLOADED;
     }
 
     /**

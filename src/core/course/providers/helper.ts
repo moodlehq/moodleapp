@@ -745,6 +745,7 @@ export class CoreCourseHelperProvider {
         return this.getModulePrefetchInfo(module, courseId, invalidateCache, component).then((moduleInfo) => {
             instance.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
             instance.prefetchStatusIcon = moduleInfo.statusIcon;
+            instance.prefetchStatus = moduleInfo.status;
 
             if (moduleInfo.status != CoreConstants.NOT_DOWNLOADABLE) {
                 // Module is downloadable, get the text to display to prefetch.

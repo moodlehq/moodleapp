@@ -51,6 +51,21 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
     }
 
     /**
+     * Download the module.
+     *
+     * @param {any} module The module object returned by WS.
+     * @param {number} courseId Course ID.
+     * @param {string} [dirPath] Path of the directory where to store all the content files.
+     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
+     * @param {boolean} [canStart=true] If true, start a new attempt if needed.
+     * @return {Promise<any>} Promise resolved when all content is downloaded.
+     */
+    download(module: any, courseId: number, dirPath?: string, single?: boolean, canStart: boolean = true): Promise<any> {
+        // Same implementation for download and prefetch.
+        return this.prefetch(module, courseId, single, dirPath, canStart);
+    }
+
+    /**
      * Get list of files. If not defined, we'll assume they're in module.contents.
      *
      * @param {any} module Module.
@@ -190,7 +205,7 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
 
         const siteId = this.sitesProvider.getCurrentSiteId();
 
-        return this.quizProvider.getQuiz(courseId, module.id, false, siteId).then((quiz) => {
+        return this.quizProvider.getQuiz(courseId, module.id, false, false, siteId).then((quiz) => {
             if (quiz.allowofflineattempts !== 1 || quiz.hasquestions === 0) {
                 return false;
             }
@@ -220,10 +235,11 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
      * @param {number} courseId Course ID the module belongs to.
      * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
      * @param {string} [dirPath] Path of the directory where to store all the content files.
+     * @param {boolean} [canStart=true] If true, start a new attempt if needed.
      * @return {Promise<any>} Promise resolved when done.
      */
-    prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string): Promise<any> {
-        return this.prefetchPackage(module, courseId, single, this.prefetchQuiz.bind(this));
+    prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string, canStart: boolean = true): Promise<any> {
+        return this.prefetchPackage(module, courseId, single, this.prefetchQuiz.bind(this), undefined, canStart);
     }
 
     /**
@@ -233,9 +249,10 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
      * @param {number} courseId Course ID the module belongs to.
      * @param {boolean} single True if we're downloading a single module, false if we're downloading a whole section.
      * @param {String} siteId Site ID.
+     * @param {boolean} canStart If true, start a new attempt if needed.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected prefetchQuiz(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
+    protected prefetchQuiz(module: any, courseId: number, single: boolean, siteId: string, canStart: boolean): Promise<any> {
         let attempts: any[],
             startAttempt = false,
             quiz,
@@ -244,7 +261,7 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
             preflightData;
 
         // Get quiz.
-        return this.quizProvider.getQuiz(courseId, module.id, false, siteId).then((quizData) => {
+        return this.quizProvider.getQuiz(courseId, module.id, false, true, siteId).then((quizData) => {
             quiz = quizData;
 
             const promises = [],
@@ -272,7 +289,13 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
         }).then(() => {
             // Check if we need to start a new attempt.
             let attempt = attempts[attempts.length - 1];
-            if (!attempt || this.quizProvider.isAttemptFinished(attempt.state)) {
+
+            if (!canStart && !attempt) {
+                // No attempts and we won't start a new one, so we don't need preflight data.
+                return;
+            }
+
+            if (canStart && (!attempt || this.quizProvider.isAttemptFinished(attempt.state))) {
                 // Check if the user can attempt the quiz.
                 if (attemptAccessInfo.preventnewattemptreasons.length) {
                     return Promise.reject(this.textUtils.buildMessage(attemptAccessInfo.preventnewattemptreasons));
@@ -331,6 +354,11 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
 
             return Promise.all(promises);
         }).then(() => {
+            if (!canStart) {
+                // Nothing else to do.
+                return;
+            }
+
             // If there's nothing to send, mark the quiz as synchronized.
             // We don't return the promises because it should be fast and we don't want to block the user for this.
             if (!this.syncProvider) {
@@ -477,14 +505,49 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
                 return this.prefetchAttempt(quiz, lastAttempt, preflightData, siteId);
             }
         }).then(() => {
-            // Prefetch finished, get current status to determine if we need to change it.
+            // Prefetch finished, set the right status.
+            return this.setStatusAfterPrefetch(quiz, attempts, true, false, siteId);
+        });
+    }
 
-            return this.filepoolProvider.getPackageStatus(siteId, this.component, quiz.coursemodule);
-        }).then((status) => {
+    /**
+     * Set the right status to a quiz after prefetching.
+     * If the last attempt is finished or there isn't one, set it as not downloaded to show download icon.
+     *
+     * @param {any} quiz Quiz.
+     * @param  {any[]} [attempts] List of attempts. If not provided, they will be calculated.
+     * @param {boolean} [forceCache] Whether it should always return cached data. Only if attempts is undefined.
+     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down). Only if
+     *                                attempts is undefined.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    setStatusAfterPrefetch(quiz: any, attempts?: any[], forceCache?: boolean, ignoreCache?: boolean, siteId?: string)
+            : Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        const promises = [];
+        let status;
+
+        if (!attempts) {
+            // Get the attempts.
+            promises.push(this.quizProvider.getUserAttempts(quiz.id, 'all', true, forceCache, ignoreCache, siteId).then((atts) => {
+                attempts = atts;
+            }));
+        }
+
+        // Check the current status of the quiz.
+        promises.push(this.filepoolProvider.getPackageStatus(siteId, this.component, quiz.coursemodule).then((stat) => {
+            status = stat;
+        }));
+
+        return Promise.all(promises).then(() => {
+
             if (status !== CoreConstants.NOT_DOWNLOADED) {
                 // Quiz was downloaded, set the new status.
                 // If no attempts or last is finished we'll mark it as not downloaded to show download icon.
-                const isLastFinished = !lastAttempt || this.quizProvider.isAttemptFinished(lastAttempt.state),
+                const lastAttempt = attempts[attempts.length - 1],
+                    isLastFinished = !lastAttempt || this.quizProvider.isAttemptFinished(lastAttempt.state),
                     newStatus = isLastFinished ? CoreConstants.NOT_DOWNLOADED : CoreConstants.DOWNLOADED;
 
                 return this.filepoolProvider.storePackageStatus(siteId, newStatus, this.component, quiz.coursemodule);

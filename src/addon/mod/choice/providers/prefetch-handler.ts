@@ -23,7 +23,6 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModChoiceProvider } from './choice';
-import { AddonModChoiceSyncProvider } from './sync';
 
 /**
  * Handler to prefetch choices.
@@ -38,7 +37,7 @@ export class AddonModChoicePrefetchHandler extends CoreCourseActivityPrefetchHan
     constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
             courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider, protected choiceProvider: AddonModChoiceProvider,
-            protected syncProvider: AddonModChoiceSyncProvider, protected userProvider: CoreUserProvider) {
+            protected userProvider: CoreUserProvider) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
@@ -66,12 +65,12 @@ export class AddonModChoicePrefetchHandler extends CoreCourseActivityPrefetchHan
      * @return {Promise<any>} Promise resolved when done.
      */
     protected prefetchChoice(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
-        return this.choiceProvider.getChoice(courseId, module.id, siteId).then((choice) => {
+        return this.choiceProvider.getChoice(courseId, module.id, siteId, false, true).then((choice) => {
             const promises = [];
 
             // Get the options and results.
-            promises.push(this.choiceProvider.getOptions(choice.id, siteId));
-            promises.push(this.choiceProvider.getResults(choice.id, siteId).then((options) => {
+            promises.push(this.choiceProvider.getOptions(choice.id, true, siteId));
+            promises.push(this.choiceProvider.getResults(choice.id, true, siteId).then((options) => {
                 // If we can see the users that answered, prefetch their profile and avatar.
                 const subPromises = [];
                 options.forEach((option) => {

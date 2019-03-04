@@ -65,7 +65,7 @@ export class AddonModFeedbackShowEntriesLinkHandler extends CoreContentLinksHand
                         return this.linkHelper.goInSite(navCtrl, 'AddonModFeedbackRespondentsPage', stateParams, siteId);
                     }
 
-                    return this.feedbackProvider.getAttempt(module.instance, params.showcompleted, siteId).then((attempt) => {
+                    return this.feedbackProvider.getAttempt(module.instance, params.showcompleted, true, siteId).then((attempt) => {
                         stateParams = {
                             moduleId: module.id,
                             attempt: attempt,

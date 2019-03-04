@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -113,6 +114,7 @@ export interface AddonModLessonGrade {
 @Injectable()
 export class AddonModLessonProvider {
     static COMPONENT = 'mmaModLesson';
+    static DATA_SENT_EVENT = 'addon_mod_lesson_data_sent';
 
     // This page.
     static LESSON_THISPAGE = 0;
@@ -186,7 +188,8 @@ export class AddonModLessonProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
             private translate: TranslateService, private textUtils: CoreTextUtilsProvider, private domUtils: CoreDomUtilsProvider,
-            private lessonOfflineProvider: AddonModLessonOfflineProvider, private logHelper: CoreCourseLogHelperProvider) {
+            private lessonOfflineProvider: AddonModLessonOfflineProvider, private logHelper: CoreCourseLogHelperProvider,
+            private eventsProvider: CoreEventsProvider) {
         this.logger = logger.getInstance('AddonModLessonProvider');
 
         this.sitesProvider.registerSiteSchema(this.siteSchema);
@@ -1087,7 +1090,17 @@ export class AddonModLessonProvider {
             });
         }
 
-        return this.finishRetakeOnline(lesson.id, password, outOfTime, review, siteId);
+        return this.finishRetakeOnline(lesson.id, password, outOfTime, review, siteId).then((response) => {
+            this.eventsProvider.trigger(AddonModLessonProvider.DATA_SENT_EVENT, {
+                lessonId: lesson.id,
+                type: 'finish',
+                courseId: courseId,
+                outOfTime: outOfTime,
+                review: review
+            }, this.sitesProvider.getCurrentSiteId());
+
+            return response;
+        });
     }
 
     /**
@@ -1363,11 +1376,12 @@ export class AddonModLessonProvider {
      * @param {number} courseId Course ID.
      * @param {number} cmid Course module ID.
      * @param {boolean} [forceCache] Whether it should always return cached data.
+     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the lesson is retrieved.
      */
-    getLesson(courseId: number, cmId: number, forceCache?: boolean, siteId?: string): Promise<any> {
-        return this.getLessonByField(courseId, 'coursemodule', cmId, forceCache, siteId);
+    getLesson(courseId: number, cmId: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
+        return this.getLessonByField(courseId, 'coursemodule', cmId, forceCache, ignoreCache, siteId);
     }
 
     /**
@@ -1377,10 +1391,12 @@ export class AddonModLessonProvider {
      * @param {string} key Name of the property to check.
      * @param {any} value Value to search.
      * @param {boolean} [forceCache] Whether it should always return cached data.
+     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the lesson is retrieved.
      */
-    protected getLessonByField(courseId: number, key: string, value: any, forceCache?: boolean, siteId?: string): Promise<any> {
+    protected getLessonByField(courseId: number, key: string, value: any, forceCache?: boolean, ignoreCache?: boolean,
+            siteId?: string): Promise<any> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
@@ -1392,6 +1408,9 @@ export class AddonModLessonProvider {
 
             if (forceCache) {
                 preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
             }
 
             return site.read('mod_lesson_get_lessons_by_courses', params, preSets).then((response) => {
@@ -1416,11 +1435,12 @@ export class AddonModLessonProvider {
      * @param {number} courseId Course ID.
      * @param {number} id Lesson ID.
      * @param {boolean} [forceCache] Whether it should always return cached data.
+     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the lesson is retrieved.
      */
-    getLessonById(courseId: number, id: number, forceCache?: boolean, siteId?: string): Promise<any> {
-        return this.getLessonByField(courseId, 'id', id, forceCache, siteId);
+    getLessonById(courseId: number, id: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
+        return this.getLessonByField(courseId, 'id', id, forceCache, ignoreCache, siteId);
     }
 
     /**
@@ -2758,7 +2778,14 @@ export class AddonModLessonProvider {
                 params.pageid = pageId;
             }
 
-            return site.write('mod_lesson_launch_attempt', params);
+            return site.write('mod_lesson_launch_attempt', params).then((response) => {
+                this.eventsProvider.trigger(AddonModLessonProvider.DATA_SENT_EVENT, {
+                    lessonId: id,
+                    type: 'launch'
+                }, this.sitesProvider.getCurrentSiteId());
+
+                return response;
+            });
         });
     }
 
@@ -3028,7 +3055,17 @@ export class AddonModLessonProvider {
             });
         }
 
-        return this.processPageOnline(lesson.id, pageId, data, password, review, siteId);
+        return this.processPageOnline(lesson.id, pageId, data, password, review, siteId).then((response) => {
+            this.eventsProvider.trigger(AddonModLessonProvider.DATA_SENT_EVENT, {
+                lessonId: lesson.id,
+                type: 'process',
+                courseId: courseId,
+                pageId: pageId,
+                review: review
+            }, this.sitesProvider.getCurrentSiteId());
+
+            return response;
+        });
     }
 
     /**

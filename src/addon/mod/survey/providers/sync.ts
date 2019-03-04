@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreAppProvider } from '@providers/app';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -26,13 +25,16 @@ import { CoreEventsProvider } from '@providers/events';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
+import { CoreCourseActivitySyncBaseProvider } from '@core/course/classes/activity-sync';
 import { CoreSyncProvider } from '@providers/sync';
+import { AddonModSurveyPrefetchHandler } from './prefetch-handler';
 
 /**
  * Service to sync surveys.
  */
 @Injectable()
-export class AddonModSurveySyncProvider extends CoreSyncBaseProvider {
+export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvider {
 
     static AUTO_SYNCED = 'addon_mod_survey_autom_synced';
     protected componentTranslate: string;
@@ -41,10 +43,11 @@ export class AddonModSurveySyncProvider extends CoreSyncBaseProvider {
             syncProvider: CoreSyncProvider, textUtils: CoreTextUtilsProvider, translate: TranslateService,
             courseProvider: CoreCourseProvider, private surveyOffline: AddonModSurveyOfflineProvider,
             private eventsProvider: CoreEventsProvider,  private surveyProvider: AddonModSurveyProvider,
-            private utils: CoreUtilsProvider, timeUtils: CoreTimeUtilsProvider, private logHelper: CoreCourseLogHelperProvider) {
+            private utils: CoreUtilsProvider, timeUtils: CoreTimeUtilsProvider, private logHelper: CoreCourseLogHelperProvider,
+            prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModSurveyPrefetchHandler) {
 
         super('AddonModSurveySyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
-                timeUtils);
+                timeUtils, prefetchDelegate, prefetchHandler);
 
         this.componentTranslate = courseProvider.translateModuleName('survey');
     }
@@ -57,7 +60,7 @@ export class AddonModSurveySyncProvider extends CoreSyncBaseProvider {
      * @return {string}          Sync ID.
      * @protected
      */
-    getSyncId (surveyId: number, userId: number): string {
+    getSyncId(surveyId: number, userId: number): string {
         return surveyId + '#' + userId;
     }
 
@@ -192,9 +195,7 @@ export class AddonModSurveySyncProvider extends CoreSyncBaseProvider {
         }).then(() => {
             if (courseId) {
                 // Data has been sent to server, update survey data.
-                return this.surveyProvider.invalidateSurveyData(courseId, siteId).then(() => {
-                    return this.surveyProvider.getSurveyById(courseId, surveyId, siteId);
-                }).catch(() => {
+                return this.prefetchAfterUpdate(module, courseId, undefined, siteId).catch(() => {
                     // Ignore errors.
                 });
             }

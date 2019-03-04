@@ -338,8 +338,13 @@ export class AddonModFeedbackFormPage implements OnDestroy {
     ngOnDestroy(): void {
         if (this.submitted) {
             const tab = this.submitted == 'analysis' ? 'analysis' : 'overview';
+
             // If form has been submitted, the info has been already invalidated but we should update index view.
-            this.eventsProvider.trigger(AddonModFeedbackProvider.FORM_SUBMITTED, {feedbackId: this.feedback.id, tab: tab});
+            this.eventsProvider.trigger(AddonModFeedbackProvider.FORM_SUBMITTED, {
+                feedbackId: this.feedback.id,
+                tab: tab,
+                offline: this.completedOffline
+            });
         }
         this.onlineObserver && this.onlineObserver.unsubscribe();
     }

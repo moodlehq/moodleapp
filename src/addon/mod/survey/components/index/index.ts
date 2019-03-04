@@ -188,8 +188,20 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
                 });
             }
 
-            return this.surveyProvider.submitAnswers(this.survey.id, this.survey.name, this.courseId, answers).then(() => {
-                return this.showLoadingAndRefresh(false);
+            return this.surveyProvider.submitAnswers(this.survey.id, this.survey.name, this.courseId, answers).then((online) => {
+                if (online && this.isPrefetched()) {
+                    // The survey is downloaded, update the data.
+                    return this.surveySync.prefetchAfterUpdate(this.module, this.courseId).then(() => {
+                        // Update the view.
+                        this.showLoadingAndFetch(false, false);
+                    }).catch((error) => {
+                        // Prefetch failed, refresh the data.
+                        return this.showLoadingAndRefresh(false);
+                    });
+                } else {
+                    // Not downloaded, refresh the data.
+                    return this.showLoadingAndRefresh(false);
+                }
             }).finally(() => {
                 modal.dismiss();
             });

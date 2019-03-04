@@ -672,10 +672,13 @@ export class AddonModQuizProvider {
      * @param {string} key Name of the property to check.
      * @param {any} value Value to search.
      * @param {boolean} [forceCache] Whether it should always return cached data.
+     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the Quiz is retrieved.
      */
-    protected getQuizByField(courseId: number, key: string, value: any, forceCache?: boolean, siteId?: string): Promise<any> {
+    protected getQuizByField(courseId: number, key: string, value: any, forceCache?: boolean, ignoreCache?: boolean,
+            siteId?: string): Promise<any> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     courseids: [courseId]
@@ -686,6 +689,9 @@ export class AddonModQuizProvider {
 
             if (forceCache) {
                 preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
             }
 
             return site.read('mod_quiz_get_quizzes_by_courses', params, preSets).then((response) => {
@@ -710,11 +716,12 @@ export class AddonModQuizProvider {
      * @param {number} courseId Course ID.
      * @param {number} cmId Course module ID.
      * @param {boolean} [forceCache] Whether it should always return cached data.
+     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the quiz is retrieved.
      */
-    getQuiz(courseId: number, cmId: number, forceCache?: boolean, siteId?: string): Promise<any> {
-        return this.getQuizByField(courseId, 'coursemodule', cmId, forceCache, siteId);
+    getQuiz(courseId: number, cmId: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
+        return this.getQuizByField(courseId, 'coursemodule', cmId, forceCache, ignoreCache, siteId);
     }
 
     /**
@@ -723,11 +730,12 @@ export class AddonModQuizProvider {
      * @param {number} courseId Course ID.
      * @param {number} id Quiz ID.
      * @param {boolean} [forceCache] Whether it should always return cached data.
+     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the quiz is retrieved.
      */
-    getQuizById(courseId: number, id: number, forceCache?: boolean, siteId?: string): Promise<any> {
-        return this.getQuizByField(courseId, 'id', id, forceCache, siteId);
+    getQuizById(courseId: number, id: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
+        return this.getQuizByField(courseId, 'id', id, forceCache, ignoreCache, siteId);
     }
 
     /**
@@ -1223,7 +1231,7 @@ export class AddonModQuizProvider {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         // Get required data to call the invalidate functions.
-       return this.getQuiz(courseId, moduleId, false, siteId).then((quiz) => {
+       return this.getQuiz(courseId, moduleId, true, false, siteId).then((quiz) => {
             return this.getUserAttempts(quiz.id, 'all', true, false, false, siteId).then((attempts) => {
                 // Now invalidate it.
                 const lastAttemptId = attempts.length ? attempts[attempts.length - 1].id : undefined;

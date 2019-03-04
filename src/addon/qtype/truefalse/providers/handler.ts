@@ -84,4 +84,20 @@ export class AddonQtypeTrueFalseHandler implements CoreQuestionHandler {
     isSameResponse(question: any, prevAnswers: any, newAnswers: any): boolean {
         return this.utils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
     }
+
+    /**
+     * Prepare and add to answers the data to send to server based in the input. Return promise if async.
+     *
+     * @param {any} question Question.
+     * @param {any} answers The answers retrieved from the form. Prepared answers must be stored in this object.
+     * @param {boolean} [offline] Whether the data should be saved in offline.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {void|Promise<any>} Return a promise resolved when done if async, void if sync.
+     */
+    prepareAnswers(question: any, answers: any, offline: boolean, siteId?: string): void | Promise<any> {
+        if (question && typeof answers[question.optionsName] != 'undefined' && !answers[question.optionsName]) {
+            // The user hasn't answered. Delete the answer to prevent marking one of the answers automatically.
+            delete answers[question.optionsName];
+        }
+    }
 }
