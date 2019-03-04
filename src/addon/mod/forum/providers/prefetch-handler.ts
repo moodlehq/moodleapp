@@ -24,6 +24,7 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/acti
 import { CoreGroupsProvider } from '@providers/groups';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModForumProvider } from './forum';
+import { CoreRatingProvider } from '@core/rating/providers/rating';
 
 /**
  * Handler to prefetch forums.
@@ -44,7 +45,8 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
             domUtils: CoreDomUtilsProvider,
             private groupsProvider: CoreGroupsProvider,
             private userProvider: CoreUserProvider,
-            private forumProvider: AddonModForumProvider) {
+            private forumProvider: AddonModForumProvider,
+            private ratingProvider: CoreRatingProvider) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
@@ -62,7 +64,7 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
             const files = this.getIntroFilesFromInstance(module, forum);
 
             // Get posts.
-            return this.getPostsForPrefetch(forum.id).then((posts) => {
+            return this.getPostsForPrefetch(forum).then((posts) => {
                 // Add posts attachments and embedded files.
                 return files.concat(this.getPostsFiles(posts));
             });
@@ -99,12 +101,12 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
     /**
      * Get the posts to be prefetched.
      *
-     * @param {number} forumId Forum ID
+     * @param {any} forum Forum instance.
      * @return {Promise<any[]>} Promise resolved with array of posts.
      */
-    protected getPostsForPrefetch(forumId: number): Promise<any[]> {
+    protected getPostsForPrefetch(forum: any): Promise<any[]> {
         // Get discussions in first 2 pages.
-        return this.forumProvider.getDiscussionsInPages(forumId, false, 2).then((response) => {
+        return this.forumProvider.getDiscussionsInPages(forum.id, false, 2).then((response) => {
             if (response.error) {
                 return Promise.reject(null);
             }
@@ -113,8 +115,11 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
             let posts = [];
 
             response.discussions.forEach((discussion) => {
-                promises.push(this.forumProvider.getDiscussionPosts(discussion.discussion).then((ps) => {
-                    posts = posts.concat(ps);
+                promises.push(this.forumProvider.getDiscussionPosts(discussion.discussion).then((response) => {
+                    posts = posts.concat(response.posts);
+
+                    return this.ratingProvider.prefetchRatings('module', forum.cmid, forum.scale, forum.course,
+                            response.ratinginfo);
                 }));
             });
 
@@ -179,7 +184,7 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
         // Get the forum data.
         return this.forumProvider.getForum(courseId, module.id).then((forum) => {
             // Prefetch the posts.
-            return this.getPostsForPrefetch(forum.id).then((posts) => {
+            return this.getPostsForPrefetch(forum).then((posts) => {
                 const promises = [];
 
                 // Prefetch user profiles.

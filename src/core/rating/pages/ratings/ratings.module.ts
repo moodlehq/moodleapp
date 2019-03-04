@@ -13,40 +13,23 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from 'ionic-angular';
+import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { CoreRatingRatingsPage } from './ratings';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
-import { CoreCourseComponentsModule } from '@core/course/components/components.module';
-import { CoreRatingComponentsModule } from '@core/rating/components/components.module';
-import { AddonModForumIndexComponent } from './index/index';
-import { AddonModForumPostComponent } from './post/post';
 
 @NgModule({
     declarations: [
-        AddonModForumIndexComponent,
-        AddonModForumPostComponent
+        CoreRatingRatingsPage
     ],
     imports: [
-        CommonModule,
-        IonicModule,
-        TranslateModule.forChild(),
         CoreComponentsModule,
         CoreDirectivesModule,
         CorePipesModule,
-        CoreCourseComponentsModule,
-        CoreRatingComponentsModule
+        IonicPageModule.forChild(CoreRatingRatingsPage),
+        TranslateModule.forChild()
     ],
-    providers: [
-    ],
-    exports: [
-        AddonModForumIndexComponent,
-        AddonModForumPostComponent
-    ],
-    entryComponents: [
-        AddonModForumIndexComponent
-    ]
 })
-export class AddonModForumComponentsModule {}
+export class CoreRatingRatingsPageModule {}

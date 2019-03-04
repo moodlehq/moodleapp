@@ -16,37 +16,24 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-import { CorePipesModule } from '@pipes/pipes.module';
-import { CoreCourseComponentsModule } from '@core/course/components/components.module';
-import { CoreRatingComponentsModule } from '@core/rating/components/components.module';
-import { AddonModForumIndexComponent } from './index/index';
-import { AddonModForumPostComponent } from './post/post';
+import { CoreRatingAggregateComponent } from './aggregate/aggregate';
+import { CoreRatingRateComponent } from './rate/rate';
 
 @NgModule({
     declarations: [
-        AddonModForumIndexComponent,
-        AddonModForumPostComponent
+        CoreRatingAggregateComponent,
+        CoreRatingRateComponent
     ],
     imports: [
         CommonModule,
         IonicModule,
-        TranslateModule.forChild(),
-        CoreComponentsModule,
-        CoreDirectivesModule,
-        CorePipesModule,
-        CoreCourseComponentsModule,
-        CoreRatingComponentsModule
+        TranslateModule.forChild()
     ],
     providers: [
     ],
     exports: [
-        AddonModForumIndexComponent,
-        AddonModForumPostComponent
-    ],
-    entryComponents: [
-        AddonModForumIndexComponent
+        CoreRatingAggregateComponent,
+        CoreRatingRateComponent
     ]
 })
-export class AddonModForumComponentsModule {}
+export class CoreRatingComponentsModule {}

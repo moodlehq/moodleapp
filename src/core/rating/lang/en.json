@@ -1,0 +1,11 @@
+{
+    "aggregateavg": "Average of ratings",
+    "aggregatecount": "Count of ratings",
+    "aggregatemax": "Maximum rating",
+    "aggregatemin": "Minimum rating",
+    "aggregatesum": "Sum of ratings",
+    "norating": "No rating",
+    "noratings": "No ratings submitted",
+    "rating": "Rating",
+    "ratings": "Ratings"
+}
