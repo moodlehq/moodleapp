@@ -54,7 +54,7 @@ export class CoreRatingOfflineProvider {
     // Variables for database.
     static RATINGS_TABLE = 'rating_ratings';
     protected siteSchema: CoreSiteSchema = {
-        name: 'CoreCourseOfflineProvider',
+        name: 'CoreRatingOfflineProvider',
         version: 1,
         tables: [
             {
