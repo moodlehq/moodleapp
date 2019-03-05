@@ -308,6 +308,13 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Function called when rating is updated online.
+     */
+    ratingUpdated(): void {
+        this.forumProvider.invalidateDiscussionPosts(this.discussionId);
+    }
+
+    /**
      * Component being destroyed.
      */
     ngOnDestroy(): void {
