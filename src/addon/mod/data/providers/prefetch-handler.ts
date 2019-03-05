@@ -24,6 +24,7 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreCommentsProvider } from '@core/comments/providers/comments';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
+import { CoreRatingProvider } from '@core/rating/providers/rating';
 import { AddonModDataProvider } from './data';
 import { AddonModDataHelperProvider } from './helper';
 
@@ -41,7 +42,8 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
             courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider, protected dataProvider: AddonModDataProvider,
             protected timeUtils: CoreTimeUtilsProvider, protected dataHelper: AddonModDataHelperProvider,
-            protected groupsProvider: CoreGroupsProvider, protected commentsProvider: CoreCommentsProvider) {
+            protected groupsProvider: CoreGroupsProvider, protected commentsProvider: CoreCommentsProvider,
+            private ratingProvider: CoreRatingProvider) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
@@ -282,7 +284,11 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
             });
 
             info.entries.forEach((entry) => {
-                promises.push(this.dataProvider.getEntry(database.id, entry.id, siteId));
+                promises.push(this.dataProvider.getEntry(database.id, entry.id, true, siteId).then((entry) => {
+                    return this.ratingProvider.prefetchRatings('module', module.id, database.scale, courseId, entry.ratinginfo,
+                        siteId);
+                }));
+
                 if (database.comments) {
                     promises.push(this.commentsProvider.getComments('module', database.coursemodule, 'mod_data', entry.id,
                         'database_entry', 0, siteId));

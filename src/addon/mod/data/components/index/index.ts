@@ -19,6 +19,9 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreGroupsProvider, CoreGroupInfo } from '@providers/groups';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
 import { CoreCommentsProvider } from '@core/comments/providers/comments';
+import { CoreRatingProvider } from '@core/rating/providers/rating';
+import { CoreRatingOfflineProvider } from '@core/rating/providers/offline';
+import { CoreRatingSyncProvider } from '@core/rating/providers/sync';
 import { AddonModDataProvider } from '../../providers/data';
 import { AddonModDataHelperProvider } from '../../providers/helper';
 import { AddonModDataOfflineProvider } from '../../providers/offline';
@@ -74,11 +77,16 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     protected hasComments = false;
     protected fieldsArray: any;
 
+    hasOfflineRatings: boolean;
+    protected ratingOfflineObserver: any;
+    protected ratingSyncObserver: any;
+
     constructor(injector: Injector, private dataProvider: AddonModDataProvider, private dataHelper: AddonModDataHelperProvider,
             private dataOffline: AddonModDataOfflineProvider, @Optional() content: Content,
             private dataSync: AddonModDataSyncProvider, private timeUtils: CoreTimeUtilsProvider,
             private groupsProvider: CoreGroupsProvider, private commentsProvider: CoreCommentsProvider,
-            private modalCtrl: ModalController, private utils: CoreUtilsProvider, protected navCtrl: NavController) {
+            private modalCtrl: ModalController, private utils: CoreUtilsProvider, protected navCtrl: NavController,
+            private ratingOffline: CoreRatingOfflineProvider) {
         super(injector, content);
 
         // Refresh entries on change.
@@ -89,7 +97,22 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                 return this.loadContent(true);
             }
         }, this.siteId);
+
+        // Listen for offline ratings saved and synced.
+        this.ratingOfflineObserver = this.eventsProvider.on(CoreRatingProvider.RATING_SAVED_EVENT, (data) => {
+            if (this.data && data.component == 'mod_data' && data.ratingArea == 'entry' && data.contextLevel == 'module'
+                    && data.instanceId == this.data.coursemodule) {
+                this.hasOfflineRatings = true;
+            }
+        });
+        this.ratingSyncObserver = this.eventsProvider.on(CoreRatingSyncProvider.SYNCED_EVENT, (data) => {
+            if (this.data && data.component == 'mod_data' && data.ratingArea == 'entry' && data.contextLevel == 'module'
+                    && data.instanceId == this.data.coursemodule) {
+                this.hasOfflineRatings = false;
+            }
+        });
     }
+
     /**
      * Component being initialized.
      */
@@ -487,6 +510,10 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                     }
                 });
             }
+        }).then(() => {
+            return this.ratingOffline.hasRatings('mod_data', 'entry', 'module', this.data.coursemodule).then((hasRatings) => {
+                this.hasOfflineRatings = hasRatings;
+            });
         });
     }
 
@@ -496,7 +523,17 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      * @return {Promise<any>} Promise resolved when done.
      */
     protected sync(): Promise<any> {
-        return this.dataSync.syncDatabase(this.data.id);
+        const promises = [
+            this.dataSync.syncDatabase(this.data.id),
+            this.dataSync.syncRatings(this.data.coursemodule)
+        ];
+
+        return Promise.all(promises).then((results) => {
+            return results.reduce((a, b) => ({
+                updated: a.updated || b.updated,
+                warnings: (a.warnings || []).concat(b.warnings || []),
+            }), {updated: false});
+        });
     }
 
     /**
@@ -515,5 +552,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     ngOnDestroy(): void {
         super.ngOnDestroy();
         this.entryChangedObserver && this.entryChangedObserver.off();
+        this.ratingOfflineObserver && this.ratingOfflineObserver.off();
+        this.ratingSyncObserver && this.ratingSyncObserver.off();
     }
 }

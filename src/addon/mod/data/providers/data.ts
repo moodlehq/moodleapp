@@ -652,10 +652,11 @@ export class AddonModDataProvider {
      *
      * @param   {number}    dataId    Data ID for caching purposes.
      * @param   {number}    entryId   Entry ID.
+     * @param   {boolean}   [ignoreCache=false] True if it should ignore cached data (it'll always fail in offline or server down).
      * @param   {string}    [siteId]  Site ID. If not defined, current site.
      * @return  {Promise<any>}        Promise resolved when the database entry is retrieved.
      */
-    getEntry(dataId: number, entryId: number, siteId?: string): Promise<any> {
+    getEntry(dataId: number, entryId: number, ignoreCache: boolean = false, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     entryid: entryId,
@@ -664,6 +665,11 @@ export class AddonModDataProvider {
                 preSets = {
                     cacheKey: this.getEntryCacheKey(dataId, entryId)
                 };
+
+            if (ignoreCache) {
+                preSets['getFromCache'] = false;
+                preSets['emergencyCache'] = false;
+            }
 
             return site.read('mod_data_get_entry', params, preSets);
         });

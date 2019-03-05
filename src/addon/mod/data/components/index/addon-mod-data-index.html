@@ -22,7 +22,7 @@
     <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
 
     <!-- Data done in offline but not synchronized -->
-    <div class="core-warning-card" icon-start *ngIf="hasOffline">
+    <div class="core-warning-card" icon-start *ngIf="hasOffline || hasOfflineRatings">
         <ion-icon name="warning"></ion-icon>
         {{ 'core.hasdatatosync' | translate: {$a: moduleName} }}
     </div>

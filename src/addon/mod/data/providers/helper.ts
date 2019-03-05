@@ -354,7 +354,7 @@ export class AddonModDataHelperProvider {
     getEntry(data: any, entryId: number, offlineActions?: any, siteId?: string): Promise<any> {
         if (entryId > 0) {
             // It's an online entry, get it from WS.
-            return this.dataProvider.getEntry(data.id, entryId, siteId);
+            return this.dataProvider.getEntry(data.id, entryId, false, siteId);
         }
 
         // It's an offline entry, search it in the offline actions.
