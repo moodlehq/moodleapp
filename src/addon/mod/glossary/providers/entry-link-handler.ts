@@ -61,8 +61,8 @@ export class AddonModGlossaryEntryLinkHandler extends CoreContentLinksHandlerBas
                         this.domUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingentry', true);
 
                         return Promise.reject(null);
-                    }).then((entry) => {
-                        return this.courseHelper.getModuleCourseIdByInstance(entry.glossaryid, 'glossary', siteId);
+                    }).then((response) => {
+                        return this.courseHelper.getModuleCourseIdByInstance(response.entry.glossaryid, 'glossary', siteId);
                     });
                 }
 

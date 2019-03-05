@@ -63,7 +63,7 @@ export class CoreRatingSyncProvider extends CoreSyncBaseProvider {
      * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
     syncRatings(component: string, ratingArea: string, contextLevel?: string, instanceId?: number, itemSetId?: number,
-            siteId?: string): Promise<{itemSet: CoreRatingItemSet, updated: boolean, warnings: string[]}[]> {
+            siteId?: string): Promise<{itemSet: CoreRatingItemSet, updated: number[], warnings: string[]}[]> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         return this.ratingOffline.getItemSets(component, ratingArea, contextLevel, instanceId, itemSetId, siteId)
@@ -102,7 +102,7 @@ export class CoreRatingSyncProvider extends CoreSyncBaseProvider {
      * @return {Promise<any>} Promise resolved when ratings are synced or if it doesn't need to be synced.
      */
     protected syncItemSetIfNeeded(component: string, ratingArea: string,  contextLevel: string, instanceId: number,
-            itemSetId: number, siteId?: string): Promise<{updated: boolean, warnings: string[]}> {
+            itemSetId: number, siteId?: string): Promise<{updated: number[], warnings: string[]}> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const syncId = this.getItemSetSyncId(component, ratingArea, contextLevel, instanceId, itemSetId);
@@ -126,7 +126,7 @@ export class CoreRatingSyncProvider extends CoreSyncBaseProvider {
      * @return {Promise<any>} Promise resolved if sync is successful, rejected otherwise.
      */
     protected syncItemSet(component: string, ratingArea: string, contextLevel: string, instanceId: number, itemSetId: number,
-            siteId?: string): Promise<{updated: boolean, warnings: string[]}> {
+            siteId?: string): Promise<{updated: number[], warnings: string[]}> {
 
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
@@ -139,7 +139,7 @@ export class CoreRatingSyncProvider extends CoreSyncBaseProvider {
         this.logger.debug(`Try to sync ratings of component '${component}' rating area '${ratingArea}'` +
             ` context level '${contextLevel}' instance ${instanceId} item set ${itemSetId}`);
 
-        let updated = false;
+        const updated = [];
         const warnings = [];
 
         return this.ratingOffline.getRatings(component, ratingArea, contextLevel, instanceId, itemSetId, siteId).then((ratings) => {
@@ -162,7 +162,7 @@ export class CoreRatingSyncProvider extends CoreSyncBaseProvider {
                         return Promise.reject(error);
                     }
                 }).then(() => {
-                    updated = true;
+                    updated.push(rating.itemid);
 
                     return this.ratingOffline.deleteRating(component, ratingArea, rating.contextlevel, rating.instanceid,
                             rating.itemid, siteId).finally(() => {

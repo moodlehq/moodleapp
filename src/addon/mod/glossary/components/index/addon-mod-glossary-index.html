@@ -25,7 +25,7 @@
         <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
 
         <!-- Glossary entries found to be synchronized -->
-        <ion-card class="core-warning-card" icon-start *ngIf="hasOffline">
+        <ion-card class="core-warning-card" icon-start *ngIf="hasOffline || hasOfflineRatings">
             <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: moduleName} }}
         </ion-card>
 
