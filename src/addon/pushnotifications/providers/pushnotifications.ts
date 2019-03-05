@@ -22,6 +22,7 @@ import { CoreAppProvider } from '@providers/app';
 import { CoreInitDelegate } from '@providers/init';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
+import { CoreSitesFactoryProvider } from '@providers/sites-factory';
 import { AddonPushNotificationsDelegate } from './delegate';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -30,7 +31,7 @@ import { CoreConfigProvider } from '@providers/config';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../../../configconstants';
 import { ILocalNotification } from '@ionic-native/local-notifications';
-import { SQLiteDBTableSchema } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreSite } from '@classes/site';
 
 /**
@@ -87,11 +88,12 @@ export interface AddonPushNotificationsRegisterData {
 export class AddonPushNotificationsProvider {
     protected logger;
     protected pushID: string;
-    protected appDB: any;
+    protected appDB: SQLiteDB;
     static COMPONENT = 'AddonPushNotificationsProvider';
 
     // Variables for database.
     static BADGE_TABLE = 'addon_pushnotifications_badge';
+    static PENDING_UNREGISTER_TABLE = 'addon_pushnotifications_pending_unregister';
     static REGISTERED_DEVICES_TABLE = 'addon_pushnotifications_registered_devices';
     protected appTablesSchema: SQLiteDBTableSchema[] = [
         {
@@ -111,6 +113,28 @@ export class AddonPushNotificationsProvider {
                 }
             ],
             primaryKeys: ['siteid', 'addon']
+        },
+        {
+            name: AddonPushNotificationsProvider.PENDING_UNREGISTER_TABLE,
+            columns: [
+                {
+                    name: 'siteid',
+                    type: 'TEXT',
+                    primaryKey: true
+                },
+                {
+                    name: 'siteurl',
+                    type: 'TEXT'
+                },
+                {
+                    name: 'token',
+                    type: 'TEXT'
+                },
+                {
+                    name: 'info',
+                    type: 'TEXT'
+                }
+            ]
         }
     ];
     protected siteSchema: CoreSiteSchema = {
@@ -159,7 +183,7 @@ export class AddonPushNotificationsProvider {
             private badge: Badge, private localNotificationsProvider: CoreLocalNotificationsProvider,
             private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider, private push: Push,
             private configProvider: CoreConfigProvider, private device: Device, private zone: NgZone,
-            private translate: TranslateService, private platform: Platform) {
+            private translate: TranslateService, private platform: Platform, private sitesFactory: CoreSitesFactoryProvider) {
         this.logger = logger.getInstance('AddonPushNotificationsProvider');
         this.appDB = appProvider.getDB();
         this.appDB.createTablesFromSchema(this.appTablesSchema);
@@ -354,10 +378,32 @@ export class AddonPushNotificationsProvider {
                 return Promise.reject(null);
             }
 
+            const promises = [];
+
             // Remove the device from the local DB.
-            return site.getDb().deleteRecords(AddonPushNotificationsProvider.REGISTERED_DEVICES_TABLE, this.getRegisterData())
-                    .catch(() => {
+            promises.push(site.getDb().deleteRecords(AddonPushNotificationsProvider.REGISTERED_DEVICES_TABLE,
+                    this.getRegisterData()));
+
+            // Remove pending unregisters for this site.
+            promises.push(this.appDB.deleteRecords(AddonPushNotificationsProvider.PENDING_UNREGISTER_TABLE, {siteid: site.id}));
+
+            return Promise.all(promises).catch(() => {
                 // Ignore errors.
+            });
+        }).catch((error) => {
+            if (this.utils.isWebServiceError(error)) {
+                // It's a WebService error, can't unregister.
+                return Promise.reject(error);
+            }
+
+            // Store the pending unregister so it's retried again later.
+            return this.appDB.insertRecord(AddonPushNotificationsProvider.PENDING_UNREGISTER_TABLE, {
+                siteid: site.id,
+                siteurl: site.getURL(),
+                token: site.getToken(),
+                info: JSON.stringify(site.getInfo())
+            }).then(() => {
+                return Promise.reject(error);
             });
         });
     }
@@ -547,8 +593,12 @@ export class AddonPushNotificationsProvider {
                     });
                 });
             }
+        }).finally(() => {
+            // Remove pending unregisters for this site.
+            this.appDB.deleteRecords(AddonPushNotificationsProvider.PENDING_UNREGISTER_TABLE, {siteid: site.id}).catch(() => {
+                // Ignore errors.
+            });
         });
-
     }
 
     /**
@@ -563,6 +613,38 @@ export class AddonPushNotificationsProvider {
              return (entry && entry.number) || 0;
         }).catch(() => {
             return 0;
+        });
+    }
+
+    /**
+     * Retry pending unregisters.
+     *
+     * @param {string} [siteId] If defined, retry only for that site if needed. Otherwise, retry all pending unregisters.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    retryUnregisters(siteId?: string): Promise<any> {
+        let promise;
+
+        if (siteId) {
+            // Check if the site has a pending unregister.
+            promise = this.appDB.getRecords(AddonPushNotificationsProvider.REGISTERED_DEVICES_TABLE, {siteid: siteId});
+        } else {
+            // Get all pending unregisters.
+            promise = this.appDB.getAllRecords(AddonPushNotificationsProvider.PENDING_UNREGISTER_TABLE);
+        }
+
+        return promise.then((results) => {
+            const promises = [];
+
+            results.forEach((result) => {
+                // Create a temporary site to unregister.
+                const tmpSite = this.sitesFactory.makeSite(result.siteid, result.siteurl, result.token,
+                        this.textUtils.parseJSON(result.info, {}));
+
+                promises.push(this.unregisterDeviceOnMoodle(tmpSite));
+            });
+
+            return Promise.all(promises);
         });
     }
 
