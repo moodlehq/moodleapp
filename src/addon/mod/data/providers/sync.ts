@@ -66,19 +66,22 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
     /**
      * Try to synchronize all the databases in a certain site or in all sites.
      *
+     * @param {boolean} force Wether to force sync not depending on last execution.
      * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
      * @return {Promise<any>}    Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllDatabases(siteId?: string): Promise<any> {
-        return this.syncOnSites('all databases', this.syncAllDatabasesFunc.bind(this), undefined, siteId);
+    syncAllDatabases(siteId?: string, force?: boolean): Promise<any> {
+        return this.syncOnSites('all databases', this.syncAllDatabasesFunc.bind(this), [force], siteId);
     }
 
     /**
      * Sync all pending databases on a site.
-     * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     *
+     * @param {string}  [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} force    Wether to force sync not depending on last execution.
      * @param {Promise<any>}     Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected syncAllDatabasesFunc(siteId?: string): Promise<any> {
+    protected syncAllDatabasesFunc(siteId?: string, force?: boolean): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const promises = [];
@@ -93,8 +96,10 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
                     return;
                 }
 
-                promises[action.dataid] = this.syncDatabaseIfNeeded(action.dataid, siteId)
-                        .then((result) => {
+                promises[action.dataid] = force ? this.syncDatabase(action.dataid, siteId) :
+                    this.syncDatabaseIfNeeded(action.dataid, siteId);
+
+                promises[action.dataid].then((result) => {
                     if (result && result.updated) {
                         // Sync done. Send event.
                         this.eventsProvider.trigger(AddonModDataSyncProvider.AUTO_SYNCED, {

@@ -67,26 +67,29 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
     /**
      * Try to synchronize all the choices in a certain site or in all sites.
      *
+     * @param {boolean} force Wether to force sync not depending on last execution.
      * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
      * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllChoices(siteId?: string): Promise<any> {
-        return this.syncOnSites('choices', this.syncAllChoicesFunc.bind(this), undefined, siteId);
+    syncAllChoices(siteId?: string, force?: boolean): Promise<any> {
+        return this.syncOnSites('choices', this.syncAllChoicesFunc.bind(this), [force], siteId);
     }
 
     /**
      * Sync all pending choices on a site.
      *
-     * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {string}  [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} force    Wether to force sync not depending on last execution.
      * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected syncAllChoicesFunc(siteId?: string): Promise<any> {
+    protected syncAllChoicesFunc(siteId?: string, force?: boolean): Promise<any> {
         return this.choiceOffline.getResponses(siteId).then((responses) => {
-            const promises = [];
-
             // Sync all responses.
-            responses.forEach((response) => {
-                promises.push(this.syncChoiceIfNeeded(response.choiceid, response.userid, siteId).then((result) => {
+            const promises = responses.map((response) => {
+                const promise = force ? this.syncChoice(response.choiceid, response.userid, siteId) :
+                    this.syncChoiceIfNeeded(response.choiceid, response.userid, siteId);
+
+                return promise.then((result) => {
                     if (result && result.updated) {
                         // Sync successful, send event.
                         this.eventsProvider.trigger(AddonModChoiceSyncProvider.AUTO_SYNCED, {
@@ -95,8 +98,10 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
                             warnings: result.warnings
                         }, siteId);
                     }
-                }));
+                });
             });
+
+            return Promise.all(promises);
         });
     }
 

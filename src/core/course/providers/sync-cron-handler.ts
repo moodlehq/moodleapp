@@ -30,10 +30,11 @@ export class CoreCourseSyncCronHandler implements CoreCronHandler {
      * Execute the process.
      * Receives the ID of the site affected, undefined for all sites.
      *
-     * @param {string} [siteId] ID of the site affected, undefined for all sites.
-     * @return {Promise<any>} Promise resolved when done, rejected if failure.
+     * @param  {string} [siteId] ID of the site affected, undefined for all sites.
+     * @param {boolean} [force] Wether the execution is forced (manual sync).
+     * @return {Promise<any>}         Promise resolved when done, rejected if failure.
      */
-    execute(siteId?: string): Promise<any> {
+    execute(siteId?: string, force?: boolean): Promise<any> {
         const promises = [];
         // Sync activity logs even if the activity does not have sync handler.
         // This will sync all the activity logs even if there's nothing else to sync and also recources.

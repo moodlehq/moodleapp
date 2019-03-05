@@ -76,25 +76,27 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
      * Try to synchronize all workshops that need it and haven't been synchronized in a while.
      *
      * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @return {Promise<any>}    Promise resolved when the sync is done.
      */
-    syncAllWorkshops(siteId?: string): Promise<any> {
-        return this.syncOnSites('all workshops', this.syncAllWorkshopsFunc.bind(this), [], siteId);
+    syncAllWorkshops(siteId?: string, force?: boolean): Promise<any> {
+        return this.syncOnSites('all workshops', this.syncAllWorkshopsFunc.bind(this), [force], siteId);
     }
 
     /**
      * Sync all workshops on a site.
      *
-     * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param  {string} siteId Site ID to sync.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @return {Promise<any>}    Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected syncAllWorkshopsFunc(siteId?: string): Promise<any> {
+    protected syncAllWorkshopsFunc(siteId: string, force?: boolean): Promise<any> {
         return this.workshopOffline.getAllWorkshops(siteId).then((workshopIds) => {
-            const promises = [];
-
             // Sync all workshops that haven't been synced for a while.
-            workshopIds.forEach((workshopId) => {
-                promises.push(this.syncWorkshopIfNeeded(workshopId, siteId).then((data) => {
+            const promises = workshopIds.map((workshopId) => {
+                const promise = force ? this.syncWorkshop(workshopId, siteId) : this.syncWorkshopIfNeeded(workshopId, siteId);
+
+                return promise.then((data) => {
                     if (data && data.updated) {
                         // Sync done. Send event.
                         this.eventsProvider.trigger(AddonModWorkshopSyncProvider.AUTO_SYNCED, {
@@ -102,7 +104,7 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
                             warnings: data.warnings
                         }, siteId);
                     }
-                }));
+                });
             });
 
             return Promise.all(promises);

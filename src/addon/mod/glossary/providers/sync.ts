@@ -68,19 +68,21 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
      * Try to synchronize all the glossaries in a certain site or in all sites.
      *
      * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @return {Promise<any>}    Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllGlossaries(siteId?: string): Promise<any> {
-        return this.syncOnSites('all glossaries', this.syncAllGlossariesFunc.bind(this), [], siteId);
+    syncAllGlossaries(siteId?: string, force?: boolean): Promise<any> {
+        return this.syncOnSites('all glossaries', this.syncAllGlossariesFunc.bind(this), [force], siteId);
     }
 
     /**
      * Sync all glossaries on a site.
      *
-     * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param  {string} siteId Site ID to sync.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @return {Promise<any>}    Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected syncAllGlossariesFunc(siteId?: string): Promise<any> {
+    protected syncAllGlossariesFunc(siteId: string, force?: boolean): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const promises = [];
@@ -97,8 +99,10 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
                     continue;
                 }
 
-                promises[entry.glossaryid] = this.syncGlossaryEntriesIfNeeded(entry.glossaryid, entry.userid, siteId)
-                        .then((result) => {
+                promises[entry.glossaryid] = force ? this.syncGlossaryEntries(entry.glossaryid, entry.userid, siteId) :
+                    this.syncGlossaryEntriesIfNeeded(entry.glossaryid, entry.userid, siteId);
+
+                promises[entry.glossaryid].then((result) => {
                     if (result && result.updated) {
                         // Sync successful, send event.
                         this.eventsProvider.trigger(AddonModGlossarySyncProvider.AUTO_SYNCED, {

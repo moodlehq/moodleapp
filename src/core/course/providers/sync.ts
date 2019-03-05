@@ -62,11 +62,9 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider {
      */
     protected syncAllCoursesFunc(siteId?: string): Promise<any> {
         return this.courseOffline.getAllManualCompletions(siteId).then((completions) => {
-            const promises = [];
-
             // Sync all courses.
-            completions.forEach((completion) => {
-                promises.push(this.syncCourseIfNeeded(completion.courseid, siteId).then((result) => {
+            const promises = completions.map((completion) => {
+                return this.syncCourseIfNeeded(completion.courseid, siteId).then((result) => {
                     if (result && result.updated) {
                         // Sync successful, send event.
                         this.eventsProvider.trigger(CoreCourseSyncProvider.AUTO_SYNCED, {
@@ -74,8 +72,10 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider {
                             warnings: result.warnings
                         }, siteId);
                     }
-                }));
+                });
             });
+
+            return Promise.all(promises);
         });
     }
 

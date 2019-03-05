@@ -59,19 +59,23 @@ export class CoreRatingSyncProvider extends CoreSyncBaseProvider {
      * @param {string} [contextLevel] Context level: course, module, user, etc.
      * @param {numnber} [instanceId] Context instance id.
      * @param {number} [itemSetId] Item set id.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
     syncRatings(component: string, ratingArea: string, contextLevel?: string, instanceId?: number, itemSetId?: number,
-            siteId?: string): Promise<{itemSet: CoreRatingItemSet, updated: number[], warnings: string[]}[]> {
+            force?: boolean, siteId?: string): Promise<{itemSet: CoreRatingItemSet, updated: number[], warnings: string[]}[]> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         return this.ratingOffline.getItemSets(component, ratingArea, contextLevel, instanceId, itemSetId, siteId)
                 .then((itemSets) => {
             const results = [];
             const promises = itemSets.map((itemSet) => {
-                return this.syncItemSetIfNeeded(component, ratingArea, itemSet.contextLevel, itemSet.instanceId,
-                        itemSet.itemSetId, siteId).then((result) => {
+                const promise = force ? this.syncItemSet(component, ratingArea, itemSet.contextLevel, itemSet.instanceId,
+                        itemSet.itemSetId, siteId) : this.syncItemSetIfNeeded(component, ratingArea, itemSet.contextLevel,
+                        itemSet.instanceId, itemSet.itemSetId, siteId);
+
+                return promise.then((result) => {
                     if (result.updated) {
                         // Sync successful, send event.
                         this.eventsProvider.trigger(CoreRatingSyncProvider.SYNCED_EVENT, {

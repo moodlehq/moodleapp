@@ -68,23 +68,29 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
      * Try to synchronize all the surveys in a certain site or in all sites.
      *
      * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @return {Promise<any>}    Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllSurveys(siteId?: string): Promise<any> {
-        return this.syncOnSites('all surveys', this.syncAllSurveysFunc.bind(this), undefined, siteId);
+    syncAllSurveys(siteId?: string, force?: boolean): Promise<any> {
+        return this.syncOnSites('all surveys', this.syncAllSurveysFunc.bind(this), [force], siteId);
     }
 
     /**
      * Sync all pending surveys on a site.
-     * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     *
+     * @param  {string} siteId Site ID to sync.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @param {Promise<any>}     Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected syncAllSurveysFunc(siteId?: string): Promise<any> {
+    protected syncAllSurveysFunc(siteId: string, force?: boolean): Promise<any> {
         // Get all survey answers pending to be sent in the site.
         return this.surveyOffline.getAllData(siteId).then((entries) => {
             // Sync all surveys.
             const promises = entries.map((entry) => {
-                return this.syncSurveyIfNeeded(entry.surveyid, entry.userid, siteId).then((result) => {
+                const promise = force ? this.syncSurvey(entry.surveyid, entry.userid, siteId) :
+                    this.syncSurveyIfNeeded(entry.surveyid, entry.userid, siteId);
+
+                return promise.then((result) => {
                     if (result && result.answersSent) {
                         // Sync successful, send event.
                         this.eventsProvider.trigger(AddonModSurveySyncProvider.AUTO_SYNCED, {

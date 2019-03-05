@@ -63,10 +63,11 @@ export interface CoreCronHandler {
      * Execute the process.
      *
      * @param {string} [siteId] ID of the site affected. If not defined, all sites.
+     * @param {boolean} [force] Determines if it's a forced execution.
      * @return {Promise<any>} Promise resolved when done. If the promise is rejected, this function will be called again often,
      *                        it shouldn't be abused.
      */
-    execute?(siteId?: string): Promise<any>;
+    execute?(siteId?: string, force?: boolean): Promise<any>;
 
     /**
      * Whether the handler is running. Used internally by the provider, there's no need to set it.
@@ -181,7 +182,7 @@ export class CoreCronDelegate {
             this.queuePromise = this.queuePromise.catch(() => {
                 // Ignore errors in previous handlers.
             }).then(() => {
-                return this.executeHandler(name, siteId).then(() => {
+                return this.executeHandler(name, force, siteId).then(() => {
                     this.logger.debug(`Execution of handler '${name}' was a success.`);
 
                     return this.setHandlerLastExecutionTime(name, Date.now()).then(() => {
@@ -204,16 +205,18 @@ export class CoreCronDelegate {
      * Run a handler, cancelling the execution if it takes more than MAX_TIME_PROCESS.
      *
      * @param {string} name Name of the handler.
+     * @param {boolean} [force] Wether the execution is forced (manual sync).
      * @param {string} [siteId] Site ID. If not defined, all sites.
      * @return {Promise<any>} Promise resolved when the handler finishes or reaches max time, rejected if it fails.
      */
-    protected executeHandler(name: string, siteId?: string): Promise<any> {
+    protected executeHandler(name: string, force?: boolean, siteId?: string): Promise<any> {
         return new Promise((resolve, reject): void => {
             let cancelTimeout;
 
             this.logger.debug('Executing handler: ' + name);
+
             // Wrap the call in Promise.resolve to make sure it's a promise.
-            Promise.resolve(this.handlers[name].execute(siteId)).then(resolve).catch(reject).finally(() => {
+            Promise.resolve(this.handlers[name].execute(siteId, force)).then(resolve).catch(reject).finally(() => {
                 clearTimeout(cancelTimeout);
             });
 

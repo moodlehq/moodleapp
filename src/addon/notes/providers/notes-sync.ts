@@ -48,19 +48,21 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider {
      * Try to synchronize all the notes in a certain site or in all sites.
      *
      * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @return {Promise<any>}    Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllNotes(siteId?: string): Promise<any> {
-        return this.syncOnSites('all notes', this.syncAllNotesFunc.bind(this), [], siteId);
+    syncAllNotes(siteId?: string, force?: boolean): Promise<any> {
+        return this.syncOnSites('all notes', this.syncAllNotesFunc.bind(this), [force], siteId);
     }
 
     /**
      * Synchronize all the notes in a certain site
      *
      * @param  {string} siteId Site ID to sync.
+     * @param  {boolean} force Wether to force sync not depending on last execution.
      * @return {Promise<any>}  Promise resolved if sync is successful, rejected if sync fails.
      */
-    private syncAllNotesFunc(siteId: string): Promise<any> {
+    private syncAllNotesFunc(siteId: string, force: boolean): Promise<any> {
         return this.notesOffline.getAllNotes(siteId).then((notes) => {
             // Get all the courses to be synced.
             const courseIds = [];
@@ -72,7 +74,9 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider {
 
             // Sync all courses.
             const promises = courseIds.map((courseId) => {
-                return this.syncNotesIfNeeded(courseId, siteId).then((warnings) => {
+                const promise = force ? this.syncNotes(courseId, siteId) : this.syncNotesIfNeeded(courseId, siteId);
+
+                return promise.then((warnings) => {
                     if (typeof warnings != 'undefined') {
                         // Sync successful, send event.
                         this.eventsProvider.trigger(AddonNotesSyncProvider.AUTO_SYNCED, {

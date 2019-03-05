@@ -143,19 +143,21 @@ export class AddonModWikiSyncProvider extends CoreSyncBaseProvider {
      * Try to synchronize all the wikis in a certain site or in all sites.
      *
      * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllWikis(siteId?: string): Promise<any> {
-        return this.syncOnSites('all wikis', this.syncAllWikisFunc.bind(this), [], siteId);
+    syncAllWikis(siteId?: string, force?: boolean): Promise<any> {
+        return this.syncOnSites('all wikis', this.syncAllWikisFunc.bind(this), [force], siteId);
     }
 
     /**
      * Sync all wikis on a site.
      *
-     * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param  {string} siteId Site ID to sync.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @param {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected syncAllWikisFunc(siteId?: string): Promise<any> {
+    protected syncAllWikisFunc(siteId: string, force?: boolean): Promise<any> {
         // Get all the pages created in offline.
         return this.wikiOfflineProvider.getAllNewPages(siteId).then((pages) => {
             const promises = [],
@@ -171,8 +173,10 @@ export class AddonModWikiSyncProvider extends CoreSyncBaseProvider {
             for (const id in subwikis) {
                 const subwiki = subwikis[id];
 
-                promises.push(this.syncSubwikiIfNeeded(subwiki.subwikiid, subwiki.wikiid, subwiki.userid, subwiki.groupid,
-                        siteId).then((result) => {
+                const promise = force ? this.syncSubwiki(subwiki.subwikiid, subwiki.wikiid, subwiki.userid, subwiki.groupid, siteId)
+                    : this.syncSubwikiIfNeeded(subwiki.subwikiid, subwiki.wikiid, subwiki.userid, subwiki.groupid, siteId);
+
+                promises.push(promise.then((result) => {
 
                     if (result && result.updated) {
                         // Sync successful, send event.
