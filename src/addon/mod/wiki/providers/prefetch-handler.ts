@@ -27,6 +27,7 @@ import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModWikiProvider } from './wiki';
+import { AddonModWikiSyncProvider } from './wiki-sync';
 
 /**
  * Handler to prefetch wikis.
@@ -42,7 +43,8 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
             courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider, protected wikiProvider: AddonModWikiProvider, protected userProvider: CoreUserProvider,
             protected textUtils: CoreTextUtilsProvider, protected courseHelper: CoreCourseHelperProvider,
-            protected groupsProvider: CoreGroupsProvider, protected gradesHelper: CoreGradesHelperProvider) {
+            protected groupsProvider: CoreGroupsProvider, protected gradesHelper: CoreGradesHelperProvider,
+            protected syncProvider: AddonModWikiSyncProvider) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
@@ -209,5 +211,16 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
 
             return Promise.all(promises);
         });
+    }
+
+    /**
+     * Sync a module.
+     *
+     * @param {any} module Module.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    sync(module: any, siteId?: string): Promise<any> {
+        return this.syncProvider.syncWiki(module.instance, module.course, module.id, siteId);
     }
 }

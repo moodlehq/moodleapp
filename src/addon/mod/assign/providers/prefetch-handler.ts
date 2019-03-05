@@ -28,6 +28,7 @@ import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModAssignProvider } from './assign';
 import { AddonModAssignHelperProvider } from './helper';
+import { AddonModAssignSyncProvider } from './assign-sync';
 import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 
@@ -47,7 +48,8 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
             protected textUtils: CoreTextUtilsProvider, protected feedbackDelegate: AddonModAssignFeedbackDelegate,
             protected submissionDelegate: AddonModAssignSubmissionDelegate, protected courseHelper: CoreCourseHelperProvider,
             protected groupsProvider: CoreGroupsProvider, protected gradesHelper: CoreGradesHelperProvider,
-            protected userProvider: CoreUserProvider, protected assignHelper: AddonModAssignHelperProvider) {
+            protected userProvider: CoreUserProvider, protected assignHelper: AddonModAssignHelperProvider,
+            protected syncProvider: AddonModAssignSyncProvider) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
@@ -453,5 +455,16 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
         promises.push(this.userProvider.prefetchProfiles(userIds, courseId, siteId));
 
         return Promise.all(promises);
+    }
+
+    /**
+     * Sync a module.
+     *
+     * @param {any} module Module.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    sync(module: any, siteId?: string): Promise<any> {
+        return this.syncProvider.syncAssign(module.instance, siteId);
     }
 }

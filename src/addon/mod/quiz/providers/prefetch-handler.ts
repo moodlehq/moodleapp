@@ -554,4 +554,19 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
             }
         });
     }
+
+    /**
+     * Sync a module.
+     *
+     * @param {any} module Module.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    sync(module: any, siteId?: string): Promise<any> {
+        if (!this.syncProvider) {
+            this.syncProvider = this.injector.get(AddonModQuizSyncProvider);
+        }
+
+        return this.syncProvider.syncQuiz(module.instance, false, siteId);
+    }
 }

@@ -24,6 +24,7 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/acti
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModGlossaryProvider } from './glossary';
 import { CoreRatingProvider } from '@core/rating/providers/rating';
+import { AddonModGlossarySyncProvider } from './sync';
 
 /**
  * Handler to prefetch forums.
@@ -44,7 +45,8 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
             domUtils: CoreDomUtilsProvider,
             private userProvider: CoreUserProvider,
             private ratingProvider: CoreRatingProvider,
-            private glossaryProvider: AddonModGlossaryProvider) {
+            private glossaryProvider: AddonModGlossaryProvider,
+            private syncProvider: AddonModGlossarySyncProvider) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
@@ -185,6 +187,27 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
             }));
 
             return Promise.all(promises);
+        });
+    }
+
+    /**
+     * Sync a module.
+     *
+     * @param {any} module Module.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    sync(module: any, siteId?: string): Promise<any> {
+        const promises = [
+            this.syncProvider.syncGlossaryEntries(module.instance, undefined, siteId),
+            this.syncProvider.syncRatings(module.id, undefined, siteId)
+        ];
+
+        return Promise.all(promises).then((results) => {
+            return results.reduce((a, b) => ({
+                updated: a.updated || b.updated,
+                warnings: (a.warnings || []).concat(b.warnings || []),
+            }), {updated: false});
         });
     }
 }

@@ -127,12 +127,13 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
      * Synchronize a choice.
      *
      * @param  {number} choiceId Choice ID to be synced.
-     * @param  {number} userId   User the answers belong to.
+     * @param  {number} [userId] User the answers belong to.
      * @param  {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved if sync is successful, rejected otherwise.
      */
-    syncChoice(choiceId: number, userId: number, siteId?: string): Promise<any> {
+    syncChoice(choiceId: number, userId?: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
+        userId = userId || this.sitesProvider.getCurrentSiteUserId();
 
         const syncId = this.getSyncId(choiceId, userId);
         if (this.isSyncing(syncId, siteId)) {

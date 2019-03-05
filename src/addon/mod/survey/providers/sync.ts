@@ -130,12 +130,13 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
      * Synchronize a survey.
      *
      * @param  {number} surveyId Survey ID.
-     * @param  {number} userId   User the answers belong to.
+     * @param  {number} [userId]   User the answers belong to. If not defined, current user.
      * @param  {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}    Promise resolved if sync is successful, rejected otherwise.
      */
-    syncSurvey(surveyId: number, userId: number, siteId?: string): Promise<any> {
+    syncSurvey(surveyId: number, userId?: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
+        userId = userId || this.sitesProvider.getCurrentSiteUserId();
 
         const syncId = this.getSyncId(surveyId, userId);
         if (this.isSyncing(syncId, siteId)) {

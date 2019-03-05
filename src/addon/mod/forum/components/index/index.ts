@@ -376,18 +376,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * @return {Promise<any>} Promise resolved when done.
      */
     protected sync(): Promise<boolean> {
-        const promises = [];
-
-        promises.push(this.forumSync.syncForumDiscussions(this.forum.id));
-        promises.push(this.forumSync.syncForumReplies(this.forum.id));
-        promises.push(this.forumSync.syncRatings(this.forum.cmid));
-
-        return Promise.all(promises).then((results) => {
-            return results.reduce((a, b) => ({
-                updated: a.updated || b.updated,
-                warnings: (a.warnings || []).concat(b.warnings || []),
-            }), {updated: false});
-        });
+        return this.prefetchHandler.sync(this.module);
     }
 
     /**

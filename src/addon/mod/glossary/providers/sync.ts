@@ -118,7 +118,7 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
             return Promise.all(this.utils.objectToArray(promises));
         }));
 
-        promises.push(this.syncRatings(undefined, siteId));
+        promises.push(this.syncRatings(undefined, force, siteId));
 
         return Promise.all(promises);
     }
@@ -259,13 +259,14 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
      * Synchronize offline ratings.
      *
      * @param {number} [cmId] Course module to be synced. If not defined, sync all glossaries.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved if sync is successful, rejected otherwise.
      */
-    syncRatings(cmId?: number, siteId?: string): Promise<any> {
+    syncRatings(cmId?: number, force?: boolean, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-         return this.ratingSync.syncRatings('mod_glossary', 'entry', 'module', cmId, 0, siteId).then((results) => {
+         return this.ratingSync.syncRatings('mod_glossary', 'entry', 'module', cmId, 0, force, siteId).then((results) => {
             let updated = false;
             const warnings = [];
             const promises = [];

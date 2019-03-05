@@ -26,6 +26,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { CoreRatingProvider } from '@core/rating/providers/rating';
 import { AddonModDataProvider } from './data';
+import { AddonModDataSyncProvider } from './sync';
 import { AddonModDataHelperProvider } from './helper';
 
 /**
@@ -43,7 +44,7 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
             domUtils: CoreDomUtilsProvider, protected dataProvider: AddonModDataProvider,
             protected timeUtils: CoreTimeUtilsProvider, protected dataHelper: AddonModDataHelperProvider,
             protected groupsProvider: CoreGroupsProvider, protected commentsProvider: CoreCommentsProvider,
-            private ratingProvider: CoreRatingProvider) {
+            private ratingProvider: CoreRatingProvider, protected syncProvider: AddonModDataSyncProvider) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
@@ -299,6 +300,27 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
             promises.push(this.courseProvider.getModuleBasicInfoByInstance(database.id, 'data', siteId));
 
             return Promise.all(promises);
+        });
+    }
+
+    /**
+     * Sync a module.
+     *
+     * @param {any} module Module.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    sync(module: any, siteId?: string): Promise<any> {
+        const promises = [
+            this.syncProvider.syncDatabase(module.instance, siteId),
+            this.syncProvider.syncRatings(module.id, true, siteId)
+        ];
+
+        return Promise.all(promises).then((results) => {
+            return results.reduce((a, b) => ({
+                updated: a.updated || b.updated,
+                warnings: (a.warnings || []).concat(b.warnings || []),
+            }), {updated: false});
         });
     }
 }

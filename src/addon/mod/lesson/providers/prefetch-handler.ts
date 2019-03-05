@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { ModalController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
@@ -24,6 +24,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreGroupsProvider } from '@providers/groups';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { AddonModLessonProvider } from './lesson';
+import { AddonModLessonSyncProvider } from './lesson-sync';
 
 /**
  * Handler to prefetch lessons.
@@ -36,10 +37,12 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
     // Don't check timers to decrease positives. If a user performs some action it will be reflected in other items.
     updatesNames = /^configuration$|^.*files$|^grades$|^gradeitems$|^pages$|^answers$|^questionattempts$|^pagesviewed$/;
 
+    protected syncProvider: AddonModLessonSyncProvider; // It will be injected later to prevent circular dependencies.
+
     constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
             courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider, protected modalCtrl: ModalController, protected groupsProvider: CoreGroupsProvider,
-            protected lessonProvider: AddonModLessonProvider) {
+            protected lessonProvider: AddonModLessonProvider, protected injector: Injector) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
@@ -428,5 +431,20 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
                 };
             });
         });
+    }
+
+    /**
+     * Sync a module.
+     *
+     * @param {any} module Module.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    sync(module: any, siteId?: string): Promise<any> {
+        if (!this.syncProvider) {
+            this.syncProvider = this.injector.get(AddonModLessonSyncProvider);
+        }
+
+        return this.syncProvider.syncLesson(module.instance, false, false, siteId);
     }
 }

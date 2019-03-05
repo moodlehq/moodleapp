@@ -206,6 +206,15 @@ export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
      * @return {Promise<any>} Promise resolved when done.
      */
     removeFiles?(module: any, courseId: number): Promise<any>;
+
+    /**
+     * Sync a module.
+     *
+     * @param {any} module Module.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    sync?(module: any, siteId?: any): Promise<any>;
 }
 
 /**
@@ -1139,10 +1148,40 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
 
         // Check if the module has a prefetch handler.
         if (handler) {
-            return handler.prefetch(module, courseId, single);
+            return this.syncModule(module).then(() => {
+                return handler.prefetch(module, courseId, single);
+            });
         }
 
         return Promise.resolve();
+    }
+
+    /**
+     * Sync a group of modules.
+     *
+     * @param  {any[]}        modules Array of modules to sync.
+     * @return {Promise<any>}         Promise resolved when finished.
+     */
+    syncModules(modules: any[]): Promise<any> {
+        return Promise.all(modules.map((module) => {
+            return this.syncModule(module);
+        }));
+    }
+
+    /**
+     * Sync a module.
+     *
+     * @param {any} module Module to sync.
+     * @return {Promise<any>} Promise resolved when finished.
+     */
+    syncModule(module: any): Promise<any> {
+        const handler = this.getPrefetchHandlerFor(module);
+
+        const promise = handler && handler.sync ? handler.sync(module) : Promise.resolve();
+
+        return promise.catch(() => {
+            // Ignore errors.
+        });
     }
 
     /**
