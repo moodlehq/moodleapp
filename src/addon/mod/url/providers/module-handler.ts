@@ -75,8 +75,12 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
             action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions, params?: any): void {
                 const modal = handler.domUtils.showModalLoading();
 
-                // First of all, check if the URL can be handled by the app. If so, always open it directly.
-                handler.contentLinksHelper.canHandleLink(module.contents[0].fileurl, courseId).then((canHandle) => {
+                // First of all, make sure module contents are loaded.
+                handler.courseProvider.loadModuleContents(module, courseId, undefined, false, false, undefined, handler.modName)
+                        .then(() => {
+                    // Check if the URL can be handled by the app. If so, always open it directly.
+                    return handler.contentLinksHelper.canHandleLink(module.contents[0].fileurl, courseId);
+                }).then((canHandle) => {
                     if (canHandle) {
                         // URL handled by the app, open it directly.
                         return true;
