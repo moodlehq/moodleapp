@@ -227,7 +227,7 @@ export class CoreCourseLogHelperProvider {
      * @param  {string}         [siteId]    Site ID. If not defined, current site.
      * @return {Promise<any>}   Promise resolved when done.
      */
-    syncAll(siteId?: string): Promise<any> {
+    syncSite(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const siteId = site.getId();
 
