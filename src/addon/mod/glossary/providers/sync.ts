@@ -29,6 +29,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { AddonModGlossaryProvider } from './glossary';
 import { AddonModGlossaryHelperProvider } from './helper';
 import { AddonModGlossaryOfflineProvider } from './offline';
+import { CoreRatingSyncProvider } from '@core/rating/providers/sync';
 
 /**
  * Service to sync glossaries.
@@ -54,7 +55,8 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
             private glossaryProvider: AddonModGlossaryProvider,
             private glossaryHelper: AddonModGlossaryHelperProvider,
             private glossaryOffline: AddonModGlossaryOfflineProvider,
-            private logHelper: CoreCourseLogHelperProvider) {
+            private logHelper: CoreCourseLogHelperProvider,
+            private ratingSync: CoreRatingSyncProvider) {
 
         super('AddonModGlossarySyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
                 timeUtils);
@@ -79,8 +81,12 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
      * @return {Promise<any>}    Promise resolved if sync is successful, rejected if sync fails.
      */
     protected syncAllGlossariesFunc(siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        const promises = [];
+
         // Sync all new entries
-        return this.glossaryOffline.getAllNewEntries(siteId).then((entries) => {
+        promises.push(this.glossaryOffline.getAllNewEntries(siteId).then((entries) => {
             const promises = {};
 
             // Do not sync same glossary twice.
@@ -106,7 +112,11 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
 
             // Promises will be an object so, convert to an array first;
             return Promise.all(this.utils.objectToArray(promises));
-        });
+        }));
+
+        promises.push(this.syncRatings(undefined, siteId));
+
+        return Promise.all(promises);
     }
 
     /**
@@ -239,6 +249,50 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
         });
 
         return this.addOngoingSync(syncId, syncPromise, siteId);
+    }
+
+    /**
+     * Synchronize offline ratings.
+     *
+     * @param {number} [cmId] Course module to be synced. If not defined, sync all glossaries.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved if sync is successful, rejected otherwise.
+     */
+    syncRatings(cmId?: number, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+         return this.ratingSync.syncRatings('mod_glossary', 'entry', 'module', cmId, 0, siteId).then((results) => {
+            let updated = false;
+            const warnings = [];
+            const promises = [];
+
+            results.forEach((result) => {
+                if (result.updated.length) {
+                    updated = true;
+
+                    // Invalidate entry of updated ratings.
+                    result.updated.forEach((itemId) => {
+                        promises.push(this.glossaryProvider.invalidateEntry(itemId, siteId));
+                    });
+                }
+                if (result.warnings.length) {
+                    promises.push(this.glossaryProvider.getGlossary(result.itemSet.courseId, result.itemSet.instanceId, siteId)
+                            .then((glossary) => {
+                        result.warnings.forEach((warning) => {
+                            warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
+                                component: this.componentTranslate,
+                                name: glossary.name,
+                                error: warning
+                            }));
+                        });
+                    }));
+                }
+            });
+
+            return this.utils.allPromises(promises).then(() => {
+                return { updated, warnings };
+            });
+        });
     }
 
     /**

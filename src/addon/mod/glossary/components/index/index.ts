@@ -16,6 +16,9 @@ import { Component, Injector, ViewChild } from '@angular/core';
 import { Content, PopoverController } from 'ionic-angular';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
+import { CoreRatingProvider } from '@core/rating/providers/rating';
+import { CoreRatingOfflineProvider } from '@core/rating/providers/offline';
+import { CoreRatingSyncProvider } from '@core/rating/providers/sync';
 import { AddonModGlossaryProvider } from '../../providers/glossary';
 import { AddonModGlossaryOfflineProvider } from '../../providers/offline';
 import { AddonModGlossarySyncProvider } from '../../providers/sync';
@@ -57,11 +60,16 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     protected getDivider: (entry: any) => string;
     protected addEntryObserver: any;
 
+    hasOfflineRatings: boolean;
+    protected ratingOfflineObserver: any;
+    protected ratingSyncObserver: any;
+
     constructor(injector: Injector,
             private popoverCtrl: PopoverController,
             private glossaryProvider: AddonModGlossaryProvider,
             private glossaryOffline: AddonModGlossaryOfflineProvider,
-            private glossarySync: AddonModGlossarySyncProvider) {
+            private glossarySync: AddonModGlossarySyncProvider,
+            private ratingOffline: CoreRatingOfflineProvider) {
         super(injector);
     }
 
@@ -73,6 +81,20 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
 
         // When an entry is added, we reload the data.
         this.addEntryObserver = this.eventsProvider.on(AddonModGlossaryProvider.ADD_ENTRY_EVENT, this.eventReceived.bind(this));
+
+        // Listen for offline ratings saved and synced.
+        this.ratingOfflineObserver = this.eventsProvider.on(CoreRatingProvider.RATING_SAVED_EVENT, (data) => {
+            if (this.glossary && data.component == 'mod_glossary' && data.ratingArea == 'entry' && data.contextLevel == 'module'
+                    && data.instanceId == this.glossary.coursemodule) {
+                this.hasOfflineRatings = true;
+            }
+        });
+        this.ratingSyncObserver = this.eventsProvider.on(CoreRatingSyncProvider.SYNCED_EVENT, (data) => {
+            if (this.glossary && data.component == 'mod_glossary' && data.ratingArea == 'entry' && data.contextLevel == 'module'
+                    && data.instanceId == this.glossary.coursemodule) {
+                this.hasOfflineRatings = false;
+            }
+        });
 
         this.loadContent(false, true).then(() => {
             if (!this.glossary) {
@@ -118,15 +140,23 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
                 return this.syncActivity(showErrors);
             }
         }).then(() => {
+            const promises = [];
 
-            return this.fetchEntries().then(() => {
+            promises.push(this.fetchEntries().then(() => {
                 // Check if there are responses stored in offline.
                 return this.glossaryOffline.getGlossaryNewEntries(this.glossary.id).then((offlineEntries) => {
                     offlineEntries.sort((a, b) => a.concept.localeCompare(b.fullname));
                     this.hasOffline = !!offlineEntries.length;
                     this.offlineEntries = offlineEntries || [];
                 });
-            });
+            }));
+
+            promises.push(this.ratingOffline.hasRatings('mod_glossary', 'entry', 'module', this.glossary.coursemodule)
+                    .then((hasRatings) => {
+                this.hasOfflineRatings = hasRatings;
+            }));
+
+            return Promise.all(promises);
         }).then(() => {
             // All data obtained, now fill the context menu.
             this.fillContextMenu(refresh);
@@ -189,7 +219,17 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      * @return {Promise<any>} Promise resolved when done.
      */
     protected sync(): Promise<boolean> {
-        return this.glossarySync.syncGlossaryEntries(this.glossary.id);
+        const promises = [
+            this.glossarySync.syncGlossaryEntries(this.glossary.id),
+            this.glossarySync.syncRatings(this.glossary.coursemodule)
+        ];
+
+        return Promise.all(promises).then((results) => {
+            return results.reduce((a, b) => ({
+                updated: a.updated || b.updated,
+                warnings: (a.warnings || []).concat(b.warnings || []),
+            }), {updated: false});
+        });
     }
 
     /**
@@ -345,7 +385,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     openEntry(entryId: number): void {
         const params = {
             courseId: this.courseId,
-            entryId: entryId,
+            entryId: entryId
         };
         this.splitviewCtrl.push('AddonModGlossaryEntryPage', params);
         this.selectedEntry = entryId;
@@ -400,5 +440,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
         super.ngOnDestroy();
 
         this.addEntryObserver && this.addEntryObserver.off();
+        this.ratingOfflineObserver && this.ratingOfflineObserver.off();
+        this.ratingSyncObserver && this.ratingSyncObserver.off();
     }
 }

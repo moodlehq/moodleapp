@@ -294,7 +294,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
             const promises = [];
 
             results.forEach((result) => {
-                if (result.updated) {
+                if (result.updated.length) {
                     updated = true;
 
                     // Invalidate discussions of updated ratings.

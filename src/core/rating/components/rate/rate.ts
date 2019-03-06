@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnChanges, SimpleChange } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChange  } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreRatingProvider, CoreRatingInfo, CoreRatingInfoItem, CoreRatingScale } from '@core/rating/providers/rating';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -35,13 +35,16 @@ export class CoreRatingRateComponent implements OnChanges {
     @Input() aggregateMethod: number;
     @Input() scaleId: number;
     @Input() userId: number;
+    @Output() onUpdate: EventEmitter<void>; // Event emitted when the rating is updated online.
 
     item: CoreRatingInfoItem;
     scale: CoreRatingScale;
     rating: number;
 
     constructor(private domUtils: CoreDomUtilsProvider, private translate: TranslateService,
-            private ratingProvider: CoreRatingProvider, private ratingOffline: CoreRatingOfflineProvider) {}
+            private ratingProvider: CoreRatingProvider, private ratingOffline: CoreRatingOfflineProvider) {
+        this.onUpdate = new EventEmitter<void>();
+    }
 
     /**
      * Detect changes on input properties.
@@ -96,6 +99,8 @@ export class CoreRatingRateComponent implements OnChanges {
                 .then((response) => {
             if (response == null) {
                 this.domUtils.showToast('core.datastoredoffline', true, 3000);
+            } else {
+                this.onUpdate.emit();
             }
         }).catch((error) => {
             this.domUtils.showErrorModal(error);
