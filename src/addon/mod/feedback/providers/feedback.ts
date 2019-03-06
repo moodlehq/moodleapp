@@ -137,18 +137,6 @@ export class AddonModFeedbackProvider {
      */
     protected fillValues(feedbackId: number, items: any[], offline: boolean, ignoreCache: boolean, siteId: string): Promise<any> {
         return this.getCurrentValues(feedbackId, offline, ignoreCache, siteId).then((valuesArray) => {
-            if (valuesArray.length == 0) {
-                // Try sending empty values to get the last completed attempt values.
-                return this.processPageOnline(feedbackId, 0, {}, undefined, siteId).then(() => {
-                    return this.getCurrentValues(feedbackId, offline, ignoreCache, siteId);
-                }).catch(() => {
-                    // Ignore errors
-                });
-            }
-
-            return valuesArray;
-
-        }).then((valuesArray) => {
             const values = {};
 
             valuesArray.forEach((value) => {
@@ -461,7 +449,7 @@ export class AddonModFeedbackProvider {
     }
 
     /**
-     * Returns the temporary completion record for the current user.
+     * Returns the temporary responses or responses of the last submission for the current user.
      *
      * @param   {number}    feedbackId          Feedback ID.
      * @param   {boolean}   [offline=false]     True if it should return cached data. Has priority over ignoreCache.
@@ -486,11 +474,22 @@ export class AddonModFeedbackProvider {
             }
 
             return site.read('mod_feedback_get_unfinished_responses', params, preSets).then((response) => {
-                if (response && typeof response.responses != 'undefined') {
-                    return response.responses;
+                if (!response || typeof response.responses == 'undefined') {
+                    return Promise.reject(null);
                 }
 
-                return Promise.reject(null);
+                if (response.responses.length == 0) {
+                    // No unfinished responses, fetch responses of the last submission.
+                    return site.read('mod_feedback_get_finished_responses', params, preSets).then((response) => {
+                        if (!response || typeof response.responses == 'undefined') {
+                            return Promise.reject(null);
+                        }
+
+                        return response.responses;
+                    });
+                }
+
+                return response.responses;
             });
         });
     }
