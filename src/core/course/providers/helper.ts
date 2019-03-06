@@ -25,7 +25,8 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from './options-delegate';
+import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay,
+    CoreCourseOptionsMenuHandlerToDisplay } from './options-delegate';
 import { CoreSiteHomeProvider } from '@core/sitehome/providers/sitehome';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCourseProvider } from './course';
@@ -273,10 +274,11 @@ export class CoreCourseHelperProvider {
      * @param {any} course Course to prefetch.
      * @param {any[]} [sections] List of course sections.
      * @param {CoreCourseOptionsHandlerToDisplay[]} courseHandlers List of course handlers.
+     * @param {CoreCourseOptionsMenuHandlerToDisplay[]} menuHandlers List of course menu handlers.
      * @return {Promise<boolean>} Promise resolved when the download finishes, rejected if an error occurs or the user cancels.
      */
-    confirmAndPrefetchCourse(data: any, course: any, sections?: any[], courseHandlers?: CoreCourseOptionsHandlerToDisplay[])
-            : Promise<boolean> {
+    confirmAndPrefetchCourse(data: any, course: any, sections?: any[], courseHandlers?: CoreCourseOptionsHandlerToDisplay[],
+            menuHandlers?: CoreCourseOptionsMenuHandlerToDisplay[]): Promise<boolean> {
 
         const initialIcon = data.prefetchCourseIcon,
             initialTitle = data.title,
@@ -297,15 +299,23 @@ export class CoreCourseHelperProvider {
             // Confirm the download.
             return this.confirmDownloadSizeSection(course.id, undefined, sections, true).then(() => {
                 // User confirmed, get the course handlers if needed.
-                if (courseHandlers) {
-                    promise = Promise.resolve(courseHandlers);
-                } else {
-                    promise = this.courseOptionsDelegate.getHandlersToDisplay(this.injector, course);
+                const subPromises = [];
+                if (!courseHandlers) {
+                    subPromises.push(this.courseOptionsDelegate.getHandlersToDisplay(this.injector, course)
+                        .then((cHandlers) => {
+                        courseHandlers = cHandlers;
+                    }));
+                }
+                if (!menuHandlers) {
+                    subPromises.push(this.courseOptionsDelegate.getMenuHandlersToDisplay(this.injector, course)
+                        .then((mHandlers) => {
+                        menuHandlers = mHandlers;
+                    }));
                 }
 
-                return promise.then((handlers: CoreCourseOptionsHandlerToDisplay[]) => {
+                return Promise.all(subPromises).then(() => {
                     // Now we have all the data, download the course.
-                    return this.prefetchCourse(course, sections, handlers, siteId);
+                    return this.prefetchCourse(course, sections, courseHandlers, menuHandlers, siteId);
                 }).then(() => {
                     // Download successful.
                     return true;
@@ -340,6 +350,7 @@ export class CoreCourseHelperProvider {
                 const subPromises = [];
                 let sections,
                     handlers,
+                    menuHandlers,
                     success = true;
 
                 // Get the sections and the handlers.
@@ -349,9 +360,12 @@ export class CoreCourseHelperProvider {
                 subPromises.push(this.courseOptionsDelegate.getHandlersToDisplay(this.injector, course).then((cHandlers) => {
                     handlers = cHandlers;
                 }));
+                subPromises.push(this.courseOptionsDelegate.getMenuHandlersToDisplay(this.injector, course).then((mHandlers) => {
+                    menuHandlers = mHandlers;
+                }));
 
                 promises.push(Promise.all(subPromises).then(() => {
-                    return this.prefetchCourse(course, sections, handlers, siteId);
+                    return this.prefetchCourse(course, sections, handlers, menuHandlers, siteId);
                 }).catch((error) => {
                     success = false;
 
@@ -1162,11 +1176,12 @@ export class CoreCourseHelperProvider {
      * @param {any} course The course to prefetch.
      * @param {any[]} sections List of course sections.
      * @param {CoreCourseOptionsHandlerToDisplay[]} courseHandlers List of course options handlers.
+     * @param {CoreCourseOptionsMenuHandlerToDisplay[]} courseMenuHandlers List of course menu handlers.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise}                Promise resolved when the download finishes.
      */
-    prefetchCourse(course: any, sections: any[], courseHandlers: CoreCourseOptionsHandlerToDisplay[], siteId?: string)
-            : Promise<any> {
+    prefetchCourse(course: any, sections: any[], courseHandlers: CoreCourseOptionsHandlerToDisplay[],
+           courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[], siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         if (this.courseDwnPromises[siteId] && this.courseDwnPromises[siteId][course.id]) {
@@ -1191,6 +1206,11 @@ export class CoreCourseHelperProvider {
 
             // Prefetch course options.
             courseHandlers.forEach((handler) => {
+                if (handler.prefetch) {
+                    promises.push(handler.prefetch(course));
+                }
+            });
+            courseMenuHandlers.forEach((handler) => {
                 if (handler.prefetch) {
                     promises.push(handler.prefetch(course));
                 }
