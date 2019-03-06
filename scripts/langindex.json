@@ -1651,6 +1651,7 @@
   "core.settings.navigatoruseragent": "local_moodlemobileapp",
   "core.settings.networkstatus": "local_moodlemobileapp",
   "core.settings.privacypolicy": "local_moodlemobileapp",
+  "core.settings.pushid": "local_moodlemobileapp",
   "core.settings.reportinbackground": "local_moodlemobileapp",
   "core.settings.settings": "moodle",
   "core.settings.showdownloadoptions": "local_moodlemobileapp",

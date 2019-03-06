@@ -1651,6 +1651,7 @@
     "core.settings.navigatoruseragent": "Navigator userAgent",
     "core.settings.networkstatus": "Internet connection status",
     "core.settings.privacypolicy": "Privacy policy",
+    "core.settings.pushid": "Push notifications ID",
     "core.settings.reportinbackground": "Report errors automatically",
     "core.settings.settings": "Settings",
     "core.settings.showdownloadoptions": "Show download options",
