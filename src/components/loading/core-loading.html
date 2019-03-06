@@ -1,10 +1,10 @@
-<div [@coreShowHideAnimation] class="core-loading-container" *ngIf="!hideUntil">
+<div [@coreShowHideAnimation] class="core-loading-container" *ngIf="!hideUntil" role="status">
     <span class="core-loading-spinner">
         <ion-spinner></ion-spinner>
-        <p class="core-loading-message" *ngIf="message">{{message}}</p>
+        <p class="core-loading-message" *ngIf="message" role="status">{{message}}</p>
     </span>
 </div>
-<div #content class="core-loading-content" [id]="uniqueId">
+<div #content class="core-loading-content" [id]="uniqueId" [attr.aria-busy]="hideUntil">
     <ng-content [@coreShowHideAnimation] *ngIf="hideUntil">
     </ng-content>
 </div>

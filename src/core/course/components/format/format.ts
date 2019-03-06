@@ -61,6 +61,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     allSectionsComponent: any;
     canLoadMore = false;
     showSectionId = 0;
+    sectionSelectorExpanded = false;
 
     // Data to pass to the components.
     data: any = {};
@@ -243,16 +244,27 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
     /**
      * Display the section selector modal.
+     *
+     * @param {MouseEvent} event Event.
      */
-    showSectionSelector(): void {
-        const modal = this.modalCtrl.create('CoreCourseSectionSelectorPage',
-            {course: this.course, sections: this.sections, selected: this.selectedSection});
-        modal.onDidDismiss((newSection) => {
-            if (newSection) {
-                this.sectionChanged(newSection);
-            }
-        });
-        modal.present();
+    showSectionSelector(event: MouseEvent): void {
+        if (!this.sectionSelectorExpanded) {
+            const modal = this.modalCtrl.create('CoreCourseSectionSelectorPage',
+                {course: this.course, sections: this.sections, selected: this.selectedSection});
+            modal.onDidDismiss((newSection) => {
+                if (newSection) {
+                    this.sectionChanged(newSection);
+                }
+
+                this.sectionSelectorExpanded = false;
+            });
+
+            modal.present({
+                ev: event
+            });
+
+            this.sectionSelectorExpanded = true;
+        }
     }
 
     /**

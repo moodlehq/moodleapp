@@ -54,6 +54,8 @@ export class CoreIconComponent implements OnInit, OnDestroy {
             this.newElement.classList.add('icon');
             this.newElement.classList.add('fa');
             this.newElement.classList.add(this.name);
+            this.newElement.setAttribute('aria-hidden', 'true');
+            this.newElement.setAttribute('role', 'img');
             if (this.isTrueProperty(this.fixedWidth)) {
                 this.newElement.classList.add('fa-fw');
             }

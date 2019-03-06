@@ -1,5 +1,5 @@
 <div [hidden]="!rteEnabled">
-    <div #editor contenteditable="true" class="core-rte-editor" tappable [attr.data-placeholder-text]="placeholder">
+    <div #editor contenteditable="true" class="core-rte-editor" tappable [attr.data-placeholder-text]="placeholder" role="textbox">
     </div>
 
     <!-- https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand -->
@@ -22,7 +22,7 @@
 </div>
 
 <div [hidden]="rteEnabled">
-    <ion-textarea #textarea class="core-textarea" [placeholder]="placeholder" [attr.name]="name" ngControl="control" (ionChange)="onChange($event)"></ion-textarea>
+    <ion-textarea #textarea class="core-textarea" [placeholder]="placeholder" [attr.name]="name" ngControl="control" (ionChange)="onChange($event)" role="textbox"></ion-textarea>
     <div class="core-rte-toolbar" [hidden]="!editorSupported">
         <div #decorate class="core-rte-buttons">
             <button tappable [core-suppress-events] (onClick)="toggleEditor($event)"><core-icon name="fa-pencil-square-o"></core-icon> {{ 'core.vieweditor' | translate }}</button>

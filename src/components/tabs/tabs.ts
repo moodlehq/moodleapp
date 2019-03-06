@@ -62,6 +62,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     slidesShown = this.maxSlides;
     numTabsShown = 0;
     direction = 'ltr';
+    description = '';
 
     protected originalTabsContainer: HTMLElement; // The container of the original tabs. It will include each tab's content.
     protected initialized = false;
@@ -238,8 +239,8 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     /**
      * Get the index of tab.
      *
-     * @param  {any}    tab [description]
-     * @return {number}     [description]
+     * @param  {any}    tab Tab object to check.
+     * @return {number}     Index number on the tabs array or -1 if not found.
      */
     getIndex(tab: any): number {
         for (let i = 0; i < this.tabs.length; i++) {
