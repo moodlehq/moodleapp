@@ -1,0 +1,62 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'addon.storagemanager.managestorage' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <ion-card class="wholecourse">
+            <ion-card-header>
+                <h1 text-wrap>{{ course.displayname }}</h1>
+                <p text-wrap>{{ 'addon.storagemanager.info' | translate }}</p>
+                <ion-item no-padding padding-top>
+                    <ion-row class="size">
+                        <ion-icon name="cube"></ion-icon>
+                        {{ 'addon.storagemanager.storageused' | translate }}
+                        {{ totalSize | coreBytesToSize }}
+                    </ion-row>
+                    <button ion-button icon-only item-end no-padding (click)="deleteForCourse()" [disabled]="totalSize == 0">
+                        <core-icon name="trash" label="{{ 'addon.storagemanager.deletecourse' | translate }}"></core-icon>
+                    </button>
+                </ion-item>
+            </ion-card-header>
+        </ion-card>
+        <ng-container *ngFor="let section of sections">
+            <ion-card *ngIf="section.totalSize > 0" class="section">
+                <ion-card-header>
+                    <ion-item no-padding>
+                        <ion-row>
+                            <h2 text-wrap>{{ section.name }}</h2>
+                        </ion-row>
+                        <ion-row class="size">
+                            <ion-icon name="cube"></ion-icon>
+                            {{ section.totalSize | coreBytesToSize }}
+                        </ion-row>
+                        <button ion-button icon-only item-end no-padding (click)="deleteForSection(section)">
+                            <core-icon name="trash" label="{{ 'addon.storagemanager.deletedatafrom' | translate: { name: section.name } }}"></core-icon>
+                        </button>
+                    </ion-item>
+                </ion-card-header>
+                <ion-card-content>
+                    <ng-container *ngFor="let module of section.modules">
+                        <div *ngIf="module.totalSize > 0">
+                            <ion-item no-padding>
+                                <ion-row class="{{module.handlerData.class}}">
+                                    <img *ngIf="module.handlerData.icon" [src]="module.handlerData.icon" alt="" role="presentation" class="core-module-icon"
+                                    >{{ module.name }}
+                                </ion-row>
+                                <ion-row class="size">
+                                    <ion-icon name="cube"></ion-icon>
+                                    {{ module.totalSize | coreBytesToSize }}
+                                </ion-row>
+                                <button ion-button icon-only outline item-end (click)="deleteForModule(module)">
+                                    <core-icon name="trash" label="{{ 'addon.storagemanager.deletedatafrom' | translate: { name: module.name } }}"></core-icon>
+                                </button>
+                            </ion-item>
+                        </div>
+                    </ng-container>
+                </ion-card-content>
+            </ion-card>
+        </ng-container>
+    </core-loading>
+</ion-content>
