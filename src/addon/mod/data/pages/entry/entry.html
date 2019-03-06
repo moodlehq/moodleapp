@@ -30,6 +30,9 @@
             <core-compile-html [text]="entryRendered" [jsData]="jsData" [extraImports]="extraImports"></core-compile-html>
         </div>
 
+        <core-rating-rate *ngIf="data && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="data.coursemodule" [itemId]="entry.id" [itemSetId]="0" [courseId]="courseId" [aggregateMethod]="data.assessed" [scaleId]="data.scale" [userId]="entry.userid" (onUpdate)="ratingUpdated()"></core-rating-rate>
+        <core-rating-aggregate *ngIf="data && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="data.coursemodule" [itemId]="entry.id" [courseId]="courseId" [aggregateMethod]="data.assessed" [scaleId]="data.scale"></core-rating-aggregate>
+
         <ion-item *ngIf="data && entry">
             <core-comments contextLevel="module" [instanceId]="data.coursemodule" component="mod_data" [itemId]="entry.id" area="database_entry"></core-comments>
         </ion-item>

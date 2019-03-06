@@ -20,6 +20,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreGroupsProvider } from '@providers/groups';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreRatingInfo } from '@core/rating/providers/rating';
 import { AddonModDataProvider } from '../../providers/data';
 import { AddonModDataHelperProvider } from '../../providers/helper';
 import { AddonModDataOfflineProvider } from '../../providers/offline';
@@ -66,6 +67,7 @@ export class AddonModDataEntryPage implements OnDestroy {
     cssClass = '';
     extraImports = [AddonModDataComponentsModule];
     jsData;
+    ratingInfo: CoreRatingInfo;
 
     constructor(params: NavParams, protected utils: CoreUtilsProvider, protected groupsProvider: CoreGroupsProvider,
             protected domUtils: CoreDomUtilsProvider, protected fieldsDelegate: AddonModDataFieldsDelegate,
@@ -162,7 +164,9 @@ export class AddonModDataEntryPage implements OnDestroy {
                 return this.dataHelper.getEntry(this.data, this.entryId, this.offlineActions);
             });
         }).then((entry) => {
+            this.ratingInfo = entry.ratinginfo;
             entry = entry.entry;
+
             this.cssTemplate = this.dataHelper.prefixCSS(this.data.csstemplate, '.' + this.cssClass);
 
             // Index contents by fieldid.
@@ -309,6 +313,13 @@ export class AddonModDataEntryPage implements OnDestroy {
                 });
             }
         });
+    }
+
+    /**
+     * Function called when rating is updated online.
+     */
+    ratingUpdated(): void {
+        this.dataProvider.invalidateEntryData(this.data.id, this.entryId);
     }
 
     /**
