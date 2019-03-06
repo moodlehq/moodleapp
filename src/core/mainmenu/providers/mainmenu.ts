@@ -52,6 +52,7 @@ export interface CoreMainMenuCustomItem {
 @Injectable()
 export class CoreMainMenuProvider {
     static NUM_MAIN_HANDLERS = 4;
+    static ITEM_MIN_WIDTH = 72; // Min with of every item, based on 5 items on a 360 pixel wide screen.
 
     constructor(private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider) { }
 
@@ -157,5 +158,23 @@ export class CoreMainMenuProvider {
                 });
             });
         });
+    }
+
+    /**
+     * Get the number of items to be shown on the main menu bar.
+     *
+     * @return {number} Number of items depending on the device width.
+     */
+    getNumItems(): number {
+        if (window && window.innerWidth) {
+            let numElements;
+
+            numElements = Math.floor(window.innerWidth / CoreMainMenuProvider.ITEM_MIN_WIDTH);
+
+            // Set a mínimum elements to show and skip more button.
+            return numElements > 1 ? numElements - 1 : 1;
+        }
+
+        return CoreMainMenuProvider.NUM_MAIN_HANDLERS;
     }
 }
