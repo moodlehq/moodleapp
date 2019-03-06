@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, ViewChildren, QueryList } from '@angular/core';
 import { IonicPage, NavParams, Content, PopoverController, ModalController, Modal, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
@@ -22,6 +22,7 @@ import { CoreSyncProvider } from '@providers/sync';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreQuestionHelperProvider } from '@core/question/providers/helper';
+import { CoreQuestionComponent } from '@core/question/components/question/question';
 import { AddonModQuizProvider } from '../../providers/quiz';
 import { AddonModQuizSyncProvider } from '../../providers/quiz-sync';
 import { AddonModQuizHelperProvider } from '../../providers/helper';
@@ -38,6 +39,7 @@ import { Subscription } from 'rxjs';
 })
 export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     @ViewChild(Content) content: Content;
+    @ViewChildren(CoreQuestionComponent) questionComponents: QueryList<CoreQuestionComponent>;
 
     quiz: any; // The quiz the attempt belongs to.
     attempt: any; // The attempt being attempted.
@@ -371,6 +373,29 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     }
 
     /**
+     * Fix sequence checks of current page.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected fixSequenceChecks(): Promise<any> {
+        // Get current page data again to get the latest sequencechecks.
+        return this.quizProvider.getAttemptData(this.attempt.id, this.attempt.currentpage, this.preflightData, this.offline, true)
+                .then((data) => {
+
+            const newSequenceChecks = {};
+
+            data.questions.forEach((question) => {
+                newSequenceChecks[question.slot] = this.questionHelper.getQuestionSequenceCheckFromHtml(question.html);
+            });
+
+            // Notify the new sequence checks to the components.
+            this.questionComponents.forEach((component) => {
+                component.updateSequenceCheck(newSequenceChecks);
+            });
+        });
+    }
+
+    /**
      * Get the input answers.
      *
      * @return {any} Object with the answers.
@@ -517,13 +542,32 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
      * @param {boolean} [userFinish] Whether the user clicked to finish the attempt.
      * @param {boolean} [timeUp] Whether the quiz time is up.
      * @return {Promise<any>} Promise resolved when done.
+     * @param {boolean} [retrying] Whether we're retrying the change.
      */
-    protected processAttempt(userFinish?: boolean, timeUp?: boolean): Promise<any> {
+    protected processAttempt(userFinish?: boolean, timeUp?: boolean, retrying?: boolean): Promise<any> {
         // Get the answers to send.
         return this.prepareAnswers().then((answers) => {
             // Send the answers.
             return this.quizProvider.processAttempt(this.quiz, this.attempt, answers, this.preflightData, userFinish, timeUp,
-                    this.offline);
+                    this.offline).catch((error) => {
+
+                if (error && error.errorcode == 'submissionoutofsequencefriendlymessage') {
+                    // There was an error with the sequence check. Try to ammend it.
+                    return this.fixSequenceChecks().then((): any => {
+                        if (retrying) {
+                            // We're already retrying, don't send the data again because it could cause an infinite loop.
+                            return Promise.reject(error);
+                        }
+
+                        // Sequence checks updated, try to send the data again.
+                        return this.processAttempt(userFinish, timeUp, true);
+                    }, () => {
+                        return Promise.reject(error);
+                    });
+                }
+
+                return Promise.reject(error);
+            });
         }).then(() => {
             // Answers saved, cancel auto save.
             this.autoSave.cancelAutoSave();
