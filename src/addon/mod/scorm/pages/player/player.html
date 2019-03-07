@@ -3,7 +3,7 @@
         <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
 
         <ion-buttons end>
-            <button *ngIf="showToc && !loadingToc && toc && toc.length" ion-button icon-only (click)="openToc($event)">
+            <button *ngIf="showToc && !loadingToc && toc && toc.length" ion-button icon-only (click)="openToc($event)"[attr.aria-label]="'addon.mod_scorm.toc' | translate" aria-haspopup="true">
                 <ion-icon name="bookmark"></ion-icon>
             </button>
             <ion-spinner *ngIf="showToc && loadingToc"></ion-spinner>

@@ -13,27 +13,30 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { NavParams, ViewController } from 'ionic-angular';
+import { IonicPage, NavParams, ViewController } from 'ionic-angular';
 import { AddonModScormProvider } from '../../providers/scorm';
 
 /**
- * Component to display the TOC of a SCORM.
+ * Modal to display the TOC of a SCORM.
  */
+@IonicPage({ segment: 'addon-mod-scorm-toc-modal' })
 @Component({
-    selector: 'addon-mod-scorm-toc-popover',
-    templateUrl: 'addon-mod-scorm-toc-popover.html'
+    selector: 'page-addon-mod-scorm-toc',
+    templateUrl: 'toc.html'
 })
-export class AddonModScormTocPopoverComponent {
+export class AddonModScormTocPage {
     toc: any[];
     isBrowse: boolean;
     isReview: boolean;
     attemptToContinue: number;
+    selected: number;
 
     constructor(navParams: NavParams, private viewCtrl: ViewController) {
         this.toc = navParams.get('toc') || [];
         this.attemptToContinue = navParams.get('attemptToContinue');
 
         const mode = navParams.get('mode');
+        this.selected = navParams.get('selected');
 
         this.isBrowse = mode === AddonModScormProvider.MODEBROWSE;
         this.isReview = mode === AddonModScormProvider.MODEREVIEW;
@@ -50,5 +53,12 @@ export class AddonModScormTocPopoverComponent {
         }
 
         this.viewCtrl.dismiss(sco);
+    }
+
+    /**
+     * Close modal.
+     */
+    closeModal(): void {
+        this.viewCtrl.dismiss();
     }
 }

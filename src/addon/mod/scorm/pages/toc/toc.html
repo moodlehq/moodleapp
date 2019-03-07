@@ -1,0 +1,33 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'addon.mod_scorm.toc' | translate }}</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <nav>
+        <ion-list>
+            <ion-item text-wrap *ngIf="attemptToContinue">
+                <p>{{ 'addon.mod_scorm.dataattemptshown' | translate:{number: attemptToContinue} }}</p>
+            </ion-item>
+            <ion-item text-center *ngIf="isBrowse">
+                <p>{{ 'addon.mod_scorm.browsemode' | translate }}</p>
+            </ion-item>
+            <ion-item text-center *ngIf="isReview">
+                <p>{{ 'addon.mod_scorm.reviewmode' | translate }}</p>
+            </ion-item>
+
+            <!-- List of SCOs. -->
+            <ng-container *ngFor="let sco of toc">
+                <a *ngIf="sco.isvisible" ion-item text-wrap [ngClass]="'core-padding-' + sco.level" [class.core-nav-item-selected]="selected == sco.id" (click)="loadSco(sco)" [attr.disabled]="!sco.prereq || !sco.launch ? true : null" [attr.detail-none]="!sco.prereq || !sco.launch ? true : null">
+                    <img [src]="sco.image.url" [alt]="sco.image.description" />
+                    <span>{{ sco.title }}</span>
+                </a>
+            </ng-container>
+        </ion-list>
+    </nav>
+</ion-content>
