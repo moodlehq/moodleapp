@@ -386,7 +386,11 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
             attemptToContinue: this.attemptToContinue,
             mode: this.mode,
             selected: this.currentSco && this.currentSco.id
-        }, { cssClass: 'core-modal-lateral' });
+        }, { cssClass: 'core-modal-lateral',
+            showBackdrop: true,
+            enableBackdropDismiss: true,
+            enterAnimation: 'core-modal-lateral-transition',
+            leaveAnimation: 'core-modal-lateral-transition' });
 
         // If the modal sends back a SCO, load it.
         modal.onDidDismiss((sco) => {

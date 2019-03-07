@@ -64,7 +64,11 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
         const modal =  this.modalCtrl.create('AddonModBookTocPage', {
             chapters: this.chapters,
             selected: this.currentChapter
-        }, { cssClass: 'core-modal-lateral' });
+        }, { cssClass: 'core-modal-lateral',
+            showBackdrop: true,
+            enableBackdropDismiss: true,
+            enterAnimation: 'core-modal-lateral-transition',
+            leaveAnimation: 'core-modal-lateral-transition' });
 
         modal.onDidDismiss((chapterId) => {
             if (chapterId) {
