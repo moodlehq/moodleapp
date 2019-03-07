@@ -193,19 +193,14 @@ export class CoreWSProvider {
         data.wstoken = preSets.wsToken;
         siteUrl = preSets.siteUrl + '/webservice/rest/server.php?moodlewsrestformat=json';
 
-        let promise = this.getPromiseHttp('post', preSets.siteUrl, data);
+        // There are some ongoing retry calls, wait for timeout.
+        if (this.retryCalls.length > 0) {
+            this.logger.warn('Calls locked, trying later...');
 
-        if (!promise) {
-            // There are some ongoing retry calls, wait for timeout.
-            if (this.retryCalls.length > 0) {
-                this.logger.warn('Calls locked, trying later...');
-                promise = this.addToRetryQueue(method, siteUrl, data, preSets);
-            } else {
-                promise = this.performPost(method, siteUrl, data, preSets);
-            }
+            return this.addToRetryQueue(method, siteUrl, data, preSets);
+        } else {
+            return this.performPost(method, siteUrl, data, preSets);
         }
-
-        return promise;
     }
 
     /**

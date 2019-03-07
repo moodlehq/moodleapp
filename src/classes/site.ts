@@ -185,6 +185,7 @@ export class CoreSite {
     protected cleanUnicode = false;
     protected lastAutoLogin = 0;
     protected offlineDisabled = false;
+    protected ongoingRequests: { [cacheId: string]: Promise<any> } = {};
 
     /**
      * Create a site.
@@ -571,7 +572,14 @@ export class CoreSite {
             return Promise.reject(this.utils.createFakeWSError('core.unicodenotsupportedcleanerror', true));
         }
 
-        return this.getFromCache(method, data, preSets, false, originalData).catch(() => {
+        const cacheId = this.getCacheId(method, data);
+
+        // Check for an ongoing identical request if we're not ignoring cache.
+        if (preSets.getFromCache && this.ongoingRequests[cacheId]) {
+            return this.ongoingRequests[cacheId];
+        }
+
+        const promise = this.getFromCache(method, data, preSets, false, originalData).catch(() => {
             // Do not pass those options to the core WS factory.
             return this.wsProvider.call(method, data, wsPreSets).then((response) => {
                 if (preSets.saveToCache) {
@@ -676,6 +684,17 @@ export class CoreSite {
 
             return response;
         });
+
+        this.ongoingRequests[cacheId] = promise;
+        // Clear ongoing request after setting the promise (just in case it's already resolved).
+        promise.finally(() => {
+           // Make sure we don't clear the promise of a newer request that ignores the cache.
+           if (this.ongoingRequests[cacheId] === promise) {
+               delete this.ongoingRequests[cacheId];
+           }
+        });
+
+        return promise;
     }
 
     /**
