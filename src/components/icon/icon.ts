@@ -37,6 +37,8 @@ export class CoreIconComponent implements OnInit, OnDestroy {
     // FontAwesome params.
     @Input('fixed-width') fixedWidth: string;
 
+    @Input('label') ariaLabel?: string;
+
     protected element: HTMLElement;
     protected newElement: HTMLElement;
 
@@ -54,8 +56,6 @@ export class CoreIconComponent implements OnInit, OnDestroy {
             this.newElement.classList.add('icon');
             this.newElement.classList.add('fa');
             this.newElement.classList.add(this.name);
-            this.newElement.setAttribute('aria-hidden', 'true');
-            this.newElement.setAttribute('role', 'img');
             if (this.isTrueProperty(this.fixedWidth)) {
                 this.newElement.classList.add('fa-fw');
             }
@@ -65,6 +65,10 @@ export class CoreIconComponent implements OnInit, OnDestroy {
         } else {
             this.newElement = <HTMLElement> this.element.firstElementChild;
         }
+
+        !this.ariaLabel && this.newElement.setAttribute('aria-hidden', 'true');
+        !this.ariaLabel && this.newElement.setAttribute('role', 'presentation');
+        this.ariaLabel && this.newElement.setAttribute('aria-label', this.ariaLabel);
 
         const attrs = this.element.attributes;
         for (let i = attrs.length - 1; i >= 0; i--) {

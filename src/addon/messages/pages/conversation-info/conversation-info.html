@@ -27,7 +27,7 @@
             <ion-avatar core-user-avatar [user]="member" [linkProfile]="false" [checkOnline]="member.showonlinestatus" item-start></ion-avatar>
             <h2>
                 <core-format-text [text]="member.fullname"></core-format-text>
-                <core-icon name="fa-ban" *ngIf="member.isblocked" [attr.aria-label]="'addon.messages.contactblocked' | translate"></core-icon>
+                <core-icon name="fa-ban" *ngIf="member.isblocked" [label]="'addon.messages.contactblocked' | translate"></core-icon>
             </h2>
         </a>
 
