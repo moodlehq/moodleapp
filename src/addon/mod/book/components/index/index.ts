@@ -13,13 +13,12 @@
 // limitations under the License.
 
 import { Component, Optional, Injector, Input } from '@angular/core';
-import { Content, PopoverController } from 'ionic-angular';
+import { Content, ModalController } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
 import { AddonModBookProvider, AddonModBookContentsMap, AddonModBookTocChapter } from '../../providers/book';
 import { AddonModBookPrefetchHandler } from '../../providers/prefetch-handler';
-import { AddonModBookTocPopoverComponent } from '../../components/toc-popover/toc-popover';
 
 /**
  * Component that displays a book.
@@ -42,7 +41,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
 
     constructor(injector: Injector, private bookProvider: AddonModBookProvider, private courseProvider: CoreCourseProvider,
             private appProvider: CoreAppProvider, private prefetchDelegate: AddonModBookPrefetchHandler,
-            private popoverCtrl: PopoverController, @Optional() private content: Content) {
+            private modalCtrl: ModalController, @Optional() private content: Content) {
         super(injector);
     }
 
@@ -61,15 +60,19 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
      * @param {MouseEvent} event Event.
      */
     showToc(event: MouseEvent): void {
-        const popover = this.popoverCtrl.create(AddonModBookTocPopoverComponent, {
-            chapters: this.chapters
+        // Create the toc modal.
+        const modal =  this.modalCtrl.create('AddonModBookTocPage', {
+            chapters: this.chapters,
+            selected: this.currentChapter
+        }, { cssClass: 'core-modal-lateral' });
+
+        modal.onDidDismiss((chapterId) => {
+            if (chapterId) {
+                this.changeChapter(chapterId);
+            }
         });
 
-        popover.onDidDismiss((chapterId) => {
-            this.changeChapter(chapterId);
-        });
-
-        popover.present({
+        modal.present({
             ev: event
         });
     }

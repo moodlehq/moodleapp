@@ -103,6 +103,10 @@ ion-app.app-root {
     border: 0;
   }
 
+  .core-nav-item-selected, .item.core-nav-item-selected {
+    @include core-selected-item($core-splitview-selected);
+  }
+
   // Recover borders on items inside cards.
   .card.with-borders .core-as-item,
   .core-as-item {
@@ -745,15 +749,21 @@ ion-app.app-root {
     height: 100% !important;
   }
 
-  @media only screen and (min-height: 600px) and (min-width: 768px) {
-      .core-modal-lateral  .modal-wrapper {
-        position: absolute;
-        @include position(0 !important, 0 !important, 0 !important, auto);
-        display: block;
-        height: 100% !important;
-        width: auto;
-        min-width: 400px;
-    }
+  @media only screen and (min-height: 400px) and (min-width: 300px) {
+      .core-modal-lateral {
+        .modal-wrapper {
+          position: absolute;
+          @include position(0 !important, 0 !important, 0 !important, auto);
+          display: block;
+          height: 100% !important;
+          width: auto;
+          min-width: 300px;
+          box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+        }
+        ion-backdrop {
+          visibility: visible;
+        }
+      }
   }
 
   .has-fab .scroll-content{

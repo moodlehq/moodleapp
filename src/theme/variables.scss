@@ -473,6 +473,20 @@ $core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA52
   }
 }
 
+@mixin core-selected-item($selected-color) {
+  @include border-start(5px, solid, $selected-color);
+
+  &.item-md {
+      @include padding(null, null, null, $item-md-padding-start - 5px);
+  }
+  &.item-ios {
+      @include padding(null, null, null, $item-ios-padding-start - 5px);
+  }
+  &.item-wp {
+      @include padding(null, null, null, $item-wp-padding-start - 5px);
+  }
+}
+
 // Font Awesome
 $fa-font-path: $font-path;
 @import "font-awesome";

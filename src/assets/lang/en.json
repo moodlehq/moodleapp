@@ -344,6 +344,7 @@
     "addon.mod_assign_submission_onlinetext.pluginname": "Online text submissions",
     "addon.mod_book.errorchapter": "Error reading chapter of book.",
     "addon.mod_book.modulenameplural": "Books",
+    "addon.mod_book.toc": "Table of contents",
     "addon.mod_chat.beep": "Beep",
     "addon.mod_chat.chatreport": "Chat sessions",
     "addon.mod_chat.currentusers": "Current users",

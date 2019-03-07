@@ -1,4 +1,5 @@
 {
     "errorchapter": "Error reading chapter of book.",
-    "modulenameplural": "Books"
+    "modulenameplural": "Books",
+    "toc": "Table of contents"
 }
