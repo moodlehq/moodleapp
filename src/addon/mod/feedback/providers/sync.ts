@@ -43,7 +43,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
             protected appProvider: CoreAppProvider, private feedbackOffline: AddonModFeedbackOfflineProvider,
             private eventsProvider: CoreEventsProvider,  private feedbackProvider: AddonModFeedbackProvider,
             protected translate: TranslateService, private utils: CoreUtilsProvider, protected textUtils: CoreTextUtilsProvider,
-            courseProvider: CoreCourseProvider, syncProvider: CoreSyncProvider, timeUtils: CoreTimeUtilsProvider,
+            private courseProvider: CoreCourseProvider, syncProvider: CoreSyncProvider, timeUtils: CoreTimeUtilsProvider,
             private logHelper: CoreCourseLogHelperProvider, prefetchDelegate: CoreCourseModulePrefetchDelegate,
             prefetchHandler: AddonModFeedbackPrefetchHandler) {
 
@@ -236,7 +236,9 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
         }).then(() => {
             if (result.updated) {
                 // Data has been sent to server, update data.
-                return this.prefetchAfterUpdate(module, courseId, undefined, siteId).catch(() => {
+                return this.courseProvider.getModuleBasicInfoByInstance(feedbackId, 'feedback', siteId).then((module) => {
+                    return this.prefetchAfterUpdate(module, courseId, undefined, siteId);
+                }).catch(() => {
                     // Ignore errors.
                 });
             }

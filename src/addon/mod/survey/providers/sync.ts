@@ -41,7 +41,7 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
 
     constructor(loggerProvider: CoreLoggerProvider, sitesProvider: CoreSitesProvider, appProvider: CoreAppProvider,
             syncProvider: CoreSyncProvider, textUtils: CoreTextUtilsProvider, translate: TranslateService,
-            courseProvider: CoreCourseProvider, private surveyOffline: AddonModSurveyOfflineProvider,
+            private courseProvider: CoreCourseProvider, private surveyOffline: AddonModSurveyOfflineProvider,
             private eventsProvider: CoreEventsProvider,  private surveyProvider: AddonModSurveyProvider,
             private utils: CoreUtilsProvider, timeUtils: CoreTimeUtilsProvider, private logHelper: CoreCourseLogHelperProvider,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModSurveyPrefetchHandler) {
@@ -195,7 +195,9 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
         }).then(() => {
             if (courseId) {
                 // Data has been sent to server, update survey data.
-                return this.prefetchAfterUpdate(module, courseId, undefined, siteId).catch(() => {
+                return this.courseProvider.getModuleBasicInfoByInstance(surveyId, 'survey', siteId).then((module) => {
+                    return this.prefetchAfterUpdate(module, courseId, undefined, siteId);
+                }).catch(() => {
                     // Ignore errors.
                 });
             }

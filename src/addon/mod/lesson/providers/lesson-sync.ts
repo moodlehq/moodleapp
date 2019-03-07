@@ -91,7 +91,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
 
     constructor(loggerProvider: CoreLoggerProvider, sitesProvider: CoreSitesProvider, appProvider: CoreAppProvider,
             syncProvider: CoreSyncProvider, textUtils: CoreTextUtilsProvider, translate: TranslateService,
-            courseProvider: CoreCourseProvider, private eventsProvider: CoreEventsProvider,
+            private courseProvider: CoreCourseProvider, private eventsProvider: CoreEventsProvider,
             private lessonProvider: AddonModLessonProvider, private lessonOfflineProvider: AddonModLessonOfflineProvider,
             protected prefetchHandler: AddonModLessonPrefetchHandler, timeUtils: CoreTimeUtilsProvider,
             private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider,
@@ -431,7 +431,9 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         }).then(() => {
             if (result.updated && courseId) {
                 // Data has been sent to server, update data.
-                return this.prefetchAfterUpdate(module, courseId, undefined, siteId).catch(() => {
+                return this.courseProvider.getModuleBasicInfoByInstance(lessonId, 'lesson', siteId).then((module) => {
+                    return this.prefetchAfterUpdate(module, courseId, undefined, siteId);
+                }).catch(() => {
                     // Ignore errors.
                 });
             }
