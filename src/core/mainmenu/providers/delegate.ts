@@ -111,6 +111,12 @@ export interface CoreMainMenuHandlerToDisplay extends CoreMainMenuHandlerData {
      * @type {number}
      */
     priority?: number;
+
+    /**
+     * Hide tab. Used then resizing.
+     * @type {[type]}
+     */
+    hide?: boolean;
 }
 
 /**

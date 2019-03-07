@@ -223,10 +223,6 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
      * @param {CoreIonTabComponent} tab The tab to remove.
      */
     remove(tab: CoreIonTabComponent): void {
-        if (tab.isSelected) {
-            // TODO: If selected we should move this navigation to the phantom tab.
-        }
-
         // First search in the list of initialized tabs.
         let index = this._tabs.indexOf(tab);
 
