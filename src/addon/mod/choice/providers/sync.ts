@@ -43,7 +43,7 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
             protected appProvider: CoreAppProvider, private choiceOffline: AddonModChoiceOfflineProvider,
             private eventsProvider: CoreEventsProvider,  private choiceProvider: AddonModChoiceProvider,
             translate: TranslateService, private utils: CoreUtilsProvider, protected textUtils: CoreTextUtilsProvider,
-            courseProvider: CoreCourseProvider, syncProvider: CoreSyncProvider, timeUtils: CoreTimeUtilsProvider,
+            private courseProvider: CoreCourseProvider, syncProvider: CoreSyncProvider, timeUtils: CoreTimeUtilsProvider,
             private logHelper: CoreCourseLogHelperProvider, prefetchHandler: AddonModChoicePrefetchHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate) {
 
@@ -200,7 +200,9 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
         }).then(() => {
             if (courseId) {
                 // Data has been sent to server, prefetch choice if needed.
-                return this.prefetchAfterUpdate(module, courseId, undefined, siteId).catch(() => {
+                return this.courseProvider.getModuleBasicInfoByInstance(choiceId, 'choice', siteId).then((module) => {
+                    return this.prefetchAfterUpdate(module, courseId, undefined, siteId);
+                }).catch(() => {
                     // Ignore errors.
                 });
             }
