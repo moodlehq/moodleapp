@@ -71,8 +71,8 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
     /**
      * Try to synchronize all the feedbacks in a certain site or in all sites.
      *
-     * @param {boolean} force Wether to force sync not depending on last execution.
      * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} force Wether to force sync not depending on last execution.
      * @return {Promise<any>}    Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllFeedbacks(siteId?: string, force?: boolean): Promise<any> {

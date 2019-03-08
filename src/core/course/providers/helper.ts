@@ -1319,7 +1319,7 @@ export class CoreCourseHelperProvider {
         section.isDownloading = true;
 
         // Sync the modules first.
-        promises.push(this.prefetchDelegate.syncModules(section.modules).then(() => {
+        promises.push(this.prefetchDelegate.syncModules(section.modules, courseId).then(() => {
             // Validate the section needs to be downloaded and calculate amount of modules that need to be downloaded.
             return this.prefetchDelegate.getModulesStatus(section.modules, courseId, section.id).then((result) => {
                 if (result.status == CoreConstants.DOWNLOADED || result.status == CoreConstants.NOT_DOWNLOADABLE) {

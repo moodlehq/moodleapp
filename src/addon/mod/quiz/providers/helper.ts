@@ -49,7 +49,7 @@ export class AddonModQuizHelperProvider {
     getAndCheckPreflightData(quiz: any, accessInfo: any, preflightData: any, attempt: any, offline?: boolean, prefetch?: boolean,
             title?: string, siteId?: string, retrying?: boolean): Promise<any> {
 
-        const rules = accessInfo.activerulenames;
+        const rules = accessInfo && accessInfo.activerulenames;
         let isPreflightCheckRequired = false;
 
         // Check if the user needs to input preflight data.

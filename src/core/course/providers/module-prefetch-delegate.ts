@@ -211,10 +211,11 @@ export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
      * Sync a module.
      *
      * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when done.
      */
-    sync?(module: any, siteId?: any): Promise<any>;
+    sync?(module: any, courseId: number, siteId?: any): Promise<any>;
 }
 
 /**
@@ -1148,7 +1149,7 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
 
         // Check if the module has a prefetch handler.
         if (handler) {
-            return this.syncModule(module).then(() => {
+            return this.syncModule(module, courseId).then(() => {
                 return handler.prefetch(module, courseId, single);
             });
         }
@@ -1160,11 +1161,12 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
      * Sync a group of modules.
      *
      * @param  {any[]}        modules Array of modules to sync.
+     * @param {number} courseId Course ID the module belongs to.
      * @return {Promise<any>}         Promise resolved when finished.
      */
-    syncModules(modules: any[]): Promise<any> {
+    syncModules(modules: any[], courseId: number): Promise<any> {
         return Promise.all(modules.map((module) => {
-            return this.syncModule(module);
+            return this.syncModule(module, courseId);
         }));
     }
 
@@ -1172,12 +1174,13 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
      * Sync a module.
      *
      * @param {any} module Module to sync.
+     * @param {number} courseId Course ID the module belongs to.
      * @return {Promise<any>} Promise resolved when finished.
      */
-    syncModule(module: any): Promise<any> {
+    syncModule(module: any, courseId: number): Promise<any> {
         const handler = this.getPrefetchHandlerFor(module);
 
-        const promise = handler && handler.sync ? handler.sync(module) : Promise.resolve();
+        const promise = handler && handler.sync ? handler.sync(module, courseId) : Promise.resolve();
 
         return promise.catch(() => {
             // Ignore errors.

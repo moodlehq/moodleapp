@@ -109,8 +109,8 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
     /**
      * Try to synchronize all the assignments in a certain site or in all sites.
      *
-     * @param {boolean} force Wether to force sync not depending on last execution.
      * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} force Wether to force sync not depending on last execution.
      * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllAssignments(siteId?: string, force?: boolean): Promise<any> {
@@ -120,8 +120,8 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
     /**
      * Sync all assignments on a site.
      *
-     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @param {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
     protected syncAllAssignmentsFunc(siteId?: string, force?: boolean): Promise<any> {

@@ -461,10 +461,11 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
      * Sync a module.
      *
      * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when done.
      */
-    sync(module: any, siteId?: string): Promise<any> {
+    sync(module: any, courseId: number, siteId?: any): Promise<any> {
         return this.syncProvider.syncAssign(module.instance, siteId);
     }
 }

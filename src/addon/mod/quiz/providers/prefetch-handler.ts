@@ -567,6 +567,8 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
             this.syncProvider = this.injector.get(AddonModQuizSyncProvider);
         }
 
-        return this.syncProvider.syncQuiz(module.instance, false, siteId);
+        return this.quizProvider.getQuiz(module.course, module.id).then((quiz) => {
+            return this.syncProvider.syncQuiz(quiz, false, siteId);
+        });
     }
 }

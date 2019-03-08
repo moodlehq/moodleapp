@@ -376,7 +376,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * @return {Promise<any>} Promise resolved when done.
      */
     protected sync(): Promise<boolean> {
-        return this.prefetchHandler.sync(this.module);
+        return this.prefetchHandler.sync(this.module, this.courseId);
     }
 
     /**
