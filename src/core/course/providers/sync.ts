@@ -49,19 +49,21 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider {
      * Try to synchronize all the courses in a certain site or in all sites.
      *
      * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} [force] Wether the execution is forced (manual sync).
      * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllCourses(siteId?: string): Promise<any> {
-        return this.syncOnSites('courses', this.syncAllCoursesFunc.bind(this), undefined, siteId);
+    syncAllCourses(siteId?: string, force?: boolean): Promise<any> {
+        return this.syncOnSites('courses', this.syncAllCoursesFunc.bind(this), [force], siteId);
     }
 
     /**
      * Sync all courses on a site.
      *
-     * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {string} siteId Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} force Wether the execution is forced (manual sync).
      * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected syncAllCoursesFunc(siteId?: string): Promise<any> {
+    protected syncAllCoursesFunc(siteId: string, force: boolean): Promise<any> {
         const p1 = [];
 
         p1.push(this.logHelper.syncSite(siteId));
@@ -69,7 +71,10 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider {
         p1.push(this.courseOffline.getAllManualCompletions(siteId).then((completions) => {
             // Sync all courses.
             const p2 = completions.map((completion) => {
-                return this.syncCourseIfNeeded(completion.courseid, siteId).then((result) => {
+                const promise = force ? this.syncCourse(completion.courseid, siteId) :
+                    this.syncCourseIfNeeded(completion.courseid, siteId);
+
+                return promise.then((result) => {
                     if (result && result.updated) {
                         // Sync successful, send event.
                         this.eventsProvider.trigger(CoreCourseSyncProvider.AUTO_SYNCED, {

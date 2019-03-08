@@ -17,4 +17,20 @@ ion-app.app-root page-core-mainmenu {
         font-size: 23px;
         height: 23px;
     }
+
+    .ion-md-fa-newspaper-o,
+    .ion-ios-fa-newspaper-o,
+    .ion-ios-fa-newspaper-o-outline,
+    .ion-wp-fa-newspaper-o,
+    .ion-fa-newspaper-o {
+        @extend .fa-newspaper-o;
+        @extend .fa;
+        font-size: 22px;
+        height: 22px;
+    }
+
+    .ion-ios-fa-newspaper-o-outline {
+        font-size: 23px;
+        height: 23px;
+    }
 }
