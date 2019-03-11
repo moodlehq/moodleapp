@@ -1234,7 +1234,7 @@ export class CoreCourseHelperProvider {
     prefetchSection(section: any, courseId: number, sections?: any[]): Promise<any> {
         if (section.id != CoreCourseProvider.ALL_SECTIONS_ID) {
             // Download only this section.
-            return this.prefetchSingleSectionIfNeeded(section, courseId).then(() => {
+            return this.prefetchSingleSectionIfNeeded(section, courseId).finally(() => {
                 // Calculate the status of the section that finished.
                 return this.calculateSectionStatus(section, courseId);
             });
@@ -1246,7 +1246,7 @@ export class CoreCourseHelperProvider {
             section.isDownloading = true;
             sections.forEach((section) => {
                 if (section.id != CoreCourseProvider.ALL_SECTIONS_ID) {
-                    promises.push(this.prefetchSingleSectionIfNeeded(section, courseId).then(() => {
+                    promises.push(this.prefetchSingleSectionIfNeeded(section, courseId).finally(() => {
                         // Calculate the status of the section that finished.
                         return this.calculateSectionStatus(section, courseId).then((result) => {
                             // Calculate "All sections" status.

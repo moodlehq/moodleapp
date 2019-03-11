@@ -101,6 +101,6 @@
         <!-- Download progress. -->
         <ion-badge class="core-course-download-section-progress" *ngIf="section.isDownloading && section.total > 0 && section.count < section.total">{{section.count}} / {{section.total}}</ion-badge>
         <!-- Spinner (downloading or calculating status). -->
-        <ion-spinner *ngIf="(section.isDownloading && section.total > 0) || section.isCalculating"></ion-spinner>
+        <ion-spinner *ngIf="section.isDownloading || section.isCalculating"></ion-spinner>
     </div>
 </ng-template>
