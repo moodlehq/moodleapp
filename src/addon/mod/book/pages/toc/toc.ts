@@ -13,21 +13,24 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { NavParams, ViewController } from 'ionic-angular';
+import { IonicPage, NavParams, ViewController } from 'ionic-angular';
 import { AddonModBookTocChapter } from '../../providers/book';
 
 /**
- * Component to display the TOC of a book.
+ * Modal to display the TOC of a book.
  */
+@IonicPage({ segment: 'addon-mod-book-toc-modal' })
 @Component({
-    selector: 'addon-mod-book-toc-popover',
-    templateUrl: 'addon-mod-assign-submission-toc-popover.html'
+    selector: 'page-addon-mod-book-toc',
+    templateUrl: 'toc.html'
 })
-export class AddonModBookTocPopoverComponent {
+export class AddonModBookTocPage {
     chapters: AddonModBookTocChapter[];
+    selected: number;
 
     constructor(navParams: NavParams, private viewCtrl: ViewController) {
         this.chapters = navParams.get('chapters') || [];
+        this.selected = navParams.get('selected');
     }
 
     /**
@@ -37,5 +40,12 @@ export class AddonModBookTocPopoverComponent {
      */
     loadChapter(id: string): void {
         this.viewCtrl.dismiss(id);
+    }
+
+    /**
+     * Close modal.
+     */
+    closeModal(): void {
+        this.viewCtrl.dismiss();
     }
 }

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { IonicPage, NavParams, PopoverController } from 'ionic-angular';
+import { IonicPage, NavParams, ModalController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
@@ -24,7 +24,6 @@ import { AddonModScormProvider, AddonModScormAttemptCountResult } from '../../pr
 import { AddonModScormHelperProvider } from '../../providers/helper';
 import { AddonModScormSyncProvider } from '../../providers/scorm-sync';
 import { AddonModScormDataModel12 } from '../../classes/data-model-12';
-import { AddonModScormTocPopoverComponent } from '../../components/toc-popover/toc-popover';
 
 /**
  * Page that allows playing a SCORM.
@@ -65,7 +64,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
     protected launchPrevObserver: any;
     protected goOfflineObserver: any;
 
-    constructor(navParams: NavParams, protected popoverCtrl: PopoverController, protected eventsProvider: CoreEventsProvider,
+    constructor(navParams: NavParams, protected modalCtrl: ModalController, protected eventsProvider: CoreEventsProvider,
             protected sitesProvider: CoreSitesProvider, protected syncProvider: CoreSyncProvider,
             protected domUtils: CoreDomUtilsProvider, protected timeUtils: CoreTimeUtilsProvider,
             protected scormProvider: AddonModScormProvider, protected scormHelper: AddonModScormHelperProvider,
@@ -382,20 +381,25 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
      * @param {MouseEvent} event Event.
      */
     openToc(event: MouseEvent): void {
-        const popover = this.popoverCtrl.create(AddonModScormTocPopoverComponent, {
+        const modal = this.modalCtrl.create('AddonModScormTocPage', {
             toc: this.toc,
             attemptToContinue: this.attemptToContinue,
-            mode: this.mode
-        });
+            mode: this.mode,
+            selected: this.currentSco && this.currentSco.id
+        }, { cssClass: 'core-modal-lateral',
+            showBackdrop: true,
+            enableBackdropDismiss: true,
+            enterAnimation: 'core-modal-lateral-transition',
+            leaveAnimation: 'core-modal-lateral-transition' });
 
-        // If the popover sends back a SCO, load it.
-        popover.onDidDismiss((sco) => {
+        // If the modal sends back a SCO, load it.
+        modal.onDidDismiss((sco) => {
             if (sco) {
                 this.loadSco(sco);
             }
         });
 
-        popover.present({
+        modal.present({
             ev: event
         });
     }

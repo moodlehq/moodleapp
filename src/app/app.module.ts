@@ -31,6 +31,7 @@ import { ScreenOrientation } from '@ionic-native/screen-orientation';
 import { MoodleMobileApp } from './app.component';
 import { CoreInterceptor } from '@classes/interceptor';
 import { CorePageTransition } from '@classes/page-transition';
+import { CoreModalLateralTransition } from '@classes/modal-lateral-transition';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDbProvider } from '@providers/db';
 import { CoreAppProvider } from '@providers/app';
@@ -323,6 +324,7 @@ export class AppModule {
 
         // Set transition animation.
         config.setTransition('core-page-transition', CorePageTransition);
+        config.setTransition('core-modal-lateral-transition', CoreModalLateralTransition);
 
         // Decorate ion-content.
         this.decorateIonContent();

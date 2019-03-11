@@ -13,33 +13,19 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from 'ionic-angular';
+import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
-import { CoreCourseComponentsModule } from '@core/course/components/components.module';
-import { AddonModScormIndexComponent } from './index/index';
+import { AddonModBookTocPage } from './toc';
 
 @NgModule({
     declarations: [
-        AddonModScormIndexComponent
+        AddonModBookTocPage,
     ],
     imports: [
-        CommonModule,
-        IonicModule,
-        TranslateModule.forChild(),
-        CoreComponentsModule,
         CoreDirectivesModule,
-        CoreCourseComponentsModule
+        IonicPageModule.forChild(AddonModBookTocPage),
+        TranslateModule.forChild()
     ],
-    providers: [
-    ],
-    exports: [
-        AddonModScormIndexComponent
-    ],
-    entryComponents: [
-        AddonModScormIndexComponent
-    ]
 })
-export class AddonModScormComponentsModule {}
+export class AddonModBookTocPageModule {}

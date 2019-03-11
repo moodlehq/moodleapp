@@ -47,6 +47,7 @@
     "scormstatusnotdownloaded": "This SCORM package is not downloaded. It will be automatically downloaded when you open it.",
     "scormstatusoutdated": "This SCORM package has been modified since the last download. It will be automatically downloaded when you open it.",
     "suspended": "Suspended",
+    "toc": "TOC",
     "warningofflinedatadeleted": "Some offline data from attempt {{number}} has been discarded because it couldn't be counted as a new attempt.",
     "warningsynconlineincomplete": "Some attempts couldn't be synchronised with the site because the last online attempt is not yet finished. Please finish the online attempt first."
 }

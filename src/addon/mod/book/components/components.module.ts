@@ -20,12 +20,10 @@ import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreCourseComponentsModule } from '@core/course/components/components.module';
 import { AddonModBookIndexComponent } from './index/index';
-import { AddonModBookTocPopoverComponent } from './toc-popover/toc-popover';
 
 @NgModule({
     declarations: [
-        AddonModBookIndexComponent,
-        AddonModBookTocPopoverComponent
+        AddonModBookIndexComponent
     ],
     imports: [
         CommonModule,
@@ -38,12 +36,10 @@ import { AddonModBookTocPopoverComponent } from './toc-popover/toc-popover';
     providers: [
     ],
     exports: [
-        AddonModBookIndexComponent,
-        AddonModBookTocPopoverComponent
+        AddonModBookIndexComponent
     ],
     entryComponents: [
-        AddonModBookIndexComponent,
-        AddonModBookTocPopoverComponent
+        AddonModBookIndexComponent
     ]
 })
 export class AddonModBookComponentsModule {}
