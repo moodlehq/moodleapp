@@ -28,7 +28,7 @@ export class CoreCourseLogHelperProvider {
     // Variables for database.
     static ACTIVITY_LOG_TABLE = 'course_activity_log';
     protected siteSchema: CoreSiteSchema = {
-        name: 'CoreCourseOfflineProvider',
+        name: 'CoreCourseLogHelperProvider',
         version: 1,
         tables: [
             {
