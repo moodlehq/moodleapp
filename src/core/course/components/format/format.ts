@@ -194,7 +194,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             }
         }
 
-        if (changes.downloadEnabled && this.downloadEnabled) {
+        if (this.downloadEnabled && (changes.downloadEnabled || changes.sections)) {
             this.calculateSectionsStatus(false);
         }
     }

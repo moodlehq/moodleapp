@@ -1208,7 +1208,7 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
         });
 
         // Set the promise.
-        prefetchData.promise = Promise.all(promises).finally(() => {
+        prefetchData.promise = this.utils.allPromises(promises).finally(() => {
             // Unsubscribe all observers.
             prefetchData.subscriptions.forEach((subscription: Subscription) => {
                 subscription.unsubscribe();
