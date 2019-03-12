@@ -13,13 +13,16 @@
 // limitations under the License.
 
 import { Injectable, NgZone } from '@angular/core';
+import { Platform } from 'ionic-angular';
 import { Badge } from '@ionic-native/badge';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
 import { Device } from '@ionic-native/device';
+import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreInitDelegate } from '@providers/init';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
+import { CoreSitesFactoryProvider } from '@providers/sites-factory';
 import { AddonPushNotificationsDelegate } from './delegate';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -28,7 +31,55 @@ import { CoreConfigProvider } from '@providers/config';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../../../configconstants';
 import { ILocalNotification } from '@ionic-native/local-notifications';
-import { SQLiteDBTableSchema } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
+import { CoreSite } from '@classes/site';
+
+/**
+ * Data needed to register a device in a Moodle site.
+ */
+export interface AddonPushNotificationsRegisterData {
+    /**
+     * App ID.
+     * @type {string}
+     */
+    appid: string;
+
+    /**
+     * Device UUID.
+     * @type {string}
+     */
+    uuid: string;
+
+    /**
+     * Device name.
+     * @type {string}
+     */
+    name: string;
+
+    /**
+     * Device model.
+     * @type {string}
+     */
+    model: string;
+
+    /**
+     * Device platform.
+     * @type {string}
+     */
+    platform: string;
+
+    /**
+     * Device version.
+     * @type {string}
+     */
+    version: string;
+
+    /**
+     * Push ID.
+     * @type {string}
+     */
+    pushid: string;
+}
 
 /**
  * Service to handle push notifications.
@@ -37,12 +88,14 @@ import { SQLiteDBTableSchema } from '@classes/sqlitedb';
 export class AddonPushNotificationsProvider {
     protected logger;
     protected pushID: string;
-    protected appDB: any;
+    protected appDB: SQLiteDB;
     static COMPONENT = 'AddonPushNotificationsProvider';
 
     // Variables for database.
     static BADGE_TABLE = 'addon_pushnotifications_badge';
-    protected tablesSchema: SQLiteDBTableSchema[] = [
+    static PENDING_UNREGISTER_TABLE = 'addon_pushnotifications_pending_unregister';
+    static REGISTERED_DEVICES_TABLE = 'addon_pushnotifications_registered_devices';
+    protected appTablesSchema: SQLiteDBTableSchema[] = [
         {
             name: AddonPushNotificationsProvider.BADGE_TABLE,
             columns: [
@@ -60,17 +113,91 @@ export class AddonPushNotificationsProvider {
                 }
             ],
             primaryKeys: ['siteid', 'addon']
+        },
+        {
+            name: AddonPushNotificationsProvider.PENDING_UNREGISTER_TABLE,
+            columns: [
+                {
+                    name: 'siteid',
+                    type: 'TEXT',
+                    primaryKey: true
+                },
+                {
+                    name: 'siteurl',
+                    type: 'TEXT'
+                },
+                {
+                    name: 'token',
+                    type: 'TEXT'
+                },
+                {
+                    name: 'info',
+                    type: 'TEXT'
+                }
+            ]
         }
     ];
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonPushNotificationsProvider',
+        version: 1,
+        tables: [
+            {
+                name: AddonPushNotificationsProvider.REGISTERED_DEVICES_TABLE,
+                columns: [
+                    {
+                        name: 'appid',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'uuid',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'name',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'model',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'platform',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'version',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'pushid',
+                        type: 'TEXT'
+                    },
+                ],
+                primaryKeys: ['appid', 'uuid']
+            }
+        ],
+    };
 
     constructor(logger: CoreLoggerProvider, protected appProvider: CoreAppProvider, private initDelegate: CoreInitDelegate,
             protected pushNotificationsDelegate: AddonPushNotificationsDelegate, protected sitesProvider: CoreSitesProvider,
             private badge: Badge, private localNotificationsProvider: CoreLocalNotificationsProvider,
             private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider, private push: Push,
-            private configProvider: CoreConfigProvider, private device: Device, private zone: NgZone) {
+            private configProvider: CoreConfigProvider, private device: Device, private zone: NgZone,
+            private translate: TranslateService, private platform: Platform, private sitesFactory: CoreSitesFactoryProvider) {
         this.logger = logger.getInstance('AddonPushNotificationsProvider');
         this.appDB = appProvider.getDB();
-        this.appDB.createTablesFromSchema(this.tablesSchema);
+        this.appDB.createTablesFromSchema(this.appTablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
+
+        platform.ready().then(() => {
+            // Create the default channel.
+            this.createDefaultChannel();
+
+            translate.onLangChange.subscribe((event: any) => {
+                // Update the channel name.
+                this.createDefaultChannel();
+            });
+        });
     }
 
     /**
@@ -86,6 +213,25 @@ export class AddonPushNotificationsProvider {
     }
 
     /**
+     * Create the default push channel. It is used to change the name.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected createDefaultChannel(): Promise<any> {
+        if (!this.platform.is('android')) {
+            return Promise.resolve();
+        }
+
+        return this.push.createChannel({
+            id: 'PushPluginChannel',
+            description: this.translate.instant('core.misc'),
+            importance: 4
+        }).catch((error) => {
+            this.logger.error('Error changing push channel name', error);
+        });
+    }
+
+    /**
      * Returns options for push notifications based on device.
      *
      * @return {Promise<PushOptions>} Promise with the push options resolved when done.
@@ -94,7 +240,6 @@ export class AddonPushNotificationsProvider {
         return this.configProvider.get(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true).then((soundEnabled) => {
             return {
                 android: {
-                    senderID: CoreConfigConstants.gcmpn,
                     sound: !!soundEnabled,
                     icon: 'smallicon'
                 },
@@ -117,6 +262,23 @@ export class AddonPushNotificationsProvider {
      */
     getPushId(): string {
         return this.pushID;
+    }
+
+    /**
+     * Get data to register the device in Moodle.
+     *
+     * @return {AddonPushNotificationsRegisterData} Data.
+     */
+    protected getRegisterData(): AddonPushNotificationsRegisterData {
+        return {
+            appid:      CoreConfigConstants.app_id,
+            name:       this.device.manufacturer || '',
+            model:      this.device.model,
+            platform:   this.device.platform + '-fcm',
+            version:    this.device.version,
+            pushid:     this.pushID,
+            uuid:       this.device.uuid
+        };
     }
 
     /**
@@ -156,13 +318,7 @@ export class AddonPushNotificationsProvider {
                 if (this.localNotificationsProvider.isAvailable()) {
                     const localNotif: ILocalNotification = {
                             id: 1,
-                            trigger: {
-                                at: new Date()
-                            },
-                            data: {
-                                notif: data.notif,
-                                site: data.site
-                            },
+                            data: data,
                             title: '',
                             text: ''
                         },
@@ -194,9 +350,6 @@ export class AddonPushNotificationsProvider {
                 });
             } else {
                 // The notification was clicked.
-                // For compatibility with old push plugin implementation we'll merge all the notification data in a single object.
-                data.title = notification.title;
-                data.message = notification.message;
                 this.notificationClicked(data);
             }
         });
@@ -205,10 +358,10 @@ export class AddonPushNotificationsProvider {
     /**
      * Unregisters a device from a certain Moodle site.
      *
-     * @param {any} site Site to unregister from.
-     * @return {Promise<any>}    Promise resolved when device is unregistered.
+     * @param {CoreSite} site Site to unregister from.
+     * @return {Promise<any>} Promise resolved when device is unregistered.
      */
-    unregisterDeviceOnMoodle(site: any): Promise<any> {
+    unregisterDeviceOnMoodle(site: CoreSite): Promise<any> {
         if (!site || !this.appProvider.isMobile()) {
             return Promise.reject(null);
         }
@@ -224,6 +377,34 @@ export class AddonPushNotificationsProvider {
             if (!response || !response.removed) {
                 return Promise.reject(null);
             }
+
+            const promises = [];
+
+            // Remove the device from the local DB.
+            promises.push(site.getDb().deleteRecords(AddonPushNotificationsProvider.REGISTERED_DEVICES_TABLE,
+                    this.getRegisterData()));
+
+            // Remove pending unregisters for this site.
+            promises.push(this.appDB.deleteRecords(AddonPushNotificationsProvider.PENDING_UNREGISTER_TABLE, {siteid: site.id}));
+
+            return Promise.all(promises).catch(() => {
+                // Ignore errors.
+            });
+        }).catch((error) => {
+            if (this.utils.isWebServiceError(error)) {
+                // It's a WebService error, can't unregister.
+                return Promise.reject(error);
+            }
+
+            // Store the pending unregister so it's retried again later.
+            return this.appDB.insertRecord(AddonPushNotificationsProvider.PENDING_UNREGISTER_TABLE, {
+                siteid: site.id,
+                siteurl: site.getURL(),
+                token: site.getToken(),
+                info: JSON.stringify(site.getInfo())
+            }).then(() => {
+                return Promise.reject(error);
+            });
         });
     }
 
@@ -366,28 +547,58 @@ export class AddonPushNotificationsProvider {
     }
 
     /**
-     * Registers a device on current Moodle site.
+     * Registers a device on a Moodle site if needed.
      *
-     * @return {Promise<any>}      Promise resolved when device is registered.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {boolean} [forceUnregister] Whether to force unregister and register.
+     * @return {Promise<any>} Promise resolved when device is registered.
      */
-    registerDeviceOnMoodle(): Promise<any> {
+    registerDeviceOnMoodle(siteId?: string, forceUnregister?: boolean): Promise<any> {
         this.logger.debug('Register device on Moodle.');
 
-        if (!this.sitesProvider.isLoggedIn() || !this.pushID || !this.appProvider.isMobile()) {
+        if (!this.pushID || !this.appProvider.isMobile()) {
             return Promise.reject(null);
         }
 
-        const data = {
-            appid:      CoreConfigConstants.app_id,
-            name:       this.device.manufacturer || '',
-            model:      this.device.model,
-            platform:   this.device.platform,
-            version:    this.device.version,
-            pushid:     this.pushID,
-            uuid:       this.device.uuid
-        };
+        const data = this.getRegisterData();
+        let result,
+            site: CoreSite;
 
-        return this.sitesProvider.getCurrentSite().write('core_user_add_user_device', data);
+        return this.sitesProvider.getSite(siteId).then((s) => {
+            site = s;
+
+            if (forceUnregister) {
+                return {unregister: true, register: true};
+            } else {
+                // Check if the device is already registered.
+                return this.shouldRegister(data, site);
+            }
+        }).then((res) => {
+            result = res;
+
+            if (result.unregister) {
+                // Unregister the device first.
+                return this.unregisterDeviceOnMoodle(site).catch(() => {
+                    // Ignore errors.
+                });
+            }
+        }).then(() => {
+            if (result.register) {
+                // Now register the device.
+                return site.write('core_user_add_user_device', this.utils.clone(data)).then((response) => {
+                    // Insert the device in the local DB.
+                    return site.getDb().insertRecord(AddonPushNotificationsProvider.REGISTERED_DEVICES_TABLE, data)
+                            .catch((error) => {
+                        // Ignore errors.
+                    });
+                });
+            }
+        }).finally(() => {
+            // Remove pending unregisters for this site.
+            this.appDB.deleteRecords(AddonPushNotificationsProvider.PENDING_UNREGISTER_TABLE, {siteid: site.id}).catch(() => {
+                // Ignore errors.
+            });
+        });
     }
 
     /**
@@ -402,6 +613,38 @@ export class AddonPushNotificationsProvider {
              return (entry && entry.number) || 0;
         }).catch(() => {
             return 0;
+        });
+    }
+
+    /**
+     * Retry pending unregisters.
+     *
+     * @param {string} [siteId] If defined, retry only for that site if needed. Otherwise, retry all pending unregisters.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    retryUnregisters(siteId?: string): Promise<any> {
+        let promise;
+
+        if (siteId) {
+            // Check if the site has a pending unregister.
+            promise = this.appDB.getRecords(AddonPushNotificationsProvider.REGISTERED_DEVICES_TABLE, {siteid: siteId});
+        } else {
+            // Get all pending unregisters.
+            promise = this.appDB.getAllRecords(AddonPushNotificationsProvider.PENDING_UNREGISTER_TABLE);
+        }
+
+        return promise.then((results) => {
+            const promises = [];
+
+            results.forEach((result) => {
+                // Create a temporary site to unregister.
+                const tmpSite = this.sitesFactory.makeSite(result.siteid, result.siteurl, result.token,
+                        this.textUtils.parseJSON(result.info, {}));
+
+                promises.push(this.unregisterDeviceOnMoodle(tmpSite));
+            });
+
+            return Promise.all(promises);
         });
     }
 
@@ -424,6 +667,60 @@ export class AddonPushNotificationsProvider {
 
         return this.appDB.insertRecord(AddonPushNotificationsProvider.BADGE_TABLE, entry).then(() => {
             return value;
+        });
+    }
+
+    /**
+     * Check if device should be registered (and unregistered first).
+     *
+     * @param {AddonPushNotificationsRegisterData} data Data of the device.
+     * @param {CoreSite} site Site to use.
+     * @return {Promise<{register: boolean, unregister: boolean}>} Promise resolved with booleans: whether to register/unregister.
+     */
+    protected shouldRegister(data: AddonPushNotificationsRegisterData, site: CoreSite)
+            : Promise<{register: boolean, unregister: boolean}> {
+
+        // Check if the device is already registered.
+        return site.getDb().getRecords(AddonPushNotificationsProvider.REGISTERED_DEVICES_TABLE, {
+            appid: data.appid,
+            uuid: data.uuid
+        }).catch(() => {
+            // Ignore errors.
+            return [];
+        }).then((records: AddonPushNotificationsRegisterData[]) => {
+            let isStored = false,
+                versionOrPushChanged = false;
+
+            records.forEach((record) => {
+                if (record.name == data.name && record.model == data.model && record.platform == data.platform) {
+                    if (record.version == data.version && record.pushid == data.pushid) {
+                        // The device is already stored.
+                        isStored = true;
+                    } else {
+                        // The version or pushid has changed.
+                        versionOrPushChanged = true;
+                    }
+                }
+            });
+
+            if (isStored) {
+                // The device has already been registered, no need to register it again.
+                return {
+                    register: false,
+                    unregister: false
+                };
+            } else if (versionOrPushChanged) {
+                // This data can be updated by calling register WS, no need to call unregister.
+                return {
+                    register: true,
+                    unregister: false
+                };
+            } else {
+                return {
+                    register: true,
+                    unregister: true
+                };
+            }
         });
     }
 }

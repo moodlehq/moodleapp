@@ -16,6 +16,9 @@ import { NgModule } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { AddonPushNotificationsProvider } from './providers/pushnotifications';
 import { AddonPushNotificationsDelegate } from './providers/delegate';
+import { AddonPushNotificationsRegisterCronHandler } from './providers/register-cron-handler';
+import { AddonPushNotificationsUnregisterCronHandler } from './providers/unregister-cron-handler';
+import { CoreCronDelegate } from '@providers/cron';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
@@ -34,15 +37,23 @@ export const ADDON_PUSHNOTIFICATIONS_PROVIDERS: any[] = [
     ],
     providers: [
         AddonPushNotificationsProvider,
-        AddonPushNotificationsDelegate
+        AddonPushNotificationsDelegate,
+        AddonPushNotificationsRegisterCronHandler,
+        AddonPushNotificationsUnregisterCronHandler
     ]
 })
 export class AddonPushNotificationsModule {
     constructor(platform: Platform, pushNotificationsProvider: AddonPushNotificationsProvider, eventsProvider: CoreEventsProvider,
             localNotificationsProvider: CoreLocalNotificationsProvider, loggerProvider: CoreLoggerProvider,
-            updateManager: CoreUpdateManagerProvider) {
+            updateManager: CoreUpdateManagerProvider, cronDelegate: CoreCronDelegate,
+            registerCronHandler: AddonPushNotificationsRegisterCronHandler,
+            unregisterCronHandler: AddonPushNotificationsUnregisterCronHandler) {
 
         const logger = loggerProvider.getInstance('AddonPushNotificationsModule');
+
+        // Register the handlers.
+        cronDelegate.register(registerCronHandler);
+        cronDelegate.register(unregisterCronHandler);
 
         // Register device on GCM or APNS server.
         platform.ready().then(() => {
