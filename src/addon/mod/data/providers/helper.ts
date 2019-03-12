@@ -424,27 +424,6 @@ export class AddonModDataHelperProvider {
     }
 
     /**
-     * Add a prefix to all rules in a CSS string.
-     *
-     * @param {string} css      CSS code to be prefixed.
-     * @param {string} prefix   Prefix css selector.
-     * @return {string}         Prefixed CSS.
-     */
-    prefixCSS(css: string, prefix: string): string {
-        if (!css) {
-            return '';
-        }
-
-        // Remove comments first.
-        let regExp = /\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm;
-        css = css.replace(regExp, '');
-        // Add prefix.
-        regExp = /([^]*?)({[^]*?}|,)/g;
-
-        return css.replace(regExp, prefix + ' $1 $2');
-    }
-
-    /**
      * Given a list of files (either online files or local files), store the local files in a local folder
      * to be submitted later.
      *

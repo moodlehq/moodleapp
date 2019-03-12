@@ -55,7 +55,6 @@ export class AddonModDataEntryPage implements OnDestroy {
     entry: any;
     offlineActions = [];
     hasOffline = false;
-    cssTemplate = '';
     previousOffset: number;
     nextOffset: number;
     access: any;
@@ -64,7 +63,6 @@ export class AddonModDataEntryPage implements OnDestroy {
     showComments: any;
     entryRendered = '';
     siteId: string;
-    cssClass = '';
     extraImports = [AddonModDataComponentsModule];
     jsData;
     ratingInfo: CoreRatingInfo;
@@ -133,7 +131,6 @@ export class AddonModDataEntryPage implements OnDestroy {
         return this.dataProvider.getDatabase(this.courseId, this.module.id).then((data) => {
             this.title = data.name || this.title;
             this.data = data;
-            this.cssClass = 'addon-data-entries-' + data.id;
 
             return this.setEntryIdFromOffset(data.id, this.offset, this.selectedGroup).then(() => {
                 return this.dataProvider.getDatabaseAccessInformation(data.id);
@@ -166,8 +163,6 @@ export class AddonModDataEntryPage implements OnDestroy {
         }).then((entry) => {
             this.ratingInfo = entry.ratinginfo;
             entry = entry.entry;
-
-            this.cssTemplate = this.dataHelper.prefixCSS(this.data.csstemplate, '.' + this.cssClass);
 
             // Index contents by fieldid.
             entry.contents = this.utils.arrayToObject(entry.contents, 'fieldid');
