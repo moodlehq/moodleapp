@@ -67,7 +67,6 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     offlineActions: any;
     offlineEntries: any;
     entriesRendered = '';
-    cssTemplate = '';
     extraImports = [AddonModDataComponentsModule];
     jsData;
     foundRecordsData;
@@ -298,8 +297,6 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             }
 
             if (!this.isEmpty) {
-                this.cssTemplate = this.dataHelper.prefixCSS(this.data.csstemplate, '.addon-data-entries-' + this.data.id);
-
                 const siteInfo = this.sitesProvider.getCurrentSite().getInfo(),
                     promises = [];
 
