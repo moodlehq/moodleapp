@@ -576,7 +576,12 @@ export class CoreSite {
 
         // Check for an ongoing identical request if we're not ignoring cache.
         if (preSets.getFromCache && this.ongoingRequests[cacheId]) {
-            return this.ongoingRequests[cacheId];
+            return this.ongoingRequests[cacheId].then((response) => {
+                // Clone the data, this may prevent errors if in the callback the object is modified.
+                return this.utils.clone(response);
+            }).catch((error) => {
+                return Promise.reject(this.utils.clone(error));
+            });
         }
 
         const promise = this.getFromCache(method, data, preSets, false, originalData).catch(() => {
@@ -586,8 +591,7 @@ export class CoreSite {
                     this.saveToCache(method, data, response, preSets);
                 }
 
-                // We pass back a clone of the original object, this may prevent errors if in the callback the object is modified.
-                return this.utils.clone(response);
+                return response;
             }).catch((error) => {
                 if (error.errorcode == 'invalidtoken' ||
                     (error.errorcode == 'accessexception' && error.message.indexOf('Invalid token - token expired') > -1)) {
@@ -694,7 +698,12 @@ export class CoreSite {
            }
         });
 
-        return promise;
+        return promise.then((response) => {
+            // We pass back a clone of the original object, this may prevent errors if in the callback the object is modified.
+            return this.utils.clone(response);
+        }).catch((error) => {
+            return Promise.reject(this.utils.clone(error));
+        });
     }
 
     /**
