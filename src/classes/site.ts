@@ -579,8 +579,6 @@ export class CoreSite {
             return this.ongoingRequests[cacheId].then((response) => {
                 // Clone the data, this may prevent errors if in the callback the object is modified.
                 return this.utils.clone(response);
-            }).catch((error) => {
-                return Promise.reject(this.utils.clone(error));
             });
         }
 
@@ -701,8 +699,6 @@ export class CoreSite {
         return promise.then((response) => {
             // We pass back a clone of the original object, this may prevent errors if in the callback the object is modified.
             return this.utils.clone(response);
-        }).catch((error) => {
-            return Promise.reject(this.utils.clone(error));
         });
     }
 
