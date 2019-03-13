@@ -42,7 +42,7 @@
     "@angular/animations": "^5.2.10",
     "@angular/common": "^5.2.10",
     "@angular/compiler": "^5.2.10",
-    "@angular/compiler-cli": "^5.2.10",
+    "@angular/compiler-cli": "^7.2.9",
     "@angular/core": "^5.2.10",
     "@angular/forms": "^5.2.10",
     "@angular/http": "^5.2.10",
@@ -102,7 +102,7 @@
     "cordova-plugin-whitelist": "^1.3.3",
     "cordova-plugin-zip": "^3.1.0",
     "cordova-sqlite-storage": "^2.6.0",
-    "cordova-support-google-services": "^1.1.0",
+    "cordova-support-google-services": "^1.2.1",
     "es6-promise-plugin": "^4.2.2",
     "font-awesome": "^4.7.0",
     "ionic-angular": "3.9.3",
@@ -111,7 +111,7 @@
     "moment": "^2.22.2",
     "nl.kingsquare.cordova.background-audio": "^1.0.1",
     "phonegap-plugin-multidex": "^1.0.0",
-    "phonegap-plugin-push": "^2.2.3",
+    "phonegap-plugin-push": "git+https://github.com/moodlemobile/phonegap-plugin-push.git#moodle-v2",
     "promise.prototype.finally": "^3.1.0",
     "rxjs": "^5.5.11",
     "sw-toolbox": "^3.6.0",
@@ -172,7 +172,7 @@
       "nl.kingsquare.cordova.background-audio": {},
       "phonegap-plugin-push": {
         "ANDROID_SUPPORT_V13_VERSION": "27.+",
-        "FCM_VERSION": "11.6.2"
+        "FCM_VERSION": "17.0.+"
       }
     }
   },
