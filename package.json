@@ -42,7 +42,7 @@
     "@angular/animations": "^5.2.10",
     "@angular/common": "^5.2.10",
     "@angular/compiler": "^5.2.10",
-    "@angular/compiler-cli": "^7.2.9",
+    "@angular/compiler-cli": "^5.2.10",
     "@angular/core": "^5.2.10",
     "@angular/forms": "^5.2.10",
     "@angular/http": "^5.2.10",
