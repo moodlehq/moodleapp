@@ -109,11 +109,20 @@ export class AddonMessagesModule {
                     messagesProvider.invalidateDiscussionsCache(notification.site).finally(() => {
                         // Check if group messaging is enabled, to determine which page should be loaded.
                         messagesProvider.isGroupMessagingEnabledInSite(notification.site).then((enabled) => {
+                            const pageParams: any = {};
                             let pageName = 'AddonMessagesIndexPage';
                             if (enabled) {
                                 pageName = 'AddonMessagesGroupConversationsPage';
                             }
-                            linkHelper.goInSite(undefined, pageName, undefined, notification.site);
+
+                            // Check if we have enough information to open the conversation.
+                            if (notification.convid && enabled) {
+                                pageParams.conversationId = Number(notification.convid);
+                            } else if (notification.userfromid) {
+                                pageParams.discussionUserId = Number(notification.userfromid);
+                            }
+
+                            linkHelper.goInSite(undefined, pageName, pageParams, notification.site);
                         });
                     });
                 });
