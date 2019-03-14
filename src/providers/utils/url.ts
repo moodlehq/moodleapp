@@ -52,13 +52,22 @@ export class CoreUrlUtilsProvider {
      */
     extractUrlParams(url: string): any {
         const regex = /[?&]+([^=&]+)=?([^&]*)?/gi,
-            params = {};
+            params: any = {},
+            urlAndHash = url.split('#');
 
-        url.replace(regex, (match: string, key: string, value: string): string => {
+        urlAndHash[0].replace(regex, (match: string, key: string, value: string): string => {
             params[key] = typeof value != 'undefined' ? value : '';
 
             return match;
         });
+
+        if (urlAndHash.length > 1) {
+            // Remove the URL from the array.
+            urlAndHash.shift();
+
+            // Add the hash as a param with a special name. Use a join in case there is more than one #.
+            params.urlHash = urlAndHash.join('#');
+        }
 
         return params;
     }

@@ -70,6 +70,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     protected siteId: string;
     protected currentUserId: number;
     protected conversationId: number;
+    protected discussionUserId: number;
     protected newMessagesObserver: any;
     protected pushObserver: any;
     protected appResumeSubscription: any;
@@ -89,7 +90,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         this.loadingString = translate.instant('core.loading');
         this.siteId = sitesProvider.getCurrentSiteId();
         this.currentUserId = sitesProvider.getCurrentSiteUserId();
+        // Conversation to load.
         this.conversationId = navParams.get('conversationId') || false;
+        this.discussionUserId = !this.conversationId && (navParams.get('discussionUserId') || false);
 
         // Update conversations when new message is received.
         this.newMessagesObserver = eventsProvider.on(AddonMessagesProvider.NEW_MESSAGE_EVENT, (data) => {
@@ -213,9 +216,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * Component loaded.
      */
     ngOnInit(): void {
-        if (this.conversationId) {
+        if (this.conversationId || this.discussionUserId) {
             // There is a discussion to load, open the discussion in a new state.
-            this.gotoConversation(this.conversationId);
+            this.gotoConversation(this.conversationId, this.discussionUserId);
         }
 
         this.fetchData().then(() => {
