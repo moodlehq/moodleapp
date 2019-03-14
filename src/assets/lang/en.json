@@ -1599,7 +1599,6 @@
     "core.rating.aggregatemax": "Maximum rating",
     "core.rating.aggregatemin": "Minimum rating",
     "core.rating.aggregatesum": "Sum of ratings",
-    "core.rating.norating": "No rating",
     "core.rating.noratings": "No ratings submitted",
     "core.rating.rating": "Rating",
     "core.rating.ratings": "Ratings",

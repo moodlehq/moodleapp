@@ -1599,7 +1599,6 @@
   "core.rating.aggregatemax": "moodle",
   "core.rating.aggregatemin": "moodle",
   "core.rating.aggregatesum": "moodle",
-  "core.rating.norating": "local_moodlemobileapp",
   "core.rating.noratings": "moodle",
   "core.rating.rating": "moodle",
   "core.rating.ratings": "moodle",
