@@ -72,7 +72,7 @@ export class CoreRatingRateComponent implements OnChanges {
         // Add "No rating" item to the scale.
         if (!this.scale.items[0] || this.scale.items[0].value != CoreRatingProvider.UNSET_RATING) {
             this.scale.items.unshift({
-                name: this.translate.instant('core.rating.norating'),
+                name: this.translate.instant('core.none'),
                 value: CoreRatingProvider.UNSET_RATING
             });
         }
