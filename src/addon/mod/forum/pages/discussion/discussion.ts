@@ -76,6 +76,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     cmId: number;
 
     protected forumId: number;
+    protected postId: number;
     protected onlineObserver: any;
     protected syncObserver: any;
     protected syncManualObserver: any;
@@ -107,6 +108,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         this.discussionId = navParams.get('discussionId');
         this.trackPosts = navParams.get('trackPosts');
         this.locked = navParams.get('locked');
+        this.postId = navParams.get('postId');
 
         this.isOnline = this.appProvider.isOnline();
         this.onlineObserver = network.onchange().subscribe((online) => {
@@ -124,7 +126,14 @@ export class AddonModForumDiscussionPage implements OnDestroy {
      * View loaded.
      */
     ionViewDidLoad(): void {
-        this.fetchPosts(true, false, true);
+        this.fetchPosts(true, false, true).then(() => {
+            if (this.postId) {
+                // Scroll to the post.
+                setTimeout(() => {
+                    this.domUtils.scrollToElementBySelector(this.content, '#addon-mod_forum-post-' + this.postId);
+                });
+            }
+        });
     }
 
     /**
