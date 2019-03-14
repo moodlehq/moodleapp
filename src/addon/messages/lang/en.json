@@ -74,6 +74,6 @@
     "warningmessagenotsent": "Couldn't send message(s) to user {{user}}. {{error}}",
     "wouldliketocontactyou": "Would like to contact you",
     "you": "You:",
-    "youhaveblockeduser": "You have blocked this user in the past",
+    "youhaveblockeduser": "You have blocked this user.",
     "yourcontactrequestpending": "Your contact request is pending with {{$a}}"
 }
