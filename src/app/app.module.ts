@@ -121,7 +121,7 @@ import { AddonMessageOutputModule } from '@addon/messageoutput/messageoutput.mod
 import { AddonMessageOutputAirnotifierModule } from '@addon/messageoutput/airnotifier/airnotifier.module';
 import { AddonMessagesModule } from '@addon/messages/messages.module';
 import { AddonNotesModule } from '../addon/notes/notes.module';
-import { AddonPushNotificationsModule } from '@addon/pushnotifications/pushnotifications.module';
+import { CorePushNotificationsModule } from '@core/pushnotifications/pushnotifications.module';
 import { AddonNotificationsModule } from '@addon/notifications/notifications.module';
 import { AddonRemoteThemesModule } from '@addon/remotethemes/remotethemes.module';
 import { AddonQbehaviourModule } from '@addon/qbehaviour/qbehaviour.module';
@@ -201,6 +201,7 @@ export const CORE_PROVIDERS: any[] = [
         CoreCommentsModule,
         CoreBlockModule,
         CoreRatingModule,
+        CorePushNotificationsModule,
         AddonBadgesModule,
         AddonBlogModule,
         AddonCalendarModule,
@@ -241,7 +242,6 @@ export const CORE_PROVIDERS: any[] = [
         AddonMessagesModule,
         AddonNotesModule,
         AddonNotificationsModule,
-        AddonPushNotificationsModule,
         AddonRemoteThemesModule,
         AddonQbehaviourModule,
         AddonQtypeModule

@@ -22,8 +22,8 @@ import { CoreAppProvider } from '@providers/app';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
-import { AddonPushNotificationsProvider } from '@addon/pushnotifications/providers/pushnotifications';
-import { AddonPushNotificationsDelegate } from '@addon/pushnotifications/providers/delegate';
+import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
+import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers/delegate';
 import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
 
 /**
@@ -50,8 +50,8 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
     constructor(private messagesProvider: AddonMessagesProvider, private sitesProvider: CoreSitesProvider,
             eventsProvider: CoreEventsProvider, private appProvider: CoreAppProvider,
             private localNotificationsProvider: CoreLocalNotificationsProvider, private textUtils: CoreTextUtilsProvider,
-            private pushNotificationsProvider: AddonPushNotificationsProvider, utils: CoreUtilsProvider,
-            pushNotificationsDelegate: AddonPushNotificationsDelegate, private emulatorHelper: CoreEmulatorHelperProvider) {
+            private pushNotificationsProvider: CorePushNotificationsProvider, utils: CoreUtilsProvider,
+            pushNotificationsDelegate: CorePushNotificationsDelegate, private emulatorHelper: CoreEmulatorHelperProvider) {
 
         eventsProvider.on(AddonMessagesProvider.UNREAD_CONVERSATION_COUNTS_EVENT, (data) => {
             this.unreadCount = data.favourites + data.individual + data.group;

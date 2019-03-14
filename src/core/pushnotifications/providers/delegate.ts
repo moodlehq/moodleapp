@@ -20,14 +20,14 @@ import { Subject } from 'rxjs';
  * Service to handle push notifications actions to perform when clicked and received.
  */
 @Injectable()
-export class AddonPushNotificationsDelegate {
+export class CorePushNotificationsDelegate {
 
     protected logger;
     protected observables: { [s: string]: Subject<any> } = {};
     protected counterHandlers: { [s: string]: string } = {};
 
     constructor(loggerProvider: CoreLoggerProvider) {
-        this.logger = loggerProvider.getInstance('AddonPushNotificationsDelegate');
+        this.logger = loggerProvider.getInstance('CorePushNotificationsDelegate');
         this.observables['click'] = new Subject<any>();
         this.observables['receive'] = new Subject<any>();
     }

@@ -19,7 +19,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider, CoreSiteBasicInfo } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { AddonPushNotificationsProvider } from '@addon/pushnotifications/providers/pushnotifications';
+import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 import { CoreLoginHelperProvider } from '../../providers/helper';
 
 /**
@@ -37,7 +37,7 @@ export class CoreLoginSitesPage {
 
     constructor(private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
             private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider, logger: CoreLoggerProvider,
-            private translate: TranslateService, private pushNotificationsProvider: AddonPushNotificationsProvider) {
+            private translate: TranslateService, private pushNotificationsProvider: CorePushNotificationsProvider) {
         this.logger = logger.getInstance('CoreLoginSitesPage');
     }
 

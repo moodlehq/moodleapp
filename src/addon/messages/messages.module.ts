@@ -35,7 +35,7 @@ import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreSettingsDelegate } from '@core/settings/providers/delegate';
 import { AddonMessagesSettingsHandler } from './providers/settings-handler';
-import { AddonPushNotificationsDelegate } from '@addon/pushnotifications/providers/delegate';
+import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers/delegate';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
@@ -75,7 +75,7 @@ export class AddonMessagesModule {
             localNotifications: CoreLocalNotificationsProvider, messagesProvider: AddonMessagesProvider,
             sitesProvider: CoreSitesProvider, linkHelper: CoreContentLinksHelperProvider, updateManager: CoreUpdateManagerProvider,
             settingsHandler: AddonMessagesSettingsHandler, settingsDelegate: CoreSettingsDelegate,
-            pushNotificationsDelegate: AddonPushNotificationsDelegate, utils: CoreUtilsProvider,
+            pushNotificationsDelegate: CorePushNotificationsDelegate, utils: CoreUtilsProvider,
             addContactHandler: AddonMessagesAddContactUserHandler, blockContactHandler: AddonMessagesBlockContactUserHandler,
             contactRequestLinkHandler: AddonMessagesContactRequestLinkHandler) {
         // Register handlers.

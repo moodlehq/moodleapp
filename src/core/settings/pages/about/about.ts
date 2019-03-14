@@ -22,7 +22,7 @@ import { CoreLangProvider } from '@providers/lang';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreConfigConstants } from '../../../../configconstants';
-import { AddonPushNotificationsProvider } from '@addon/pushnotifications/providers/pushnotifications';
+import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 
 /**
  * Page that displays the about settings.
@@ -58,7 +58,7 @@ export class CoreSettingsAboutPage {
 
     constructor(platform: Platform, device: Device, appProvider: CoreAppProvider, fileProvider: CoreFileProvider,
             initDelegate: CoreInitDelegate, langProvider: CoreLangProvider, sitesProvider: CoreSitesProvider,
-            localNotificationsProvider: CoreLocalNotificationsProvider, pushNotificationsProvider: AddonPushNotificationsProvider) {
+            localNotificationsProvider: CoreLocalNotificationsProvider, pushNotificationsProvider: CorePushNotificationsProvider) {
 
         const currentSite = sitesProvider.getCurrentSite();
 

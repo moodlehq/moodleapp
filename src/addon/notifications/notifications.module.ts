@@ -26,7 +26,7 @@ import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { AddonPushNotificationsDelegate } from '@addon/pushnotifications/providers/delegate';
+import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers/delegate';
 import { AddonModForumProvider } from '@addon/mod/forum/providers/forum';
 
 // List of providers (without handlers).
@@ -52,7 +52,7 @@ export class AddonNotificationsModule {
             cronDelegate: CoreCronDelegate, cronHandler: AddonNotificationsCronHandler, zone: NgZone,
             appProvider: CoreAppProvider, utils: CoreUtilsProvider, sitesProvider: CoreSitesProvider,
             notificationsProvider: AddonNotificationsProvider, localNotifications: CoreLocalNotificationsProvider,
-            linkHelper: CoreContentLinksHelperProvider, pushNotificationsDelegate: AddonPushNotificationsDelegate,
+            linkHelper: CoreContentLinksHelperProvider, pushNotificationsDelegate: CorePushNotificationsDelegate,
             urlUtils: CoreUrlUtilsProvider, forumProvider: AddonModForumProvider) {
 
         mainMenuDelegate.registerHandler(mainMenuHandler);
