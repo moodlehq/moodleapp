@@ -55,9 +55,7 @@ export class CoreTabComponent implements OnInit, OnDestroy {
 
             if (this.initialized && hasChanged) {
                 this.tabs.tabVisibilityChanged();
-
-                this.tabElement = document.getElementById(this.id + '-tab');
-                this.tabElement && this.tabElement.setAttribute('aria-hidden', !this._show);
+                this.updateAriaHidden();
             }
         }
     }
@@ -96,8 +94,7 @@ export class CoreTabComponent implements OnInit, OnDestroy {
         this.initialized = true;
 
         setTimeout(() => {
-            this.tabElement = document.getElementById(this.id + '-tab');
-            this.tabElement && this.tabElement.setAttribute('aria-hidden', !this._show);
+            this.updateAriaHidden();
         }, 1000);
     }
 
@@ -116,8 +113,8 @@ export class CoreTabComponent implements OnInit, OnDestroy {
 
         this.tabElement = this.tabElement || document.getElementById(this.id + '-tab');
 
+        this.updateAriaHidden();
         this.tabElement && this.tabElement.setAttribute('aria-selected', true);
-        this.tabElement && this.tabElement.setAttribute('aria-hidden', !this._show);
 
         this.loaded = true;
         this.ionSelect.emit(this);
@@ -137,8 +134,8 @@ export class CoreTabComponent implements OnInit, OnDestroy {
      * Unselect tab.
      */
     unselectTab(): void {
+        this.updateAriaHidden();
         this.tabElement && this.tabElement.setAttribute('aria-selected', false);
-        this.tabElement && this.tabElement.setAttribute('aria-hidden', true);
 
         this.element.classList.remove('selected');
         this.showHideNavBarButtons(false);
@@ -174,6 +171,19 @@ export class CoreTabComponent implements OnInit, OnDestroy {
 
         for (const i in instances) {
             instances[i].forceHide(!show);
+        }
+    }
+
+    /**
+     * Update aria hidden attribute.
+     */
+    updateAriaHidden(): void {
+        if (!this.tabElement) {
+            this.tabElement = document.getElementById(this.id + '-tab');
+        }
+
+        if (this.tabElement) {
+            this.tabElement && this.tabElement.setAttribute('aria-hidden', !this._show);
         }
     }
 }

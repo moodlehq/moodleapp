@@ -327,6 +327,8 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             // Current tab has changed, don't slide to initial anymore.
             this.shouldSlideToInitial = false;
         }
+
+        this.updateAriaHidden(); // Sliding resets the aria-hidden, update it.
     }
 
     /**
@@ -354,11 +356,18 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
                     if (this.shouldSlideToInitial) {
                         this.slides.slideTo(this.selected, 0);
                         this.shouldSlideToInitial = false;
+                        this.updateAriaHidden(); // Slide's slideTo() sets aria-hidden to true, update it.
                     }
                 }, 400);
+
+                return;
             } else if (this.selected) {
                 this.hasSliddenToInitial = true;
             }
+
+            setTimeout(() => {
+                this.updateAriaHidden(); // Slide's update() sets aria-hidden to true, update it.
+            }, 400);
         });
     }
 
@@ -458,6 +467,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
         if (this.selected) {
             this.slides.slideTo(index);
+            this.updateAriaHidden(); // Slide's slideTo() sets aria-hidden to true, update it.
         }
 
         this.selectHistory.push(index);
@@ -489,6 +499,15 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
      */
     tabVisibilityChanged(): void {
         this.calculateSlides();
+    }
+
+    /**
+     * Update aria-hidden of all tabs.
+     */
+    protected updateAriaHidden(): void {
+        this.tabs.forEach((tab, index) => {
+            tab.updateAriaHidden();
+        });
     }
 
     /**
