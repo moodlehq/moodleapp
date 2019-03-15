@@ -62,7 +62,7 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
 
         // Update discussions when new message is received.
         this.newMessagesObserver = eventsProvider.on(AddonMessagesProvider.NEW_MESSAGE_EVENT, (data) => {
-            if (data.userId) {
+            if (data.userId && this.discussions) {
                 const discussion = this.discussions.find((disc) => {
                     return disc.message.user == data.userId;
                 });
@@ -82,7 +82,7 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
 
         // Update discussions when a message is read.
         this.readChangedObserver = eventsProvider.on(AddonMessagesProvider.READ_CHANGED_EVENT, (data) => {
-            if (data.userId) {
+            if (data.userId && this.discussions) {
                 const discussion = this.discussions.find((disc) => {
                     return disc.message.user == data.userId;
                 });
