@@ -1863,16 +1863,19 @@ export class AddonMessagesProvider {
     /**
      * Mark message as read.
      *
-     * @param   {number}  messageId   ID of message to mark as read
+     * @param {number} messageId ID of message to mark as read
+     * @param {string} [siteId] Site ID. If not defined, current site.
      * @returns {Promise<any>} Promise resolved with boolean marking success or not.
      */
-    markMessageRead(messageId: number): Promise<any> {
-        const params = {
-            messageid: messageId,
-            timeread: this.timeUtils.timestamp()
-        };
+    markMessageRead(messageId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                messageid: messageId,
+                timeread: this.timeUtils.timestamp()
+            };
 
-        return this.sitesProvider.getCurrentSite().write('core_message_mark_message_read', params);
+            return site.write('core_message_mark_message_read', params);
+        });
     }
 
     /**

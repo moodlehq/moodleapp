@@ -76,7 +76,8 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
         // If a message push notification is received, refresh the count.
         pushNotificationsDelegate.on('receive').subscribe((notification) => {
             // New message received. If it's from current site, refresh the data.
-            if (utils.isFalseOrZero(notification.notif) && this.sitesProvider.isCurrentSite(notification.site)) {
+            const isMessage = utils.isFalseOrZero(notification.notif) || notification.name == 'messagecontactrequests';
+            if (isMessage && this.sitesProvider.isCurrentSite(notification.site)) {
                 this.refreshBadge(notification.site);
             }
         });

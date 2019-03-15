@@ -262,23 +262,25 @@ export class AddonNotificationsProvider {
      * Mark a single notification as read.
      *
      * @param {number} notificationId ID of notification to mark as read
+     * @param {string} [siteId] Site ID. If not defined, current site.
      * @returns {Promise<any>} Resolved when done.
      * @since 3.5
      */
-    markNotificationRead(notificationId: number): Promise<any> {
-        const currentSite = this.sitesProvider.getCurrentSite();
+    markNotificationRead(notificationId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
 
-        if (currentSite.wsAvailable('core_message_mark_notification_read')) {
-            const params = {
-                notificationid: notificationId,
-                timeread: this.timeUtils.timestamp()
-            };
+            if (site.wsAvailable('core_message_mark_notification_read')) {
+                const params = {
+                    notificationid: notificationId,
+                    timeread: this.timeUtils.timestamp()
+                };
 
-            return currentSite.write('core_message_mark_notification_read', params);
-        } else {
-            // Fallback for versions prior to 3.5.
-            return this.messageProvider.markMessageRead(notificationId);
-        }
+                return site.write('core_message_mark_notification_read', params);
+            } else {
+                // Fallback for versions prior to 3.5.
+                return this.messageProvider.markMessageRead(notificationId, site.id);
+            }
+        });
     }
 
     /**
