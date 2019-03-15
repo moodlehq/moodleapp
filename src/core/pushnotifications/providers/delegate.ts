@@ -14,7 +14,49 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { Subject } from 'rxjs';
+
+/**
+ * Interface that all click handlers must implement.
+ */
+export interface CorePushNotificationsClickHandler {
+    /**
+     * A name to identify the handler.
+     * @type {string}
+     */
+    name: string;
+
+    /**
+     * Handler's priority. The highest priority is treated first.
+     * @type {number}
+     */
+    priority?: number;
+
+    /**
+     * Name of the feature this handler is related to.
+     * It will be used to check if the feature is disabled (@see CoreSite.isFeatureDisabled).
+     * @type {string}
+     */
+    featureName?: string;
+
+    /**
+     * Check if a notification click is handled by this handler.
+     *
+     * @param {any} notification The notification to check.
+     * @return {boolean} Whether the notification click is handled by this handler.
+     */
+    handles(notification: any): boolean | Promise<boolean>;
+
+    /**
+     * Handle the notification click.
+     *
+     * @param {any} notification The notification to check.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    handleClick(notification: any): Promise<any>;
+}
 
 /**
  * Service to handle push notifications actions to perform when clicked and received.
@@ -24,11 +66,11 @@ export class CorePushNotificationsDelegate {
 
     protected logger;
     protected observables: { [s: string]: Subject<any> } = {};
+    protected clickHandlers: { [s: string]: CorePushNotificationsClickHandler } = {};
     protected counterHandlers: { [s: string]: string } = {};
 
-    constructor(loggerProvider: CoreLoggerProvider) {
+    constructor(loggerProvider: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider) {
         this.logger = loggerProvider.getInstance('CorePushNotificationsDelegate');
-        this.observables['click'] = new Subject<any>();
         this.observables['receive'] = new Subject<any>();
     }
 
@@ -36,9 +78,61 @@ export class CorePushNotificationsDelegate {
      * Function called when a push notification is clicked. Sends notification to handlers.
      *
      * @param {any} notification Notification clicked.
+     * @return {Promise<any>} Promise resolved when done.
      */
-    clicked(notification: any): void {
-        this.observables['click'].next(notification);
+    clicked(notification: any): Promise<any> {
+        if (!notification) {
+            return;
+        }
+
+        const promises = [];
+        let handlers: CorePushNotificationsClickHandler[] = [];
+
+        for (const name in this.clickHandlers) {
+            const handler = this.clickHandlers[name];
+
+            // Check if the handler is disabled for the site.
+            promises.push(this.isFeatureDisabled(handler, notification.site).then((disabled) => {
+                if (!disabled) {
+                    // Check if the handler handles the notification.
+                    return Promise.resolve(handler.handles(notification)).then((handles) => {
+                        if (handles) {
+                            handlers.push(handler);
+                        }
+                    });
+                }
+            }));
+        }
+
+        return this.utils.allPromises(promises).catch(() => {
+            // Ignore errors.
+        }).then(() => {
+            // Sort by priority.
+            handlers = handlers.sort((a, b) => {
+                return a.priority <= b.priority ? 1 : -1;
+            });
+
+            if (handlers[0]) {
+                // Execute the first one.
+                handlers[0].handleClick(notification);
+            }
+        });
+    }
+
+    /**
+     * Check if a handler's feature is disabled for a certain site.
+     *
+     * @param {CorePushNotificationsClickHandler} handler Handler to check.
+     * @param {string} siteId The site ID to check.
+     * @return {Promise<boolean>} Promise resolved with boolean: whether the handler feature is disabled.
+     */
+    protected isFeatureDisabled(handler: CorePushNotificationsClickHandler, siteId: string): Promise<boolean> {
+        if (handler.featureName) {
+            // Check if the feature is disabled.
+            return this.sitesProvider.isFeatureDisabled(handler.featureName, siteId);
+        } else {
+            return Promise.resolve(false);
+        }
     }
 
     /**
@@ -52,13 +146,12 @@ export class CorePushNotificationsDelegate {
     }
 
     /**
-     * Register a push notifications observable for click and receive notification event.
-     * When a notification is clicked or received, the observable will receive a notification to treat.
-     * let observer = pushNotificationsDelegate.on('click').subscribe((notification) => {
+     * Register a push notifications observable for a certain event. Right now, only receive is supported.
+     * let observer = pushNotificationsDelegate.on('receive').subscribe((notification) => {
      * ...
      * observer.unsuscribe();
      *
-     * @param {string}  eventName Only click and receive are permitted.
+     * @param {string}  eventName Only receive is permitted.
      * @return {Subject<any>} Observer to subscribe.
      */
     on(eventName: string): Subject<any> {
@@ -70,6 +163,25 @@ export class CorePushNotificationsDelegate {
         }
 
         return this.observables[eventName];
+    }
+
+    /**
+     * Register a click handler.
+     *
+     * @param {CorePushNotificationsClickHandler} handler The handler to register.
+     * @return {boolean} True if registered successfully, false otherwise.
+     */
+    registerClickHandler(handler: CorePushNotificationsClickHandler): boolean {
+        if (typeof this.clickHandlers[handler.name] !== 'undefined') {
+            this.logger.log(`Addon '${handler.name}' already registered`);
+
+            return false;
+        }
+
+        this.logger.log(`Registered addon '${handler.name}'`);
+        this.clickHandlers[handler.name] = handler;
+
+        return true;
     }
 
     /**

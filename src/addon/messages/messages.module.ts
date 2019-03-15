@@ -29,6 +29,7 @@ import { AddonMessagesContactRequestLinkHandler } from './providers/contact-requ
 import { AddonMessagesDiscussionLinkHandler } from './providers/discussion-link-handler';
 import { AddonMessagesIndexLinkHandler } from './providers/index-link-handler';
 import { AddonMessagesSyncCronHandler } from './providers/sync-cron-handler';
+import { AddonMessagesPushClickHandler } from './providers/push-click-handler';
 import { CoreAppProvider } from '@providers/app';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
@@ -63,7 +64,8 @@ export const ADDON_MESSAGES_PROVIDERS: any[] = [
         AddonMessagesDiscussionLinkHandler,
         AddonMessagesIndexLinkHandler,
         AddonMessagesSyncCronHandler,
-        AddonMessagesSettingsHandler
+        AddonMessagesSettingsHandler,
+        AddonMessagesPushClickHandler
     ]
 })
 export class AddonMessagesModule {
@@ -77,7 +79,7 @@ export class AddonMessagesModule {
             settingsHandler: AddonMessagesSettingsHandler, settingsDelegate: CoreSettingsDelegate,
             pushNotificationsDelegate: CorePushNotificationsDelegate, utils: CoreUtilsProvider,
             addContactHandler: AddonMessagesAddContactUserHandler, blockContactHandler: AddonMessagesBlockContactUserHandler,
-            contactRequestLinkHandler: AddonMessagesContactRequestLinkHandler) {
+            contactRequestLinkHandler: AddonMessagesContactRequestLinkHandler, pushClickHandler: AddonMessagesPushClickHandler) {
         // Register handlers.
         mainMenuDelegate.registerHandler(mainmenuHandler);
         contentLinksDelegate.registerHandler(indexLinkHandler);
@@ -89,6 +91,7 @@ export class AddonMessagesModule {
         cronDelegate.register(syncHandler);
         cronDelegate.register(mainmenuHandler);
         settingsDelegate.registerHandler(settingsHandler);
+        pushNotificationsDelegate.registerClickHandler(pushClickHandler);
 
         // Sync some discussions when device goes online.
         network.onConnect().subscribe(() => {
@@ -133,18 +136,6 @@ export class AddonMessagesModule {
             // Listen for clicks in simulated push notifications.
             localNotifications.registerClick(AddonMessagesProvider.PUSH_SIMULATION_COMPONENT, notificationClicked);
         }
-
-        // Register push notification clicks.
-        pushNotificationsDelegate.on('click').subscribe((notification) => {
-            if (utils.isFalseOrZero(notification.notif)) {
-                // Execute the callback in the Angular zone, so change detection doesn't stop working.
-                zone.run(() => {
-                    notificationClicked(notification);
-                });
-
-                return true;
-            }
-        });
 
         // Allow migrating the table from the old app to the new schema.
         updateManager.registerSiteTableMigration({
