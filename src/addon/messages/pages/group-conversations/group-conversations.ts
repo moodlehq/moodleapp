@@ -222,7 +222,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         }
 
         this.fetchData().then(() => {
-            if (!this.conversationId && this.splitviewCtrl.isOn()) {
+            if (!this.conversationId && !this.discussionUserId && this.splitviewCtrl.isOn()) {
                 // Load the first conversation.
                 let conversation;
                 const expandedOption = this.getExpandedOption();
@@ -256,7 +256,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         return Promise.all(promises).then(() => {
             if (typeof this.favourites.expanded == 'undefined') {
                 // The expanded status hasn't been initialized. Do it now.
-                if (this.conversationId) {
+                if (this.conversationId || this.discussionUserId) {
                     // A certain conversation should be opened.
                     // We don't know which option it belongs to, so we need to fetch the data for all of them.
                     const promises = [];
@@ -267,7 +267,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
                     return Promise.all(promises).then(() => {
                         // All conversations have been loaded, find the one we need to load and expand its option.
-                        const conversation = this.findConversation(this.conversationId);
+                        const conversation = this.findConversation(this.conversationId, this.discussionUserId);
                         if (conversation) {
                             const option = this.getConversationOption(conversation);
 
