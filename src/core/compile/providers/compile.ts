@@ -78,6 +78,7 @@ import { CoreBlockComponentsModule } from '@core/block/components/components.mod
 import { CoreCourseUnsupportedModuleComponent } from '@core/course/components/unsupported-module/unsupported-module';
 import { CoreCourseFormatSingleActivityComponent } from '@core/course/formats/singleactivity/components/singleactivity';
 import { CoreSitePluginsModuleIndexComponent } from '@core/siteplugins/components/module-index/module-index';
+import { CoreSitePluginsBlockComponent } from '@core/siteplugins/components/block/block';
 import { CoreSitePluginsCourseOptionComponent } from '@core/siteplugins/components/course-option/course-option';
 import { CoreSitePluginsCourseFormatComponent } from '@core/siteplugins/components/course-format/course-format';
 import { CoreSitePluginsQuestionComponent } from '@core/siteplugins/components/question/question';
@@ -269,6 +270,7 @@ export class CoreCompileProvider {
         instance['CoreCourseUnsupportedModuleComponent'] = CoreCourseUnsupportedModuleComponent;
         instance['CoreCourseFormatSingleActivityComponent'] = CoreCourseFormatSingleActivityComponent;
         instance['CoreSitePluginsModuleIndexComponent'] = CoreSitePluginsModuleIndexComponent;
+        instance['CoreSitePluginsBlockComponent'] = CoreSitePluginsBlockComponent;
         instance['CoreSitePluginsCourseOptionComponent'] = CoreSitePluginsCourseOptionComponent;
         instance['CoreSitePluginsCourseFormatComponent'] = CoreSitePluginsCourseFormatComponent;
         instance['CoreSitePluginsQuestionComponent'] = CoreSitePluginsQuestionComponent;

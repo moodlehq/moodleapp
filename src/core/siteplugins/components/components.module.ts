@@ -29,11 +29,13 @@ import { CoreSitePluginsQuizAccessRuleComponent } from './quiz-access-rule/quiz-
 import { CoreSitePluginsAssignFeedbackComponent } from './assign-feedback/assign-feedback';
 import { CoreSitePluginsAssignSubmissionComponent } from './assign-submission/assign-submission';
 import { CoreSitePluginsWorkshopAssessmentStrategyComponent } from './workshop-assessment-strategy/workshop-assessment-strategy';
+import { CoreSitePluginsBlockComponent } from '@core/siteplugins/components/block/block';
 
 @NgModule({
     declarations: [
         CoreSitePluginsPluginContentComponent,
         CoreSitePluginsModuleIndexComponent,
+        CoreSitePluginsBlockComponent,
         CoreSitePluginsCourseOptionComponent,
         CoreSitePluginsCourseFormatComponent,
         CoreSitePluginsUserProfileFieldComponent,
@@ -56,6 +58,7 @@ import { CoreSitePluginsWorkshopAssessmentStrategyComponent } from './workshop-a
     exports: [
         CoreSitePluginsPluginContentComponent,
         CoreSitePluginsModuleIndexComponent,
+        CoreSitePluginsBlockComponent,
         CoreSitePluginsCourseOptionComponent,
         CoreSitePluginsCourseFormatComponent,
         CoreSitePluginsUserProfileFieldComponent,
@@ -68,6 +71,7 @@ import { CoreSitePluginsWorkshopAssessmentStrategyComponent } from './workshop-a
     ],
     entryComponents: [
         CoreSitePluginsModuleIndexComponent,
+        CoreSitePluginsBlockComponent,
         CoreSitePluginsCourseOptionComponent,
         CoreSitePluginsCourseFormatComponent,
         CoreSitePluginsUserProfileFieldComponent,
