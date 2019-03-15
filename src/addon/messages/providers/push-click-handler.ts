@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CorePushNotificationsClickHandler } from '@core/pushnotifications/providers/delegate';
-import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
+import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { AddonMessagesProvider } from './messages';
 
 /**
@@ -28,7 +28,7 @@ export class AddonMessagesPushClickHandler implements CorePushNotificationsClick
     featureName = 'CoreMainMenuDelegate_AddonMessages';
 
     constructor(private utils: CoreUtilsProvider, private messagesProvider: AddonMessagesProvider,
-            private linkHelper: CoreContentLinksHelperProvider) {}
+            private loginHelper: CoreLoginHelperProvider) {}
 
     /**
      * Check if a notification click is handled by this handler.
@@ -37,7 +37,7 @@ export class AddonMessagesPushClickHandler implements CorePushNotificationsClick
      * @return {boolean} Whether the notification click is handled by this handler
      */
     handles(notification: any): boolean | Promise<boolean> {
-        if (this.utils.isTrueOrOne(notification.notif)) {
+        if (this.utils.isTrueOrOne(notification.notif) && notification.name != 'messagecontactrequests') {
             return false;
         }
 
@@ -70,7 +70,7 @@ export class AddonMessagesPushClickHandler implements CorePushNotificationsClick
                     pageParams.discussionUserId = Number(notification.userfromid);
                 }
 
-                return this.linkHelper.goInSite(undefined, pageName, pageParams, notification.site);
+                return this.loginHelper.redirect(pageName, pageParams, notification.site);
             });
         });
     }
