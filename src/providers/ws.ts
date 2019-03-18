@@ -525,9 +525,9 @@ export class CoreWSProvider {
         }
 
         // Perform the post request.
-        let promise = this.http.post(siteUrl, ajaxData, options).timeout(CoreConstants.WS_TIMEOUT).toPromise();
+        const promise = this.http.post(siteUrl, ajaxData, options).timeout(CoreConstants.WS_TIMEOUT).toPromise();
 
-        promise = promise.then((data: any) => {
+        return promise.then((data: any) => {
             // Some moodle web services return null.
             // If the responseExpected value is set to false, we create a blank object if the response is null.
             if (!data && !preSets.responseExpected) {
@@ -608,10 +608,6 @@ export class CoreWSProvider {
 
             return Promise.reject(this.createFakeWSError('core.serverconnection', true));
         });
-
-        promise = this.setPromiseHttp(promise, 'post', preSets.siteUrl, ajaxData);
-
-        return promise;
     }
 
     /**
