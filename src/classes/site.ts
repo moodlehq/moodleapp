@@ -217,6 +217,7 @@ export class CoreSite {
         this.wsProvider = injector.get(CoreWSProvider);
 
         this.logger = logger.getInstance('CoreWSProvider');
+        this.setInfo(infos);
         this.calculateOfflineDisabled();
 
         if (this.id) {
@@ -349,6 +350,14 @@ export class CoreSite {
      */
     setInfo(infos: any): void {
         this.infos = infos;
+
+        // Index function by name to speed up wsAvailable method.
+        if (infos && infos.functions) {
+            infos.functionsByName = {};
+            infos.functions.forEach((func) => {
+                infos.functionsByName[func.name] = func;
+            });
+        }
     }
 
     /**
@@ -711,11 +720,8 @@ export class CoreSite {
             return false;
         }
 
-        for (let i = 0; i < this.infos.functions.length; i++) {
-            const func = this.infos.functions[i];
-            if (func.name == method) {
-                return true;
-            }
+        if (this.infos.functionsByName[method]) {
+            return true;
         }
 
         // Let's try again with the compatibility prefix.
