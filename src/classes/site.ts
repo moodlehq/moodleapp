@@ -573,10 +573,9 @@ export class CoreSite {
 
         const originalData = data;
 
-        // Convert the values to string before starting the cache process.
-        try {
-            data = this.wsProvider.convertValuesToString(data, wsPreSets.cleanUnicode);
-        } catch (e) {
+        // Convert arguments to strings before starting the cache process.
+        data = this.wsProvider.convertValuesToString(data, wsPreSets.cleanUnicode);
+        if (data == null) {
             // Empty cleaned text found.
             return Promise.reject(this.utils.createFakeWSError('core.unicodenotsupportedcleanerror', true));
         }

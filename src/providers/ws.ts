@@ -284,32 +284,55 @@ export class CoreWSProvider {
 
     /**
      * Converts an objects values to strings where appropriate.
-     * Arrays (associative or otherwise) will be maintained.
+     * Arrays (associative or otherwise) will be maintained, null values will be removed.
      *
      * @param {object} data The data that needs all the non-object values set to strings.
      * @param {boolean} [stripUnicode] If Unicode long chars need to be stripped.
-     * @return {object} The cleaned object, with multilevel array and objects preserved.
+     * @return {object} The cleaned object or null if some strings becomes empty after stripping Unicode.
      */
-    convertValuesToString(data: object, stripUnicode?: boolean): object {
-        let result;
-        if (!Array.isArray(data) && typeof data == 'object') {
-            result = {};
-        } else {
-            result = [];
-        }
+    convertValuesToString(data: any, stripUnicode?: boolean): any {
+        const result: any = Array.isArray(data) ? [] : {};
 
-        for (const el in data) {
-            if (typeof data[el] == 'object') {
-                result[el] = this.convertValuesToString(data[el], stripUnicode);
-            } else {
-                if (typeof data[el] == 'string') {
-                    result[el] = stripUnicode ? this.textUtils.stripUnicode(data[el]) : data[el];
-                    if (stripUnicode && data[el] != result[el] && result[el].trim().length == 0) {
-                        throw new Error();
-                    }
-                } else {
-                    result[el] = data[el] + '';
+        for (const key in data) {
+            let value = data[key];
+
+            if (value == null) {
+                // Skip null or undefined value.
+                continue;
+            } else if (typeof value == 'object') {
+                // Object or array.
+                value = this.convertValuesToString(value, stripUnicode);
+                if (value == null) {
+                    return null;
                 }
+            } else if (typeof value == 'string') {
+                if (stripUnicode) {
+                    const stripped = this.textUtils.stripUnicode(value);
+                    if (stripped != value && stripped.trim().length == 0) {
+                        return null;
+                    }
+                    value = stripped;
+                }
+            } else if (typeof value == 'boolean') {
+                /* Moodle does not allow "true" or "false" in WS parameters, only in POST parameters.
+                   We've been using "true" and "false" for WS settings "filter" and "fileurl",
+                   we keep it this way to avoid changing cache keys. */
+                if (key == 'moodlewssettingfilter' || key == 'moodlewssettingfileurl') {
+                    value = value ? 'true' : 'false';
+                } else {
+                    value = value ? '1' : '0';
+                }
+            } else if (typeof value == 'number') {
+                value = String(value);
+            } else {
+                // Unknown type.
+                continue;
+            }
+
+            if (Array.isArray(result)) {
+                result.push(value);
+            } else {
+                result[key] = value;
             }
         }
 
@@ -688,9 +711,8 @@ export class CoreWSProvider {
             preSets.responseExpected = true;
         }
 
-        try {
-            data = this.convertValuesToString(data, preSets.cleanUnicode);
-        } catch (e) {
+        data = this.convertValuesToString(data || {}, preSets.cleanUnicode);
+        if (data == null) {
             // Empty cleaned text found.
             errorResponse.message = this.translate.instant('core.unicodenotsupportedcleanerror');
 

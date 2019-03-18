@@ -250,8 +250,8 @@ export class CoreUserProvider {
                 this.logger.debug(`Get user with ID '${userId}'`);
                 wsName = 'core_user_get_users_by_field';
                 data = {
-                    'field': 'id',
-                    'values[0]': userId
+                    field: 'id',
+                    values: [userId]
                 };
             }
 
