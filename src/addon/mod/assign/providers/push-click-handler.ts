@@ -16,20 +16,20 @@ import { Injectable } from '@angular/core';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CorePushNotificationsClickHandler } from '@core/pushnotifications/providers/delegate';
-import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
-import { AddonModForumProvider } from './forum';
+import { CoreCourseHelperProvider } from '@core/course/providers/helper';
+import { AddonModAssignProvider } from './assign';
 
 /**
- * Handler for forum push notifications clicks.
+ * Handler for assign push notifications clicks.
  */
 @Injectable()
-export class AddonModForumPushClickHandler implements CorePushNotificationsClickHandler {
-    name = 'AddonModForumPushClickHandler';
+export class AddonModAssignPushClickHandler implements CorePushNotificationsClickHandler {
+    name = 'AddonModAssignPushClickHandler';
     priority = 200;
-    featureName = 'CoreCourseModuleDelegate_AddonModForum';
+    featureName = 'CoreCourseModuleDelegate_AddonModAssign';
 
-    constructor(private utils: CoreUtilsProvider, private forumProvider: AddonModForumProvider,
-            private urlUtils: CoreUrlUtilsProvider, private linkHelper: CoreContentLinksHelperProvider) {}
+    constructor(private utils: CoreUtilsProvider, private assignProvider: AddonModAssignProvider,
+            private urlUtils: CoreUrlUtilsProvider, private courseHelper: CoreCourseHelperProvider) {}
 
     /**
      * Check if a notification click is handled by this handler.
@@ -38,8 +38,8 @@ export class AddonModForumPushClickHandler implements CorePushNotificationsClick
      * @return {boolean} Whether the notification click is handled by this handler
      */
     handles(notification: any): boolean | Promise<boolean> {
-        return this.utils.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'mod_forum' &&
-                notification.name == 'posts';
+        return this.utils.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'mod_assign' &&
+                notification.name == 'assign_notification';
     }
 
     /**
@@ -50,19 +50,13 @@ export class AddonModForumPushClickHandler implements CorePushNotificationsClick
      */
     handleClick(notification: any): Promise<any> {
         const contextUrlParams = this.urlUtils.extractUrlParams(notification.contexturl),
-            pageParams: any = {
-                courseId: Number(notification.courseid),
-                discussionId: Number(contextUrlParams.d),
-            };
+            courseId = Number(notification.courseid),
+            moduleId = Number(contextUrlParams.id);
 
-        if (contextUrlParams.urlHash) {
-            pageParams.postId = Number(contextUrlParams.urlHash.replace('p', ''));
-        }
-
-        return this.forumProvider.invalidateDiscussionPosts(pageParams.discussionId, notification.site).catch(() => {
+        return this.assignProvider.invalidateContent(moduleId, courseId, notification.site).catch(() => {
             // Ignore errors.
         }).then(() => {
-            return this.linkHelper.goInSite(undefined, 'AddonModForumDiscussionPage', pageParams, notification.site);
+            return this.courseHelper.navigateToModule(moduleId, notification.site, courseId);
         });
     }
 }
