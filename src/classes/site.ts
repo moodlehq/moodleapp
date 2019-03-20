@@ -582,7 +582,7 @@ export class CoreSite {
             });
         }
 
-        const promise = this.getFromCache(method, data, preSets, false, originalData).catch(() => {
+        let promise = this.getFromCache(method, data, preSets, false, originalData).catch(() => {
             // Do not pass those options to the core WS factory.
             return this.wsProvider.call(method, data, wsPreSets).then((response) => {
                 if (preSets.saveToCache) {
@@ -688,12 +688,13 @@ export class CoreSite {
         });
 
         this.ongoingRequests[cacheId] = promise;
+
         // Clear ongoing request after setting the promise (just in case it's already resolved).
-        promise.finally(() => {
-           // Make sure we don't clear the promise of a newer request that ignores the cache.
-           if (this.ongoingRequests[cacheId] === promise) {
-               delete this.ongoingRequests[cacheId];
-           }
+        promise = promise.finally(() => {
+            // Make sure we don't clear the promise of a newer request that ignores the cache.
+            if (this.ongoingRequests[cacheId] === promise) {
+                delete this.ongoingRequests[cacheId];
+            }
         });
 
         return promise.then((response) => {
