@@ -1,6 +1,6 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons end>
-    <button ion-button icon-only (click)="showToc($event)" [attr.aria-label]="'addon.mod_book.toc' | translate" aria-haspopup="true">
+    <button ion-button icon-only (click)="showToc($event)" [attr.aria-label]="'addon.mod_book.toc' | translate" aria-haspopup="true" *ngIf="loaded">
         <ion-icon name="bookmark"></ion-icon>
     </button>
     <core-context-menu>
