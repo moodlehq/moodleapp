@@ -145,6 +145,7 @@
   "addon.coursecompletion.criteriarequiredany": "completion",
   "addon.coursecompletion.inprogress": "completion",
   "addon.coursecompletion.manualselfcompletion": "completion",
+  "addon.coursecompletion.nottracked": "completion",
   "addon.coursecompletion.notyetstarted": "completion",
   "addon.coursecompletion.pending": "completion",
   "addon.coursecompletion.required": "moodle",

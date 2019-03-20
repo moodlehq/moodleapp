@@ -3,7 +3,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="completionLoaded">
-        <ion-card *ngIf="completion">
+        <ion-card *ngIf="completion && tracked">
             <ion-item text-wrap>
                 <h2>{{ 'addon.coursecompletion.status' | translate }}</h2>
                 <p>{{ completion.statusText | translate }}</p>
@@ -14,7 +14,7 @@
                 <p *ngIf="completion.aggregation === 2">{{ 'addon.coursecompletion.criteriarequiredany' | translate }}</p>
             </ion-item>
         </ion-card>
-        <ion-card *ngIf="completion">
+        <ion-card *ngIf="completion && tracked">
             <ion-item-divider>{{ 'addon.coursecompletion.requiredcriteria' | translate }}</ion-item-divider>
             <ion-item class="hidden-tablet" text-wrap *ngFor="let criteria of completion.completions">
                 <h2><core-format-text clean="true" [text]="criteria.details.criteria"></core-format-text></h2>
@@ -41,11 +41,16 @@
                 </ion-row>
             </ion-item>
         </ion-card>
-        <ion-card *ngIf="showSelfComplete">
+        <ion-card *ngIf="showSelfComplete && tracked">
             <ion-item-divider>{{ 'addon.coursecompletion.manualselfcompletion' | translate }}</ion-item-divider>
             <ion-item>
                 <button ion-button block (click)="completeCourse()">{{ 'addon.coursecompletion.completecourse' | translate }}</button>
             </ion-item>
         </ion-card>
+
+        <div *ngIf="!tracked" class="core-warning-card" icon-start>
+            <ion-icon name="warning"></ion-icon>
+            {{ 'addon.coursecompletion.nottracked' | translate }}
+        </div>
     </core-loading>
 </ion-content>

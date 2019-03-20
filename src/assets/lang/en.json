@@ -145,6 +145,7 @@
     "addon.coursecompletion.criteriarequiredany": "Any criteria below are required",
     "addon.coursecompletion.inprogress": "In progress",
     "addon.coursecompletion.manualselfcompletion": "Manual self completion",
+    "addon.coursecompletion.nottracked": "You are currently not being tracked by completion in this course",
     "addon.coursecompletion.notyetstarted": "Not yet started",
     "addon.coursecompletion.pending": "Pending",
     "addon.coursecompletion.required": "Required",
