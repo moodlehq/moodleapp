@@ -390,6 +390,30 @@ export class CoreCoursesProvider {
     }
 
     /**
+     * Get the first course returned by getCoursesByField.
+     *
+     * @param {string} [field] The field to search. Can be left empty for all courses or:
+     *                             id: course id.
+     *                             ids: comma separated course ids.
+     *                             shortname: course short name.
+     *                             idnumber: course id number.
+     *                             category: category id the course belongs to.
+     * @param {any} [value] The value to match.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<any>} Promise resolved with the first course.
+     * @since 3.2
+     */
+    getCourseByField(field?: string, value?: any, siteId?: string): Promise<any> {
+        return this.getCoursesByField(field, value, siteId).then((courses) => {
+            if (courses && courses.length > 0) {
+                return courses[0];
+            }
+
+            return Promise.reject(null);
+        });
+    }
+
+    /**
      * Get courses. They can be filtered by field.
      *
      * @param {string} [field] The field to search. Can be left empty for all courses or:
@@ -482,13 +506,29 @@ export class CoreCoursesProvider {
     }
 
     /**
-     * Check if get courses by field WS is available.
+     * Check if get courses by field WS is available in a certain site.
      *
+     * @param {CoreSite} [site] Site to check.
      * @return {boolean} Whether get courses by field is available.
      * @since 3.2
      */
-    isGetCoursesByFieldAvailable(): boolean {
-        return this.sitesProvider.wsAvailableInCurrentSite('core_course_get_courses_by_field');
+    isGetCoursesByFieldAvailable(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.wsAvailable('core_course_get_courses_by_field');
+    }
+
+    /**
+     * Check if get courses by field WS is available in a certain site, by site ID.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<boolean>} Promise resolved with boolean: whether get courses by field is available.
+     * @since 3.2
+     */
+    isGetCoursesByFieldAvailableInSite(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.isGetCoursesByFieldAvailable(site);
+        });
     }
 
     /**

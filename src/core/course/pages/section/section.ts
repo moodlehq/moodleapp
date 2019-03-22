@@ -169,7 +169,9 @@ export class CoreCourseSectionPage implements OnDestroy {
      */
     protected loadData(refresh?: boolean, sync?: boolean): Promise<any> {
         // First of all, get the course because the data might have changed.
-        return this.coursesProvider.getUserCourse(this.course.id).catch(() => {
+        return this.courseHelper.getCourse(this.course.id).then((result) => {
+            return result.course;
+        }).catch(() => {
             // Error getting the course, probably guest access.
         }).then((course) => {
             if (course) {

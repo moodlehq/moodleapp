@@ -12,6 +12,7 @@
     "criteriarequiredany": "Any criteria below are required",
     "inprogress": "In progress",
     "manualselfcompletion": "Manual self completion",
+    "nottracked": "You are currently not being tracked by completion in this course",
     "notyetstarted": "Not yet started",
     "pending": "Pending",
     "required": "Required",
