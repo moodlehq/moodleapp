@@ -768,6 +768,33 @@ export class CoreCourseHelperProvider {
     }
 
     /**
+     * Get a course. It will first check the user courses, and fallback to another WS if not enrolled.
+     *
+     * @param {number} courseId Course ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<{enrolled: boolean, course: any}>} Promise resolved with the course.
+     */
+    getCourse(courseId: number, siteId?: string): Promise<{enrolled: boolean, course: any}> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        // Try with enrolled courses first.
+        return this.coursesProvider.getUserCourse(courseId, false, siteId).then((course) => {
+            return { enrolled: true, course: course };
+        }).catch(() => {
+            // Not enrolled or an error happened. Try to use another WebService.
+            return this.coursesProvider.isGetCoursesByFieldAvailableInSite(siteId).then((available) => {
+                if (available) {
+                    return this.coursesProvider.getCourseByField('id', courseId, siteId);
+                } else {
+                    return this.coursesProvider.getCourse(courseId, siteId);
+                }
+            }).then((course) => {
+                return { enrolled: false, course: course };
+            });
+        });
+    }
+
+    /**
      * Check if the course has a block with that name.
      *
      * @param {number} courseId Course ID.
