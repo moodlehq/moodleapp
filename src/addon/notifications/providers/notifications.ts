@@ -45,9 +45,10 @@ export class AddonNotificationsProvider {
      * Function to format notification data.
      *
      * @param {any[]} notifications List of notifications.
+     * @param {boolean} [read] Whether the notifications are read or unread.
      * @return {Promise<any[]>} Promise resolved with notifications.
      */
-    protected formatNotificationsData(notifications: any[]): Promise<any> {
+    protected formatNotificationsData(notifications: any[], read?: boolean): Promise<any> {
         const promises = notifications.map((notification) => {
             // Set message to show.
             if (notification.contexturl && notification.contexturl.indexOf('/mod/forum/') >= 0) {
@@ -55,6 +56,7 @@ export class AddonNotificationsProvider {
             } else {
                 notification.mobiletext = notification.fullmessage;
             }
+
             // Try to set courseid the notification belongs to.
             const cid = notification.fullmessagehtml.match(/course\/view\.php\?id=([^"]*)/);
             if (cid && cid[1]) {
@@ -69,6 +71,11 @@ export class AddonNotificationsProvider {
                 }).catch(() => {
                     // Error getting user. This can happen if device is offline or the user is deleted.
                 });
+            }
+
+            notification.notification = 1;
+            if (typeof read != 'undefined') {
+                notification.read = read;
             }
 
             return Promise.resolve(notification);
@@ -154,7 +161,7 @@ export class AddonNotificationsProvider {
                 if (response.messages) {
                     const notifications = response.messages;
 
-                    return this.formatNotificationsData(notifications).then(() => {
+                    return this.formatNotificationsData(notifications, read).then(() => {
                         if (this.appProvider.isDesktop() && toDisplay && !read && limitFrom === 0) {
                             // Store the last received notification. Don't block the user for this.
                             this.emulatorHelper.storeLastReceivedNotification(
@@ -162,6 +169,67 @@ export class AddonNotificationsProvider {
                         }
 
                         return notifications;
+                    });
+                } else {
+                    return Promise.reject(null);
+                }
+            });
+        });
+    }
+
+    /**
+     * Get notifications from site using the new WebService.
+     *
+     * @param {number} offset Position of the first notification to get.
+     * @param {number} [limit] Number of notifications to get. Defaults to LIST_LIMIT.
+     * @param {boolean} [toDisplay=true] True if notifications will be displayed to the user, either in view or in a notification.
+     * @param {boolean} [forceCache] True if it should return cached data. Has priority over ignoreCache.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<{notifications: any[], canLoadMore: boolean}>} Promise resolved with notifications and if can load more.
+     * @since 3.2
+     */
+    getPopupNotifications(offset: number, limit?: number, toDisplay: boolean = true, forceCache?: boolean, ignoreCache?: boolean,
+            siteId?: string): Promise<{notifications: any[], canLoadMore: boolean}> {
+
+        limit = limit || AddonNotificationsProvider.LIST_LIMIT;
+
+        this.logger.debug('Get popup notifications from ' + offset + '. Limit: ' + limit);
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const data = {
+                    useridto: site.getUserId(),
+                    newestfirst: 1,
+                    offset: offset,
+                    limit: limit + 1 // Get one more to calculate canLoadMore.
+                },
+                preSets = {
+                    cacheKey: this.getNotificationsCacheKey(),
+                    omitExpires: forceCache,
+                    getFromCache: forceCache || !ignoreCache,
+                    emergencyCache: forceCache || !ignoreCache,
+                };
+
+            // Get notifications.
+            return site.read('message_popup_get_popup_notifications', data, preSets).then((response) => {
+                if (response.notifications) {
+                    const result: any = {
+                            canLoadMore: response.notifications.length > limit
+                        },
+                        notifications = response.notifications.slice(0, limit);
+
+                    result.notifications = notifications;
+
+                    return this.formatNotificationsData(notifications).then(() => {
+                        const first = notifications[0];
+
+                        if (this.appProvider.isDesktop() && toDisplay && offset === 0 && first && !first.read) {
+                            // Store the last received notification. Don't block the user for this.
+                            this.emulatorHelper.storeLastReceivedNotification(
+                                AddonNotificationsProvider.PUSH_SIMULATION_COMPONENT, first, siteId);
+                        }
+
+                        return result;
                     });
                 } else {
                     return Promise.reject(null);
@@ -241,6 +309,18 @@ export class AddonNotificationsProvider {
                 // Return no messages if the call fails.
                 return 0;
             });
+        });
+    }
+
+    /**
+     * Returns whether or not popup WS is available for a certain site.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<boolean>} Promise resolved with true if available, resolved with false or rejected otherwise.
+     */
+    isPopupAvailable(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.wsAvailable('message_popup_get_popup_notifications');
         });
     }
 

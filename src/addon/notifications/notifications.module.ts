@@ -14,6 +14,7 @@
 
 import { NgModule, NgZone } from '@angular/core';
 import { AddonNotificationsProvider } from './providers/notifications';
+import { AddonNotificationsHelperProvider } from './providers/helper';
 import { AddonNotificationsMainMenuHandler } from './providers/mainmenu-handler';
 import { AddonNotificationsSettingsHandler } from './providers/settings-handler';
 import { AddonNotificationsCronHandler } from './providers/cron-handler';
@@ -30,7 +31,8 @@ import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers
 
 // List of providers (without handlers).
 export const ADDON_NOTIFICATIONS_PROVIDERS: any[] = [
-    AddonNotificationsProvider
+    AddonNotificationsProvider,
+    AddonNotificationsHelperProvider
 ];
 
 @NgModule({
@@ -40,6 +42,7 @@ export const ADDON_NOTIFICATIONS_PROVIDERS: any[] = [
     ],
     providers: [
         AddonNotificationsProvider,
+        AddonNotificationsHelperProvider,
         AddonNotificationsMainMenuHandler,
         AddonNotificationsSettingsHandler,
         AddonNotificationsCronHandler,
