@@ -49,7 +49,7 @@ export class CoreSplitViewComponent implements OnInit, OnDestroy {
     @ViewChild('menu') menu: Menu;
     @Input() when?: string | boolean = 'md';
 
-    protected isEnabled = false;
+    protected isEnabled;
     protected masterPageName = '';
     protected masterPageIndex = 0;
     protected loadDetailPage: any = false;
@@ -174,7 +174,7 @@ export class CoreSplitViewComponent implements OnInit, OnDestroy {
      * @return {boolean} If split view is enabled.
      */
     isOn(): boolean {
-        return this.isEnabled;
+        return !!this.isEnabled;
     }
 
     /**
@@ -182,16 +182,24 @@ export class CoreSplitViewComponent implements OnInit, OnDestroy {
      *
      * @param {any} page   The component class or deeplink name you want to push onto the navigation stack.
      * @param {any} params Any NavParams you want to pass along to the next view.
+     * @param {boolean} [retrying] Whether it's retrying.
      */
-    push(page: any, params?: any): void {
-        if (this.isEnabled) {
-            this.detailNav.setRoot(page, params);
+    push(page: any, params?: any, retrying?: boolean): void {
+        if (typeof this.isEnabled == 'undefined' && !retrying) {
+            // Hasn't calculated if it's enabled yet. Wait a bit and try again.
+            setTimeout(() => {
+                this.push(page, params, true);
+            }, 200);
         } else {
-            this.loadDetailPage = {
-                component: page,
-                data: params
-            };
-            this.masterNav.push(page, params);
+            if (this.isEnabled) {
+                this.detailNav.setRoot(page, params);
+            } else {
+                this.loadDetailPage = {
+                    component: page,
+                    data: params
+                };
+                this.masterNav.push(page, params);
+            }
         }
     }
 
