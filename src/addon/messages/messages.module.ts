@@ -121,8 +121,8 @@ export class AddonMessagesModule {
                             // Check if we have enough information to open the conversation.
                             if (notification.convid && enabled) {
                                 pageParams.conversationId = Number(notification.convid);
-                            } else if (notification.userfromid) {
-                                pageParams.discussionUserId = Number(notification.userfromid);
+                            } else if (notification.userfromid || notification.useridfrom) {
+                                pageParams.discussionUserId = Number(notification.userfromid || notification.useridfrom);
                             }
 
                             linkHelper.goInSite(undefined, pageName, pageParams, notification.site);

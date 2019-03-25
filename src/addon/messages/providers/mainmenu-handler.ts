@@ -229,8 +229,59 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
      * @return {Promise<any>}    Promise resolved with the notifications.
      */
     protected fetchMessages(siteId?: string): Promise<any> {
-        return this.messagesProvider.getUnreadReceivedMessages(true, false, true, siteId).then((response) => {
-            return response.messages;
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            if (site.isVersionGreaterEqualThan('3.7')) {
+
+                // Use get conversations WS to be able to get group conversations messages.
+                return this.messagesProvider.getConversations(undefined, undefined, 0, site.id, undefined, false, true)
+                        .then((result) => {
+
+                    // Find the first unmuted conversation.
+                    const conv = result.conversations.find((conversation) => {
+                        return !conversation.ismuted;
+                    });
+
+                    if (conv.isread) {
+                        // The conversation is read, no unread messages.
+                        return [];
+                    }
+
+                    const currentUserId = site.getUserId(),
+                        message = conv.messages[0]; // Treat only the last message, is the one we're interested.
+
+                    if (!message || message.useridfrom == currentUserId) {
+                        // No last message or not from current user. Return empty list.
+                        return [];
+                    }
+
+                    // Add some calculated data.
+                    message.contexturl = '';
+                    message.contexturlname = '';
+                    message.convid = conv.id;
+                    message.fullmessage = message.text;
+                    message.fullmessageformat = 0;
+                    message.fullmessagehtml = '';
+                    message.notification = 0;
+                    message.read = 0;
+                    message.smallmessage = message.smallmessage || message.text;
+                    message.subject = conv.name;
+                    message.timecreated = message.timecreated * 1000;
+                    message.timeread = 0;
+                    message.useridto = currentUserId;
+                    message.usertofullname = site.getInfo().fullname;
+
+                    const userFrom = conv.members.find((member) => {
+                        return member.id == message.useridfrom;
+                    });
+                    message.userfromfullname = userFrom && userFrom.fullname;
+
+                    return [message];
+                });
+            } else {
+                return this.messagesProvider.getUnreadReceivedMessages(true, false, true, siteId).then((response) => {
+                    return response.messages;
+                });
+            }
         });
     }
 
@@ -242,7 +293,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
      */
     protected getTitleAndText(message: any): Promise<any> {
         const data = {
-            title: message.userfromfullname,
+            title: message.name || message.userfromfullname,
         };
 
         return this.textUtils.formatText(message.text, true, true).catch(() => {
