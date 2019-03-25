@@ -122,10 +122,13 @@ export class CoreTabComponent implements OnInit, OnDestroy {
 
         // Setup tab scrolling.
         setTimeout(() => {
+            // TODO: Solve undefined this.scroll on tab change.
+
             if (this.scroll) {
                 this.scroll.getScrollElement().onscroll = (e): void => {
-                    this.tabs.showHideTabs(e);
+                    this.tabs.showHideTabs(e.target);
                 };
+                this.tabs.showHideTabs(this.scroll.getScrollElement());
             }
         }, 1);
     }

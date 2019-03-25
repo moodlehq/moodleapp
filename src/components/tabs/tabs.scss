@@ -118,8 +118,10 @@ ion-app.app-root core-tabs {
     &.tabs-hidden {
         .core-tabs-bar {
             display: none !important;
+            transform: translateY(0) !important;
         }
         .core-tabs-content-container {
+            transform: translateY(0) !important;
             padding-bottom: 0 !important;
         }
     }
