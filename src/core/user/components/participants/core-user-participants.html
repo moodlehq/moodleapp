@@ -11,7 +11,8 @@
                 <a ion-item text-wrap *ngFor="let participant of participants" [title]="participant.fullname" (click)="gotoParticipant(participant.id)" [class.core-split-item-selected]="participant.id == participantId">
                     <ion-avatar core-user-avatar [user]="participant" item-start [userId]="participant.id" [checkOnline]="true"></ion-avatar>
                     <h2><core-format-text [text]="participant.fullname"></core-format-text></h2>
-                    <p *ngIf="participant.lastaccess"><strong>{{ 'core.lastaccess' | translate }}: </strong>{{ participant.lastaccess | coreTimeAgo }}</p>
+                    <p *ngIf="participant.lastcourseaccess"><strong>{{ 'core.lastaccess' | translate }}: </strong>{{ participant.lastcourseaccess | coreTimeAgo }}</p>
+                    <p *ngIf="participant.lastcourseaccess == null && participant.lastaccess"><strong>{{ 'core.lastaccess' | translate }}: </strong>{{ participant.lastaccess | coreTimeAgo }}</p>
                 </a>
             </ion-list>
             <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreData($event)" [error]="loadMoreError"></core-infinite-loading>
