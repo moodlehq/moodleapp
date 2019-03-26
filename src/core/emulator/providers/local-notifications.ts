@@ -294,10 +294,6 @@ export class LocalNotificationsMock extends LocalNotifications {
             notification.timeoutAfter = this.parseToInt('timeoutAfter', notification);
         }
 
-        if (typeof notification.data == 'object') {
-            notification.data = JSON.stringify(notification.data);
-        }
-
         this.convertPriority(notification);
         this.convertTrigger(notification);
         this.convertActions(notification);
