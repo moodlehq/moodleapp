@@ -73,7 +73,9 @@ export class AddonNotificationsProvider {
                 });
             }
 
+            notification.moodlecomponent = notification.component;
             notification.notification = 1;
+            notification.notif = 1;
             if (typeof read != 'undefined') {
                 notification.read = read;
             }

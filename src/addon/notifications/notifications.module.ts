@@ -20,13 +20,11 @@ import { AddonNotificationsSettingsHandler } from './providers/settings-handler'
 import { AddonNotificationsCronHandler } from './providers/cron-handler';
 import { AddonNotificationsPushClickHandler } from './providers/push-click-handler';
 import { CoreAppProvider } from '@providers/app';
-import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
+import { CoreInitDelegate } from '@providers/init';
 import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
 import { CoreSettingsDelegate } from '@core/settings/providers/delegate';
 import { CoreCronDelegate } from '@providers/cron';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
-import { CoreSitesProvider } from '@providers/sites';
-import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers/delegate';
 
 // List of providers (without handlers).
@@ -53,9 +51,8 @@ export class AddonNotificationsModule {
     constructor(mainMenuDelegate: CoreMainMenuDelegate, mainMenuHandler: AddonNotificationsMainMenuHandler,
             settingsDelegate: CoreSettingsDelegate, settingsHandler: AddonNotificationsSettingsHandler,
             cronDelegate: CoreCronDelegate, cronHandler: AddonNotificationsCronHandler, zone: NgZone,
-            appProvider: CoreAppProvider, utils: CoreUtilsProvider, sitesProvider: CoreSitesProvider,
-            notificationsProvider: AddonNotificationsProvider, localNotifications: CoreLocalNotificationsProvider,
-            linkHelper: CoreContentLinksHelperProvider, pushNotificationsDelegate: CorePushNotificationsDelegate,
+            appProvider: CoreAppProvider, localNotifications: CoreLocalNotificationsProvider,
+            initDelegate: CoreInitDelegate, pushNotificationsDelegate: CorePushNotificationsDelegate,
             pushClickHandler: AddonNotificationsPushClickHandler) {
 
         mainMenuDelegate.registerHandler(mainMenuHandler);
@@ -63,22 +60,13 @@ export class AddonNotificationsModule {
         cronDelegate.register(cronHandler);
         pushNotificationsDelegate.registerClickHandler(pushClickHandler);
 
-        const notificationClicked = (notification: any): void => {
-            sitesProvider.isFeatureDisabled('CoreMainMenuDelegate_AddonNotifications', notification.site).then((disabled) => {
-                if (disabled) {
-                    // Notifications are disabled, stop.
-                    return;
-                }
-
-                notificationsProvider.invalidateNotificationsList().finally(() => {
-                    linkHelper.goInSite(undefined, 'AddonNotificationsListPage', undefined, notification.site);
-                });
-            });
-        };
-
         if (appProvider.isDesktop()) {
             // Listen for clicks in simulated push notifications.
-            localNotifications.registerClick(AddonNotificationsProvider.PUSH_SIMULATION_COMPONENT, notificationClicked);
+            localNotifications.registerClick(AddonNotificationsProvider.PUSH_SIMULATION_COMPONENT, (notification) => {
+                initDelegate.ready().then(() => {
+                    pushNotificationsDelegate.clicked(notification);
+                });
+            });
         }
     }
 }

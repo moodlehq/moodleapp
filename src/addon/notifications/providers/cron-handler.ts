@@ -105,7 +105,7 @@ export class AddonNotificationsCronHandler implements CoreCronHandler {
      */
     protected getTitleAndText(notification: any): Promise<any> {
         const data = {
-            title: notification.userfromfullname,
+            title: notification.subject || notification.userfromfullname,
             text: notification.mobiletext.replace(/-{4,}/ig, '')
         };
         data.text = this.textUtils.replaceNewLines(data.text, '<br>');
