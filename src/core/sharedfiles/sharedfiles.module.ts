@@ -44,15 +44,27 @@ export class CoreSharedFilesModule {
         delegate.registerHandler(handler);
 
         if (platform.is('ios')) {
+            let lastCheck = 0;
+
             // Check if there are new files at app start and when the app is resumed.
             helper.searchIOSNewSharedFiles();
             platform.resume.subscribe(() => {
-                helper.searchIOSNewSharedFiles();
+                // Wait a bit to make sure that APP_LAUNCHED_URL is treated before this callback.
+                setTimeout(() => {
+                    if (Date.now() - lastCheck < 1000) {
+                        // Last check less than 1s ago, don't do anything.
+                        return;
+                    }
+
+                    lastCheck = Date.now();
+                    helper.searchIOSNewSharedFiles();
+                }, 200);
             });
 
             eventsProvider.on(CoreEventsProvider.APP_LAUNCHED_URL, (url) => {
                 if (url && url.indexOf('file://') === 0) {
                     // We received a file in iOS, it's probably a shared file. Treat it.
+                    lastCheck = Date.now();
                     helper.searchIOSNewSharedFiles(url);
                 }
             });
