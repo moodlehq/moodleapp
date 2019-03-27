@@ -32,6 +32,7 @@ import { AddonModWorkshopOfflineProvider } from '../../providers/offline';
 export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivityComponent {
     @Input() group = 0;
 
+    component = AddonModWorkshopProvider.COMPONENT;
     moduleName = 'workshop';
     workshop: any;
     page = 0;
@@ -64,6 +65,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     protected obsAssessmentSaved: any;
     protected appResumeSubscription: any;
     protected syncObserver: any;
+    protected syncEventName = AddonModWorkshopSyncProvider.AUTO_SYNCED;
 
     constructor(injector: Injector, private workshopProvider: AddonModWorkshopProvider, @Optional() content: Content,
             private workshopOffline: AddonModWorkshopOfflineProvider, private groupsProvider: CoreGroupsProvider,

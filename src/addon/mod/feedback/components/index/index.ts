@@ -36,6 +36,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     @Input() tab = 'overview';
     @Input() group = 0;
 
+    component = AddonModFeedbackProvider.COMPONENT;
     moduleName = 'feedback';
 
     access = {
@@ -67,6 +68,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     firstSelectedTab: number;
 
     protected submitObserver: any;
+    protected syncEventName = AddonModFeedbackSyncProvider.AUTO_SYNCED;
 
     constructor(injector: Injector, private feedbackProvider: AddonModFeedbackProvider, @Optional() content: Content,
             private feedbackOffline: AddonModFeedbackOfflineProvider, private groupsProvider: CoreGroupsProvider,
