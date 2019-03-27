@@ -196,6 +196,7 @@
     "remove": "Remove",
     "required": "Required",
     "requireduserdatamissing": "This user lacks some required profile data. Please enter the data in your site and try again.<br>{{$a}}",
+    "resourcedisplayopen": "Open",
     "resources": "Resources",
     "restore": "Restore",
     "retry": "Retry",
