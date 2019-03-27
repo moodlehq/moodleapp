@@ -173,6 +173,7 @@ export class AddonModDataHelperProvider {
             comments: database.comments,
 
             // Unsupported actions.
+            tags: false,
             delcheck: false,
             export: false
         };
