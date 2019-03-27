@@ -261,25 +261,25 @@ export class CoreLoginEmailSignupPage {
                 (fieldsData) => {
                     params.customprofilefields = fieldsData;
 
-                    this.wsProvider.callAjax('auth_email_signup_user', params, { siteUrl: this.siteUrl }).then((result) => {
-                        if (result.success) {
-                            // Show alert and ho back.
-                            const message = this.translate.instant('core.login.emailconfirmsent', { $a: params.email });
-                            this.domUtils.showAlert(this.translate.instant('core.success'), message);
-                            this.navCtrl.pop();
-                        } else {
-                            if (result.warnings && result.warnings.length) {
-                                let error = result.warnings[0].message;
-                                if (error == 'incorrect-captcha-sol') {
-                                    error = this.translate.instant('core.login.recaptchaincorrect');
-                                }
-
-                                this.domUtils.showErrorModal(error);
-                            } else {
-                                this.domUtils.showErrorModal('core.login.usernotaddederror', true);
+                    return this.wsProvider.callAjax('auth_email_signup_user', params, { siteUrl: this.siteUrl });
+                }).then((result) => {
+                    if (result.success) {
+                        // Show alert and ho back.
+                        const message = this.translate.instant('core.login.emailconfirmsent', { $a: params.email });
+                        this.domUtils.showAlert(this.translate.instant('core.success'), message);
+                        this.navCtrl.pop();
+                    } else {
+                        if (result.warnings && result.warnings.length) {
+                            let error = result.warnings[0].message;
+                            if (error == 'incorrect-captcha-sol') {
+                                error = this.translate.instant('core.login.recaptchaincorrect');
                             }
+
+                            this.domUtils.showErrorModal(error);
+                        } else {
+                            this.domUtils.showErrorModal('core.login.usernotaddederror', true);
                         }
-                    });
+                    }
                 }).catch((error) => {
                     this.domUtils.showErrorModalDefault(error, 'core.login.usernotaddederror', true);
                 }).finally(() => {
