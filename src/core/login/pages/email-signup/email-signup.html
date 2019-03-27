@@ -115,7 +115,7 @@
 
             <!-- ReCAPTCHA -->
             <ng-container *ngIf="settings.recaptchapublickey">
-                <ion-item-divider text-wrap>{{ 'core.login.security_question' | translate }}</ion-item-divider>
+                <ion-item-divider text-wrap><span [core-mark-required]="true">{{ 'core.login.security_question' | translate }}</span></ion-item-divider>
                 <ion-item text-wrap>
                     <core-recaptcha [publicKey]="settings.recaptchapublickey" [model]="captcha" [siteUrl]="siteUrl"></core-recaptcha>
                 </ion-item>
