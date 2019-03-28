@@ -357,7 +357,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     protected syncDiscussion(showErrors: boolean): Promise<any> {
         const promises = [];
 
-        promises.push(this.forumSync.syncDiscussionReplies(this.forumId, this.discussionId).then((result) => {
+        promises.push(this.forumSync.syncDiscussionReplies(this.discussionId).then((result) => {
             if (result.warnings && result.warnings.length) {
                 this.domUtils.showErrorModal(result.warnings[0]);
             }

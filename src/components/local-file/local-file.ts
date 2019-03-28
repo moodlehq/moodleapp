@@ -62,13 +62,6 @@ export class CoreLocalFileComponent implements OnInit {
     ngOnInit(): void {
         this.manage = this.utils.isTrueOrOne(this.manage);
 
-        // Let's calculate the relative path for the file.
-        this.relativePath = this.fileProvider.removeBasePath(this.file.toURL());
-        if (!this.relativePath) {
-            // Didn't find basePath, use fullPath but if the user tries to manage the file it'll probably fail.
-            this.relativePath = this.file.fullPath;
-        }
-
         this.loadFileBasicData();
 
         // Get the size and timemodified.
@@ -88,6 +81,13 @@ export class CoreLocalFileComponent implements OnInit {
         this.fileName = this.file.name;
         this.fileIcon = this.mimeUtils.getFileIcon(this.file.name);
         this.fileExtension = this.mimeUtils.getFileExtension(this.file.name);
+
+        // Let's calculate the relative path for the file.
+        this.relativePath = this.fileProvider.removeBasePath(this.file.toURL());
+        if (!this.relativePath) {
+            // Didn't find basePath, use fullPath but if the user tries to manage the file it'll probably fail.
+            this.relativePath = this.file.fullPath;
+        }
     }
 
     /**

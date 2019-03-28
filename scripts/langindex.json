@@ -1608,6 +1608,7 @@
   "core.remove": "moodle",
   "core.required": "moodle",
   "core.requireduserdatamissing": "local_moodlemobileapp",
+  "core.resourcedisplayopen": "moodle",
   "core.resources": "moodle",
   "core.restore": "moodle",
   "core.retry": "local_moodlemobileapp",

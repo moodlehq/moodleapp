@@ -605,7 +605,7 @@ export class CoreSite {
 
                     // Session expired, trigger event.
                     this.eventsProvider.trigger(CoreEventsProvider.SESSION_EXPIRED, {}, this.id);
-                    // Change error message. We'll try to get data from cache.
+                    // Change error message. Try to get data from cache, the event will handle the error.
                     error.message = this.translate.instant('core.lostconnection');
                 } else if (error.errorcode === 'userdeleted') {
                     // User deleted, trigger event.
@@ -614,17 +614,15 @@ export class CoreSite {
 
                     return Promise.reject(error);
                 } else if (error.errorcode === 'forcepasswordchangenotice') {
-                    // Password Change Forced, trigger event.
+                    // Password Change Forced, trigger event. Try to get data from cache, the event will handle the error.
                     this.eventsProvider.trigger(CoreEventsProvider.PASSWORD_CHANGE_FORCED, {}, this.id);
                     error.message = this.translate.instant('core.forcepasswordchangenotice');
 
-                    return Promise.reject(error);
                 } else if (error.errorcode === 'usernotfullysetup') {
-                    // User not fully setup, trigger event.
+                    // User not fully setup, trigger event. Try to get data from cache, the event will handle the error.
                     this.eventsProvider.trigger(CoreEventsProvider.USER_NOT_FULLY_SETUP, {}, this.id);
                     error.message = this.translate.instant('core.usernotfullysetup');
 
-                    return Promise.reject(error);
                 } else if (error.errorcode === 'sitepolicynotagreed') {
                     // Site policy not agreed, trigger event.
                     this.eventsProvider.trigger(CoreEventsProvider.SITE_POLICY_NOT_AGREED, {}, this.id);

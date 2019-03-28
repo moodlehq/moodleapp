@@ -51,53 +51,64 @@
                 </ion-card>
 
                 <core-loading [hideUntil]="!showSpinner">
-                    <ion-list *ngIf="lesson && (!preventMessages || !preventMessages.length)">
+
+                    <ion-list *ngIf="(lesson && (!preventMessages || !preventMessages.length)) || retakeToReview">
                         <ion-item text-wrap *ngIf="retakeToReview">
                             <!-- A retake was finished in a synchronization, allow reviewing it. -->
-                            <p>{{ 'addon.mod_lesson.retakefinishedinsync' | translate }}</p>
+                            <p padding-bottom>{{ 'addon.mod_lesson.retakefinishedinsync' | translate }}</p>
                             <a ion-button block (click)="review()">{{ 'addon.mod_lesson.review' | translate }}</a>
                         </ion-item>
 
-                        <ion-item text-wrap *ngIf="leftDuringTimed && !lesson.timelimit">
-                            <!-- User left during the session and there is no time limit, ask to continue. -->
-                            <p [innerHTML]="'addon.mod_lesson.youhaveseen' | translate"></p>
-                            <ion-grid>
-                                <ion-row>
-                                    <ion-col>
-                                        <a ion-button block color="light" (click)="start(false)">{{ 'core.no' | translate }}</a>
-                                    </ion-col>
-                                    <ion-col>
-                                        <a ion-button block (click)="start(true)">{{ 'core.yes' | translate }}</a>
-                                    </ion-col>
-                                </ion-row>
-                            </ion-grid>
-                        </ion-item>
+                        <ng-container *ngIf="lesson && (!preventMessages || !preventMessages.length)">
+                            <ion-item text-wrap *ngIf="leftDuringTimed && !lesson.timelimit && !finishedOffline">
+                                <!-- User left during the session and there is no time limit, ask to continue. -->
+                                <p [innerHTML]="'addon.mod_lesson.youhaveseen' | translate"></p>
+                                <ion-grid>
+                                    <ion-row>
+                                        <ion-col>
+                                            <a ion-button block color="light" (click)="start(false)">{{ 'core.no' | translate }}</a>
+                                        </ion-col>
+                                        <ion-col>
+                                            <a ion-button block (click)="start(true)">{{ 'core.yes' | translate }}</a>
+                                        </ion-col>
+                                    </ion-row>
+                                </ion-grid>
+                            </ion-item>
 
-                        <ion-item text-wrap *ngIf="leftDuringTimed && lesson.timelimit && lesson.retake">
-                            <!-- User left during the session with time limit and retakes allowed, ask to continue. -->
-                            <p [innerHTML]="'addon.mod_lesson.leftduringtimed' | translate"></p>
-                            <a ion-button block icon-end (click)="start(false)">
-                                {{ 'addon.mod_lesson.continue' | translate }}
-                                <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
-                            </a>
-                        </ion-item>
+                            <ion-item text-wrap *ngIf="leftDuringTimed && lesson.timelimit && lesson.retake && !finishedOffline">
+                                <!-- User left during the session with time limit and retakes allowed, ask to continue. -->
+                                <p [innerHTML]="'addon.mod_lesson.leftduringtimed' | translate"></p>
+                                <a ion-button block icon-end (click)="start(false)">
+                                    {{ 'addon.mod_lesson.continue' | translate }}
+                                    <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
+                                </a>
+                            </ion-item>
 
-                        <ion-item text-wrap *ngIf="leftDuringTimed && lesson.timelimit && !lesson.retake">
-                            <!-- User left during the session with time limit and retakes not allowed. This should be handled by preventMessages -->
-                            <p [innerHTML]="'addon.mod_lesson.leftduringtimednoretake' | translate"></p>
-                        </ion-item>
+                            <ion-item text-wrap *ngIf="leftDuringTimed && lesson.timelimit && !lesson.retake">
+                                <!-- User left during the session with time limit and retakes not allowed. This should be handled by preventMessages -->
+                                <p [innerHTML]="'addon.mod_lesson.leftduringtimednoretake' | translate"></p>
+                            </ion-item>
 
-                        <ion-item text-wrap *ngIf="!leftDuringTimed">
-                            <!-- User hasn't left during the session, show a start button. -->
-                            <a ion-button block *ngIf="!canManage" icon-end (click)="start(false)">
-                                {{ 'core.start' | translate }}
-                                <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
-                            </a>
-                            <a ion-button block *ngIf="canManage" icon-end (click)="start(false)">
-                                {{ 'addon.mod_lesson.preview' | translate }}
-                                <ion-icon name="search"></ion-icon>
-                            </a>
-                        </ion-item>
+                            <ion-item text-wrap *ngIf="!leftDuringTimed && !finishedOffline">
+                                <!-- User hasn't left during the session, show a start button. -->
+                                <a ion-button block *ngIf="!canManage" icon-end (click)="start(false)">
+                                    {{ 'core.start' | translate }}
+                                    <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
+                                </a>
+                                <a ion-button block *ngIf="canManage" icon-end (click)="start(false)">
+                                    {{ 'addon.mod_lesson.preview' | translate }}
+                                    <ion-icon name="search"></ion-icon>
+                                </a>
+                            </ion-item>
+
+                            <ion-item text-wrap *ngIf="finishedOffline">
+                                <!-- There's an attempt finished in offline. Let the user continue, showing the end of lesson. -->
+                                <a ion-button block icon-end (click)="start(true)">
+                                    {{ 'addon.mod_lesson.continue' | translate }}
+                                    <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
+                                </a>
+                            </ion-item>
+                        </ng-container>
                     </ion-list>
                 </core-loading>
             </ng-template>
