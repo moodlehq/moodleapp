@@ -27,7 +27,8 @@ import { AddonModLessonProvider } from './lesson';
 export class AddonModLessonHelperProvider {
 
     constructor(private domUtils: CoreDomUtilsProvider, private fb: FormBuilder, private translate: TranslateService,
-            private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider) { }
+            private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider,
+            private lessonProvider: AddonModLessonProvider) { }
 
     /**
      * Given the HTML of next activity link, format it to extract the href and the text.
@@ -149,8 +150,15 @@ export class AddonModLessonHelperProvider {
             return contents.innerHTML.trim();
         }
 
-        // Cannot find contents element, return the page.contents (some elements like videos might not work).
-        return data.page.contents;
+        // Cannot find contents element.
+        if (this.lessonProvider.isQuestionPage(data.page.type) ||
+                data.page.qtype == AddonModLessonProvider.LESSON_PAGE_BRANCHTABLE) {
+            // Return page.contents to prevent having duplicated elements (some elements like videos might not work).
+            return data.page.contents;
+        } else {
+            // It's an end of cluster, end of branch, etc. Return the whole pagecontent to match what's displayed in web.
+            return data.pagecontent;
+        }
     }
 
     /**
