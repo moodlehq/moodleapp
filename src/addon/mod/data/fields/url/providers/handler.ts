@@ -54,7 +54,7 @@ export class AddonModDataFieldUrlHandler extends AddonModDataFieldTextHandler {
             {
                 fieldid: field.id,
                 subfield: '0',
-                value: inputData[fieldName] || ''
+                value: (inputData[fieldName] && inputData[fieldName].trim()) || ''
             }
         ];
     }

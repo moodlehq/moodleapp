@@ -35,9 +35,9 @@
                 <!-- Input password for protected lessons. -->
                 <ion-card *ngIf="askPassword">
                     <form ion-list (ngSubmit)="submitPassword($event, passwordinput)">
-                        <ion-item>
+                        <ion-item text-wrap>
+                            <ion-label stacked>{{ 'addon.mod_lesson.enterpassword' | translate }}</ion-label>
                             <core-show-password item-content [name]="'password'">
-                                <ion-label>{{ 'addon.mod_lesson.enterpassword' | translate }}</ion-label>
                                 <ion-input name="password" type="password" placeholder="{{ 'core.login.password' | translate }}" [core-auto-focus] #passwordinput [clearOnEdit]="false"></ion-input>
                             </core-show-password>
                         </ion-item>
