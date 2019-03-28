@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
@@ -40,7 +40,7 @@ export class CoreContentLinksHelperProvider {
             private contentLinksDelegate: CoreContentLinksDelegate, private appProvider: CoreAppProvider,
             private domUtils: CoreDomUtilsProvider, private urlUtils: CoreUrlUtilsProvider, private translate: TranslateService,
             private initDelegate: CoreInitDelegate, eventsProvider: CoreEventsProvider, private textUtils: CoreTextUtilsProvider,
-            private sitePluginsProvider: CoreSitePluginsProvider) {
+            private sitePluginsProvider: CoreSitePluginsProvider, private zone: NgZone) {
         this.logger = logger.getInstance('CoreContentLinksHelperProvider');
 
         // Listen for app launched URLs. If we receive one, check if it's a content link.
@@ -91,11 +91,15 @@ export class CoreContentLinksHelperProvider {
      */
     goInSite(navCtrl: NavController, pageName: string, pageParams: any, siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
-        if (navCtrl && siteId == this.sitesProvider.getCurrentSiteId()) {
-            navCtrl.push(pageName, pageParams);
-        } else {
-            this.loginHelper.redirect(pageName, pageParams, siteId);
-        }
+
+        // Execute the code in the Angular zone, so change detection doesn't stop working.
+        this.zone.run(() => {
+            if (navCtrl && siteId == this.sitesProvider.getCurrentSiteId()) {
+                navCtrl.push(pageName, pageParams);
+            } else {
+                this.loginHelper.redirect(pageName, pageParams, siteId);
+            }
+        });
     }
 
     /**

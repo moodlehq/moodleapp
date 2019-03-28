@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Platform, Alert, AlertController } from 'ionic-angular';
 import { LocalNotifications, ILocalNotification } from '@ionic-native/local-notifications';
 import { Push } from '@ionic-native/push';
@@ -105,7 +105,7 @@ export class CoreLocalNotificationsProvider {
     constructor(logger: CoreLoggerProvider, private localNotifications: LocalNotifications, private platform: Platform,
             private appProvider: CoreAppProvider, private utils: CoreUtilsProvider, private configProvider: CoreConfigProvider,
             private textUtils: CoreTextUtilsProvider, private translate: TranslateService, private alertCtrl: AlertController,
-            eventsProvider: CoreEventsProvider, private push: Push) {
+            eventsProvider: CoreEventsProvider, private push: Push, private zone: NgZone) {
 
         this.logger = logger.getInstance('CoreLocalNotificationsProvider');
         this.appDB = appProvider.getDB();
@@ -327,12 +327,15 @@ export class CoreLocalNotificationsProvider {
      * @param {any} data Data received by the notification.
      */
     notifyClick(data: any): void {
-        const component = data.component;
-        if (component) {
-            if (this.observables[component]) {
-                this.observables[component].next(data);
+        // Execute the code in the Angular zone, so change detection doesn't stop working.
+        this.zone.run(() => {
+            const component = data.component;
+            if (component) {
+                if (this.observables[component]) {
+                    this.observables[component].next(data);
+                }
             }
-        }
+        });
     }
 
     /**
