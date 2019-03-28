@@ -379,9 +379,13 @@ export class AddonModAssignProvider {
      *
      * @param {any} assign Assign.
      * @param {any} attempt Attempt.
-     * @return {any} Submission object.
+     * @return {any} Submission object or null.
      */
     getSubmissionObjectFromAttempt(assign: any, attempt: any): any {
+        if (!attempt) {
+            return null;
+        }
+
         return assign.teamsubmission ? attempt.teamsubmission : attempt.submission;
     }
 

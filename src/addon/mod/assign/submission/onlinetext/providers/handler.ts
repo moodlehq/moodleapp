@@ -14,6 +14,7 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreWSProvider } from '@providers/ws';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -31,7 +32,7 @@ export class AddonModAssignSubmissionOnlineTextHandler implements AddonModAssign
     name = 'AddonModAssignSubmissionOnlineTextHandler';
     type = 'onlinetext';
 
-    constructor(private sitesProvider: CoreSitesProvider, private wsProvider: CoreWSProvider,
+    constructor(private translate: TranslateService, private sitesProvider: CoreSitesProvider, private wsProvider: CoreWSProvider,
         private textUtils: CoreTextUtilsProvider, private assignProvider: AddonModAssignProvider,
         private assignOfflineProvider: AddonModAssignOfflineProvider, private assignHelper: AddonModAssignHelperProvider) { }
 
@@ -237,6 +238,19 @@ export class AddonModAssignSubmissionOnlineTextHandler implements AddonModAssign
             userId?: number, siteId?: string): void | Promise<any> {
 
         let text = this.getTextToSubmit(plugin, inputData);
+
+        // Check word limit.
+        const configs = this.assignHelper.getPluginConfig(assign, 'assignsubmission', plugin.type);
+        if (parseInt(configs.wordlimitenabled, 10)) {
+            const words = this.textUtils.countWords(text);
+            const wordlimit = parseInt(configs.wordlimit, 10);
+            if (words > wordlimit) {
+                const params = {$a: {count: words, limit: wordlimit}};
+                const message = this.translate.instant('addon.mod_assign_submission_onlinetext.wordlimitexceeded', params);
+
+                return Promise.reject(message);
+            }
+        }
 
         // Add some HTML to the text if needed.
         text = this.textUtils.formatHtmlLines(text);
