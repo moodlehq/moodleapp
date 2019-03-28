@@ -344,6 +344,7 @@
   "addon.mod_assign_submission_comments.pluginname": "assignsubmission_comments",
   "addon.mod_assign_submission_file.pluginname": "assignsubmission_file",
   "addon.mod_assign_submission_onlinetext.pluginname": "assignsubmission_onlinetext",
+  "addon.mod_assign_submission_onlinetext.wordlimitexceeded": "assignsubmission_onlinetext",
   "addon.mod_book.errorchapter": "book",
   "addon.mod_book.modulenameplural": "book",
   "addon.mod_book.toc": "book",
