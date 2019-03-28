@@ -141,8 +141,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                     conversation.unreadcount = 0;
 
                     // Conversations changed, invalidate them and refresh unread counts.
-                    this.messagesProvider.invalidateConversations();
-                    this.messagesProvider.refreshUnreadConversationCounts();
+                    this.messagesProvider.invalidateConversations(this.siteId);
+                    this.messagesProvider.refreshUnreadConversationCounts(this.siteId);
                 }
             }
         }, this.siteId);
@@ -251,7 +251,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         const promises = [];
 
         promises.push(this.fetchConversationCounts());
-        promises.push(this.messagesProvider.getContactRequestsCount());  // View updated by the event observer.
+        promises.push(this.messagesProvider.getContactRequestsCount(this.siteId));  // View updated by the event observer.
 
         return Promise.all(promises).then(() => {
             if (typeof this.favourites.expanded == 'undefined') {
@@ -323,7 +323,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
             promises.push(this.fetchConversationCounts());
             if (refreshUnreadCounts) {
-                promises.push(this.messagesProvider.refreshUnreadConversationCounts()); // View updated by the event observer.
+                // View updated by event observer.
+                promises.push(this.messagesProvider.refreshUnreadConversationCounts(this.siteId));
             }
 
             return Promise.all(promises);
@@ -347,10 +348,10 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             offlineMessages;
 
         // Get the conversations and, if needed, the offline messages. Always try to get the latest data.
-        promises.push(this.messagesProvider.invalidateConversations().catch(() => {
+        promises.push(this.messagesProvider.invalidateConversations(this.siteId).catch(() => {
             // Shouldn't happen.
         }).then(() => {
-            return this.messagesProvider.getConversations(option.type, option.favourites, limitFrom);
+            return this.messagesProvider.getConversations(option.type, option.favourites, limitFrom, this.siteId);
         }).then((result) => {
             data = result;
         }));
@@ -362,7 +363,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
             promises.push(this.fetchConversationCounts());
             if (refreshUnreadCounts) {
-                promises.push(this.messagesProvider.refreshUnreadConversationCounts()); // View updated by the event observer.
+                // View updated by the event observer.
+                promises.push(this.messagesProvider.refreshUnreadConversationCounts(this.siteId));
             }
         }
 
@@ -392,10 +394,10 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      */
     protected fetchConversationCounts(): Promise<void> {
         // Always try to get the latest data.
-        return this.messagesProvider.invalidateConversationCounts().catch(() => {
+        return this.messagesProvider.invalidateConversationCounts(this.siteId).catch(() => {
             // Shouldn't happen.
         }).then(() => {
-            return this.messagesProvider.getConversationCounts();
+            return this.messagesProvider.getConversationCounts(this.siteId);
         }).then((counts) => {
             this.favourites.count = counts.favourites;
             this.individual.count = counts.individual;
@@ -610,7 +612,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     refreshData(refresher?: any, refreshUnreadCounts: boolean = true): Promise<any> {
         // Don't invalidate conversations and so, they always try to get latest data.
         const promises = [
-            this.messagesProvider.invalidateContactRequestsCountCache()
+            this.messagesProvider.invalidateContactRequestsCountCache(this.siteId)
         ];
 
         return this.utils.allPromises(promises).finally(() => {

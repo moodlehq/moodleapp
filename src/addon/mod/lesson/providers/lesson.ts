@@ -2367,9 +2367,10 @@ export class AddonModLessonProvider {
      *
      * @param {any} info Lesson access info.
      * @param {boolean} [ignorePassword] Whether password protected reason should be ignored (user already entered the password).
+     * @param {boolean} [isReview] Whether user is reviewing a retake.
      * @return {any} Prevent access reason.
      */
-    getPreventAccessReason(info: any, ignorePassword?: boolean): any {
+    getPreventAccessReason(info: any, ignorePassword?: boolean, isReview?: boolean): any {
         let result;
 
         if (info && info.preventaccessreasons) {
@@ -2384,6 +2385,8 @@ export class AddonModLessonProvider {
                         // Treat password before all other reasons.
                         result = entry;
                     }
+                } else if (entry.reason == 'noretake' && isReview) {
+                    // Ignore noretake error when reviewing.
                 } else if (!result) {
                     // Rest of cases, just return any of them.
                     result = entry;
