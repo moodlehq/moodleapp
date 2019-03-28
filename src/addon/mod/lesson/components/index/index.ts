@@ -56,6 +56,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     reportLoaded: boolean; // Whether the report data has been loaded.
     selectedGroupName: string; // The name of the selected group.
     overview: any; // Reports overview data.
+    finishedOffline: boolean; // Whether a retake was finished in offline.
 
     protected syncEventName = AddonModLessonSyncProvider.AUTO_SYNCED;
     protected accessInfo: any; // Lesson access info.
@@ -157,6 +158,11 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
                             this.lessonSync.deleteRetakeFinishedInSync(this.lesson.id);
                         }
                     }
+                }));
+
+                // Check if the ser has a finished retake in offline.
+                promises.push(this.lessonOffline.hasFinishedRetake(this.lesson.id).then((finished) => {
+                    this.finishedOffline = finished;
                 }));
 
                 // Update the list of content pages viewed and question attempts.
