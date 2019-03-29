@@ -25,7 +25,7 @@ import { CoreUtilsProvider } from './utils/utils';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../configconstants';
 import { CoreSite } from '@classes/site';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { Md5 } from 'ts-md5/dist/md5';
 
 /**
@@ -127,6 +127,42 @@ export interface CoreSiteBasicInfo {
     badge?: number;
 }
 
+/**
+ * Site schema and migration function.
+ */
+export interface CoreSiteSchema {
+    /**
+     * Name of the schema.
+     *
+     * @type {string}
+     */
+    name: string;
+
+    /**
+     * Latest version of the schema (integer greater than 0).
+     *
+     * @type {number}
+     */
+    version: number;
+
+    /**
+     * Tables to create when installing or upgrading the schema.
+     */
+    tables?: SQLiteDBTableSchema[];
+
+    /**
+     * Migrates the schema in a site to the latest version.
+     *
+     * Called when installing and upgrading the schema, after creating the defined tables.
+     *
+     * @param {SQLiteDB} db Site database.
+     * @param {number} oldVersion Old version of the schema or 0 if not installed.
+     * @param {string} siteId Site Id to migrate.
+     * @return {Promise<any> | void} Promise resolved when done.
+     */
+    migrate?(db: SQLiteDB, oldVersion: number, siteId: string): Promise<any> | void;
+}
+
 /*
  * Service to manage and interact with sites.
  * It allows creating tables in the databases of all sites. Each service or component should be responsible of creating
@@ -143,7 +179,8 @@ export class CoreSitesProvider {
     // Variables for the database.
     protected SITES_TABLE = 'sites';
     protected CURRENT_SITE_TABLE = 'current_site';
-    protected appTablesSchema = [
+    protected SCHEMA_VERSIONS_TABLE = 'schema_versions';
+    protected appTablesSchema: SQLiteDBTableSchema[] = [
         {
             name: this.SITES_TABLE,
             columns: [
@@ -208,7 +245,70 @@ export class CoreSitesProvider {
     protected currentSite: CoreSite;
     protected sites: { [s: string]: CoreSite } = {};
     protected appDB: SQLiteDB;
-    protected siteTablesSchemas = []; // Schemas for site tables. Other providers can add schemas in here.
+    protected siteSchemasMigration: { [siteId: string]: Promise<any> } = {};
+
+    // Schemas for site tables. Other providers can add schemas in here.
+    protected siteSchemas: { [name: string]: CoreSiteSchema } = {};
+    protected siteTablesSchemas: SQLiteDBTableSchema[] = [
+        {
+            name: this.SCHEMA_VERSIONS_TABLE,
+            columns: [
+                {
+                    name: 'name',
+                    type: 'TEXT',
+                    primaryKey: true,
+                },
+                {
+                    name: 'version',
+                    type: 'INTEGER'
+                }
+            ]
+        }
+    ];
+
+    // Site schema for this provider.
+    protected siteSchema: CoreSiteSchema = {
+        name: 'CoreSitesProvider',
+        version: 1,
+        tables: [
+            {
+                name: CoreSite.WS_CACHE_TABLE,
+                columns: [
+                    {
+                        name: 'id',
+                        type: 'TEXT',
+                        primaryKey: true
+                    },
+                    {
+                        name: 'data',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'key',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'expirationTime',
+                        type: 'INTEGER'
+                    }
+                ]
+            },
+            {
+                name: CoreSite.CONFIG_TABLE,
+                columns: [
+                    {
+                        name: 'name',
+                        type: 'TEXT',
+                        unique: true,
+                        notNull: true
+                    },
+                    {
+                        name: 'value'
+                    }
+                ]
+            }
+        ]
+    };
 
     constructor(logger: CoreLoggerProvider, private http: HttpClient, private sitesFactory: CoreSitesFactoryProvider,
             private appProvider: CoreAppProvider, private translate: TranslateService, private urlUtils: CoreUrlUtilsProvider,
@@ -218,6 +318,7 @@ export class CoreSitesProvider {
 
         this.appDB = appProvider.getDB();
         this.appDB.createTablesFromSchema(this.appTablesSchema);
+        this.registerSiteSchema(this.siteSchema);
     }
 
     /**
@@ -478,24 +579,23 @@ export class CoreSitesProvider {
                 candidateSite.setId(siteId);
                 candidateSite.setInfo(info);
 
-                // Try to get the site config.
-                return this.getSiteConfig(candidateSite).then((config) => {
-                    candidateSite.setConfig(config);
-                    // Add site to sites list.
-                    this.addSite(siteId, siteUrl, token, info, privateToken, config);
-                    // Turn candidate site into current site.
-                    this.currentSite = candidateSite;
-                    this.sites[siteId] = candidateSite;
-                    // Store session.
-                    this.login(siteId);
-                    this.eventsProvider.trigger(CoreEventsProvider.SITE_ADDED, info, siteId);
+                // Create database tables before login and before any WS call.
+                return this.migrateSiteSchemas(candidateSite).then(() => {
 
-                    if (this.siteTablesSchemas.length) {
-                        // Create tables in the site's database.
-                        candidateSite.getDb().createTablesFromSchema(this.siteTablesSchemas);
-                    }
+                    // Try to get the site config.
+                    return this.getSiteConfig(candidateSite).then((config) => {
+                        candidateSite.setConfig(config);
+                        // Add site to sites list.
+                        this.addSite(siteId, siteUrl, token, info, privateToken, config);
+                        // Turn candidate site into current site.
+                        this.currentSite = candidateSite;
+                        this.sites[siteId] = candidateSite;
+                        // Store session.
+                        this.login(siteId);
+                        this.eventsProvider.trigger(CoreEventsProvider.SITE_ADDED, info, siteId);
 
-                    return siteId;
+                        return siteId;
+                    });
                 });
             } else if (result == this.LEGACY_APP_VERSION) {
                 let errorKey = 'core.login.legacymoodleversion',
@@ -830,10 +930,10 @@ export class CoreSitesProvider {
      * Create a site from an entry of the sites list DB. The new site is added to the list of "cached" sites: this.sites.
      *
      * @param {any} entry Site list entry.
-     * @return {CoreSite} Created site.
+     * @return {Promise<CoreSite>} Promised resolved with the created site.
      */
-    makeSiteFromSiteListEntry(entry: any): CoreSite {
-        let site,
+    makeSiteFromSiteListEntry(entry: any): Promise<CoreSite> {
+        let site: CoreSite,
             info = entry.info,
             config = entry.config;
 
@@ -843,13 +943,13 @@ export class CoreSitesProvider {
 
         site = this.sitesFactory.makeSite(entry.id, entry.siteUrl, entry.token,
             info, entry.privateToken, config, entry.loggedOut == 1);
-        this.sites[entry.id] = site;
-        if (this.siteTablesSchemas.length) {
-            // Create tables in the site's database.
-            site.getDb().createTablesFromSchema(this.siteTablesSchemas);
-        }
 
-        return site;
+        return this.migrateSiteSchemas(site).then(() => {
+            // Set site after migrating schemas, or a call to getSite could get the site while tables are being created.
+            this.sites[entry.id] = site;
+
+            return site;
+        });
     }
 
     /**
@@ -947,6 +1047,19 @@ export class CoreSitesProvider {
             });
 
             return sites;
+        });
+    }
+
+    /**
+     * Get the list of IDs of sites stored and not logged out.
+     *
+     * @return {Promise<string[]>} Promise resolved when the sites IDs are retrieved.
+     */
+    getLoggedInSitesIds(): Promise<string[]> {
+        return this.appDB.getRecords(this.SITES_TABLE, {loggedOut : 0}).then((sites) => {
+            return sites.map((site) => {
+                return site.id;
+            });
         });
     }
 
@@ -1178,9 +1291,11 @@ export class CoreSitesProvider {
 
         return this.appDB.getAllRecords(this.SITES_TABLE).then((siteEntries) => {
             const ids = [];
+            const promises = [];
+
             siteEntries.forEach((site) => {
                 if (!this.sites[site.id]) {
-                    this.makeSiteFromSiteListEntry(site);
+                    promises.push(this.makeSiteFromSiteListEntry(site));
                 }
 
                 if (this.sites[site.id].containsUrl(url)) {
@@ -1190,7 +1305,9 @@ export class CoreSitesProvider {
                 }
             });
 
-            return ids;
+            return Promise.all(promises).then(() => {
+                return ids;
+            });
         }).catch(() => {
             // Shouldn't happen.
             return [];
@@ -1251,18 +1368,18 @@ export class CoreSitesProvider {
     /**
      * Create a table in all the sites databases.
      *
-     * @param {any} table Table schema.
+     * @param {SQLiteDBTamableSchema} table Table schema.
      */
-    createTableFromSchema(table: any): void {
+    createTableFromSchema(table: SQLiteDBTableSchema): void {
         this.createTablesFromSchema([table]);
     }
 
     /**
      * Create several tables in all the sites databases.
      *
-     * @param {any[]} tables List of tables schema.
+     * @param {SQLiteDBTamableSchema[]} tables List of tables schema.
      */
-    createTablesFromSchema(tables: any[]): void {
+    createTablesFromSchema(tables: SQLiteDBTableSchema[]): void {
         // Add the tables to the list of schemas. This list is to create all the tables in new sites.
         this.siteTablesSchemas = this.siteTablesSchemas.concat(tables);
 
@@ -1293,5 +1410,71 @@ export class CoreSitesProvider {
      */
     isLegacyMoodleByInfo(info: any): boolean {
         return this.isValidMoodleVersion(info) == this.LEGACY_APP_VERSION;
+    }
+
+    /**
+     * Register a site schema.
+     */
+    registerSiteSchema(schema: CoreSiteSchema): void {
+        this.siteSchemas[schema.name] = schema;
+    }
+
+    /**
+     * Install and upgrade all the registered schemas and tables.
+     *
+     * @param {CoreSite} site Site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    migrateSiteSchemas(site: CoreSite): Promise<any> {
+        const db = site.getDb();
+
+        if (this.siteSchemasMigration[site.id]) {
+            return this.siteSchemasMigration[site.id];
+        }
+
+        this.logger.debug(`Migrating all schemas of ${site.id}`);
+
+        // First create tables not registerd with name/version.
+        const promise = db.createTablesFromSchema(this.siteTablesSchemas).then(() => {
+            // Fetch installed versions of the schema.
+            return db.getAllRecords(this.SCHEMA_VERSIONS_TABLE).then((records) => {
+                const versions = {};
+                records.forEach((record) => {
+                    versions[record.name] = record.version;
+                });
+
+                const promises = [];
+                for (const name in this.siteSchemas) {
+                    const schema = this.siteSchemas[name];
+                    const oldVersion = versions[name] || 0;
+                    if (oldVersion >= schema.version) {
+                        continue;
+                    }
+
+                    this.logger.debug(`Migrating schema '${name}' of ${site.id} from version ${oldVersion} to ${schema.version}`);
+
+                    let promise: Promise<any> = Promise.resolve();
+                    if (schema.tables) {
+                        promise = promise.then(() => db.createTablesFromSchema(schema.tables));
+                    }
+                    if (schema.migrate) {
+                        promise = promise.then(() => schema.migrate(db, oldVersion, site.id));
+                    }
+
+                    // Set installed version.
+                    promise = promise.then(() => db.insertRecord(this.SCHEMA_VERSIONS_TABLE, {name, version: schema.version}));
+
+                    promises.push(promise);
+                }
+
+                return Promise.all(promises);
+            });
+        });
+
+        this.siteSchemasMigration[site.id] = promise;
+
+        return promise.finally(() => {
+            delete this.siteSchemasMigration[site.id];
+        });
     }
 }

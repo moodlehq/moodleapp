@@ -26,12 +26,14 @@ import { CoreLoggerProvider } from '@providers/logger';
 })
 export class CoreContextMenuPopoverComponent {
     title: string;
+    uniqueId: string;
     items: CoreContextMenuItemComponent[];
     protected logger: any;
 
     constructor(navParams: NavParams, private viewCtrl: ViewController, logger: CoreLoggerProvider) {
         this.title = navParams.get('title');
         this.items = navParams.get('items') || [];
+        this.uniqueId = navParams.get('id');
         this.logger = logger.getInstance('CoreContextMenuPopoverComponent');
     }
 

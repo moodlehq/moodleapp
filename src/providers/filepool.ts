@@ -20,7 +20,7 @@ import { CoreFileProvider } from './file';
 import { CoreInitDelegate } from './init';
 import { CoreLoggerProvider } from './logger';
 import { CorePluginFileDelegate } from './plugin-file-delegate';
-import { CoreSitesProvider } from './sites';
+import { CoreSitesProvider, CoreSiteSchema } from './sites';
 import { CoreWSProvider } from './ws';
 import { CoreDomUtilsProvider } from './utils/dom';
 import { CoreMimetypeUtilsProvider } from './utils/mimetype';
@@ -28,7 +28,7 @@ import { CoreTextUtilsProvider } from './utils/text';
 import { CoreTimeUtilsProvider } from './utils/time';
 import { CoreUrlUtilsProvider } from './utils/url';
 import { CoreUtilsProvider } from './utils/utils';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreConstants } from '@core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
 
@@ -254,7 +254,7 @@ export class CoreFilepoolProvider {
     protected FILES_TABLE = 'filepool_files'; // Downloaded files.
     protected LINKS_TABLE = 'filepool_files_links'; // Links between downloaded files and components.
     protected PACKAGES_TABLE = 'filepool_packages'; // Downloaded packages (sets of files).
-    protected appTablesSchema = [
+    protected appTablesSchema: SQLiteDBTableSchema[] = [
         {
             name: this.QUEUE_TABLE,
             columns: [
@@ -306,115 +306,119 @@ export class CoreFilepoolProvider {
             primaryKeys: ['siteId', 'fileId']
         }
     ];
-    protected sitesTablesSchema = [
-        {
-            name: this.FILES_TABLE,
-            columns: [
-                {
-                    name: 'fileId',
-                    type: 'TEXT',
-                    primaryKey: true
-                },
-                {
-                    name: 'url',
-                    type: 'TEXT',
-                    notNull: true
-                },
-                {
-                    name: 'revision',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'stale',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'downloadTime',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'isexternalfile',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'repositorytype',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'path',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'extension',
-                    type: 'TEXT'
-                }
-            ]
-        },
-        {
-            name: this.LINKS_TABLE,
-            columns: [
-                {
-                    name: 'fileId',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'component',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'componentId',
-                    type: 'TEXT'
-                }
-            ],
-            primaryKeys: ['fileId', 'component', 'componentId']
-        },
-        {
-            name: this.PACKAGES_TABLE,
-            columns: [
-                {
-                    name: 'id',
-                    type: 'TEXT',
-                    primaryKey: true
-                },
-                {
-                    name: 'component',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'componentId',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'status',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'previous',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'updated',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'downloadTime',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'previousDownloadTime',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'extra',
-                    type: 'TEXT'
-                }
-            ]
-        },
-    ];
+    protected siteSchma: CoreSiteSchema = {
+        name: 'CoreFilepoolProvider',
+        version: 1,
+        tables: [
+            {
+                name: this.FILES_TABLE,
+                columns: [
+                    {
+                        name: 'fileId',
+                        type: 'TEXT',
+                        primaryKey: true
+                    },
+                    {
+                        name: 'url',
+                        type: 'TEXT',
+                        notNull: true
+                    },
+                    {
+                        name: 'revision',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'stale',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'downloadTime',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'isexternalfile',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'repositorytype',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'path',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'extension',
+                        type: 'TEXT'
+                    }
+                ]
+            },
+            {
+                name: this.LINKS_TABLE,
+                columns: [
+                    {
+                        name: 'fileId',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'component',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'componentId',
+                        type: 'TEXT'
+                    }
+                ],
+                primaryKeys: ['fileId', 'component', 'componentId']
+            },
+            {
+                name: this.PACKAGES_TABLE,
+                columns: [
+                    {
+                        name: 'id',
+                        type: 'TEXT',
+                        primaryKey: true
+                    },
+                    {
+                        name: 'component',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'componentId',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'status',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'previous',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'updated',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'downloadTime',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'previousDownloadTime',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'extra',
+                        type: 'TEXT'
+                    }
+                ]
+            }
+        ]
+    };
 
     protected logger;
     protected appDB: SQLiteDB;
@@ -443,7 +447,7 @@ export class CoreFilepoolProvider {
         this.appDB = this.appProvider.getDB();
         this.appDB.createTablesFromSchema(this.appTablesSchema);
 
-        this.sitesProvider.createTablesFromSchema(this.sitesTablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchma);
 
         initDelegate.ready().then(() => {
             // Waiting for the app to be ready to start processing the queue.

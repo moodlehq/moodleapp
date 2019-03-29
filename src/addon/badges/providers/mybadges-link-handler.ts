@@ -19,7 +19,7 @@ import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { AddonBadgesProvider } from './badges';
 
 /**
- * Handler to treat links to user participants page.
+ * Handler to treat links to user badges page.
  */
 @Injectable()
 export class AddonBadgesMyBadgesLinkHandler extends CoreContentLinksHandlerBase {

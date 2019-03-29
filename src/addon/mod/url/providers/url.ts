@@ -18,6 +18,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreConstants } from '@core/constants';
 
 /**
@@ -31,7 +32,8 @@ export class AddonModUrlProvider {
     protected logger;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private courseProvider: CoreCourseProvider,
-            private utils: CoreUtilsProvider, private mimeUtils: CoreMimetypeUtilsProvider) {
+            private utils: CoreUtilsProvider, private mimeUtils: CoreMimetypeUtilsProvider,
+            private logHelper: CoreCourseLogHelperProvider) {
         this.logger = logger.getInstance('AddonModUrlProvider');
     }
 
@@ -215,13 +217,14 @@ export class AddonModUrlProvider {
      * Report the url as being viewed.
      *
      * @param {number} id Module ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(id: number): Promise<any> {
+    logView(id: number, siteId?: string): Promise<any> {
         const params = {
             urlid: id
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_url_view_url', params);
+        return this.logHelper.log('mod_url_view_url', params, AddonModUrlProvider.COMPONENT, id, siteId);
     }
 }

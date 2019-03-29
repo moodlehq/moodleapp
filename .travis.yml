@@ -1,16 +1,23 @@
 sudo: required
-dist: trusty
+dist: xenial
 group: edge
 
 language: node_js
-node_js:
-  - '8.10'
+node_js: stable
+
+before_cache:
+  - rm -rf $HOME/.cache/electron-builder/wine
+
+cache:
+  directories:
+    - node_modules
+    - $HOME/.cache/electron
+    - $HOME/.cache/electron-builder
 
 before_script:
   - npm install -g @angular/cli
   - npm i npm@latest -g
   - gulp
-  - rm -Rf node_modules/electron-builder-squirrel-windows node_modules/electron-windows-notifications #Avoid electron fail
 
 script:
   - npm run build

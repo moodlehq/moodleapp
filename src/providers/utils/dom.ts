@@ -140,13 +140,12 @@ export class CoreDomUtilsProvider {
             const readableSize = this.textUtils.bytesToSize(size.size, 2);
 
             return this.showConfirm(this.translate.instant('core.course.confirmpartialdownloadsize', { size: readableSize }));
-        } else if (size.size >= wifiThreshold || (this.appProvider.isNetworkAccessLimited() && size.size >= limitedThreshold)) {
+        } else if (alwaysConfirm || size.size >= wifiThreshold ||
+                (this.appProvider.isNetworkAccessLimited() && size.size >= limitedThreshold)) {
             message = message || 'core.course.confirmdownload';
             const readableSize = this.textUtils.bytesToSize(size.size, 2);
 
             return this.showConfirm(this.translate.instant(message, { size: readableSize }));
-        } else if (alwaysConfirm) {
-            return this.showConfirm(this.translate.instant('core.areyousure'));
         }
 
         return Promise.resolve();
@@ -1161,8 +1160,21 @@ export class CoreDomUtilsProvider {
         }
 
         const loader = this.loadingCtrl.create({
-            content: text
-        });
+                content: text
+            }),
+            dismiss = loader.dismiss.bind(loader);
+        let isDismissed = false;
+
+        // Override dismiss to prevent dismissing a modal twice (it can throw an error and cause problems).
+        loader.dismiss = (data, role, navOptions): Promise<any> => {
+            if (isDismissed) {
+                return Promise.resolve();
+            }
+
+            isDismissed = true;
+
+            return dismiss(data, role, navOptions);
+        };
 
         loader.present();
 

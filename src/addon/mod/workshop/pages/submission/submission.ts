@@ -130,7 +130,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.fetchSubmissionData().then(() => {
-            this.workshopProvider.logViewSubmission(this.submissionId).then(() => {
+            this.workshopProvider.logViewSubmission(this.submissionId, this.workshopId).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch(() => {
                 // Ignore errors.
@@ -202,7 +202,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
                 this.workshop.phase < AddonModWorkshopProvider.PHASE_CLOSED && this.access.canoverridegrades;
             this.ownAssessment = false;
 
-            if (this.access.canviewallassessments) {
+            if (this.access.canviewallassessments || this.currentUserId == this.userId) {
                 // Get new data, different that came from stateParams.
                 promises.push(this.workshopProvider.getSubmissionAssessments(this.workshopId, this.submissionId)
                         .then((subAssessments) => {
@@ -291,7 +291,8 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
                         this.feedbackForm.controls['text'].setValue(this.evaluate.text);
                     });
                 }));
-            } else if (this.workshop.phase == AddonModWorkshopProvider.PHASE_CLOSED && submissionData.gradeoverby) {
+            } else if (this.workshop.phase == AddonModWorkshopProvider.PHASE_CLOSED && submissionData.gradeoverby &&
+                    this.evaluate && this.evaluate.text) {
                 promises.push(this.userProvider.getProfile(submissionData.gradeoverby, this.courseId, true).then((profile) => {
                     this.evaluateByProfile = profile;
                 }));

@@ -40,6 +40,7 @@
     "navigatoruseragent": "Navigator userAgent",
     "networkstatus": "Internet connection status",
     "privacypolicy": "Privacy policy",
+    "pushid": "Push notifications ID",
     "reportinbackground": "Report errors automatically",
     "settings": "Settings",
     "showdownloadoptions": "Show download options",

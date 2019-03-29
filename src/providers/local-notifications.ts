@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Platform, Alert, AlertController } from 'ionic-angular';
 import { LocalNotifications, ILocalNotification } from '@ionic-native/local-notifications';
+import { Push } from '@ionic-native/push';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from './app';
 import { CoreConfigProvider } from './config';
@@ -22,26 +23,9 @@ import { CoreEventsProvider } from './events';
 import { CoreLoggerProvider } from './logger';
 import { CoreTextUtilsProvider } from './utils/text';
 import { CoreUtilsProvider } from './utils/utils';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreConstants } from '@core/constants';
-import { Subject } from 'rxjs';
-
-/**
- * Local notification.
- */
-export interface CoreILocalNotification extends ILocalNotification {
-    /**
-     * Number of milliseconds to turn the led on (Android only).
-     * @type {number}
-     */
-    ledOnTime?: number;
-
-    /**
-     * Number of milliseconds to turn the led off (Android only).
-     * @type {number}
-     */
-    ledOffTime?: number;
-}
+import { Subject, Subscription } from 'rxjs';
 
 /*
  * Generated class for the LocalNotificationsProvider provider.
@@ -55,7 +39,7 @@ export class CoreLocalNotificationsProvider {
     protected SITES_TABLE = 'notification_sites'; // Store to asigne unique codes to each site.
     protected COMPONENTS_TABLE = 'notification_components'; // Store to asigne unique codes to each component.
     protected TRIGGERED_TABLE = 'notifications_triggered'; // Store to prevent re-triggering notifications.
-    protected tablesSchema = [
+    protected tablesSchema: SQLiteDBTableSchema[] = [
         {
             name: this.SITES_TABLE,
             columns: [
@@ -115,28 +99,37 @@ export class CoreLocalNotificationsProvider {
         ids: [],
         timeouts: []
     };
+    protected triggerSubscription: Subscription;
+    protected clickSubscription: Subscription;
 
     constructor(logger: CoreLoggerProvider, private localNotifications: LocalNotifications, private platform: Platform,
             private appProvider: CoreAppProvider, private utils: CoreUtilsProvider, private configProvider: CoreConfigProvider,
             private textUtils: CoreTextUtilsProvider, private translate: TranslateService, private alertCtrl: AlertController,
-            eventsProvider: CoreEventsProvider) {
+            eventsProvider: CoreEventsProvider, private push: Push, private zone: NgZone) {
 
         this.logger = logger.getInstance('CoreLocalNotificationsProvider');
         this.appDB = appProvider.getDB();
         this.appDB.createTablesFromSchema(this.tablesSchema);
 
         platform.ready().then(() => {
-            localNotifications.on('trigger', (notification, state) => {
+            this.triggerSubscription = localNotifications.on('trigger').subscribe((notification: ILocalNotification) => {
                 this.trigger(notification);
             });
 
-            localNotifications.on('click', (notification, state) => {
+            this.clickSubscription = localNotifications.on('click').subscribe((notification: ILocalNotification) => {
                 if (notification && notification.data) {
                     this.logger.debug('Notification clicked: ', notification.data);
 
-                    const data = textUtils.parseJSON(notification.data);
-                    this.notifyClick(data);
+                    this.notifyClick(notification.data);
                 }
+            });
+
+            // Create the default channel for local notifications.
+            this.createDefaultChannel();
+
+            translate.onLangChange.subscribe((event: any) => {
+                // Update the channel name.
+                this.createDefaultChannel();
             });
         });
 
@@ -175,7 +168,7 @@ export class CoreLocalNotificationsProvider {
             return Promise.reject(null);
         }
 
-        return this.localNotifications.getAllScheduled().then((scheduled) => {
+        return this.localNotifications.getScheduled().then((scheduled) => {
             const ids = [];
 
             scheduled.forEach((notif) => {
@@ -189,6 +182,25 @@ export class CoreLocalNotificationsProvider {
             });
 
             return this.localNotifications.cancel(ids);
+        });
+    }
+
+    /**
+     * Create the default channel. It is used to change the name.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected createDefaultChannel(): Promise<any> {
+        if (!this.platform.is('android')) {
+            return Promise.resolve();
+        }
+
+        return this.push.createChannel({
+            id: 'default-channel-id',
+            description: this.translate.instant('addon.calendar.calendarreminders'),
+            importance: 4
+        }).catch((error) => {
+            this.logger.error('Error changing channel name', error);
         });
     }
 
@@ -285,18 +297,25 @@ export class CoreLocalNotificationsProvider {
     isAvailable(): boolean {
         const win = <any> window;
 
-        return this.appProvider.isDesktop() || !!(win.plugin && win.plugin.notification && win.plugin.notification.local);
+        return this.appProvider.isDesktop() || !!(win.cordova && win.cordova.plugins && win.cordova.plugins.notification &&
+                win.cordova.plugins.notification.local);
     }
 
     /**
      * Check if a notification has been triggered with the same trigger time.
      *
-     * @param {CoreILocalNotification} notification Notification to check.
+     * @param {ILocalNotification} notification Notification to check.
      * @return {Promise<any>} Promise resolved with a boolean indicating if promise is triggered (true) or not.
      */
-    isTriggered(notification: CoreILocalNotification): Promise<any> {
+    isTriggered(notification: ILocalNotification): Promise<any> {
         return this.appDB.getRecord(this.TRIGGERED_TABLE, { id: notification.id }).then((stored) => {
-            return stored.at === notification.at.getTime() / 1000;
+            let triggered = (notification.trigger && notification.trigger.at) || 0;
+
+            if (typeof triggered != 'number') {
+                triggered = triggered.getTime();
+            }
+
+            return stored.at === triggered;
         }).catch(() => {
             return this.localNotifications.isTriggered(notification.id);
         });
@@ -308,12 +327,15 @@ export class CoreLocalNotificationsProvider {
      * @param {any} data Data received by the notification.
      */
     notifyClick(data: any): void {
-        const component = data.component;
-        if (component) {
-            if (this.observables[component]) {
-                this.observables[component].next(data);
+        // Execute the code in the Angular zone, so change detection doesn't stop working.
+        this.zone.run(() => {
+            const component = data.component;
+            if (component) {
+                if (this.observables[component]) {
+                    this.observables[component].next(data);
+                }
             }
-        }
+        });
     }
 
     /**
@@ -426,12 +448,11 @@ export class CoreLocalNotificationsProvider {
      */
     rescheduleAll(): Promise<any> {
         // Get all the scheduled notifications.
-        return this.localNotifications.getAllScheduled().then((notifications) => {
+        return this.localNotifications.getScheduled().then((notifications) => {
             const promises = [];
 
             notifications.forEach((notification) => {
                 // Convert some properties to the needed types.
-                notification.at = new Date(notification.at * 1000);
                 notification.data = notification.data ? this.textUtils.parseJSON(notification.data, {}) : {};
 
                 promises.push(this.scheduleNotification(notification));
@@ -444,13 +465,13 @@ export class CoreLocalNotificationsProvider {
     /**
      * Schedule a local notification.
      *
-     * @param {CoreILocalNotification} notification Notification to schedule. Its ID should be lower than 10000000 and it should
-     *                                              be unique inside its component and site.
+     * @param {ILocalNotification} notification Notification to schedule. Its ID should be lower than 10000000 and it should
+     *                                          be unique inside its component and site.
      * @param {string} component Component triggering the notification. It is used to generate unique IDs.
      * @param {string} siteId Site ID.
      * @return {Promise<any>} Promise resolved when the notification is scheduled.
      */
-    schedule(notification: CoreILocalNotification, component: string, siteId: string): Promise<any> {
+    schedule(notification: ILocalNotification, component: string, siteId: string): Promise<any> {
         return this.getUniqueNotificationId(notification.id, component, siteId).then((uniqueId) => {
             notification.id = uniqueId;
             notification.data = notification.data || {};
@@ -459,10 +480,14 @@ export class CoreLocalNotificationsProvider {
 
             if (this.platform.is('android')) {
                 notification.icon = notification.icon || 'res://icon';
-                notification.smallIcon = notification.smallIcon || 'res://icon';
-                notification.led = notification.led || 'FF9900';
-                notification.ledOnTime = notification.ledOnTime || 1000;
-                notification.ledOffTime = notification.ledOffTime || 1000;
+                notification.smallIcon = notification.smallIcon || 'res://smallicon';
+
+                const led: any = notification.led || {};
+                notification.led = {
+                    color: led.color || 'FF9900',
+                    on: led.on || 1000,
+                    off: led.off || 1000
+                };
             }
 
             return this.scheduleNotification(notification);
@@ -472,10 +497,10 @@ export class CoreLocalNotificationsProvider {
     /**
      * Helper function to schedule a notification object if it hasn't been triggered already.
      *
-     * @param {CoreILocalNotification} notification Notification to schedule.
+     * @param {ILocalNotification} notification Notification to schedule.
      * @return {Promise<any>} Promise resolved when scheduled.
      */
-    protected scheduleNotification(notification: CoreILocalNotification): Promise<any> {
+    protected scheduleNotification(notification: ILocalNotification): Promise<any> {
         // Check if the notification has been triggered already.
         return this.isTriggered(notification).then((triggered) => {
             // Cancel the current notification in case it gets scheduled twice.
@@ -488,6 +513,8 @@ export class CoreLocalNotificationsProvider {
                         } else {
                             delete notification.sound; // Use default value.
                         }
+
+                        notification.foreground = true;
 
                         // Remove from triggered, since the notification could be in there with a different time.
                         this.removeTriggered(notification.id);
@@ -503,9 +530,9 @@ export class CoreLocalNotificationsProvider {
      * This function was used because local notifications weren't displayed when the app was in foreground in iOS10+,
      * but the issue was fixed in the plugin and this function is no longer used.
      *
-     * @param {CoreILocalNotification} notification Notification.
+     * @param {ILocalNotification} notification Notification.
      */
-    showNotificationPopover(notification: CoreILocalNotification): void {
+    showNotificationPopover(notification: ILocalNotification): void {
 
         if (!notification || !notification.title || !notification.text) {
             // Invalid data.
@@ -595,13 +622,13 @@ export class CoreLocalNotificationsProvider {
      * Function to call when a notification is triggered. Stores the notification so it's not scheduled again unless the
      * time is changed.
      *
-     * @param {CoreILocalNotification} notification Triggered notification.
+     * @param {ILocalNotification} notification Triggered notification.
      * @return {Promise<any>} Promise resolved when stored, rejected otherwise.
      */
-    trigger(notification: CoreILocalNotification): Promise<any> {
+    trigger(notification: ILocalNotification): Promise<any> {
         const entry = {
             id: notification.id,
-            at: parseInt(notification.at, 10)
+            at: notification.trigger && notification.trigger.at ? notification.trigger.at : Date.now()
         };
 
         return this.appDB.insertRecord(this.TRIGGERED_TABLE, entry);

@@ -16,6 +16,129 @@ import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { Platform } from 'ionic-angular';
 
 /**
+ * Schema of a table.
+ */
+export interface SQLiteDBTableSchema {
+    /**
+     * The table name.
+     * @type {string}
+     */
+    name: string;
+
+    /**
+     * The columns to create in the table.
+     * @type {SQLiteDBColumnSchema[]}
+     */
+    columns: SQLiteDBColumnSchema[];
+
+    /**
+     * Names of columns that are primary key. Use it for compound primary keys.
+     * @type {string[]}
+     */
+    primaryKeys?: string[];
+
+    /**
+     * List of sets of unique columns. E.g: [['section', 'title'], ['author', 'title']].
+     * @type {string[][]}
+     */
+    uniqueKeys?: string[][];
+
+    /**
+     * List of foreign keys.
+     * @type {SQLiteDBForeignKeySchema[]}
+     */
+    foreignKeys?: SQLiteDBForeignKeySchema[];
+
+    /**
+     * Check constraint for the table.
+     * @type {string}
+     */
+    tableCheck?: string;
+}
+
+/**
+ * Schema of a column.
+ */
+export interface SQLiteDBColumnSchema {
+    /**
+     * Column's name.
+     * @type {string}
+     */
+    name: string;
+
+    /**
+     * Column's type.
+     * @type {string}
+     */
+    type?: 'INTEGER' | 'REAL' | 'TEXT' | 'BLOB';
+
+    /**
+     * Whether the column is a primary key. Use it only if primary key is a single column.
+     * @type {boolean}
+     */
+    primaryKey?: boolean;
+
+    /**
+     * Whether it should be autoincremented. Only if primaryKey is true.
+     * @type {boolean}
+     */
+    autoIncrement?: boolean;
+
+    /**
+     * True if column shouldn't be null.
+     * @type {boolean}
+     */
+    notNull?: boolean;
+
+    /**
+     * WWhether the column is unique.
+     * @type {boolean}
+     */
+    unique?: boolean;
+
+    /**
+     * Check constraint for the column.
+     * @type {string}
+     */
+    check?: string;
+
+    /**
+     * Default value for the column.
+     * @type {string}
+     */
+    default?: string;
+}
+
+/**
+ * Schema of a foreign key.
+ */
+export interface SQLiteDBForeignKeySchema {
+    /**
+     * Columns to include in this foreign key.
+     * @type {string[]}
+     */
+    columns: string[];
+
+    /**
+     * The external table referenced by this key.
+     * @type {string}
+     */
+    table: string;
+
+    /**
+     * List of referenced columns from the referenced table.
+     * @type {string[]}
+     */
+    foreignColumns?: string[];
+
+    /**
+     * Text with the actions to apply to the foreign key.
+     * @type {string}
+     */
+    actions?: string;
+}
+
+/**
  * Class to interact with the local database.
  *
  * @description
@@ -43,27 +166,15 @@ export class SQLiteDB {
      * Helper function to create a table if it doesn't exist.
      *
      * @param {string} name The table name.
-     * @param {any[]} columns The columns to create in the table. Each column can have:
-     *                    * {string} name  Column's name.
-     *                    * {string} [type] Column's type.
-     *                    * {boolean} [primaryKey] If column is primary key. Use it only if primary key is a single column.
-     *                    * {boolean} [autoIncrement] Whether it should be autoincremented. Only if primaryKey is true.
-     *                    * {boolean} [notNull] True if column shouldn't be null.
-     *                    * {boolean} [unique] Whether the column is unique.
-     *                    * {string} [check] Check constraint for the column.
-     *                    * {string} [default] Default value for the column.
+     * @param {SQLiteDBColumnSchema[]} columns The columns to create in the table.
      * @param {string[]} [primaryKeys] Names of columns that are primary key. Use it for compound primary keys.
      * @param {string[][]} [uniqueKeys] List of sets of unique columns. E.g: [['section', 'title'], ['author', 'title']].
-     * @param {any[]} [foreignKeys] List of foreign keys. Each key can have:
-     *                    * {string[]} columns Columns to include in this foreign key.
-     *                    * {string} table The external table referenced by this key.
-     *                    * {string[]} [foreignColumns] List of referenced columns from the referenced table.
-     *                    * {string} [actions] Text with the actions to apply to the foreign key.
+     * @param {SQLiteDBForeignKeySchema[]} [foreignKeys] List of foreign keys.
      * @param {string} [tableCheck] Check constraint for the table.
      * @return SQL query.
      */
-    buildCreateTableSql(name: string, columns: any[], primaryKeys?: string[], uniqueKeys?: string[][], foreignKeys?: any[],
-            tableCheck?: string): string {
+    buildCreateTableSql(name: string, columns: SQLiteDBColumnSchema[], primaryKeys?: string[], uniqueKeys?: string[][],
+            foreignKeys?: SQLiteDBForeignKeySchema[], tableCheck?: string): string {
         const columnsSql = [];
         let sql = `CREATE TABLE IF NOT EXISTS ${name} (`;
 
@@ -207,27 +318,15 @@ export class SQLiteDB {
      * Create a table if it doesn't exist.
      *
      * @param {string} name The table name.
-     * @param {any[]} columns The columns to create in the table. Each column can have:
-     *                    * {string} name  Column's name.
-     *                    * {string} [type] Column's type.
-     *                    * {boolean} [primaryKey] If column is primary key. Use it only if primary key is a single column.
-     *                    * {boolean} [autoIncrement] Whether it should be autoincremented. Only if primaryKey is true.
-     *                    * {boolean} [notNull] True if column shouldn't be null.
-     *                    * {boolean} [unique] Whether the column is unique.
-     *                    * {string} [check] Check constraint for the column.
-     *                    * {string} [default] Default value for the column.
+     * @param {SQLiteDBColumnSchema[]} columns The columns to create in the table.
      * @param {string[]} [primaryKeys] Names of columns that are primary key. Use it for compound primary keys.
      * @param {string[][]} [uniqueKeys] List of sets of unique columns. E.g: [['section', 'title'], ['author', 'title']].
-     * @param {any[]} [foreignKeys] List of foreign keys. Each key can have:
-     *                    * {string[]} columns Columns to include in this foreign key.
-     *                    * {string} table The external table referenced by this key.
-     *                    * {string[]} [foreignColumns] List of referenced columns from the referenced table.
-     *                    * {string} [actions] Text with the actions to apply to the foreign key.
+     * @param {SQLiteDBForeignKeySchema[]} [foreignKeys] List of foreign keys.
      * @param {string} [tableCheck] Check constraint for the table.
      * @return {Promise<any>} Promise resolved when success.
      */
-    createTable(name: string, columns: any[], primaryKeys?: string[], uniqueKeys?: string[][], foreignKeys?: any[],
-            tableCheck?: string): Promise<any> {
+    createTable(name: string, columns: SQLiteDBColumnSchema[], primaryKeys?: string[], uniqueKeys?: string[][],
+            foreignKeys?: SQLiteDBForeignKeySchema[], tableCheck?: string): Promise<any> {
         const sql = this.buildCreateTableSql(name, columns, primaryKeys, uniqueKeys, foreignKeys, tableCheck);
 
         return this.execute(sql);
@@ -236,10 +335,10 @@ export class SQLiteDB {
     /**
      * Create a table if it doesn't exist from a schema.
      *
-     * @param {any} table Table schema.
+     * @param {SQLiteDBTableSchema} table Table schema.
      * @return {Promise<any>} Promise resolved when success.
      */
-    createTableFromSchema(table: any): Promise<any> {
+    createTableFromSchema(table: SQLiteDBTableSchema): Promise<any> {
         return this.createTable(table.name, table.columns, table.primaryKeys, table.uniqueKeys,
             table.foreignKeys, table.tableCheck);
     }
@@ -247,10 +346,10 @@ export class SQLiteDB {
     /**
      * Create several tables if they don't exist from a list of schemas.
      *
-     * @param {any[]} tables List of table schema.
+     * @param {SQLiteDBTableSchema[]} tables List of table schema.
      * @return {Promise<any>} Promise resolved when success.
      */
-    createTablesFromSchema(tables: any[]): Promise<any> {
+    createTablesFromSchema(tables: SQLiteDBTableSchema[]): Promise<any> {
         const promises = [];
         tables.forEach((table) => {
             promises.push(this.createTableFromSchema(table));
@@ -306,6 +405,16 @@ export class SQLiteDB {
         }
 
         return this.execute(`DELETE FROM ${table} ${select}`, params);
+    }
+
+    /**
+     * Drop a table if it exists.
+     *
+     * @param {string} name The table name.
+     * @return {Promise<any>} Promise resolved when success.
+     */
+    dropTable(name: string): Promise<any> {
+        return this.execute(`DROP TABLE IF EXISTS ${name}`);
     }
 
     /**
@@ -685,6 +794,23 @@ export class SQLiteDB {
     }
 
     /**
+     * Insert multiple records into database from another table.
+     *
+     * @param {string} table The database table to be inserted into.
+     * @param {string} source The database table to get the records from.
+     * @param {object} [conditions] The conditions to build the where clause. Must not contain numeric indexes.
+     * @param {string} [fields='*'] A comma separated list of fields to return.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    insertRecordsFrom(table: string, source: string, conditions?: object, fields: string = '*'): Promise<any> {
+        const selectAndParams = this.whereClause(conditions);
+        const select = selectAndParams[0] ? 'WHERE ' + selectAndParams[0] : '';
+        const params = selectAndParams[1];
+
+        return this.execute(`INSERT INTO ${table} SELECT ${fields} FROM ${source} ${select}`, params);
+    }
+
+    /**
      * Ensures that limit params are numeric and positive integers, to be passed to the database.
      * We explicitly treat null, '' and -1 as 0 in order to provide compatibility with how limit
      * values have been passed historically.
@@ -774,6 +900,16 @@ export class SQLiteDB {
                 return Promise.reject(null);
             }
         });
+    }
+
+    /**
+     * Test whether a table exists..
+     *
+     * @param {string} name The table name.
+     * @return {Promise<void>} Promise resolved if exists, rejected otherwise.
+     */
+    tableExists(name: string): Promise<void> {
+        return this.recordExists('sqlite_master', {type: 'table', tbl_name: name});
     }
 
     /**

@@ -18,6 +18,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModDataOfflineProvider } from './offline';
 import { AddonModDataFieldsDelegate } from './fields-delegate';
 
@@ -35,7 +36,8 @@ export class AddonModDataProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
             private filepoolProvider: CoreFilepoolProvider, private dataOffline: AddonModDataOfflineProvider,
-            private appProvider: CoreAppProvider, private fieldsDelegate: AddonModDataFieldsDelegate) {
+            private appProvider: CoreAppProvider, private fieldsDelegate: AddonModDataFieldsDelegate,
+            private logHelper: CoreCourseLogHelperProvider) {
         this.logger = logger.getInstance('AddonModDataProvider');
     }
 
@@ -650,10 +652,11 @@ export class AddonModDataProvider {
      *
      * @param   {number}    dataId    Data ID for caching purposes.
      * @param   {number}    entryId   Entry ID.
+     * @param   {boolean}   [ignoreCache=false] True if it should ignore cached data (it'll always fail in offline or server down).
      * @param   {string}    [siteId]  Site ID. If not defined, current site.
      * @return  {Promise<any>}        Promise resolved when the database entry is retrieved.
      */
-    getEntry(dataId: number, entryId: number, siteId?: string): Promise<any> {
+    getEntry(dataId: number, entryId: number, ignoreCache: boolean = false, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     entryid: entryId,
@@ -662,6 +665,11 @@ export class AddonModDataProvider {
                 preSets = {
                     cacheKey: this.getEntryCacheKey(dataId, entryId)
                 };
+
+            if (ignoreCache) {
+                preSets['getFromCache'] = false;
+                preSets['emergencyCache'] = false;
+            }
 
             return site.read('mod_data_get_entry', params, preSets);
         });
@@ -846,14 +854,15 @@ export class AddonModDataProvider {
      * Report the database as being viewed.
      *
      * @param {number} id      Module ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(id: number): Promise<any> {
+    logView(id: number, siteId?: string): Promise<any> {
         const params = {
             databaseid: id
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_data_view_database', params);
+        return this.logHelper.log('mod_data_view_database', params, AddonModDataProvider.COMPONENT, id, siteId);
     }
 
     /**

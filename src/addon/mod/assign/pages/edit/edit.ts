@@ -121,9 +121,11 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
         }).then(() => {
 
             // Get submission status. Ignore cache to get the latest data.
-            return this.assignProvider.getSubmissionStatus(this.assign.id, this.userId, this.isBlind, false, true).catch((err) => {
+            return this.assignProvider.getSubmissionStatus(this.assign.id, this.userId, undefined, this.isBlind, false, true)
+                    .catch((err) => {
                 // Cannot connect. Get cached data.
-                return this.assignProvider.getSubmissionStatus(this.assign.id, this.userId, this.isBlind).then((response) => {
+                return this.assignProvider.getSubmissionStatus(this.assign.id, this.userId, undefined, this.isBlind)
+                        .then((response) => {
                     const userSubmission = this.assignProvider.getSubmissionObjectFromAttempt(this.assign, response.lastattempt);
 
                     // Check if the user can edit it in offline.
@@ -303,6 +305,9 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
                 }
 
                 return promise.then(() => {
+                    // Clear temporary data from plugins.
+                    return this.assignHelper.clearSubmissionPluginTmpData(this.assign, this.userSubmission, inputData);
+                }).then(() => {
                     // Submission saved, trigger event.
                     const params = {
                         assignmentId: this.assign.id,

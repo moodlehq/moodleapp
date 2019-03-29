@@ -34,7 +34,7 @@
         <ion-avatar item-start core-user-avatar [user]="result" [checkOnline]="true" [linkProfile]="false"></ion-avatar>
         <h2>
             <core-format-text [text]="result.fullname"></core-format-text>
-            <core-icon name="fa-ban" *ngIf="result.isblocked" [attr.aria-label]="'addon.messages.contactblocked' | translate"></core-icon>
+            <core-icon name="fa-ban" *ngIf="result.isblocked" [label]="'addon.messages.contactblocked' | translate"></core-icon>
         </h2>
         <ion-note *ngIf="result.lastmessagedate > 0">
             {{result.lastmessagedate | coreDateDayOrTime}}

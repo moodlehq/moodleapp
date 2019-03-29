@@ -20,6 +20,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreGroupsProvider } from '@providers/groups';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreRatingInfo } from '@core/rating/providers/rating';
 import { AddonModDataProvider } from '../../providers/data';
 import { AddonModDataHelperProvider } from '../../providers/helper';
 import { AddonModDataOfflineProvider } from '../../providers/offline';
@@ -41,7 +42,7 @@ export class AddonModDataEntryPage implements OnDestroy {
     protected module: any;
     protected entryId: number;
     protected courseId: number;
-    protected page: number;
+    protected offset: number;
     protected syncObserver: any; // It will observe the sync auto event.
     protected entryChangedObserver: any; // It will observe the changed entry event.
     protected fields = {};
@@ -54,18 +55,17 @@ export class AddonModDataEntryPage implements OnDestroy {
     entry: any;
     offlineActions = [];
     hasOffline = false;
-    cssTemplate = '';
-    previousId: number;
-    nextId: number;
+    previousOffset: number;
+    nextOffset: number;
     access: any;
     data: any;
     groupInfo: any;
     showComments: any;
     entryRendered = '';
     siteId: string;
-    cssClass = '';
     extraImports = [AddonModDataComponentsModule];
     jsData;
+    ratingInfo: CoreRatingInfo;
 
     constructor(params: NavParams, protected utils: CoreUtilsProvider, protected groupsProvider: CoreGroupsProvider,
             protected domUtils: CoreDomUtilsProvider, protected fieldsDelegate: AddonModDataFieldsDelegate,
@@ -77,7 +77,7 @@ export class AddonModDataEntryPage implements OnDestroy {
         this.entryId = params.get('entryId') || null;
         this.courseId = params.get('courseId');
         this.selectedGroup = params.get('group') || 0;
-        this.page = params.get('page') || null;
+        this.offset = params.get('offset');
 
         this.siteId = sitesProvider.getCurrentSiteId();
 
@@ -131,9 +131,8 @@ export class AddonModDataEntryPage implements OnDestroy {
         return this.dataProvider.getDatabase(this.courseId, this.module.id).then((data) => {
             this.title = data.name || this.title;
             this.data = data;
-            this.cssClass = 'addon-data-entries-' + data.id;
 
-            return this.setEntryIdFromPage(data.id, this.page, this.selectedGroup).then(() => {
+            return this.setEntryIdFromOffset(data.id, this.offset, this.selectedGroup).then(() => {
                 return this.dataProvider.getDatabaseAccessInformation(data.id);
             });
         }).then((accessData) => {
@@ -162,8 +161,8 @@ export class AddonModDataEntryPage implements OnDestroy {
                 return this.dataHelper.getEntry(this.data, this.entryId, this.offlineActions);
             });
         }).then((entry) => {
+            this.ratingInfo = entry.ratinginfo;
             entry = entry.entry;
-            this.cssTemplate = this.dataHelper.prefixCSS(this.data.csstemplate, '.' + this.cssClass);
 
             // Index contents by fieldid.
             entry.contents = this.utils.arrayToObject(entry.contents, 'fieldid');
@@ -177,7 +176,7 @@ export class AddonModDataEntryPage implements OnDestroy {
             const actions = this.dataHelper.getActions(this.data, this.access, this.entry);
 
             const templte = this.data.singletemplate || this.dataHelper.getDefaultTemplate('single', fieldsArray);
-            this.entryRendered = this.dataHelper.displayShowFields(templte, fieldsArray, this.entry, 'show', actions);
+            this.entryRendered = this.dataHelper.displayShowFields(templte, fieldsArray, this.entry, this.offset, 'show', actions);
             this.showComments = actions.comments;
 
             const entries = {};
@@ -189,11 +188,6 @@ export class AddonModDataEntryPage implements OnDestroy {
                 entries: entries,
                 data: this.data
             };
-
-            return this.dataHelper.getPageInfoByEntry(this.data.id, this.entryId, this.selectedGroup).then((result) => {
-                this.previousId = result.previousId;
-                this.nextId = result.nextId;
-            });
         }).catch((message) => {
             if (!refresh) {
                 // Some call failed, retry without using cache since it might be a new activity.
@@ -210,13 +204,13 @@ export class AddonModDataEntryPage implements OnDestroy {
     /**
      * Go to selected entry without changing state.
      *
-     * @param  {number}       entry Entry Id where to go.
-     * @return {Promise<any>}       Resolved when done.
+     * @param  {number} offset Entry offset.
+     * @return {Promise<any>} Resolved when done.
      */
-    gotoEntry(entry: number): Promise<any> {
-        this.entryId = entry;
+    gotoEntry(offset: number): Promise<any> {
+        this.offset = offset;
+        this.entryId = null;
         this.entry = null;
-        this.page = null;
         this.entryLoaded = false;
 
         return this.fetchEntryData();
@@ -264,30 +258,63 @@ export class AddonModDataEntryPage implements OnDestroy {
      */
     setGroup(groupId: number): Promise<any> {
         this.selectedGroup = groupId;
+        this.offset = 0;
+        this.entry = null;
+        this.entryId = null;
         this.entryLoaded = false;
 
-        return this.setEntryIdFromPage(this.data.id, 0, this.selectedGroup).then(() => {
-            return this.fetchEntryData();
+        return this.fetchEntryData();
+    }
+
+    /**
+     * Convenience function to translate offset to entry identifier and set next/previous entries.
+     *
+     * @param {number} dataId Data Id.
+     * @param {number} [offset] Offset of the entry.
+     * @param {number} [groupId] Group Id to get the entry.
+     * @return {Promise<any>} Resolved when done.
+     */
+    protected setEntryIdFromOffset(dataId: number, offset?: number, groupId?: number): Promise<any> {
+        if (typeof offset != 'number') {
+            // Entry id passed as navigation parameter instead of the offset.
+            // We don't display next/previous buttons in this case.
+            this.nextOffset = null;
+            this.previousOffset = null;
+
+            return Promise.resolve();
+        }
+
+        const perPage = AddonModDataProvider.PER_PAGE;
+        const page = Math.floor(offset / perPage);
+        const pageOffset = offset % perPage;
+
+        return this.dataProvider.getEntries(dataId, groupId, undefined, undefined, page, perPage).then((entries) => {
+            if (!entries || !entries.entries || !entries.entries.length || pageOffset >= entries.entries.length) {
+                return Promise.reject(null);
+            }
+
+            this.entryId = entries.entries[pageOffset].id;
+            this.previousOffset = offset > 0 ? offset - 1 : null;
+            if (pageOffset + 1 < entries.entries.length) {
+                // Not the last entry on the page;
+                this.nextOffset = offset + 1;
+            } else if (entries.entries.length < perPage) {
+                // Last entry of the last page.
+                this.nextOffset = null;
+            } else {
+                // Last entry of the page, check if there are more pages.
+                return this.dataProvider.getEntries(dataId, groupId, undefined, undefined, page + 1, perPage).then((entries) => {
+                    this.nextOffset = entries && entries.entries && entries.entries.length > 0 ? offset + 1 : null;
+                });
+            }
         });
     }
 
     /**
-     * Convenience function to translate page number to entry identifier.
-     *
-     * @param  {number}       dataId       Data Id.
-     * @param  {number}       [pageNumber] Page number where to go
-     * @param  {number}       group        Group Id to get the entry.
-     * @return {Promise<any>}              Resolved when done.
+     * Function called when rating is updated online.
      */
-    protected setEntryIdFromPage(dataId: number, pageNumber?: number, group?: number): Promise<any> {
-        if (typeof pageNumber == 'number') {
-            return this.dataHelper.getPageInfoByPage(dataId, pageNumber, group).then((result) => {
-                this.entryId = result.entryId;
-                this.page = null;
-            });
-        }
-
-        return Promise.resolve();
+    ratingUpdated(): void {
+        this.dataProvider.invalidateEntryData(this.data.id, this.entryId);
     }
 
     /**

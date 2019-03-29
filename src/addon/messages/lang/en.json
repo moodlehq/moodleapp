@@ -66,11 +66,14 @@
     "unabletomessage": "You are unable to message this user",
     "unblockuser": "Unblock user",
     "unblockuserconfirm": "Are you sure you want to unblock {{$a}}?",
+    "useentertosend": "Use enter to send",
+    "useentertosenddescdesktop": "If disabled, you can use Ctrl+Enter to send the message.",
+    "useentertosenddescmac": "If disabled, you can use Cmd+Enter to send the message.",
     "userwouldliketocontactyou": "{{$a}} would like to contact you",
     "warningconversationmessagenotsent": "Couldn't send message(s) to conversation {{conversation}}. {{error}}",
     "warningmessagenotsent": "Couldn't send message(s) to user {{user}}. {{error}}",
     "wouldliketocontactyou": "Would like to contact you",
     "you": "You:",
-    "youhaveblockeduser": "You have blocked this user in the past",
+    "youhaveblockeduser": "You have blocked this user.",
     "yourcontactrequestpending": "Your contact request is pending with {{$a}}"
 }

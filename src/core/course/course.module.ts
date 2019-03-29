@@ -18,6 +18,7 @@ import { CoreCronDelegate } from '@providers/cron';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreCourseProvider } from './providers/course';
 import { CoreCourseHelperProvider } from './providers/helper';
+import { CoreCourseLogHelperProvider } from './providers/log-helper';
 import { CoreCourseFormatDelegate } from './providers/format-delegate';
 import { CoreCourseModuleDelegate } from './providers/module-delegate';
 import { CoreCourseOfflineProvider } from './providers/course-offline';
@@ -37,6 +38,7 @@ import { CoreCourseLogCronHandler } from './providers/log-cron-handler';
 export const CORE_COURSE_PROVIDERS: any[] = [
     CoreCourseProvider,
     CoreCourseHelperProvider,
+    CoreCourseLogHelperProvider,
     CoreCourseFormatDelegate,
     CoreCourseModuleDelegate,
     CoreCourseModulePrefetchDelegate,
@@ -56,6 +58,7 @@ export const CORE_COURSE_PROVIDERS: any[] = [
     providers: [
         CoreCourseProvider,
         CoreCourseHelperProvider,
+        CoreCourseLogHelperProvider,
         CoreCourseFormatDelegate,
         CoreCourseModuleDelegate,
         CoreCourseModulePrefetchDelegate,

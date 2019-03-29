@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { CoreAppProvider } from '@providers/app';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -28,6 +29,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { AddonModForumProvider } from './forum';
 import { AddonModForumHelperProvider } from './helper';
 import { AddonModForumOfflineProvider } from './offline';
+import { CoreRatingSyncProvider } from '@core/rating/providers/sync';
 
 /**
  * Service to sync forums.
@@ -53,7 +55,9 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
             private utils: CoreUtilsProvider,
             private forumProvider: AddonModForumProvider,
             private forumHelper: AddonModForumHelperProvider,
-            private forumOffline: AddonModForumOfflineProvider) {
+            private forumOffline: AddonModForumOfflineProvider,
+            private logHelper: CoreCourseLogHelperProvider,
+            private ratingSync: CoreRatingSyncProvider) {
 
         super('AddonModForumSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
                 timeUtils);
@@ -133,6 +137,8 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
             return Promise.all(this.utils.objectToArray(promises));
         }));
 
+        sitePromises.push(this.syncRatings(undefined, undefined, siteId));
+
         return Promise.all(sitePromises);
     }
 
@@ -189,10 +195,15 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
             updated: false
         };
 
-        // Get offline responses to be sent.
-        const syncPromise = this.forumOffline.getNewDiscussions(forumId, siteId, userId).catch(() => {
-            // No offline data found, return empty object.
-            return [];
+        // Sync offline logs.
+        const syncPromise = this.logHelper.syncIfNeeded(AddonModForumProvider.COMPONENT, forumId, siteId).catch(() => {
+            // Ignore errors.
+        }).then(() => {
+            // Get offline responses to be sent.
+            return this.forumOffline.getNewDiscussions(forumId, siteId, userId).catch(() => {
+                // No offline data found, return empty object.
+                return [];
+            });
         }).then((discussions) => {
             if (!discussions.length) {
                 // Nothing to sync.
@@ -264,6 +275,50 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
         });
 
         return this.addOngoingSync(syncId, syncPromise, siteId);
+    }
+
+    /**
+     * Synchronize forum offline ratings.
+     *
+     * @param {number} [cmId] Course module to be synced. If not defined, sync all forums.
+     * @param {number} [discussionId] Discussion id to be synced. If not defined, sync all discussions.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved if sync is successful, rejected otherwise.
+     */
+    syncRatings(cmId?: number, discussionId?: number, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        return this.ratingSync.syncRatings('mod_forum', 'post', 'module', cmId, discussionId, siteId).then((results) => {
+            let updated = false;
+            const warnings = [];
+            const promises = [];
+
+            results.forEach((result) => {
+                if (result.updated.length) {
+                    updated = true;
+
+                    // Invalidate discussions of updated ratings.
+                    promises.push(this.forumProvider.invalidateDiscussionPosts(result.itemSet.itemSetId, siteId));
+                }
+                if (result.warnings.length) {
+                    // Fetch forum to construct the warning message.
+                    promises.push(this.forumProvider.getForum(result.itemSet.courseId, result.itemSet.instanceId, siteId)
+                            .then((forum) => {
+                        result.warnings.forEach((warning) => {
+                            warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
+                                component: this.componentTranslate,
+                                name: forum.name,
+                                error: warning
+                            }));
+                        });
+                    }));
+                }
+            });
+
+            return this.utils.allPromises(promises).then(() => {
+                return { updated, warnings };
+            });
+        });
     }
 
     /**

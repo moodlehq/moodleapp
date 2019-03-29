@@ -50,7 +50,7 @@ export class CoreLoginSitePage {
             this.fixedSites = <any[]> this.loginHelper.getFixedSites();
             this.fixedDisplay = CoreConfigConstants.multisitesdisplay;
             // Autoselect if not defined.
-            if (['list', 'select', 'buttons'].indexOf(this.fixedDisplay) < 0) {
+            if (['list', 'listnourl', 'select', 'buttons'].indexOf(this.fixedDisplay) < 0) {
                 this.fixedDisplay = this.fixedSites.length > 8 ? 'list' : (this.fixedSites.length > 3 ? 'select' : 'buttons');
             }
             this.filteredSites = this.fixedSites;

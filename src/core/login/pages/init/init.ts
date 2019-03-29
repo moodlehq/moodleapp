@@ -55,7 +55,8 @@ export class CoreLoginInitPage {
                                 .then((loggedIn) => {
 
                             if (loggedIn) {
-                                return this.navCtrl.setRoot(redirectData.page, redirectData.params, { animate: false });
+                                return this.loginHelper.goToSiteInitialPage(this.navCtrl, redirectData.page, redirectData.params,
+                                        { animate: false });
                             }
                         }).catch(() => {
                             // Site doesn't exist.

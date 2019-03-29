@@ -79,6 +79,6 @@ export class AddonNotesCourseOptionHandler implements CoreCourseOptionsHandler {
      * @return {Promise<any>} Promise resolved when done.
      */
     prefetch(course: any): Promise<any> {
-        return this.notesProvider.getNotes(course.id, true);
+        return this.notesProvider.getNotes(course.id, undefined, true);
     }
 }

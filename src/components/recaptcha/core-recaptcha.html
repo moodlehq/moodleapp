@@ -2,7 +2,7 @@
 <div *ngIf="publicKey">
     <!-- A button to open the recaptcha modal. -->
     <!-- Use anchor instead of button to prevent marking form as submitted. -->
-    <button ion-button block *ngIf="!model[modelValueName]" (click)="answerRecaptcha()" type="button">{{ 'core.answer' | translate }}</button>
+    <button ion-button block *ngIf="!model[modelValueName]" (click)="answerRecaptcha()" type="button">{{ 'core.resourcedisplayopen' | translate }}</button>
     <p *ngIf="model[modelValueName]" class="text-success">{{ 'core.answered' | translate }}</p>
     <p *ngIf="expired" class="text-danger">{{ 'core.login.recaptchaexpired' | translate }}</p>
 </div>

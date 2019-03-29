@@ -31,6 +31,7 @@ export class AddonCourseCompletionReportComponent implements OnInit {
     completionLoaded = false;
     completion: any;
     showSelfComplete: boolean;
+    tracked = true; // Whether completion is tracked.
 
     constructor(
         private sitesProvider: CoreSitesProvider,
@@ -62,8 +63,14 @@ export class AddonCourseCompletionReportComponent implements OnInit {
 
             this.completion = completion;
             this.showSelfComplete = this.courseCompletionProvider.canMarkSelfCompleted(this.userId, completion);
-        }).catch((message) => {
-            this.domUtils.showErrorModalDefault(message, 'addon.coursecompletion.couldnotloadreport', true);
+            this.tracked = true;
+        }).catch((error) => {
+            if (error && error.errorcode == 'notenroled') {
+                // Not enrolled error, probably a teacher.
+                this.tracked = false;
+            } else {
+                this.domUtils.showErrorModalDefault(error, 'addon.coursecompletion.couldnotloadreport', true);
+            }
         });
     }
 

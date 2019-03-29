@@ -23,7 +23,9 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
-import { CoreSyncBaseProvider } from '@classes/base-sync';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
+import { CoreCourseActivitySyncBaseProvider } from '@core/course/classes/activity-sync';
 import { AddonModScormProvider, AddonModScormAttemptCountResult } from './scorm';
 import { AddonModScormOfflineProvider } from './scorm-offline';
 import { AddonModScormPrefetchHandler } from './prefetch-handler';
@@ -55,7 +57,7 @@ export interface AddonModScormSyncResult {
  * Service to sync SCORMs.
  */
 @Injectable()
-export class AddonModScormSyncProvider extends CoreSyncBaseProvider {
+export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvider {
 
     static AUTO_SYNCED = 'addon_mod_scorm_autom_synced';
 
@@ -63,12 +65,14 @@ export class AddonModScormSyncProvider extends CoreSyncBaseProvider {
 
     constructor(loggerProvider: CoreLoggerProvider, sitesProvider: CoreSitesProvider, appProvider: CoreAppProvider,
             syncProvider: CoreSyncProvider, textUtils: CoreTextUtilsProvider, translate: TranslateService,
-            courseProvider: CoreCourseProvider, private eventsProvider: CoreEventsProvider, timeUtils: CoreTimeUtilsProvider,
+            private eventsProvider: CoreEventsProvider, timeUtils: CoreTimeUtilsProvider,
             private scormProvider: AddonModScormProvider, private scormOfflineProvider: AddonModScormOfflineProvider,
-            private prefetchHandler: AddonModScormPrefetchHandler, private utils: CoreUtilsProvider) {
+            prefetchHandler: AddonModScormPrefetchHandler, private utils: CoreUtilsProvider,
+            prefetchDelegate: CoreCourseModulePrefetchDelegate, private courseProvider: CoreCourseProvider,
+            private logHelper: CoreCourseLogHelperProvider) {
 
         super('AddonModScormSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
-                timeUtils);
+                timeUtils, prefetchDelegate, prefetchHandler);
 
         this.componentTranslate = courseProvider.translateModuleName('scorm');
     }
@@ -190,11 +194,11 @@ export class AddonModScormSyncProvider extends CoreSyncBaseProvider {
         let promise;
 
         if (updated) {
-            // Update the WS data.
-            promise = this.scormProvider.invalidateAllScormData(scorm.id, siteId).catch(() => {
+            // Update downloaded data.
+            promise = this.courseProvider.getModuleBasicInfoByInstance(scorm.id, 'scorm', siteId).then((module) => {
+                return this.prefetchAfterUpdate(module, scorm.course, undefined, siteId);
+            }).catch(() => {
                 // Ignore errors.
-            }).then(() => {
-                return this.prefetchHandler.fetchWSData(scorm, siteId);
             });
         } else {
             promise = Promise.resolve();
@@ -619,8 +623,13 @@ export class AddonModScormSyncProvider extends CoreSyncBaseProvider {
 
         this.logger.debug('Try to sync SCORM ' + scorm.id + ' in site ' + siteId);
 
-        // Get attempts data. We ignore cache for online attempts, so this call will fail if offline or server down.
-        syncPromise = this.scormProvider.getAttemptCount(scorm.id, false, true, siteId).then((attemptsData) => {
+        // Sync offline logs.
+        syncPromise = this.logHelper.syncIfNeeded(AddonModScormProvider.COMPONENT, scorm.id, siteId).catch(() => {
+            // Ignore errors.
+        }).then(() => {
+            // Get attempts data. We ignore cache for online attempts, so this call will fail if offline or server down.
+            return this.scormProvider.getAttemptCount(scorm.id, false, true, siteId);
+        }).then((attemptsData) => {
             if (!attemptsData.offline || !attemptsData.offline.length) {
                 // Nothing to sync.
                 return this.finishSync(siteId, scorm, warnings, lastOnline, lastOnlineWasFinished);

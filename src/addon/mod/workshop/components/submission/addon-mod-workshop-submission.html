@@ -1,7 +1,7 @@
 <core-loading [hideUntil]="loaded">
     <div *ngIf="!summary">
         <ion-list-header text-wrap>
-            <ion-avatar core-user-avatar [user]="profile" item-start></ion-avatar>
+            <ion-avatar core-user-avatar [user]="profile" [courseId]="courseId" [userId]="profile && profile.id" item-start></ion-avatar>
             <h2>{{submission.title}}</h2>
             <p *ngIf="profile && profile.fullname">{{profile.fullname}}</p>
             <p *ngIf="showGrade(submission.submissiongrade)" [class.addon-has-overriden-grade]="showGrade(submission.submissiongradeover)">

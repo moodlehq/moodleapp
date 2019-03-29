@@ -20,12 +20,10 @@ import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreCourseComponentsModule } from '@core/course/components/components.module';
 import { AddonModScormIndexComponent } from './index/index';
-import { AddonModScormTocPopoverComponent } from './toc-popover/toc-popover';
 
 @NgModule({
     declarations: [
-        AddonModScormIndexComponent,
-        AddonModScormTocPopoverComponent
+        AddonModScormIndexComponent
     ],
     imports: [
         CommonModule,
@@ -38,12 +36,10 @@ import { AddonModScormTocPopoverComponent } from './toc-popover/toc-popover';
     providers: [
     ],
     exports: [
-        AddonModScormIndexComponent,
-        AddonModScormTocPopoverComponent
+        AddonModScormIndexComponent
     ],
     entryComponents: [
-        AddonModScormIndexComponent,
-        AddonModScormTocPopoverComponent
+        AddonModScormIndexComponent
     ]
 })
 export class AddonModScormComponentsModule {}

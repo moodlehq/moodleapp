@@ -11,4 +11,9 @@ ion-app.app-root page-addon-mod-quiz-player {
     .toolbar-ios .bar-buttons-ios .bar-button {
         @include padding-horizontal($content-padding);
     }
+
+    .core-question-container {
+        display: block;
+        padding-bottom: $content-padding;
+    }
 }

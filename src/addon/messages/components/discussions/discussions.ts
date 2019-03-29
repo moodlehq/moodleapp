@@ -62,7 +62,7 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
 
         // Update discussions when new message is received.
         this.newMessagesObserver = eventsProvider.on(AddonMessagesProvider.NEW_MESSAGE_EVENT, (data) => {
-            if (data.userId) {
+            if (data.userId && this.discussions) {
                 const discussion = this.discussions.find((disc) => {
                     return disc.message.user == data.userId;
                 });
@@ -82,7 +82,7 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
 
         // Update discussions when a message is read.
         this.readChangedObserver = eventsProvider.on(AddonMessagesProvider.READ_CHANGED_EVENT, (data) => {
-            if (data.userId) {
+            if (data.userId && this.discussions) {
                 const discussion = this.discussions.find((disc) => {
                     return disc.message.user == data.userId;
                 });
@@ -92,8 +92,8 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
                     discussion.unread = false;
 
                     // Conversations changed, invalidate them and refresh unread counts.
-                    this.messagesProvider.invalidateConversations();
-                    this.messagesProvider.refreshUnreadConversationCounts();
+                    this.messagesProvider.invalidateConversations(this.siteId);
+                    this.messagesProvider.refreshUnreadConversationCounts(this.siteId);
                 }
             }
         }, this.siteId);
@@ -145,10 +145,10 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
      */
     refreshData(refresher?: any, refreshUnreadCounts: boolean = true): Promise<any> {
         const promises = [];
-        promises.push(this.messagesProvider.invalidateDiscussionsCache());
+        promises.push(this.messagesProvider.invalidateDiscussionsCache(this.siteId));
 
         if (refreshUnreadCounts) {
-            promises.push(this.messagesProvider.invalidateUnreadConversationCounts());
+            promises.push(this.messagesProvider.invalidateUnreadConversationCounts(this.siteId));
         }
 
         return this.utils.allPromises(promises).finally(() => {
@@ -171,7 +171,7 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
 
         const promises = [];
 
-        promises.push(this.messagesProvider.getDiscussions().then((discussions) => {
+        promises.push(this.messagesProvider.getDiscussions(this.siteId).then((discussions) => {
             // Convert to an array for sorting.
             const discussionsSorted = [];
             for (const userId in discussions) {
@@ -184,7 +184,7 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
             });
         }));
 
-        promises.push(this.messagesProvider.getUnreadConversationCounts());
+        promises.push(this.messagesProvider.getUnreadConversationCounts(this.siteId));
 
         return Promise.all(promises).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
@@ -216,7 +216,7 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
         this.loaded = false;
         this.loadingMessage = this.search.loading;
 
-        return this.messagesProvider.searchMessages(query).then((searchResults) => {
+        return this.messagesProvider.searchMessages(query, undefined, undefined, undefined, this.siteId).then((searchResults) => {
             this.search.showResults = true;
             this.search.results = searchResults.messages;
         }).catch((error) => {

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 
 /**
  * Service to handle offline wiki.
@@ -26,62 +26,66 @@ export class AddonModWikiOfflineProvider {
 
     // Variables for database.
     static NEW_PAGES_TABLE = 'addon_mod_wiki_new_pages_store';
-    protected tablesSchema = [
-        {
-            name: AddonModWikiOfflineProvider.NEW_PAGES_TABLE,
-            columns: [
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonModWikiOfflineProvider',
+        version: 1,
+        tables: [
                 {
-                    name: 'wikiid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'subwikiid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'userid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'groupid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'title',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'cachedcontent',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'contentformat',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'timecreated',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'caneditpage',
-                    type: 'INTEGER'
-                }
-            ],
-            primaryKeys: ['wikiid', 'subwikiid', 'userid', 'groupid', 'title']
-        }
-    ];
+                name: AddonModWikiOfflineProvider.NEW_PAGES_TABLE,
+                columns: [
+                    {
+                        name: 'wikiid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'subwikiid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'userid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'groupid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'title',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'cachedcontent',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'contentformat',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'timecreated',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'caneditpage',
+                        type: 'INTEGER'
+                    }
+                ],
+                primaryKeys: ['wikiid', 'subwikiid', 'userid', 'groupid', 'title']
+            }
+        ]
+    };
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider) {
         this.logger = logger.getInstance('AddonModWikiOfflineProvider');
-        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**

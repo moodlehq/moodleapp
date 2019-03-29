@@ -70,6 +70,26 @@ function createWindow() {
     mainWindow.webContents.setUserAgent(mainWindow.webContents.getUserAgent() + ' ' + userAgent);
 }
 
+// Make sure that only a single instance of the app is running.
+// For some reason, gotTheLock is always false in signed Mac apps so we should ingore it.
+// See https://github.com/electron/electron/issues/15958
+var gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock && os.platform().indexOf('darwin') == -1) {
+    // It's not the main instance of the app, kill it.
+    app.exit();
+    return;
+}
+
+app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Another instance was launched. If it was launched with a URL, it should be in the second param.
+    if (commandLine && commandLine[1]) {
+        appLaunched(commandLine[1]);
+    } else {
+        focusApp();
+    }
+});
+
 // This method will be called when Electron has finished initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', function() {
@@ -121,23 +141,6 @@ fs.readFile(path.join(__dirname, 'config.json'), 'utf8', (err, data) => {
         setAppMenu();
     }
 });
-
-// Make sure that only a single instance of the app is running.
-var shouldQuit = app.makeSingleInstance((argv, workingDirectory) => {
-    // Another instance was launched. If it was launched with a URL, it should be in the second param.
-    if (argv && argv[1]) {
-        appLaunched(argv[1]);
-    } else {
-        focusApp();
-    }
-});
-
-// For some reason, shouldQuit is always true in signed Mac apps so we should ingore it.
-if (shouldQuit && os.platform().indexOf('darwin') == -1) {
-    // It's not the main instance of the app, kill it.
-    app.exit();
-    return;
-}
 
 // Listen for open-url events (Mac OS only).
 app.on('open-url', (event, url) => {

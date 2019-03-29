@@ -73,6 +73,10 @@ ion-app.app-root {
     }
   }
 
+  .has-refresher > .scroll-content {
+    border-top: 0 !important;
+  }
+
   // Define an alternative way to set a heading in an item without using a heading tag.
   // This is done for accessibility reasons when a heading is semantically incorrect.
   .item .item-heading {
@@ -97,6 +101,10 @@ ion-app.app-root {
   .item *[no-lines] .item-inner,
   *[no-lines] .item .item-inner {
     border: 0;
+  }
+
+  .core-nav-item-selected, .item.core-nav-item-selected {
+    @include core-selected-item($core-splitview-selected);
   }
 
   // Recover borders on items inside cards.
@@ -130,6 +138,8 @@ ion-app.app-root {
 
   .core-module-icon {
     width: auto;
+    max-width: 24px;
+    max-height: 24px;
   }
 
   .core-button-spinner {
@@ -372,6 +382,21 @@ ion-app.app-root {
     .select-icon .select-icon-inner {
       color: $core-select-placeholder-color;
     }
+
+    &.select-disabled, .select-icon .select-icon-inner {
+        color: $text-color;
+    }
+    @each $color-name, $color-base, $color-contrast in get-colors($colors) {
+      &.select-md-#{$color-name},
+      &.select-ios-#{$color-name},
+      &.select-wp-#{$color-name} {
+         color: $color-base;
+
+        .select-icon .select-icon-inner {
+          color: $color-base;
+        }
+      }
+    }
   }
 
   ion-select.core-button-select,
@@ -448,8 +473,31 @@ ion-app.app-root {
 
   // Question.
   // -------------------------
+  .core-correct-icon {
+    padding: 0 ($content-padding / 2);
+    position: absolute;
+    @include position(null, 0, $content-padding / 2, null);
+    margin-top: 0;
+    margin-bottom: 0;
+  }
 
-  .core-question-answer-correct,
+
+  .core-question-answer-correct {
+    color: $core-question-correct-color;
+  }
+
+  .core-question-answer-incorrect {
+    color: $core-question-incorrect-color;
+  }
+
+  input, select {
+    &.core-question-answer-correct, &.core-question-answer-incorrect {
+      background-color: $gray-lighter;
+      color: $text-color;
+    }
+  }
+
+  .core-question-correct,
   .core-question-comment {
     color: $core-question-correct-color;
     background-color: $core-question-correct-color-bg;
@@ -465,7 +513,6 @@ ion-app.app-root {
     }
   }
 
-  .core-question-answer-incorrect,
   .core-question-incorrect {
     color: $core-question-incorrect-color;
     background-color: $core-question-incorrect-color-bg;
@@ -527,7 +574,8 @@ ion-app.app-root {
   .core-question-incorrect {
     background-color: $core-question-state-incorrect-color;
   }
-  .core-question-answersaved {
+  .core-question-answersaved,
+  .core-question-requiresgrading {
     color: $text-color;
     background-color: $core-question-saved-color-bg;
   }
@@ -601,7 +649,7 @@ ion-app.app-root {
         @include padding(null, null, null, 52px);
         position: relative;
 
-        ion-icon {
+        > ion-icon {
           color: $color-base;
           position: absolute;
           @include position(0, null, null, 16px)
@@ -617,6 +665,22 @@ ion-app.app-root {
       border-bottom: 3px solid $color-base !important;
       ion-icon {
         color: $color-base;
+      }
+    }
+
+    .core-#{$color-name}-item.item-input {
+      border-bottom: 0 !important;
+
+      &.item-md .item-inner {
+        @include md-input-highlight($color-base);
+      }
+
+      &.item-ios .item-inner {
+        @include ios-input-highlight($color-base);
+      }
+
+      &.item-wp .item-inner {
+        border-color: $color-base;
       }
     }
 
@@ -677,14 +741,29 @@ ion-app.app-root {
     width: 100%;
   }
 
-  .core-modal-fullscreen {
-    .modal-wrapper {
-      position: absolute;
-      @include position(0 !important, null, null, 0 !important);
-      display: block;
-      width: 100% !important;
-      height: 100% !important;
-    }
+  .core-modal-fullscreen  .modal-wrapper {
+    position: absolute;
+    @include position(0 !important, null, null, 0 !important);
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  @media only screen and (min-height: 400px) and (min-width: 300px) {
+      .core-modal-lateral {
+        .modal-wrapper {
+          position: absolute;
+          @include position(0 !important, 0 !important, 0 !important, auto);
+          display: block;
+          height: 100% !important;
+          width: auto;
+          min-width: 300px;
+          box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+        }
+        ion-backdrop {
+          visibility: visible;
+        }
+      }
   }
 
   .has-fab .scroll-content{
@@ -946,7 +1025,9 @@ details summary {
   pointer-events: auto;
 }
 
-.icon.fa-graduation-cap{
+.icon.fa-graduation-cap,
+.item > .icon.fa,
+.item-inner > .icon.fa {
     font-size: 21px;
     width: 21px;
     line-height: 28px;
@@ -967,4 +1048,17 @@ ion-modal,
 .modal-wrapper,
 .split-pane {
   contain: size layout style;
+}
+
+// Styles for desktop apps only.
+ion-app.platform-desktop {
+  video::-webkit-media-text-track-display {
+    white-space: normal !important;
+  }
+
+  &.platform-windows {
+    video::-webkit-media-text-track-display {
+      font-size: 0.6em;
+    }
+  }
 }

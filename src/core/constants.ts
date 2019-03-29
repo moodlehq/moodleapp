@@ -32,6 +32,7 @@ export class CoreConstants {
     static SETTINGS_SYNC_ONLY_ON_WIFI = 'CoreSettingsSyncOnlyOnWifi';
     static SETTINGS_DEBUG_DISPLAY = 'CoreSettingsDebugDisplay';
     static SETTINGS_REPORT_IN_BACKGROUND = 'CoreSettingsReportInBackground'; // @deprecated since 3.5.0
+    static SETTINGS_SEND_ON_ENTER = 'CoreSettingsSendOnEnter';
 
     // WS constants.
     static WS_TIMEOUT = 30000;

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -31,103 +31,108 @@ export class AddonModLessonOfflineProvider {
     // Variables for database. We use lowercase in the names to match the WS responses.
     static RETAKES_TABLE = 'addon_mod_lesson_retakes';
     static PAGE_ATTEMPTS_TABLE = 'addon_mod_lesson_page_attempts';
-    protected tablesSchema = [
-        {
-            name: AddonModLessonOfflineProvider.RETAKES_TABLE,
-            columns: [
-                {
-                    name: 'lessonid',
-                    type: 'INTEGER',
-                    primaryKey: true // Only 1 offline retake per lesson.
-                },
-                {
-                    name: 'retake', // Retake number.
-                    type: 'INTEGER',
-                    notNull: true
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'finished',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'outoftime',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'lastquestionpage',
-                    type: 'INTEGER'
-                },
-            ]
-        },
-        {
-            name: AddonModLessonOfflineProvider.PAGE_ATTEMPTS_TABLE,
-            columns: [
-                {
-                    name: 'lessonid',
-                    type: 'INTEGER',
-                    notNull: true
-                },
-                {
-                    name: 'retake', // Retake number.
-                    type: 'INTEGER',
-                    notNull: true
-                },
-                {
-                    name: 'pageid',
-                    type: 'INTEGER',
-                    notNull: true
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER',
-                    notNull: true
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'data',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'type',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'newpageid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'correct',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'answerid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'useranswer',
-                    type: 'TEXT'
-                },
-            ],
-            primaryKeys: ['lessonid', 'retake', 'pageid', 'timemodified'] // A user can attempt several times per page and retake.
-        }
-    ];
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonModLessonOfflineProvider',
+        version: 1,
+        tables: [
+            {
+                name: AddonModLessonOfflineProvider.RETAKES_TABLE,
+                columns: [
+                    {
+                        name: 'lessonid',
+                        type: 'INTEGER',
+                        primaryKey: true // Only 1 offline retake per lesson.
+                    },
+                    {
+                        name: 'retake', // Retake number.
+                        type: 'INTEGER',
+                        notNull: true
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'finished',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'outoftime',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'lastquestionpage',
+                        type: 'INTEGER'
+                    },
+                ]
+            },
+            {
+                name: AddonModLessonOfflineProvider.PAGE_ATTEMPTS_TABLE,
+                columns: [
+                    {
+                        name: 'lessonid',
+                        type: 'INTEGER',
+                        notNull: true
+                    },
+                    {
+                        name: 'retake', // Retake number.
+                        type: 'INTEGER',
+                        notNull: true
+                    },
+                    {
+                        name: 'pageid',
+                        type: 'INTEGER',
+                        notNull: true
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER',
+                        notNull: true
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'data',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'type',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'newpageid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'correct',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'answerid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'useranswer',
+                        type: 'TEXT'
+                    },
+                ],
+                // A user can attempt several times per page and retake.
+                primaryKeys: ['lessonid', 'retake', 'pageid', 'timemodified']
+            }
+        ]
+    };
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private timeUtils: CoreTimeUtilsProvider,
             private textUtils: CoreTextUtilsProvider, private utils: CoreUtilsProvider) {
         this.logger = logger.getInstance('AddonModLessonOfflineProvider');
 
-        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**

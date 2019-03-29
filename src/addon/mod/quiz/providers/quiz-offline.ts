@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreQuestionProvider } from '@core/question/providers/question';
@@ -33,57 +33,61 @@ export class AddonModQuizOfflineProvider {
 
     // Variables for database.
     static ATTEMPTS_TABLE = 'addon_mod_quiz_attempts';
-    protected tablesSchema = [
-        {
-            name: AddonModQuizOfflineProvider.ATTEMPTS_TABLE,
-            columns: [
-                {
-                    name: 'id', // Attempt ID.
-                    type: 'INTEGER',
-                    primaryKey: true
-                },
-                {
-                    name: 'attempt', // Attempt number.
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'userid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'quizid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'currentpage',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'timecreated',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'finished',
-                    type: 'INTEGER'
-                }
-            ]
-        }
-    ];
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonModQuizOfflineProvider',
+        version: 1,
+        tables: [
+            {
+                name: AddonModQuizOfflineProvider.ATTEMPTS_TABLE,
+                columns: [
+                    {
+                        name: 'id', // Attempt ID.
+                        type: 'INTEGER',
+                        primaryKey: true
+                    },
+                    {
+                        name: 'attempt', // Attempt number.
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'userid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'quizid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'currentpage',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'timecreated',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'finished',
+                        type: 'INTEGER'
+                    }
+                ]
+            }
+        ]
+    };
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private timeUtils: CoreTimeUtilsProvider,
             private questionProvider: CoreQuestionProvider, private translate: TranslateService, private utils: CoreUtilsProvider,
             private behaviourDelegate: CoreQuestionBehaviourDelegate) {
         this.logger = logger.getInstance('AddonModQuizOfflineProvider');
 
-        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**

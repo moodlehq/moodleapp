@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 
 /**
@@ -26,46 +26,50 @@ export class AddonNotesOfflineProvider {
 
     // Variables for database.
     static NOTES_TABLE = 'addon_notes_offline_notes';
-    protected tablesSchema = [
-        {
-            name: AddonNotesOfflineProvider.NOTES_TABLE,
-            columns: [
-                {
-                    name: 'userid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'publishstate',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'content',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'format',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'created',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'lastmodified',
-                    type: 'INTEGER'
-                }
-            ],
-            primaryKeys: ['userid', 'content', 'created']
-        }
-    ];
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonNotesOfflineProvider',
+        version: 1,
+        tables: [
+            {
+                name: AddonNotesOfflineProvider.NOTES_TABLE,
+                columns: [
+                    {
+                        name: 'userid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'publishstate',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'content',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'format',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'created',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'lastmodified',
+                        type: 'INTEGER'
+                    }
+                ],
+                primaryKeys: ['userid', 'content', 'created']
+            }
+        ]
+    };
 
     constructor(logger: CoreLoggerProvider,  private sitesProvider: CoreSitesProvider, private timeUtils: CoreTimeUtilsProvider) {
         this.logger = logger.getInstance('AddonNotesOfflineProvider');
-        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**
@@ -115,6 +119,24 @@ export class AddonNotesOfflineProvider {
                 content: content,
                 created: timecreated
             });
+        });
+    }
+
+    /**
+     * Get offline notes for a certain course and user.
+     *
+     * @param  {number} courseId Course ID.
+     * @param  {number} [userId] User ID.
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any[]>}  Promise resolved with notes.
+     */
+    getNotesForCourseAndUser(courseId: number, userId?: number, siteId?: string): Promise<any[]> {
+        if (!userId) {
+            return this.getNotesForCourse(courseId, siteId);
+        }
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.getDb().getRecords(AddonNotesOfflineProvider.NOTES_TABLE, {userid: userId, courseid: courseId});
         });
     }
 

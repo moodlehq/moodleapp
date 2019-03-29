@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreAppProvider } from './app';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 /**
  * Factory to provide access to dynamic and permanent config and settings.
@@ -24,7 +24,7 @@ import { SQLiteDB } from '@classes/sqlitedb';
 export class CoreConfigProvider {
     protected appDB: SQLiteDB;
     protected TABLE_NAME = 'core_config';
-    protected tableSchema = {
+    protected tableSchema: SQLiteDBTableSchema = {
         name: this.TABLE_NAME,
         columns: [
             {

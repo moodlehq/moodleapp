@@ -16,11 +16,11 @@ import { Injectable } from '@angular/core';
 import { CoreFileProvider } from '@providers/file';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { File } from '@ionic-native/file';
-import { LocalNotifications } from '@ionic-native/local-notifications';
+import { LocalNotifications, ILocalNotification } from '@ionic-native/local-notifications';
 import { CoreAppProvider } from '@providers/app';
 import { CoreInitDelegate, CoreInitHandler } from '@providers/init';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { FileTransferErrorMock } from './file-transfer';
@@ -40,33 +40,37 @@ export class CoreEmulatorHelperProvider implements CoreInitHandler {
 
     // Variables for database.
     protected LAST_RECEIVED_NOTIFICATION_TABLE = 'core_emulator_last_received_notification';
-    protected tablesSchema = [
-        {
-            name: this.LAST_RECEIVED_NOTIFICATION_TABLE,
-            columns: [
-                {
-                    name: 'component',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'id',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'timecreated',
-                    type: 'INTEGER',
-                },
-            ],
-            primaryKeys: ['component']
-        }
-    ];
+    protected siteSchema: CoreSiteSchema = {
+        name: 'CoreEmulatorHelperProvider',
+        version: 1,
+        tables: [
+            {
+                name: this.LAST_RECEIVED_NOTIFICATION_TABLE,
+                columns: [
+                    {
+                        name: 'component',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'id',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'timecreated',
+                        type: 'INTEGER',
+                    },
+                ],
+                primaryKeys: ['component']
+            }
+        ]
+    };
 
     constructor(private file: File, private fileProvider: CoreFileProvider, private utils: CoreUtilsProvider,
             logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private localNotif: LocalNotifications,
             private captureHelper: CoreEmulatorCaptureHelperProvider, private timeUtils: CoreTimeUtilsProvider,
             private appProvider: CoreAppProvider, private localNotifProvider: CoreLocalNotificationsProvider) {
         this.logger = logger.getInstance('CoreEmulatorHelper');
-        sitesProvider.createTablesFromSchema(this.tablesSchema);
+        sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**
@@ -157,9 +161,11 @@ export class CoreEmulatorHelperProvider implements CoreInitHandler {
 
                 // There is a new notification, show it.
                 return getDataFn(notification).then((titleAndText) => {
-                    const localNotif = {
+                    const localNotif: ILocalNotification = {
                         id: 1,
-                        at: new Date(),
+                        trigger: {
+                            at: new Date()
+                        },
                         title: titleAndText.title,
                         text: titleAndText.text,
                         data: {

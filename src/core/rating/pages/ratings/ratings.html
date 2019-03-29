@@ -1,0 +1,28 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'core.rating.ratings' | translate }}</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="loaded" (ionRefresh)="refreshRatings($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded">
+        <ion-list *ngIf="ratings.length > 0">
+            <ion-item text-wrap *ngFor="let rating of ratings">
+                <ion-avatar core-user-avatar [user]="rating" [courseId]="courseId" item-start></ion-avatar>
+                <ion-note item-end padding-left *ngIf="rating.timemodified">
+                    {{ rating.timemodified | coreDateDayOrTime }}
+                </ion-note>
+                <h2><core-format-text [text]="rating.userfullname"></core-format-text></h2>
+                <p>{{ rating.rating }}</p>
+            </ion-item>
+        </ion-list>
+        <core-empty-box *ngIf="ratings.length == 0" icon="stats" [message]="'core.rating.noratings' | translate"></core-empty-box>
+    </core-loading>
+</ion-content>

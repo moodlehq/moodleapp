@@ -22,6 +22,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 
 /**
  * A book chapter inside the toc list.
@@ -64,7 +65,8 @@ export class AddonModBookProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private textUtils: CoreTextUtilsProvider,
             private fileProvider: CoreFileProvider, private filepoolProvider: CoreFilepoolProvider, private http: Http,
-            private utils: CoreUtilsProvider, private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider) {
+            private utils: CoreUtilsProvider, private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
+            private logHelper: CoreCourseLogHelperProvider) {
         this.logger = logger.getInstance('AddonModBookProvider');
     }
 
@@ -378,14 +380,15 @@ export class AddonModBookProvider {
      *
      * @param {number} id Module ID.
      * @param {string} chapterId Chapter ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logView(id: number, chapterId: string): Promise<any> {
+    logView(id: number, chapterId: string, siteId?: string): Promise<any> {
         const params = {
             bookid: id,
             chapterid: chapterId
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_book_view_book', params);
+        return this.logHelper.log('mod_book_view_book', params, AddonModBookProvider.COMPONENT, id, siteId);
     }
 }

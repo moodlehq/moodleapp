@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreFileProvider } from '@providers/file';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 
@@ -27,56 +27,60 @@ export class AddonModGlossaryOfflineProvider {
     // Variables for database.
     static ENTRIES_TABLE = 'addon_mod_glossary_entrues';
 
-    protected tablesSchema = [
-        {
-            name: AddonModGlossaryOfflineProvider.ENTRIES_TABLE,
-            columns: [
-                {
-                    name: 'glossaryid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'concept',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'definition',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'definitionformat',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'userid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'timecreated',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'options',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'attachments',
-                    type: 'TEXT',
-                },
-            ],
-            primaryKeys: ['glossaryid', 'concept', 'timecreated']
-        }
-    ];
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonModGlossaryOfflineProvider',
+        version: 1,
+        tables: [
+            {
+                name: AddonModGlossaryOfflineProvider.ENTRIES_TABLE,
+                columns: [
+                    {
+                        name: 'glossaryid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'concept',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'definition',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'definitionformat',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'userid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'timecreated',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'options',
+                        type: 'TEXT',
+                    },
+                    {
+                        name: 'attachments',
+                        type: 'TEXT',
+                    },
+                ],
+                primaryKeys: ['glossaryid', 'concept', 'timecreated']
+            }
+        ]
+    };
 
     constructor(private fileProvider: CoreFileProvider,
             private sitesProvider: CoreSitesProvider,
             private textUtils: CoreTextUtilsProvider,
             private utils: CoreUtilsProvider) {
-        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**

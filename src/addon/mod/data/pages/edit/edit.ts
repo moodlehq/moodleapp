@@ -57,7 +57,6 @@ export class AddonModDataEditPage {
     loaded = false;
     selectedGroup = 0;
     cssClass = '';
-    cssTemplate = '';
     groupInfo: any;
     editFormRender = '';
     editForm: FormGroup;
@@ -132,8 +131,6 @@ export class AddonModDataEditPage {
 
             return this.dataProvider.getDatabaseAccessInformation(data.id);
         }).then((accessData) => {
-            this.cssTemplate = this.dataHelper.prefixCSS(this.data.csstemplate, '.' + this.cssClass);
-
             if (this.entryId) {
                 return this.groupsProvider.getActivityGroupInfo(this.data.coursemodule, accessData.canmanageentries)
                         .then((groupInfo) => {

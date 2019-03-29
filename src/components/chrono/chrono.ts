@@ -28,7 +28,7 @@ import { Component, Input, OnChanges, OnDestroy, Output, EventEmitter, SimpleCha
  */
 @Component({
     selector: 'core-chrono',
-    template: '<span>{{ time / 1000 | coreSecondsToHMS }}</span>'
+    template: '<span role="timer">{{ time / 1000 | coreSecondsToHMS }}</span>'
 })
 export class CoreChronoComponent implements OnChanges, OnDestroy {
     @Input() running: boolean; // Set it to true to start the chrono. Set it to false to stop it.

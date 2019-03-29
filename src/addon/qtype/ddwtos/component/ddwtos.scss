@@ -40,10 +40,11 @@ addon-qtype-ddwtos {
     .drag {
         z-index: 2;
         border-radius: 5px;
+        line-height: 25px;
     }
     .drag.selected {
         z-index: 3;
-        box-shadow: 3px 3px 4px $gray-darker;
+        box-shadow: $core-dd-question-selected-shadow;
     }
 
     .drop.selected {
@@ -73,29 +74,10 @@ addon-qtype-ddwtos {
         background-color: $green-light;
     }
 
-    .group1 {
-        background-color: $white;
-    }
-    .group2 {
-        background-color: #DCDCDC;
-    }
-    .group3 {
-        background-color: $blue-light;
-    }
-    .group4 {
-        background-color: #D8BFD8;
-    }
-    .group5 {
-        background-color: #87CEFA;
-    }
-    .group6 {
-        background-color: #DAA520;
-    }
-    .group7 {
-        background-color: #FFD700;
-    }
-    .group8 {
-        background-color: #F0E68C;
+    @for $i from 0 to length($core-dd-question-colors) {
+        .group#{$i + 1} {
+            background: nth($core-dd-question-colors, $i + 1);
+        }
     }
 
     sub, sup {

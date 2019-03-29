@@ -71,7 +71,7 @@ export class AddonCalendarModule {
             newName: AddonCalendarProvider.EVENTS_TABLE,
             filterFields: ['id', 'name', 'description', 'format', 'eventtype', 'courseid', 'timestart', 'timeduration',
                     'categoryid', 'groupid', 'userid', 'instance', 'modulename', 'timemodified', 'repeatid', 'visible', 'uuid',
-                    'sequence', 'subscriptionid', 'notificationtime']
+                    'sequence', 'subscriptionid']
         });
 
         // Migrate the component name.

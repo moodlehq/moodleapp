@@ -1,4 +1,4 @@
-<ion-card-header text-wrap no-padding >
+<ion-card-header text-wrap no-padding id="addon-mod_forum-post-{{post.id}}">
     <ion-item text-wrap>
         <ion-avatar core-user-avatar [user]="post" item-start (click)="openUserProfile(post.userid)"></ion-avatar>
         <h2><span [class.core-bold]="post.parent == 0"><core-format-text [text]="post.subject"></core-format-text></span></h2>
@@ -23,6 +23,8 @@
         </ng-container>
     </div>
 </ion-card-content>
+<core-rating-rate *ngIf="forum && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id" [itemSetId]="discussionId" [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale" [userId]="post.userid" (onUpdate)="ratingUpdated()"></core-rating-rate>
+<core-rating-aggregate *ngIf="forum && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id" [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale"></core-rating-aggregate>
 <ion-item no-padding text-end *ngIf="post.id && post.canreply" class="addon-forum-reply-button">
     <button ion-button icon-left clear small (click)="showReply()" [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId" [attr.aria-expanded]="replyData.replyingTo === post.id">
         <ion-icon name="undo"></ion-icon> {{ 'addon.mod_forum.reply' | translate }}

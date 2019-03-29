@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreAppProvider } from '@providers/app';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -25,13 +24,17 @@ import { AddonModFeedbackProvider } from './feedback';
 import { CoreEventsProvider } from '@providers/events';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseActivitySyncBaseProvider } from '@core/course/classes/activity-sync';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreSyncProvider } from '@providers/sync';
+import { AddonModFeedbackPrefetchHandler } from './prefetch-handler';
 
 /**
  * Service to sync feedbacks.
  */
 @Injectable()
-export class AddonModFeedbackSyncProvider extends CoreSyncBaseProvider {
+export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProvider {
 
     static AUTO_SYNCED = 'addon_mod_feedback_autom_synced';
     protected componentTranslate: string;
@@ -40,11 +43,29 @@ export class AddonModFeedbackSyncProvider extends CoreSyncBaseProvider {
             protected appProvider: CoreAppProvider, private feedbackOffline: AddonModFeedbackOfflineProvider,
             private eventsProvider: CoreEventsProvider,  private feedbackProvider: AddonModFeedbackProvider,
             protected translate: TranslateService, private utils: CoreUtilsProvider, protected textUtils: CoreTextUtilsProvider,
-            courseProvider: CoreCourseProvider, syncProvider: CoreSyncProvider, timeUtils: CoreTimeUtilsProvider) {
+            private courseProvider: CoreCourseProvider, syncProvider: CoreSyncProvider, timeUtils: CoreTimeUtilsProvider,
+            private logHelper: CoreCourseLogHelperProvider, prefetchDelegate: CoreCourseModulePrefetchDelegate,
+            prefetchHandler: AddonModFeedbackPrefetchHandler) {
+
         super('AddonModFeedbackSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
-                timeUtils);
+                timeUtils, prefetchDelegate, prefetchHandler);
 
         this.componentTranslate = courseProvider.translateModuleName('feedback');
+    }
+
+    /**
+     * Conveniece function to prefetch data after an update.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID.
+     * @param {RegExp} [regex] If regex matches, don't download the data. Defaults to check files and timers.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetchAfterUpdate(module: any, courseId: number, regex?: RegExp, siteId?: string): Promise<any> {
+        regex = regex || /^.*files$|^timers/;
+
+        return super.prefetchAfterUpdate(module, courseId, regex, siteId);
     }
 
     /**
@@ -144,10 +165,15 @@ export class AddonModFeedbackSyncProvider extends CoreSyncBaseProvider {
 
         this.logger.debug(`Try to sync feedback '${feedbackId}' in site ${siteId}'`);
 
-        // Get offline responses to be sent.
-        const syncPromise = this.feedbackOffline.getFeedbackResponses(feedbackId, siteId).catch(() => {
-            // No offline data found, return empty array.
-            return [];
+        // Sync offline logs.
+        const syncPromise = this.logHelper.syncIfNeeded(AddonModFeedbackProvider.COMPONENT, feedbackId, siteId).catch(() => {
+            // Ignore errors.
+        }).then(() => {
+            // Get offline responses to be sent.
+            return this.feedbackOffline.getFeedbackResponses(feedbackId, siteId).catch(() => {
+                // No offline data found, return empty array.
+                return [];
+            });
         }).then((responses) => {
             if (!responses.length) {
                 // Nothing to sync.
@@ -189,7 +215,7 @@ export class AddonModFeedbackSyncProvider extends CoreSyncBaseProvider {
                     return Promise.all(promises);
                 }
 
-                return this.feedbackProvider.getCurrentCompletedTimeModified(feedbackId, siteId).then((timemodified) => {
+                return this.feedbackProvider.getCurrentCompletedTimeModified(feedbackId, true, siteId).then((timemodified) => {
                     // Sort by page.
                     responses.sort((a, b) => {
                         return a.page - b.page;
@@ -209,8 +235,10 @@ export class AddonModFeedbackSyncProvider extends CoreSyncBaseProvider {
             });
         }).then(() => {
             if (result.updated) {
-                // Data has been sent to server. Now invalidate the WS calls.
-                return this.feedbackProvider.invalidateAllFeedbackData(feedbackId, siteId).catch(() => {
+                // Data has been sent to server, update data.
+                return this.courseProvider.getModuleBasicInfoByInstance(feedbackId, 'feedback', siteId).then((module) => {
+                    return this.prefetchAfterUpdate(module, courseId, undefined, siteId);
+                }).catch(() => {
                     // Ignore errors.
                 });
             }

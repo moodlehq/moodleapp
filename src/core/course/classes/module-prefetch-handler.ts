@@ -53,6 +53,13 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
     updatesNames = /^.*files$/;
 
     /**
+     * If true, this module will be ignored when determining the status of a list of modules. The module will
+     * still be downloaded when downloading the section/course, it only affects whether the button should be displayed.
+     * @type {boolean}
+     */
+    skipListStatus = false;
+
+    /**
      * List of download promises to prevent downloading the module twice at the same time.
      * @type {{[s: string]: {[s: string]: Promise<any>}}}
      */
@@ -167,9 +174,10 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      *
      * @param {any} module The module object returned by WS.
      * @param {number} courseId Course ID.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @return {Promise<any[]>} Promise resolved with list of intro files.
      */
-    getIntroFiles(module: any, courseId: number): Promise<any[]> {
+    getIntroFiles(module: any, courseId: number, ignoreCache?: boolean): Promise<any[]> {
         return Promise.resolve(this.getIntroFilesFromInstance(module));
     }
 

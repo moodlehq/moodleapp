@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { OnInit, OnDestroy, Input, Output, EventEmitter, Injector } from '@angular/core';
+import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -20,6 +21,9 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseModuleMainComponent, CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreCourseSectionPage } from '@core/course/pages/section/section.ts';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
+import { AddonBlogProvider } from '@addon/blog/providers/blog';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Template class to easily create CoreCourseModuleMainComponent of resources (or activities without syncing).
@@ -32,12 +36,14 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     loaded: boolean; // If the component has been loaded.
     component: string; // Component name.
     componentId: number; // Component ID.
+    blog: boolean; // If blog is avalaible.
 
     // Data for context menu.
     externalUrl: string; // External URL to open in browser.
     description: string; // Module description.
     refreshIcon: string; // Refresh icon, normally spinner or refresh.
     prefetchStatusIcon: string; // Used when calling fillContextMenu.
+    prefetchStatus: string; // Used when calling fillContextMenu.
     prefetchText: string; // Used when calling fillContextMenu.
     size: string; // Used when calling fillContextMenu.
 
@@ -54,6 +60,9 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     protected domUtils: CoreDomUtilsProvider;
     protected moduleDelegate: CoreCourseModuleDelegate;
     protected courseSectionPage: CoreCourseSectionPage;
+    protected linkHelper: CoreContentLinksHelperProvider;
+    protected navCtrl: NavController;
+    protected blogProvider: AddonBlogProvider;
 
     protected logger;
 
@@ -64,6 +73,9 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         this.domUtils = injector.get(CoreDomUtilsProvider);
         this.moduleDelegate = injector.get(CoreCourseModuleDelegate);
         this.courseSectionPage = injector.get(CoreCourseSectionPage, null);
+        this.linkHelper = injector.get(CoreContentLinksHelperProvider);
+        this.navCtrl = injector.get(NavController, null);
+        this.blogProvider = injector.get(AddonBlogProvider, null);
         this.dataRetrieved = new EventEmitter();
 
         const loggerProvider = injector.get(CoreLoggerProvider);
@@ -79,6 +91,9 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         this.externalUrl = this.module.url;
         this.loaded = false;
         this.refreshIcon = 'spinner';
+        this.blogProvider.isPluginEnabled().then((enabled) => {
+            this.blog = enabled;
+        });
     }
 
     /**
@@ -210,10 +225,28 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     }
 
     /**
+     * Check if the module is prefetched or being prefetched. To make it faster, just use the data calculated by fillContextMenu.
+     * This means that you need to call fillContextMenu to make this work.
+     */
+    protected isPrefetched(): boolean {
+        return this.prefetchStatus != CoreConstants.NOT_DOWNLOADABLE && this.prefetchStatus != CoreConstants.NOT_DOWNLOADED;
+    }
+
+    /**
      * Expand the description.
      */
     expandDescription(): void {
         this.textUtils.expandText(this.translate.instant('core.description'), this.description, this.component, this.module.id);
+    }
+
+    /**
+     * Go to blog posts.
+     *
+     * @param {any} event Event.
+     */
+    gotoBlog(event: any): void {
+        // Always use redirect to make it the new history root (to avoid "loops" in history).
+        this.linkHelper.goInSite(this.navCtrl, 'AddonBlogEntriesPage', { cmId: this.module.id });
     }
 
     /**

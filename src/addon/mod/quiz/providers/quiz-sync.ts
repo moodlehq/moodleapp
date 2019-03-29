@@ -22,9 +22,11 @@ import { CoreSyncProvider } from '@providers/sync';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreQuestionProvider } from '@core/question/providers/question';
 import { CoreQuestionDelegate } from '@core/question/providers/delegate';
-import { CoreSyncBaseProvider } from '@classes/base-sync';
+import { CoreCourseActivitySyncBaseProvider } from '@core/course/classes/activity-sync';
 import { AddonModQuizProvider } from './quiz';
 import { AddonModQuizOfflineProvider } from './quiz-offline';
 import { AddonModQuizPrefetchHandler } from './prefetch-handler';
@@ -50,7 +52,7 @@ export interface AddonModQuizSyncResult {
  * Service to sync quizzes.
  */
 @Injectable()
-export class AddonModQuizSyncProvider extends CoreSyncBaseProvider {
+export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider {
 
     static AUTO_SYNCED = 'addon_mod_quiz_autom_synced';
 
@@ -58,13 +60,14 @@ export class AddonModQuizSyncProvider extends CoreSyncBaseProvider {
 
     constructor(loggerProvider: CoreLoggerProvider, sitesProvider: CoreSitesProvider, appProvider: CoreAppProvider,
             syncProvider: CoreSyncProvider, textUtils: CoreTextUtilsProvider, translate: TranslateService,
-            courseProvider: CoreCourseProvider, private eventsProvider: CoreEventsProvider, timeUtils: CoreTimeUtilsProvider,
+            private eventsProvider: CoreEventsProvider, timeUtils: CoreTimeUtilsProvider,
             private quizProvider: AddonModQuizProvider, private quizOfflineProvider: AddonModQuizOfflineProvider,
-            private prefetchHandler: AddonModQuizPrefetchHandler, private questionProvider: CoreQuestionProvider,
-            private questionDelegate: CoreQuestionDelegate) {
+            protected prefetchHandler: AddonModQuizPrefetchHandler, private questionProvider: CoreQuestionProvider,
+            private questionDelegate: CoreQuestionDelegate, private logHelper: CoreCourseLogHelperProvider,
+            prefetchDelegate: CoreCourseModulePrefetchDelegate, private courseProvider: CoreCourseProvider) {
 
         super('AddonModQuizSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
-                timeUtils);
+                timeUtils, prefetchDelegate, prefetchHandler);
 
         this.componentTranslate = courseProvider.translateModuleName('quiz');
     }
@@ -96,7 +99,11 @@ export class AddonModQuizSyncProvider extends CoreSyncBaseProvider {
         }).then(() => {
             if (updated) {
                 // Data has been sent. Update prefetched data.
-                return this.prefetchHandler.prefetchQuizAndLastAttempt(quiz, false, siteId);
+                return this.courseProvider.getModuleBasicInfoByInstance(quiz.id, 'quiz', siteId).then((module) => {
+                    return this.prefetchAfterUpdateQuiz(module, quiz, courseId, undefined, siteId);
+                }).catch(() => {
+                    // Ignore errors.
+                });
             }
         }).then(() => {
             return this.setSyncTime(quiz.id, siteId).catch(() => {
@@ -145,6 +152,41 @@ export class AddonModQuizSyncProvider extends CoreSyncBaseProvider {
     }
 
     /**
+     * Conveniece function to prefetch data after an update.
+     *
+     * @param {any} module Module.
+     * @param {any} quiz Quiz.
+     * @param {number} courseId Course ID.
+     * @param {RegExp} [regex] If regex matches, don't download the data. Defaults to check files.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetchAfterUpdateQuiz(module: any, quiz: any, courseId: number, regex?: RegExp, siteId?: string): Promise<any> {
+        regex = regex || /^.*files$/;
+
+        let shouldDownload;
+
+        // Get the module updates to check if the data was updated or not.
+        return this.prefetchDelegate.getModuleUpdates(module, courseId, true, siteId).then((result) => {
+
+            if (result && result.updates && result.updates.length > 0) {
+                // Only prefetch if files haven't changed.
+                shouldDownload = !result.updates.find((entry) => {
+                    return entry.name.match(regex);
+                });
+
+                if (shouldDownload) {
+                    return this.prefetchHandler.download(module, courseId, undefined, false, false);
+                }
+            }
+
+        }).then(() => {
+            // Prefetch finished or not needed, set the right status.
+            return this.prefetchHandler.setStatusAfterPrefetch(quiz, undefined, shouldDownload, false, siteId);
+        });
+    }
+
+    /**
      * Try to synchronize all the quizzes in a certain site or in all sites.
      *
      * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
@@ -184,7 +226,7 @@ export class AddonModQuizSyncProvider extends CoreSyncBaseProvider {
                 if (!this.syncProvider.isBlocked(AddonModQuizProvider.COMPONENT, quiz.id, siteId)) {
 
                     // Quiz not blocked, try to synchronize it.
-                    promises.push(this.quizProvider.getQuizById(quiz.courseid, quiz.id, false, siteId).then((quiz) => {
+                    promises.push(this.quizProvider.getQuizById(quiz.courseid, quiz.id, false, false, siteId).then((quiz) => {
                         return this.syncQuizIfNeeded(quiz, false, siteId).then((data) => {
                             if (data && data.warnings && data.warnings.length) {
                                 // Store the warnings to show them when the user opens the quiz.
@@ -259,8 +301,13 @@ export class AddonModQuizSyncProvider extends CoreSyncBaseProvider {
 
         this.logger.debug('Try to sync quiz ' + quiz.id + ' in site ' + siteId);
 
-        // Get all the offline attempts for the quiz.
-        syncPromise = this.quizOfflineProvider.getQuizAttempts(quiz.id, siteId).then((attempts) => {
+        // Sync offline logs.
+        syncPromise = this.logHelper.syncIfNeeded(AddonModQuizProvider.COMPONENT, quiz.id, siteId).catch(() => {
+            // Ignore errors.
+        }).then(() => {
+            // Get all the offline attempts for the quiz.
+            return this.quizOfflineProvider.getQuizAttempts(quiz.id, siteId);
+        }).then((attempts) => {
             // Should return 0 or 1 attempt.
             if (!attempts.length) {
                 return this.finishSync(siteId, quiz, courseId, warnings);

@@ -9,13 +9,15 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <ng-container *ngFor="let section of sections">
-        <a ion-item *ngIf="!section.hiddenbynumsections && section.id != stealthModulesSectionId" text-wrap (click)="selectSection(section)" [class.core-primary-selected-item]="selected.id == section.id" [class.item-dimmed]="section.visible === 0 || section.uservisible === false" detail-none>
-            <core-icon name="fa-folder" item-start></core-icon>
-            <h2><core-format-text [text]="section.formattedName || section.name"></core-format-text></h2>
-            <core-progress-bar *ngIf="section.progress >= 0" [progress]="section.progress"></core-progress-bar>
-            <ion-badge color="secondary" *ngIf="section.visible === 0 && section.uservisible !== false">{{ 'core.course.hiddenfromstudents' | translate }}</ion-badge>
-            <ion-badge color="secondary" *ngIf="section.availabilityinfo"><core-format-text  [text]=" section.availabilityinfo"></core-format-text></ion-badge>
-        </a>
-    </ng-container>
+    <ion-list id="core-course-section-selector" role="menu" aria-labelledby="core-course-section-button">
+        <ng-container *ngFor="let section of sections">
+            <a ion-item *ngIf="!section.hiddenbynumsections && section.id != stealthModulesSectionId" text-wrap (click)="selectSection(section)" [class.core-primary-selected-item]="selected.id == section.id" [class.item-dimmed]="section.visible === 0 || section.uservisible === false" detail-none role="menuitem" [attr.aria-hidden]="section.uservisible === false" [attr.aria-label]="section.formattedName || section.name">
+                <core-icon name="fa-folder" item-start></core-icon>
+                <h2><core-format-text [text]="section.formattedName || section.name"></core-format-text></h2>
+                <core-progress-bar *ngIf="section.progress >= 0" [progress]="section.progress"></core-progress-bar>
+                <ion-badge color="secondary" *ngIf="section.visible === 0 && section.uservisible !== false" text-wrap>{{ 'core.course.hiddenfromstudents' | translate }}</ion-badge>
+                <ion-badge color="secondary" *ngIf="section.availabilityinfo" text-wrap><core-format-text  [text]=" section.availabilityinfo"></core-format-text></ion-badge>
+            </a>
+        </ng-container>
+    </ion-list>
 </ion-content>

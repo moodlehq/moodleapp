@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { ModalController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '@core/user/providers/user-delegate';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreSitesProvider } from '@providers/sites';
 import { AddonNotesProvider } from './notes';
 
@@ -25,30 +25,30 @@ import { AddonNotesProvider } from './notes';
  */
 @Injectable()
 export class AddonNotesUserHandler implements CoreUserProfileHandler {
-    name = 'AddonNotes:addNote';
-    priority = 200;
-    type = CoreUserDelegate.TYPE_COMMUNICATION;
-    addNoteEnabledCache = {};
+    name = 'AddonNotes:notes';
+    priority = 100;
+    type = CoreUserDelegate.TYPE_NEW_PAGE;
+    noteEnabledCache = {};
 
-    constructor(private modalCtrl: ModalController, private sitesProvider: CoreSitesProvider,
+    constructor(private linkHelper: CoreContentLinksHelperProvider, private sitesProvider: CoreSitesProvider,
             private notesProvider: AddonNotesProvider, eventsProvider: CoreEventsProvider) {
-        eventsProvider.on(CoreEventsProvider.LOGOUT, this.clearAddNoteCache.bind(this));
+        eventsProvider.on(CoreEventsProvider.LOGOUT, this.clearNoteCache.bind(this));
         eventsProvider.on(CoreUserProvider.PROFILE_REFRESHED, (data) => {
-            this.clearAddNoteCache(data.courseId);
+            this.clearNoteCache(data.courseId);
         });
     }
 
     /**
-     * Clear add note cache.
+     * Clear note cache.
      * If a courseId is specified, it will only delete the entry for that course.
      *
      * @param {number} [courseId] Course ID.
      */
-    private clearAddNoteCache(courseId?: number): void {
+    private clearNoteCache(courseId?: number): void {
         if (courseId) {
-            delete this.addNoteEnabledCache[courseId];
+            delete this.noteEnabledCache[courseId];
         } else {
-            this.addNoteEnabledCache = {};
+            this.noteEnabledCache = {};
         }
     }
 
@@ -75,12 +75,12 @@ export class AddonNotesUserHandler implements CoreUserProfileHandler {
             return Promise.resolve(false);
         }
 
-        if (typeof this.addNoteEnabledCache[courseId] != 'undefined') {
-            return this.addNoteEnabledCache[courseId];
+        if (typeof this.noteEnabledCache[courseId] != 'undefined') {
+            return this.noteEnabledCache[courseId];
         }
 
-        return this.notesProvider.isPluginAddNoteEnabledForCourse(courseId).then((enabled) => {
-            this.addNoteEnabledCache[courseId] = enabled;
+        return this.notesProvider.isPluginViewNotesEnabledForCourse(courseId).then((enabled) => {
+            this.noteEnabledCache[courseId] = enabled;
 
             return enabled;
         });
@@ -94,13 +94,13 @@ export class AddonNotesUserHandler implements CoreUserProfileHandler {
     getDisplayData(user: any, courseId: number): CoreUserProfileHandlerData {
         return {
             icon: 'list',
-            title: 'addon.notes.addnewnote',
+            title: 'addon.notes.notes',
             class: 'addon-notes-handler',
             action: (event, navCtrl, user, courseId): void => {
                 event.preventDefault();
                 event.stopPropagation();
-                const modal = this.modalCtrl.create('AddonNotesAddPage', { userId: user.id, courseId });
-                modal.present();
+                // Always use redirect to make it the new history root (to avoid "loops" in history).
+                this.linkHelper.goInSite(navCtrl, 'AddonNotesListPage', { userId: user.id, courseId: courseId });
             }
         };
     }

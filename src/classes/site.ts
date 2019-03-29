@@ -166,47 +166,8 @@ export class CoreSite {
     protected wsProvider: CoreWSProvider;
 
     // Variables for the database.
-    protected WS_CACHE_TABLE = 'wscache';
-    protected CONFIG_TABLE = 'core_site_config';
-    protected tableSchemas = [
-        {
-            name: this.WS_CACHE_TABLE,
-            columns: [
-                {
-                    name: 'id',
-                    type: 'TEXT',
-                    primaryKey: true
-                },
-                {
-                    name: 'data',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'key',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'expirationTime',
-                    type: 'INTEGER'
-                }
-            ]
-        },
-        {
-            name: this.CONFIG_TABLE,
-            columns: [
-                {
-                    name: 'name',
-                    type: 'TEXT',
-                    unique: true,
-                    notNull: true
-                },
-                {
-                    name: 'value'
-                }
-            ]
-        }
-
-    ];
+    static WS_CACHE_TABLE = 'wscache';
+    static CONFIG_TABLE = 'core_site_config';
 
     // Versions of Moodle releases.
     protected MOODLE_RELEASES = {
@@ -224,6 +185,7 @@ export class CoreSite {
     protected cleanUnicode = false;
     protected lastAutoLogin = 0;
     protected offlineDisabled = false;
+    protected ongoingRequests: { [cacheId: string]: Promise<any> } = {};
 
     /**
      * Create a site.
@@ -267,7 +229,6 @@ export class CoreSite {
      */
     initDB(): void {
         this.db = this.dbProvider.getDB('Site-' + this.id);
-        this.db.createTablesFromSchema(this.tableSchemas);
     }
 
     /**
@@ -611,15 +572,24 @@ export class CoreSite {
             return Promise.reject(this.utils.createFakeWSError('core.unicodenotsupportedcleanerror', true));
         }
 
-        return this.getFromCache(method, data, preSets, false, originalData).catch(() => {
+        const cacheId = this.getCacheId(method, data);
+
+        // Check for an ongoing identical request if we're not ignoring cache.
+        if (preSets.getFromCache && this.ongoingRequests[cacheId]) {
+            return this.ongoingRequests[cacheId].then((response) => {
+                // Clone the data, this may prevent errors if in the callback the object is modified.
+                return this.utils.clone(response);
+            });
+        }
+
+        const promise = this.getFromCache(method, data, preSets, false, originalData).catch(() => {
             // Do not pass those options to the core WS factory.
             return this.wsProvider.call(method, data, wsPreSets).then((response) => {
                 if (preSets.saveToCache) {
                     this.saveToCache(method, data, response, preSets);
                 }
 
-                // We pass back a clone of the original object, this may prevent errors if in the callback the object is modified.
-                return this.utils.clone(response);
+                return response;
             }).catch((error) => {
                 if (error.errorcode == 'invalidtoken' ||
                     (error.errorcode == 'accessexception' && error.message.indexOf('Invalid token - token expired') > -1)) {
@@ -635,7 +605,7 @@ export class CoreSite {
 
                     // Session expired, trigger event.
                     this.eventsProvider.trigger(CoreEventsProvider.SESSION_EXPIRED, {}, this.id);
-                    // Change error message. We'll try to get data from cache.
+                    // Change error message. Try to get data from cache, the event will handle the error.
                     error.message = this.translate.instant('core.lostconnection');
                 } else if (error.errorcode === 'userdeleted') {
                     // User deleted, trigger event.
@@ -644,17 +614,15 @@ export class CoreSite {
 
                     return Promise.reject(error);
                 } else if (error.errorcode === 'forcepasswordchangenotice') {
-                    // Password Change Forced, trigger event.
+                    // Password Change Forced, trigger event. Try to get data from cache, the event will handle the error.
                     this.eventsProvider.trigger(CoreEventsProvider.PASSWORD_CHANGE_FORCED, {}, this.id);
                     error.message = this.translate.instant('core.forcepasswordchangenotice');
 
-                    return Promise.reject(error);
                 } else if (error.errorcode === 'usernotfullysetup') {
-                    // User not fully setup, trigger event.
+                    // User not fully setup, trigger event. Try to get data from cache, the event will handle the error.
                     this.eventsProvider.trigger(CoreEventsProvider.USER_NOT_FULLY_SETUP, {}, this.id);
                     error.message = this.translate.instant('core.usernotfullysetup');
 
-                    return Promise.reject(error);
                 } else if (error.errorcode === 'sitepolicynotagreed') {
                     // Site policy not agreed, trigger event.
                     this.eventsProvider.trigger(CoreEventsProvider.SITE_POLICY_NOT_AGREED, {}, this.id);
@@ -672,10 +640,13 @@ export class CoreSite {
                     error.message = this.translate.instant('core.unicodenotsupported');
 
                     return Promise.reject(error);
-                } else if (error.exception === 'required_capability_exception' || error.errorcode === 'nopermission') {
+                } else if (error.exception === 'required_capability_exception' || error.errorcode === 'nopermission' ||
+                        error.errorcode === 'notingroup') {
+                    // Translate error messages with missing strings.
                     if (error.message === 'error/nopermission') {
-                        // This error message is returned by some web services but the string does not exist.
                         error.message = this.translate.instant('core.nopermissionerror');
+                    } else if (error.message === 'error/notingroup') {
+                        error.message = this.translate.instant('core.notingroup');
                     }
 
                     // Save the error instead of deleting the cache entry so the same content is displayed in offline.
@@ -712,6 +683,19 @@ export class CoreSite {
             }
 
             return response;
+        });
+
+        this.ongoingRequests[cacheId] = promise;
+
+        // Clear ongoing request after setting the promise (just in case it's already resolved).
+        return promise.finally(() => {
+            // Make sure we don't clear the promise of a newer request that ignores the cache.
+            if (this.ongoingRequests[cacheId] === promise) {
+                delete this.ongoingRequests[cacheId];
+            }
+        }).then((response) => {
+            // We pass back a clone of the original object, this may prevent errors if in the callback the object is modified.
+            return this.utils.clone(response);
         });
     }
 
@@ -784,10 +768,10 @@ export class CoreSite {
         let promise;
 
         if (preSets.getCacheUsingCacheKey || (emergency && preSets.getEmergencyCacheUsingCacheKey)) {
-            promise = this.db.getRecords(this.WS_CACHE_TABLE, { key: preSets.cacheKey }).then((entries) => {
+            promise = this.db.getRecords(CoreSite.WS_CACHE_TABLE, { key: preSets.cacheKey }).then((entries) => {
                 if (!entries.length) {
                     // Cache key not found, get by params sent.
-                    return this.db.getRecord(this.WS_CACHE_TABLE, { id: id });
+                    return this.db.getRecord(CoreSite.WS_CACHE_TABLE, { id: id });
                 } else if (entries.length > 1) {
                     // More than one entry found. Search the one with same ID as this call.
                     for (let i = 0, len = entries.length; i < len; i++) {
@@ -801,13 +785,13 @@ export class CoreSite {
                 return entries[0];
             });
         } else {
-            promise = this.db.getRecord(this.WS_CACHE_TABLE, { id: id }).catch(() => {
+            promise = this.db.getRecord(CoreSite.WS_CACHE_TABLE, { id: id }).catch(() => {
                 // Entry not found, try to get it using the old ID.
                 const oldId = this.getCacheOldId(method, originalData || {});
 
-                return this.db.getRecord(this.WS_CACHE_TABLE, { id: oldId }).then((entry) => {
+                return this.db.getRecord(CoreSite.WS_CACHE_TABLE, { id: oldId }).then((entry) => {
                     // Update the entry ID to use the new one.
-                    this.db.updateRecords(this.WS_CACHE_TABLE, {id: id}, {id: oldId});
+                    this.db.updateRecords(CoreSite.WS_CACHE_TABLE, {id: id}, {id: oldId});
 
                     return entry;
                 });
@@ -877,7 +861,7 @@ export class CoreSite {
                 entry.key = preSets.cacheKey;
             }
 
-            return this.db.insertRecord(this.WS_CACHE_TABLE, entry);
+            return this.db.insertRecord(CoreSite.WS_CACHE_TABLE, entry);
         });
     }
 
@@ -898,10 +882,10 @@ export class CoreSite {
         const id = this.getCacheId(method, data);
 
         if (allCacheKey) {
-            return this.db.deleteRecords(this.WS_CACHE_TABLE, { key: preSets.cacheKey });
+            return this.db.deleteRecords(CoreSite.WS_CACHE_TABLE, { key: preSets.cacheKey });
         }
 
-        return this.db.deleteRecords(this.WS_CACHE_TABLE, { id: id });
+        return this.db.deleteRecords(CoreSite.WS_CACHE_TABLE, { id: id });
     }
 
     /*
@@ -935,7 +919,7 @@ export class CoreSite {
 
         this.logger.debug('Invalidate all the cache for site: ' + this.id);
 
-        return this.db.updateRecords(this.WS_CACHE_TABLE, { expirationTime: 0 });
+        return this.db.updateRecords(CoreSite.WS_CACHE_TABLE, { expirationTime: 0 });
     }
 
     /**
@@ -954,7 +938,7 @@ export class CoreSite {
 
         this.logger.debug('Invalidate cache for key: ' + key);
 
-        return this.db.updateRecords(this.WS_CACHE_TABLE, { expirationTime: 0 }, { key: key });
+        return this.db.updateRecords(CoreSite.WS_CACHE_TABLE, { expirationTime: 0 }, { key: key });
     }
 
     /**
@@ -997,7 +981,7 @@ export class CoreSite {
 
         this.logger.debug('Invalidate cache for key starting with: ' + key);
 
-        const sql = 'UPDATE ' + this.WS_CACHE_TABLE + ' SET expirationTime=0 WHERE key LIKE ?';
+        const sql = 'UPDATE ' + CoreSite.WS_CACHE_TABLE + ' SET expirationTime=0 WHERE key LIKE ?';
 
         return this.db.execute(sql, [key + '%']);
     }
@@ -1590,7 +1574,7 @@ export class CoreSite {
      * @return {Promise<any>} Promise resolved when done.
      */
     deleteSiteConfig(name: string): Promise<any> {
-        return this.db.deleteRecords(this.CONFIG_TABLE, { name: name });
+        return this.db.deleteRecords(CoreSite.CONFIG_TABLE, { name: name });
     }
 
     /**
@@ -1601,7 +1585,7 @@ export class CoreSite {
      * @return {Promise<any>} Resolves upon success along with the config data. Reject on failure.
      */
     getLocalSiteConfig(name: string, defaultValue?: any): Promise<any> {
-        return this.db.getRecord(this.CONFIG_TABLE, { name: name }).then((entry) => {
+        return this.db.getRecord(CoreSite.CONFIG_TABLE, { name: name }).then((entry) => {
             return entry.value;
         }).catch((error) => {
             if (typeof defaultValue != 'undefined') {
@@ -1620,6 +1604,6 @@ export class CoreSite {
      * @return {Promise<any>} Promise resolved when done.
      */
     setLocalSiteConfig(name: string, value: number | string): Promise<any> {
-        return this.db.insertRecord(this.CONFIG_TABLE, { name: name, value: value });
+        return this.db.insertRecord(CoreSite.CONFIG_TABLE, { name: name, value: value });
     }
 }

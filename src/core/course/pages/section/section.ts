@@ -62,6 +62,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     displayRefresher: boolean;
 
     protected module: any;
+    protected modParams: any;
     protected completionObserver;
     protected courseStatusObserver;
     protected syncObserver;
@@ -80,6 +81,7 @@ export class CoreCourseSectionPage implements OnDestroy {
         this.sectionNumber = navParams.get('sectionNumber');
         this.module = navParams.get('module');
         this.firstTabName = navParams.get('selectedTab');
+        this.modParams = navParams.get('modParams');
 
         // Get the title to display. We dont't have sections yet.
         this.title = courseFormatDelegate.getCourseTitle(this.course);
@@ -124,7 +126,7 @@ export class CoreCourseSectionPage implements OnDestroy {
 
         if (this.module) {
             this.moduleId = this.module.id;
-            this.courseHelper.openModule(this.navCtrl, this.module, this.course.id, this.sectionId);
+            this.courseHelper.openModule(this.navCtrl, this.module, this.course.id, this.sectionId, this.modParams);
         }
 
         this.loadData(false, true).finally(() => {
@@ -167,7 +169,9 @@ export class CoreCourseSectionPage implements OnDestroy {
      */
     protected loadData(refresh?: boolean, sync?: boolean): Promise<any> {
         // First of all, get the course because the data might have changed.
-        return this.coursesProvider.getUserCourse(this.course.id).catch(() => {
+        return this.courseHelper.getCourse(this.course.id).then((result) => {
+            return result.course;
+        }).catch(() => {
             // Error getting the course, probably guest access.
         }).then((course) => {
             if (course) {
@@ -345,9 +349,12 @@ export class CoreCourseSectionPage implements OnDestroy {
     /**
      * The completion of any of the modules have changed.
      */
-    onCompletionChange(): void {
+    onCompletionChange(completionData: any): void {
+        const shouldReload = !completionData.hasOwnProperty('valueused') || completionData.valueused;
         this.invalidateData().finally(() => {
-            this.refreshAfterCompletionChange(true);
+            if (shouldReload) {
+                this.refreshAfterCompletionChange(true);
+            }
         });
     }
 

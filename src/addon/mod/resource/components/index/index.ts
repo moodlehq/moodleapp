@@ -15,6 +15,7 @@
 import { Component, Injector } from '@angular/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
 import { AddonModResourceProvider } from '../../providers/resource';
@@ -38,7 +39,8 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
 
     constructor(injector: Injector, private resourceProvider: AddonModResourceProvider, private courseProvider: CoreCourseProvider,
             private appProvider: CoreAppProvider, private prefetchHandler: AddonModResourcePrefetchHandler,
-            private resourceHelper: AddonModResourceHelperProvider, private sitesProvider: CoreSitesProvider) {
+            private resourceHelper: AddonModResourceHelperProvider, private sitesProvider: CoreSitesProvider,
+            private utils: CoreUtilsProvider) {
         super(injector);
     }
 
@@ -78,7 +80,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
         // Load module contents if needed. Passing refresh is needed to force reloading contents.
         return this.courseProvider.loadModuleContents(this.module, this.courseId, null, false, refresh).then(() => {
             if (!this.module.contents || !this.module.contents.length) {
-                return Promise.reject(null);
+                return Promise.reject(this.utils.createFakeWSError('core.filenotfound', true));
             }
 
             // Get the resource instance to get the latest name/description and to know if it's embedded.

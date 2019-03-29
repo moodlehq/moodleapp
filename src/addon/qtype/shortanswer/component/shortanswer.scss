@@ -1,0 +1,18 @@
+addon-qtype-shortanswer {
+    .addon-qtype-shortanswer-text {
+        ion-label.label {
+            margin-bottom: 0;
+        }
+
+        input {
+            @include placeholder($text-input-placeholder-color);
+            @include appearance(none);
+            @include border-radius(4px);
+            display: inline-block;
+            border: 1px solid $gray-dark;
+            padding: 6px 8px;
+            @include margin-horizontal(2px);
+            margin-bottom: 10px;
+        }
+    }
+}

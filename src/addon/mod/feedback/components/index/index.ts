@@ -36,6 +36,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     @Input() tab = 'overview';
     @Input() group = 0;
 
+    component = AddonModFeedbackProvider.COMPONENT;
     moduleName = 'feedback';
 
     access = {
@@ -67,25 +68,40 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     firstSelectedTab: number;
 
     protected submitObserver: any;
+    protected syncEventName = AddonModFeedbackSyncProvider.AUTO_SYNCED;
 
     constructor(injector: Injector, private feedbackProvider: AddonModFeedbackProvider, @Optional() content: Content,
             private feedbackOffline: AddonModFeedbackOfflineProvider, private groupsProvider: CoreGroupsProvider,
-            private feedbackSync: AddonModFeedbackSyncProvider, private navCtrl: NavController,
+            private feedbackSync: AddonModFeedbackSyncProvider, protected navCtrl: NavController,
             private feedbackHelper: AddonModFeedbackHelperProvider, private timeUtils: CoreTimeUtilsProvider) {
         super(injector, content);
 
         // Listen for form submit events.
         this.submitObserver = this.eventsProvider.on(AddonModFeedbackProvider.FORM_SUBMITTED, (data) => {
             if (this.feedback && data.feedbackId == this.feedback.id) {
-                // Go to review attempt if an attempt in this quiz was finished and synced.
                 this.tabsLoaded['analysis'] = false;
                 this.tabsLoaded['overview'] = false;
                 this.loaded = false;
-                if (data.tab != this.tab) {
-                    this.tabChanged(data.tab);
+
+                let promise;
+
+                // Prefetch data if needed.
+                if (!data.offline && this.isPrefetched()) {
+                    promise = this.feedbackSync.prefetchAfterUpdate(this.module, this.courseId).catch(() => {
+                        // Ignore errors.
+                    });
                 } else {
-                    this.loadContent(true);
+                    promise = Promise.resolve();
                 }
+
+                promise.then(() => {
+                    // Load the right tab.
+                    if (data.tab != this.tab) {
+                        this.tabChanged(data.tab);
+                    } else {
+                        this.loadContent(true);
+                    }
+                });
             }
         }, this.siteId);
     }

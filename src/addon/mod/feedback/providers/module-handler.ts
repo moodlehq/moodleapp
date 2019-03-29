@@ -65,8 +65,12 @@ export class AddonModFeedbackModuleHandler implements CoreCourseModuleHandler {
             title: module.name,
             class: 'addon-mod_feedback-handler',
             showDownloadButton: true,
-            action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void {
-                navCtrl.push('AddonModFeedbackIndexPage', {module: module, courseId: courseId}, options);
+            action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions, params?: any): void {
+                const pageParams = {module: module, courseId: courseId};
+                if (params) {
+                    Object.assign(pageParams, params);
+                }
+                navCtrl.push('AddonModFeedbackIndexPage', pageParams, options);
             }
         };
     }

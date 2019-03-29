@@ -245,7 +245,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy {
 
             if (info.preventaccessreasons && info.preventaccessreasons.length) {
                 // If it's a password protected lesson and we have the password, allow playing it.
-                const preventReason = this.lessonProvider.getPreventAccessReason(info, !!this.password);
+                const preventReason = this.lessonProvider.getPreventAccessReason(info, !!this.password, this.review);
                 if (preventReason) {
                     // Lesson cannot be played, show message and go back.
                     return Promise.reject(preventReason.message);

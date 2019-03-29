@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreEventsProvider } from './events';
-import { CoreSitesProvider } from './sites';
+import { CoreSitesProvider, CoreSiteSchema } from './sites';
 
 /*
  * Service that provides some features regarding synchronization.
@@ -24,36 +24,42 @@ export class CoreSyncProvider {
 
     // Variables for the database.
     protected SYNC_TABLE = 'sync';
-    protected tableSchema = {
-        name: this.SYNC_TABLE,
-        columns: [
+    protected siteSchema: CoreSiteSchema = {
+        name: 'CoreSyncProvider',
+        version: 1,
+        tables: [
             {
-                name: 'component',
-                type: 'TEXT',
-                notNull: true
-            },
-            {
-                name: 'id',
-                type: 'TEXT',
-                notNull: true
-            },
-            {
-                name: 'time',
-                type: 'INTEGER'
-            },
-            {
-                name: 'warnings',
-                type: 'TEXT'
+                name: this.SYNC_TABLE,
+                columns: [
+                    {
+                        name: 'component',
+                        type: 'TEXT',
+                        notNull: true
+                    },
+                    {
+                        name: 'id',
+                        type: 'TEXT',
+                        notNull: true
+                    },
+                    {
+                        name: 'time',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'warnings',
+                        type: 'TEXT'
+                    }
+                ],
+                primaryKeys: ['component', 'id']
             }
-        ],
-        primaryKeys: ['component', 'id']
+        ]
     };
 
     // Store blocked sync objects.
     protected blockedItems: { [siteId: string]: { [blockId: string]: { [operation: string]: boolean } } } = {};
 
     constructor(eventsProvider: CoreEventsProvider, private sitesProvider: CoreSitesProvider) {
-        this.sitesProvider.createTableFromSchema(this.tableSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
 
         // Unblock all blocks on logout.
         eventsProvider.on(CoreEventsProvider.LOGOUT, (data) => {

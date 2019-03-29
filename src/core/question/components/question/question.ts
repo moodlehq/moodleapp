@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, OnInit, Injector, EventEmitter } from '@angular/core';
+import { Component, Input, Output, OnInit, Injector, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -49,7 +49,8 @@ export class CoreQuestionComponent implements OnInit {
     constructor(logger: CoreLoggerProvider, protected injector: Injector, protected questionDelegate: CoreQuestionDelegate,
             protected utils: CoreUtilsProvider, protected behaviourDelegate: CoreQuestionBehaviourDelegate,
             protected questionHelper: CoreQuestionHelperProvider, protected translate: TranslateService,
-            protected questionProvider: CoreQuestionProvider, protected domUtils: CoreDomUtilsProvider) {
+            protected questionProvider: CoreQuestionProvider, protected domUtils: CoreDomUtilsProvider,
+            protected cdr: ChangeDetectorRef) {
         logger = logger.getInstance('CoreQuestionComponent');
 
         this.buttonClicked = new EventEmitter();
@@ -147,5 +148,17 @@ export class CoreQuestionComponent implements OnInit {
         }).catch(() => {
             // Ignore errors.
         });
+    }
+
+    /**
+     * Update the sequence check of the question.
+     *
+     * @param {any} sequenceChecks Object with sequence checks. The keys are the question slot.
+     */
+    updateSequenceCheck(sequenceChecks: any): void {
+        if (sequenceChecks[this.question.slot]) {
+            this.seqCheck = sequenceChecks[this.question.slot];
+            this.cdr.detectChanges();
+        }
     }
 }

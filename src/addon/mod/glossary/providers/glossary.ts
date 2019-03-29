@@ -20,6 +20,8 @@ import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
+import { CoreRatingInfo } from '@core/rating/providers/rating';
 import { AddonModGlossaryOfflineProvider } from './offline';
 
 /**
@@ -43,7 +45,8 @@ export class AddonModGlossaryProvider {
             private translate: TranslateService,
             private textUtils: CoreTextUtilsProvider,
             private utils: CoreUtilsProvider,
-            private glossaryOffline: AddonModGlossaryOfflineProvider) {}
+            private glossaryOffline: AddonModGlossaryOfflineProvider,
+            private logHelper: CoreCourseLogHelperProvider) {}
 
     /**
      * Get the course glossary cache key.
@@ -487,7 +490,7 @@ export class AddonModGlossaryProvider {
      * @param  {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}    Promise resolved with the entry.
      */
-    getEntry(entryId: number, siteId?: string): Promise<any> {
+    getEntry(entryId: number, siteId?: string): Promise<{entry: any, ratinginfo: CoreRatingInfo}> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 id: entryId
@@ -498,7 +501,7 @@ export class AddonModGlossaryProvider {
 
             return site.read('mod_glossary_get_entry_by_id', params, preSets).then((response) => {
                 if (response && response.entry) {
-                    return response.entry;
+                    return response;
                 } else {
                     return Promise.reject(null);
                 }
@@ -613,31 +616,35 @@ export class AddonModGlossaryProvider {
      *
      * @param  {any}     glossary          The glossary object.
      * @param  {boolean} [onlyEntriesList] If true, entries won't be invalidated.
+     * @param  {string}  [siteId]          Site ID. If not defined, current site.
      * @return {Promise<any>}              Promise resolved when data is invalidated.
      */
-    invalidateGlossaryEntries(glossary: any, onlyEntriesList?: boolean): Promise<any> {
+    invalidateGlossaryEntries(glossary: any, onlyEntriesList?: boolean, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
         const promises = [];
 
         if (!onlyEntriesList) {
-            promises.push(this.fetchAllEntries(this.getEntriesByLetter, [glossary.id, 'ALL'], true).then((entries) => {
-                return this.invalidateEntries(entries);
+            promises.push(this.fetchAllEntries(this.getEntriesByLetter, [glossary.id, 'ALL'], true, siteId).then((entries) => {
+                return this.invalidateEntries(entries, siteId);
             }));
         }
 
         glossary.browsemodes.forEach((mode) => {
             switch (mode) {
                 case 'letter':
-                    promises.push(this.invalidateEntriesByLetter(glossary.id, 'ALL'));
+                    promises.push(this.invalidateEntriesByLetter(glossary.id, 'ALL', siteId));
                     break;
                 case 'cat':
-                    promises.push(this.invalidateEntriesByCategory(glossary.id, AddonModGlossaryProvider.SHOW_ALL_CATERGORIES));
+                    promises.push(this.invalidateEntriesByCategory(glossary.id, AddonModGlossaryProvider.SHOW_ALL_CATERGORIES,
+                            siteId));
                     break;
                 case 'date':
-                    promises.push(this.invalidateEntriesByDate(glossary.id, 'CREATION', 'DESC'));
-                    promises.push(this.invalidateEntriesByDate(glossary.id, 'UPDATE', 'DESC'));
+                    promises.push(this.invalidateEntriesByDate(glossary.id, 'CREATION', 'DESC', siteId));
+                    promises.push(this.invalidateEntriesByDate(glossary.id, 'UPDATE', 'DESC', siteId));
                     break;
                 case 'author':
-                    promises.push(this.invalidateEntriesByAuthor(glossary.id, 'ALL', 'LASTNAME', 'ASC'));
+                    promises.push(this.invalidateEntriesByAuthor(glossary.id, 'ALL', 'LASTNAME', 'ASC', siteId));
                     break;
                 default:
             }
@@ -860,28 +867,31 @@ export class AddonModGlossaryProvider {
      *
      * @param  {number} glossaryId Glossary ID.
      * @param  {string} mode       The mode in which the glossary was viewed.
+     * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}      Promise resolved when the WS call is successful.
      */
-    logView(glossaryId: number, mode: string): Promise<any> {
+    logView(glossaryId: number, mode: string, siteId?: string): Promise<any> {
         const params = {
             id: glossaryId,
             mode: mode
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_glossary_view_glossary', params);
+        return this.logHelper.log('mod_glossary_view_glossary', params, AddonModGlossaryProvider.COMPONENT, glossaryId, siteId);
     }
 
     /**
      * Report a glossary entry as being viewed.
      *
      * @param  {number} entryId Entry ID.
+     * @param  {number} glossaryId Glossary ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}   Promise resolved when the WS call is successful.
      */
-    logEntryView(entryId: number): Promise<any> {
+    logEntryView(entryId: number, glossaryId: number, siteId?: string): Promise<any> {
         const params = {
             id: entryId
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_glossary_view_entry', params);
+        return this.logHelper.log('mod_glossary_view_entry', params, AddonModGlossaryProvider.COMPONENT, glossaryId, siteId);
     }
 }

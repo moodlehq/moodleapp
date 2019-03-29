@@ -352,8 +352,9 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         }
 
         // Check if we are at the bottom to scroll it after render.
-        this.scrollBottom = this.domUtils.getScrollHeight(this.content) - this.domUtils.getScrollTop(this.content) ===
-            this.domUtils.getContentHeight(this.content);
+        // Use a 5px error margin because in iOS there is 1px difference for some reason.
+        this.scrollBottom = Math.abs(this.domUtils.getScrollHeight(this.content) - this.domUtils.getScrollTop(this.content) -
+            this.domUtils.getContentHeight(this.content)) < 5;
 
         if (this.messagesBeingSent > 0) {
             // Ignore polling due to a race condition.

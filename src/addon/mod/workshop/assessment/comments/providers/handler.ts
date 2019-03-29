@@ -102,15 +102,17 @@ export class AddonModWorkshopAssessmentStrategyCommentsHandler implements AddonW
         let hasErrors = false;
 
         form.fields.forEach((field, idx) => {
-            if (currentValues[idx].peercomment) {
-                data['peercomment__idx_' + idx] = currentValues[idx].peercomment;
-            } else {
-                errors['peercomment_' + idx] = this.translate.instant('core.err_required');
-                hasErrors = true;
-            }
+            if (idx < form.dimenssionscount) {
+                if (currentValues[idx].peercomment) {
+                    data['peercomment__idx_' + idx] = currentValues[idx].peercomment;
+                } else {
+                    errors['peercomment_' + idx] = this.translate.instant('core.err_required');
+                    hasErrors = true;
+                }
 
-            data['gradeid__idx_' + idx] = parseInt(form.current[idx].gradeid, 10) || 0;
-            data['dimensionid__idx_' + idx] = parseInt(field.dimensionid, 10);
+                data['gradeid__idx_' + idx] = parseInt(form.current[idx].gradeid, 10) || 0;
+                data['dimensionid__idx_' + idx] = parseInt(field.dimensionid, 10);
+            }
         });
 
         if (hasErrors) {

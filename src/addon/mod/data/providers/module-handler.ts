@@ -67,8 +67,12 @@ export class AddonModDataModuleHandler implements CoreCourseModuleHandler {
             title: module.name,
             class: 'addon-mod_data-handler',
             showDownloadButton: true,
-            action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void {
-                navCtrl.push('AddonModDataIndexPage', {module: module, courseId: courseId}, options);
+            action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions, params?: any): void {
+                const pageParams = {module: module, courseId: courseId};
+                if (params) {
+                    Object.assign(pageParams, params);
+                }
+                navCtrl.push('AddonModDataIndexPage', pageParams, options);
             }
         };
     }

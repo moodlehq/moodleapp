@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreAppProvider } from '@providers/app';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -25,25 +24,30 @@ import { AddonModSurveyProvider } from './survey';
 import { CoreEventsProvider } from '@providers/events';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
+import { CoreCourseActivitySyncBaseProvider } from '@core/course/classes/activity-sync';
 import { CoreSyncProvider } from '@providers/sync';
+import { AddonModSurveyPrefetchHandler } from './prefetch-handler';
 
 /**
  * Service to sync surveys.
  */
 @Injectable()
-export class AddonModSurveySyncProvider extends CoreSyncBaseProvider {
+export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvider {
 
     static AUTO_SYNCED = 'addon_mod_survey_autom_synced';
     protected componentTranslate: string;
 
     constructor(loggerProvider: CoreLoggerProvider, sitesProvider: CoreSitesProvider, appProvider: CoreAppProvider,
             syncProvider: CoreSyncProvider, textUtils: CoreTextUtilsProvider, translate: TranslateService,
-            courseProvider: CoreCourseProvider, private surveyOffline: AddonModSurveyOfflineProvider,
+            private courseProvider: CoreCourseProvider, private surveyOffline: AddonModSurveyOfflineProvider,
             private eventsProvider: CoreEventsProvider,  private surveyProvider: AddonModSurveyProvider,
-            private utils: CoreUtilsProvider, timeUtils: CoreTimeUtilsProvider) {
+            private utils: CoreUtilsProvider, timeUtils: CoreTimeUtilsProvider, private logHelper: CoreCourseLogHelperProvider,
+            prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModSurveyPrefetchHandler) {
 
         super('AddonModSurveySyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
-                timeUtils);
+                timeUtils, prefetchDelegate, prefetchHandler);
 
         this.componentTranslate = courseProvider.translateModuleName('survey');
     }
@@ -56,7 +60,7 @@ export class AddonModSurveySyncProvider extends CoreSyncBaseProvider {
      * @return {string}          Sync ID.
      * @protected
      */
-    getSyncId (surveyId: number, userId: number): string {
+    getSyncId(surveyId: number, userId: number): string {
         return surveyId + '#' + userId;
     }
 
@@ -141,10 +145,15 @@ export class AddonModSurveySyncProvider extends CoreSyncBaseProvider {
             answersSent: false
         };
 
-        // Get answers to be sent.
-        const syncPromise = this.surveyOffline.getSurveyData(surveyId, siteId, userId).catch(() => {
-            // No offline data found, return empty object.
-            return {};
+        // Sync offline logs.
+        const syncPromise = this.logHelper.syncIfNeeded(AddonModSurveyProvider.COMPONENT, surveyId, siteId).catch(() => {
+            // Ignore errors.
+        }).then(() => {
+            // Get answers to be sent.
+            return this.surveyOffline.getSurveyData(surveyId, siteId, userId).catch(() => {
+                // No offline data found, return empty object.
+                return {};
+            });
         }).then((data) => {
             if (!data.answers || !data.answers.length) {
                 // Nothing to sync.
@@ -186,8 +195,8 @@ export class AddonModSurveySyncProvider extends CoreSyncBaseProvider {
         }).then(() => {
             if (courseId) {
                 // Data has been sent to server, update survey data.
-                return this.surveyProvider.invalidateSurveyData(courseId, siteId).then(() => {
-                    return this.surveyProvider.getSurveyById(courseId, surveyId, siteId);
+                return this.courseProvider.getModuleBasicInfoByInstance(surveyId, 'survey', siteId).then((module) => {
+                    return this.prefetchAfterUpdate(module, courseId, undefined, siteId);
                 }).catch(() => {
                     // Ignore errors.
                 });

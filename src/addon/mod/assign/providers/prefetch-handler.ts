@@ -92,19 +92,19 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
 
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        return this.assignProvider.getAssignment(courseId, module.id, siteId).then((assign) => {
+        return this.assignProvider.getAssignment(courseId, module.id, false, siteId).then((assign) => {
             // Get intro files and attachments.
             let files = assign.introattachments || [];
             files = files.concat(this.getIntroFilesFromInstance(module, assign));
 
             // Now get the files in the submissions.
-            return this.assignProvider.getSubmissions(assign.id, siteId).then((data) => {
+            return this.assignProvider.getSubmissions(assign.id, false, siteId).then((data) => {
                 const blindMarking = assign.blindmarking && !assign.revealidentities;
 
                 if (data.canviewsubmissions) {
                     // Teacher, get all submissions.
                     return this.assignProvider.getSubmissionsUserData(data.submissions, courseId, assign.id, blindMarking,
-                            undefined, siteId).then((submissions) => {
+                            undefined, false, siteId).then((submissions) => {
 
                         const promises = [];
 
@@ -156,7 +156,8 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
     protected getSubmissionFiles(assign: any, submitId: number, blindMarking: boolean, siteId?: string)
             : Promise<any[]> {
 
-        return this.assignProvider.getSubmissionStatus(assign.id, submitId, blindMarking, true, false, siteId).then((response) => {
+        return this.assignProvider.getSubmissionStatusWithRetry(assign, submitId, undefined, blindMarking, true, false, siteId)
+                .then((response) => {
             const promises = [];
 
             if (response.lastattempt) {
@@ -201,6 +202,17 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
     }
 
     /**
+     * Invalidate WS calls needed to determine module status.
+     *
+     * @param  {any}    module   Module.
+     * @param  {number} courseId Course ID the module belongs to.
+     * @return {Promise<any>} Promise resolved when invalidated.
+     */
+    invalidateModule(module: any, courseId: number): Promise<any> {
+        return this.assignProvider.invalidateAssignmentData(courseId);
+    }
+
+    /**
      * Whether or not the handler is enabled on a site level.
      *
      * @return {boolean|Promise<boolean>} A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
@@ -238,12 +250,12 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         // Get assignment to retrieve all its submissions.
-        promises.push(this.assignProvider.getAssignment(courseId, module.id, siteId).then((assign) => {
+        promises.push(this.assignProvider.getAssignment(courseId, module.id, true, siteId).then((assign) => {
             const subPromises = [],
                 blindMarking = assign.blindmarking && !assign.revealidentities;
 
             if (blindMarking) {
-                subPromises.push(this.assignProvider.getAssignmentUserMappings(assign.id, undefined, siteId).catch(() => {
+                subPromises.push(this.assignProvider.getAssignmentUserMappings(assign.id, undefined, true, siteId).catch(() => {
                     // Ignore errors.
                 }));
             }
@@ -252,10 +264,11 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
 
             subPromises.push(this.courseHelper.getModuleCourseIdByInstance(assign.id, 'assign', siteId));
 
-            // Get all files and fetch them.
-            subPromises.push(this.getFiles(module, courseId, single, siteId).then((files) => {
-                return this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id);
-            }));
+            // Download intro files and attachments. Do not call getFiles because it'd call some WS twice.
+            let files = assign.introattachments || [];
+                files = files.concat(this.getIntroFilesFromInstance(module, assign));
+
+            subPromises.push(this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id));
 
             return Promise.all(subPromises);
         }));
@@ -274,63 +287,74 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
      * @return {Promise<any>} Promise resolved when prefetched, rejected otherwise.
      */
     protected prefetchSubmissions(assign: any, courseId: number, moduleId: number, userId: number, siteId: string): Promise<any> {
-
         // Get submissions.
-        return this.assignProvider.getSubmissions(assign.id, siteId).then((data) => {
+        return this.assignProvider.getSubmissions(assign.id, true, siteId).then((data) => {
             const promises = [],
                 blindMarking = assign.blindmarking && !assign.revealidentities;
 
             if (data.canviewsubmissions) {
                 // Teacher. Do not send participants to getSubmissionsUserData to retrieve user profiles.
-                promises.push(this.assignProvider.getSubmissionsUserData(data.submissions, courseId, assign.id, blindMarking,
-                        undefined, siteId).then((submissions) => {
+                promises.push(this.groupsProvider.getActivityGroupInfo(assign.cmid, false, undefined, siteId).then((groupInfo) => {
+                    const groupProms = [];
+                    if (!groupInfo.groups || groupInfo.groups.length == 0) {
+                        groupInfo.groups = [{id: 0}];
+                    }
 
-                    const subPromises = [];
+                    groupInfo.groups.forEach((group) => {
+                        groupProms.push(this.assignProvider.getSubmissionsUserData(data.submissions, courseId, assign.id,
+                                blindMarking, undefined, true, siteId).then((submissions) => {
 
-                    submissions.forEach((submission) => {
-                        subPromises.push(this.assignProvider.getSubmissionStatus(assign.id, submission.submitid,
-                                !!submission.blindid, true, false, siteId).then((subm) => {
-                            return this.prefetchSubmission(assign, courseId, moduleId, subm, submission.submitid, siteId);
-                        }).catch((error) => {
-                            if (error && error.errorcode == 'nopermission') {
-                                // The user does not have persmission to view this submission, ignore it.
-                                return Promise.resolve();
+                            const subPromises = [];
+
+                            submissions.forEach((submission) => {
+                                subPromises.push(this.assignProvider.getSubmissionStatusWithRetry(assign, submission.submitid,
+                                        group.id, !!submission.blindid, true, true, siteId).then((subm) => {
+                                    return this.prefetchSubmission(assign, courseId, moduleId, subm, submission.submitid, siteId);
+                                }).catch((error) => {
+                                    if (error && error.errorcode == 'nopermission') {
+                                        // The user does not have persmission to view this submission, ignore it.
+                                        return Promise.resolve();
+                                    }
+
+                                    return Promise.reject(error);
+                                }));
+                            });
+
+                            if (!assign.markingworkflow) {
+                                // Get assignment grades only if workflow is not enabled to check grading date.
+                                subPromises.push(this.assignProvider.getAssignmentGrades(assign.id, true, siteId));
                             }
 
-                            return Promise.reject(error);
+                            // Prefetch the submission of the current user even if it does not exist, this will be create it.
+                            if (!data.submissions || !data.submissions.find((subm) => subm.submitid == userId)) {
+                                subPromises.push(this.assignProvider.getSubmissionStatusWithRetry(assign, userId, group.id,
+                                        false, true, true, siteId).then((subm) => {
+                                    return this.prefetchSubmission(assign, courseId, moduleId, subm, userId, siteId);
+                                }));
+                            }
+
+                            return Promise.all(subPromises);
+                        }));
+
+                        // Get list participants.
+                        groupProms.push(this.assignHelper.getParticipants(assign, group.id, true, siteId).then((participants) => {
+                            participants.forEach((participant) => {
+                                if (participant.profileimageurl) {
+                                    this.filepoolProvider.addToQueueByUrl(siteId, participant.profileimageurl);
+                                }
+                            });
+                        }).catch(() => {
+                            // Fail silently (Moodle < 3.2).
                         }));
                     });
 
-                    if (!assign.markingworkflow) {
-                        // Get assignment grades only if workflow is not enabled to check grading date.
-                        subPromises.push(this.assignProvider.getAssignmentGrades(assign.id, siteId));
-                    }
-
-                    // Prefetch the submission of the current user even if it does not exist, this will be create it.
-                    if (!data.submissions || !data.submissions.find((subm) => subm.submitid == userId)) {
-                        subPromises.push(this.assignProvider.getSubmissionStatus(assign.id, userId, false, true, false, siteId)
-                                .then((subm) => {
-                            return this.prefetchSubmission(assign, courseId, moduleId, subm, userId, siteId);
-                        }));
-                    }
-
-                    return Promise.all(subPromises);
-                }));
-
-                // Get list participants.
-                promises.push(this.assignHelper.getParticipants(assign, siteId).then((participants) => {
-                    participants.forEach((participant) => {
-                        if (participant.profileimageurl) {
-                            this.filepoolProvider.addToQueueByUrl(siteId, participant.profileimageurl);
-                        }
-                    });
-                }).catch(() => {
-                    // Fail silently (Moodle < 3.2).
+                    return Promise.all(groupProms);
                 }));
             } else {
                 // Student.
                 promises.push(
-                    this.assignProvider.getSubmissionStatus(assign.id, userId, false, true, false, siteId).then((subm) => {
+                    this.assignProvider.getSubmissionStatusWithRetry(assign, userId, undefined, false, true, true, siteId)
+                            .then((subm) => {
                         return this.prefetchSubmission(assign, courseId, moduleId, subm, userId, siteId);
                     }).catch((error) => {
                         // Ignore if the user can't view their own submission.
@@ -341,8 +365,8 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                 );
             }
 
-            promises.push(this.groupsProvider.activityHasGroups(assign.cmid));
-            promises.push(this.groupsProvider.getActivityAllowedGroups(assign.cmid, undefined, siteId));
+            promises.push(this.groupsProvider.activityHasGroups(assign.cmid, siteId, true));
+            promises.push(this.groupsProvider.getActivityAllowedGroups(assign.cmid, undefined, siteId, true));
 
             return Promise.all(promises);
         });
@@ -378,7 +402,16 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                 // Prefetch submission plugins data.
                 if (userSubmission.plugins) {
                     userSubmission.plugins.forEach((plugin) => {
+                        // Prefetch the plugin WS data.
                         promises.push(this.submissionDelegate.prefetch(assign, userSubmission, plugin, siteId));
+
+                        // Prefetch the plugin files.
+                        promises.push(this.submissionDelegate.getPluginFiles(assign, userSubmission, plugin, siteId)
+                                .then((files) => {
+                            return this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id);
+                        }).catch(() => {
+                            // Ignore errors.
+                        }));
                     });
                 }
 
@@ -392,18 +425,26 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
         // Prefetch feedback.
         if (submission.feedback) {
             // Get profile and image of the grader.
-            if (submission.feedback.grade && submission.feedback.grade.grader) {
+            if (submission.feedback.grade && submission.feedback.grade.grader > 0) {
                 userIds.push(submission.feedback.grade.grader);
             }
 
             if (userId) {
-                promises.push(this.gradesHelper.getGradeModuleItems(courseId, moduleId, userId, undefined, siteId));
+                promises.push(this.gradesHelper.getGradeModuleItems(courseId, moduleId, userId, undefined, siteId, true));
             }
 
             // Prefetch feedback plugins data.
             if (submission.feedback.plugins) {
                 submission.feedback.plugins.forEach((plugin) => {
+                    // Prefetch the plugin WS data.
                     promises.push(this.feedbackDelegate.prefetch(assign, submission, plugin, siteId));
+
+                    // Prefetch the plugin files.
+                    promises.push(this.feedbackDelegate.getPluginFiles(assign, submission, plugin, siteId).then((files) => {
+                        return this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id);
+                    }).catch(() => {
+                        // Ignore errors.
+                    }));
                 });
             }
         }

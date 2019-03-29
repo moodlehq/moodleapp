@@ -324,7 +324,16 @@ export class CoreFileProvider {
             path = this.removeStartingSlash(path.replace(this.basePath, ''));
             this.logger.debug('Remove file: ' + path);
 
-            return this.file.removeFile(this.basePath, path);
+            return this.file.removeFile(this.basePath, path).catch((error) => {
+                // The delete can fail if the path has encoded characters. Try again if that's the case.
+                const decodedPath = decodeURI(path);
+
+                if (decodedPath != path) {
+                    return this.file.removeFile(this.basePath, decodedPath);
+                } else {
+                    return Promise.reject(error);
+                }
+            });
         });
     }
 

@@ -1,18 +1,16 @@
 <core-loading [hideUntil]="hideUntil" class="core-loading-center">
-    <div class="core-tabs-bar" #topTabs [hidden]="!tabs || numTabsShown < 2">
+    <div class="core-tabs-bar" #topTabs [hidden]="!tabs || numTabsShown < 2" id="core-tabs-bar">
         <ion-row>
             <ion-col class="col-with-arrow" (click)="slidePrev()" no-padding col-1>
                 <ion-icon *ngIf="showPrevButton" name="arrow-back" md="ios-arrow-back"></ion-icon>
             </ion-col>
             <ion-col no-padding col-10>
-                <ion-slides (ionSlideDidChange)="slideChanged()" [slidesPerView]="slidesShown" [dir]="direction">
+                <ion-slides (ionSlideDidChange)="slideChanged()" [slidesPerView]="slidesShown" [dir]="direction" role="tablist" [attr.aria-label]="description" aria-hidden="false">
                     <ng-container *ngFor="let tab of tabs; let idx = index">
-                        <ion-slide *ngIf="tab.show">
-                            <a [attr.aria-selected]="selected == idx" (click)="selectTab(idx)" class="tab-slide">
-                                <core-icon *ngIf="tab.icon" [name]="tab.icon"></core-icon>
-                                <span *ngIf="tab.title">{{ tab.title }}</span>
-                                <ion-badge *ngIf="tab.badge" [color]="tab.badgeStyle" class="tab-badge">{{tab.badge}}</ion-badge>
-                            </a>
+                       <ion-slide *ngIf="tab.show" [attr.aria-selected]="selected == idx" (click)="selectTab(idx)" class="tab-slide" [attr.aria-label]="tab.title || ''" role="tab" [attr.aria-controls]="tab.id" [id]="tab.id + '-tab'" [tabindex]="selected == idx ? null : -1">
+                            <core-icon *ngIf="tab.icon" [name]="tab.icon"></core-icon>
+                            <div *ngIf="tab.title">{{ tab.title }}</div>
+                            <ion-badge *ngIf="tab.badge" [color]="tab.badgeStyle" class="tab-badge">{{tab.badge}}</ion-badge>
                         </ion-slide>
                     </ng-container>
                 </ion-slides>

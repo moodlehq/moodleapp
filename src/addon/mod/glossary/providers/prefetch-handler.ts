@@ -23,6 +23,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModGlossaryProvider } from './glossary';
+import { CoreRatingProvider } from '@core/rating/providers/rating';
 
 /**
  * Handler to prefetch forums.
@@ -42,6 +43,7 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
             private userProvider: CoreUserProvider,
+            private ratingProvider: CoreRatingProvider,
             private glossaryProvider: AddonModGlossaryProvider) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
@@ -164,7 +166,11 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
                 // Fetch user avatars.
                 entries.forEach((entry) => {
                     // Fetch individual entries.
-                    promises.push(this.glossaryProvider.getEntry(entry.id, siteId));
+                    promises.push(this.glossaryProvider.getEntry(entry.id, siteId).then((entry) => {
+                        // Fetch individual ratings.
+                        return this.ratingProvider.prefetchRatings('module', module.id, glossary.scale, courseId, entry.ratinginfo,
+                            siteId);
+                    }));
 
                     userIds.push(entry.userid);
                 });
@@ -177,6 +183,8 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
 
                 return Promise.all(promises);
             }));
+
+            return Promise.all(promises);
         });
     }
 }

@@ -10,10 +10,10 @@
     <core-loading [hideUntil]="eventLoaded">
         <ion-card>
             <ion-card-content *ngIf="event">
-                <ion-card-title text-wrap>
+                <ion-item text-wrap>
                     <core-icon *ngIf="event.icon && !event.moduleIcon" [name]="event.icon" item-start></core-icon>
-                    <core-format-text [text]="event.name"></core-format-text>
-                </ion-card-title>
+                    <h2><core-format-text [text]="event.name"></core-format-text></h2>
+                </ion-item>
                 <ion-item text-wrap>
                     <h2>{{ 'addon.calendar.eventstarttime' | translate}}</h2>
                     <p>{{ event.timestart * 1000 | coreFormatDate }}</p>
@@ -52,21 +52,29 @@
             </ion-card-content>
         </ion-card>
 
-        <ion-card list *ngIf="notificationsEnabled && event.timestart - 600 > currentTime">
+        <ion-card list *ngIf="notificationsEnabled">
             <ion-item>
-                <ion-label>{{ 'addon.calendar.notifications' | translate }}</ion-label>
-                <ion-select [(ngModel)]="notificationTime" (ionChange)="updateNotificationTime($event)" interface="action-sheet">
-                    <ion-option value="-1" *ngIf="event.timestart - defaultTime > currentTime">{{ 'core.defaultvalue' | translate :{$a: defaultTimeReadable} }}</ion-option>
-                    <ion-option value="0">{{ 'core.settings.disabled' | translate }}</ion-option>
-                    <ion-option value="10">{{ 600 | coreDuration }}</ion-option>
-                    <ion-option value="30" *ngIf="event.timestart - 1800 > currentTime">{{ 1800 | coreDuration }}</ion-option>
-                    <ion-option value="60" *ngIf="event.timestart - 3600 > currentTime">{{ 3600 | coreDuration }}</ion-option>
-                    <ion-option value="120" *ngIf="event.timestart - 7200 > currentTime">{{ 7200 | coreDuration }}</ion-option>
-                    <ion-option value="360" *ngIf="event.timestart - 21600 > currentTime">{{ 21600 | coreDuration }}</ion-option>
-                    <ion-option value="720" *ngIf="event.timestart - 43200 > currentTime">{{ 43200 | coreDuration }}</ion-option>
-                    <ion-option value="1440" *ngIf="event.timestart - 86400 > currentTime">{{ 86400 | coreDuration }}</ion-option>
-                </ion-select>
+                <h2>{{ 'addon.calendar.reminders' | translate }}</h2>
             </ion-item>
+            <ng-container *ngFor="let reminder of reminders">
+                <ion-item  *ngIf="reminder.time > 0 || defaultTime > 0" [class.item-dimmed]="(reminder.time == -1 ? (event.timestart - defaultTime) : reminder.time) <= currentTime" >
+                    <p *ngIf="reminder.time == -1">{{ 'core.defaultvalue' | translate :{$a: ((event.timestart - defaultTime) * 1000) | coreFormatDate } }}</p>
+                    <p *ngIf="reminder.time > 0">{{ reminder.time * 1000 | coreFormatDate }}</p>
+                    <button ion-button icon-only clear="true" (click)="cancelNotification(reminder.id, $event)" [attr.aria-label]=" 'core.delete' | translate" item-end *ngIf="(reminder.time == -1 ? (event.timestart - defaultTime) : reminder.time) > currentTime">
+                        <ion-icon name="trash" color="danger"></ion-icon>
+                    </button>
+                </ion-item>
+            </ng-container>
+
+            <ng-container *ngIf="event.timestart + event.timeduration > currentTime">
+                <ion-item>
+                    <ion-label stacked>{{ 'addon.calendar.setnewreminder' | translate }}</ion-label>
+                    <ion-datetime [(ngModel)]="notificationTimeText" [placeholder]="'core.choosedots' | translate" [displayFormat]="notificationFormat" [min]="notificationMin" [max]="notificationMax"></ion-datetime>
+                </ion-item>
+                <ion-item>
+                    <button ion-button block color="primary" (click)="addNotificationTime($event)" [disabled]="!notificationTimeText">{{ 'addon.calendar.setnewreminder' | translate }}</button>
+                </ion-item>
+            </ng-container>
         </ion-card>
     </core-loading>
 </ion-content>

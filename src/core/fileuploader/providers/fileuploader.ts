@@ -333,9 +333,16 @@ export class CoreFileUploaderProvider {
      * Parse filetypeList to get the list of allowed mimetypes and the data to render information.
      *
      * @param {string} filetypeList Formatted string list where the mimetypes can be checked.
-     * @return {{info: any[], mimetypes: string[]}}  Mimetypes and the filetypes informations.
+     * @return {{info: any[], mimetypes: string[]}}  Mimetypes and the filetypes informations. Undefined if all types supported.
      */
     prepareFiletypeList(filetypeList: string): { info: any[], mimetypes: string[] } {
+        filetypeList = filetypeList && filetypeList.trim();
+
+        if (!filetypeList || filetypeList == '*') {
+            // All types supported, return undefined.
+            return undefined;
+        }
+
         const filetypes = filetypeList.split(/[;, ]+/g),
             mimetypes = {}, // Use an object to prevent duplicates.
             typesInfo = [];
@@ -486,7 +493,10 @@ export class CoreFileUploaderProvider {
     }
 
     /**
-     * Upload a file to a draft area. If the file is an online file it will be downloaded and then re-uploaded.
+     * Upload a file to a draft area and return the draft ID.
+     *
+     * If the file is an online file it will be downloaded and then re-uploaded.
+     * If the file is a local file it will not be deleted from the device after upload.
      *
      * @param {any} file Online file or local FileEntry.
      * @param {number} [itemId] Draft ID to use. Undefined or 0 to create a new draft ID.
@@ -502,7 +512,9 @@ export class CoreFileUploaderProvider {
         let promise,
             fileName;
 
-        if (file.filename && !file.name) {
+        const isOnline = file.filename && !file.name;
+
+        if (isOnline) {
             // It's an online file. We need to download it and re-upload it.
             fileName = file.filename;
             promise = this.filepoolProvider.downloadUrl(siteId, file.url || file.fileurl, false, component, componentId,
@@ -517,7 +529,7 @@ export class CoreFileUploaderProvider {
 
         return promise.then((fileEntry) => {
             // Now upload the file.
-            const options = this.getFileUploadOptions(fileEntry.toURL(), fileName, fileEntry.type, true, 'draft', itemId);
+            const options = this.getFileUploadOptions(fileEntry.toURL(), fileName, fileEntry.type, isOnline, 'draft', itemId);
 
             return this.uploadFile(fileEntry.toURL(), options, undefined, siteId).then((result) => {
                 return result.itemid;
@@ -527,7 +539,9 @@ export class CoreFileUploaderProvider {
 
     /**
      * Given a list of files (either online files or local files), upload them to a draft area and return the draft ID.
+     *
      * Online files will be downloaded and then re-uploaded.
+     * Local files are not deleted from the device after upload.
      * If there are no files to upload it will return a fake draft ID (1).
      *
      * @param {any[]} files List of files.

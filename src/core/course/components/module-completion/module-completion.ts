@@ -35,7 +35,7 @@ import { CoreCourseProvider } from '../../providers/course';
 export class CoreCourseModuleCompletionComponent implements OnChanges {
     @Input() completion: any; // The completion status.
     @Input() moduleName?: string; // The name of the module this completion affects.
-    @Output() completionChanged?: EventEmitter<void>; // Will emit an event when the completion changes.
+    @Output() completionChanged?: EventEmitter<any>; // Will emit an event when the completion changes.
 
     completionImage: string;
     completionDescription: string;
@@ -71,15 +71,23 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
 
             const modal = this.domUtils.showModalLoading();
 
-            this.courseProvider.markCompletedManually(this.completion.cmid, this.completion.state === 1 ? 0 : 1,
+            this.completion.state = this.completion.state === 1 ? 0 : 1;
+            this.courseProvider.markCompletedManually(this.completion.cmid, this.completion.state,
                     this.completion.courseId, this.completion.courseName).then((response) => {
 
                 if (!response.status) {
                     return Promise.reject(null);
                 }
 
-                this.completionChanged.emit();
+                if (this.completion.hasOwnProperty('valueused') && !this.completion.valueused) {
+                    this.showStatus();
+                    if (response.offline) {
+                        this.completion.offline = true;
+                    }
+                }
+                this.completionChanged.emit(this.completion);
             }).catch((error) => {
+                this.completion.state = this.completion.state === 1 ? 0 : 1;
                 this.domUtils.showErrorModalDefault(error, 'core.errorchangecompletion', true);
             }).finally(() => {
                 modal.dismiss();

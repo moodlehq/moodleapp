@@ -44,8 +44,7 @@ export const ADDON_NOTES_PROVIDERS: any[] = [
         AddonNotesSyncProvider,
         AddonNotesCourseOptionHandler,
         AddonNotesSyncCronHandler,
-        AddonNotesUserHandler
-    ]
+        AddonNotesUserHandler    ]
 })
 export class AddonNotesModule {
     constructor(courseOptionsDelegate: CoreCourseOptionsDelegate, courseOptionHandler: AddonNotesCourseOptionHandler,

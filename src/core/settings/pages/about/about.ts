@@ -22,6 +22,7 @@ import { CoreLangProvider } from '@providers/lang';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreConfigConstants } from '../../../../configconstants';
+import { AddonPushNotificationsProvider } from '@addon/pushnotifications/providers/pushnotifications';
 
 /**
  * Page that displays the about settings.
@@ -53,10 +54,11 @@ export class CoreSettingsAboutPage {
     fsClickable: boolean;
     storageType: string;
     localNotifAvailable: string;
+    pushId: string;
 
     constructor(platform: Platform, device: Device, appProvider: CoreAppProvider, fileProvider: CoreFileProvider,
             initDelegate: CoreInitDelegate, langProvider: CoreLangProvider, sitesProvider: CoreSitesProvider,
-            localNotificationsProvider: CoreLocalNotificationsProvider) {
+            localNotificationsProvider: CoreLocalNotificationsProvider, pushNotificationsProvider: AddonPushNotificationsProvider) {
 
         const currentSite = sitesProvider.getCurrentSite();
 
@@ -111,5 +113,6 @@ export class CoreSettingsAboutPage {
         }
 
         this.localNotifAvailable = localNotificationsProvider.isAvailable() ? 'core.yes' : 'core.no';
+        this.pushId = pushNotificationsProvider.getPushId();
     }
 }

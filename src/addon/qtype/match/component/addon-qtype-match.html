@@ -1,18 +1,21 @@
 <section ion-list class="addon-qtype-match-container" *ngIf="question.loaded">
     <ion-item text-wrap>
-        <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text></p>
+        <core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text>
     </ion-item>
     <ion-item text-wrap *ngFor="let row of question.rows">
-        <ion-grid item-content>
-            <ion-row>
+        <ion-grid item-content no-margin no-padding>
+            <ion-row no-margin>
                 <ion-col>
                     <p><core-format-text id="addon-qtype-match-question-{{row.id}}" [component]="component" [componentId]="componentId" [text]="row.text"></core-format-text></p>
                 </ion-col>
-                <ion-col [ngClass]='{"core-question-answer-correct": row.isCorrect === 1, "core-question-answer-incorrect": row.isCorrect === 0}'>
+                <ion-col>
                     <label class="accesshide" for="{{row.id}}" *ngIf="row.accessibilityLabel">{{ row.accessibilityLabel }}</label>
-                    <ion-select id="{{row.id}}" [name]="row.name" [attr.aria-labelledby]="'addon-qtype-match-question-' + row.id" [(ngModel)]="row.selected" interface="action-sheet">
+                    <ion-select id="{{row.id}}" [name]="row.name" [attr.aria-labelledby]="'addon-qtype-match-question-' + row.id" [(ngModel)]="row.selected" interface="action-sheet" [disabled]="row.disabled" [color]='(row.isCorrect === 1 ? "success": "") +  (row.isCorrect === 0 ? "danger": "")'>
                         <ion-option *ngFor="let option of row.options" [value]="option.value">{{option.label}}</ion-option>
                     </ion-select>
+
+                    <core-icon *ngIf="row.isCorrect === 1" class="core-correct-icon" name="fa-check" color="success"></core-icon>
+                    <core-icon *ngIf="row.isCorrect === 0" class="core-correct-icon" name="fa-remove" color="danger"></core-icon>
 
                     <!-- ion-select doesn't use a select. Create a hidden input to hold the selected value. -->
                     <input type="hidden" [ngModel]="row.selected" [attr.name]="row.name">

@@ -14,7 +14,7 @@
 
 import { Component, Input, Output, Optional, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { NavController } from 'ionic-angular';
+import { NavController, Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -25,6 +25,7 @@ import { AddonModForumProvider } from '../../providers/forum';
 import { AddonModForumHelperProvider } from '../../providers/helper';
 import { AddonModForumOfflineProvider } from '../../providers/offline';
 import { AddonModForumSyncProvider } from '../../providers/sync';
+import { CoreRatingInfo } from '@core/rating/providers/rating';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -34,7 +35,6 @@ import { AddonModForumSyncProvider } from '../../providers/sync';
     templateUrl: 'addon-mod-forum-post.html',
 })
 export class AddonModForumPostComponent implements OnInit, OnDestroy {
-
     @Input() post: any; // Post.
     @Input() courseId: number; // Post's course ID.
     @Input() discussionId: number; // Post's' discussion ID.
@@ -45,6 +45,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
     @Input() trackPosts: boolean; // True if post is being tracked.
     @Input() forum: any; // The forum the post belongs to. Required for attachments and offline posts.
     @Input() defaultSubject: string; // Default subject to set to new posts.
+    @Input() ratingInfo?: CoreRatingInfo; // Rating info item.
     @Output() onPostChange: EventEmitter<void>; // Event emitted when a reply is posted or modified.
 
     messageControl = new FormControl();
@@ -64,7 +65,8 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
             private forumHelper: AddonModForumHelperProvider,
             private forumOffline: AddonModForumOfflineProvider,
             private forumSync: AddonModForumSyncProvider,
-            @Optional() private svComponent: CoreSplitViewComponent) {
+            @Optional() private svComponent: CoreSplitViewComponent,
+            @Optional() private content: Content) {
         this.onPostChange = new EventEmitter<void>();
     }
 
@@ -122,9 +124,18 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
             // User is editing a post, data needs to be resetted. Ask confirm if there is unsaved data.
             this.confirmDiscard().then(() => {
                 this.setReplyData(this.post.id);
+
+                if (this.content) {
+                    setTimeout(() => {
+                        this.content.resize();
+                        this.domUtils.scrollToElementBySelector(this.content, '#addon-forum-reply-edit-form-' + this.uniqueId);
+                    });
+                }
             }).catch(() => {
                 // Cancelled.
             });
+
+            return;
         } else if (!this.replyData.replyingTo) {
             // User isn't replying, it's a brand new reply. Initialize the data.
             this.setReplyData(this.post.id);
@@ -133,6 +144,14 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
             this.replyData.replyingTo = this.post.id;
             this.messageControl.setValue(this.replyData.message);
         }
+
+        if (this.content) {
+            setTimeout(() => {
+                this.content.resize();
+                this.domUtils.scrollToElementBySelector(this.content, '#addon-forum-reply-edit-form-' + this.uniqueId);
+            });
+        }
+
     }
 
     /**
@@ -286,6 +305,13 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
         }).catch(() => {
             // Cancelled.
         });
+    }
+
+    /**
+     * Function called when rating is updated online.
+     */
+    ratingUpdated(): void {
+        this.forumProvider.invalidateDiscussionPosts(this.discussionId);
     }
 
     /**

@@ -33,9 +33,10 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
     chatInfo: any;
 
     protected title: string;
+    protected sessionsAvailable = false;
 
     constructor(injector: Injector, private chatProvider: AddonModChatProvider, private timeUtils: CoreTimeUtilsProvider,
-            private navCtrl: NavController) {
+            protected navCtrl: NavController) {
         super(injector);
     }
 
@@ -83,6 +84,10 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
 
             // All data obtained, now fill the context menu.
             this.fillContextMenu(refresh);
+
+            return this.chatProvider.areSessionsAvailable().then((available) => {
+                this.sessionsAvailable = available;
+            });
         });
     }
 
@@ -92,5 +97,12 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
     enterChat(): void {
         const title = this.chat.name || this.moduleName;
         this.navCtrl.push('AddonModChatChatPage', {chatId: this.chat.id, courseId: this.courseId, title: title });
+    }
+
+    /**
+     * View past sessions.
+     */
+    viewSessions(): void {
+        this.navCtrl.push('AddonModChatSessionsPage', {courseId: this.courseId, chatId: this.chat.id, cmId: this.module.id});
     }
 }

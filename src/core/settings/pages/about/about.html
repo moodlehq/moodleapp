@@ -106,6 +106,10 @@
             <h2>{{ 'core.settings.cordovadeviceuuid' | translate}}</h2>
             <p>{{ device.uuid }}</p>
         </ion-item>
+        <ion-item text-wrap *ngIf="pushId">
+            <h2>{{ 'core.settings.pushid' | translate}}</h2>
+            <p>{{ pushId }}</p>
+        </ion-item>
         <ion-item text-wrap *ngIf="localNotifAvailable">
             <h2>{{ 'core.settings.localnotifavailable' | translate}}</h2>
             <p>{{ localNotifAvailable | translate }}</p>

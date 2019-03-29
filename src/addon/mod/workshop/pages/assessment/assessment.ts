@@ -164,8 +164,8 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
 
             if (this.evaluating || this.workshop.phase == AddonModWorkshopProvider.PHASE_CLOSED) {
                 // Get all info of the assessment.
-                return this.workshopHelper.getReviewerAssessmentById(this.workshopId, this.assessmentId, this.profile.id)
-                        .then((assessment) => {
+                return this.workshopHelper.getReviewerAssessmentById(this.workshopId, this.assessmentId,
+                        this.profile && this.profile.id).then((assessment) => {
                     let defaultGrade, promise;
 
                     this.assessment = this.workshopHelper.realGradeValue(this.workshop, assessment);

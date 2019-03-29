@@ -173,19 +173,15 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
      */
     protected prefetchFeedback(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
         // Prefetch the feedback data.
-        return this.feedbackProvider.getFeedback(courseId, module.id).then((feedback) => {
-            const p1 = [];
+        return this.feedbackProvider.getFeedback(courseId, module.id, siteId, false, true).then((feedback) => {
+            let files = (feedback.pageaftersubmitfiles || []).concat(this.getIntroFilesFromInstance(module, feedback));
 
-            p1.push(this.getFiles(module, courseId).then((files) => {
-                return this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id);
-            }));
-
-            p1.push(this.feedbackProvider.getFeedbackAccessInformation(feedback.id, false, true, siteId).then((accessData) => {
+            return this.feedbackProvider.getFeedbackAccessInformation(feedback.id, false, true, siteId).then((accessData) => {
                 const p2 = [];
                 if (accessData.canedititems || accessData.canviewreports) {
                     // Get all groups analysis.
-                    p2.push(this.feedbackProvider.getAnalysis(feedback.id, undefined, siteId));
-                    p2.push(this.groupsProvider.getActivityGroupInfo(feedback.coursemodule, true, undefined, siteId)
+                    p2.push(this.feedbackProvider.getAnalysis(feedback.id, undefined, true, siteId));
+                    p2.push(this.groupsProvider.getActivityGroupInfo(feedback.coursemodule, true, undefined, siteId, true)
                             .then((groupInfo) => {
                         const p3 = [],
                             userIds = [];
@@ -194,8 +190,8 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
                             groupInfo.groups = [{id: 0}];
                         }
                         groupInfo.groups.forEach((group) => {
-                            p3.push(this.feedbackProvider.getAnalysis(feedback.id, group.id, siteId));
-                            p3.push(this.feedbackProvider.getAllResponsesAnalysis(feedback.id, group.id, siteId)
+                            p3.push(this.feedbackProvider.getAnalysis(feedback.id, group.id, true, siteId));
+                            p3.push(this.feedbackProvider.getAllResponsesAnalysis(feedback.id, group.id, true, siteId)
                                     .then((responses) => {
                                 responses.attempts.forEach((attempt) => {
                                     userIds.push(attempt.userid);
@@ -203,7 +199,7 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
                             }));
 
                             if (!accessData.isanonymous) {
-                                p3.push(this.feedbackProvider.getAllNonRespondents(feedback.id, group.id, siteId)
+                                p3.push(this.feedbackProvider.getAllNonRespondents(feedback.id, group.id, true, siteId)
                                         .then((responses) => {
                                     responses.users.forEach((user) => {
                                         userIds.push(user.userid);
@@ -219,7 +215,13 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
                     }));
                 }
 
-                p2.push(this.feedbackProvider.getItems(feedback.id, siteId));
+                p2.push(this.feedbackProvider.getItems(feedback.id, true, siteId).then((response) => {
+                    response.items.forEach((item) => {
+                        files = files.concat(item.itemfiles);
+                    });
+
+                    return this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id);
+                }));
 
                 if (accessData.cancomplete && accessData.cansubmit && !accessData.isempty) {
                     // Send empty data, so it will recover last completed feedback attempt values.
@@ -234,9 +236,7 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
                 }
 
                 return Promise.all(p2);
-            }));
-
-            return Promise.all(p1);
+            });
         });
     }
 }

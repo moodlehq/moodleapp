@@ -279,7 +279,11 @@ $core-question-saved-color-bg:        $gray-light !default;
 
 $core-question-state-correct-color:   $green-light !default;
 $core-question-state-partial-color:   $yellow-light !default;
+$core-question-state-partial-text:    $yellow !default;
 $core-question-state-incorrect-color: $red-light !default;
+
+$core-dd-question-selected-shadow: 2px 2px 4px $gray-dark !default;
+$core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA520, #FFD700, #F0E68C !default;
 
 // Mixins
 // -------------------------
@@ -466,6 +470,20 @@ $core-question-state-incorrect-color: $red-light !default;
 
   &:last-child > .item-inner {
     border-bottom: 0;
+  }
+}
+
+@mixin core-selected-item($selected-color) {
+  @include border-start(5px, solid, $selected-color);
+
+  &.item-md {
+      @include padding(null, null, null, $item-md-padding-start - 5px);
+  }
+  &.item-ios {
+      @include padding(null, null, null, $item-ios-padding-start - 5px);
+  }
+  &.item-wp {
+      @include padding(null, null, null, $item-wp-padding-start - 5px);
   }
 }
 

@@ -15,6 +15,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreRatingInfo } from '@core/rating/providers/rating';
 import { AddonModGlossaryProvider } from '../../providers/glossary';
 
 /**
@@ -29,9 +30,11 @@ export class AddonModGlossaryEntryPage {
     component = AddonModGlossaryProvider.COMPONENT;
     componentId: number;
     entry: any;
+    glossary: any;
     loaded = false;
     showAuthor = false;
     showDate = false;
+    ratingInfo: CoreRatingInfo;
 
     protected courseId: number;
     protected entryId: number;
@@ -48,7 +51,7 @@ export class AddonModGlossaryEntryPage {
      */
     ionViewDidLoad(): void {
         this.fetchEntry().then(() => {
-            this.glossaryProvider.logEntryView(this.entry.id).catch(() => {
+            this.glossaryProvider.logEntryView(this.entry.id, this.componentId).catch(() => {
                 // Ignore errors.
             });
         }).finally(() => {
@@ -80,11 +83,13 @@ export class AddonModGlossaryEntryPage {
      */
     protected fetchEntry(refresh?: boolean): Promise<any> {
         return this.glossaryProvider.getEntry(this.entryId).then((result) => {
-            this.entry = result;
+            this.entry = result.entry;
+            this.ratingInfo = result.ratinginfo;
 
             if (!refresh) {
                 // Load the glossary.
                 return this.glossaryProvider.getGlossaryById(this.courseId, this.entry.glossaryid).then((glossary) => {
+                    this.glossary = glossary;
                     this.componentId = glossary.coursemodule;
 
                     switch (glossary.displayformat) {
@@ -108,5 +113,12 @@ export class AddonModGlossaryEntryPage {
 
             return Promise.reject(null);
         });
+    }
+
+    /**
+     * Function called when rating is updated online.
+     */
+    ratingUpdated(): void {
+        this.glossaryProvider.invalidateEntry(this.entryId);
     }
 }

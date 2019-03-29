@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Compile AOT.
-if [ $TRAVIS_BRANCH == 'integration' ] || [ $TRAVIS_BRANCH == 'master' ] || [ -z $TRAVIS_BRANCH ] ; then
+if [ $TRAVIS_BRANCH == 'integration' ] || [ $TRAVIS_BRANCH == 'master' ] || [ $TRAVIS_BRANCH == 'desktop' ] || [ -z $TRAVIS_BRANCH ] ; then
     cd scripts
     ./build_lang.sh
     cd ..
@@ -38,9 +38,8 @@ fi
 # Copy to PGB git (only on a configured travis build).
 if [ ! -z $GIT_ORG ] && [ ! -z $GIT_TOKEN ] ; then
     gitfolder=${PWD##*/}
-    cd ..
-    git clone --depth 1 --no-single-branch https://github.com/$GIT_ORG/moodlemobile-phonegapbuild.git pgb
-    cd pgb
+    git clone --depth 1 --no-single-branch https://github.com/$GIT_ORG/moodlemobile-phonegapbuild.git ../pgb
+    pushd ../pgb
     git checkout $TRAVIS_BRANCH
     rm -Rf assets build index.html templates
     cp -Rf ../$gitfolder/www/* ./
@@ -48,4 +47,10 @@ if [ ! -z $GIT_ORG ] && [ ! -z $GIT_TOKEN ] ; then
     git add .
     git commit -m "Travis build: $TRAVIS_BUILD_NUMBER"
     git push https://$GIT_TOKEN@github.com/$GIT_ORG/moodlemobile-phonegapbuild.git
+    popd
 fi
+
+if [ ! -z $GIT_ORG_PRIVATE ] && [ ! -z $GIT_TOKEN ] && [ $TRAVIS_BRANCH == 'desktop' ] && [ $TRAVIS_OS_NAME == 'linux' ]; then
+    ./scripts/linux.sh
+fi
+

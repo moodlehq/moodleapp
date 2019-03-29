@@ -51,11 +51,17 @@ export class MoodleMobileApp implements OnInit {
 
             keyboard.hideFormAccessoryBar(false);
 
-            let desktopClass = this.appProvider.isDesktop() ? 'platform-desktop' : '';
-            desktopClass += this.appProvider.isMac() ? ' platform-mac' : '';
-            desktopClass += this.appProvider.isLinux() ? ' platform-linux' : '';
-            desktopClass += this.appProvider.isWindows() ? ' platform-windows' : '';
-            desktopClass != '' ? app.setElementClass(desktopClass, true) : false;
+            if (this.appProvider.isDesktop()) {
+                app.setElementClass('platform-desktop', true);
+
+                if (this.appProvider.isMac()) {
+                    app.setElementClass('platform-mac', true);
+                } else if (this.appProvider.isLinux()) {
+                    app.setElementClass('platform-linux', true);
+                } else if (this.appProvider.isWindows()) {
+                    app.setElementClass('platform-windows', true);
+                }
+            }
         });
 
     }

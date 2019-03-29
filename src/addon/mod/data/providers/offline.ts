@@ -14,9 +14,11 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreFileProvider } from '@providers/file';
+import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
+import { SQLiteDB } from '@classes/sqlitedb';
 
 /**
  * Service to handle Offline data.
@@ -27,48 +29,67 @@ export class AddonModDataOfflineProvider {
     protected logger;
 
     // Variables for database.
-    static DATA_ENTRY_TABLE = 'addon_mod_data_entry';
-    protected tablesSchema = [
-        {
-            name: AddonModDataOfflineProvider.DATA_ENTRY_TABLE,
-            columns: [
-                {
-                    name: 'dataid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'courseid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'groupid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'action',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'entryid',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'fields',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER'
-                }
-            ],
-            primaryKeys: ['dataid', 'entryid']
+    static DATA_ENTRY_TABLE = 'addon_mod_data_entry_1';
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonModDataOfflineProvider',
+        version: 1,
+        tables: [
+            {
+                name: AddonModDataOfflineProvider.DATA_ENTRY_TABLE,
+                columns: [
+                    {
+                        name: 'dataid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'courseid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'groupid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'action',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'entryid',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'fields',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER'
+                    }
+                ],
+                primaryKeys: ['dataid', 'entryid', 'action']
+            }
+        ],
+        migrate(db: SQLiteDB, oldVersion: number, siteId: string): Promise<any> | void {
+            if (oldVersion == 0) {
+                // Move the records from the old table.
+                const newTable = AddonModDataOfflineProvider.DATA_ENTRY_TABLE;
+                const oldTable = 'addon_mod_data_entry';
+
+                return db.tableExists(oldTable).then(() => {
+                    return db.insertRecordsFrom(newTable, oldTable).then(() => {
+                        return db.dropTable(oldTable);
+                    });
+                }).catch(() => {
+                    // Old table does not exist, ignore.
+                });
+            }
         }
-    ];
+    };
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private textUtils: CoreTextUtilsProvider,
-            private fileProvider: CoreFileProvider) {
+            private fileProvider: CoreFileProvider, private fileUploaderProvider: CoreFileUploaderProvider) {
         this.logger = logger.getInstance('AddonModDataOfflineProvider');
-        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**
@@ -102,8 +123,52 @@ export class AddonModDataOfflineProvider {
      */
     deleteEntry(dataId: number, entryId: number, action: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().deleteRecords(AddonModDataOfflineProvider.DATA_ENTRY_TABLE, {dataid: dataId, entryid: entryId,
+            return this.deleteEntryFiles(dataId, entryId, action, site.id).then(() => {
+                return site.getDb().deleteRecords(AddonModDataOfflineProvider.DATA_ENTRY_TABLE, {dataid: dataId, entryid: entryId,
                     action: action});
+            });
+        });
+    }
+
+    /**
+     * Delete entry offline files.
+     *
+     * @param  {number} dataId Database ID.
+     * @param  {number} entryId Database entry ID.
+     * @param  {string} action Action to be done.
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved if deleted, rejected if failure.
+     */
+    protected deleteEntryFiles(dataId: number, entryId: number, action: string, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.getEntry(dataId, entryId, action, site.id).then((entry) => {
+                if (!entry.fields) {
+                    return;
+                }
+
+                const promises = [];
+
+                entry.fields.forEach((field) => {
+                    const value = this.textUtils.parseJSON(field.value);
+                    if (!value.offline) {
+                        return;
+                    }
+
+                    const promise = this.getEntryFieldFolder(dataId, entryId, field.fieldid, site.id).then((folderPath) => {
+                        return this.fileUploaderProvider.getStoredFiles(folderPath);
+                    }).then((files) => {
+                        return this.fileUploaderProvider.clearTmpFiles(files);
+                    }).catch(() => {
+                        // Files not found, ignore.
+                    });
+
+                    promises.push(promise);
+                });
+
+                return Promise.all(promises);
+            }).catch(() => {
+                // Entry not found, ignore.
+            });
         });
     }
 

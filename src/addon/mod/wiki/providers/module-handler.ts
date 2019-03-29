@@ -65,8 +65,12 @@ export class AddonModWikiModuleHandler implements CoreCourseModuleHandler {
             title: module.name,
             class: 'addon-mod_wiki-handler',
             showDownloadButton: true,
-            action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void {
-                navCtrl.push('AddonModWikiIndexPage', {module: module, courseId: courseId}, options);
+            action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions, params?: any): void {
+                const pageParams = {module: module, courseId: courseId};
+                if (params) {
+                    Object.assign(pageParams, params);
+                }
+                navCtrl.push('AddonModWikiIndexPage', pageParams, options);
             }
         };
     }

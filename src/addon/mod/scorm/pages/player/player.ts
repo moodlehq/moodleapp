@@ -13,17 +13,17 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { IonicPage, NavParams, PopoverController } from 'ionic-angular';
+import { IonicPage, NavParams, ModalController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreIonTabsComponent } from '@components/ion-tabs/ion-tabs';
 import { AddonModScormProvider, AddonModScormAttemptCountResult } from '../../providers/scorm';
 import { AddonModScormHelperProvider } from '../../providers/helper';
 import { AddonModScormSyncProvider } from '../../providers/scorm-sync';
 import { AddonModScormDataModel12 } from '../../classes/data-model-12';
-import { AddonModScormTocPopoverComponent } from '../../components/toc-popover/toc-popover';
 
 /**
  * Page that allows playing a SCORM.
@@ -64,11 +64,11 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
     protected launchPrevObserver: any;
     protected goOfflineObserver: any;
 
-    constructor(navParams: NavParams, protected popoverCtrl: PopoverController, protected eventsProvider: CoreEventsProvider,
+    constructor(navParams: NavParams, protected modalCtrl: ModalController, protected eventsProvider: CoreEventsProvider,
             protected sitesProvider: CoreSitesProvider, protected syncProvider: CoreSyncProvider,
             protected domUtils: CoreDomUtilsProvider, protected timeUtils: CoreTimeUtilsProvider,
             protected scormProvider: AddonModScormProvider, protected scormHelper: AddonModScormHelperProvider,
-            protected scormSyncProvider: AddonModScormSyncProvider) {
+            protected scormSyncProvider: AddonModScormSyncProvider, protected tabs: CoreIonTabsComponent) {
 
         this.scorm = navParams.get('scorm') || {};
         this.mode = navParams.get('mode') || AddonModScormProvider.MODENORMAL;
@@ -92,6 +92,8 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
         this.showToc = this.scormProvider.displayTocInPlayer(this.scorm);
 
         if (this.scorm.popup) {
+            this.tabs.changeVisibility(false);
+
             // If we receive a value <= 100 we need to assume it's a percentage.
             if (this.scorm.width <= 100) {
                 this.scorm.width = this.scorm.width + '%';
@@ -379,20 +381,25 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
      * @param {MouseEvent} event Event.
      */
     openToc(event: MouseEvent): void {
-        const popover = this.popoverCtrl.create(AddonModScormTocPopoverComponent, {
+        const modal = this.modalCtrl.create('AddonModScormTocPage', {
             toc: this.toc,
             attemptToContinue: this.attemptToContinue,
-            mode: this.mode
-        });
+            mode: this.mode,
+            selected: this.currentSco && this.currentSco.id
+        }, { cssClass: 'core-modal-lateral',
+            showBackdrop: true,
+            enableBackdropDismiss: true,
+            enterAnimation: 'core-modal-lateral-transition',
+            leaveAnimation: 'core-modal-lateral-transition' });
 
-        // If the popover sends back a SCO, load it.
-        popover.onDidDismiss((sco) => {
+        // If the modal sends back a SCO, load it.
+        modal.onDidDismiss((sco) => {
             if (sco) {
                 this.loadSco(sco);
             }
         });
 
-        popover.present({
+        modal.present({
             ev: event
         });
     }
@@ -442,9 +449,12 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
         this.tocObserver && this.tocObserver.off();
         this.launchNextObserver && this.launchNextObserver.off();
         this.launchPrevObserver && this.launchPrevObserver.off();
-        this.goOfflineObserver && this.goOfflineObserver.off();
+        setTimeout(() => {
+            this.goOfflineObserver && this.goOfflineObserver.off();
+        }, 500);
 
         // Unblock the SCORM so it can be synced.
         this.syncProvider.unblockOperation(AddonModScormProvider.COMPONENT, this.scorm.id, 'player');
+        this.tabs.changeVisibility(true);
     }
 }

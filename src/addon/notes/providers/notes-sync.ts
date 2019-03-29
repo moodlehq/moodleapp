@@ -154,8 +154,8 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider {
                 });
 
                 // Fetch the notes from server to be sure they're up to date.
-                return this.notesProvider.invalidateNotes(courseId, siteId).then(() => {
-                    return this.notesProvider.getNotes(courseId, false, true, siteId);
+                return this.notesProvider.invalidateNotes(courseId, undefined, siteId).then(() => {
+                    return this.notesProvider.getNotes(courseId, undefined, false, true, siteId);
                 }).catch(() => {
                     // Ignore errors.
                 });

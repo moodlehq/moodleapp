@@ -13,13 +13,13 @@
         <ion-list *ngIf="grade">
             <a ion-item *ngIf="grade.itemname && grade.link" text-wrap detail-push [href]="grade.link" core-link capture="true">
                 <ion-icon *ngIf="grade.icon" name="{{grade.icon}}" item-start></ion-icon>
-                <img *ngIf="grade.image" [src]="grade.image" item-start/>
+                <img *ngIf="grade.image" [src]="grade.image" item-start class="core-module-icon"/>
                 <h2><core-format-text [text]="grade.itemname"></core-format-text></h2>
             </a>
 
             <ion-item *ngIf="grade.itemname && !grade.link" text-wrap >
                 <ion-icon *ngIf="grade.icon" name="{{grade.icon}}" item-start></ion-icon>
-                <img *ngIf="grade.image" [src]="grade.image" item-start/>
+                <img *ngIf="grade.image" [src]="grade.image" item-start class="core-module-icon"/>
                 <h2><core-format-text [text]="grade.itemname"></core-format-text></h2>
             </ion-item>
 

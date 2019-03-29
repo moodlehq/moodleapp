@@ -100,11 +100,12 @@ export class AddonModDataHelperProvider {
      * @param {string} template   Template HMTL.
      * @param {any[]}  fields     Fields that defines every content in the entry.
      * @param {any}    entry      Entry.
+     * @param {number} offset     Entry offset.
      * @param {string} mode       Mode list or show.
      * @param {any}    actions    Actions that can be performed to the record.
      * @return {string}           Generated HTML.
      */
-    displayShowFields(template: string, fields: any[], entry: any, mode: string, actions: any): string {
+    displayShowFields(template: string, fields: any[], entry: any, offset: number, mode: string, actions: any): string {
         if (!template) {
             return '';
         }
@@ -135,7 +136,7 @@ export class AddonModDataHelperProvider {
                     render = this.translate.instant('addon.mod_data.' + (entry.approved ? 'approved' : 'notapproved'));
                 } else {
                     render = '<addon-mod-data-action action="' + action + '" [entry]="entries[' + entry.id +
-                                ']" mode="' + mode + '" [database]="data"></addon-mod-data-action>';
+                                ']" mode="' + mode + '" [database]="data" [offset]="' + offset + '"></addon-mod-data-action>';
                 }
                 template = template.replace(replace, render);
             } else {
@@ -172,27 +173,10 @@ export class AddonModDataHelperProvider {
             comments: database.comments,
 
             // Unsupported actions.
+            tags: false,
             delcheck: false,
             export: false
         };
-    }
-
-    /**
-     * Fetch all entries and return it's Id
-     *
-     * @param  {number}    dataId          Data ID.
-     * @param  {number}    groupId         Group ID.
-     * @param  {boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
-     * @param  {boolean}   [ignoreCache]   True if it should ignore cached data (it will always fail in offline or server down).
-     * @param  {string}    [siteId]        Site ID. Current if not defined.
-     * @return {Promise<any>}              Resolved with an array of entry ID.
-     */
-    getAllEntriesIds(dataId: number, groupId: number, forceCache: boolean = false, ignoreCache: boolean = false, siteId?: string):
-            Promise<any> {
-        return this.dataProvider.fetchAllEntries(dataId, groupId, undefined, undefined, undefined, forceCache, ignoreCache, siteId)
-                .then((entries) => {
-            return entries.map((entry) => entry.id);
-        });
     }
 
     /**
@@ -371,7 +355,7 @@ export class AddonModDataHelperProvider {
     getEntry(data: any, entryId: number, offlineActions?: any, siteId?: string): Promise<any> {
         if (entryId > 0) {
             // It's an online entry, get it from WS.
-            return this.dataProvider.getEntry(data.id, entryId, siteId);
+            return this.dataProvider.getEntry(data.id, entryId, false, siteId);
         }
 
         // It's an offline entry, search it in the offline actions.
@@ -395,67 +379,6 @@ export class AddonModDataHelperProvider {
                     }
                 };
             }
-        });
-    }
-
-    /**
-     * Get page info related to an entry.
-     *
-     * @param  {number}    dataId          Data ID.
-     * @param  {number}    entryId         Entry ID.
-     * @param  {number}    groupId         Group ID.
-     * @param  {boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
-     * @param  {boolean}   [ignoreCache]   True if it should ignore cached data (it will always fail in offline or server down).
-     * @param  {string}    [siteId]        Site ID. Current if not defined.
-     * @return {Promise<any>}              Containing page number, if has next and have following page.
-     */
-    getPageInfoByEntry(dataId: number, entryId: number, groupId: number, forceCache: boolean = false,
-            ignoreCache: boolean = false, siteId?: string): Promise<any> {
-        return this.getAllEntriesIds(dataId, groupId, forceCache, ignoreCache, siteId).then((entries) => {
-            const index = entries.findIndex((entry) => entry == entryId);
-
-            if (index >= 0) {
-                return {
-                    previousId: entries[index - 1] || false,
-                    nextId: entries[index + 1] || false,
-                    entryId: entryId,
-                    page: index + 1, // Parsed to natural language.
-                    numEntries: entries.length
-                };
-            }
-
-            return false;
-        });
-    }
-
-    /**
-     * Get page info related to an entry by page number.
-     *
-     * @param  {number}    dataId          Data ID.
-     * @param  {number}    page            Page number.
-     * @param  {number}    groupId         Group ID.
-     * @param  {boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
-     * @param  {boolean}   [ignoreCache]   True if it should ignore cached data (it will always fail in offline or server down).
-     * @param  {string}    [siteId]        Site ID. Current if not defined.
-     * @return {Promise<any>}              Containing page number, if has next and have following page.
-     */
-    getPageInfoByPage(dataId: number, page: number, groupId: number, forceCache: boolean = false,
-            ignoreCache: boolean = false, siteId?: string): Promise<any> {
-        return this.getAllEntriesIds(dataId, groupId, forceCache, ignoreCache, siteId).then((entries) => {
-            const index = page - 1,
-                entryId = entries[index];
-
-            if (entryId) {
-                return {
-                    previousId: entries[index - 1] || null,
-                    nextId: entries[index + 1] || null,
-                    entryId: entryId,
-                    page: page, // Parsed to natural language.
-                    numEntries: entries.length
-                };
-            }
-
-            return false;
         });
     }
 
@@ -499,27 +422,6 @@ export class AddonModDataHelperProvider {
             // Has changes.
             return true;
         });
-    }
-
-    /**
-     * Add a prefix to all rules in a CSS string.
-     *
-     * @param {string} css      CSS code to be prefixed.
-     * @param {string} prefix   Prefix css selector.
-     * @return {string}         Prefixed CSS.
-     */
-    prefixCSS(css: string, prefix: string): string {
-        if (!css) {
-            return '';
-        }
-
-        // Remove comments first.
-        let regExp = /\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm;
-        css = css.replace(regExp, '');
-        // Add prefix.
-        regExp = /([^]*?)({[^]*?}|,)/g;
-
-        return css.replace(regExp, prefix + ' $1 $2');
     }
 
     /**

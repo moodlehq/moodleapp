@@ -49,7 +49,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
-    @Output() completionChanged?: EventEmitter<void>; // Will emit an event when any module completion changes.
+    @Output() completionChanged?: EventEmitter<any>; // Will emit an event when any module completion changes.
 
     @ViewChildren(CoreDynamicComponent) dynamicComponents: QueryList<CoreDynamicComponent>;
 
@@ -61,6 +61,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     allSectionsComponent: any;
     canLoadMore = false;
     showSectionId = 0;
+    sectionSelectorExpanded = false;
 
     // Data to pass to the components.
     data: any = {};
@@ -193,7 +194,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             }
         }
 
-        if (changes.downloadEnabled && this.downloadEnabled) {
+        if (this.downloadEnabled && (changes.downloadEnabled || changes.sections)) {
             this.calculateSectionsStatus(false);
         }
     }
@@ -243,16 +244,27 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
     /**
      * Display the section selector modal.
+     *
+     * @param {MouseEvent} event Event.
      */
-    showSectionSelector(): void {
-        const modal = this.modalCtrl.create('CoreCourseSectionSelectorPage',
-            {course: this.course, sections: this.sections, selected: this.selectedSection});
-        modal.onDidDismiss((newSection) => {
-            if (newSection) {
-                this.sectionChanged(newSection);
-            }
-        });
-        modal.present();
+    showSectionSelector(event: MouseEvent): void {
+        if (!this.sectionSelectorExpanded) {
+            const modal = this.modalCtrl.create('CoreCourseSectionSelectorPage',
+                {course: this.course, sections: this.sections, selected: this.selectedSection});
+            modal.onDidDismiss((newSection) => {
+                if (newSection) {
+                    this.sectionChanged(newSection);
+                }
+
+                this.sectionSelectorExpanded = false;
+            });
+
+            modal.present({
+                ev: event
+            });
+
+            this.sectionSelectorExpanded = true;
+        }
     }
 
     /**
@@ -460,5 +472,29 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     canViewSection(section: any): boolean {
         return section.uservisible !== false && !section.hiddenbynumsections &&
                 section.id != CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
+    }
+
+    /**
+     * The completion of any of the modules have changed.
+     */
+    onCompletionChange(completionData: any): void {
+        if (completionData.hasOwnProperty('valueused') && !completionData.valueused) {
+            // If the completion value is not used, the page won't be reloaded, so update the progress bar.
+            const completionModules = []
+                    .concat(...this.sections.filter((section) => section.hasOwnProperty('modules'))
+                        .map((section) => section.modules))
+                    .map((module) => (module.completion > 0) ? 1 : module.completion)
+                    .reduce((accumulator, currentValue) => accumulator + currentValue);
+            const moduleProgressPercent = 100 / completionModules;
+            // Use min/max here to avoid floating point rounding errors over/under-flowing the progress bar.
+            if (completionData.state === CoreCourseProvider.COMPLETION_COMPLETE) {
+                this.course.progress = Math.min(100, this.course.progress + moduleProgressPercent);
+            } else {
+                this.course.progress = Math.max(0, this.course.progress - moduleProgressPercent);
+            }
+
+        }
+        // Emit a new event for other components.
+        this.completionChanged.emit(completionData);
     }
 }

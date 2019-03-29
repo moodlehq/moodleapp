@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
-import { Platform, AlertController } from 'ionic-angular';
+import { Platform, AlertController, NavController, NavOptions } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreConfigProvider } from '@providers/config';
@@ -179,10 +179,10 @@ export class CoreLoginHelperProvider {
             } else {
                 this.goToSiteInitialPage();
             }
-        }).catch((errorMessage) => {
-            if (errorMessage) {
+        }).catch((error) => {
+            if (error) {
                 // An error occurred, display the error and logout the user.
-                this.domUtils.showErrorModal(errorMessage);
+                this.treatUserTokenError(siteData.siteUrl, error);
                 this.sitesProvider.logout();
             }
         }).finally(() => {
@@ -416,14 +416,20 @@ export class CoreLoginHelperProvider {
     /**
      * Go to the initial page of a site depending on 'userhomepage' setting.
      *
+     * @param {NavController} [navCtrl] NavController to use. Defaults to app root NavController.
+     * @param {string} [page] Name of the page to load after loading the main page.
+     * @param {any} [params] Params to pass to the page.
+     * @param {NavOptions} [options] Navigation options.
      * @return {Promise<any>} Promise resolved when done.
      */
-    goToSiteInitialPage(): Promise<any> {
+    goToSiteInitialPage(navCtrl?: NavController, page?: string, params?: any, options?: NavOptions): Promise<any> {
+        navCtrl = navCtrl || this.appProvider.getRootNavController();
+
         // Due to DeepLinker, we need to remove the path from the URL before going to main menu.
         // IonTabs checks the URL to determine which path to load for deep linking, so we clear the URL.
         this.location.replaceState('');
 
-        return this.appProvider.getRootNavController().setRoot('CoreMainMenuPage');
+        return navCtrl.setRoot('CoreMainMenuPage', { redirectPage: page, redirectParams: params }, options);
     }
 
     /**
@@ -562,7 +568,7 @@ export class CoreLoginHelperProvider {
      */
     isSSOEmbeddedBrowser(code: number): boolean {
         if (this.appProvider.isLinux()) {
-            // In Linux desktop apps, always use embedded browser.
+            // In Linux desktop app, always use embedded browser.
             return true;
         }
 
@@ -648,7 +654,7 @@ export class CoreLoginHelperProvider {
         loginUrl += '&oauthsso=' + params.id;
 
         if (this.appProvider.isLinux()) {
-            // In Linux desktop apps, always use embedded browser.
+            // In Linux desktop app, always use embedded browser.
             this.utils.openInApp(loginUrl);
         } else {
             // Always open it in browser because the user might have the session stored in there.

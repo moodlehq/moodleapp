@@ -1,7 +1,11 @@
 <section ion-list *ngIf="question.text || question.text === ''">
-    <ion-item text-wrap>
-        <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text></p>
+    <ion-item text-wrap class="addon-qtype-shortanswer-text">
+        <core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text>
     </ion-item>
-    <ion-input padding-left type="text" placeholder="{{ 'core.question.answer' | translate }}" [attr.name]="question.input.name" [value]="question.input.value" autocorrect="off" [disabled]="question.input.readOnly" [ngClass]="[question.input.correctClass]">
-    </ion-input>
+    <ion-item *ngIf="!question.input.isInline" text-wrap ngClass="core-{{question.input.correctIconColor}}-item">
+        <ion-label stacked>{{ 'addon.mod_quiz.answercolon' | translate }}</ion-label>
+        <ion-input padding-left type="text" [placeholder]="question.input.readOnly ? '' : 'core.question.answer' | translate" [attr.name]="question.input.name" [value]="question.input.value" autocorrect="off" [disabled]="question.input.readOnly">
+        </ion-input>
+        <core-icon *ngIf="question.input.correctIcon" class="core-correct-icon" item-content item-end [name]="question.input.correctIcon" [color]="[question.input.correctIconColor]"></core-icon>
+</ion-item>
 </section>

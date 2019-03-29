@@ -1,0 +1,5 @@
+ion-app.app-root addon-qtype-calculated {
+    ion-col .select-disabled {
+        @include margin(0, 20px, 0, 0);
+    }
+}

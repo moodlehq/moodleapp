@@ -26,7 +26,9 @@ import { AddonModDataHelperProvider } from './helper';
 import { CoreEventsProvider } from '@providers/events';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreSyncProvider } from '@providers/sync';
+import { CoreRatingSyncProvider } from '@core/rating/providers/sync';
 
 /**
  * Service to sync databases.
@@ -42,7 +44,8 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
             private eventsProvider: CoreEventsProvider,  private dataProvider: AddonModDataProvider,
             protected translate: TranslateService, private utils: CoreUtilsProvider, courseProvider: CoreCourseProvider,
             syncProvider: CoreSyncProvider, protected textUtils: CoreTextUtilsProvider, timeUtils: CoreTimeUtilsProvider,
-            private dataHelper: AddonModDataHelperProvider) {
+            private dataHelper: AddonModDataHelperProvider, private logHelper: CoreCourseLogHelperProvider,
+            private ratingSync: CoreRatingSyncProvider) {
         super('AddonModDataSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
                 timeUtils);
 
@@ -76,8 +79,12 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
      * @param {Promise<any>}     Promise resolved if sync is successful, rejected if sync fails.
      */
     protected syncAllDatabasesFunc(siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        const promises = [];
+
         // Get all data answers pending to be sent in the site.
-        return this.dataOffline.getAllEntries(siteId).then((offlineActions) => {
+        promises.push(this.dataOffline.getAllEntries(siteId).then((offlineActions) => {
             const promises = {};
 
             // Do not sync same database twice.
@@ -100,7 +107,11 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
 
             // Promises will be an object so, convert to an array first;
             return Promise.all(this.utils.objectToArray(promises));
-        });
+        }));
+
+        promises.push(this.syncRatings(undefined, siteId));
+
+        return Promise.all(promises);
     }
 
     /**
@@ -149,10 +160,15 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
             updated: false
         };
 
-        // Get answers to be sent.
-        const syncPromise = this.dataOffline.getDatabaseEntries(dataId, siteId).catch(() => {
-            // No offline data found, return empty object.
-            return [];
+        // Sync offline logs.
+        const syncPromise = this.logHelper.syncIfNeeded(AddonModDataProvider.COMPONENT, dataId, siteId).catch(() => {
+            // Ignore errors.
+        }).then(() => {
+            // Get answers to be sent.
+            return this.dataOffline.getDatabaseEntries(dataId, siteId).catch(() => {
+                // No offline data found, return empty object.
+                return [];
+            });
         }).then((offlineActions) => {
             if (!offlineActions.length) {
                 // Nothing to sync.
@@ -226,7 +242,7 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
         entryId = entryActions[0].entryid;
 
         if (entryId > 0) {
-            timePromise = this.dataProvider.getEntry(data.id, entryId, siteId).then((entry) => {
+            timePromise = this.dataProvider.getEntry(data.id, entryId, false, siteId).then((entry) => {
                 return entry.entry.timemodified;
             }).catch(() => {
                 return -1;
@@ -337,4 +353,52 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
         });
     }
 
+    /**
+     * Synchronize offline ratings.
+     *
+     * @param {number} [cmId] Course module to be synced. If not defined, sync all databases.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved if sync is successful, rejected otherwise.
+     */
+    syncRatings(cmId?: number, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+         return this.ratingSync.syncRatings('mod_data', 'entry', 'module', cmId, 0, siteId).then((results) => {
+            let updated = false;
+            const warnings = [];
+            const promises = [];
+
+            results.forEach((result) => {
+                promises.push(this.dataProvider.getDatabase(result.itemSet.courseId, result.itemSet.instanceId, siteId)
+                        .then((data) => {
+                    const promises = [];
+
+                    if (result.updated.length) {
+                        updated = true;
+
+                        // Invalidate entry of updated ratings.
+                        result.updated.forEach((itemId) => {
+                            promises.push(this.dataProvider.invalidateEntryData(data.id, itemId, siteId));
+                        });
+                    }
+
+                    if (result.warnings.length) {
+                        result.warnings.forEach((warning) => {
+                            warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
+                                component: this.componentTranslate,
+                                name: data.name,
+                                error: warning
+                            }));
+                        });
+                    }
+
+                    return this.utils.allPromises(promises);
+                }));
+            });
+
+            return Promise.all(promises).then(() => {
+                return { updated, warnings };
+            });
+        });
+    }
 }

@@ -111,7 +111,7 @@ export class AddonModSurveyPrefetchHandler extends CoreCourseActivityPrefetchHan
      * @return {Promise<any>} Promise resolved when done.
      */
     protected prefetchSurvey(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
-        return this.surveyProvider.getSurvey(courseId, module.id).then((survey) => {
+        return this.surveyProvider.getSurvey(courseId, module.id, true, siteId).then((survey) => {
             const promises = [],
                 files = this.getIntroFilesFromInstance(module, survey);
 
@@ -120,7 +120,7 @@ export class AddonModSurveyPrefetchHandler extends CoreCourseActivityPrefetchHan
 
             // If survey isn't answered, prefetch the questions.
             if (!survey.surveydone) {
-                promises.push(this.surveyProvider.getQuestions(survey.id));
+                promises.push(this.surveyProvider.getQuestions(survey.id, true, siteId));
             }
 
             return Promise.all(promises);

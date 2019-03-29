@@ -24,6 +24,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSiteWSPreSets } from '@classes/site';
 import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
 import { CoreQuestionDelegate } from '@core/question/providers/delegate';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
 import { AddonModQuizOfflineProvider } from './quiz-offline';
 
@@ -62,7 +63,7 @@ export class AddonModQuizProvider {
             private gradesHelper: CoreGradesHelperProvider, private questionDelegate: CoreQuestionDelegate,
             private filepoolProvider: CoreFilepoolProvider, private timeUtils: CoreTimeUtilsProvider,
             private accessRulesDelegate: AddonModQuizAccessRuleDelegate, private quizOfflineProvider: AddonModQuizOfflineProvider,
-            private domUtils: CoreDomUtilsProvider) {
+            private domUtils: CoreDomUtilsProvider, private logHelper: CoreCourseLogHelperProvider) {
         this.logger = logger.getInstance('AddonModQuizProvider');
     }
 
@@ -671,10 +672,13 @@ export class AddonModQuizProvider {
      * @param {string} key Name of the property to check.
      * @param {any} value Value to search.
      * @param {boolean} [forceCache] Whether it should always return cached data.
+     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the Quiz is retrieved.
      */
-    protected getQuizByField(courseId: number, key: string, value: any, forceCache?: boolean, siteId?: string): Promise<any> {
+    protected getQuizByField(courseId: number, key: string, value: any, forceCache?: boolean, ignoreCache?: boolean,
+            siteId?: string): Promise<any> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     courseids: [courseId]
@@ -685,6 +689,9 @@ export class AddonModQuizProvider {
 
             if (forceCache) {
                 preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
             }
 
             return site.read('mod_quiz_get_quizzes_by_courses', params, preSets).then((response) => {
@@ -709,11 +716,12 @@ export class AddonModQuizProvider {
      * @param {number} courseId Course ID.
      * @param {number} cmId Course module ID.
      * @param {boolean} [forceCache] Whether it should always return cached data.
+     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the quiz is retrieved.
      */
-    getQuiz(courseId: number, cmId: number, forceCache?: boolean, siteId?: string): Promise<any> {
-        return this.getQuizByField(courseId, 'coursemodule', cmId, forceCache, siteId);
+    getQuiz(courseId: number, cmId: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
+        return this.getQuizByField(courseId, 'coursemodule', cmId, forceCache, ignoreCache, siteId);
     }
 
     /**
@@ -722,11 +730,12 @@ export class AddonModQuizProvider {
      * @param {number} courseId Course ID.
      * @param {number} id Quiz ID.
      * @param {boolean} [forceCache] Whether it should always return cached data.
+     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the quiz is retrieved.
      */
-    getQuizById(courseId: number, id: number, forceCache?: boolean, siteId?: string): Promise<any> {
-        return this.getQuizByField(courseId, 'id', id, forceCache, siteId);
+    getQuizById(courseId: number, id: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
+        return this.getQuizByField(courseId, 'id', id, forceCache, ignoreCache, siteId);
     }
 
     /**
@@ -1222,7 +1231,7 @@ export class AddonModQuizProvider {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         // Get required data to call the invalidate functions.
-       return this.getQuiz(courseId, moduleId, false, siteId).then((quiz) => {
+       return this.getQuiz(courseId, moduleId, true, false, siteId).then((quiz) => {
             return this.getUserAttempts(quiz.id, 'all', true, false, false, siteId).then((attempts) => {
                 // Now invalidate it.
                 const lastAttemptId = attempts.length ? attempts[attempts.length - 1].id : undefined;
@@ -1517,42 +1526,47 @@ export class AddonModQuizProvider {
     }
 
     /**
-     * Report an attempt as being viewed.
+     * Report an attempt as being viewed. It did not store logs offline because order of the log is important.
      *
      * @param {number} attemptId Attempt ID.
      * @param {number} [page=0] Page number.
      * @param {any} [preflightData] Preflight required data (like password).
      * @param {boolean} [offline] Whether attempt is offline.
+     * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logViewAttempt(attemptId: number, page: number = 0, preflightData: any = {}, offline?: boolean): Promise<any> {
-        const params = {
-                attemptid: attemptId,
-                page: page,
-                preflightdata: this.utils.objectToArrayOfObjects(preflightData, 'name', 'value', true)
-            },
-            promises = [];
+    logViewAttempt(attemptId: number, page: number = 0, preflightData: any = {}, offline?: boolean, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                    attemptid: attemptId,
+                    page: page,
+                    preflightdata: this.utils.objectToArrayOfObjects(preflightData, 'name', 'value', true)
+                },
+                promises = [];
 
-        promises.push(this.sitesProvider.getCurrentSite().write('mod_quiz_view_attempt', params));
-        if (offline) {
-            promises.push(this.quizOfflineProvider.setAttemptCurrentPage(attemptId, page));
-        }
+            promises.push(site.write('mod_quiz_view_attempt', params));
+            if (offline) {
+                promises.push(this.quizOfflineProvider.setAttemptCurrentPage(attemptId, page, site.getId()));
+            }
 
-        return Promise.all(promises);
+            return Promise.all(promises);
+        });
     }
 
     /**
      * Report an attempt's review as being viewed.
      *
      * @param {number} attemptId Attempt ID.
+     * @param {number} quizId Quiz ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logViewAttemptReview(attemptId: number): Promise<any> {
+    logViewAttemptReview(attemptId: number, quizId: number, siteId?: string): Promise<any> {
         const params = {
             attemptid: attemptId
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_quiz_view_attempt_review', params);
+        return this.logHelper.log('mod_quiz_view_attempt_review', params, AddonModQuizProvider.COMPONENT, quizId, siteId);
     }
 
     /**
@@ -1560,29 +1574,32 @@ export class AddonModQuizProvider {
      *
      * @param {number} attemptId Attempt ID.
      * @param {any} preflightData Preflight required data (like password).
+     * @param {number} quizId Quiz ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logViewAttemptSummary(attemptId: number, preflightData: any): Promise<any> {
+    logViewAttemptSummary(attemptId: number, preflightData: any, quizId: number, siteId?: string): Promise<any> {
         const params = {
             attemptid: attemptId,
             preflightdata: this.utils.objectToArrayOfObjects(preflightData, 'name', 'value', true)
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_quiz_view_attempt_summary', params);
+        return this.logHelper.log('mod_quiz_view_attempt_summary', params, AddonModQuizProvider.COMPONENT, quizId, siteId);
     }
 
     /**
      * Report a quiz as being viewed.
      *
      * @param {number} id Module ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logViewQuiz(id: number): Promise<any> {
+    logViewQuiz(id: number, siteId?: string): Promise<any> {
         const params = {
             quizid: id
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_quiz_view_quiz', params);
+        return this.logHelper.log('mod_quiz_view_quiz', params, AddonModQuizProvider.COMPONENT, id, siteId);
     }
 
     /**

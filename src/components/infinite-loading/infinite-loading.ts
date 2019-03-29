@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { InfiniteScroll } from 'ionic-angular';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChange, Optional } from '@angular/core';
+import { InfiniteScroll, Content } from 'ionic-angular';
 
 /**
  * Component to show a infinite loading trigger and spinner while more data is being loaded.
@@ -25,7 +25,7 @@ import { InfiniteScroll } from 'ionic-angular';
     selector: 'core-infinite-loading',
     templateUrl: 'core-infinite-loading.html',
 })
-export class CoreInfiniteLoadingComponent {
+export class CoreInfiniteLoadingComponent implements OnChanges {
     @Input() enabled: boolean;
     @Input() error = false;
     @Input() position = 'bottom';
@@ -35,8 +35,24 @@ export class CoreInfiniteLoadingComponent {
 
     protected infiniteScroll: InfiniteScroll;
 
-    constructor() {
+    constructor(@Optional() private content: Content) {
         this.action = new EventEmitter();
+    }
+
+    /**
+     * Detect changes on input properties.
+     *
+     * @param {SimpleChange}} changes Changes.
+     */
+    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
+        if (changes.enabled && this.enabled && this.position == 'bottom') {
+            // Infinite scroll enabled. If the list doesn't fill the full height, infinite scroll isn't triggered automatically.
+            // Send a fake scroll event to make infinite scroll check if it should load more items.
+            setTimeout(() => {
+                const event: any = new Event('scroll');
+                this.content.ionScroll.emit(event);
+            }, 400);
+        }
     }
 
     /**
@@ -64,6 +80,13 @@ export class CoreInfiniteLoadingComponent {
         this.loadingMore = false;
         this.infiniteScroll && this.infiniteScroll.complete();
         this.infiniteScroll = undefined;
+
+        // More items loaded. If the list doesn't fill the full height, infinite scroll isn't triggered automatically.
+        // Send a fake scroll event to make infinite scroll check if it should load more items.
+        setTimeout(() => {
+            const event: any = new Event('scroll');
+            this.content.ionScroll.emit(event);
+        });
     }
 
 }

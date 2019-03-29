@@ -15,11 +15,13 @@
 import { NgModule } from '@angular/core';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { AddonModChatComponentsModule } from './components/components.module';
 import { AddonModChatProvider } from './providers/chat';
 import { AddonModChatLinkHandler } from './providers/link-handler';
 import { AddonModChatListLinkHandler } from './providers/list-link-handler';
 import { AddonModChatModuleHandler } from './providers/module-handler';
+import { AddonModChatPrefetchHandler } from './providers/prefetch-handler';
 
 // List of providers (without handlers).
 export const ADDON_MOD_CHAT_PROVIDERS: any[] = [
@@ -37,15 +39,18 @@ export const ADDON_MOD_CHAT_PROVIDERS: any[] = [
         AddonModChatLinkHandler,
         AddonModChatListLinkHandler,
         AddonModChatModuleHandler,
+        AddonModChatPrefetchHandler
     ]
 })
 export class AddonModChatModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModChatModuleHandler,
             contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModChatLinkHandler,
+            prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModChatPrefetchHandler,
             listLinkHandler: AddonModChatListLinkHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         contentLinksDelegate.registerHandler(linkHandler);
         contentLinksDelegate.registerHandler(listLinkHandler);
+        prefetchDelegate.registerHandler(prefetchHandler);
     }
 }

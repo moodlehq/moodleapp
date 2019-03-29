@@ -13,14 +13,15 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { LocalNotifications, ILocalNotification } from '@ionic-native/local-notifications';
+import { LocalNotifications, ILocalNotification, ILocalNotificationAction } from '@ionic-native/local-notifications';
 import { CoreAppProvider } from '@providers/app';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../../../configconstants';
 import * as moment from 'moment';
+import { Subject, Observable } from 'rxjs';
 
 /**
  * Emulates the Cordova Globalization plugin in desktop apps and in browser.
@@ -42,7 +43,7 @@ export class LocalNotificationsMock extends LocalNotifications {
 
     // Variables for database.
     protected DESKTOP_NOTIFS_TABLE = 'desktop_local_notifications';
-    protected tableSchema = {
+    protected tableSchema: SQLiteDBTableSchema = {
         name: this.DESKTOP_NOTIFS_TABLE,
         columns: [
             {
@@ -76,16 +77,40 @@ export class LocalNotificationsMock extends LocalNotifications {
     protected appDB: SQLiteDB;
     protected scheduled: { [i: number]: any } = {};
     protected triggered: { [i: number]: any } = {};
-    protected observers;
+    protected observers: {[event: string]: Subject<any>};
     protected defaults = {
-        text: '',
-        title: '',
-        sound: '',
-        badge: 0,
-        id: 0,
-        data: undefined,
-        every: undefined,
-        at: undefined
+        actions       : [],
+        attachments   : [],
+        autoClear     : true,
+        badge         : null,
+        channel       : null,
+        clock         : true,
+        color         : null,
+        data          : null,
+        defaults      : 0,
+        foreground    : null,
+        group         : null,
+        groupSummary  : false,
+        icon          : null,
+        id            : 0,
+        launch        : true,
+        led           : true,
+        lockscreen    : true,
+        mediaSession  : null,
+        number        : 0,
+        priority      : 0,
+        progressBar   : false,
+        silent        : false,
+        smallIcon     : 'res://icon',
+        sound         : true,
+        sticky        : false,
+        summary       : null,
+        text          : '',
+        timeoutAfter  : false,
+        title         : '',
+        trigger       : { type : 'calendar' },
+        vibrate       : false,
+        wakeup        : true
     };
 
     constructor(private appProvider: CoreAppProvider, private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider) {
@@ -96,20 +121,32 @@ export class LocalNotificationsMock extends LocalNotifications {
 
         // Initialize observers.
         this.observers = {
-            schedule: [],
-            trigger: [],
-            click: [],
-            update: [],
-            clear: [],
-            clearall: [],
-            cancel: [],
-            cancelall: []
+            schedule: new Subject<any>(),
+            trigger: new Subject<any>(),
+            click: new Subject<any>(),
+            update: new Subject<any>(),
+            clear: new Subject<any>(),
+            clearall: new Subject<any>(),
+            cancel: new Subject<any>(),
+            cancelall: new Subject<any>(),
         };
     }
 
     /**
-     * Cancels single or multiple notifications
-     * @param notificationId {any} A single notification id, or an array of notification ids.
+     * Adds a group of actions.
+     *
+     * @param {any} groupId The id of the action group
+     * @param {ILocalNotificationAction[]} actions The actions of this group
+     * @returns {Promise<any>}
+     */
+    addActions(groupId: any, actions: ILocalNotificationAction[]): Promise<any> {
+        return Promise.reject('Not supported in desktop apps.');
+    }
+
+    /**
+     * Cancels single or multiple notifications.
+     *
+     * @param {any} notificationId A single notification id, or an array of notification ids.
      * @returns {Promise<any>} Returns a promise when the notification is canceled
      */
     cancel(notificationId: any): Promise<any> {
@@ -135,7 +172,11 @@ export class LocalNotificationsMock extends LocalNotifications {
      */
     cancelAll(): Promise<any> {
         return this.cancel(Object.keys(this.scheduled)).then(() => {
-            this.triggerEvent('cancelall', 'foreground');
+            this.fireEvent('cancelall', {
+                event: 'cancelall',
+                foreground: true,
+                queued: false
+            });
         });
     }
 
@@ -162,7 +203,7 @@ export class LocalNotificationsMock extends LocalNotifications {
         this.removeNotification(id);
 
         if (!omitEvent) {
-            this.triggerEvent(eventName, notification, 'foreground');
+            this.fireEvent(eventName, notification);
         }
     }
 
@@ -181,7 +222,8 @@ export class LocalNotificationsMock extends LocalNotifications {
         // Clear the notifications.
         notificationId.forEach((id) => {
             // Cancel only the notifications that aren't repeating.
-            if (this.scheduled[id] && this.scheduled[id].notification && !this.scheduled[id].notification.every) {
+            if (this.scheduled[id] && this.scheduled[id].notification &&
+                    (!this.scheduled[id].notification.trigger || !this.scheduled[id].notification.trigger.every)) {
                 promises.push(this.cancelNotification(id, false, 'clear'));
             }
         });
@@ -195,7 +237,11 @@ export class LocalNotificationsMock extends LocalNotifications {
      */
     clearAll(): Promise<any> {
         return this.clear(Object.keys(this.scheduled)).then(() => {
-            this.triggerEvent('clearall', 'foreground');
+            this.fireEvent('clearall', {
+                event: 'clearall',
+                foreground: true,
+                queued: false
+            });
         });
     }
 
@@ -225,42 +271,245 @@ export class LocalNotificationsMock extends LocalNotifications {
      */
     protected convertProperties(notification: ILocalNotification): ILocalNotification {
         if (notification.id) {
-            if (isNaN(notification.id)) {
-                notification.id = this.defaults.id;
-            } else {
-                notification.id = Number(notification.id);
-            }
+            notification.id = this.parseToInt('id', notification);
         }
 
         if (notification.title) {
             notification.title = notification.title.toString();
         }
 
-        if (notification.text) {
-            notification.text = notification.text.toString();
-        }
-
         if (notification.badge) {
-            if (isNaN(notification.badge)) {
-                notification.badge = this.defaults.badge;
-            } else {
-                notification.badge = Number(notification.badge);
-            }
+            notification.badge = this.parseToInt('badge', notification);
         }
 
-        if (notification.at) {
-            if (typeof notification.at == 'object') {
-                notification.at = notification.at.getTime();
-            }
-
-            notification.at = Math.round(notification.at / 1000);
+        if (notification.defaults) {
+            notification.defaults = this.parseToInt('defaults', notification);
         }
 
-        if (typeof notification.data == 'object') {
-            notification.data = JSON.stringify(notification.data);
+        if (typeof notification.timeoutAfter === 'boolean') {
+            notification.timeoutAfter = notification.timeoutAfter ? 3600000 : null;
+        }
+
+        if (notification.timeoutAfter) {
+            notification.timeoutAfter = this.parseToInt('timeoutAfter', notification);
+        }
+
+        this.convertPriority(notification);
+        this.convertTrigger(notification);
+        this.convertActions(notification);
+        this.convertProgressBar(notification);
+
+        return notification;
+    }
+
+    /**
+     * Parse a property to number, returning the default value if not valid.
+     * Code extracted from the Cordova plugin.
+     *
+     * @param {string} prop Name of property to convert.
+     * @param {any} notification Notification where to search the property.
+     * @return {number} Converted number or default value.
+     */
+    protected parseToInt(prop: string, notification: any): number {
+        if (isNaN(notification[prop])) {
+            return this.defaults[prop];
+        } else {
+            return Number(notification[prop]);
+        }
+    }
+
+    /**
+     * Convert the priority of a notification.
+     * Code extracted from the Cordova plugin.
+     *
+     * @param {any} notification Notification.
+     * @return {any} Notification.
+     */
+    protected convertPriority(notification: any): any {
+        let prio = notification.priority || notification.prio || 0;
+
+        if (typeof prio === 'string') {
+            prio = { min: -2, low: -1, high: 1, max: 2 }[prio] || 0;
+        }
+
+        if (notification.foreground === true) {
+            prio = Math.max(prio, 1);
+        }
+
+        if (notification.foreground === false) {
+            prio = Math.min(prio, 0);
+        }
+
+        notification.priority = prio;
+
+        return notification;
+    }
+
+    /**
+     * Convert the actions of a notification.
+     * Code extracted from the Cordova plugin.
+     *
+     * @param {any} notification Notification.
+     * @return {any} Notification.
+     */
+    protected convertActions(notification: any): any {
+        const actions = [];
+
+        if (!notification.actions || typeof notification.actions === 'string') {
+            return notification;
+        }
+
+        for (let i = 0, len = notification.actions.length; i < len; i++) {
+            const action = notification.actions[i];
+
+            if (!action.id) {
+                // Ignore action, it has no ID.
+                continue;
+            }
+
+            action.id = action.id.toString();
+
+            actions.push(action);
+        }
+
+        notification.actions = actions;
+
+        return notification;
+    }
+
+    /**
+     * Convert the trigger of a notification.
+     * Code extracted from the Cordova plugin.
+     *
+     * @param {any} notification Notification.
+     * @return {any} Notification.
+     */
+    protected convertTrigger(notification: any): any {
+        const trigger = notification.trigger || {};
+        let date = this.getValueFor(trigger, 'at', 'firstAt', 'date');
+
+        const dateToNum = (date: any): number => {
+            const num = typeof date == 'object' ? date.getTime() : date;
+
+            return Math.round(num);
+        };
+
+        if (!notification.trigger) {
+            return notification;
+        }
+
+        if (!trigger.type) {
+            trigger.type = trigger.center ? 'location' : 'calendar';
+        }
+
+        const isCal = trigger.type == 'calendar';
+
+        if (isCal && !date) {
+            date = this.getValueFor(notification, 'at', 'firstAt', 'date');
+        }
+
+        if (isCal && !trigger.every && notification.every) {
+            trigger.every = notification.every;
+        }
+
+        if (isCal && (trigger.in || trigger.every)) {
+            date = null;
+        }
+
+        if (isCal && date) {
+            trigger.at = dateToNum(date);
+        }
+
+        if (isCal && trigger.firstAt) {
+            trigger.firstAt = dateToNum(trigger.firstAt);
+        }
+
+        if (isCal && trigger.before) {
+            trigger.before = dateToNum(trigger.before);
+        }
+
+        if (isCal && trigger.after) {
+            trigger.after = dateToNum(trigger.after);
+        }
+
+        if (!trigger.count) {
+            trigger.count = trigger.every ? 5 : 1;
+        }
+
+        if (!isCal) {
+            trigger.notifyOnEntry = !!trigger.notifyOnEntry;
+            trigger.notifyOnExit  = trigger.notifyOnExit === true;
+            trigger.radius        = trigger.radius || 5;
+            trigger.single        = !!trigger.single;
+        }
+
+        if (!isCal || trigger.at) {
+            delete trigger.every;
+        }
+
+        delete notification.every;
+        delete notification.at;
+        delete notification.firstAt;
+        delete notification.date;
+
+        notification.trigger = trigger;
+
+        return notification;
+    }
+
+    /**
+     * Convert the progress bar of a notification.
+     * Code extracted from the Cordova plugin.
+     *
+     * @param {any} notification Notification.
+     * @return {any} Notification.
+     */
+    protected convertProgressBar(notification: any): any {
+        let cfg = notification.progressBar;
+
+        if (cfg === undefined) {
+            return notification;
+        }
+
+        if (typeof cfg === 'boolean') {
+            cfg = notification.progressBar = { enabled: cfg };
+        }
+
+        if (typeof cfg.enabled !== 'boolean') {
+            cfg.enabled = !!(cfg.value || cfg.maxValue || cfg.indeterminate !== null);
+        }
+
+        cfg.value = cfg.value || 0;
+
+        cfg.enabled = !!cfg.enabled;
+
+        if (cfg.enabled && notification.clock === true) {
+            notification.clock = 'chronometer';
         }
 
         return notification;
+    }
+
+    /**
+     * Not an official interface, however its possible to manually fire events.
+     *
+     * @param {string} eventName The name of the event. Available events: schedule, trigger, click, update, clear, clearall, cancel,
+     *                  cancelall. Custom event names are possible for actions
+     * @param {any} args Optional arguments
+     */
+    fireEvent(eventName: string, args: any): void {
+        if (this.observers[eventName]) {
+            this.observers[eventName].next(args);
+        }
+    }
+
+    /**
+     * Fire queued events once the device is ready and all listeners are registered.
+     *
+     * @returns {Promise<any>}
+     */
+    fireQueuedEvents(): Promise<any> {
+        return Promise.resolve();
     }
 
     /**
@@ -283,11 +532,20 @@ export class LocalNotificationsMock extends LocalNotifications {
     }
 
     /**
+     * Gets the (platform specific) default settings.
+     *
+     * @returns {Promise<any>} An object with all default settings
+     */
+    getDefaults(): Promise<any> {
+        return Promise.resolve(this.defaults);
+    }
+
+    /**
      * Get all the notification ids.
      *
      * @returns {Promise<Array<number>>}
      */
-    getAllIds(): Promise<Array<number>> {
+    getIds(): Promise<Array<number>> {
         let ids = this.utils.mergeArraysWithoutDuplicates(Object.keys(this.scheduled), Object.keys(this.triggered));
         ids = ids.map((id) => {
             return Number(id);
@@ -304,9 +562,13 @@ export class LocalNotificationsMock extends LocalNotifications {
     protected getAllNotifications(): Promise<any> {
         return this.appDB.getAllRecords(this.DESKTOP_NOTIFS_TABLE).then((notifications) => {
             notifications.forEach((notification) => {
-                notification.at = new Date(notification.at);
+                notification.trigger = {
+                    at: new Date(notification.at)
+                };
                 notification.data = this.textUtils.parseJSON(notification.data);
                 notification.triggered = !!notification.triggered;
+
+                this.mergeWithDefaults(notification);
             });
 
             return notifications;
@@ -318,7 +580,7 @@ export class LocalNotificationsMock extends LocalNotifications {
      *
      * @returns {Promise<Array<ILocalNotification>>}
      */
-    getAllScheduled(): Promise<Array<ILocalNotification>> {
+    getScheduled(): Promise<Array<ILocalNotification>> {
         return Promise.resolve(this.getNotifications(undefined, true, false));
     }
 
@@ -327,14 +589,14 @@ export class LocalNotificationsMock extends LocalNotifications {
      *
      * @returns {Promise<Array<ILocalNotification>>}
      */
-    getAllTriggered(): Promise<Array<ILocalNotification>> {
+    getTriggered(): Promise<Array<ILocalNotification>> {
         return Promise.resolve(this.getNotifications(undefined, false, true));
     }
 
     /**
      * Get a set of notifications. If ids isn't specified, return all the notifications.
      *
-     * @param {Number[]} [ids] Ids of notifications to get. If not specified, get all notifications.
+     * @param {number[]} [ids] Ids of notifications to get. If not specified, get all notifications.
      * @param {boolean} [getScheduled] Get scheduled notifications.
      * @param {boolean} [getTriggered] Get triggered notifications.
      * @return {ILocalNotification[]} List of notifications.
@@ -362,13 +624,19 @@ export class LocalNotificationsMock extends LocalNotifications {
     }
 
     /**
-     * Get a scheduled notification object.
+     * Get the trigger "at" in milliseconds.
      *
-     * @param {any} notificationId The id of the notification to ge.
-     * @returns {Promise<ILocalNotification>}
+     * @param {ILocalNotification} notification Notification to get the trigger from.
+     * @return {number} Trigger time.
      */
-    getScheduled(notificationId: any): Promise<ILocalNotification> {
-        return Promise.resolve(this.getNotifications([Number(notificationId)], true, false)[0]);
+    protected getNotificationTriggerAt(notification: ILocalNotification): number {
+        const triggerAt = (notification.trigger && notification.trigger.at) || 0;
+
+        if (typeof triggerAt != 'number') {
+            return triggerAt.getTime();
+        }
+
+        return triggerAt;
     }
 
     /**
@@ -385,16 +653,6 @@ export class LocalNotificationsMock extends LocalNotifications {
     }
 
     /**
-     * Get a triggered notification object.
-     *
-     * @param {any} notificationId The id of the notification to get.
-     * @returns {Promise<ILocalNotification>}
-     */
-    getTriggered(notificationId: any): Promise<ILocalNotification> {
-        return Promise.resolve(this.getNotifications([Number(notificationId)], false, true)[0]);
-    }
-
-    /**
      * Get the ids of triggered notifications.
      *
      * @returns {Promise<Array<number>>}
@@ -408,11 +666,27 @@ export class LocalNotificationsMock extends LocalNotifications {
     }
 
     /**
+     * Get the type (triggered, scheduled) for the notification.
+     *
+     * @param {number} id The ID of the notification.
+     * @return {Promise<boolean>}
+     */
+    getType(id: number): Promise<any> {
+        if (this.scheduled[id]) {
+            return Promise.resolve('scheduled');
+        } else if (this.triggered[id]) {
+            return Promise.resolve('triggered');
+        } else {
+            return Promise.resolve('unknown');
+        }
+    }
+
+    /**
      * Given an object of options and a list of properties, return the first property that exists.
      * Code extracted from the Cordova plugin.
      *
      * @param {ILocalNotification} notification Notification.
-     * @param {any} ...args List of keys to check.
+     * @param {any[]} ...args List of keys to check.
      * @return {any} First value found.
      */
     protected getValueFor(notification: ILocalNotification, ...args: any[]): any {
@@ -425,12 +699,35 @@ export class LocalNotificationsMock extends LocalNotifications {
     }
 
     /**
+     * Checks if a group of actions is defined.
+     *
+     * @param {any} groupId The id of the action group
+     * @returns {Promise<boolean>} Whether the group is defined.
+     */
+    hasActions(groupId: any): Promise<boolean> {
+        return Promise.resolve(false);
+    }
+
+    /**
      * Informs if the app has the permission to show notifications.
      *
      * @returns {Promise<boolean>}
      */
     hasPermission(): Promise<boolean> {
         return Promise.resolve(true);
+    }
+
+    /**
+     * Check if a notification has a given type.
+     *
+     * @param {number} id The ID of the notification.
+     * @param {string} type  The type of the notification.
+     * @returns {Promise<boolean>} Promise resolved with boolean: whether it has the type.
+     */
+    hasType(id: number, type: string): Promise<boolean> {
+        return this.getType(id).then((notifType) => {
+            return type == notifType;
+        });
     }
 
     /**
@@ -512,26 +809,22 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @return {ILocalNotification} Treated notification.
      */
     protected mergeWithDefaults(notification: ILocalNotification): ILocalNotification {
-        notification.at = this.getValueFor(notification, 'at', 'firstAt', 'date');
-        notification.text = this.getValueFor(notification, 'text', 'message');
-        notification.data = this.getValueFor(notification, 'data', 'json');
+        const values = this.getDefaults();
 
-        if (notification.at === undefined || notification.at === null) {
-            notification.at = new Date();
+        if (values.hasOwnProperty('sticky')) {
+            notification.sticky = this.getValueFor(notification, 'sticky', 'ongoing');
         }
 
-        for (const key in this.defaults) {
-            if (notification[key] === null || notification[key] === undefined) {
-                if (notification.hasOwnProperty(key) && ['data', 'sound'].indexOf(key) > -1) {
-                    notification[key] = undefined;
-                } else {
-                    notification[key] = this.defaults[key];
-                }
-            }
+        if (notification.sticky && notification.autoClear !== true) {
+            notification.autoClear = false;
         }
 
-        for (const key in notification) {
-            if (!this.defaults.hasOwnProperty(key)) {
+        Object.assign(values, notification);
+
+        for (const key in values) {
+            if (values[key] !== null) {
+                notification[key] = values[key];
+            } else {
                 delete notification[key];
             }
         }
@@ -545,7 +838,7 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @param {ILocalNotification} notification Clicked notification.
      */
     protected notificationClicked(notification: ILocalNotification): void {
-        this.triggerEvent('click', notification, 'foreground');
+        this.fireEvent('click', notification);
         // Focus the app.
         require('electron').ipcRenderer.send('focusApp');
     }
@@ -553,20 +846,16 @@ export class LocalNotificationsMock extends LocalNotifications {
     /**
      * Sets a callback for a specific event.
      *
-     * @param {string} eventName Name of the event. Events: schedule, trigger, click, update, clear, clearall, cancel, cancelall
-     * @param {any} callback Call back function.
+     * @param {string} eventName The name of the event. Events: schedule, trigger, click, update, clear, clearall, cancel,
+     *                           cancelall. Custom event names are possible for actions.
+     * @return {Observable<any>} Observable
      */
-    on(eventName: string, callback: any): void {
-        if (!this.observers[eventName] || typeof callback != 'function') {
-            // Event not supported, stop.
-            return;
-        }
-        this.observers[eventName].push(callback);
+    on(eventName: string): Observable<any> {
+        return this.observers[eventName];
     }
 
     /**
      * Parse a interval and convert it to a number of milliseconds (0 if not valid).
-     * Code extracted from the Cordova plugin.
      *
      * @param {string} every Interval to convert.
      * @return {number} Number of milliseconds of the interval-
@@ -607,12 +896,13 @@ export class LocalNotificationsMock extends LocalNotifications {
     }
 
     /**
-     * Register permission to show notifications if not already granted.
+     * Removes a group of actions.
      *
-     * @returns {Promise<boolean>}
+     * @param {any} groupId The id of the action group
+     * @returns {Promise<any>}
      */
-    registerPermission(): Promise<boolean> {
-        return Promise.resolve(true);
+    removeActions(groupId: any): Promise<any> {
+        return Promise.reject('Not supported in desktop apps.');
     }
 
     /**
@@ -626,6 +916,15 @@ export class LocalNotificationsMock extends LocalNotifications {
     }
 
     /**
+     * Request permission to show notifications if not already granted.
+     *
+     * @returns {Promise<boolean>}
+     */
+    requestPermission(): Promise<boolean> {
+        return Promise.resolve(true);
+    }
+
+    /**
      * Schedules a single or multiple notifications.
      *
      * @param {ILocalNotification | Array<ILocalNotification>} [options] Notification or notifications.
@@ -636,6 +935,8 @@ export class LocalNotificationsMock extends LocalNotifications {
 
     /**
      * Schedules or updates a single or multiple notifications.
+     * We only support using the "at" property to trigger the notification. Other properties like "in" or "every"
+     * aren't supported yet.
      *
      * @param {ILocalNotification | Array<ILocalNotification>} [options] Notification or notifications.
      * @param {string} [eventName] Name of the event: schedule or update.
@@ -656,13 +957,15 @@ export class LocalNotificationsMock extends LocalNotifications {
             };
             this.storeNotification(notification, false);
 
-            if (Math.abs(moment().diff(notification.at * 1000, 'days')) > 15) {
+            const triggerAt = this.getNotificationTriggerAt(notification);
+
+            if (Math.abs(moment().diff(triggerAt, 'days')) > 15) {
                 // Notification should trigger more than 15 days from now, don't schedule it.
                 return;
             }
 
             // Schedule the notification.
-            const toTriggerTime = notification.at * 1000 - Date.now(),
+            const toTriggerTime = triggerAt - Date.now(),
                 trigger = (): void => {
                     // Trigger the notification.
                     this.triggerNotification(notification);
@@ -672,21 +975,26 @@ export class LocalNotificationsMock extends LocalNotifications {
                     this.storeNotification(notification, true);
 
                     // Launch the trigger event.
-                    this.triggerEvent('trigger', notification, 'foreground');
-
-                    if (notification.every && this.scheduled[notification.id] && !this.scheduled[notification.id].interval) {
-                        const interval = this.parseInterval(notification.every);
-                        if (interval > 0) {
-                            this.scheduled[notification.id].interval = setInterval(trigger, interval);
-                        }
-                    }
+                    this.fireEvent('trigger', notification);
                 };
 
             this.scheduled[notification.id].timeout = setTimeout(trigger, toTriggerTime);
 
             // Launch the scheduled/update event.
-            this.triggerEvent(eventName, notification, 'foreground');
+            this.fireEvent(eventName, notification);
         });
+    }
+
+    /**
+     * Overwrites the (platform specific) default settings.
+     *
+     * @param {any} defaults The defaults to set.
+     * @returns {Promise<any>}
+     */
+    setDefaults(defaults: any): Promise<any> {
+        this.defaults = defaults;
+
+        return Promise.resolve();
     }
 
     /**
@@ -702,26 +1010,12 @@ export class LocalNotificationsMock extends LocalNotifications {
             id : notification.id,
             title: notification.title,
             text: notification.text,
-            at: notification.at ? (typeof notification.at == 'object' ? notification.at.getTime() : notification.at) : 0,
+            at: this.getNotificationTriggerAt(notification),
             data: notification.data ? JSON.stringify(notification.data) : '{}',
             triggered: triggered ? 1 : 0
         };
 
         return this.appDB.insertRecord(this.DESKTOP_NOTIFS_TABLE, entry);
-    }
-
-    /**
-     * Trigger an event.
-     *
-     * @param {string} eventName Event name.
-     * @param {any[]} ...args List of parameters to pass.
-     */
-    protected triggerEvent(eventName: string, ...args: any[]): void {
-        if (this.observers[eventName]) {
-            this.observers[eventName].forEach((callback) => {
-                callback.apply(null, args);
-            });
-        }
     }
 
     /**
@@ -763,30 +1057,13 @@ export class LocalNotificationsMock extends LocalNotifications {
         } else {
             // Use Electron default notifications.
             const notifInstance = new Notification(notification.title, {
-                body: notification.text
+                body: <string> notification.text
             });
 
             // Listen for click events.
             notifInstance.onclick = (): void => {
                 this.notificationClicked(notification);
             };
-        }
-    }
-
-    /**
-     * Removes a callback of a specific event.
-     *
-     * @param {string} eventName Name of the event. Events: schedule, trigger, click, update, clear, clearall, cancel, cancelall
-     * @param {any} callback Call back function.
-     */
-    un(eventName: string, callback: any): void {
-        if (this.observers[eventName] && this.observers[eventName].length) {
-            for (let i = 0; i < this.observers[eventName].length; i++) {
-                if (this.observers[eventName][i] == callback) {
-                    this.observers[eventName].splice(i, 1);
-                    break;
-                }
-            }
         }
     }
 

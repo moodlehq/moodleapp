@@ -69,7 +69,11 @@ export class AddonModQuizReviewPage implements OnInit {
         this.navigationModal = modalCtrl.create('AddonModQuizNavigationModalPage', {
             isReview: true,
             page: this
-        });
+        }, { cssClass: 'core-modal-lateral',
+            showBackdrop: true,
+            enableBackdropDismiss: true,
+            enterAnimation: 'core-modal-lateral-transition',
+            leaveAnimation: 'core-modal-lateral-transition' });
     }
 
     /**
@@ -77,7 +81,7 @@ export class AddonModQuizReviewPage implements OnInit {
      */
     ngOnInit(): void {
         this.fetchData().then(() => {
-            this.quizProvider.logViewAttemptReview(this.attemptId).catch((error) => {
+            this.quizProvider.logViewAttemptReview(this.attemptId, this.quizId).catch((error) => {
                 // Ignore errors.
             });
         }).finally(() => {

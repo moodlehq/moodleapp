@@ -24,6 +24,7 @@ import { CoreSyncProvider } from '@providers/sync';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModWorkshopProvider } from './workshop';
 import { AddonModWorkshopHelperProvider } from './helper';
 import { AddonModWorkshopOfflineProvider } from './offline';
@@ -51,7 +52,8 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
             private utils: CoreUtilsProvider,
             private workshopProvider: AddonModWorkshopProvider,
             private workshopHelper: AddonModWorkshopHelperProvider,
-            private workshopOffline: AddonModWorkshopOfflineProvider) {
+            private workshopOffline: AddonModWorkshopOfflineProvider,
+            private logHelper: CoreCourseLogHelperProvider) {
 
         super('AddonModWorkshopSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
                 timeUtils);
@@ -171,6 +173,9 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
             // No offline data found, return empty array.
             return [];
         }));
+
+        // Sync offline logs.
+        syncPromises.push(this.logHelper.syncIfNeeded(AddonModWorkshopProvider.COMPONENT, workshopId, siteId));
 
         const result = {
             warnings: [],
@@ -353,7 +358,15 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
                         result.updated = true;
 
                         return this.workshopOffline.deleteSubmissionAction(action.workshopid, action.submissionid, action.action,
-                                siteId);
+                                siteId).then(() => {
+                            // Delete stored files.
+                            if (action.action == 'add' || action.action == 'update') {
+                                const editing = action.action == 'update';
+
+                                return this.workshopHelper.deleteSubmissionStoredFiles(action.workshopid,
+                                        action.submissionid, editing, siteId);
+                            }
+                        });
                     });
                 });
             });
@@ -433,7 +446,9 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
                 // Delete the offline data.
                 result.updated = true;
 
-                return this.workshopOffline.deleteAssessment(workshop.id, assessmentId, siteId);
+                return this.workshopOffline.deleteAssessment(workshop.id, assessmentId, siteId).then(() => {
+                    this.workshopHelper.deleteAssessmentStoredFiles(workshop.id, assessmentId, siteId);
+                });
             });
         }).then(() => {
             if (discardError) {

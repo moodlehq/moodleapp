@@ -67,7 +67,7 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
             return this.loadContents(module, courseId, true);
         }).then(() => {
             // Get the intro files.
-            return this.getIntroFiles(module, courseId);
+            return this.getIntroFiles(module, courseId, true);
         }).then((introFiles) => {
             const downloadFn = prefetch ? this.filepoolProvider.prefetchPackage.bind(this.filepoolProvider) :
                         this.filepoolProvider.downloadPackage.bind(this.filepoolProvider),

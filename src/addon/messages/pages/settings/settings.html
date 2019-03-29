@@ -32,6 +32,7 @@
             </ion-list>
         </ion-card>
 
+        <!-- Notifications. -->
         <ng-container *ngIf="preferences">
             <div *ngFor="let component of preferences.components">
                 <ion-card list *ngFor="let notification of component.notifications">
@@ -90,5 +91,20 @@
                 </ion-card>
             </div>
         </ng-container>
+
+        <!-- General settings. -->
+        <ion-card>
+            <ion-list text-wrap>
+                <ion-item-divider>{{ 'core.settings.general' | translate }}</ion-item-divider>
+                <ion-item text-wrap>
+                    <ion-label>
+                        <h2>{{ 'addon.messages.useentertosend' | translate }}</h2>
+                        <p *ngIf="isDesktop && !isMac">{{ 'addon.messages.useentertosenddescdesktop' | translate }}</p>
+                        <p *ngIf="isDesktop && isMac">{{ 'addon.messages.useentertosenddescmac' | translate }}</p>
+                    </ion-label>
+                    <ion-toggle [(ngModel)]="sendOnEnter" (ngModelChange)="sendOnEnterChanged()"></ion-toggle>
+                </ion-item>
+            </ion-list>
+        </ion-card>
     </core-loading>
 </ion-content>

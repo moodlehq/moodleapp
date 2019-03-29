@@ -17,7 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSiteWSPreSets, CoreSite } from '@classes/site';
@@ -43,38 +43,46 @@ export class CoreCourseProvider {
     static COMPLETION_COMPLETE_PASS = 2;
     static COMPLETION_COMPLETE_FAIL = 3;
 
+    static COMPONENT = 'CoreCourse';
+
     protected ROOT_CACHE_KEY = 'mmCourse:';
 
     // Variables for database.
     protected COURSE_STATUS_TABLE = 'course_status';
-    protected courseStatusTableSchema = {
-        name: this.COURSE_STATUS_TABLE,
-        columns: [
+    protected siteSchema: CoreSiteSchema = {
+        name: 'CoreCourseProvider',
+        version: 1,
+        tables: [
             {
-                name: 'id',
-                type: 'INTEGER',
-                primaryKey: true
-            },
-            {
-                name: 'status',
-                type: 'TEXT',
-                notNull: true
-            },
-            {
-                name: 'previous',
-                type: 'TEXT'
-            },
-            {
-                name: 'updated',
-                type: 'INTEGER'
-            },
-            {
-                name: 'downloadTime',
-                type: 'INTEGER'
-            },
-            {
-                name: 'previousDownloadTime',
-                type: 'INTEGER'
+                name: this.COURSE_STATUS_TABLE,
+                columns: [
+                    {
+                        name: 'id',
+                        type: 'INTEGER',
+                        primaryKey: true
+                    },
+                    {
+                        name: 'status',
+                        type: 'TEXT',
+                        notNull: true
+                    },
+                    {
+                        name: 'previous',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'updated',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'downloadTime',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'previousDownloadTime',
+                        type: 'INTEGER'
+                    }
+                ]
             }
         ]
     };
@@ -91,7 +99,7 @@ export class CoreCourseProvider {
             private courseOffline: CoreCourseOfflineProvider, private appProvider: CoreAppProvider) {
         this.logger = logger.getInstance('CoreCourseProvider');
 
-        this.sitesProvider.createTableFromSchema(this.courseStatusTableSchema);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
     /**
