@@ -95,6 +95,7 @@
     "favourites": "Starred",
     "filename": "Filename",
     "filenameexist": "File name already exists: {{$a}}",
+    "filenotfound": "File not found, sorry.",
     "folder": "Folder",
     "forcepasswordchangenotice": "You must change your password to proceed.",
     "fulllistofcourses": "All courses",
