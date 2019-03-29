@@ -3,7 +3,7 @@
     "appname": "Moodle Mobile",
     "desktopappname": "Moodle Desktop",
     "versioncode": 3610,
-    "versionname": "3.6.1-dev",
+    "versionname": "3.6.1",
     "cache_expiration_time": 300000,
     "default_lang": "en",
     "languages": {
