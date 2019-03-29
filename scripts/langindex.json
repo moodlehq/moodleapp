@@ -1342,6 +1342,7 @@
   "core.favourites": "moodle",
   "core.filename": "repository",
   "core.filenameexist": "local_moodlemobileapp",
+  "core.filenotfound": "resource",
   "core.fileuploader.addfiletext": "repository",
   "core.fileuploader.audio": "local_moodlemobileapp",
   "core.fileuploader.camera": "local_moodlemobileapp",
