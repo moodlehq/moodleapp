@@ -332,17 +332,14 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
                             });
                         }
 
-                        if (assessments.length > 0) {
-                            reportPromise = reportPromise.finally(() => {
-                                const promises3 = [];
-                                assessments.forEach((assessment, id) => {
-                                    promises3.push(this.workshopProvider.getAssessmentForm(workshop.id, id, undefined, undefined,
-                                        undefined, siteId));
-                                });
-
-                                return Promise.all(promises3);
-                            });
-                        }
+                        reportPromise = reportPromise.finally(() => {
+                            if (assessments.length > 0) {
+                                return Promise.all(assessments.map((assessment, id) => {
+                                    return this.workshopProvider.getAssessmentForm(workshop.id, id, undefined, undefined, undefined,
+                                        siteId);
+                                }));
+                            }
+                        });
                         promises2.push(reportPromise);
 
                         if (workshop.phase == AddonModWorkshopProvider.PHASE_CLOSED) {
