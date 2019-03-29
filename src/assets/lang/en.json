@@ -1342,7 +1342,6 @@
     "core.favourites": "Starred",
     "core.filename": "Filename",
     "core.filenameexist": "File name already exists: {{$a}}",
-    "core.filenotfound": "File not found, sorry.",
     "core.fileuploader.addfiletext": "Add file",
     "core.fileuploader.audio": "Audio",
     "core.fileuploader.camera": "Camera",
