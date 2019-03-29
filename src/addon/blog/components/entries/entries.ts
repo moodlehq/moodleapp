@@ -135,9 +135,7 @@ export class AddonBlogEntriesComponent implements OnInit {
             this.canLoadMore = result.totalentries > this.entries.length;
             this.pageLoaded++;
 
-            this.showMyIssuesToggle = !this.userId && (this.showMyIssuesToggle || this.entries.some((entry) => {
-                return entry.userid == this.currentUserId;
-            }));
+            this.showMyIssuesToggle = !this.userId;
 
             return Promise.all(promises);
         }).catch((message) => {
