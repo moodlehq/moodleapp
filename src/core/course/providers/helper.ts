@@ -528,7 +528,7 @@ export class CoreCourseHelperProvider {
         // Make sure that module contents are loaded.
         return promise.then(() => {
             if (!files || !files.length) {
-                return Promise.reject(null);
+                return Promise.reject(this.utils.createFakeWSError('core.filenotfound', true));
             }
 
             return this.sitesProvider.getSite(siteId);
