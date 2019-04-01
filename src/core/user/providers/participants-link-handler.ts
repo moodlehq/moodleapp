@@ -18,6 +18,7 @@ import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-han
 import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreUserProvider } from './user';
 
 /**
@@ -30,7 +31,8 @@ export class CoreUserParticipantsLinkHandler extends CoreContentLinksHandlerBase
     pattern = /\/user\/index\.php/;
 
     constructor(private userProvider: CoreUserProvider, private loginHelper: CoreLoginHelperProvider,
-            private courseHelper: CoreCourseHelperProvider, private domUtils: CoreDomUtilsProvider) {
+            private courseHelper: CoreCourseHelperProvider, private domUtils: CoreDomUtilsProvider,
+            private linkHelper: CoreContentLinksHelperProvider) {
         super();
     }
 
@@ -61,7 +63,7 @@ export class CoreUserParticipantsLinkHandler extends CoreContentLinksHandlerBase
                     return this.loginHelper.redirect('CoreCourseSectionPage', params, siteId);
                 }).catch(() => {
                     // Cannot get course for some reason, just open the participants page.
-                    this.loginHelper.redirect('CoreUserParticipantsPage', {courseId: courseId}, siteId);
+                    return this.linkHelper.goInSite(navCtrl, 'CoreUserParticipantsPage', {courseId: courseId}, siteId);
                 }).finally(() => {
                     modal.dismiss();
                 });
