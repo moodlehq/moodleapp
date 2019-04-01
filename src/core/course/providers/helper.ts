@@ -1245,7 +1245,7 @@ export class CoreCourseHelperProvider {
             return promise.catch(() => {
                 // Ignore errors.
             }).then(() => {
-                return handler.prefetch(module, courseId, true);
+                return this.prefetchDelegate.prefetchModule(module, courseId, true);
             });
         });
     }
