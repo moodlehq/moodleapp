@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { NavController } from 'ionic-angular';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
@@ -22,6 +23,9 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
+import { CoreLoginHelperProvider } from '@core/login/providers/helper';
+import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 
 /**
  * Service that provides some features regarding grades information.
@@ -33,7 +37,9 @@ export class CoreGradesHelperProvider {
     constructor(logger: CoreLoggerProvider, private coursesProvider: CoreCoursesProvider,
             private gradesProvider: CoreGradesProvider, private sitesProvider: CoreSitesProvider,
             private textUtils: CoreTextUtilsProvider, private courseProvider: CoreCourseProvider,
-            private domUtils: CoreDomUtilsProvider, private urlUtils: CoreUrlUtilsProvider, private utils: CoreUtilsProvider) {
+            private domUtils: CoreDomUtilsProvider, private urlUtils: CoreUrlUtilsProvider, private utils: CoreUtilsProvider,
+            private linkHelper: CoreContentLinksHelperProvider, private loginHelper: CoreLoginHelperProvider,
+            private courseHelper: CoreCourseHelperProvider) {
         this.logger = logger.getInstance('CoreGradesHelperProvider');
     }
 
@@ -379,6 +385,95 @@ export class CoreGradesHelperProvider {
         }
 
         return [];
+    }
+
+    /**
+     * Go to view grades.
+     *
+     * @param {number} courseId Course ID t oview.
+     * @param {number} [userId] User to view. If not defined, current user.
+     * @param {number} [moduleId] Module to view. If not defined, view all course grades.
+     * @param {NavController} [navCtrl] NavController to use.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    goToGrades(courseId: number, userId?: number, moduleId?: number, navCtrl?: NavController, siteId?: string): Promise<any> {
+
+        const modal = this.domUtils.showModalLoading();
+        let currentUserId;
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            siteId = site.id;
+            currentUserId = site.getUserId();
+
+            if (moduleId) {
+                // Try to open the module grade directly. Check if it's possible.
+                return this.gradesProvider.isGradeItemsAvalaible(siteId).then((getGrades) => {
+                    if (!getGrades) {
+                        return Promise.reject(null);
+                    }
+                });
+            } else {
+                return Promise.reject(null);
+            }
+
+        }).then(() => {
+
+            // Can get grades. Do it.
+            return this.gradesProvider.getGradeItems(courseId, userId, undefined, siteId).then((items) => {
+                // Find the item of the module.
+                const item = items.find((item) => {
+                    return moduleId == item.cmid;
+                });
+
+                if (item) {
+                    // Open the item directly.
+                    const pageParams: any = {
+                        courseId: courseId,
+                        userId: userId,
+                        gradeId: item.id
+                    };
+
+                    return this.linkHelper.goInSite(navCtrl, 'CoreGradesGradePage', pageParams, siteId).catch(() => {
+                        // Ignore errors.
+                    });
+                }
+
+                return Promise.reject(null);
+            });
+
+        }).catch(() => {
+
+            // Cannot get grade items or there's no need to.
+            if (userId && userId != currentUserId) {
+                // View another user grades. Open the grades page directly.
+                const pageParams = {
+                    course: {id: courseId},
+                    userId: userId
+                };
+
+                return this.linkHelper.goInSite(navCtrl, 'CoreGradesCoursePage', pageParams, siteId).catch(() => {
+                    // Ignore errors.
+                });
+            }
+
+            // View own grades. Open the course with the grades tab selected.
+            return this.courseHelper.getCourse(courseId, siteId).then((result) => {
+                const pageParams: any = {
+                    course: result.course,
+                    selectedTab: 'CoreGrades'
+                };
+
+                return this.loginHelper.redirect('CoreCourseSectionPage', pageParams, siteId).catch(() => {
+                    // Ignore errors.
+                });
+            });
+        }).catch(() => {
+            // Cannot get course for some reason, just open the grades page.
+            return this.linkHelper.goInSite(navCtrl, 'CoreGradesCoursePage', {course: {id: courseId}}, siteId);
+        }).finally(() => {
+            modal.dismiss();
+        });
     }
 
     /**

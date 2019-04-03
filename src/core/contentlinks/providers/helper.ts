@@ -23,6 +23,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { CoreContentLinksDelegate, CoreContentLinksAction } from './delegate';
 import { CoreConstants } from '@core/constants';
@@ -40,7 +41,7 @@ export class CoreContentLinksHelperProvider {
             private contentLinksDelegate: CoreContentLinksDelegate, private appProvider: CoreAppProvider,
             private domUtils: CoreDomUtilsProvider, private urlUtils: CoreUrlUtilsProvider, private translate: TranslateService,
             private initDelegate: CoreInitDelegate, eventsProvider: CoreEventsProvider, private textUtils: CoreTextUtilsProvider,
-            private sitePluginsProvider: CoreSitePluginsProvider, private zone: NgZone) {
+            private sitePluginsProvider: CoreSitePluginsProvider, private zone: NgZone, private utils: CoreUtilsProvider) {
         this.logger = logger.getInstance('CoreContentLinksHelperProvider');
 
         // Listen for app launched URLs. If we receive one, check if it's a content link.
@@ -88,18 +89,23 @@ export class CoreContentLinksHelperProvider {
      * @param {string} pageName Name of the page to go.
      * @param {any} [pageParams] Params to send to the page.
      * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
      */
-    goInSite(navCtrl: NavController, pageName: string, pageParams: any, siteId?: string): void {
+    goInSite(navCtrl: NavController, pageName: string, pageParams: any, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        const deferred = this.utils.promiseDefer();
 
         // Execute the code in the Angular zone, so change detection doesn't stop working.
         this.zone.run(() => {
             if (navCtrl && siteId == this.sitesProvider.getCurrentSiteId()) {
-                navCtrl.push(pageName, pageParams);
+                navCtrl.push(pageName, pageParams).then(deferred.resolve, deferred.reject);
             } else {
-                this.loginHelper.redirect(pageName, pageParams, siteId);
+                this.loginHelper.redirect(pageName, pageParams, siteId).then(deferred.resolve, deferred.reject);
             }
         });
+
+        return deferred.promise;
     }
 
     /**

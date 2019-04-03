@@ -60,7 +60,7 @@ export class AddonModQuizPushClickHandler implements CorePushNotificationsClickH
         if (notification.name == 'submission') {
             // A student made a submission, go to view the attempt.
             return this.quizHelper.handleReviewLink(undefined, Number(contextUrlParams.attempt), Number(contextUrlParams.page),
-                    courseId, data.instance, notification.site);
+                    courseId, Number(data.instance), notification.site);
         } else {
             // Open the activity.
             const moduleId = Number(contextUrlParams.id);

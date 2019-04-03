@@ -27,6 +27,7 @@ import { CoreSitesProvider } from '@providers/sites';
 export class AddonNotificationsActionsComponent implements OnInit {
     @Input() contextUrl: string;
     @Input() courseId: number;
+    @Input() data?: any; // Extra data to handle the URL.
 
     actions: CoreContentLinksAction[] = [];
 
@@ -41,7 +42,7 @@ export class AddonNotificationsActionsComponent implements OnInit {
             return;
         }
 
-        this.contentLinksDelegate.getActionsFor(this.contextUrl, this.courseId).then((actions) => {
+        this.contentLinksDelegate.getActionsFor(this.contextUrl, this.courseId, undefined, this.data).then((actions) => {
             if (!actions.length) {
                 // URL is not supported. Add an action to open it in browser.
                 actions.push({

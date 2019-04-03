@@ -56,9 +56,10 @@ export interface CoreContentLinksHandler {
      * @param {string} url The URL to treat.
      * @param {any} params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
+     * @param {any} [data] Extra data to handle the URL.
      * @return {CoreContentLinksAction[]|Promise<CoreContentLinksAction[]>} List of (or promise resolved with list of) actions.
      */
-    getActions(siteIds: string[], url: string, params: any, courseId?: number):
+    getActions(siteIds: string[], url: string, params: any, courseId?: number, data?: any):
         CoreContentLinksAction[] | Promise<CoreContentLinksAction[]>;
 
     /**
@@ -157,9 +158,10 @@ export class CoreContentLinksDelegate {
      * @param {string} url URL to handle.
      * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
      * @param {string} [username] Username to use to filter sites.
+     * @param {any} [data] Extra data to handle the URL.
      * @return {Promise<CoreContentLinksAction[]>}  Promise resolved with the actions.
      */
-    getActionsFor(url: string, courseId?: number, username?: string): Promise<CoreContentLinksAction[]> {
+    getActionsFor(url: string, courseId?: number, username?: string, data?: any): Promise<CoreContentLinksAction[]> {
         if (!url) {
             return Promise.resolve([]);
         }
@@ -187,7 +189,7 @@ export class CoreContentLinksDelegate {
                         return;
                     }
 
-                    return Promise.resolve(handler.getActions(siteIds, url, params, courseId)).then((actions) => {
+                    return Promise.resolve(handler.getActions(siteIds, url, params, courseId, data)).then((actions) => {
                         if (actions && actions.length) {
                             // Set default values if any value isn't supplied.
                             actions.forEach((action) => {
