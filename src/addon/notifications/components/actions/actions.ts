@@ -13,7 +13,9 @@
 // limitations under the License.
 
 import { Component, Input, OnInit } from '@angular/core';
+import { NavController } from 'ionic-angular';
 import { CoreContentLinksDelegate, CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Component that displays the actions for a notification.
@@ -28,14 +30,38 @@ export class AddonNotificationsActionsComponent implements OnInit {
 
     actions: CoreContentLinksAction[] = [];
 
-    constructor(private contentLinksDelegate: CoreContentLinksDelegate) {}
+    constructor(private contentLinksDelegate: CoreContentLinksDelegate, private sitesProvider: CoreSitesProvider) {}
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
+        if (!this.contextUrl) {
+            // No contexturl, nothing to do.
+            return;
+        }
+
         this.contentLinksDelegate.getActionsFor(this.contextUrl, this.courseId).then((actions) => {
+            if (!actions.length) {
+                // URL is not supported. Add an action to open it in browser.
+                actions.push({
+                    message: 'core.view',
+                    icon: 'eye',
+                    action: this.defaultAction.bind(this)
+                });
+            }
+
             this.actions = actions;
         });
+    }
+
+    /**
+     * Default action. Open in browser.
+     *
+     * @param {string} siteId Site ID to use.
+     * @param {NavController} [navCtrl] NavController.
+     */
+    protected defaultAction(siteId: string, navCtrl?: NavController): void {
+        this.sitesProvider.getCurrentSite().openInBrowserWithAutoLogin(this.contextUrl);
     }
 }
