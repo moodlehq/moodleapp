@@ -176,6 +176,8 @@ interface RequestQueueItem {
 export class CoreSite {
     static REQUEST_QUEUE_DELAY = 50; // Maximum number of miliseconds to wait before processing the queue.
     static REQUEST_QUEUE_LIMIT = 10; // Maximum number of requests allowed in the queue.
+    // @todo Set REQUEST_QUEUE_FORCE_WS to false before the release.
+    static REQUEST_QUEUE_FORCE_WS = true; // Use "tool_mobile_call_external_functions" even for calling a single function.
 
     // List of injected services. This class isn't injectable, so it cannot use DI.
     protected appProvider: CoreAppProvider;
@@ -803,7 +805,7 @@ export class CoreSite {
         const requests = this.requestQueue;
         this.requestQueue = [];
 
-        if (requests.length == 1) {
+        if (requests.length == 1 && !CoreSite.REQUEST_QUEUE_FORCE_WS) {
             // Only one request, do a regular web service call.
             this.wsProvider.call(requests[0].method, requests[0].data, requests[0].wsPreSets).then((data) => {
                 requests[0].deferred.resolve(data);
