@@ -481,7 +481,8 @@ export class CoreSite {
         // The get_site_info WS call won't be cached.
         const preSets = {
             getFromCache: false,
-            saveToCache: false
+            saveToCache: false,
+            skipQueue: true
         };
 
         // Reset clean Unicode to check if it's supported again.
