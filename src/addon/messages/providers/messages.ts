@@ -1939,6 +1939,34 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Returns whether or not a site supports muting or unmuting a conversation.
+     *
+     * @param {CoreSite} [site] The site to check, undefined for current site.
+     * @return {boolean} If related WS is available on current site.
+     * @since 3.7
+     */
+    isMuteConversationEnabled(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.wsAvailable('core_message_mute_conversations');
+    }
+
+    /**
+     * Returns whether or not a site supports muting or unmuting a conversation.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<boolean>} Promise resolved with boolean: whether related WS is available on a certain site.
+     * @since 3.7
+     */
+    isMuteConversationEnabledInSite(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.isMuteConversationEnabled(site);
+        }).catch(() => {
+            return false;
+        });
+    }
+
+    /**
      * Returns whether or not the plugin is enabled in a certain site.
      *
      * @param  {string} [siteId] Site ID. If not defined, current site.
@@ -2041,6 +2069,53 @@ export class AddonMessagesProvider {
             };
 
         return this.sitesProvider.getCurrentSite().write('core_message_mark_all_messages_as_read', params, preSets);
+    }
+
+    /**
+     * Mute or unmute a conversation.
+     *
+     * @param {number} conversationId Conversation ID.
+     * @param {boolean} set Whether to mute or unmute.
+     * @param {string} [siteId]  Site ID. If not defined, use current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>}  Resolved when done.
+     */
+    muteConversation(conversationId: number, set: boolean, siteId?: string, userId?: number): Promise<any> {
+        return this.muteConversations([conversationId], set, siteId, userId);
+    }
+
+    /**
+     * Mute or unmute some conversations.
+     *
+     * @param {number[]} conversations Conversation IDs.
+     * @param {boolean} set Whether to mute or unmute.
+     * @param {string} [siteId]  Site ID. If not defined, use current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>}  Resolved when done.
+     */
+    muteConversations(conversations: number[], set: boolean, siteId?: string, userId?: number): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            const params = {
+                    userid: userId,
+                    conversationids: conversations
+                },
+                wsName = set ? 'core_message_mute_conversations' : 'core_message_unmute_conversations';
+
+            return site.write(wsName, params).then(() => {
+                // Invalidate the conversations data.
+                const promises = [];
+
+                conversations.forEach((conversationId) => {
+                    promises.push(this.invalidateConversation(conversationId, site.getId(), userId));
+                });
+
+                return Promise.all(promises).catch(() => {
+                    // Ignore errors.
+                });
+            });
+        });
     }
 
     /**
