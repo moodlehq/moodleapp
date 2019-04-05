@@ -38,7 +38,6 @@ export class AddonMessagesSearchPage implements OnDestroy {
     contacts = {
         type: 'contacts',
         titleString: 'addon.messages.contacts',
-        emptyString: 'addon.messages.searchnocontactsfound',
         results: [],
         canLoadMore: false,
         loadingMore: false
@@ -46,7 +45,6 @@ export class AddonMessagesSearchPage implements OnDestroy {
     nonContacts = {
         type: 'noncontacts',
         titleString: 'addon.messages.noncontacts',
-        emptyString: 'addon.messages.searchnononcontactsfound',
         results: [],
         canLoadMore: false,
         loadingMore: false
@@ -54,7 +52,6 @@ export class AddonMessagesSearchPage implements OnDestroy {
     messages = {
         type: 'messages',
         titleString: 'addon.messages.messages',
-        emptyString: 'addon.messages.searchnomessagesfound',
         results: [],
         canLoadMore: false,
         loadingMore: false,
