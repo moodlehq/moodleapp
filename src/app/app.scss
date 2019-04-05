@@ -1050,6 +1050,11 @@ ion-modal,
   contain: size layout style;
 }
 
+// Highlight text.
+.matchtext {
+  background-color: lighten($blue, 40%);
+}
+
 // Styles for desktop apps only.
 ion-app.platform-desktop {
   video::-webkit-media-text-track-display {

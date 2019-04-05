@@ -175,17 +175,20 @@ export class AddonMessagesSearchPage implements OnDestroy {
             if (!loadMore || loadMore == 'contacts') {
                 this.contacts.results.push(...newContacts);
                 this.contacts.canLoadMore = canLoadMoreContacts;
+                this.setHighlight(newContacts, true);
             }
 
             if (!loadMore || loadMore == 'noncontacts') {
                 this.nonContacts.results.push(...newNonContacts);
                 this.nonContacts.canLoadMore = canLoadMoreNonContacts;
+                this.setHighlight(newNonContacts, true);
             }
 
             if (!loadMore || loadMore == 'messages') {
                 this.messages.results.push(...newMessages);
                 this.messages.canLoadMore = canLoadMoreMessages;
                 this.messages.loadMoreError = false;
+                this.setHighlight(newMessages, false);
             }
 
             if (!loadMore) {
@@ -236,6 +239,19 @@ export class AddonMessagesSearchPage implements OnDestroy {
             }
             this.splitviewCtrl.push('AddonMessagesDiscussionPage', params);
         }
+    }
+
+    /**
+     * Set the highlight values for each entry.
+     *
+     * @param {any[]} results Results to highlight.
+     * @param {boolean} isUser Whether the results are from a user search or from a message search.
+     */
+    setHighlight(results: any[], isUser: boolean): void {
+        results.forEach((result) => {
+            result.highlightName = isUser ? this.query : undefined;
+            result.highlightMessage = !isUser ? this.query : undefined;
+        });
     }
 
     /**
