@@ -113,7 +113,8 @@ export class AddonModResourceHelperProvider {
      * @return {boolean}         Whether the resource should be displayed embeded.
      */
     isDisplayedEmbedded(module: any, display: number): boolean {
-        if (!module.contents.length || !this.fileProvider.isAvailable() || this.isNextcloudFile(module)) {
+        if (!module.contents.length || !this.fileProvider.isAvailable() ||
+                (!this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.7') && this.isNextcloudFile(module))) {
             return false;
         }
 
