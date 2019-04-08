@@ -241,7 +241,8 @@ export class CorePushNotificationsProvider {
             return {
                 android: {
                     sound: !!soundEnabled,
-                    icon: 'smallicon'
+                    icon: 'smallicon',
+                    iconColor: CoreConfigConstants.notificoncolor
                 },
                 ios: {
                     alert: 'true',
