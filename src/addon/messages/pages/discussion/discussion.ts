@@ -85,6 +85,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     footerType: 'message' | 'blocked' | 'requiresContact' | 'requestSent' | 'requestReceived' | 'unable';
     requestContactSent = false;
     requestContactReceived = false;
+    isSelf = false;
 
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, navParams: NavParams,
             private userProvider: CoreUserProvider, private navCtrl: NavController, private messagesSync: AddonMessagesSyncProvider,
@@ -402,7 +403,13 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         if (conversationId) {
             promise = Promise.resolve(conversationId);
         } else {
-            promise = this.messagesProvider.getConversationBetweenUsers(userId, undefined, true).then((conversation) => {
+            if (userId == this.currentUserId && this.messagesProvider.isSelfConversationEnabled()) {
+                promise = this.messagesProvider.getSelfConversation();
+            } else {
+                promise = this.messagesProvider.getConversationBetweenUsers(userId, undefined, true);
+            }
+
+            promise = promise.then((conversation) => {
                 fallbackConversation = conversation;
 
                 return conversation.id;
@@ -434,6 +441,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                     if (!this.isGroup) {
                         this.userId = conversation.userid;
                     }
+                    this.isSelf = conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_SELF;
 
                     return true;
                 } else {
@@ -442,7 +450,9 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             });
         }, (error) => {
             // Probably conversation does not exist or user is offline. Try to load offline messages.
-            return this.messagesOffline.getMessages(userId).then((messages) => {
+            this.isSelf = userId == this.currentUserId;
+
+            return this.messagesOffline.getMessages(userId).then((messages): any => {
                 if (messages && messages.length) {
                     // We have offline messages, this probably means that the conversation didn't exist. Don't display error.
                     messages.forEach((message) => {
@@ -455,6 +465,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                     // Display the error.
                     return Promise.reject(error);
                 }
+
+                return false;
             });
         });
     }
@@ -1123,7 +1135,9 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      * @param {Function} [done] Function to call when done.
      */
     deleteConversation(done?: () => void): void {
-        this.domUtils.showConfirm(this.translate.instant('addon.messages.deleteallconfirm')).then(() => {
+        const confirmMessage = 'addon.messages.' + (this.isSelf ? 'deleteallselfconfirm' : 'deleteallconfirm');
+
+        this.domUtils.showConfirm(this.translate.instant(confirmMessage)).then(() => {
             this.deleteIcon = 'spinner';
 
             return this.messagesProvider.deleteConversation(this.conversation.id).then(() => {

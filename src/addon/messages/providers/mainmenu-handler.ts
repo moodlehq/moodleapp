@@ -54,7 +54,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
             pushNotificationsDelegate: AddonPushNotificationsDelegate, private emulatorHelper: CoreEmulatorHelperProvider) {
 
         eventsProvider.on(AddonMessagesProvider.UNREAD_CONVERSATION_COUNTS_EVENT, (data) => {
-            this.unreadCount = data.favourites + data.individual + data.group;
+            this.unreadCount = data.favourites + data.individual + data.group + data.self;
             this.orMore = data.orMore;
             this.updateBadge(data.siteId);
         });
