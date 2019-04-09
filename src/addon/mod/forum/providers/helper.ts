@@ -54,7 +54,8 @@ export class AddonModForumHelperProvider {
                 postread: false,
                 subject: offlineReply.subject,
                 totalscore: 0,
-                userid: offlineReply.userid
+                userid: offlineReply.userid,
+                isprivatereply: offlineReply.options && offlineReply.options.private
             },
             promises = [];
 
@@ -161,6 +162,10 @@ export class AddonModForumHelperProvider {
         }
 
         if (post.subject != original.subject || post.message != original.message) {
+            return true;
+        }
+
+        if (post.isprivatereply != original.isprivatereply) {
             return true;
         }
 

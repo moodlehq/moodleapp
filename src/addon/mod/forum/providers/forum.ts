@@ -80,6 +80,16 @@ export class AddonModForumProvider {
     }
 
     /**
+     * Get cache key for forum access information WS calls.
+     *
+     * @param  {number} forumId Forum ID.
+     * @return {string}         Cache key.
+     */
+    protected getAccessInformationCacheKey(forumId: number): string {
+        return this.ROOT_CACHE_KEY + 'accessInformation:' + forumId;
+    }
+
+    /**
      * Get cache key for forum discussion posts WS calls.
      *
      * @param  {number} discussionId Discussion ID.
@@ -366,6 +376,34 @@ export class AddonModForumProvider {
     }
 
     /**
+     * Get access information for a given forum.
+     *
+     * @param  {number}  forumId      Forum ID.
+     * @param  {boolean} [forceCache] True to always get the value from cache. false otherwise.
+     * @param  {string}  [siteId]     Site ID. If not defined, current site.
+     * @return {Promise<any>} Object with access information.
+     * @since 3.7
+     */
+    getAccessInformation(forumId: number, forceCache?: boolean, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            if (!site.wsAvailable('mod_forum_get_forum_access_information')) {
+                // Access information not available for 3.6 or older sites.
+                return Promise.resolve({});
+            }
+
+            const params = {
+                forumid: forumId
+            };
+            const preSets = {
+                cacheKey: this.getAccessInformationCacheKey(forumId),
+                omitExpires: forceCache
+            };
+
+            return site.read('mod_forum_get_forum_access_information', params, preSets);
+        });
+    }
+
+    /**
      * Get forum discussion posts.
      *
      * @param  {number} discussionId Discussion ID.
@@ -537,6 +575,7 @@ export class AddonModForumProvider {
                 promises.push(this.invalidateForumData(courseId));
                 promises.push(this.invalidateDiscussionsList(forum.id));
                 promises.push(this.invalidateCanAddDiscussion(forum.id));
+                promises.push(this.invalidateAccessInformation(forum.id));
 
                 response.discussions.forEach((discussion) => {
                     promises.push(this.invalidateDiscussionPosts(discussion.discussion));
@@ -544,6 +583,19 @@ export class AddonModForumProvider {
 
                 return this.utils.allPromises(promises);
             });
+        });
+    }
+
+    /**
+     * Invalidates access information.
+     *
+     * @param  {number} forumId  Forum ID.
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}    Promise resolved when the data is invalidated.
+     */
+    invalidateAccessInformation(forumId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getAccessInformationCacheKey(forumId));
         });
     }
 

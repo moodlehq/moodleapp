@@ -183,8 +183,10 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
     protected prefetchForum(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
         // Get the forum data.
         return this.forumProvider.getForum(courseId, module.id).then((forum) => {
+            const promises = [];
+
             // Prefetch the posts.
-            return this.getPostsForPrefetch(forum).then((posts) => {
+            promises.push(this.getPostsForPrefetch(forum).then((posts) => {
                 const promises = [];
 
                 // Prefetch user profiles.
@@ -201,7 +203,12 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
                 promises.push(this.prefetchGroupsInfo(forum, courseId, forum.cancreatediscussions));
 
                 return Promise.all(promises);
-            });
+            }));
+
+            // Prefetch access information.
+            promises.push(this.forumProvider.getAccessInformation(forum.id));
+
+            return Promise.all(promises);
         });
     }
 
