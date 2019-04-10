@@ -395,6 +395,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      */
     setGroup(groupId: number): Promise<any> {
         this.selectedGroup = groupId;
+        this.search.page = 0;
 
         return this.fetchEntriesData().catch((message) => {
             this.domUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);
