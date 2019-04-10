@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChange, Optional } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChange, Optional, ViewChild, ElementRef } from '@angular/core';
 import { InfiniteScroll, Content } from 'ionic-angular';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 
 /**
  * Component to show a infinite loading trigger and spinner while more data is being loaded.
@@ -31,11 +32,16 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
     @Input() position = 'bottom';
     @Output() action: EventEmitter<() => void>; // Will emit an event when triggered.
 
+    @ViewChild('topbutton') topButton: ElementRef;
+    @ViewChild('infinitescroll') infiniteEl: ElementRef;
+    @ViewChild('bottombutton') bottomButton: ElementRef;
+    @ViewChild('spinnercontainer') spinnerContainer: ElementRef;
+
     loadingMore = false;   // Hide button and avoid loading more.
 
     protected infiniteScroll: InfiniteScroll;
 
-    constructor(@Optional() private content: Content) {
+    constructor(@Optional() private content: Content, private domUtils: CoreDomUtilsProvider) {
         this.action = new EventEmitter();
     }
 
@@ -77,6 +83,18 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
      * Complete loading.
      */
     complete(): void {
+        if (this.position == 'top') {
+            // Wait a bit before allowing loading more, otherwise it could be re-triggered automatically when it shouldn't.
+            setTimeout(this.completeLoadMore.bind(this), 400);
+        } else {
+            this.completeLoadMore();
+        }
+    }
+
+    /**
+     * Complete loading.
+     */
+    protected completeLoadMore(): void {
         this.loadingMore = false;
         this.infiniteScroll && this.infiniteScroll.complete();
         this.infiniteScroll = undefined;
@@ -87,6 +105,30 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
             const event: any = new Event('scroll');
             this.content.ionScroll.emit(event);
         });
+    }
+
+    /**
+     * Get the height of the element.
+     *
+     * @return {number} Height.
+     */
+    getHeight(): number {
+        return this.getElementHeight(this.topButton) + this.getElementHeight(this.infiniteEl) +
+                this.getElementHeight(this.bottomButton) + this.getElementHeight(this.spinnerContainer);
+    }
+
+    /**
+     * Get the height of an element.
+     *
+     * @param {ElementRef} element Element ref.
+     * @return {number} Height.
+     */
+    protected getElementHeight(element: ElementRef): number {
+        if (element && element.nativeElement) {
+            return this.domUtils.getElementHeight(element.nativeElement, true, true, true);
+        }
+
+        return 0;
     }
 
 }

@@ -1,5 +1,5 @@
 <ng-container *ngIf="!loadingMore && position != 'top'">
-    <div *ngIf="enabled || error" padding-horizontal>
+    <div *ngIf="enabled || error" padding-horizontal #bottombutton>
         <button *ngIf="!error" ion-button block (click)="loadMore()" color="light">
             {{ 'core.loadmore' | translate }}
         </button>
@@ -9,12 +9,12 @@
     </div>
 </ng-container>
 
-<ion-infinite-scroll [enabled]="enabled && !error && !loadingMore" (ionInfinite)="loadMore($event)" [position]="position">
+<ion-infinite-scroll [enabled]="enabled && !error && !loadingMore" (ionInfinite)="loadMore($event)" [position]="position" #infinitescroll>
     <ion-infinite-scroll-content></ion-infinite-scroll-content>
 </ion-infinite-scroll>
 
 <ng-container *ngIf="!loadingMore && position == 'top'">
-    <div *ngIf="enabled || error" padding-horizontal>
+    <div *ngIf="enabled || error" padding-horizontal #topbutton>
         <button *ngIf="!error" ion-button block (click)="loadMore()" color="light">
             {{ 'core.loadmore' | translate }}
         </button>
@@ -24,6 +24,6 @@
     </div>
 </ng-container>
 
-<div *ngIf="loadingMore" padding text-center>
+<div *ngIf="loadingMore" padding text-center #spinnercontainer>
     <ion-spinner></ion-spinner>
 </div>
