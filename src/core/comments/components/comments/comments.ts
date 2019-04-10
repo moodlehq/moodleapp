@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnChanges, SimpleChange } from '@angular/core';
-import { NavParams, NavController } from 'ionic-angular';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChange } from '@angular/core';
+import { NavController } from 'ionic-angular';
 import { CoreCommentsProvider } from '../../providers/comments';
 
 /**
@@ -31,11 +31,15 @@ export class CoreCommentsCommentsComponent implements OnChanges {
     @Input() area = '';
     @Input() page = 0;
     @Input() title?: string;
+    @Input() displaySpinner = true; // Whether to display the loading spinner.
+    @Output() onLoading: EventEmitter<boolean>; // Eevent that indicates whether the component is loading data.
 
     commentsLoaded = false;
     commentsCount: number;
 
-    constructor(navParams: NavParams, private navCtrl: NavController, private commentsProvider: CoreCommentsProvider) {}
+    constructor(private navCtrl: NavController, private commentsProvider: CoreCommentsProvider) {
+        this.onLoading = new EventEmitter<boolean>();
+    }
 
     /**
      * View loaded.
@@ -56,6 +60,7 @@ export class CoreCommentsCommentsComponent implements OnChanges {
 
     protected fetchData(): void {
         this.commentsLoaded = false;
+        this.onLoading.emit(true);
 
         this.commentsProvider.getComments(this.contextLevel, this.instanceId, this.component, this.itemId, this.area, this.page)
             .then((comments) => {
@@ -64,6 +69,7 @@ export class CoreCommentsCommentsComponent implements OnChanges {
                 this.commentsCount = -1;
             }).finally(() => {
                 this.commentsLoaded = true;
+                this.onLoading.emit(false);
             });
     }
 
