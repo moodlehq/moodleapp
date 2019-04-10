@@ -58,6 +58,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     protected componentRef: ComponentRef<any>;
     protected element;
     protected differ: any; // To detect changes in the jsData input.
+    protected creatingComponent = false;
 
     constructor(protected compileProvider: CoreCompileProvider, protected cdr: ChangeDetectorRef, element: ElementRef,
             @Optional() protected navCtrl: NavController, differs: KeyValueDiffers, protected domUtils: CoreDomUtilsProvider,
@@ -70,7 +71,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
      * Detect and act upon changes that Angular can’t or won’t detect on its own (objects and arrays).
      */
     ngDoCheck(): void {
-        if (this.componentInstance) {
+        if (this.componentInstance && !this.creatingComponent) {
             // Check if there's any change in the jsData object.
             const changes = this.differ.diff(this.jsData);
             if (changes) {
@@ -91,6 +92,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
                 this.text) {
 
             // Create a new component and a new module.
+            this.creatingComponent = true;
             this.compileProvider.createAndCompileComponent(this.text, this.getComponentClass(), this.extraImports)
                     .then((factory) => {
                 // Destroy previous components.
@@ -107,6 +109,8 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
                 this.domUtils.showErrorModal(error);
 
                 this.loaded = true;
+            }).finally(() => {
+                this.creatingComponent = false;
             });
         }
     }
