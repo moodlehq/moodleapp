@@ -19,7 +19,9 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { AddonModDataFieldsDelegate } from './fields-delegate';
 import { AddonModDataOfflineProvider, AddonModDataOfflineAction } from './offline';
-import { AddonModDataProvider, AddonModDataEntry, AddonModDataEntryFields } from './data';
+import { AddonModDataProvider, AddonModDataEntry, AddonModDataEntryFields, AddonModDataEntries } from './data';
+import { CoreRatingInfo } from '@core/rating/providers/rating';
+import { CoreRatingOfflineProvider } from '@core/rating/providers/offline';
 
 /**
  * Service that provides helper functions for datas.
@@ -30,7 +32,7 @@ export class AddonModDataHelperProvider {
     constructor(private sitesProvider: CoreSitesProvider, protected dataProvider: AddonModDataProvider,
         private translate: TranslateService, private fieldsDelegate: AddonModDataFieldsDelegate,
         private dataOffline: AddonModDataOfflineProvider, private fileUploaderProvider: CoreFileUploaderProvider,
-        private textUtils: CoreTextUtilsProvider) { }
+        private textUtils: CoreTextUtilsProvider, private ratingOffline: CoreRatingOfflineProvider) { }
 
     /**
      * Returns the record with the offline actions applied.
@@ -154,6 +156,153 @@ export class AddonModDataHelperProvider {
         }
 
         return template;
+    }
+
+    /**
+     * Get online and offline entries, or search entries.
+     *
+     * @param   {any}       data               Database object.
+     * @param   {any[]}     fields             The fields that define the contents.
+     * @param   {number}    [groupId=0]        Group ID.
+     * @param   {string}    [search]           Search text. It will be used if advSearch is not defined.
+     * @param   {any[]}     [advSearch]        Advanced search data.
+     * @param   {string}    [sort=0]           Sort the records by this field id, reserved ids are:
+     *                                            0: timeadded
+     *                                           -1: firstname
+     *                                           -2: lastname
+     *                                           -3: approved
+     *                                           -4: timemodified.
+     *                                          Empty for using the default database setting.
+     * @param   {string}    [order=DESC]        The direction of the sorting: 'ASC' or 'DESC'.
+     *                                          Empty for using the default database setting.
+     * @param   {number}    [page=0]            Page of records to return.
+     * @param   {number}    [perPage=PER_PAGE]  Records per page to return. Default on PER_PAGE.
+     * @param   {string}    [siteId]            Site ID. If not defined, current site.
+     * @return  {Promise<AddonModDataEntries>}  Promise resolved when the database is retrieved.
+     */
+    fetchEntries(data: any, fields: any[], groupId: number = 0, search?: string, advSearch?: any[], sort: string = '0',
+            order: string = 'DESC', page: number = 0, perPage: number = AddonModDataProvider.PER_PAGE, siteId?: string):
+            Promise<AddonModDataEntries> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const offlineActions = {};
+            const result: AddonModDataEntries = {
+                entries: [],
+                totalcount: 0,
+                offlineEntries: []
+            };
+
+            const offlinePromise = this.dataOffline.getDatabaseEntries(data.id, site.id).then((actions) => {
+                result.hasOfflineActions = !!actions.length;
+
+                actions.forEach((action) => {
+                    if (typeof offlineActions[action.entryid] == 'undefined') {
+                        offlineActions[action.entryid] = [];
+                    }
+                    offlineActions[action.entryid].push(action);
+
+                    // We only display new entries in the first page when not searching.
+                    if (action.action == 'add' && page == 0 && !search && !advSearch &&
+                            (!action.groupid || !groupId || action.groupid == groupId)) {
+                        result.offlineEntries.push({
+                            id: action.entryid,
+                            canmanageentry: true,
+                            approved: !data.approval || data.manageapproved,
+                            dataid: data.id,
+                            groupid: action.groupid,
+                            timecreated: -action.entryid,
+                            timemodified: -action.entryid,
+                            userid: site.getUserId(),
+                            fullname: site.getInfo().fullname,
+                            contents: {}
+                        });
+                    }
+                });
+
+                // Sort offline entries by creation time.
+                result.offlineEntries.sort((entry1, entry2) => entry2.timecreated - entry1.timecreated);
+            });
+
+            const ratingsPromise = this.ratingOffline.hasRatings('mod_data', 'entry', 'module', data.coursemodule)
+                    .then((hasRatings) => {
+                result.hasOfflineRatings = hasRatings;
+            });
+
+            let fetchPromise: Promise<void>;
+            if (search || advSearch) {
+                fetchPromise = this.dataProvider.searchEntries(data.id, groupId, search, advSearch, sort, order, page, perPage,
+                        site.id).then((fetchResult) => {
+                    result.entries = fetchResult.entries;
+                    result.totalcount = fetchResult.totalcount;
+                    result.maxcount = fetchResult.maxcount;
+                });
+            } else {
+                fetchPromise = this.dataProvider.getEntries(data.id, groupId, sort, order, page, perPage, false, false, site.id)
+                        .then((fetchResult) => {
+                    result.entries = fetchResult.entries;
+                    result.totalcount = fetchResult.totalcount;
+                });
+            }
+
+            return Promise.all([offlinePromise, ratingsPromise, fetchPromise]).then(() => {
+                // Apply offline actions to online and offline entries.
+                const promises = [];
+                result.entries.forEach((entry) => {
+                    promises.push(this.applyOfflineActions(entry, offlineActions[entry.id] || [], fields));
+                });
+                result.offlineEntries.forEach((entry) => {
+                    promises.push(this.applyOfflineActions(entry, offlineActions[entry.id] || [], fields));
+                });
+
+                return Promise.all(promises);
+            }).then(() => {
+                return result;
+            });
+        });
+    }
+
+    /**
+     * Fetch an online or offline entry.
+     *
+     * @param {any} data Database.
+     * @param {any[]} fields List of database fields.
+     * @param {number} entryId Entry ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<{entry: AddonModDataEntry, ratinginfo?: CoreRatingInfo}>} Promise resolved with the entry.
+     */
+    fetchEntry(data: any, fields: any[], entryId: number, siteId?: string):
+            Promise<{entry: AddonModDataEntry, ratinginfo?: CoreRatingInfo}> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.dataOffline.getEntryActions(data.id, entryId, site.id).then((offlineActions) => {
+                let promise: Promise<{entry: AddonModDataEntry, ratinginfo?: CoreRatingInfo}>;
+
+                if (entryId > 0) {
+                    // Online entry.
+                    promise = this.dataProvider.getEntry(data.id, entryId, false, site.id);
+                } else  {
+                    // Offline entry or new entry.
+                    promise = Promise.resolve({
+                        entry: {
+                            id: entryId,
+                            userid: site.getUserId(),
+                            groupid: 0,
+                            dataid: data.id,
+                            timecreated: -entryId,
+                            timemodified: -entryId,
+                            approved: !data.approval || data.manageapproved,
+                            canmanageentry: true,
+                            fullname: site.getInfo().fullname,
+                            contents: [],
+                        }
+                    });
+                }
+
+                return promise.then((response) => {
+                    return this.applyOfflineActions(response.entry, offlineActions, fields).then(() => {
+                        return response;
+                    });
+                });
+            });
+        });
     }
 
     /**
@@ -349,45 +498,6 @@ export class AddonModDataHelperProvider {
 
         return Promise.all(promises).then((fieldsFiles) => {
             return fieldsFiles.reduce((files: any[], fieldFiles: any) => files.concat(fieldFiles), []);
-        });
-    }
-
-    /**
-     * Get an online or offline entry.
-     *
-     * @param  {any} data             Database.
-     * @param  {number} entryId       Entry ID.
-     * @param  {any} [offlineActions] Offline data with the actions done. Required for offline entries.
-     * @param  {string} [siteId]      Site ID. If not defined, current site.
-     * @return {Promise<any>}         Promise resolved with the entry.
-     */
-    getEntry(data: any, entryId: number, offlineActions?: any, siteId?: string): Promise<any> {
-        if (entryId > 0) {
-            // It's an online entry, get it from WS.
-            return this.dataProvider.getEntry(data.id, entryId, false, siteId);
-        }
-
-        // It's an offline entry, search it in the offline actions.
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            const offlineEntry = offlineActions.find((offlineAction) => offlineAction.action == 'add');
-
-            if (offlineEntry) {
-                const siteInfo = site.getInfo();
-
-                return {entry: {
-                        id: offlineEntry.entryid,
-                        canmanageentry: true,
-                        approved: !data.approval || data.manageapproved,
-                        dataid: offlineEntry.dataid,
-                        groupid: offlineEntry.groupid,
-                        timecreated: -offlineEntry.entryid,
-                        timemodified: -offlineEntry.entryid,
-                        userid: siteInfo.userid,
-                        fullname: siteInfo.fullname,
-                        contents: {}
-                    }
-                };
-            }
         });
     }
 

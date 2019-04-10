@@ -23,7 +23,6 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreRatingInfo } from '@core/rating/providers/rating';
 import { AddonModDataProvider } from '../../providers/data';
 import { AddonModDataHelperProvider } from '../../providers/helper';
-import { AddonModDataOfflineProvider } from '../../providers/offline';
 import { AddonModDataSyncProvider } from '../../providers/sync';
 import { AddonModDataFieldsDelegate } from '../../providers/fields-delegate';
 import { AddonModDataComponentsModule } from '../../components/components.module';
@@ -46,6 +45,7 @@ export class AddonModDataEntryPage implements OnDestroy {
     protected syncObserver: any; // It will observe the sync auto event.
     protected entryChangedObserver: any; // It will observe the changed entry event.
     protected fields = {};
+    protected fieldsArray = [];
 
     title = '';
     moduleName = 'data';
@@ -56,8 +56,6 @@ export class AddonModDataEntryPage implements OnDestroy {
     loadingRating = false;
     selectedGroup = 0;
     entry: any;
-    offlineActions = [];
-    hasOffline = false;
     previousOffset: number;
     nextOffset: number;
     access: any;
@@ -74,7 +72,7 @@ export class AddonModDataEntryPage implements OnDestroy {
     constructor(params: NavParams, protected utils: CoreUtilsProvider, protected groupsProvider: CoreGroupsProvider,
             protected domUtils: CoreDomUtilsProvider, protected fieldsDelegate: AddonModDataFieldsDelegate,
             protected courseProvider: CoreCourseProvider, protected dataProvider: AddonModDataProvider,
-            protected dataOffline: AddonModDataOfflineProvider, protected dataHelper: AddonModDataHelperProvider,
+            protected dataHelper: AddonModDataHelperProvider,
             sitesProvider: CoreSitesProvider, protected navCtrl: NavController, protected eventsProvider: CoreEventsProvider,
             private cdr: ChangeDetectorRef) {
         this.module = params.get('module') || {};
@@ -131,8 +129,6 @@ export class AddonModDataEntryPage implements OnDestroy {
      * @return {Promise<any>} Resolved when done.
      */
     protected fetchEntryData(refresh?: boolean, isPtr?: boolean): Promise<any> {
-        let fieldsArray;
-
         this.isPullingToRefresh = isPtr;
 
         return this.dataProvider.getDatabase(this.courseId, this.module.id).then((data) => {
@@ -155,32 +151,22 @@ export class AddonModDataEntryPage implements OnDestroy {
                         this.selectedGroup = groupInfo.groups[0].id;
                     }
                 }
-
-                return this.dataOffline.getEntryActions(this.data.id, this.entryId);
             });
-        }).then((actions) => {
-            this.offlineActions = actions;
-            this.hasOffline = !!actions.length;
-
+        }).then(() => {
             return this.dataProvider.getFields(this.data.id).then((fieldsData) => {
                 this.fields = this.utils.arrayToObject(fieldsData, 'id');
+                this.fieldsArray = fieldsData;
 
-                return this.dataHelper.getEntry(this.data, this.entryId, this.offlineActions);
+                return this.dataHelper.fetchEntry(this.data, fieldsData, this.entryId);
             });
         }).then((entry) => {
+            this.entry = entry.entry;
             this.ratingInfo = entry.ratinginfo;
-            entry = entry.entry;
-
-            fieldsArray = this.utils.objectToArray(this.fields);
-
-            return this.dataHelper.applyOfflineActions(entry, this.offlineActions, fieldsArray);
-        }).then((entryData) => {
-            this.entry = entryData;
 
             const actions = this.dataHelper.getActions(this.data, this.access, this.entry);
 
-            const templte = this.data.singletemplate || this.dataHelper.getDefaultTemplate('single', fieldsArray);
-            this.entryHtml = this.dataHelper.displayShowFields(templte, fieldsArray, this.entry, this.offset, 'show', actions);
+            const templte = this.data.singletemplate || this.dataHelper.getDefaultTemplate('single', this.fieldsArray);
+            this.entryHtml = this.dataHelper.displayShowFields(templte, this.fieldsArray, this.entry, this.offset, 'show', actions);
             this.showComments = actions.comments;
 
             const entries = {};

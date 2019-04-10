@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreFileProvider } from '@providers/file';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { SQLiteDB } from '@classes/sqlitedb';
@@ -101,7 +102,8 @@ export class AddonModDataOfflineProvider {
     };
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private textUtils: CoreTextUtilsProvider,
-            private fileProvider: CoreFileProvider, private fileUploaderProvider: CoreFileUploaderProvider) {
+            private fileProvider: CoreFileProvider, private fileUploaderProvider: CoreFileUploaderProvider,
+            private utils: CoreUtilsProvider) {
         this.logger = logger.getInstance('AddonModDataOfflineProvider');
         this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
@@ -201,7 +203,7 @@ export class AddonModDataOfflineProvider {
     }
 
     /**
-     * Get all the stored entry data from a certain database.
+     * Get all the stored entry actions from a certain database, sorted by modification time.
      *
      * @param  {number} dataId Database ID.
      * @param  {string} [siteId] Site ID. If not defined, current site.
@@ -209,7 +211,7 @@ export class AddonModDataOfflineProvider {
      */
     getDatabaseEntries(dataId: number, siteId?: string): Promise<AddonModDataOfflineAction[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(AddonModDataOfflineProvider.DATA_ENTRY_TABLE, {dataid: dataId});
+            return site.getDb().getRecords(AddonModDataOfflineProvider.DATA_ENTRY_TABLE, {dataid: dataId}, 'timemodified');
         }).then((entries) => {
             return entries.map(this.parseRecord.bind(this));
         });
@@ -257,11 +259,10 @@ export class AddonModDataOfflineProvider {
      * @return {Promise<any>}          Promise resolved with boolean: true if has offline answers, false otherwise.
      */
     hasOfflineData(dataId: number, siteId?: string): Promise<any> {
-        return this.getDatabaseEntries(dataId, siteId).then((entries) => {
-            return !!entries.length;
-        }).catch(() => {
-            // No offline data found, return false.
-            return false;
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.utils.promiseWorks(
+                site.getDb().recordExists(AddonModDataOfflineProvider.DATA_ENTRY_TABLE, {dataid: dataId})
+            );
         });
     }
 
