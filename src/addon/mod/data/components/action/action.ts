@@ -12,10 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import { Component, Input, OnInit, Injector } from '@angular/core';
+import { NavController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { AddonModDataProvider } from '../../providers/data';
+import { AddonModDataHelperProvider } from '../../providers/helper';
 import { AddonModDataOfflineProvider } from '../../providers/offline';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreUserProvider } from '@core/user/providers/user';
 
 /**
@@ -30,6 +33,8 @@ export class AddonModDataActionComponent implements OnInit {
     @Input() action: string; // The field to render.
     @Input() entry?: any; // The value of the field.
     @Input() database: any; // Database object.
+    @Input() module: any; // Module object.
+    @Input() group: number; // Module object.
     @Input() offset?: number; // Offset of the entry.
 
     siteId: string;
@@ -39,9 +44,70 @@ export class AddonModDataActionComponent implements OnInit {
 
     constructor(protected injector: Injector, protected dataProvider: AddonModDataProvider,
             protected dataOffline: AddonModDataOfflineProvider, protected eventsProvider: CoreEventsProvider,
-            sitesProvider: CoreSitesProvider, protected userProvider: CoreUserProvider) {
+            sitesProvider: CoreSitesProvider, protected userProvider: CoreUserProvider, private navCtrl: NavController,
+            protected linkHelper: CoreContentLinksHelperProvider, private dataHelper: AddonModDataHelperProvider) {
         this.rootUrl = sitesProvider.getCurrentSite().getURL();
         this.siteId = sitesProvider.getCurrentSiteId();
+    }
+
+    /**
+     * Component being initialized.
+     */
+    ngOnInit(): void {
+        if (this.action == 'userpicture') {
+            this.userProvider.getProfile(this.entry.userid, this.database.courseid).then((profile) => {
+                this.userPicture = profile.profileimageurl;
+            });
+        }
+    }
+
+    /**
+     * Approve the entry.
+     */
+    approveEntry(): void {
+        this.dataHelper.approveOrDisapproveEntry(this.database.id, this.entry.id, true, this.database.courseid);
+    }
+
+    /**
+     * Show confirmation modal for deleting the entry.
+     */
+    deleteEntry(): void {
+       this.dataHelper.showDeleteEntryModal(this.database.id, this.entry.id, this.database.courseid);
+    }
+
+    /**
+     * Disapprove the entry.
+     */
+    disapproveEntry(): void {
+        this.dataHelper.approveOrDisapproveEntry(this.database.id, this.entry.id, false, this.database.courseid);
+    }
+
+    /**
+     * Go to the edit page of the entry.
+     */
+    editEntry(): void {
+        const pageParams = {
+            courseId: this.database.course,
+            module: this.module,
+            entryId: this.entry.id
+        };
+
+        this.linkHelper.goInSite(this.navCtrl, 'AddonModDataEditPage', pageParams);
+    }
+
+    /**
+     * Go to the view page of the entry.
+     */
+    viewEntry(): void {
+        const pageParams: any = {
+            courseId: this.database.course,
+            module: this.module,
+            entryId: this.entry.id,
+            group: this.group,
+            offset: this.offset
+        };
+
+        this.linkHelper.goInSite(this.navCtrl, 'AddonModDataEntryPage', pageParams);
     }
 
     /**
@@ -59,38 +125,5 @@ export class AddonModDataActionComponent implements OnInit {
         }).then(() => {
             this.eventsProvider.trigger(AddonModDataProvider.ENTRY_CHANGED, {dataId: dataId, entryId: entryId}, this.siteId);
         });
-    }
-
-    /**
-     * Component being initialized.
-     */
-    ngOnInit(): void {
-        switch (this.action) {
-            case 'more':
-                this.url = this.rootUrl + '/mod/data/view.php?d= ' + this.entry.dataid + '&rid=' + this.entry.id;
-                if (typeof this.offset == 'number') {
-                    this.url += '&mode=single&page=' + this.offset;
-                }
-                break;
-            case 'edit':
-                this.url = this.rootUrl + '/mod/data/edit.php?d= ' + this.entry.dataid + '&rid=' + this.entry.id;
-                break;
-            case 'delete':
-                this.url = this.rootUrl + '/mod/data/view.php?d= ' + this.entry.dataid + '&delete=' + this.entry.id;
-                break;
-            case 'approve':
-                this.url = this.rootUrl + '/mod/data/view.php?d= ' + this.entry.dataid + '&approve=' + this.entry.id;
-                break;
-            case 'disapprove':
-                this.url = this.rootUrl + '/mod/data/view.php?d= ' + this.entry.dataid + '&disapprove=' + this.entry.id;
-                break;
-            case 'userpicture':
-                this.userProvider.getProfile(this.entry.userid, this.database.courseid).then((profile) => {
-                    this.userPicture = profile.profileimageurl;
-                });
-                break;
-            default:
-                break;
-        }
     }
 }

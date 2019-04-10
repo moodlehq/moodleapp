@@ -1,12 +1,12 @@
-<a *ngIf="action == 'more'" ion-button icon-only clear [href]="url" core-link capture="true" [title]="'addon.mod_data.more' | translate">
+<a *ngIf="action == 'more'" ion-button icon-only clear (click)="viewEntry()" [title]="'addon.mod_data.more' | translate">
     <ion-icon name="search"></ion-icon>
 </a>
 
-<a *ngIf="action == 'edit'" ion-button icon-only clear [href]="url" core-link capture="true" [title]="'core.edit' | translate">
+<a *ngIf="action == 'edit'" ion-button icon-only clear (click)="editEntry()"  [title]="'core.edit' | translate">
     <ion-icon name="cog"></ion-icon>
 </a>
 
-<a *ngIf="action == 'delete' && !entry.deleted" ion-button icon-only clear [href]="url" core-link capture="true" [title]="'core.delete' | translate">
+<a *ngIf="action == 'delete' && !entry.deleted" ion-button icon-only clear (click)="deleteEntry()" [title]="'core.delete' | translate">
     <ion-icon name="trash"></ion-icon>
 </a>
 
@@ -14,11 +14,11 @@
     <ion-icon name="undo"></ion-icon>
 </a>
 
-<a *ngIf="action == 'approve'" ion-button icon-only clear [href]="url" core-link capture="true" [title]="'addon.mod_data.approve' | translate">
+<a *ngIf="action == 'approve'" ion-button icon-only clear (click)="approveEntry()" [title]="'addon.mod_data.approve' | translate">
     <ion-icon name="thumbs-up"></ion-icon>
 </a>
 
-<a *ngIf="action == 'disapprove'" ion-button icon-only clear [href]="url" core-link capture="true" [title]="'addon.mod_data.disapprove' | translate">
+<a *ngIf="action == 'disapprove'" ion-button icon-only clear (click)="disapproveEntry()" [title]="'addon.mod_data.disapprove' | translate">
     <ion-icon name="thumbs-down"></ion-icon>
 </a>
 

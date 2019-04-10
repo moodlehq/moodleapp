@@ -16,9 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
 import { AddonModDataProvider } from './data';
-import { CoreCourseProvider } from '@core/course/providers/course';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreEventsProvider } from '@providers/events';
+import { AddonModDataHelperProvider } from './helper';
 
 /**
  * Content links handler for database approve/disapprove entry.
@@ -30,27 +28,8 @@ export class AddonModDataApproveLinkHandler extends CoreContentLinksHandlerBase 
     featureName = 'CoreCourseModuleDelegate_AddonModData';
     pattern = /\/mod\/data\/view\.php.*([\?\&](d|approve|disapprove)=\d+)/;
 
-    constructor(private dataProvider: AddonModDataProvider, private courseProvider: CoreCourseProvider,
-            private domUtils: CoreDomUtilsProvider, private eventsProvider: CoreEventsProvider) {
+    constructor(private dataProvider: AddonModDataProvider, private dataHelper: AddonModDataHelperProvider) {
         super();
-    }
-
-    /**
-     * Convenience function to help get courseId.
-     *
-     * @param {number} dataId   Database Id.
-     * @param {string} siteId   Site Id, if not set, current site will be used.
-     * @param {number} courseId Course Id if already set.
-     * @return {Promise<number>}   Resolved with course Id when done.
-     */
-    protected getActivityCourseIdIfNotSet(dataId: number, siteId: string, courseId: number): Promise<number> {
-        if (courseId) {
-            return Promise.resolve(courseId);
-        }
-
-        return this.courseProvider.getModuleBasicInfoByInstance(dataId, 'data', siteId).then((module) => {
-            return module.course;
-        });
     }
 
     /**
@@ -66,34 +45,11 @@ export class AddonModDataApproveLinkHandler extends CoreContentLinksHandlerBase 
             CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: (siteId, navCtrl?): void => {
-                const modal = this.domUtils.showModalLoading(),
-                    dataId = parseInt(params.d, 10),
+                const dataId = parseInt(params.d, 10),
                     entryId = parseInt(params.approve, 10) || parseInt(params.disapprove, 10),
                     approve = parseInt(params.approve, 10) ? true : false;
 
-                this.getActivityCourseIdIfNotSet(dataId, siteId, courseId).then((cId) => {
-                    courseId = cId;
-
-                    // Approve/disapprove entry.
-                    return this.dataProvider.approveEntry(dataId, entryId, approve, courseId, siteId).catch((message) => {
-                        this.domUtils.showErrorModalDefault(message, 'addon.mod_data.errorapproving', true);
-
-                        return Promise.reject(null);
-                    });
-                }).then(() => {
-                    const promises = [];
-                    promises.push(this.dataProvider.invalidateEntryData(dataId, entryId, siteId));
-                    promises.push(this.dataProvider.invalidateEntriesData(dataId, siteId));
-
-                    return Promise.all(promises);
-                }).then(() => {
-                    this.eventsProvider.trigger(AddonModDataProvider.ENTRY_CHANGED, {dataId: dataId, entryId: entryId}, siteId);
-
-                    this.domUtils.showToast(approve ? 'addon.mod_data.recordapproved' : 'addon.mod_data.recorddisapproved', true,
-                        3000);
-                }).finally(() => {
-                    modal.dismiss();
-                });
+                this.dataHelper.approveOrDisapproveEntry(dataId, entryId, approve, courseId, siteId);
             }
         }];
     }

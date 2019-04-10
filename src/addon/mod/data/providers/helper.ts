@@ -14,8 +14,12 @@
 
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { AddonModDataFieldsDelegate } from './fields-delegate';
 import { AddonModDataOfflineProvider, AddonModDataOfflineAction } from './offline';
@@ -32,7 +36,9 @@ export class AddonModDataHelperProvider {
     constructor(private sitesProvider: CoreSitesProvider, protected dataProvider: AddonModDataProvider,
         private translate: TranslateService, private fieldsDelegate: AddonModDataFieldsDelegate,
         private dataOffline: AddonModDataOfflineProvider, private fileUploaderProvider: CoreFileUploaderProvider,
-        private textUtils: CoreTextUtilsProvider, private ratingOffline: CoreRatingOfflineProvider) { }
+        private textUtils: CoreTextUtilsProvider, private eventsProvider: CoreEventsProvider, private utils: CoreUtilsProvider,
+        private domUtils: CoreDomUtilsProvider, private courseProvider: CoreCourseProvider,
+        private ratingOffline: CoreRatingOfflineProvider) {}
 
     /**
      * Returns the record with the offline actions applied.
@@ -105,6 +111,46 @@ export class AddonModDataHelperProvider {
     }
 
     /**
+     * Approve or disapprove a database entry.
+     *
+     * @param {number} dataId Database ID.
+     * @param {number} entryId Entry ID.
+     * @param {boolaen} approve True to approve, false to disapprove.
+     * @param {number} [courseId] Course ID. It not defined, it will be fetched.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     */
+    approveOrDisapproveEntry(dataId: number, entryId: number, approve: boolean, courseId?: number, siteId?: string): void {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        const modal = this.domUtils.showModalLoading('core.sending', true);
+
+        this.getActivityCourseIdIfNotSet(dataId, courseId, siteId).then((courseId) => {
+            // Approve/disapprove entry.
+            return this.dataProvider.approveEntry(dataId, entryId, approve, courseId, siteId).catch((message) => {
+                this.domUtils.showErrorModalDefault(message, 'addon.mod_data.errorapproving', true);
+
+                return Promise.reject(null);
+            });
+        }).then(() => {
+            const promises = [];
+            promises.push(this.dataProvider.invalidateEntryData(dataId, entryId, siteId));
+            promises.push(this.dataProvider.invalidateEntriesData(dataId, siteId));
+
+            return Promise.all(promises).catch(() => {
+                // Ignore errors.
+            });
+        }).then(() => {
+            this.eventsProvider.trigger(AddonModDataProvider.ENTRY_CHANGED, {dataId: dataId, entryId: entryId}, siteId);
+
+            this.domUtils.showToast(approve ? 'addon.mod_data.recordapproved' : 'addon.mod_data.recorddisapproved', true, 3000);
+        }).catch(() => {
+            // Ignore error, it was already displayed.
+        }).finally(() => {
+            modal.dismiss();
+        });
+    }
+
+    /**
      * Displays fields for being shown.
      *
      * @param {string} template Template HMTL.
@@ -146,8 +192,8 @@ export class AddonModDataHelperProvider {
                 } else if (action == 'approvalstatus') {
                     render = this.translate.instant('addon.mod_data.' + (entry.approved ? 'approved' : 'notapproved'));
                 } else {
-                    render = '<addon-mod-data-action action="' + action + '" [entry]="entries[' + entry.id +
-                                ']" mode="' + mode + '" [database]="data" [offset]="' + offset + '"></addon-mod-data-action>';
+                    render = '<addon-mod-data-action action="' + action + '" [entry]="entries[' + entry.id + ']" mode="' + mode +
+                    '" [database]="data" [module]="module" [offset]="' + offset + '" [group]="group" ></addon-mod-data-action>';
                 }
                 template = template.replace(replace, render);
             } else {
@@ -335,6 +381,24 @@ export class AddonModDataHelperProvider {
             delcheck: false,
             export: false
         };
+    }
+
+    /**
+     * Convenience function to get the course id of the database.
+     *
+     * @param {number} dataId Database id.
+     * @param {number} [courseId] Course id, if known.
+     * @param {string} [siteId] Site id, if not set, current site will be used.
+     * @return {Promise<number>} Resolved with course Id when done.
+     */
+    protected getActivityCourseIdIfNotSet(dataId: number, courseId?: number, siteId?: string): Promise<number> {
+        if (courseId) {
+            return Promise.resolve(courseId);
+        }
+
+        return this.courseProvider.getModuleBasicInfoByInstance(dataId, 'data', siteId).then((module) => {
+            return module.course;
+        });
     }
 
     /**
@@ -540,6 +604,45 @@ export class AddonModDataHelperProvider {
         }).catch(() => {
             // Has changes.
             return true;
+        });
+    }
+
+    /**
+     * Displays a confirmation modal for deleting an entry.
+     *
+     * @param {number} dataId Database ID.
+     * @param {number} entryId Entry ID.
+     * @param {number} [courseId] Course ID. It not defined, it will be fetched.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     */
+    showDeleteEntryModal(dataId: number, entryId: number, courseId?: number, siteId?: string): void {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        this.domUtils.showConfirm(this.translate.instant('addon.mod_data.confirmdeleterecord')).then(() => {
+            const modal = this.domUtils.showModalLoading();
+
+            return this.getActivityCourseIdIfNotSet(dataId, courseId, siteId).then((courseId) => {
+                return this.dataProvider.deleteEntry(dataId, entryId, courseId, siteId);
+            }).catch((message) => {
+                this.domUtils.showErrorModalDefault(message, 'addon.mod_data.errordeleting', true);
+
+                return Promise.reject(null);
+            }).then(() => {
+                return this.utils.allPromises([
+                    this.dataProvider.invalidateEntryData(dataId, entryId, siteId),
+                    this.dataProvider.invalidateEntriesData(dataId, siteId)
+                ]).catch(() => {
+                    // Ignore errors.
+                });
+            }).then(() => {
+                this.eventsProvider.trigger(AddonModDataProvider.ENTRY_CHANGED, {dataId, entryId,  deleted: true}, siteId);
+
+                this.domUtils.showToast('addon.mod_data.recorddeleted', true, 3000);
+            }).finally(() => {
+                modal.dismiss();
+            });
+        }).catch(() => {
+            // Ignore error, it was already displayed.
         });
     }
 
