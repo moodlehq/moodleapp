@@ -18,8 +18,8 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { AddonModDataFieldsDelegate } from './fields-delegate';
-import { AddonModDataOfflineProvider } from './offline';
-import { AddonModDataProvider } from './data';
+import { AddonModDataOfflineProvider, AddonModDataOfflineAction } from './offline';
+import { AddonModDataProvider, AddonModDataEntry, AddonModDataEntryFields } from './data';
 
 /**
  * Service that provides helper functions for datas.
@@ -35,15 +35,19 @@ export class AddonModDataHelperProvider {
     /**
      * Returns the record with the offline actions applied.
      *
-     * @param  {any} record         Entry to modify.
-     * @param  {any} offlineActions Offline data with the actions done.
-     * @param  {any} fields         Entry defined fields indexed by fieldid.
-     * @return {any}                Modified entry.
+     * @param {AddonModDataEntry} record Entry to modify.
+     * @param {AddonModDataOfflineAction[]} offlineActions Offline data with the actions done.
+     * @param {any[]} fields Entry defined fields indexed by fieldid.
+     * @return {Promise<AddonModDataEntry>} Promise resolved when done.
      */
-    applyOfflineActions(record: any, offlineActions: any[], fields: any[]): any {
+    applyOfflineActions(record: AddonModDataEntry, offlineActions: AddonModDataOfflineAction[], fields: any[]):
+            Promise<AddonModDataEntry> {
         const promises  = [];
 
         offlineActions.forEach((action) => {
+            record.timemodified = action.timemodified;
+            record.hasOffline = true;
+
             switch (action.action) {
                 case 'approve':
                     record.approved = true;
@@ -56,6 +60,8 @@ export class AddonModDataHelperProvider {
                     break;
                 case 'add':
                 case 'edit':
+                    record.groupid = action.groupid;
+
                     const offlineContents = {};
 
                     action.fields.forEach((offlineContent) => {
@@ -77,10 +83,12 @@ export class AddonModDataHelperProvider {
                             promises.push(this.getStoredFiles(record.dataid, record.id, field.id).then((offlineFiles) => {
                                 record.contents[field.id] = this.fieldsDelegate.overrideData(field, record.contents[field.id],
                                         offlineContents[field.id], offlineFiles);
+                                record.contents[field.id].fieldid = field.id;
                             }));
                         } else {
                             record.contents[field.id] = this.fieldsDelegate.overrideData(field, record.contents[field.id],
                                     offlineContents[field.id]);
+                            record.contents[field.id].fieldid = field.id;
                         }
                     });
                     break;
@@ -97,15 +105,16 @@ export class AddonModDataHelperProvider {
     /**
      * Displays fields for being shown.
      *
-     * @param {string} template   Template HMTL.
-     * @param {any[]}  fields     Fields that defines every content in the entry.
-     * @param {any}    entry      Entry.
-     * @param {number} offset     Entry offset.
-     * @param {string} mode       Mode list or show.
-     * @param {any}    actions    Actions that can be performed to the record.
-     * @return {string}           Generated HTML.
+     * @param {string} template Template HMTL.
+     * @param {any[]} fields Fields that defines every content in the entry.
+     * @param {any} entry Entry.
+     * @param {number} offset Entry offset.
+     * @param {string} mode Mode list or show.
+     * @param {AddonModDataOfflineAction[]} actions Actions that can be performed to the record.
+     * @return {string} Generated HTML.
      */
-    displayShowFields(template: string, fields: any[], entry: any, offset: number, mode: string, actions: any): string {
+    displayShowFields(template: string, fields: any[], entry: any, offset: number, mode: string,
+            actions: AddonModDataOfflineAction[]): string {
         if (!template) {
             return '';
         }
@@ -256,17 +265,17 @@ export class AddonModDataHelperProvider {
      * Retrieve the entered data in the edit form.
      * We don't use ng-model because it doesn't detect changes done by JavaScript.
      *
-     * @param  {any}     inputData    Array with the entered form values.
-     * @param  {Array}   fields       Fields that defines every content in the entry.
-     * @param  {number}  [dataId]     Database Id. If set, files will be uploaded and itemId set.
-     * @param  {number}  entryId      Entry Id.
-     * @param  {any}  entryContents   Original entry contents indexed by field id.
-     * @param  {boolean} offline      True to prepare the data for an offline uploading, false otherwise.
-     * @param  {string}  [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}         That contains object with the answers.
+     * @param {any} inputData Array with the entered form values.
+     * @param {Array} fields Fields that defines every content in the entry.
+     * @param {number} [dataId] Database Id. If set, files will be uploaded and itemId set.
+     * @param {number} entryId Entry Id.
+     * @param {AddonModDataEntryFields} entryContents Original entry contents.
+     * @param {boolean} offline True to prepare the data for an offline uploading, false otherwise.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} That contains object with the answers.
      */
-    getEditDataFromForm(inputData: any, fields: any, dataId: number, entryId: number, entryContents: any, offline: boolean = false,
-            siteId?: string): Promise<any> {
+    getEditDataFromForm(inputData: any, fields: any, dataId: number, entryId: number, entryContents: AddonModDataEntryFields,
+            offline: boolean = false, siteId?: string): Promise<any> {
         if (!inputData) {
             return Promise.resolve({});
         }
@@ -322,13 +331,13 @@ export class AddonModDataHelperProvider {
     /**
      * Retrieve the temp files to be updated.
      *
-     * @param  {any}     inputData    Array with the entered form values.
-     * @param  {Array}   fields       Fields that defines every content in the entry.
-     * @param  {number}  [dataId]     Database Id. If set, fils will be uploaded and itemId set.
-     * @param  {any}   entryContents  Original entry contents indexed by field id.
-     * @return {Promise<any>}         That contains object with the files.
+     * @param {any} inputData Array with the entered form values.
+     * @param {any[]} fields Fields that defines every content in the entry.
+     * @param {number} [dataId] Database Id. If set, fils will be uploaded and itemId set.
+     * @param {AddonModDataEntryFields} entryContents Original entry contents indexed by field id.
+     * @return {Promise<any>} That contains object with the files.
      */
-    getEditTmpFiles(inputData: any, fields: any, dataId: number, entryContents: any): Promise<any> {
+    getEditTmpFiles(inputData: any, fields: any[], dataId: number, entryContents: AddonModDataEntryFields): Promise<any> {
         if (!inputData) {
             return Promise.resolve([]);
         }
@@ -403,13 +412,13 @@ export class AddonModDataHelperProvider {
     /**
      * Check if data has been changed by the user.
      *
-     * @param  {any}    inputData     Array with the entered form values.
-     * @param  {any}  fields          Fields that defines every content in the entry.
-     * @param  {number} [dataId]      Database Id. If set, fils will be uploaded and itemId set.
-     * @param  {any}    entryContents Original entry contents indexed by field id.
-     * @return {Promise<boolean>}     True if changed, false if not.
+     * @param {any} inputData Object with the entered form values.
+     * @param {any[]} fields Fields that defines every content in the entry.
+     * @param {number} [dataId] Database Id. If set, fils will be uploaded and itemId set.
+     * @param {AddonModDataEntryFields} entryContents Original entry contents indexed by field id.
+     * @return {Promise<boolean>} True if changed, false if not.
      */
-    hasEditDataChanged(inputData: any, fields: any, dataId: number, entryContents: any): Promise<boolean> {
+    hasEditDataChanged(inputData: any, fields: any[], dataId: number, entryContents: AddonModDataEntryFields): Promise<boolean> {
         const promises = fields.map((field) => {
             return this.fieldsDelegate.hasFieldDataChanged(field, inputData, entryContents[field.id]);
         });

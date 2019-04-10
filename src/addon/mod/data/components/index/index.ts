@@ -327,9 +327,6 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                 });
 
                 entries.entries.forEach((entry) => {
-                    // Index contents by fieldid.
-                    entry.contents = this.utils.arrayToObject(entry.contents, 'fieldid');
-
                     if (typeof this.offlineActions[entry.id] != 'undefined') {
                         promises.push(this.dataHelper.applyOfflineActions(entry, this.offlineActions[entry.id], this.fieldsArray));
                     } else {

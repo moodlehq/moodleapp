@@ -20,7 +20,7 @@ import { CoreAppProvider } from '@providers/app';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
-import { AddonModDataOfflineProvider } from './offline';
+import { AddonModDataOfflineProvider, AddonModDataOfflineAction } from './offline';
 import { AddonModDataProvider } from './data';
 import { AddonModDataHelperProvider } from './helper';
 import { CoreEventsProvider } from '@providers/events';
@@ -174,7 +174,7 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
                 // No offline data found, return empty object.
                 return [];
             });
-        }).then((offlineActions) => {
+        }).then((offlineActions: AddonModDataOfflineAction[]) => {
             if (!offlineActions.length) {
                 // Nothing to sync.
                 return;
@@ -226,13 +226,13 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
     /**
      * Synchronize an entry.
      *
-     * @param  {any} data          Database.
-     * @param  {any} entryActions  Entry actions.
-     * @param  {any} result        Object with the result of the sync.
-     * @param  {string} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise<any>}      Promise resolved if success, rejected otherwise.
+     * @param {any} data Database.
+     * @param {AddonModDataOfflineAction[]} entryActions  Entry actions.
+     * @param {any} result Object with the result of the sync.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved if success, rejected otherwise.
      */
-    protected syncEntry(data: any, entryActions: any[], result: any, siteId?: string): Promise<any> {
+    protected syncEntry(data: any, entryActions: AddonModDataOfflineAction[], result: any, siteId?: string): Promise<any> {
         let discardError,
             timePromise,
             entryId = 0,

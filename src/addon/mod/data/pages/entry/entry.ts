@@ -171,9 +171,6 @@ export class AddonModDataEntryPage implements OnDestroy {
             this.ratingInfo = entry.ratinginfo;
             entry = entry.entry;
 
-            // Index contents by fieldid.
-            entry.contents = this.utils.arrayToObject(entry.contents, 'fieldid');
-
             fieldsArray = this.utils.objectToArray(this.fields);
 
             return this.dataHelper.applyOfflineActions(entry, this.offlineActions, fieldsArray);

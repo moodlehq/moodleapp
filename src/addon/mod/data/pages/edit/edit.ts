@@ -158,9 +158,6 @@ export class AddonModDataEditPage {
         }).then((entry) => {
              if (entry) {
                 entry = entry.entry;
-
-                // Index contents by fieldid.
-                entry.contents = this.utils.arrayToObject(entry.contents, 'fieldid');
             } else {
                 entry = {
                     contents: {}
