@@ -48,6 +48,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     @Input() extraProviders: any[] = []; // Extra providers.
     @Input() forceCompile: string | boolean; // Set it to true to force compile even if the text/javascript hasn't changed.
     @Output() created: EventEmitter<any> = new EventEmitter(); // Will emit an event when the component is instantiated.
+    @Output() compiling: EventEmitter<boolean> = new EventEmitter(); // Event that indicates whether the template is being compiled.
 
     // Get the container where to put the content.
     @ViewChild('dynamicComponent', { read: ViewContainerRef }) container: ViewContainerRef;
@@ -93,6 +94,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
 
             // Create a new component and a new module.
             this.creatingComponent = true;
+            this.compiling.emit(true);
             this.compileProvider.createAndCompileComponent(this.text, this.getComponentClass(), this.extraImports)
                     .then((factory) => {
                 // Destroy previous components.
@@ -111,6 +113,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
                 this.loaded = true;
             }).finally(() => {
                 this.creatingComponent = false;
+                this.compiling.emit(false);
             });
         }
     }
