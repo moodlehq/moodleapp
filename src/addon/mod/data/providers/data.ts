@@ -137,6 +137,8 @@ export class AddonModDataProvider {
                     fieldnotifications: notifications
                 });
             }
+
+            return storeOffline();
         }
 
         return this.addEntryOnline(dataId, contents, groupId, siteId).catch((error) => {
