@@ -61,6 +61,14 @@ ion-app.app-root core-course-format {
         core-format-text {
             line-height: 44px;
         }
+
+        &.core-section-download .label{
+            @include margin(null, 0, null, null);
+        }
+    }
+
+    div.core-section-download {
+        @include padding(null, 0, null, null);
     }
 
     .core-course-section-nav-buttons {
