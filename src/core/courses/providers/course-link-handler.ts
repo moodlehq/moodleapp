@@ -22,6 +22,8 @@ import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCoursesProvider } from './courses';
+import { NavController } from 'ionic-angular';
+import { CoreLoggerProvider } from '@providers/logger';
 
 /**
  * Handler to treat links to course view or enrol (except site home).
@@ -32,12 +34,15 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
     pattern = /((\/enrol\/index\.php)|(\/course\/enrol\.php)|(\/course\/view\.php)).*([\?\&]id=\d+)/;
 
     protected waitStart = 0;
+    protected logger;
 
     constructor(private sitesProvider: CoreSitesProvider, private coursesProvider: CoreCoursesProvider,
             private domUtils: CoreDomUtilsProvider,
             private translate: TranslateService, private courseProvider: CoreCourseProvider,
-            private textUtils: CoreTextUtilsProvider, private courseHelper: CoreCourseHelperProvider) {
+            private textUtils: CoreTextUtilsProvider, private courseHelper: CoreCourseHelperProvider,
+            private loggerProvider: CoreLoggerProvider) {
         super();
+        this.logger = loggerProvider.getInstance('CoreCoursesCourseLinkHandler');
     }
 
     /**
@@ -75,7 +80,7 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
             action: (siteId, navCtrl?): void => {
                 siteId = siteId || this.sitesProvider.getCurrentSiteId();
                 if (siteId == this.sitesProvider.getCurrentSiteId()) {
-                    this.actionEnrol(courseId, url, pageParams).catch(() => {
+                    this.actionEnrol(courseId, url, pageParams, navCtrl).catch(() => {
                         // Ignore errors.
                     });
                 } else {
@@ -115,9 +120,11 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
      * @param {number} courseId Course ID.
      * @param {string} url Treated URL.
      * @param {any} pageParams Params to send to the new page.
+     * @param {NavController} [navCtrl] NavController for adding new pages to the current history. Optional for legacy support, but
+     *                                  generates a warning if omitted.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected actionEnrol(courseId: number, url: string, pageParams: any): Promise<any> {
+    protected actionEnrol(courseId: number, url: string, pageParams: any, navCtrl?: NavController): Promise<any> {
         const modal = this.domUtils.showModalLoading(),
             isEnrolUrl = !!url.match(/(\/enrol\/index\.php)|(\/course\/enrol\.php)/);
         let course;
@@ -188,8 +195,12 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
         }).then((course) => {
             modal.dismiss();
 
+            if (typeof navCtrl === 'undefined') {
+                this.logger.warn('navCtrl was not passed to actionEnrol');
+            }
+
             // Now open the course.
-            this.courseHelper.openCourse(undefined, course, pageParams);
+            this.courseHelper.openCourse(navCtrl, course, pageParams);
         });
     }
 
