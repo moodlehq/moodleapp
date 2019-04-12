@@ -321,7 +321,8 @@ export class CorePushNotificationsProvider {
                             id: 1,
                             data: data,
                             title: '',
-                            text: ''
+                            text: '',
+                            channel: 'PushPluginChannel'
                         },
                         promises = [];
 
