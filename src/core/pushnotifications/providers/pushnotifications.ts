@@ -339,6 +339,13 @@ export class CorePushNotificationsProvider {
                         localNotif.text = notification.message;
                     }));
 
+                    if (this.utils.isTrueOrOne(data.extrafeatures)) {
+                        // Extra features enabled.
+                        localNotif.icon = notification.image;
+                        // This feature isn't supported by the official plugin, we use a fork.
+                        (<any> localNotif).iconType = data['image-type'];
+                    }
+
                     Promise.all(promises).then(() => {
                         this.localNotificationsProvider.schedule(localNotif, CorePushNotificationsProvider.COMPONENT, data.site);
                     });
