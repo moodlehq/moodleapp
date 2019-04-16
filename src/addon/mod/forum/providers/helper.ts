@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreFileProvider } from '@providers/file';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModForumProvider } from './forum';
 import { AddonModForumOfflineProvider } from './offline';
@@ -25,8 +26,10 @@ import { AddonModForumOfflineProvider } from './offline';
 @Injectable()
 export class AddonModForumHelperProvider {
     constructor(private fileProvider: CoreFileProvider,
+            private sitesProvider: CoreSitesProvider,
             private uploaderProvider: CoreFileUploaderProvider,
             private userProvider: CoreUserProvider,
+            private forumProvider: AddonModForumProvider,
             private forumOffline: AddonModForumOfflineProvider) {}
 
     /**
@@ -117,6 +120,38 @@ export class AddonModForumHelperProvider {
                 // Ignore any errors, CoreFileProvider.removeDir fails if folder doesn't exists.
             });
         });
+    }
+
+    /**
+     * Get a forum discussion by id.
+     *
+     * This function is inefficient because it needs to fetch all discussion pages in the worst case.
+     *
+     * @param {number} forumId Forum ID.
+     * @param {number} discussionId Discussion ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with the discussion data.
+     */
+    getDiscussionById(forumId: number, discussionId: number, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        const findDiscussion = (page: number): Promise<any> => {
+            return this.forumProvider.getDiscussions(forumId, page, false, siteId).then((response) => {
+                if (response.discussions && response.discussions.length > 0) {
+                    const discussion = response.discussions.find((discussion) => discussion.id == discussionId);
+                    if (discussion) {
+                        return discussion;
+                    }
+                    if (response.canLoadMore) {
+                        return findDiscussion(page + 1);
+                    }
+                }
+
+                return Promise.reject(null);
+            });
+        };
+
+        return findDiscussion(0);
     }
 
     /**
