@@ -470,10 +470,19 @@ export class CoreLocalNotificationsProvider {
      *                                          be unique inside its component and site.
      * @param {string} component Component triggering the notification. It is used to generate unique IDs.
      * @param {string} siteId Site ID.
+     * @param {boolean} [alreadyUnique] Whether the ID is already unique.
      * @return {Promise<any>} Promise resolved when the notification is scheduled.
      */
-    schedule(notification: ILocalNotification, component: string, siteId: string): Promise<any> {
-        return this.getUniqueNotificationId(notification.id, component, siteId).then((uniqueId) => {
+    schedule(notification: ILocalNotification, component: string, siteId: string, alreadyUnique?: boolean): Promise<any> {
+        let promise;
+
+        if (alreadyUnique) {
+            promise = Promise.resolve(notification.id);
+        } else {
+            promise = this.getUniqueNotificationId(notification.id, component, siteId);
+        }
+
+        return promise.then((uniqueId) => {
             notification.id = uniqueId;
             notification.data = notification.data || {};
             notification.data.component = component;

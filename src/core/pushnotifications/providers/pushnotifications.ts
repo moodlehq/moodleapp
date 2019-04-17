@@ -318,13 +318,14 @@ export class CorePushNotificationsProvider {
                 // If the app is in foreground when the notification is received, it's not shown. Let's show it ourselves.
                 if (this.localNotificationsProvider.isAvailable()) {
                     const localNotif: ILocalNotification = {
-                            id: 1,
+                            id: data.notId || 1,
                             data: data,
                             title: '',
                             text: '',
                             channel: 'PushPluginChannel'
                         },
-                        promises = [];
+                        promises = [],
+                        extraFeatures = this.utils.isTrueOrOne(data.extrafeatures);
 
                     // Apply formatText to title and message.
                     promises.push(this.textUtils.formatText(notification.title, true, true).then((formattedTitle) => {
@@ -333,21 +334,33 @@ export class CorePushNotificationsProvider {
                         localNotif.title = notification.title;
                     }));
 
-                    promises.push(this.textUtils.formatText(notification.message, true, true).then((formattedMessage) => {
-                        localNotif.text = formattedMessage;
-                    }).catch(() => {
-                        localNotif.text = notification.message;
+                    promises.push(this.textUtils.formatText(notification.message, true, true).catch(() => {
+                        // Error formatting, use the original message.
+                        return notification.message;
+                    }).then((formattedMessage) => {
+                        if (extraFeatures && this.utils.isFalseOrZero(data.notif)) {
+                            // It's a message, use messaging style. Ionic Native doesn't specify this option.
+                            (<any> localNotif).text = [
+                                {
+                                    message: formattedMessage,
+                                    person: data.conversationtype == 2 ? data.userfromfullname : ''
+                                }
+                            ];
+                        } else {
+                            localNotif.text = formattedMessage;
+                        }
                     }));
 
-                    if (this.utils.isTrueOrOne(data.extrafeatures)) {
-                        // Extra features enabled.
+                    if (extraFeatures) {
+                        // Use a different icon if needed.
                         localNotif.icon = notification.image;
                         // This feature isn't supported by the official plugin, we use a fork.
                         (<any> localNotif).iconType = data['image-type'];
                     }
 
                     Promise.all(promises).then(() => {
-                        this.localNotificationsProvider.schedule(localNotif, CorePushNotificationsProvider.COMPONENT, data.site);
+                        this.localNotificationsProvider.schedule(localNotif, CorePushNotificationsProvider.COMPONENT, data.site,
+                                true);
                     });
                 }
 
