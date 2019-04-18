@@ -156,6 +156,8 @@ export class AddonModLessonProvider {
      */
     static MULTIANSWER_DELIMITER = '@^#|';
 
+    static LESSON_OTHER_ANSWERS = '@#wronganswer#@';
+
     // Variables for database.
     static PASSWORD_TABLE = 'addon_mod_lesson_password';
     protected siteSchema: CoreSiteSchema = {
@@ -793,6 +795,8 @@ export class AddonModLessonProvider {
                 break;
             }
         }
+
+        this.checkOtherAnswers(lesson, pageData, result);
     }
 
     /**
@@ -907,6 +911,8 @@ export class AddonModLessonProvider {
             }
         }
 
+        this.checkOtherAnswers(lesson, pageData, result);
+
         result.userresponse = studentAnswer;
         result.studentanswer = this.textUtils.s(studentAnswer); // Clean student answer as it goes to output.
     }
@@ -941,6 +947,33 @@ export class AddonModLessonProvider {
                 result.response  = answer.response;
                 result.studentanswer = result.userresponse = answer.answer;
                 break;
+            }
+        }
+    }
+
+    /**
+     * Check the "other answers" value.
+     *
+     * @param {any} lesson Lesson.
+     * @param {any} pageData Result of getPageData for the page to process.
+     * @param {AddonModLessonCheckAnswerResult} result Object where to store the result.
+     */
+    protected checkOtherAnswers(lesson: any, pageData: any, result: AddonModLessonCheckAnswerResult): void {
+        // We could check here to see if we have a wrong answer jump to use.
+        if (result.answerid == 0) {
+            // Use the all other answers jump details if it is set up.
+            const lastAnswer = pageData.answers[pageData.answers.length - 1] || {};
+
+            // Double check that this is the OTHER_ANSWERS answer.
+            if (typeof lastAnswer.answer == 'string' &&
+                    lastAnswer.answer.indexOf(AddonModLessonProvider.LESSON_OTHER_ANSWERS) != -1) {
+                result.newpageid = lastAnswer.jumpto;
+                result.response = lastAnswer.response;
+
+                if (lesson.custom) {
+                    result.correctanswer = lastAnswer.score > 0;
+                }
+                result.answerid = lastAnswer.id;
             }
         }
     }
