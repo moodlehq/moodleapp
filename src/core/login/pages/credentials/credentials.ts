@@ -24,6 +24,7 @@ import { CoreLoginHelperProvider } from '../../providers/helper';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CoreConfigConstants } from '../../../../configconstants';
 
 /**
  * Page to enter the user credentials.
@@ -142,7 +143,7 @@ export class CoreLoginCredentialsPage {
      */
     protected treatSiteConfig(): void {
         if (this.siteConfig) {
-            this.siteName = this.siteConfig.sitename;
+            this.siteName = CoreConfigConstants.sitename ? CoreConfigConstants.sitename : this.siteConfig.sitename;
             this.logoUrl = this.siteConfig.logourl || this.siteConfig.compactlogourl;
             this.authInstructions = this.siteConfig.authinstructions || this.translate.instant('core.login.loginsteps');
             this.canSignup = this.siteConfig.registerauth == 'email' && !this.loginHelper.isEmailSignupDisabled(this.siteConfig);

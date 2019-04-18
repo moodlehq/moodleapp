@@ -131,7 +131,7 @@ export class CoreCoursesDashboardPage implements OnDestroy {
      * Load the site name.
      */
     protected loadSiteName(): void {
-        this.siteName = this.sitesProvider.getCurrentSite().getInfo().sitename;
+        this.siteName = this.sitesProvider.getCurrentSite().getSiteName();
     }
 
     /**

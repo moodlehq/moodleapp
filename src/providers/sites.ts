@@ -1009,7 +1009,7 @@ export class CoreSitesProvider {
                             id: site.id,
                             siteUrl: site.siteUrl,
                             fullName: siteInfo && siteInfo.fullname,
-                            siteName: siteInfo && siteInfo.sitename,
+                            siteName: CoreConfigConstants.sitename ? CoreConfigConstants.sitename : siteInfo && siteInfo.sitename,
                             avatar: siteInfo && siteInfo.userpictureurl
                         };
                     formattedSites.push(basicInfo);
