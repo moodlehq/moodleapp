@@ -637,6 +637,7 @@
   "addon.mod_quiz.attemptquiznow": "quiz",
   "addon.mod_quiz.attemptstate": "quiz",
   "addon.mod_quiz.cannotsubmitquizdueto": "local_moodlemobileapp",
+  "addon.mod_quiz.clearchoice": "qtype_multichoice",
   "addon.mod_quiz.comment": "quiz",
   "addon.mod_quiz.completedon": "quiz",
   "addon.mod_quiz.confirmclose": "quiz",

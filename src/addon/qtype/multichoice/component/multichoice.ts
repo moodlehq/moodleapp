@@ -35,4 +35,11 @@ export class AddonQtypeMultichoiceComponent extends CoreQuestionBaseComponent im
     ngOnInit(): void {
         this.initMultichoiceComponent();
     }
+
+    /**
+     * Clear selected choices.
+     */
+    clear(): void {
+        this.question.singleChoiceModel = null;
+    }
 }

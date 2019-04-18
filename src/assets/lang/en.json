@@ -637,6 +637,7 @@
     "addon.mod_quiz.attemptquiznow": "Attempt quiz now",
     "addon.mod_quiz.attemptstate": "State",
     "addon.mod_quiz.cannotsubmitquizdueto": "This quiz attempt cannot be submitted for the following reasons:",
+    "addon.mod_quiz.clearchoice": "Clear my choice",
     "addon.mod_quiz.comment": "Comment",
     "addon.mod_quiz.completedon": "Completed on",
     "addon.mod_quiz.confirmclose": "Once you submit, you will no longer be able to change your answers for this attempt.",
