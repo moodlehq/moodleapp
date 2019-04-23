@@ -146,6 +146,12 @@
     <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application/activity[@android:name='MainActivity']">
         <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|screenLayout|smallestScreenSize" android:debuggable="true" />
     </edit-config>
+    <config-file parent="/manifest/application" target="AndroidManifest.xml">
+        <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
+    </config-file>
+    <config-file parent="FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED" target="*-Info.plist">
+        <string>YES</string>
+    </config-file>
     <engine name="android" spec="7.1.2" />
     <engine name="ios" spec="4.5.5" />
 </widget>
