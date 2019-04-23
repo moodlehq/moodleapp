@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { CoreCourseFormatHandler } from './format-delegate';
 
 /**
@@ -25,7 +26,9 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
     name = 'CoreCourseFormatDefault';
     format = 'default';
 
-    constructor(private coursesProvider: CoreCoursesProvider) { }
+    protected loginHelper: CoreLoginHelperProvider; // Inject it later to prevent circular dependencies.
+
+    constructor(protected coursesProvider: CoreCoursesProvider, protected injector: Injector) { }
 
     /**
      * Whether or not the handler is enabled on a site level.
@@ -154,7 +157,7 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      * getCourseFormatComponent because it will display the course handlers at the top.
      * Your page should include the course handlers using CoreCoursesDelegate.
      *
-     * @param {NavController} navCtrl The NavController instance to use.
+     * @param {NavController} navCtrl The NavController instance to use. If not defined, please use loginHelper.redirect.
      * @param {any} course The course to open. It should contain a "format" attribute.
      * @param {any} [params] Params to pass to the course page.
      * @return {Promise<any>} Promise resolved when done.
@@ -163,7 +166,14 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
         params = params || {};
         Object.assign(params, { course: course });
 
-        return navCtrl.push('CoreCourseSectionPage', params);
+        if (navCtrl) {
+            return navCtrl.push('CoreCourseSectionPage', params);
+        } else {
+            // Open the course in the "phantom" tab.
+            this.loginHelper = this.loginHelper || this.injector.get(CoreLoginHelperProvider);
+
+            return this.loginHelper.redirect('CoreCourseSectionPage', params);
+        }
     }
 
     /**

@@ -107,8 +107,9 @@ export class CoreSitePluginsHelperProvider {
                     }).finally(() => {
                         eventsProvider.trigger(CoreEventsProvider.SITE_PLUGINS_LOADED, {}, data.siteId);
                     });
-
                 }
+            }).finally(() => {
+                this.sitePluginsProvider.setPluginsFetched();
             });
         });
 

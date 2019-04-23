@@ -36,8 +36,6 @@ import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { CoreConstants } from '@core/constants';
 import { CoreSite } from '@classes/site';
 import * as moment from 'moment';
-import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
-import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
 
 /**
  * Prefetch info of a module.
@@ -125,8 +123,7 @@ export class CoreCourseHelperProvider {
         private courseOptionsDelegate: CoreCourseOptionsDelegate, private siteHomeProvider: CoreSiteHomeProvider,
         private eventsProvider: CoreEventsProvider, private fileHelper: CoreFileHelperProvider,
         private appProvider: CoreAppProvider, private fileProvider: CoreFileProvider, private injector: Injector,
-        private coursesProvider: CoreCoursesProvider, private courseOffline: CoreCourseOfflineProvider,
-        private courseFormatDelegate: CoreCourseFormatDelegate, private sitePluginsProvider: CoreSitePluginsProvider) { }
+        private coursesProvider: CoreCoursesProvider, private courseOffline: CoreCourseOfflineProvider) { }
 
     /**
      * This function treats every module on the sections provided to load the handler data, treat completion
@@ -795,6 +792,30 @@ export class CoreCourseHelperProvider {
     }
 
     /**
+     * Get a course, wait for any course format plugin to load, and open the course page. It basically chains the functions
+     * getCourse and openCourse.
+     *
+     * @param {NavController} navCtrl The nav controller to use. If not defined, the course will be opened in main menu.
+     * @param {number} courseId Course ID.
+     * @param {any} [params] Other params to pass to the course page.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     */
+    getAndOpenCourse(navCtrl: NavController, courseId: number, params?: any, siteId?: string): Promise<any> {
+        const modal = this.domUtils.showModalLoading();
+
+        return this.getCourse(courseId, siteId).then((data) => {
+            return data.course;
+        }).catch(() => {
+            // Cannot get course, return a "fake".
+            return { id: courseId };
+        }).then((course) => {
+            modal.dismiss();
+
+            return this.openCourse(navCtrl, course, params, siteId);
+        });
+    }
+
+    /**
      * Check if the course has a block with that name.
      *
      * @param {number} courseId Course ID.
@@ -1121,14 +1142,17 @@ export class CoreCourseHelperProvider {
                 // Check if site home is available.
                 return this.siteHomeProvider.isAvailable().then(() => {
                     this.loginHelper.redirect('CoreSiteHomeIndexPage', params, siteId);
+                }).finally(() => {
+                    modal.dismiss();
                 });
             } else {
-                this.loginHelper.redirect('CoreCourseSectionPage', params, siteId);
+                modal.dismiss();
+
+                return this.getAndOpenCourse(undefined, courseId, params, siteId);
             }
         }).catch((error) => {
-            this.domUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
-        }).finally(() => {
             modal.dismiss();
+            this.domUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
         });
     }
 
@@ -1399,46 +1423,22 @@ export class CoreCourseHelperProvider {
      * will be displayed until it is complete, before the course page is opened.  If the promise is already complete,
      * they will see the result immediately.
      *
-     * @param {NavController} navCtrl The nav controller to use.
+     * @param {NavController} navCtrl The nav controller to use. If not defined, the course will be opened in main menu.
      * @param {any} course Course to open
      * @param {any} [params] Params to pass to the course page.
+     * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when done.
      */
-    openCourse(navCtrl: NavController, course: any, params?: any): Promise<any> {
-        if (this.sitePluginsProvider.sitePluginPromiseExists('format_' + course.format)) {
-            // This course uses a custom format plugin, wait for the format plugin to finish loading.
-            const loading = this.domUtils.showModalLoading();
-
-            return this.sitePluginsProvider.sitePluginLoaded('format_' + course.format).then(() => {
-                // The format loaded successfully, but the handlers wont be registered until all site plugins have loaded.
-                if (this.sitePluginsProvider.sitePluginsFinishedLoading) {
-                    loading.dismiss();
-
-                    return this.courseFormatDelegate.openCourse(navCtrl, course, params);
-                } else {
-                    // Wait for plugins to be loaded.
-                    const deferred = this.utils.promiseDefer(),
-                        observer = this.eventsProvider.on(CoreEventsProvider.SITE_PLUGINS_LOADED, () => {
-                            loading.dismiss();
-                            observer && observer.off();
-
-                            this.courseFormatDelegate.openCourse(navCtrl, course, params).then((response) => {
-                                deferred.resolve(response);
-                            }).catch((error) => {
-                                deferred.reject(error);
-                            });
-                        });
-
-                    return deferred.promise;
-                }
-            }).catch(() => {
-                // The site plugin failed to load. The user needs to restart the app to try loading it again.
-                loading.dismiss();
-                this.domUtils.showErrorModal('core.courses.errorloadplugins', true);
-            });
+    openCourse(navCtrl: NavController, course: any, params?: any, siteId?: string): Promise<any> {
+        if (!siteId || siteId == this.sitesProvider.getCurrentSiteId()) {
+            // Current site, we can open the course.
+            return this.courseProvider.openCourse(navCtrl, course, params);
         } else {
-            // No custom format plugin. We don't need to wait for anything.
-            return this.courseFormatDelegate.openCourse(navCtrl, course, params);
+            // We need to load the site first.
+            params = params || {};
+            Object.assign(params, { course: course });
+
+            return this.loginHelper.redirect(CoreLoginHelperProvider.OPEN_COURSE, params, siteId);
         }
     }
 }
