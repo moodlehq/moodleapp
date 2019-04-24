@@ -68,6 +68,14 @@ function createWindow() {
 
     // Append some text to the user agent.
     mainWindow.webContents.setUserAgent(mainWindow.webContents.getUserAgent() + ' ' + userAgent);
+
+    // Add shortcut to open dev tools: Control/Cmd + Alt + I.
+    mainWindow.webContents.on('before-input-event', function(e, input) {
+        // The "meta" key is Cmd in MacOS and Control in Windows/Linux.
+        if (input.type == 'keyDown' && !input.isAutoRepeat && input.code == 'KeyI' && input.alt && input.meta) {
+            mainWindow.webContents.toggleDevTools();
+        }
+    }, true)
 }
 
 // Make sure that only a single instance of the app is running.
@@ -221,22 +229,18 @@ function setAppMenu() {
             submenu: [
                 {
                     label: 'Cut',
-                    accelerator: 'CmdOrCtrl+X',
                     role: 'cut'
                 },
                 {
                     label: 'Copy',
-                    accelerator: 'CmdOrCtrl+C',
                     role: 'copy'
                 },
                 {
                     label: 'Paste',
-                    accelerator: 'CmdOrCtrl+V',
                     role: 'paste'
                 },
                 {
                     label: 'Select All',
-                    accelerator: 'CmdOrCtrl+A',
                     role: 'selectall'
                 }
             ]
