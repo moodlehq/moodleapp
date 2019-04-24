@@ -32,6 +32,16 @@
                 </a>
                 <ion-item-divider></ion-item-divider>
             </ng-container>
+
+            <ion-item text-wrap *ngIf="course.customfields" detail-none>
+                <ng-container *ngFor="let field of course.customfields">
+                    <div *ngIf="field.value" class="core-customfield core-customfield_{{field.type}} core-customfield_{{field.shortname}}">
+                        <span class="core-customfieldname"><core-format-text [text]="field.name"></core-format-text></span><span class="core-customfieldseparator">: </span>
+                        <span class="core-customfieldvalue"><core-format-text [text]="field.value" maxHeight="120"></core-format-text></span>
+                    </div>
+                </ng-container>
+            </ion-item>
+
             <core-file *ngFor="let file of course.overviewfiles" [file]="file" [component]="component" [componentId]="course.id"></core-file>
             <div *ngIf="!isEnrolled" detail-none>
                 <ion-item text-wrap *ngFor="let instance of selfEnrolInstances">
