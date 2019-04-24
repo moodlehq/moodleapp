@@ -36,7 +36,8 @@ export class CoreCourseSectionSelectorPage {
         this.selected = navParams.get('selected');
         const course = navParams.get('course');
 
-        if (course && course.enablecompletion && course.courseformatoptions && course.courseformatoptions.coursedisplay == 1) {
+        if (course && course.enablecompletion && course.courseformatoptions && course.courseformatoptions.coursedisplay == 1 &&
+                course.completionusertracked !== false) {
             this.sections.forEach((section) => {
                 let complete = 0,
                     total = 0;
