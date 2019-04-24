@@ -3,13 +3,12 @@
     <h2>{{fileName}}</h2>
     <p *ngIf="fileSizeReadable">{{ fileSizeReadable }}</p>
     <p *ngIf="showTime">{{ timemodified * 1000 | coreFormatDate }}</p>
+
     <div class="buttons" item-end>
-        <button ion-button clear icon-only (click)="download($event)" *ngIf="!isDownloading && showDownload" [attr.aria-label]="'core.download' | translate" color="dark">
-            <ion-icon [name]="isDownloaded ? 'refresh' : 'cloud-download'"></ion-icon>
-        </button>
+        <core-download-refresh [status]="state" [enabled]="canDownload" [loading]="isDownloading" [canTrustDownload]="!alwaysDownload" (action)="download()"></core-download-refresh>
+
         <button ion-button clear icon-only (click)="delete($event)" *ngIf="!isDownloading && canDelete" [attr.aria-label]="'core.delete' | translate" color="danger">
             <ion-icon name="trash"></ion-icon>
         </button>
     </div>
-    <ion-spinner *ngIf="isDownloading" item-end></ion-spinner>
 </a>
