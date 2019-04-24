@@ -36,6 +36,8 @@ ion-app.app-root core-course-module {
             flex-flow: row;
             align-items: center;
             z-index: 1;
+            justify-content: space-around;
+            align-content: center;
         }
 
         .core-module-buttons core-course-module-completion,
@@ -44,9 +46,8 @@ ion-app.app-root core-course-module {
             pointer-events: auto;
         }
 
-        .core-module-buttons-more .spinner {
-            @include position(null, 13px, null, null);
-            position: absolute;
+        .core-module-buttons core-course-module-completion {
+            text-align: center;
         }
     }
 

@@ -21,7 +21,6 @@ import { CoreCourseHelperProvider } from '../../providers/helper';
 import { CoreCourseProvider } from '../../providers/course';
 import { CoreCourseModuleHandlerButton } from '../../providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate, CoreCourseModulePrefetchHandler } from '../../providers/module-prefetch-delegate';
-import { CoreConstants } from '../../../constants';
 
 /**
  * Component to display a module entry in a list of modules.
@@ -52,9 +51,9 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     }
     @Output() completionChanged?: EventEmitter<any>; // Will emit an event when the module completion changes.
 
-    showDownload: boolean; // Whether to display the download button.
-    showRefresh: boolean; // Whether to display the refresh button.
-    spinner: boolean; // Whether to display a spinner.
+    downloadStatus: string;
+    canCheckUpdates: boolean;
+    spinner: boolean; // Whether to display a loading spinner.
     downloadEnabled: boolean; // Whether the download of sections and modules is enabled.
 
     protected prefetchHandler: CoreCourseModulePrefetchHandler;
@@ -81,6 +80,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         if (this.module.handlerData.showDownloadButton) {
             // Listen for changes on this module status, even if download isn't enabled.
             this.prefetchHandler = this.prefetchDelegate.getPrefetchHandlerFor(this.module);
+            this.canCheckUpdates = this.prefetchDelegate.canCheckUpdates();
 
             this.statusObserver = this.eventsProvider.on(CoreEventsProvider.PACKAGE_STATUS_CHANGED, (data) => {
                 if (data.componentId === this.module.id && this.prefetchHandler &&
@@ -135,13 +135,9 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     /**
      * Download the module.
      *
-     * @param {Event} event Click event.
      * @param {boolean} refresh Whether it's refreshing.
      */
-    download(event: Event, refresh: boolean): void {
-        event.preventDefault();
-        event.stopPropagation();
-
+    download(refresh: boolean): void {
         if (!this.prefetchHandler) {
             return;
         }
@@ -168,10 +164,8 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      */
     protected showStatus(status: string): void {
         if (status) {
-            this.spinner = status === CoreConstants.DOWNLOADING;
-            this.showDownload = status === CoreConstants.NOT_DOWNLOADED;
-            this.showRefresh = status === CoreConstants.OUTDATED ||
-                (!this.prefetchDelegate.canCheckUpdates() && status === CoreConstants.DOWNLOADED);
+            this.spinner = false;
+            this.downloadStatus = status;
 
             if (this.module.handlerData.updateStatus) {
                 this.module.handlerData.updateStatus(status);

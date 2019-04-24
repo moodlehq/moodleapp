@@ -1,0 +1,16 @@
+ion-app.app-root core-download-refresh {
+    button, ion-icon {
+        cursor: pointer;
+        pointer-events: auto;
+        text-align: center;
+    }
+
+    .core-icon-downloaded {
+        font-size: 1.8em;
+    }
+
+    .spinner {
+        /*@include position(null, 13px, null, null);
+        position: absolute;*/
+    }
+}
