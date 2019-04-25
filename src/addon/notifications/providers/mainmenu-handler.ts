@@ -18,8 +18,8 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@core/mainmenu/providers/delegate';
 import { AddonNotificationsProvider } from './notifications';
-import { AddonPushNotificationsProvider } from '@addon/pushnotifications/providers/pushnotifications';
-import { AddonPushNotificationsDelegate } from '@addon/pushnotifications/providers/delegate';
+import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
+import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers/delegate';
 
 /**
  * Handler to inject an option into main menu.
@@ -41,8 +41,8 @@ export class AddonNotificationsMainMenuHandler implements CoreMainMenuHandler {
 
     constructor(eventsProvider: CoreEventsProvider, private sitesProvider: CoreSitesProvider,
             utils: CoreUtilsProvider, private notificationsProvider: AddonNotificationsProvider,
-            private pushNotificationsProvider: AddonPushNotificationsProvider,
-            pushNotificationsDelegate: AddonPushNotificationsDelegate) {
+            private pushNotificationsProvider: CorePushNotificationsProvider,
+            pushNotificationsDelegate: CorePushNotificationsDelegate) {
 
         eventsProvider.on(AddonNotificationsProvider.READ_CHANGED_EVENT, (data) => {
             this.updateBadge(data.siteId);

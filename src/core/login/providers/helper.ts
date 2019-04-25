@@ -591,26 +591,28 @@ export class CoreLoginHelperProvider {
      * @param {string} page Name of the page to load.
      * @param {any} params Params to pass to the page.
      * @param {string} siteId Site to load.
+     * @return {Promise<any>} Promise resolved when done.
      */
-    protected loadSiteAndPage(page: string, params: any, siteId: string): void {
+    protected loadSiteAndPage(page: string, params: any, siteId: string): Promise<any> {
         const navCtrl = this.appProvider.getRootNavController();
 
         if (siteId == CoreConstants.NO_SITE_ID) {
             // Page doesn't belong to a site, just load the page.
-            navCtrl.setRoot(page, params);
+            return navCtrl.setRoot(page, params);
         } else {
             const modal = this.domUtils.showModalLoading();
-            this.sitesProvider.loadSite(siteId, page, params).then((loggedIn) => {
+
+            return this.sitesProvider.loadSite(siteId, page, params).then((loggedIn) => {
                 if (loggedIn) {
                     // Due to DeepLinker, we need to remove the path from the URL before going to main menu.
                     // IonTabs checks the URL to determine which path to load for deep linking, so we clear the URL.
                     this.location.replaceState('');
 
-                    navCtrl.setRoot('CoreMainMenuPage', { redirectPage: page, redirectParams: params });
+                    return navCtrl.setRoot('CoreMainMenuPage', { redirectPage: page, redirectParams: params });
                 }
             }).catch((error) => {
                 // Site doesn't exist.
-                navCtrl.setRoot('CoreLoginSitesPage');
+                return navCtrl.setRoot('CoreLoginSitesPage');
             }).finally(() => {
                 modal.dismiss();
             });
@@ -794,8 +796,9 @@ export class CoreLoginHelperProvider {
      * @param {string} page Name of the page to load.
      * @param {any} params Params to pass to the page.
      * @param {string} [siteId] Site to load. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
      */
-    redirect(page: string, params?: any, siteId?: string): void {
+    redirect(page: string, params?: any, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         if (this.sitesProvider.isLoggedIn()) {
@@ -804,10 +807,11 @@ export class CoreLoginHelperProvider {
                 if (this.sitePluginsProvider.hasSitePluginsLoaded) {
                     // The site has site plugins so the app will be restarted. Store the data and logout.
                     this.appProvider.storeRedirect(siteId, page, params);
-                    this.sitesProvider.logout();
+
+                    return this.sitesProvider.logout();
                 } else {
-                    this.sitesProvider.logout().then(() => {
-                        this.loadSiteAndPage(page, params, siteId);
+                    return this.sitesProvider.logout().then(() => {
+                        return this.loadSiteAndPage(page, params, siteId);
                     });
                 }
             } else {
@@ -815,11 +819,13 @@ export class CoreLoginHelperProvider {
             }
         } else {
             if (siteId) {
-                this.loadSiteAndPage(page, params, siteId);
+                return this.loadSiteAndPage(page, params, siteId);
             } else {
-                this.appProvider.getRootNavController().setRoot('CoreLoginSitesPage');
+                return this.appProvider.getRootNavController().setRoot('CoreLoginSitesPage');
             }
         }
+
+        return Promise.resolve();
     }
 
     /**

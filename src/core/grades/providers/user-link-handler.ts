@@ -15,7 +15,10 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
+import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
+import { CoreLoginHelperProvider } from '@core/login/providers/helper';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreGradesProvider } from './grades';
 
 /**
@@ -26,7 +29,9 @@ export class CoreGradesUserLinkHandler extends CoreContentLinksHandlerBase {
     name = 'CoreGradesUserLinkHandler';
     pattern = /\/grade\/report\/user\/index.php/;
 
-    constructor(private linkHelper: CoreContentLinksHelperProvider, private gradesProvider: CoreGradesProvider) {
+    constructor(private linkHelper: CoreContentLinksHelperProvider, private gradesProvider: CoreGradesProvider,
+            private domUtils: CoreDomUtilsProvider, private courseHelper: CoreCourseHelperProvider,
+            private loginHelper: CoreLoginHelperProvider) {
         super();
     }
 
@@ -41,14 +46,39 @@ export class CoreGradesUserLinkHandler extends CoreContentLinksHandlerBase {
      */
     getActions(siteIds: string[], url: string, params: any, courseId?: number):
             CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
+        courseId = courseId || params.id;
+
         return [{
             action: (siteId, navCtrl?): void => {
-                const pageParams = {
-                    course: {id: courseId},
-                    userId: params.userid ? parseInt(params.userid, 10) : false,
-                };
-                // Always use redirect to make it the new history root (to avoid "loops" in history).
-                this.linkHelper.goInSite(navCtrl, 'CoreGradesCoursePage', pageParams, siteId);
+                const userId = params.userid ? parseInt(params.userid, 10) : false;
+
+                if (userId) {
+                    // Open the grades page directly.
+                    const pageParams = {
+                        course: {id: courseId},
+                        userId: userId,
+                    };
+
+                    this.linkHelper.goInSite(navCtrl, 'CoreGradesCoursePage', pageParams, siteId);
+                } else {
+                    // No userid, open the course with the grades tab selected.
+                    const modal = this.domUtils.showModalLoading();
+
+                    this.courseHelper.getCourse(courseId, siteId).then((result) => {
+                        const pageParams: any = {
+                            course: result.course,
+                            selectedTab: 'CoreGrades'
+                        };
+
+                        // Use redirect to prevent loops in the navigation.
+                        return this.loginHelper.redirect('CoreCourseSectionPage', pageParams, siteId);
+                    }).catch(() => {
+                        // Cannot get course for some reason, just open the grades page.
+                        return this.linkHelper.goInSite(navCtrl, 'CoreGradesCoursePage', {course: {id: courseId}}, siteId);
+                    }).finally(() => {
+                        modal.dismiss();
+                    });
+                }
             }
         }];
     }
@@ -64,10 +94,10 @@ export class CoreGradesUserLinkHandler extends CoreContentLinksHandlerBase {
      * @return {boolean|Promise<boolean>} Whether the handler is enabled for the URL and site.
      */
     isEnabled(siteId: string, url: string, params: any, courseId?: number): boolean | Promise<boolean> {
-        if (!courseId) {
+        if (!courseId && !params.id) {
             return false;
         }
 
-        return this.gradesProvider.isPluginEnabledForCourse(courseId, siteId);
+        return this.gradesProvider.isPluginEnabledForCourse(courseId || params.id, siteId);
     }
 }

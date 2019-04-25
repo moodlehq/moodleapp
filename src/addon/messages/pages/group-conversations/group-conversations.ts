@@ -21,7 +21,7 @@ import { AddonMessagesProvider } from '../../providers/messages';
 import { AddonMessagesOfflineProvider } from '../../providers/messages-offline';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { AddonPushNotificationsDelegate } from '@addon/pushnotifications/providers/delegate';
+import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers/delegate';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreUserProvider } from '@core/user/providers/user';
 
@@ -84,7 +84,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     constructor(eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, translate: TranslateService,
             private messagesProvider: AddonMessagesProvider, private domUtils: CoreDomUtilsProvider, navParams: NavParams,
             private navCtrl: NavController, platform: Platform, private utils: CoreUtilsProvider,
-            pushNotificationsDelegate: AddonPushNotificationsDelegate, private messagesOffline: AddonMessagesOfflineProvider,
+            pushNotificationsDelegate: CorePushNotificationsDelegate, private messagesOffline: AddonMessagesOfflineProvider,
             private userProvider: CoreUserProvider) {
 
         this.loadingString = translate.instant('core.loading');

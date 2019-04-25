@@ -15,20 +15,18 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
-import { AddonModFeedbackProvider } from './feedback';
-import { AddonModFeedbackHelperProvider } from './helper';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
+import { AddonCompetencyProvider } from './competency';
 
 /**
- * Content links handler for feedback show entries questions.
- * Match mod/feedback/show_entries.php with a valid feedback id.
+ * Handler to treat links to a plan.
  */
 @Injectable()
-export class AddonModFeedbackShowEntriesLinkHandler extends CoreContentLinksHandlerBase {
-    name = 'AddonModFeedbackShowEntriesLinkHandler';
-    featureName = 'CoreCourseModuleDelegate_AddonModFeedback';
-    pattern = /\/mod\/feedback\/show_entries\.php.*([\?\&](id|showcompleted)=\d+)/;
+export class AddonCompetencyPlanLinkHandler extends CoreContentLinksHandlerBase {
+    name = 'AddonCompetencyPlanLinkHandler';
+    pattern = /\/admin\/tool\/lp\/plan\.php.*([\?\&]id=\d+)/;
 
-    constructor(private feedbackProvider: AddonModFeedbackProvider, private feedbackHelper: AddonModFeedbackHelperProvider) {
+    constructor(private linkHelper: CoreContentLinksHelperProvider, private competencyProvider: AddonCompetencyProvider) {
         super();
     }
 
@@ -43,9 +41,10 @@ export class AddonModFeedbackShowEntriesLinkHandler extends CoreContentLinksHand
      */
     getActions(siteIds: string[], url: string, params: any, courseId?: number):
             CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
+
         return [{
             action: (siteId, navCtrl?): void => {
-                this.feedbackHelper.handleShowEntriesLink(navCtrl, params, siteId);
+                this.linkHelper.goInSite(navCtrl, 'AddonCompetencyPlanPage', { planId: params.id }, siteId);
             }
         }];
     }
@@ -61,17 +60,9 @@ export class AddonModFeedbackShowEntriesLinkHandler extends CoreContentLinksHand
      * @return {boolean|Promise<boolean>} Whether the handler is enabled for the URL and site.
      */
     isEnabled(siteId: string, url: string, params: any, courseId?: number): boolean | Promise<boolean> {
-        return this.feedbackProvider.isPluginEnabled(siteId).then((enabled) => {
-            if (!enabled) {
-                return false;
-            }
-
-            if (typeof params.id == 'undefined') {
-                // Cannot treat the URL.
-                return false;
-            }
-
-            return true;
+        // Handler is disabled if all competency features are disabled.
+        return this.competencyProvider.allCompetenciesDisabled(siteId).then((disabled) => {
+            return !disabled;
         });
     }
 }

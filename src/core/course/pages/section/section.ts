@@ -303,10 +303,10 @@ export class CoreCourseSectionPage implements OnDestroy {
 
             // Load the course format options when course completion is enabled to show completion progress on sections.
             if (this.course.enablecompletion && this.coursesProvider.isGetCoursesByFieldAvailable()) {
-                promises.push(this.coursesProvider.getCoursesByField('id', this.course.id).catch(() => {
+                promises.push(this.coursesProvider.getCourseByField('id', this.course.id).catch(() => {
                     // Ignore errors.
-                }).then((courses) => {
-                    courses && courses[0] && Object.assign(this.course, courses[0]);
+                }).then((course) => {
+                    course && Object.assign(this.course, course);
 
                     if (this.course.courseformatoptions) {
                         this.course.courseformatoptions = this.utils.objectToKeyValueMap(this.course.courseformatoptions,

@@ -92,9 +92,10 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
      *
      * @param {NavController} navCtrl The NavController instance to use.
      * @param {any} course The course to open. It should contain a "format" attribute.
+     * @param {any} [params] Params to pass to the course page.
      * @return {Promise<any>} Promise resolved when done.
      */
-    openCourse?(navCtrl: NavController, course: any): Promise<any>;
+    openCourse?(navCtrl: NavController, course: any, params?: any): Promise<any>;
 
     /**
      * Return the Component to use to display the course format instead of using the default one.
@@ -337,10 +338,11 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
      *
      * @param {NavController} navCtrl The NavController instance to use.
      * @param {any} course The course to open. It should contain a "format" attribute.
+     * @param {any} [params] Params to pass to the course page.
      * @return {Promise<any>} Promise resolved when done.
      */
-    openCourse(navCtrl: NavController, course: any): Promise<any> {
-        return this.executeFunctionOnEnabled(course.format, 'openCourse', [navCtrl, course]);
+    openCourse(navCtrl: NavController, course: any, params?: any): Promise<any> {
+        return this.executeFunctionOnEnabled(course.format, 'openCourse', [navCtrl, course, params]);
     }
 
     /**

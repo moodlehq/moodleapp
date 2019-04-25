@@ -23,7 +23,7 @@ import { CoreInitDelegate } from '@providers/init';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreSitesFactoryProvider } from '@providers/sites-factory';
-import { AddonPushNotificationsDelegate } from './delegate';
+import { CorePushNotificationsDelegate } from './delegate';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -37,7 +37,7 @@ import { CoreSite } from '@classes/site';
 /**
  * Data needed to register a device in a Moodle site.
  */
-export interface AddonPushNotificationsRegisterData {
+export interface CorePushNotificationsRegisterData {
     /**
      * App ID.
      * @type {string}
@@ -85,19 +85,19 @@ export interface AddonPushNotificationsRegisterData {
  * Service to handle push notifications.
  */
 @Injectable()
-export class AddonPushNotificationsProvider {
+export class CorePushNotificationsProvider {
     protected logger;
     protected pushID: string;
     protected appDB: SQLiteDB;
-    static COMPONENT = 'AddonPushNotificationsProvider';
+    static COMPONENT = 'CorePushNotificationsProvider';
 
-    // Variables for database.
+    // Variables for database. The name still contains the name "addon" for backwards compatibility.
     static BADGE_TABLE = 'addon_pushnotifications_badge';
     static PENDING_UNREGISTER_TABLE = 'addon_pushnotifications_pending_unregister';
     static REGISTERED_DEVICES_TABLE = 'addon_pushnotifications_registered_devices';
     protected appTablesSchema: SQLiteDBTableSchema[] = [
         {
-            name: AddonPushNotificationsProvider.BADGE_TABLE,
+            name: CorePushNotificationsProvider.BADGE_TABLE,
             columns: [
                 {
                     name: 'siteid',
@@ -115,7 +115,7 @@ export class AddonPushNotificationsProvider {
             primaryKeys: ['siteid', 'addon']
         },
         {
-            name: AddonPushNotificationsProvider.PENDING_UNREGISTER_TABLE,
+            name: CorePushNotificationsProvider.PENDING_UNREGISTER_TABLE,
             columns: [
                 {
                     name: 'siteid',
@@ -138,11 +138,11 @@ export class AddonPushNotificationsProvider {
         }
     ];
     protected siteSchema: CoreSiteSchema = {
-        name: 'AddonPushNotificationsProvider',
+        name: 'AddonPushNotificationsProvider', // The name still contains "Addon" for backwards compatibility.
         version: 1,
         tables: [
             {
-                name: AddonPushNotificationsProvider.REGISTERED_DEVICES_TABLE,
+                name: CorePushNotificationsProvider.REGISTERED_DEVICES_TABLE,
                 columns: [
                     {
                         name: 'appid',
@@ -179,12 +179,12 @@ export class AddonPushNotificationsProvider {
     };
 
     constructor(logger: CoreLoggerProvider, protected appProvider: CoreAppProvider, private initDelegate: CoreInitDelegate,
-            protected pushNotificationsDelegate: AddonPushNotificationsDelegate, protected sitesProvider: CoreSitesProvider,
+            protected pushNotificationsDelegate: CorePushNotificationsDelegate, protected sitesProvider: CoreSitesProvider,
             private badge: Badge, private localNotificationsProvider: CoreLocalNotificationsProvider,
             private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider, private push: Push,
             private configProvider: CoreConfigProvider, private device: Device, private zone: NgZone,
             private translate: TranslateService, private platform: Platform, private sitesFactory: CoreSitesFactoryProvider) {
-        this.logger = logger.getInstance('AddonPushNotificationsProvider');
+        this.logger = logger.getInstance('CorePushNotificationsProvider');
         this.appDB = appProvider.getDB();
         this.appDB.createTablesFromSchema(this.appTablesSchema);
         this.sitesProvider.registerSiteSchema(this.siteSchema);
@@ -207,7 +207,7 @@ export class AddonPushNotificationsProvider {
      * @return {Promise<any>}  Resolved when done.
      */
     cleanSiteCounters(siteId: string): Promise<any> {
-        return this.appDB.deleteRecords(AddonPushNotificationsProvider.BADGE_TABLE, {siteid: siteId} ).finally(() => {
+        return this.appDB.deleteRecords(CorePushNotificationsProvider.BADGE_TABLE, {siteid: siteId} ).finally(() => {
             this.updateAppCounter();
         });
     }
@@ -267,9 +267,9 @@ export class AddonPushNotificationsProvider {
     /**
      * Get data to register the device in Moodle.
      *
-     * @return {AddonPushNotificationsRegisterData} Data.
+     * @return {CorePushNotificationsRegisterData} Data.
      */
-    protected getRegisterData(): AddonPushNotificationsRegisterData {
+    protected getRegisterData(): CorePushNotificationsRegisterData {
         return {
             appid:      CoreConfigConstants.app_id,
             name:       this.device.manufacturer || '',
@@ -338,7 +338,7 @@ export class AddonPushNotificationsProvider {
                     }));
 
                     Promise.all(promises).then(() => {
-                        this.localNotificationsProvider.schedule(localNotif, AddonPushNotificationsProvider.COMPONENT, data.site);
+                        this.localNotificationsProvider.schedule(localNotif, CorePushNotificationsProvider.COMPONENT, data.site);
                     });
                 }
 
@@ -381,11 +381,11 @@ export class AddonPushNotificationsProvider {
             const promises = [];
 
             // Remove the device from the local DB.
-            promises.push(site.getDb().deleteRecords(AddonPushNotificationsProvider.REGISTERED_DEVICES_TABLE,
+            promises.push(site.getDb().deleteRecords(CorePushNotificationsProvider.REGISTERED_DEVICES_TABLE,
                     this.getRegisterData()));
 
             // Remove pending unregisters for this site.
-            promises.push(this.appDB.deleteRecords(AddonPushNotificationsProvider.PENDING_UNREGISTER_TABLE, {siteid: site.id}));
+            promises.push(this.appDB.deleteRecords(CorePushNotificationsProvider.PENDING_UNREGISTER_TABLE, {siteid: site.id}));
 
             return Promise.all(promises).catch(() => {
                 // Ignore errors.
@@ -397,7 +397,7 @@ export class AddonPushNotificationsProvider {
             }
 
             // Store the pending unregister so it's retried again later.
-            return this.appDB.insertRecord(AddonPushNotificationsProvider.PENDING_UNREGISTER_TABLE, {
+            return this.appDB.insertRecord(CorePushNotificationsProvider.PENDING_UNREGISTER_TABLE, {
                 siteid: site.id,
                 siteurl: site.getURL(),
                 token: site.getToken(),
@@ -587,7 +587,7 @@ export class AddonPushNotificationsProvider {
                 // Now register the device.
                 return site.write('core_user_add_user_device', this.utils.clone(data)).then((response) => {
                     // Insert the device in the local DB.
-                    return site.getDb().insertRecord(AddonPushNotificationsProvider.REGISTERED_DEVICES_TABLE, data)
+                    return site.getDb().insertRecord(CorePushNotificationsProvider.REGISTERED_DEVICES_TABLE, data)
                             .catch((error) => {
                         // Ignore errors.
                     });
@@ -595,7 +595,7 @@ export class AddonPushNotificationsProvider {
             }
         }).finally(() => {
             // Remove pending unregisters for this site.
-            this.appDB.deleteRecords(AddonPushNotificationsProvider.PENDING_UNREGISTER_TABLE, {siteid: site.id}).catch(() => {
+            this.appDB.deleteRecords(CorePushNotificationsProvider.PENDING_UNREGISTER_TABLE, {siteid: site.id}).catch(() => {
                 // Ignore errors.
             });
         });
@@ -609,7 +609,7 @@ export class AddonPushNotificationsProvider {
      * @return {Promise<any>}         Promise resolved with the stored badge counter for the addon or site or 0 if none.
      */
     protected getAddonBadge(siteId?: string, addon: string = 'site'): Promise<any> {
-        return this.appDB.getRecord(AddonPushNotificationsProvider.BADGE_TABLE, {siteid: siteId, addon: addon}).then((entry) => {
+        return this.appDB.getRecord(CorePushNotificationsProvider.BADGE_TABLE, {siteid: siteId, addon: addon}).then((entry) => {
              return (entry && entry.number) || 0;
         }).catch(() => {
             return 0;
@@ -627,10 +627,10 @@ export class AddonPushNotificationsProvider {
 
         if (siteId) {
             // Check if the site has a pending unregister.
-            promise = this.appDB.getRecords(AddonPushNotificationsProvider.REGISTERED_DEVICES_TABLE, {siteid: siteId});
+            promise = this.appDB.getRecords(CorePushNotificationsProvider.REGISTERED_DEVICES_TABLE, {siteid: siteId});
         } else {
             // Get all pending unregisters.
-            promise = this.appDB.getAllRecords(AddonPushNotificationsProvider.PENDING_UNREGISTER_TABLE);
+            promise = this.appDB.getAllRecords(CorePushNotificationsProvider.PENDING_UNREGISTER_TABLE);
         }
 
         return promise.then((results) => {
@@ -665,7 +665,7 @@ export class AddonPushNotificationsProvider {
             number: value
         };
 
-        return this.appDB.insertRecord(AddonPushNotificationsProvider.BADGE_TABLE, entry).then(() => {
+        return this.appDB.insertRecord(CorePushNotificationsProvider.BADGE_TABLE, entry).then(() => {
             return value;
         });
     }
@@ -673,21 +673,21 @@ export class AddonPushNotificationsProvider {
     /**
      * Check if device should be registered (and unregistered first).
      *
-     * @param {AddonPushNotificationsRegisterData} data Data of the device.
+     * @param {CorePushNotificationsRegisterData} data Data of the device.
      * @param {CoreSite} site Site to use.
      * @return {Promise<{register: boolean, unregister: boolean}>} Promise resolved with booleans: whether to register/unregister.
      */
-    protected shouldRegister(data: AddonPushNotificationsRegisterData, site: CoreSite)
+    protected shouldRegister(data: CorePushNotificationsRegisterData, site: CoreSite)
             : Promise<{register: boolean, unregister: boolean}> {
 
         // Check if the device is already registered.
-        return site.getDb().getRecords(AddonPushNotificationsProvider.REGISTERED_DEVICES_TABLE, {
+        return site.getDb().getRecords(CorePushNotificationsProvider.REGISTERED_DEVICES_TABLE, {
             appid: data.appid,
             uuid: data.uuid
         }).catch(() => {
             // Ignore errors.
             return [];
-        }).then((records: AddonPushNotificationsRegisterData[]) => {
+        }).then((records: CorePushNotificationsRegisterData[]) => {
             let isStored = false,
                 versionOrPushChanged = false;
 

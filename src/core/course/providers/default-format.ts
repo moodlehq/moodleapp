@@ -113,10 +113,10 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
             return sections[0];
         } else {
             // Try to retrieve the marker.
-            promise = this.coursesProvider.getCoursesByField('id', course.id).catch(() => {
+            promise = this.coursesProvider.getCourseByField('id', course.id).catch(() => {
                 // Ignore errors.
-            }).then((courses) => {
-                return courses && courses[0] && courses[0].marker;
+            }).then((course) => {
+                return course && course.marker;
             });
         }
 
@@ -156,10 +156,14 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      *
      * @param {NavController} navCtrl The NavController instance to use.
      * @param {any} course The course to open. It should contain a "format" attribute.
+     * @param {any} [params] Params to pass to the course page.
      * @return {Promise<any>} Promise resolved when done.
      */
-    openCourse(navCtrl: NavController, course: any): Promise<any> {
-        return navCtrl.push('CoreCourseSectionPage', { course: course });
+    openCourse(navCtrl: NavController, course: any, params?: any): Promise<any> {
+        params = params || {};
+        Object.assign(params, { course: course });
+
+        return navCtrl.push('CoreCourseSectionPage', params);
     }
 
     /**

@@ -15,7 +15,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { AddonPushNotificationsProvider } from '@addon/pushnotifications/providers/pushnotifications';
+import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 import { AddonMessageOutputAirnotifierProvider } from '../../providers/airnotifier';
 
 /**
@@ -34,7 +34,7 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnDestroy {
     protected updateTimeout: any;
 
     constructor(private domUtils: CoreDomUtilsProvider, private airnotifierProivder: AddonMessageOutputAirnotifierProvider,
-            private pushNotificationsProvider: AddonPushNotificationsProvider ) {
+            private pushNotificationsProvider: CorePushNotificationsProvider ) {
     }
 
     /**

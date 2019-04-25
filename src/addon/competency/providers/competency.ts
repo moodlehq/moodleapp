@@ -43,6 +43,20 @@ export class AddonCompetencyProvider {
     }
 
     /**
+     * Check if all competencies features are disabled.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<boolean>} Promise resolved with boolean: whether all competency features are disabled.
+     */
+    allCompetenciesDisabled(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.isFeatureDisabled('CoreMainMenuDelegate_AddonCompetency') &&
+                    site.isFeatureDisabled('CoreCourseOptionsDelegate_AddonCompetency') &&
+                    site.isFeatureDisabled('CoreUserDelegate_AddonCompetency');
+        });
+    }
+
+    /**
      * Get cache key for user learning plans data WS calls.
      *
      * @param {number} userId User ID.

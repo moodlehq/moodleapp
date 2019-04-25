@@ -14,16 +14,16 @@
 
 import { Injectable } from '@angular/core';
 import { CoreCronHandler } from '@providers/cron';
-import { AddonPushNotificationsProvider } from './pushnotifications';
+import { CorePushNotificationsProvider } from './pushnotifications';
 
 /**
  * Cron handler to retry pending unregisters.
  */
 @Injectable()
-export class AddonPushNotificationsUnregisterCronHandler implements CoreCronHandler {
-    name = 'AddonPushNotificationsUnregisterCronHandler';
+export class CorePushNotificationsUnregisterCronHandler implements CoreCronHandler {
+    name = 'CorePushNotificationsUnregisterCronHandler';
 
-    constructor(private pushNotificationsProvider: AddonPushNotificationsProvider) {}
+    constructor(private pushNotificationsProvider: CorePushNotificationsProvider) {}
 
     /**
      * Execute the process.

@@ -17,6 +17,7 @@ import { CoreCronDelegate } from '@providers/cron';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
+import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers/delegate';
 import { AddonModLessonComponentsModule } from './components/components.module';
 import { AddonModLessonProvider } from './providers/lesson';
 import { AddonModLessonOfflineProvider } from './providers/lesson-offline';
@@ -29,6 +30,7 @@ import { AddonModLessonIndexLinkHandler } from './providers/index-link-handler';
 import { AddonModLessonGradeLinkHandler } from './providers/grade-link-handler';
 import { AddonModLessonReportLinkHandler } from './providers/report-link-handler';
 import { AddonModLessonListLinkHandler } from './providers/list-link-handler';
+import { AddonModLessonPushClickHandler } from './providers/push-click-handler';
 import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 // List of providers (without handlers).
@@ -56,7 +58,8 @@ export const ADDON_MOD_LESSON_PROVIDERS: any[] = [
         AddonModLessonIndexLinkHandler,
         AddonModLessonGradeLinkHandler,
         AddonModLessonReportLinkHandler,
-        AddonModLessonListLinkHandler
+        AddonModLessonListLinkHandler,
+        AddonModLessonPushClickHandler
     ]
 })
 export class AddonModLessonModule {
@@ -65,7 +68,8 @@ export class AddonModLessonModule {
             cronDelegate: CoreCronDelegate, syncHandler: AddonModLessonSyncCronHandler, linksDelegate: CoreContentLinksDelegate,
             indexHandler: AddonModLessonIndexLinkHandler, gradeHandler: AddonModLessonGradeLinkHandler,
             reportHandler: AddonModLessonReportLinkHandler, updateManager: CoreUpdateManagerProvider,
-            listLinkHandler: AddonModLessonListLinkHandler) {
+            listLinkHandler: AddonModLessonListLinkHandler, pushNotificationsDelegate: CorePushNotificationsDelegate,
+            pushClickHandler: AddonModLessonPushClickHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
@@ -74,6 +78,7 @@ export class AddonModLessonModule {
         linksDelegate.registerHandler(gradeHandler);
         linksDelegate.registerHandler(reportHandler);
         linksDelegate.registerHandler(listLinkHandler);
+        pushNotificationsDelegate.registerClickHandler(pushClickHandler);
 
         // Allow migrating the tables from the old app to the new schema.
         updateManager.registerSiteTablesMigration([

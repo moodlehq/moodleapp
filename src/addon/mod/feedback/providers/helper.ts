@@ -16,6 +16,10 @@ import { Injectable } from '@angular/core';
 import { NavController, ViewController } from 'ionic-angular';
 import { AddonModFeedbackProvider } from './feedback';
 import { CoreUserProvider } from '@core/user/providers/user';
+import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { TranslateService } from '@ngx-translate/core';
@@ -32,7 +36,9 @@ export class AddonModFeedbackHelperProvider {
 
     constructor(protected feedbackProvider: AddonModFeedbackProvider, protected userProvider: CoreUserProvider,
             protected textUtils: CoreTextUtilsProvider, protected translate: TranslateService,
-            protected timeUtils: CoreTimeUtilsProvider) {
+            protected timeUtils: CoreTimeUtilsProvider, protected domUtils: CoreDomUtilsProvider,
+            protected courseProvider: CoreCourseProvider, protected linkHelper: CoreContentLinksHelperProvider,
+            protected sitesProvider: CoreSitesProvider) {
     }
 
     /**
@@ -190,6 +196,48 @@ export class AddonModFeedbackHelperProvider {
 
                 return responses;
             });
+        });
+    }
+
+    /**
+     * Handle a show entries link.
+     *
+     * @param {NavController} navCtrl Nav controller to use to navigate. Can be undefined/null.
+     * @param {any} params URL params.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    handleShowEntriesLink(navCtrl: NavController, params: any, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        const modal = this.domUtils.showModalLoading(),
+            moduleId = params.id;
+
+        return this.courseProvider.getModuleBasicInfo(moduleId, siteId).then((module) => {
+            let stateParams;
+
+            if (typeof params.showcompleted == 'undefined') {
+                // Param showcompleted not defined. Show entry list.
+                stateParams = {
+                    module: module,
+                    courseId: module.course
+                };
+
+                return this.linkHelper.goInSite(navCtrl, 'AddonModFeedbackRespondentsPage', stateParams, siteId);
+            }
+
+            return this.feedbackProvider.getAttempt(module.instance, params.showcompleted, true, siteId).then((attempt) => {
+                stateParams = {
+                    moduleId: module.id,
+                    attempt: attempt,
+                    feedbackId: module.instance,
+                    courseId: module.course
+                };
+
+                return this.linkHelper.goInSite(navCtrl, 'AddonModFeedbackAttemptPage', stateParams, siteId);
+            });
+        }).finally(() => {
+            modal.dismiss();
         });
     }
 

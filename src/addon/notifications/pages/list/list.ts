@@ -21,7 +21,7 @@ import { CoreEventsProvider, CoreEventObserver } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { AddonNotificationsProvider } from '../../providers/notifications';
-import { AddonPushNotificationsDelegate } from '@addon/pushnotifications/providers/delegate';
+import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers/delegate';
 
 /**
  * Page that displays the list of notifications.
@@ -48,7 +48,7 @@ export class AddonNotificationsListPage {
     constructor(navParams: NavParams, private domUtils: CoreDomUtilsProvider, private eventsProvider: CoreEventsProvider,
             private sitesProvider: CoreSitesProvider, private textUtils: CoreTextUtilsProvider,
             private utils: CoreUtilsProvider, private notificationsProvider: AddonNotificationsProvider,
-            private pushNotificationsDelegate: AddonPushNotificationsDelegate) {
+            private pushNotificationsDelegate: CorePushNotificationsDelegate) {
     }
 
     /**

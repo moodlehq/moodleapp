@@ -1401,22 +1401,35 @@ export class CoreCourseHelperProvider {
      *
      * @param {NavController} navCtrl The nav controller to use.
      * @param {any} course Course to open
+     * @param {any} [params] Params to pass to the course page.
+     * @return {Promise<any>} Promise resolved when done.
      */
-    openCourse(navCtrl: NavController, course: any): void {
+    openCourse(navCtrl: NavController, course: any, params?: any): Promise<any> {
         if (this.sitePluginsProvider.sitePluginPromiseExists('format_' + course.format)) {
             // This course uses a custom format plugin, wait for the format plugin to finish loading.
             const loading = this.domUtils.showModalLoading();
-            this.sitePluginsProvider.sitePluginLoaded('format_' + course.format).then(() => {
+
+            return this.sitePluginsProvider.sitePluginLoaded('format_' + course.format).then(() => {
                 // The format loaded successfully, but the handlers wont be registered until all site plugins have loaded.
                 if (this.sitePluginsProvider.sitePluginsFinishedLoading) {
                     loading.dismiss();
-                    this.courseFormatDelegate.openCourse(navCtrl, course);
+
+                    return this.courseFormatDelegate.openCourse(navCtrl, course, params);
                 } else {
-                    const observer = this.eventsProvider.on(CoreEventsProvider.SITE_PLUGINS_LOADED, () => {
-                        loading.dismiss();
-                        this.courseFormatDelegate.openCourse(navCtrl, course);
-                        observer && observer.off();
-                    });
+                    // Wait for plugins to be loaded.
+                    const deferred = this.utils.promiseDefer(),
+                        observer = this.eventsProvider.on(CoreEventsProvider.SITE_PLUGINS_LOADED, () => {
+                            loading.dismiss();
+                            observer && observer.off();
+
+                            this.courseFormatDelegate.openCourse(navCtrl, course, params).then((response) => {
+                                deferred.resolve(response);
+                            }).catch((error) => {
+                                deferred.reject(error);
+                            });
+                        });
+
+                    return deferred.promise;
                 }
             }).catch(() => {
                 // The site plugin failed to load. The user needs to restart the app to try loading it again.
@@ -1425,7 +1438,7 @@ export class CoreCourseHelperProvider {
             });
         } else {
             // No custom format plugin. We don't need to wait for anything.
-            this.courseFormatDelegate.openCourse(navCtrl, course);
+            return this.courseFormatDelegate.openCourse(navCtrl, course, params);
         }
     }
 }

@@ -13,12 +13,10 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
-import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
-import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { AddonModQuizProvider } from './quiz';
+import { AddonModQuizHelperProvider } from './helper';
 
 /**
  * Handler to treat links to quiz review.
@@ -29,8 +27,7 @@ export class AddonModQuizReviewLinkHandler extends CoreContentLinksHandlerBase {
     featureName = 'CoreCourseModuleDelegate_AddonModQuiz';
     pattern = /\/mod\/quiz\/review\.php.*([\&\?]attempt=\d+)/;
 
-    constructor(protected domUtils: CoreDomUtilsProvider, protected quizProvider: AddonModQuizProvider,
-            protected courseHelper: CoreCourseHelperProvider, protected linkHelper: CoreContentLinksHelperProvider) {
+    constructor(protected quizProvider: AddonModQuizProvider, protected quizHelper: AddonModQuizHelperProvider) {
         super();
     }
 
@@ -50,55 +47,12 @@ export class AddonModQuizReviewLinkHandler extends CoreContentLinksHandlerBase {
 
         return [{
             action: (siteId, navCtrl?): void => {
-                // Retrieve the quiz ID using the attempt ID.
-                const modal = this.domUtils.showModalLoading(),
-                    attemptId = parseInt(params.attempt, 10),
+                const attemptId = parseInt(params.attempt, 10),
                     page = parseInt(params.page, 10);
-                let quizId;
 
-                this.getQuizIdByAttemptId(attemptId).then((id) => {
-                    quizId = id;
-
-                    // Get the courseId if we don't have it.
-                    if (courseId) {
-                        return courseId;
-                    } else {
-                        return this.courseHelper.getModuleCourseIdByInstance(quizId, 'quiz', siteId);
-                    }
-                }).then((courseId) => {
-                    // Go to the review page.
-                    const pageParams = {
-                        quizId: quizId,
-                        attemptId: attemptId,
-                        courseId: courseId,
-                        page: params.showall ? -1 : (isNaN(page) ? -1 : page)
-                    };
-
-                    this.linkHelper.goInSite(navCtrl, 'AddonModQuizReviewPage', pageParams, siteId);
-                }).catch((error) => {
-
-                    this.domUtils.showErrorModalDefault(error, 'An error occurred while loading the required data.');
-                }).finally(() => {
-                    modal.dismiss();
-                });
+                this.quizHelper.handleReviewLink(navCtrl, attemptId, page, courseId, undefined, siteId);
             }
         }];
-    }
-    /**
-     * Get a quiz ID by attempt ID.
-     *
-     * @param {number} attemptId Attempt ID.
-     * @return {Promise<number>} Promise resolved with the quiz ID.
-     */
-    protected getQuizIdByAttemptId(attemptId: number): Promise<number> {
-        // Use getAttemptReview to retrieve the quiz ID.
-        return this.quizProvider.getAttemptReview(attemptId).then((reviewData) => {
-            if (reviewData.attempt && reviewData.attempt.quiz) {
-                return reviewData.attempt.quiz;
-            }
-
-            return Promise.reject(null);
-        });
     }
 
     /**

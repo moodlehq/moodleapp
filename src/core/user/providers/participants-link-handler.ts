@@ -13,9 +13,12 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
+import { CoreCourseHelperProvider } from '@core/course/providers/helper';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreUserProvider } from './user';
 
 /**
@@ -27,7 +30,9 @@ export class CoreUserParticipantsLinkHandler extends CoreContentLinksHandlerBase
     featureName = 'CoreCourseOptionsDelegate_CoreUserParticipants';
     pattern = /\/user\/index\.php/;
 
-    constructor(private userProvider: CoreUserProvider, private loginHelper: CoreLoginHelperProvider) {
+    constructor(private userProvider: CoreUserProvider, private loginHelper: CoreLoginHelperProvider,
+            private courseHelper: CoreCourseHelperProvider, private domUtils: CoreDomUtilsProvider,
+            private linkHelper: CoreContentLinksHelperProvider) {
         super();
     }
 
@@ -46,8 +51,22 @@ export class CoreUserParticipantsLinkHandler extends CoreContentLinksHandlerBase
 
         return [{
             action: (siteId, navCtrl?): void => {
-                // Always use redirect to make it the new history root (to avoid "loops" in history).
-                this.loginHelper.redirect('CoreUserParticipantsPage', {courseId: courseId}, siteId);
+                const modal = this.domUtils.showModalLoading();
+
+                this.courseHelper.getCourse(courseId, siteId).then((result) => {
+                    const params: any = {
+                        course: result.course,
+                        selectedTab: 'CoreUserParticipants'
+                    };
+
+                    // Always use redirect to make it the new history root (to avoid "loops" in history).
+                    return this.loginHelper.redirect('CoreCourseSectionPage', params, siteId);
+                }).catch(() => {
+                    // Cannot get course for some reason, just open the participants page.
+                    return this.linkHelper.goInSite(navCtrl, 'CoreUserParticipantsPage', {courseId: courseId}, siteId);
+                }).finally(() => {
+                    modal.dismiss();
+                });
             }
         }];
     }
