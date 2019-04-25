@@ -388,7 +388,24 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
                             }
 
                             retakePromises.push(this.lessonProvider.getUserRetake(lesson.id, lastRetake.try, student.id, false,
-                                    true, siteId));
+                                    true, siteId).then((attempt) => {
+                                if (!attempt || !attempt.answerpages) {
+                                    return;
+                                }
+
+                                // Download embedded files in essays.
+                                const files = [];
+                                attempt.answerpages.forEach((answerPage) => {
+                                    if (answerPage.page.qtype != AddonModLessonProvider.LESSON_PAGE_ESSAY) {
+                                        return;
+                                    }
+                                    answerPage.answerdata.answers.forEach((answer) => {
+                                        files.push(...this.domUtils.extractDownloadableFilesFromHtmlAsFakeFileObjects(answer[0]));
+                                    });
+                                });
+
+                                return this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id);
+                            }));
                         });
 
                         return Promise.all(retakePromises);
