@@ -630,7 +630,7 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @return {number} Trigger time.
      */
     protected getNotificationTriggerAt(notification: ILocalNotification): number {
-        const triggerAt = (notification.trigger && notification.trigger.at) || 0;
+        const triggerAt = (notification.trigger && notification.trigger.at) || new Date();
 
         if (typeof triggerAt != 'number') {
             return triggerAt.getTime();

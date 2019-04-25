@@ -40,7 +40,9 @@ export class AddonNotificationsPushClickHandler implements CorePushNotifications
     handles(notification: any): boolean | Promise<boolean> {
         if (this.utils.isTrueOrOne(notification.notif)) {
             // Notification clicked, mark as read. Don't block for this.
-            this.notificationsProvider.markNotificationRead(notification.savedmessageid, notification.site).then(() => {
+            const notifId = notification.savedmessageid || notification.id;
+
+            this.notificationsProvider.markNotificationRead(notifId, notification.site).then(() => {
                 this.eventsProvider.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, null, notification.site);
             }).catch(() => {
                 // Ignore errors.

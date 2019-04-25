@@ -21,6 +21,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
 import { AddonNotificationsProvider } from './notifications';
+import { AddonNotificationsHelperProvider } from './helper';
 
 /**
  * Notifications cron handler.
@@ -32,7 +33,7 @@ export class AddonNotificationsCronHandler implements CoreCronHandler {
     constructor(private appProvider: CoreAppProvider, private eventsProvider: CoreEventsProvider,
             private sitesProvider: CoreSitesProvider, private localNotifications: CoreLocalNotificationsProvider,
             private notificationsProvider: AddonNotificationsProvider, private textUtils: CoreTextUtilsProvider,
-            private emulatorHelper: CoreEmulatorHelperProvider) {}
+            private emulatorHelper: CoreEmulatorHelperProvider, private notificationsHelper: AddonNotificationsHelperProvider) {}
 
     /**
      * Get the time between consecutive executions.
@@ -91,7 +92,9 @@ export class AddonNotificationsCronHandler implements CoreCronHandler {
      * @return {Promise<any[]>} Promise resolved with the notifications.
      */
     protected fetchNotifications(siteId: string): Promise<any[]> {
-        return this.notificationsProvider.getUnreadNotifications(0, undefined, true, false, true, siteId);
+        return this.notificationsHelper.getNotifications([], undefined, true, false, true, siteId).then((result) => {
+            return result.notifications;
+        });
     }
 
     /**
@@ -102,7 +105,7 @@ export class AddonNotificationsCronHandler implements CoreCronHandler {
      */
     protected getTitleAndText(notification: any): Promise<any> {
         const data = {
-            title: notification.userfromfullname,
+            title: notification.subject || notification.userfromfullname,
             text: notification.mobiletext.replace(/-{4,}/ig, '')
         };
         data.text = this.textUtils.replaceNewLines(data.text, '<br>');

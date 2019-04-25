@@ -882,14 +882,20 @@ export class AddonMessagesProvider {
                     result.messages = result.messages.slice(0, limitTo);
                 }
 
+                let lastReceived;
+
                 result.messages.forEach((message) => {
                     // Convert time to milliseconds.
                     message.timecreated = message.timecreated ? message.timecreated * 1000 : 0;
+
+                    if (!lastReceived && message.useridfrom != userId) {
+                        lastReceived = message;
+                    }
                 });
 
-                if (this.appProvider.isDesktop() && params.useridto == userId && limitFrom === 0) {
+                if (this.appProvider.isDesktop() && limitFrom === 0 && lastReceived) {
                     // Store the last received message (we cannot know if it's unread or not). Don't block the user for this.
-                    this.storeLastReceivedMessageIfNeeded(conversationId, result.messages[0], site.getId());
+                    this.storeLastReceivedMessageIfNeeded(conversationId, lastReceived, site.getId());
                 }
 
                 if (excludePending) {
@@ -923,11 +929,13 @@ export class AddonMessagesProvider {
      * @param {number} [limitFrom=0] The offset to start at.
      * @param {string} [siteId] Site ID. If not defined, use current site.
      * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @param {boolean} [forceCache] True if it should return cached data. Has priority over ignoreCache.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @return {Promise<any>} Promise resolved with the conversations.
      * @since 3.6
      */
-    getConversations(type?: number, favourites?: boolean, limitFrom: number = 0, siteId?: string, userId?: number)
-            : Promise<{conversations: any[], canLoadMore: boolean}> {
+    getConversations(type?: number, favourites?: boolean, limitFrom: number = 0, siteId?: string, userId?: number,
+            forceCache?: boolean, ignoreCache?: boolean): Promise<{conversations: any[], canLoadMore: boolean}> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
@@ -941,6 +949,13 @@ export class AddonMessagesProvider {
                     limitnum: this.LIMIT_MESSAGES + 1,
                 };
 
+            if (forceCache) {
+                preSets['omitExpires'] = true;
+            } else if (ignoreCache) {
+                preSets['getFromCache'] = false;
+                preSets['emergencyCache'] = false;
+            }
+
             if (typeof type != 'undefined' && type != null) {
                 params.type = type;
             }
@@ -951,8 +966,15 @@ export class AddonMessagesProvider {
             return site.read('core_message_get_conversations', params, preSets).then((response) => {
                 // Format the conversations, adding some calculated fields.
                 const conversations = response.conversations.slice(0, this.LIMIT_MESSAGES).map((conversation) => {
-                    return this.formatConversation(conversation, userId);
-                });
+                        return this.formatConversation(conversation, userId);
+                    }),
+                    conv = conversations[0],
+                    lastMessage = conv && conv.messages[0];
+
+                if (this.appProvider.isDesktop() && limitFrom === 0 && lastMessage && !conv.sentfromcurrentuser) {
+                    // Store the last received message (we cannot know if it's unread or not). Don't block the user for this.
+                    this.storeLastReceivedMessageIfNeeded(conv.id, lastMessage, site.getId());
+                }
 
                 return {
                     conversations: conversations,
