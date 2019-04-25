@@ -224,31 +224,38 @@ export class InAppBrowserObjectMock {
                     }
                 };
 
-            switch (name) {
-                case 'loadstart':
-                    this.window.webContents.on('did-start-loading', received);
+            if (!this.window.isDestroyed() && !this.window.webContents.isDestroyed()) {
+                switch (name) {
+                    case 'loadstart':
+                        this.window.webContents.on('did-start-loading', received);
 
-                    if (this.isSSO) {
-                        // Linux doesn't support custom URL Schemes. Check if launch page is loaded.
-                        this.window.webContents.on('did-finish-load', finishLoad);
-                    }
-                    break;
+                        if (this.isSSO) {
+                            // Linux doesn't support custom URL Schemes. Check if launch page is loaded.
+                            this.window.webContents.on('did-finish-load', finishLoad);
+                        }
+                        break;
 
-                case 'loadstop':
-                    this.window.webContents.on('did-finish-load', received);
-                    break;
+                    case 'loadstop':
+                        this.window.webContents.on('did-finish-load', received);
+                        break;
 
-                case 'loaderror':
-                    this.window.webContents.on('did-fail-load', received);
-                    break;
-                case 'exit':
-                    this.window.on('close', received);
-                    break;
-                default:
+                    case 'loaderror':
+                        this.window.webContents.on('did-fail-load', received);
+                        break;
+                    case 'exit':
+                        this.window.on('close', received);
+                        break;
+                    default:
+                }
             }
 
             return (): void => {
                 // Unsubscribing. We need to remove the listeners.
+                if (this.window.isDestroyed() || this.window.webContents.isDestroyed()) {
+                    // Page has been destroyed already, no need to remove listeners.
+                    return;
+                }
+
                 switch (name) {
                     case 'loadstart':
                         this.window.webContents.removeListener('did-start-loading', received);
