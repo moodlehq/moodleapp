@@ -211,12 +211,12 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
         const siteId = this.sitesProvider.getCurrentSiteId();
 
         return this.lessonProvider.getLesson(courseId, module.id, false, false, siteId).then((lesson) => {
-            if (!this.lessonProvider.isLessonOffline(lesson)) {
-                return false;
-            }
-
             // Check if there is any prevent access reason.
             return this.lessonProvider.getAccessInformation(lesson.id, false, false, siteId).then((info) => {
+                if (!info.canviewreports && !this.lessonProvider.isLessonOffline(lesson)) {
+                    return false;
+                }
+
                 // It's downloadable if there are no prevent access reasons or there is just 1 and it's password.
                 return !info.preventaccessreasons || !info.preventaccessreasons.length ||
                         (info.preventaccessreasons.length == 1 && this.lessonProvider.isPasswordProtected(info));
@@ -270,7 +270,7 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
             lesson = data.lesson || lesson;
             accessInfo = data.accessInfo;
 
-            if (!this.lessonProvider.leftDuringTimed(accessInfo)) {
+            if (this.lessonProvider.isLessonOffline(lesson) && !this.lessonProvider.leftDuringTimed(accessInfo)) {
                 // The user didn't left during a timed session. Call launch retake to make sure there is a started retake.
                 return this.lessonProvider.launchRetake(lesson.id, password, undefined, false, siteId).then(() => {
                     const promises = [];
@@ -298,65 +298,68 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
             promises.push(this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id));
 
             // Get the list of pages.
-            promises.push(this.lessonProvider.getPages(lesson.id, password, false, true, siteId).then((pages) => {
-                const subPromises = [];
-                let hasRandomBranch = false;
+            if (this.lessonProvider.isLessonOffline(lesson)) {
+                promises.push(this.lessonProvider.getPages(lesson.id, password, false, true, siteId).then((pages) => {
+                    const subPromises = [];
+                    let hasRandomBranch = false;
 
-                // Get the data for each page.
-                pages.forEach((data) => {
-                    // Check if any page has a RANDOMBRANCH jump.
-                    if (!hasRandomBranch) {
-                        for (let i = 0; i < data.jumps.length; i++) {
-                            if (data.jumps[i] == AddonModLessonProvider.LESSON_RANDOMBRANCH) {
-                                hasRandomBranch = true;
-                                break;
+                    // Get the data for each page.
+                    pages.forEach((data) => {
+                        // Check if any page has a RANDOMBRANCH jump.
+                        if (!hasRandomBranch) {
+                            for (let i = 0; i < data.jumps.length; i++) {
+                                if (data.jumps[i] == AddonModLessonProvider.LESSON_RANDOMBRANCH) {
+                                    hasRandomBranch = true;
+                                    break;
+                                }
                             }
                         }
-                    }
 
-                    // Get the page data. We don't pass accessInfo because we don't need to calculate the offline data.
-                    subPromises.push(this.lessonProvider.getPageData(lesson, data.page.id, password, false, true, false,
-                            true, undefined, undefined, siteId).then((pageData) => {
+                        // Get the page data. We don't pass accessInfo because we don't need to calculate the offline data.
+                        subPromises.push(this.lessonProvider.getPageData(lesson, data.page.id, password, false, true, false,
+                                true, undefined, undefined, siteId).then((pageData) => {
 
-                        // Download the page files.
-                        let pageFiles = pageData.contentfiles || [];
+                            // Download the page files.
+                            let pageFiles = pageData.contentfiles || [];
 
-                        pageData.answers.forEach((answer) => {
-                            if (answer.answerfiles && answer.answerfiles.length) {
-                                pageFiles = pageFiles.concat(answer.answerfiles);
-                            }
-                            if (answer.responsefiles && answer.responsefiles.length) {
-                                pageFiles = pageFiles.concat(answer.responsefiles);
-                            }
-                        });
+                            pageData.answers.forEach((answer) => {
+                                if (answer.answerfiles && answer.answerfiles.length) {
+                                    pageFiles = pageFiles.concat(answer.answerfiles);
+                                }
+                                if (answer.responsefiles && answer.responsefiles.length) {
+                                    pageFiles = pageFiles.concat(answer.responsefiles);
+                                }
+                            });
 
-                        return this.filepoolProvider.addFilesToQueue(siteId, pageFiles, this.component, module.id);
+                            return this.filepoolProvider.addFilesToQueue(siteId, pageFiles, this.component, module.id);
+                        }));
+                    });
+
+                    // Prefetch the list of possible jumps for offline navigation. Do it here because we know hasRandomBranch.
+                    subPromises.push(this.lessonProvider.getPagesPossibleJumps(lesson.id, false, true, siteId).catch((error) => {
+                        if (hasRandomBranch) {
+                            // The WebSevice probably failed because RANDOMBRANCH aren't supported if the user hasn't seen any page.
+                            return Promise.reject(this.translate.instant('addon.mod_lesson.errorprefetchrandombranch'));
+                        } else {
+                            return Promise.reject(error);
+                        }
                     }));
-                });
 
-                // Prefetch the list of possible jumps for offline navigation. Do it here because we know hasRandomBranch.
-                subPromises.push(this.lessonProvider.getPagesPossibleJumps(lesson.id, false, true, siteId).catch((error) => {
-                    if (hasRandomBranch) {
-                        // The WebSevice probably failed because RANDOMBRANCH aren't supported if the user hasn't seen any page.
-                        return Promise.reject(this.translate.instant('addon.mod_lesson.errorprefetchrandombranch'));
-                    } else {
-                        return Promise.reject(error);
-                    }
+                    return Promise.all(subPromises);
                 }));
 
-                return Promise.all(subPromises);
-            }));
+                // Prefetch user timers to be able to calculate timemodified in offline.
+                promises.push(this.lessonProvider.getTimers(lesson.id, false, true, siteId).catch(() => {
+                    // Ignore errors.
+                }));
 
-            // Prefetch user timers to be able to calculate timemodified in offline.
-            promises.push(this.lessonProvider.getTimers(lesson.id, false, true, siteId).catch(() => {
-                // Ignore errors.
-            }));
+                // Prefetch viewed pages in last retake to calculate progress.
+                promises.push(this.lessonProvider.getContentPagesViewedOnline(lesson.id, retake, false, true, siteId));
 
-            // Prefetch viewed pages in last retake to calculate progress.
-            promises.push(this.lessonProvider.getContentPagesViewedOnline(lesson.id, retake, false, true, siteId));
-
-            // Prefetch question attempts in last retake for offline calculations.
-            promises.push(this.lessonProvider.getQuestionsAttemptsOnline(lesson.id, retake, false, undefined, false, true, siteId));
+                // Prefetch question attempts in last retake for offline calculations.
+                promises.push(this.lessonProvider.getQuestionsAttemptsOnline(lesson.id, retake, false, undefined, false, true,
+                        siteId));
+            }
 
             if (accessInfo.canviewreports) {
                 // Prefetch reports data.
