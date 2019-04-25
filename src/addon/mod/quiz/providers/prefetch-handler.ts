@@ -409,7 +409,7 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
 
                 data.questions.forEach((question) => {
                     questionPromises.push(this.questionHelper.prefetchQuestionFiles(
-                            question, this.component, quiz.coursemodule, siteId));
+                            question, this.component, quiz.coursemodule, siteId, attempt.uniqueid));
                 });
 
                 return Promise.all(questionPromises);
@@ -437,7 +437,7 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
 
                         data.questions.forEach((question) => {
                             questionPromises.push(this.questionHelper.prefetchQuestionFiles(
-                                    question, this.component, quiz.coursemodule, siteId));
+                                    question, this.component, quiz.coursemodule, siteId, attempt.uniqueid));
                         });
 
                         return Promise.all(questionPromises);
