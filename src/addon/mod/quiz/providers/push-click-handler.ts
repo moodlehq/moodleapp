@@ -54,12 +54,13 @@ export class AddonModQuizPushClickHandler implements CorePushNotificationsClickH
      */
     handleClick(notification: any): Promise<any> {
         const contextUrlParams = this.urlUtils.extractUrlParams(notification.contexturl),
+            data = notification.customdata || {},
             courseId = Number(notification.courseid);
 
         if (notification.name == 'submission') {
             // A student made a submission, go to view the attempt.
             return this.quizHelper.handleReviewLink(undefined, Number(contextUrlParams.attempt), Number(contextUrlParams.page),
-                    courseId, undefined, notification.site);
+                    courseId, Number(data.instance), notification.site);
         } else {
             // Open the activity.
             const moduleId = Number(contextUrlParams.id);

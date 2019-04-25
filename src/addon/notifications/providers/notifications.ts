@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
@@ -37,7 +38,8 @@ export class AddonNotificationsProvider {
 
     constructor(logger: CoreLoggerProvider, private appProvider: CoreAppProvider, private sitesProvider: CoreSitesProvider,
             private timeUtils: CoreTimeUtilsProvider, private userProvider: CoreUserProvider,
-            private emulatorHelper: CoreEmulatorHelperProvider, private messageProvider: AddonMessagesProvider) {
+            private emulatorHelper: CoreEmulatorHelperProvider, private messageProvider: AddonMessagesProvider,
+            private textUtils: CoreTextUtilsProvider) {
         this.logger = logger.getInstance('AddonNotificationsProvider');
     }
 
@@ -57,11 +59,27 @@ export class AddonNotificationsProvider {
                 notification.mobiletext = notification.fullmessage;
             }
 
-            // Try to set courseid the notification belongs to.
-            const cid = notification.fullmessagehtml.match(/course\/view\.php\?id=([^"]*)/);
-            if (cid && cid[1]) {
-                notification.courseid = cid[1];
+            notification.moodlecomponent = notification.component;
+            notification.notification = 1;
+            notification.notif = 1;
+            if (typeof read != 'undefined') {
+                notification.read = read;
             }
+
+            if (typeof notification.customdata == 'string') {
+                notification.customdata = this.textUtils.parseJSON(notification.customdata, {});
+            }
+
+            // Try to set courseid the notification belongs to.
+            if (notification.customdata && notification.customdata.courseid) {
+                notification.courseid = notification.customdata.courseid;
+            } else {
+                const cid = notification.fullmessagehtml.match(/course\/view\.php\?id=([^"]*)/);
+                if (cid && cid[1]) {
+                    notification.courseid = cid[1];
+                }
+            }
+
             if (notification.useridfrom > 0) {
                 // Try to get the profile picture of the user.
                 return this.userProvider.getProfile(notification.useridfrom, notification.courseid, true).then((user) => {
@@ -71,13 +89,6 @@ export class AddonNotificationsProvider {
                 }).catch(() => {
                     // Error getting user. This can happen if device is offline or the user is deleted.
                 });
-            }
-
-            notification.moodlecomponent = notification.component;
-            notification.notification = 1;
-            notification.notif = 1;
-            if (typeof read != 'undefined') {
-                notification.read = read;
             }
 
             return Promise.resolve(notification);

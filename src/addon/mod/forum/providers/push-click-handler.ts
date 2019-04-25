@@ -50,13 +50,16 @@ export class AddonModForumPushClickHandler implements CorePushNotificationsClick
      */
     handleClick(notification: any): Promise<any> {
         const contextUrlParams = this.urlUtils.extractUrlParams(notification.contexturl),
+            data = notification.customdata || {},
             pageParams: any = {
                 courseId: Number(notification.courseid),
-                discussionId: Number(contextUrlParams.d),
+                discussionId: Number(contextUrlParams.d || data.discussionid),
+                cmId: Number(data.cmid),
+                forumId: Number(data.instance)
             };
 
-        if (contextUrlParams.urlHash) {
-            pageParams.postId = Number(contextUrlParams.urlHash.replace('p', ''));
+        if (data.postid || contextUrlParams.urlHash) {
+            pageParams.postId = Number(data.postid || contextUrlParams.urlHash.replace('p', ''));
         }
 
         return this.forumProvider.invalidateDiscussionPosts(pageParams.discussionId, notification.site).catch(() => {

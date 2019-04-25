@@ -38,16 +38,26 @@ export class AddonModForumDiscussionLinkHandler extends CoreContentLinksHandlerB
      * @param {string} url The URL to treat.
      * @param {any} params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
+     * @param {any} [data] Extra data to handle the URL.
      * @return {CoreContentLinksAction[]|Promise<CoreContentLinksAction[]>} List of (or promise resolved with list of) actions.
      */
-    getActions(siteIds: string[], url: string, params: any, courseId?: number):
+    getActions(siteIds: string[], url: string, params: any, courseId?: number, data?: any):
             CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
+        data = data || {};
+
         return [{
             action: (siteId, navCtrl?): void => {
-                const pageParams = {
+                const pageParams: any = {
                     courseId: courseId || parseInt(params.courseid, 10) || parseInt(params.cid, 10),
                     discussionId: parseInt(params.d, 10),
+                    cmId: data.cmid && parseInt(data.cmid, 10),
+                    forumId: data.instance && parseInt(data.instance, 10)
                 };
+
+                if (data.postid || params.urlHash) {
+                    pageParams.postId = parseInt(data.postid || params.urlHash.replace('p', ''));
+                }
+
                 this.linkHelper.goInSite(navCtrl, 'AddonModForumDiscussionPage', pageParams, siteId);
             }
         }];

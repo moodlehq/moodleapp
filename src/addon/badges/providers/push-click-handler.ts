@@ -37,9 +37,10 @@ export class AddonBadgesPushClickHandler implements CorePushNotificationsClickHa
      * @return {boolean} Whether the notification click is handled by this handler
      */
     handles(notification: any): boolean | Promise<boolean> {
-        // @todo: Support 'badgecreatornotice' once we receive the hash or contexturl.
+        const data = notification.customdata || {};
+
         if (this.utils.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'moodle' &&
-                notification.name == 'badgerecipientnotice') {
+                (notification.name == 'badgerecipientnotice' || (notification.name == 'badgecreatornotice' && data.hash))) {
             return this.badgesProvider.isPluginEnabled(notification.site);
         }
 
@@ -53,8 +54,14 @@ export class AddonBadgesPushClickHandler implements CorePushNotificationsClickHa
      * @return {Promise<any>} Promise resolved when done.
      */
     handleClick(notification: any): Promise<any> {
-        // @todo: Go to the badge page once we receive the hash or contexturl.
+        const data = notification.customdata || {};
 
+        if (data.hash) {
+            // We have the hash, open the badge directly.
+            return this.loginHelper.redirect('AddonBadgesIssuedBadgePage', {courseId: 0, badgeHash: data.hash}, notification.site);
+        }
+
+        // No hash, open the list of user badges.
         return this.badgesProvider.invalidateUserBadges(0, Number(notification.usertoid), notification.site).catch(() => {
             // Ignore errors.
         }).then(() => {
