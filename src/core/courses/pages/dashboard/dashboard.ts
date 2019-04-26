@@ -142,8 +142,8 @@ export class CoreCoursesDashboardPage implements OnDestroy {
      * @return {Promise<any>} Promise resolved when done.
      */
     protected loadDashboardContent(): Promise<any> {
-        return this.dashboardProvider.isAvailable().then((enabled) => {
-            if (enabled) {
+        return this.dashboardProvider.isAvailable().then((available) => {
+            if (available) {
                 this.userId = this.sitesProvider.getCurrentSiteUserId();
 
                 return this.dashboardProvider.getDashboardBlocks().then((blocks) => {
@@ -154,10 +154,14 @@ export class CoreCoursesDashboardPage implements OnDestroy {
                     // Cannot get the blocks, just show dashboard if needed.
                     this.loadFallbackBlocks();
                 });
+            } else if (!this.dashboardProvider.isDisabledInSite()) {
+                // Not available, but not disabled either. Use fallback.
+                this.loadFallbackBlocks();
+            } else {
+                // Disabled.
+                this.blocks = [];
             }
 
-            // Not enabled, check separated tabs.
-            this.loadFallbackBlocks();
         }).finally(() => {
             this.dashboardEnabled = this.blockDelegate.hasSupportedBlock(this.blocks);
             this.dashboardLoaded = true;

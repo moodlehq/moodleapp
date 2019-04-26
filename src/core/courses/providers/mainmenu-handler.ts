@@ -13,22 +13,25 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreCoursesProvider } from './courses';
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@core/mainmenu/providers/delegate';
 import { CoreCoursesDashboardProvider } from '../providers/dashboard';
 import { CoreSiteHomeProvider } from '@core/sitehome/providers/sitehome';
 import { AddonBlockTimelineProvider } from '@addon/block/timeline/providers/timeline';
+import { CoreBlockDelegate } from '@core/block/providers/delegate';
 
 /**
  * Handler to add Dashboard into main menu.
  */
 @Injectable()
 export class CoreDashboardMainMenuHandler implements CoreMainMenuHandler {
-    name = 'CoreDashboard'; // Old name CoreCourses cannot be used because it would be all disabled by site.
+    name = 'CoreHome'; // This handler contains several different features, so we use a generic name like "CoreHome".
     priority = 1100;
 
     constructor(private coursesProvider: CoreCoursesProvider, private dashboardProvider: CoreCoursesDashboardProvider,
-        private siteHomeProvider: CoreSiteHomeProvider, private timelineProvider: AddonBlockTimelineProvider) { }
+        private siteHomeProvider: CoreSiteHomeProvider, private timelineProvider: AddonBlockTimelineProvider,
+        private blockDelegate: CoreBlockDelegate, private sitesProvider: CoreSitesProvider) { }
 
     /**
      * Check if the handler is enabled on a site level.
@@ -36,15 +39,40 @@ export class CoreDashboardMainMenuHandler implements CoreMainMenuHandler {
      * @return {boolean | Promise<boolean>} Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
+        return this.isEnabledForSite();
+    }
+
+    /**
+     * Check if the handler is enabled on a certain site.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {boolean | Promise<boolean>} Whether or not the handler is enabled on a site level.
+     */
+    isEnabledForSite(siteId?: string): Promise<boolean> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        const promises = [];
+        let blocksEnabled,
+            dashboardAvailable;
+
+        // Check if blocks and 3.6 dashboard is enabled.
+        promises.push(this.blockDelegate.areBlocksDisabled(siteId).then((disabled) => {
+            blocksEnabled = !disabled;
+        }));
+
+        promises.push(this.dashboardProvider.isAvailable().then((available) => {
+            dashboardAvailable = available;
+        }));
+
         // Check if 3.6 dashboard is enabled.
-        return this.dashboardProvider.isAvailable().then((enabled) => {
-            if (enabled) {
+        return Promise.all(promises).then(() => {
+            if (dashboardAvailable && blocksEnabled) {
                 return true;
             }
 
             // Check if my overview is enabled.
             return this.timelineProvider.isAvailable().then((enabled) => {
-                if (enabled) {
+                if (enabled && blocksEnabled) {
                     return true;
                 }
 
