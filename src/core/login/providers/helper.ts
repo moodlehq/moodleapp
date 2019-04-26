@@ -442,22 +442,8 @@ export class CoreLoginHelperProvider {
      * @return {Promise<any>} Promise resolved when the user is authenticated with the token.
      */
     handleSSOLoginAuthentication(siteUrl: string, token: string, privateToken?: string): Promise<any> {
-        if (this.sitesProvider.isLoggedIn()) {
-            // User logged in, he is reconnecting. Retrieve username.
-            const info = this.sitesProvider.getCurrentSite().getInfo();
-            if (typeof info != 'undefined' && typeof info.username != 'undefined') {
-                return this.sitesProvider.updateSiteToken(info.siteurl, info.username, token, privateToken).then(() => {
-                    return this.sitesProvider.updateSiteInfoByUrl(info.siteurl, info.username);
-                }, () => {
-                    // Error updating token, return proper error message.
-                    return Promise.reject(this.translate.instant('core.login.errorupdatesite'));
-                });
-            }
-
-            return Promise.reject(this.translate.instant('core.login.errorupdatesite'));
-        } else {
-            return this.sitesProvider.newSite(siteUrl, token, privateToken);
-        }
+        // Always create a new site to prevent overriding data if another user credentials were introduced.
+        return this.sitesProvider.newSite(siteUrl, token, privateToken);
     }
 
     /**
