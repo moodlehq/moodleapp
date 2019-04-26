@@ -31,10 +31,10 @@ import { Subject } from 'rxjs';
 })
 export class CoreContextMenuComponent implements OnInit, OnDestroy {
     @Input() icon?: string; // Icon to be shown on the navigation bar. Default: Kebab menu icon.
-    @Input() title?: string; // Aria label and text to be shown on the top of the popover.
+    @Input() title?: string; // Text to be shown on the top of the popover.
+    @Input('aria-label') ariaLabel?: string; // Aria label to be shown on the top of the popover.
 
     hideMenu = true; // It will be unhidden when items are added.
-    ariaLabel: string;
     expanded = false;
     protected items: CoreContextMenuItemComponent[] = [];
     protected itemsMovedToParent: CoreContextMenuItemComponent[] = [];
@@ -70,7 +70,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.icon = this.icon || 'more';
-        this.ariaLabel = this.title || this.translate.instant('core.info');
+        this.ariaLabel = this.ariaLabel || this.title || this.translate.instant('core.info');
     }
 
     /**

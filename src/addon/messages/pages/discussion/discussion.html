@@ -1,16 +1,16 @@
 <ion-header>
     <ion-navbar core-back-button>
         <ion-title>
-            <img *ngIf="loaded && !otherMember && conversationImage" class="core-bar-button-image" [src]="conversationImage" alt="" onError="this.src='assets/img/group-avatar.png'" core-external-content role="presentation" [siteId]="siteId || null">
+            <img *ngIf="loaded && !otherMember && conversationImage" class="core-bar-button-image" [src]="conversationImage" [alt]="title" onError="this.src='assets/img/group-avatar.png'" core-external-content role="presentation" [siteId]="siteId || null">
             <ion-avatar *ngIf="loaded && otherMember" class="core-bar-button-image" core-user-avatar [user]="otherMember" [linkProfile]="false" [checkOnline]="otherMember.showonlinestatus" item-start (click)="showInfo && viewInfo()"></ion-avatar>
             <core-format-text [text]="title" (click)="showInfo && !isGroup && viewInfo()"></core-format-text>
-            <core-icon *ngIf="conversation && conversation.isfavourite" name="fa-star"></core-icon>
-            <core-icon *ngIf="conversation && conversation.ismuted" name="volume-off"></core-icon>
+            <core-icon *ngIf="conversation && conversation.isfavourite" name="fa-star" [label]="'core.favourites' | translate"></core-icon>
+            <core-icon *ngIf="conversation && conversation.ismuted" name="volume-off" [label]="'addon.messages.mutedconversation' | translate"></core-icon>
         </ion-title>
         <ion-buttons end></ion-buttons>
     </ion-navbar>
     <core-navbar-buttons end>
-        <core-context-menu>
+        <core-context-menu [aria-label]="'addon.messages.conversationactions' | translate">
             <core-context-menu-item [hidden]="isSelf || !showInfo || isGroup" [priority]="1000" [content]="'addon.messages.info' | translate" (action)="viewInfo()" iconAction="information-circle"></core-context-menu-item>
             <core-context-menu-item [hidden]="isSelf || !showInfo || !isGroup" [priority]="1000" [content]="'addon.messages.groupinfo' | translate" (action)="viewInfo()" iconAction="information-circle"></core-context-menu-item>
             <core-context-menu-item [hidden]="!groupMessagingEnabled || !conversation" [priority]="800" [content]="(conversation && conversation.isfavourite ? 'addon.messages.removefromfavourites' : 'addon.messages.addtofavourites') | translate" (action)="changeFavourite($event)" [closeOnClick]="false" [iconAction]="favouriteIcon"></core-context-menu-item>

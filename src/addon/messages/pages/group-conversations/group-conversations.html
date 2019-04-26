@@ -101,7 +101,7 @@
         <h2>
             <core-format-text [text]="conversation.name"></core-format-text>
             <core-icon name="fa-ban" *ngIf="conversation.isblocked" [label]="'addon.messages.contactblocked' | translate"></core-icon>
-            <core-icon *ngIf="conversation.ismuted" name="volume-off"></core-icon>
+            <core-icon *ngIf="conversation.ismuted" name="volume-off" [label]="'addon.messages.mutedconversation' | translate"></core-icon>
         </h2>
         <ion-note *ngIf="conversation.lastmessagedate > 0 || conversation.unreadcount">
             <ion-badge *ngIf="conversation.unreadcount > 0">{{ conversation.unreadcount }}</ion-badge>
