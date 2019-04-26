@@ -47,6 +47,7 @@ export class AddonMessagesProvider {
     static MESSAGE_PRIVACY_SITE = 2; // Privacy setting for being messaged by anyone on the site.
     static MESSAGE_CONVERSATION_TYPE_INDIVIDUAL = 1; // An individual conversation.
     static MESSAGE_CONVERSATION_TYPE_GROUP = 2; // A group conversation.
+    static MESSAGE_CONVERSATION_TYPE_SELF = 3; // A self conversation.
     static LIMIT_CONTACTS = 50;
     static LIMIT_MESSAGES = 50;
     static LIMIT_INITIAL_USER_SEARCH = 3;
@@ -297,14 +298,15 @@ export class AddonMessagesProvider {
         conversation.lastmessagedate = lastMessage ? lastMessage.timecreated : null;
         conversation.sentfromcurrentuser = lastMessage ? lastMessage.useridfrom == userId : null;
 
-        if (conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL) {
-            const otherUser = conversation.members.reduce((carry, member) => {
-                if (!carry && member.id != userId) {
-                    carry = member;
-                }
+        if (conversation.type != AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP) {
+            const isIndividual = conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL,
+                otherUser = conversation.members.reduce((carry, member) => {
+                    if (!carry && ((isIndividual && member.id != userId) || (!isIndividual && member.id == userId))) {
+                        carry = member;
+                    }
 
-                return carry;
-            }, null);
+                    return carry;
+                }, null);
 
             conversation.name = conversation.name ? conversation.name : otherUser.fullname;
             conversation.imageurl = conversation.imageurl ? conversation.imageurl : otherUser.profileimageurl;
@@ -476,6 +478,16 @@ export class AddonMessagesProvider {
      */
     protected getCacheKeyForMemberInfo(userId: number, otherUserId: number): string {
         return this.ROOT_CACHE_KEY + 'memberInfo:' + userId + ':' + otherUserId;
+    }
+
+    /**
+     * Get cache key for get self conversation.
+     *
+     * @param {number} userId User ID.
+     * @return {string} Cache key.
+     */
+    protected getCacheKeyForSelfConversation(userId: number): string {
+        return this.ROOT_CACHE_KEY + 'selfconversation:' + userId;
     }
 
     /**
@@ -963,7 +975,21 @@ export class AddonMessagesProvider {
                 params.favourites = favourites ? 1 : 0;
             }
 
-            return site.read('core_message_get_conversations', params, preSets).then((response) => {
+            if (site.isVersionGreaterEqualThan('3.7') && type != AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP) {
+                // Add self conversation to the list.
+                params.mergeself = 1;
+            }
+
+            return site.read('core_message_get_conversations', params, preSets).catch((error) => {
+                if (params.mergeself) {
+                    // Try again without the new param. Maybe the user is offline and he has a previous request cached.
+                    delete params.mergeself;
+
+                    return site.read('core_message_get_conversations', params, preSets);
+                }
+
+                return Promise.reject(error);
+            }).then((response) => {
                 // Format the conversations, adding some calculated fields.
                 const conversations = response.conversations.slice(0, this.LIMIT_MESSAGES).map((conversation) => {
                         return this.formatConversation(conversation, userId);
@@ -988,11 +1014,11 @@ export class AddonMessagesProvider {
      * Get conversation counts by type.
      *
      * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<favourites: number, individual: number, group: number>} Promise resolved with favourite, individual and
-     *                                      group conversation counts.
+     * @return {Promise<favourites: number, individual: number, group: number, self: number>} Promise resolved with favourite,
+     *                                      individual, group and self conversation counts.
      * @since 3.6
      */
-    getConversationCounts(siteId?: string): Promise<{favourites: number, individual: number, group: number}> {
+    getConversationCounts(siteId?: string): Promise<{favourites: number, individual: number, group: number, self: number}> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const preSets = {
@@ -1003,7 +1029,8 @@ export class AddonMessagesProvider {
                 const counts = {
                     favourites: result.favourites,
                     individual: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL],
-                    group: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP]
+                    group: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP],
+                    self: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_SELF] || 0
                 };
 
                 return counts;
@@ -1360,16 +1387,50 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Get a self conversation.
+     *
+     * @param {number} [messageOffset=0] Offset for messages list.
+     * @param {number} [messageLimit=1] Limit of messages. Defaults to 1 (last message).
+     *                                  We recommend getConversationMessages to get them.
+     * @param {boolean} [newestFirst=true] Whether to order messages by newest first.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @param {string} [userId] User ID to get the self conversation for. If not defined, current user in the site.
+     * @return {Promise<any>} Promise resolved with the response.
+     * @since 3.7
+     */
+    getSelfConversation(messageOffset: number = 0, messageLimit: number = 1, newestFirst: boolean = true, siteId?: string,
+            userId?: number): Promise<any> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            const preSets = {
+                    cacheKey: this.getCacheKeyForSelfConversation(userId)
+                },
+                params: any = {
+                    userid: userId,
+                    messageoffset: messageOffset,
+                    messagelimit: messageLimit,
+                    newestmessagesfirst: newestFirst ? 1 : 0
+                };
+
+            return site.read('core_message_get_self_conversation', params, preSets).then((conversation) => {
+                return this.formatConversation(conversation, userId);
+            });
+        });
+    }
+
+    /**
      * Get unread conversation counts by type.
      *
      * @param {string} [siteId] Site ID. If not defined, use current site.
      * @return {Promise<any>} Resolved with the unread favourite, individual and group conversation counts.
      */
     getUnreadConversationCounts(siteId?: string):
-            Promise<{favourites: number, individual: number, group: number, orMore?: boolean}> {
+            Promise<{favourites: number, individual: number, group: number, self: number, orMore?: boolean}> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
-            let promise: Promise<{favourites: number, individual: number, group: number, orMore?: boolean}>;
+            let promise: Promise<{favourites: number, individual: number, group: number, self: number, orMore?: boolean}>;
 
             if (this.isGroupMessagingEnabled()) {
                 // @since 3.6
@@ -1381,7 +1442,8 @@ export class AddonMessagesProvider {
                     return {
                         favourites: result.favourites,
                         individual: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL],
-                        group: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP]
+                        group: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP],
+                        self: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_SELF] || 0
                     };
                 });
 
@@ -1396,7 +1458,7 @@ export class AddonMessagesProvider {
                     };
 
                 promise = site.read('core_message_get_unread_conversations_count', params, preSets).then((count) => {
-                    return { favourites: 0, individual: count, group: 0 };
+                    return { favourites: 0, individual: count, group: 0, self: 0 };
                 });
             } else {
                 // Fallback call.
@@ -1421,6 +1483,7 @@ export class AddonMessagesProvider {
                         favourites: 0,
                         individual: count,
                         group: 0,
+                        self: 0,
                         orMore: count > this.LIMIT_MESSAGES
                     };
                 });
@@ -1719,6 +1782,21 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Invalidate a self conversation.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {number} [userId] User ID. If not defined, current user in the site.
+     * @return {Promise<any>} Resolved when done.
+     */
+    invalidateSelfConversation(siteId?: string, userId?: number): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            return site.invalidateWsCacheForKey(this.getCacheKeyForSelfConversation(userId));
+        });
+    }
+
+    /**
      * Invalidate unread conversation counts cache.
      *
      * @param {string} [siteId] Site ID. If not defined, current site.
@@ -1880,6 +1958,34 @@ export class AddonMessagesProvider {
      */
     isSearchMessagesEnabled(): boolean {
         return this.sitesProvider.wsAvailableInCurrentSite('core_message_data_for_messagearea_search_messages');
+    }
+
+    /**
+     * Returns whether or not self conversation is supported in a certain site.
+     *
+     * @param {CoreSite} [site] Site. If not defined, current site.
+     * @return {boolean} If related WS is available on the site.
+     * @since 3.7
+     */
+    isSelfConversationEnabled(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.wsAvailable('core_message_get_self_conversation');
+    }
+
+    /**
+     * Returns whether or not self conversation is supported in a certain site.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<boolean>} Promise resolved with boolean: whether related WS is available on a certain site.
+     * @since 3.7
+     */
+    isSelfConversationEnabledInSite(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.isSelfConversationEnabled(site);
+        }).catch(() => {
+            return false;
+        });
     }
 
     /**

@@ -63,7 +63,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         count: 0,
         unread: 0
     };
-    typeIndividual = AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL;
+    typeGroup = AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP;
     currentListEl: HTMLElement;
 
     protected loadingString: string;
@@ -182,7 +182,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         // Update unread conversation counts.
         this.cronObserver = eventsProvider.on(AddonMessagesProvider.UNREAD_CONVERSATION_COUNTS_EVENT, (data) => {
             this.favourites.unread = data.favourites;
-            this.individual.unread = data.individual;
+            this.individual.unread = data.individual + data.self; // Self is only returned if it's not favourite.
             this.group.unread = data.group;
          }, this.siteId);
 
@@ -400,7 +400,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             return this.messagesProvider.getConversationCounts(this.siteId);
         }).then((counts) => {
             this.favourites.count = counts.favourites;
-            this.individual.count = counts.individual;
+            this.individual.count = counts.individual + counts.self; // Self is only returned if it's not favourite.
             this.group.count = counts.group;
         });
     }

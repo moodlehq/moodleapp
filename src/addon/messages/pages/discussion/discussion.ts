@@ -27,6 +27,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreAppProvider } from '@providers/app';
 import { coreSlideInOut } from '@classes/animations';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreInfiniteLoadingComponent } from '@components/infinite-loading/infinite-loading';
 import { Md5 } from 'ts-md5/dist/md5';
 import * as moment from 'moment';
 
@@ -41,6 +42,7 @@ import * as moment from 'moment';
 })
 export class AddonMessagesDiscussionPage implements OnDestroy {
     @ViewChild(Content) content: Content;
+    @ViewChild(CoreInfiniteLoadingComponent) infinite: CoreInfiniteLoadingComponent;
 
     siteId: string;
     protected fetching: boolean;
@@ -85,6 +87,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     footerType: 'message' | 'blocked' | 'requiresContact' | 'requestSent' | 'requestReceived' | 'unable';
     requestContactSent = false;
     requestContactReceived = false;
+    isSelf = false;
 
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, navParams: NavParams,
             private userProvider: CoreUserProvider, private navCtrl: NavController, private messagesSync: AddonMessagesSyncProvider,
@@ -380,6 +383,9 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             message.showUserData = this.showUserData(message, this.messages[index - 1]);
         });
 
+        // Call resize to recalculate the dimensions.
+        this.content && this.content.resize();
+
         // Notify that there can be a new message.
         this.notifyNewMessage();
 
@@ -402,7 +408,13 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         if (conversationId) {
             promise = Promise.resolve(conversationId);
         } else {
-            promise = this.messagesProvider.getConversationBetweenUsers(userId, undefined, true).then((conversation) => {
+            if (userId == this.currentUserId && this.messagesProvider.isSelfConversationEnabled()) {
+                promise = this.messagesProvider.getSelfConversation();
+            } else {
+                promise = this.messagesProvider.getConversationBetweenUsers(userId, undefined, true);
+            }
+
+            promise = promise.then((conversation) => {
                 fallbackConversation = conversation;
 
                 return conversation.id;
@@ -434,6 +446,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                     if (!this.isGroup) {
                         this.userId = conversation.userid;
                     }
+                    this.isSelf = conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_SELF;
 
                     return true;
                 } else {
@@ -442,7 +455,9 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             });
         }, (error) => {
             // Probably conversation does not exist or user is offline. Try to load offline messages.
-            return this.messagesOffline.getMessages(userId).then((messages) => {
+            this.isSelf = userId == this.currentUserId;
+
+            return this.messagesOffline.getMessages(userId).then((messages): any => {
                 if (messages && messages.length) {
                     // We have offline messages, this probably means that the conversation didn't exist. Don't display error.
                     messages.forEach((message) => {
@@ -455,6 +470,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                     // Display the error.
                     return Promise.reject(error);
                 }
+
+                return false;
             });
         });
     }
@@ -813,11 +830,28 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      * @return {Promise<any>} Resolved when done.
      */
     loadPrevious(infiniteComplete?: any): Promise<any> {
+        let infiniteHeight = this.infinite ? this.infinite.getHeight() : 0;
+        const scrollHeight = this.domUtils.getScrollHeight(this.content);
+
         // If there is an ongoing fetch, wait for it to finish.
         return this.waitForFetch().finally(() => {
             this.pagesLoaded++;
 
-            this.fetchMessages().catch((error) => {
+            this.fetchMessages().then(() => {
+
+                // Try to keep the scroll position.
+                const scrollBottom = scrollHeight - this.domUtils.getScrollTop(this.content);
+
+                if (this.canLoadMore && infiniteHeight && this.infinite) {
+                    // The height of the infinite is different while spinner is shown. Add that difference.
+                    infiniteHeight = infiniteHeight - this.infinite.getHeight();
+                } else if (!this.canLoadMore) {
+                    // Can't load more, take into account the full height of the infinite loading since it will disappear now.
+                    infiniteHeight = infiniteHeight || (this.infinite ? this.infinite.getHeight() : 0);
+                }
+
+                this.keepScroll(scrollHeight, scrollBottom, infiniteHeight);
+            }).catch((error) => {
                 this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
                 this.pagesLoaded--;
                 this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingmessages', true);
@@ -825,6 +859,31 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                 infiniteComplete && infiniteComplete();
             });
         });
+    }
+
+    /**
+     * Keep scroll position after loading previous messages.
+     * We don't use resizeContent because the approach used is different and it isn't easy to calculate these positions.
+     */
+    protected keepScroll(oldScrollHeight: number, oldScrollBottom: number, infiniteHeight: number, retries?: number): void {
+        retries = retries || 0;
+
+        setTimeout(() => {
+            const newScrollHeight = this.domUtils.getScrollHeight(this.content);
+
+            if (newScrollHeight == oldScrollHeight) {
+                // Height hasn't changed yet. Retry if max retries haven't been reached.
+                if (retries <= 10) {
+                    this.keepScroll(oldScrollHeight, oldScrollBottom, infiniteHeight, retries + 1);
+                }
+
+                return;
+            }
+
+            const scrollTo = newScrollHeight - oldScrollBottom + infiniteHeight;
+
+            this.domUtils.scrollTo(this.content, 0, scrollTo, 0);
+        }, 30);
     }
 
     /**
@@ -1123,7 +1182,9 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      * @param {Function} [done] Function to call when done.
      */
     deleteConversation(done?: () => void): void {
-        this.domUtils.showConfirm(this.translate.instant('addon.messages.deleteallconfirm')).then(() => {
+        const confirmMessage = 'addon.messages.' + (this.isSelf ? 'deleteallselfconfirm' : 'deleteallconfirm');
+
+        this.domUtils.showConfirm(this.translate.instant(confirmMessage)).then(() => {
             this.deleteIcon = 'spinner';
 
             return this.messagesProvider.deleteConversation(this.conversation.id).then(() => {
