@@ -3,33 +3,20 @@
         <ion-title>{{ 'core.courses.mycourses' | translate }}</ion-title>
 
         <ion-buttons end>
-            <button *ngIf="searchEnabled" ion-button icon-only (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
+            <button *ngIf="mcComponent && mcComponent.searchEnabled" ion-button icon-only (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
                 <ion-icon name="search"></ion-icon>
             </button>
-            <core-context-menu>
-                <core-context-menu-item [hidden]="!downloadAllCoursesEnabled || !courses || courses.length < 2" [priority]="800" [content]="'core.courses.downloadcourses' | translate" (action)="prefetchCourses()" [iconAction]="prefetchCoursesData.icon" [closeOnClick]="false" [badge]="prefetchCoursesData.badge"></core-context-menu-item>
-                <core-context-menu-item [hidden]="!courses || courses.length <= 5" [priority]="700" [content]="'core.courses.filtermycourses' | translate" (action)="switchFilter()" [iconAction]="'funnel'"></core-context-menu-item>
+            <core-context-menu *ngIf="mcComponent">
+                <core-context-menu-item [hidden]="!mcComponent.downloadAllCoursesEnabled || !mcComponent.courses || mcComponent.courses.length < 2" [priority]="800" [content]="'core.courses.downloadcourses' | translate" (action)="mcComponent.prefetchCourses()" [iconAction]="mcComponent.prefetchCoursesData.icon" [closeOnClick]="false" [badge]="mcComponent.prefetchCoursesData.badge"></core-context-menu-item>
+                <core-context-menu-item [hidden]="!mcComponent.courses || mcComponent.courses.length <= 5" [priority]="700" [content]="'core.courses.filtermycourses' | translate" (action)="mcComponent.switchFilter()" [iconAction]="'funnel'"></core-context-menu-item>
             </core-context-menu>
         </ion-buttons>
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <ion-refresher [enabled]="coursesLoaded" (ionRefresh)="refreshCourses($event)">
+    <ion-refresher [enabled]="mcComponent && mcComponent.coursesLoaded" (ionRefresh)="mcComponent.refreshCourses($event)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <core-loading [hideUntil]="coursesLoaded">
-        <ion-searchbar #searchbar *ngIf="showFilter" [(ngModel)]="filter" (ionInput)="filterChanged($event)" (ionCancel)="filterChanged()" [placeholder]="'core.courses.filtermycourses' | translate">
-        </ion-searchbar>
-        <ion-grid no-padding>
-            <ion-row no-padding>
-                <ion-col *ngFor="let course of filteredCourses" no-padding col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 align-self-stretch>
-                    <core-courses-course-progress [course]="course" class="core-courseoverview" showAll="true"></core-courses-course-progress>
-                </ion-col>
-            </ion-row>
-        </ion-grid>
-        <core-empty-box *ngIf="!courses || !courses.length" icon="ionic" [message]="'core.courses.nocourses' | translate">
-            <p *ngIf="searchEnabled">{{ 'core.courses.searchcoursesadvice' | translate }}</p>
-        </core-empty-box>
-    </core-loading>
+    <core-courses-my-courses></core-courses-my-courses>
 </ion-content>

@@ -18,6 +18,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreBlockDefaultHandler } from './default-block-handler';
+import { CoreSite } from '@classes/site';
 
 /**
  * Interface that all blocks must implement.
@@ -88,6 +89,30 @@ export class CoreBlockDelegate extends CoreDelegate {
     }
 
     /**
+     * Check if blocks are disabled in a certain site.
+     *
+     * @param {CoreSite} [site] Site. If not defined, use current site.
+     * @return {boolean} Whether it's disabled.
+     */
+    areBlocksDisabledInSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.isFeatureDisabled('NoDelegate_SiteBlocks');
+    }
+
+    /**
+     * Check if blocks are disabled in a certain site.
+     *
+     * @param  {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<boolean>}     Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    areBlocksDisabled(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.areBlocksDisabledInSite(site);
+        });
+    }
+
+    /**
      * Get the display data for a certain block.
      *
      * @param {Injector} injector Injector.
@@ -120,5 +145,16 @@ export class CoreBlockDelegate extends CoreDelegate {
      */
     isBlockSupported(name: string): boolean {
         return this.hasHandler(name, true);
+    }
+
+    /**
+     * Check if feature is enabled or disabled in the site, depending on the feature prefix and the handler name.
+     *
+     * @param  {CoreDelegateHandler} handler Handler to check.
+     * @param  {CoreSite} site Site to check.
+     * @return {boolean} Whether is enabled or disabled in site.
+     */
+    protected isFeatureDisabled(handler: CoreDelegateHandler, site: CoreSite): boolean {
+        return this.areBlocksDisabledInSite(site) || super.isFeatureDisabled(handler, site);
     }
 }

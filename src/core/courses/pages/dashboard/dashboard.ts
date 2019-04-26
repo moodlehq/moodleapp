@@ -24,6 +24,7 @@ import { CoreSiteHomeProvider } from '@core/sitehome/providers/sitehome';
 import { CoreSiteHomeIndexComponent } from '@core/sitehome/components/index/index';
 import { CoreCoursesProvider } from '../../providers/courses';
 import { CoreCoursesDashboardProvider } from '../../providers/dashboard';
+import { CoreCoursesMyCoursesComponent } from '../../components/my-courses/my-courses';
 
 /**
  * Page that displays the dashboard.
@@ -37,6 +38,7 @@ export class CoreCoursesDashboardPage implements OnDestroy {
     @ViewChild(CoreTabsComponent) tabsComponent: CoreTabsComponent;
     @ViewChild(CoreSiteHomeIndexComponent) siteHomeComponent: CoreSiteHomeIndexComponent;
     @ViewChildren(CoreBlockComponent) blocksComponents: QueryList<CoreBlockComponent>;
+    @ViewChild(CoreCoursesMyCoursesComponent) mcComponent: CoreCoursesMyCoursesComponent;
 
     firstSelectedTab: number;
     siteHomeEnabled = false;
@@ -183,6 +185,26 @@ export class CoreCoursesDashboardPage implements OnDestroy {
             this.loadDashboardContent().finally(() => {
                 refresher.complete();
             });
+        });
+    }
+
+    /**
+     * Refresh the dashboard data and My Courses.
+     *
+     * @param {any} refresher Refresher.
+     */
+    refreshMyCourses(refresher: any): void {
+        // First of all, refresh dashboard blocks, maybe a new block was added and now we can display the dashboard.
+        this.dashboardProvider.invalidateDashboardBlocks().finally(() => {
+            return this.loadDashboardContent();
+        }).finally(() => {
+            if (!this.dashboardEnabled) {
+                // Dashboard still not enabled. Refresh my courses.
+                this.mcComponent && this.mcComponent.refreshCourses(refresher);
+            } else {
+                this.tabsComponent.selectTab(1);
+                refresher.complete();
+            }
         });
     }
 
