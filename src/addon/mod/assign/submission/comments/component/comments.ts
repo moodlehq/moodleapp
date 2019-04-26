@@ -27,8 +27,12 @@ import { AddonModAssignSubmissionPluginComponent } from '../../../classes/submis
 export class AddonModAssignSubmissionCommentsComponent extends AddonModAssignSubmissionPluginComponent {
     @ViewChild(CoreCommentsCommentsComponent) commentsComponent: CoreCommentsCommentsComponent;
 
+    commentsEnabled: boolean;
+
     constructor(protected commentsProvider: CoreCommentsProvider) {
         super();
+
+        this.commentsEnabled = !commentsProvider.areCommentsDisabledInSite();
     }
 
     /**
