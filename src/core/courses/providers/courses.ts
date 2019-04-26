@@ -722,13 +722,18 @@ export class CoreCoursesProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
 
             const userId = site.getUserId(),
-                data = {
+                data: any = {
                     userid: userId
                 },
                 preSets = {
                     cacheKey: this.getUserCoursesCacheKey(),
+                    getCacheUsingCacheKey: true,
                     omitExpires: !!preferCache
                 };
+
+            if (site.isVersionGreaterEqualThan('3.7')) {
+                data.returnusercount = 0;
+            }
 
             return site.read('core_enrol_get_users_courses', data, preSets);
         });
