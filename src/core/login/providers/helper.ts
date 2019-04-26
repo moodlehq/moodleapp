@@ -28,6 +28,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
+import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreConfigConstants } from '../../../configconstants';
 import { CoreConstants } from '@core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
@@ -72,6 +73,8 @@ export interface CoreLoginSSOData {
  */
 @Injectable()
 export class CoreLoginHelperProvider {
+    static OPEN_COURSE = 'open_course';
+
     protected logger;
     protected isSSOConfirmShown = false;
     protected isOpenEditAlertShown = false;
@@ -83,7 +86,7 @@ export class CoreLoginHelperProvider {
             private eventsProvider: CoreEventsProvider, private appProvider: CoreAppProvider, private utils: CoreUtilsProvider,
             private urlUtils: CoreUrlUtilsProvider, private configProvider: CoreConfigProvider, private platform: Platform,
             private initDelegate: CoreInitDelegate, private sitePluginsProvider: CoreSitePluginsProvider,
-            private location: Location, private alertCtrl: AlertController) {
+            private location: Location, private alertCtrl: AlertController, private courseProvider: CoreCourseProvider) {
         this.logger = logger.getInstance('CoreLoginHelper');
     }
 
@@ -423,13 +426,7 @@ export class CoreLoginHelperProvider {
      * @return {Promise<any>} Promise resolved when done.
      */
     goToSiteInitialPage(navCtrl?: NavController, page?: string, params?: any, options?: NavOptions): Promise<any> {
-        navCtrl = navCtrl || this.appProvider.getRootNavController();
-
-        // Due to DeepLinker, we need to remove the path from the URL before going to main menu.
-        // IonTabs checks the URL to determine which path to load for deep linking, so we clear the URL.
-        this.location.replaceState('');
-
-        return navCtrl.setRoot('CoreMainMenuPage', { redirectPage: page, redirectParams: params }, options);
+        return this.openMainMenu(navCtrl, page, params, options);
     }
 
     /**
@@ -604,11 +601,7 @@ export class CoreLoginHelperProvider {
 
             return this.sitesProvider.loadSite(siteId, page, params).then((loggedIn) => {
                 if (loggedIn) {
-                    // Due to DeepLinker, we need to remove the path from the URL before going to main menu.
-                    // IonTabs checks the URL to determine which path to load for deep linking, so we clear the URL.
-                    this.location.replaceState('');
-
-                    return navCtrl.setRoot('CoreMainMenuPage', { redirectPage: page, redirectParams: params });
+                    return this.openMainMenu(navCtrl, page, params);
                 }
             }).catch((error) => {
                 // Site doesn't exist.
@@ -626,7 +619,39 @@ export class CoreLoginHelperProvider {
      * @param {any} params Params to pass to the page.
      */
     protected loadPageInMainMenu(page: string, params: any): void {
-        this.eventsProvider.trigger(CoreEventsProvider.LOAD_PAGE_MAIN_MENU, { redirectPage: page, redirectParams: params });
+        if (page == CoreLoginHelperProvider.OPEN_COURSE) {
+            // Use the openCourse function.
+            this.courseProvider.openCourse(undefined, params.course, params);
+        } else {
+            this.eventsProvider.trigger(CoreEventsProvider.LOAD_PAGE_MAIN_MENU, { redirectPage: page, redirectParams: params });
+        }
+    }
+
+    /**
+     * Open the main menu, loading a certain page.
+     *
+     * @param {NavController} navCtrl NavController.
+     * @param {string} page Name of the page to load.
+     * @param {any} params Params to pass to the page.
+     * @param {NavOptions} [options] Navigation options.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected openMainMenu(navCtrl: NavController, page: string, params: any, options?: NavOptions): Promise<any> {
+        navCtrl = navCtrl || this.appProvider.getRootNavController();
+
+        // Due to DeepLinker, we need to remove the path from the URL before going to main menu.
+        // IonTabs checks the URL to determine which path to load for deep linking, so we clear the URL.
+        this.location.replaceState('');
+
+        if (page == CoreLoginHelperProvider.OPEN_COURSE) {
+            // Load the main menu first, and then open the course.
+            return navCtrl.setRoot('CoreMainMenuPage').finally(() => {
+                return this.courseProvider.openCourse(undefined, params.course, params);
+            });
+        } else {
+            // Open the main menu.
+            return navCtrl.setRoot('CoreMainMenuPage', { redirectPage: page, redirectParams: params }, options);
+        }
     }
 
     /**
@@ -793,7 +818,7 @@ export class CoreLoginHelperProvider {
     /**
      * Redirect to a new page, setting it as the root page and loading the right site if needed.
      *
-     * @param {string} page Name of the page to load.
+     * @param {string} page Name of the page to load. Special cases: OPEN_COURSE (to open course page).
      * @param {any} params Params to pass to the page.
      * @param {string} [siteId] Site to load. If not defined, current site.
      * @return {Promise<any>} Promise resolved when done.

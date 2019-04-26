@@ -13,16 +13,20 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSiteWSPreSets, CoreSite } from '@classes/site';
 import { CoreConstants } from '../../constants';
 import { CoreCourseOfflineProvider } from './course-offline';
+import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
+import { CoreCourseFormatDelegate } from './format-delegate';
 
 /**
  * Service that provides some features regarding a course.
@@ -96,7 +100,9 @@ export class CoreCourseProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private eventsProvider: CoreEventsProvider,
             private utils: CoreUtilsProvider, private timeUtils: CoreTimeUtilsProvider, private translate: TranslateService,
-            private courseOffline: CoreCourseOfflineProvider, private appProvider: CoreAppProvider) {
+            private courseOffline: CoreCourseOfflineProvider, private appProvider: CoreAppProvider,
+            private courseFormatDelegate: CoreCourseFormatDelegate, private sitePluginsProvider: CoreSitePluginsProvider,
+            private domUtils: CoreDomUtilsProvider) {
         this.logger = logger.getInstance('CoreCourseProvider');
 
         this.sitesProvider.registerSiteSchema(this.siteSchema);
@@ -897,6 +903,61 @@ export class CoreCourseProvider {
      */
     moduleHasView(module: any): boolean {
         return !!module.url;
+    }
+
+    /**
+     * Wait for any course format plugin to load, and open the course page.
+     *
+     * If the plugin's promise is resolved, the course page will be opened.  If it is rejected, they will see an error.
+     * If the promise for the plugin is still in progress when the user tries to open the course, a loader
+     * will be displayed until it is complete, before the course page is opened.  If the promise is already complete,
+     * they will see the result immediately.
+     *
+     * This function must be in here instead of course helper to prevent circular dependencies.
+     *
+     * @param {NavController} navCtrl The nav controller to use. If not defined, the course will be opened in main menu.
+     * @param {any} course Course to open
+     * @param {any} [params] Other params to pass to the course page.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    openCourse(navCtrl: NavController, course: any, params?: any): Promise<any> {
+        const loading = this.domUtils.showModalLoading();
+
+        // Wait for site plugins to be fetched.
+        return this.sitePluginsProvider.waitFetchPlugins().then(() => {
+            if (this.sitePluginsProvider.sitePluginPromiseExists('format_' + course.format)) {
+                // This course uses a custom format plugin, wait for the format plugin to finish loading.
+
+                return this.sitePluginsProvider.sitePluginLoaded('format_' + course.format).then(() => {
+                    // The format loaded successfully, but the handlers wont be registered until all site plugins have loaded.
+                    if (this.sitePluginsProvider.sitePluginsFinishedLoading) {
+                        return this.courseFormatDelegate.openCourse(navCtrl, course, params);
+                    } else {
+                        // Wait for plugins to be loaded.
+                        const deferred = this.utils.promiseDefer(),
+                            observer = this.eventsProvider.on(CoreEventsProvider.SITE_PLUGINS_LOADED, () => {
+                                observer && observer.off();
+
+                                this.courseFormatDelegate.openCourse(navCtrl, course, params).then((response) => {
+                                    deferred.resolve(response);
+                                }).catch((error) => {
+                                    deferred.reject(error);
+                                });
+                            });
+
+                        return deferred.promise;
+                    }
+                }).catch(() => {
+                    // The site plugin failed to load. The user needs to restart the app to try loading it again.
+                    this.domUtils.showErrorModal('core.courses.errorloadplugins', true);
+                });
+            } else {
+                // No custom format plugin. We don't need to wait for anything.
+                return this.courseFormatDelegate.openCourse(navCtrl, course, params);
+            }
+        }).finally(() => {
+            loading.dismiss();
+        });
     }
 
     /**
