@@ -234,7 +234,9 @@ export class CoreWSProvider {
             args: this.convertValuesToString(data)
         }];
 
-        siteUrl = preSets.siteUrl + '/lib/ajax/service.php';
+        // The info= parameter has no function. It is just to help with debugging.
+        // We call it info to match the parameter name use by Moodle's AMD ajax module.
+        siteUrl = preSets.siteUrl + '/lib/ajax/service.php?info=' + method;
 
         const promise = this.http.post(siteUrl, JSON.stringify(ajaxData)).timeout(CoreConstants.WS_TIMEOUT).toPromise();
 
@@ -547,8 +549,13 @@ export class CoreWSProvider {
             options['responseType'] = 'text';
         }
 
+        // We add the method name to the URL purely to help with debugging.
+        // This duplicates what is in the ajaxData, but that does no harm.
+        // POST variables take precedence over GET.
+        const requestUrl = siteUrl + '&wsfunction=' + method;
+
         // Perform the post request.
-        const promise = this.http.post(siteUrl, ajaxData, options).timeout(CoreConstants.WS_TIMEOUT).toPromise();
+        const promise = this.http.post(requestUrl, ajaxData, options).timeout(CoreConstants.WS_TIMEOUT).toPromise();
 
         return promise.then((data: any) => {
             // Some moodle web services return null.
