@@ -66,12 +66,14 @@ export class AddonNotificationsCronHandler implements CoreCronHandler {
 
     /**
      * Execute the process.
+     * Receives the ID of the site affected, undefined for all sites.
      *
-     * @param {string} [siteId] ID of the site affected. If not defined, all sites.
-     * @return {Promise<any>} Promise resolved when done. If the promise is rejected, this function will be called again often,
-     *                        it shouldn't be abused.
+     * @param  {string} [siteId] ID of the site affected, undefined for all sites.
+     * @param {boolean} [force] Wether the execution is forced (manual sync).
+     * @return {Promise<any>}         Promise resolved when done, rejected if failure. If the promise is rejected, this function
+     *                                will be called again often, it shouldn't be abused.
      */
-    execute(siteId?: string): Promise<any> {
+    execute(siteId?: string, force?: boolean): Promise<any> {
         if (this.sitesProvider.isCurrentSite(siteId)) {
             this.eventsProvider.trigger(AddonNotificationsProvider.READ_CRON_EVENT, {}, this.sitesProvider.getCurrentSiteId());
         }

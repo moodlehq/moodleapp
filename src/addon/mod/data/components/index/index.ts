@@ -27,6 +27,7 @@ import { AddonModDataHelperProvider } from '../../providers/helper';
 import { AddonModDataOfflineProvider } from '../../providers/offline';
 import { AddonModDataSyncProvider } from '../../providers/sync';
 import { AddonModDataComponentsModule } from '../components.module';
+import { AddonModDataPrefetchHandler } from '../../providers/prefetch-handler';
 
 /**
  * Component that displays a data index page.
@@ -82,7 +83,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
     constructor(injector: Injector, private dataProvider: AddonModDataProvider, private dataHelper: AddonModDataHelperProvider,
             private dataOffline: AddonModDataOfflineProvider, @Optional() content: Content,
-            private dataSync: AddonModDataSyncProvider, private timeUtils: CoreTimeUtilsProvider,
+            private prefetchHandler: AddonModDataPrefetchHandler, private timeUtils: CoreTimeUtilsProvider,
             private groupsProvider: CoreGroupsProvider, private commentsProvider: CoreCommentsProvider,
             private modalCtrl: ModalController, private utils: CoreUtilsProvider, protected navCtrl: NavController,
             private ratingOffline: CoreRatingOfflineProvider) {
@@ -520,17 +521,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      * @return {Promise<any>} Promise resolved when done.
      */
     protected sync(): Promise<any> {
-        const promises = [
-            this.dataSync.syncDatabase(this.data.id),
-            this.dataSync.syncRatings(this.data.coursemodule)
-        ];
-
-        return Promise.all(promises).then((results) => {
-            return results.reduce((a, b) => ({
-                updated: a.updated || b.updated,
-                warnings: (a.warnings || []).concat(b.warnings || []),
-            }), {updated: false});
-        });
+        return this.prefetchHandler.sync(this.module, this.courseId);
     }
 
     /**

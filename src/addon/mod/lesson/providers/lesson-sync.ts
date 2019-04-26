@@ -186,26 +186,31 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      * Try to synchronize all the lessons in a certain site or in all sites.
      *
      * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllLessons(siteId?: string): Promise<any> {
-        return this.syncOnSites('all lessons', this.syncAllLessonsFunc.bind(this), [], siteId);
+    syncAllLessons(siteId?: string, force?: boolean): Promise<any> {
+        return this.syncOnSites('all lessons', this.syncAllLessonsFunc.bind(this), [force], siteId);
     }
 
     /**
      * Sync all lessons on a site.
      *
-     * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param  {string} siteId Site ID to sync.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @param {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected syncAllLessonsFunc(siteId?: string): Promise<any> {
+    protected syncAllLessonsFunc(siteId: string, force?: boolean): Promise<any> {
         // Get all the lessons that have something to be synchronized.
         return this.lessonOfflineProvider.getAllLessonsWithData(siteId).then((lessons) => {
             // Sync all lessons that haven't been synced for a while.
             const promises = [];
 
-            lessons.forEach((lesson) => {
-                promises.push(this.syncLessonIfNeeded(lesson.id, false, siteId).then((result) => {
+            lessons.map((lesson) => {
+                const promise = force ? this.syncLesson(lesson.id, false, false, siteId) :
+                    this.syncLessonIfNeeded(lesson.id, false, siteId);
+
+                return promise.then((result) => {
                     if (result && result.updated) {
                         // Sync successful, send event.
                         this.eventsProvider.trigger(AddonModLessonSyncProvider.AUTO_SYNCED, {
@@ -213,7 +218,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
                             warnings: result.warnings
                         }, siteId);
                     }
-                }));
+                });
             });
 
             return Promise.all(promises);

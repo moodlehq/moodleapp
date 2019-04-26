@@ -24,6 +24,7 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/acti
 import { CoreGroupsProvider } from '@providers/groups';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModWorkshopProvider } from './workshop';
+import { AddonModWorkshopSyncProvider } from './sync';
 import { AddonModWorkshopHelperProvider } from './helper';
 
 /**
@@ -47,7 +48,8 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
             private groupsProvider: CoreGroupsProvider,
             private userProvider: CoreUserProvider,
             private workshopProvider: AddonModWorkshopProvider,
-            private workshopHelper: AddonModWorkshopHelperProvider) {
+            private workshopHelper: AddonModWorkshopHelperProvider,
+            private syncProvider: AddonModWorkshopSyncProvider) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
@@ -364,5 +366,17 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
                 // Ignore errors.
             });
         });
+    }
+
+    /**
+     * Sync a module.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    sync(module: any, courseId: number, siteId?: any): Promise<any> {
+        return this.syncProvider.syncWorkshop(module.instance, siteId);
     }
 }

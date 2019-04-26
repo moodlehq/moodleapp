@@ -444,19 +444,21 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
      * Try to synchronize all the SCORMs in a certain site or in all sites.
      *
      * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} force Wether to force sync not depending on last execution.
      * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllScorms(siteId?: string): Promise<any> {
-        return this.syncOnSites('all SCORMs', this.syncAllScormsFunc.bind(this), [], siteId);
+    syncAllScorms(siteId?: string, force?: boolean): Promise<any> {
+        return this.syncOnSites('all SCORMs', this.syncAllScormsFunc.bind(this), [force], siteId);
     }
 
     /**
      * Sync all SCORMs on a site.
      *
-     * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param  {string} siteId Site ID to sync.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @param {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected syncAllScormsFunc(siteId?: string): Promise<any> {
+    protected syncAllScormsFunc(siteId: string, force?: boolean): Promise<any> {
 
         // Get all offline attempts.
         return this.scormOfflineProvider.getAllAttempts(siteId).then((attempts) => {
@@ -481,7 +483,9 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
                 if (!this.syncProvider.isBlocked(AddonModScormProvider.COMPONENT, scorm.id, siteId)) {
 
                     promises.push(this.scormProvider.getScormById(scorm.courseId, scorm.id, '', false, siteId).then((scorm) => {
-                        return this.syncScormIfNeeded(scorm, siteId).then((data) => {
+                        const promise = force ? this.syncScorm(scorm, siteId) : this.syncScormIfNeeded(scorm, siteId);
+
+                        return promise.then((data) => {
                             if (typeof data != 'undefined') {
                                 // We tried to sync. Send event.
                                 this.eventsProvider.trigger(AddonModScormSyncProvider.AUTO_SYNCED, {

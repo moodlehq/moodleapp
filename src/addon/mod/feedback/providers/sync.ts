@@ -72,19 +72,21 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
      * Try to synchronize all the feedbacks in a certain site or in all sites.
      *
      * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} force Wether to force sync not depending on last execution.
      * @return {Promise<any>}    Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllFeedbacks(siteId?: string): Promise<any> {
-        return this.syncOnSites('all feedbacks', this.syncAllFeedbacksFunc.bind(this), undefined, siteId);
+    syncAllFeedbacks(siteId?: string, force?: boolean): Promise<any> {
+        return this.syncOnSites('all feedbacks', this.syncAllFeedbacksFunc.bind(this), [force], siteId);
     }
 
     /**
      * Sync all pending feedbacks on a site.
      *
-     * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {string}  [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} force    Wether to force sync not depending on last execution.
      * @param {Promise<any>}     Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected syncAllFeedbacksFunc(siteId?: string): Promise<any> {
+    protected syncAllFeedbacksFunc(siteId?: string, force?: boolean): Promise<any> {
          // Sync all new responses.
         return this.feedbackOffline.getAllFeedbackResponses(siteId).then((responses) => {
             const promises = {};
@@ -97,7 +99,10 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
                     continue;
                 }
 
-                promises[response.feedbackid] = this.syncFeedbackIfNeeded(response.feedbackid, siteId).then((result) => {
+                promises[response.feedbackid] = force ? this.syncFeedback(response.feedbackid, siteId) :
+                    this.syncFeedbackIfNeeded(response.feedbackid, siteId);
+
+                promises[response.feedbackid].then((result) => {
                     if (result && result.updated) {
                         // Sync successful, send event.
                         this.eventsProvider.trigger(AddonModFeedbackSyncProvider.AUTO_SYNCED, {

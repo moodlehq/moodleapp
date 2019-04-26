@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
@@ -25,6 +25,7 @@ import { AddonModFeedbackProvider } from './feedback';
 import { AddonModFeedbackHelperProvider } from './helper';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreGroupsProvider } from '@providers/groups';
+import { AddonModFeedbackSyncProvider } from './sync';
 import { CoreUserProvider } from '@core/user/providers/user';
 
 /**
@@ -37,11 +38,14 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
     component = AddonModFeedbackProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$|^attemptsfinished|^attemptsunfinished$/;
 
+    protected syncProvider: AddonModFeedbackSyncProvider; // It will be injected later to prevent circular dependencies.
+
     constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
             courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider, protected feedbackProvider: AddonModFeedbackProvider,
             protected userProvider: CoreUserProvider, protected feedbackHelper: AddonModFeedbackHelperProvider,
-            protected timeUtils: CoreTimeUtilsProvider, protected groupsProvider: CoreGroupsProvider) {
+            protected timeUtils: CoreTimeUtilsProvider, protected groupsProvider: CoreGroupsProvider,
+            protected injector: Injector) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
@@ -238,5 +242,21 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
                 return Promise.all(p2);
             });
         });
+    }
+
+    /**
+     * Sync a module.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    sync(module: any, courseId: number, siteId?: any): Promise<any> {
+        if (!this.syncProvider) {
+            this.syncProvider = this.injector.get(AddonModFeedbackSyncProvider);
+        }
+
+        return this.syncProvider.syncFeedback(module.instance, siteId);
     }
 }

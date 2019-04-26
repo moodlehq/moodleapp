@@ -69,19 +69,21 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
      * Try to synchronize all the forums in a certain site or in all sites.
      *
      * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @return {Promise<any>}    Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllForums(siteId?: string): Promise<any> {
-        return this.syncOnSites('all forums', this.syncAllForumsFunc.bind(this), [], siteId);
+    syncAllForums(siteId?: string, force?: boolean): Promise<any> {
+        return this.syncOnSites('all forums', this.syncAllForumsFunc.bind(this), [force], siteId);
     }
 
     /**
      * Sync all forums on a site.
      *
-     * @param  {string}       [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param  {string} siteId Site ID to sync.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @return {Promise<any>}          Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected syncAllForumsFunc(siteId?: string): Promise<any> {
+    protected syncAllForumsFunc(siteId: string, force?: boolean): Promise<any> {
         const sitePromises = [];
 
         // Sync all new discussions.
@@ -94,8 +96,10 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
                     return;
                 }
 
-                promises[discussion.forumid] = this.syncForumDiscussionsIfNeeded(discussion.forumid, discussion.userid, siteId)
-                        .then((result) => {
+                promises[discussion.forumid] = force ? this.syncForumDiscussions(discussion.forumid, discussion.userid, siteId) :
+                    this.syncForumDiscussionsIfNeeded(discussion.forumid, discussion.userid, siteId);
+
+                promises[discussion.forumid].then((result) => {
                     if (result && result.updated) {
                         // Sync successful, send event.
                         this.eventsProvider.trigger(AddonModForumSyncProvider.AUTO_SYNCED, {
@@ -120,8 +124,10 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
                     return;
                 }
 
-                promises[reply.discussionid] = this.syncDiscussionRepliesIfNeeded(reply.discussionid, reply.userid, siteId)
-                        .then((result) => {
+                promises[reply.discussionid] = force ? this.syncDiscussionReplies(reply.discussionid, reply.userid, siteId) :
+                    this.syncDiscussionRepliesIfNeeded(reply.discussionid, reply.userid, siteId);
+
+                promises[reply.discussionid].then((result) => {
                     if (result && result.updated) {
                         // Sync successful, send event.
                         this.eventsProvider.trigger(AddonModForumSyncProvider.AUTO_SYNCED, {
@@ -137,7 +143,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
             return Promise.all(this.utils.objectToArray(promises));
         }));
 
-        sitePromises.push(this.syncRatings(undefined, undefined, siteId));
+        sitePromises.push(this.syncRatings(undefined, undefined, force, siteId));
 
         return Promise.all(sitePromises);
     }
@@ -282,13 +288,14 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
      *
      * @param {number} [cmId] Course module to be synced. If not defined, sync all forums.
      * @param {number} [discussionId] Discussion id to be synced. If not defined, sync all discussions.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved if sync is successful, rejected otherwise.
      */
-    syncRatings(cmId?: number, discussionId?: number, siteId?: string): Promise<any> {
+    syncRatings(cmId?: number, discussionId?: number, force?: boolean, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        return this.ratingSync.syncRatings('mod_forum', 'post', 'module', cmId, discussionId, siteId).then((results) => {
+        return this.ratingSync.syncRatings('mod_forum', 'post', 'module', cmId, discussionId, force, siteId).then((results) => {
             let updated = false;
             const warnings = [];
             const promises = [];

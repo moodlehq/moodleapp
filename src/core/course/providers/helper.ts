@@ -291,6 +291,7 @@ export class CoreCourseHelperProvider {
         }
 
         return promise.then((sections) => {
+
             // Confirm the download.
             return this.confirmDownloadSizeSection(course.id, undefined, sections, true).then(() => {
                 // User confirmed, get the course handlers if needed.
@@ -1268,7 +1269,7 @@ export class CoreCourseHelperProvider {
             return promise.catch(() => {
                 // Ignore errors.
             }).then(() => {
-                return handler.prefetch(module, courseId, true);
+                return this.prefetchDelegate.prefetchModule(module, courseId, true);
             });
         });
     }
@@ -1341,18 +1342,22 @@ export class CoreCourseHelperProvider {
 
         section.isDownloading = true;
 
-        // Validate the section needs to be downloaded and calculate amount of modules that need to be downloaded.
-        promises.push(this.prefetchDelegate.getModulesStatus(section.modules, courseId, section.id).then((result) => {
-            if (result.status == CoreConstants.DOWNLOADED || result.status == CoreConstants.NOT_DOWNLOADABLE) {
-                // Section is downloaded or not downloadable, nothing to do.
-                return;
-            }
+        // Sync the modules first.
+        promises.push(this.prefetchDelegate.syncModules(section.modules, courseId).then(() => {
+            // Validate the section needs to be downloaded and calculate amount of modules that need to be downloaded.
+            return this.prefetchDelegate.getModulesStatus(section.modules, courseId, section.id).then((result) => {
+                if (result.status == CoreConstants.DOWNLOADED || result.status == CoreConstants.NOT_DOWNLOADABLE) {
+                    // Section is downloaded or not downloadable, nothing to do.
 
-            return this.prefetchSingleSection(section, result, courseId);
-        }, (error) => {
-            section.isDownloading = false;
+                    return ;
+                }
 
-            return Promise.reject(error);
+                return this.prefetchSingleSection(section, result, courseId);
+            }, (error) => {
+                section.isDownloading = false;
+
+                return Promise.reject(error);
+            });
         }));
 
         // Download the files in the section description.

@@ -24,6 +24,7 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/acti
 import { CoreGroupsProvider } from '@providers/groups';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModForumProvider } from './forum';
+import { AddonModForumSyncProvider } from './sync';
 import { CoreRatingProvider } from '@core/rating/providers/rating';
 
 /**
@@ -46,7 +47,8 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
             private groupsProvider: CoreGroupsProvider,
             private userProvider: CoreUserProvider,
             private forumProvider: AddonModForumProvider,
-            private ratingProvider: CoreRatingProvider) {
+            private ratingProvider: CoreRatingProvider,
+            private syncProvider: AddonModForumSyncProvider) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
@@ -262,6 +264,29 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
             if (canCreateDiscussions) {
                 return Promise.reject(error);
             }
+        });
+    }
+
+    /**
+     * Sync a module.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    sync(module: any, courseId: number, siteId?: any): Promise<any> {
+        const promises = [];
+
+        promises.push(this.syncProvider.syncForumDiscussions(module.instance, undefined, siteId));
+        promises.push(this.syncProvider.syncForumReplies(module.instance, undefined, siteId));
+        promises.push(this.syncProvider.syncRatings(module.id, undefined, true, siteId));
+
+        return Promise.all(promises).then((results) => {
+            return results.reduce((a, b) => ({
+                updated: a.updated || b.updated,
+                warnings: (a.warnings || []).concat(b.warnings || []),
+            }), {updated: false});
         });
     }
 }
