@@ -24,7 +24,8 @@ import { CoreCourseProvider } from '../../providers/course';
 import { CoreCourseHelperProvider } from '../../providers/helper';
 import { CoreCourseFormatDelegate } from '../../providers/format-delegate';
 import { CoreCourseModulePrefetchDelegate } from '../../providers/module-prefetch-delegate';
-import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from '../../providers/options-delegate';
+import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay,
+    CoreCourseOptionsMenuHandlerToDisplay } from '../../providers/options-delegate';
 import { CoreCourseSyncProvider } from '../../providers/sync';
 import { CoreCourseFormatComponent } from '../../components/format/format';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
@@ -49,6 +50,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     sectionId: number;
     sectionNumber: number;
     courseHandlers: CoreCourseOptionsHandlerToDisplay[];
+    courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];
     dataLoaded: boolean;
     downloadEnabled: boolean;
     downloadEnabledIcon = 'square-outline'; // Disabled by default.
@@ -301,6 +303,11 @@ export class CoreCourseSectionPage implements OnDestroy {
                 }
             }));
 
+            // Load the course menu handlers.
+            promises.push(this.courseOptionsDelegate.getMenuHandlersToDisplay(this.injector, this.course).then((handlers) => {
+                this.courseMenuHandlers = handlers;
+            }));
+
             // Load the course format options when course completion is enabled to show completion progress on sections.
             if (this.course.enablecompletion && this.coursesProvider.isGetCoursesByFieldAvailable()) {
                 promises.push(this.coursesProvider.getCourseByField('id', this.course.id).catch(() => {
@@ -417,7 +424,8 @@ export class CoreCourseSectionPage implements OnDestroy {
      * Prefetch the whole course.
      */
     prefetchCourse(): void {
-        this.courseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course, this.sections, this.courseHandlers)
+        this.courseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course, this.sections,
+                this.courseHandlers, this.courseMenuHandlers)
                 .then(() => {
             if (this.downloadEnabled) {
                 // Recalculate the status.
@@ -457,6 +465,16 @@ export class CoreCourseSectionPage implements OnDestroy {
      */
     openCourseSummary(): void {
         this.navCtrl.push('CoreCoursesCoursePreviewPage', {course: this.course, avoidOpenCourse: true});
+    }
+
+    /**
+     * Opens a menu item registered to the delegate.
+     *
+     * @param {CoreCourseMenuHandlerToDisplay} item Item to open
+     */
+    openMenuItem(item: CoreCourseOptionsMenuHandlerToDisplay): void {
+        const params = Object.assign({ course: this.course}, item.data.pageParams);
+        this.navCtrl.push(item.data.page, params);
     }
 
     /**
