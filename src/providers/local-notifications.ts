@@ -25,6 +25,7 @@ import { CoreTextUtilsProvider } from './utils/text';
 import { CoreUtilsProvider } from './utils/utils';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreConstants } from '@core/constants';
+import { CoreConfigConstants } from '../configconstants';
 import { Subject, Subscription } from 'rxjs';
 
 /*
@@ -481,6 +482,7 @@ export class CoreLocalNotificationsProvider {
             if (this.platform.is('android')) {
                 notification.icon = notification.icon || 'res://icon';
                 notification.smallIcon = notification.smallIcon || 'res://smallicon';
+                notification.color = notification.color || CoreConfigConstants.notificoncolor;
 
                 const led: any = notification.led || {};
                 notification.led = {

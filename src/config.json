@@ -70,5 +70,6 @@
     "multisitesdisplay": "",
     "skipssoconfirmation": false,
     "forcedefaultlanguage": false,
-    "privacypolicy": "https:\/\/moodle.org\/mod\/page\/view.php?id=8148"
+    "privacypolicy": "https:\/\/moodle.org\/mod\/page\/view.php?id=8148",
+    "notificoncolor": "#f98012"
 }
