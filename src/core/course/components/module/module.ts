@@ -86,12 +86,15 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
                 if (data.componentId === this.module.id && this.prefetchHandler &&
                         data.component === this.prefetchHandler.component) {
 
+                    // Call determineModuleStatus to get the right status to display.
+                    const status = this.prefetchDelegate.determineModuleStatus(this.module, data.status);
+
                     if (this.downloadEnabled) {
                         // Download is enabled, show the status.
-                        this.showStatus(data.status);
+                        this.showStatus(status);
                     } else if (this.module.handlerData.updateStatus) {
                         // Download isn't enabled but the handler defines a updateStatus function, call it anyway.
-                        this.module.handlerData.updateStatus(data.status);
+                        this.module.handlerData.updateStatus(status);
                     }
                 }
             }, this.sitesProvider.getCurrentSiteId());

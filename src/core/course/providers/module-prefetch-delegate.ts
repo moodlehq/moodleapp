@@ -387,6 +387,8 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
                 }
             } else if (handler.determineStatus) {
                 // The handler implements a determineStatus function. Apply it.
+                canCheck = canCheck || this.canCheckUpdates();
+
                 return handler.determineStatus(module, status, canCheck);
             }
         }
