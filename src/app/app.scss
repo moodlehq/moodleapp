@@ -1052,7 +1052,7 @@ ion-modal,
 
 // Highlight text.
 .matchtext {
-  background-color: lighten($blue, 40%);
+  background-color: $core-text-hightlight-background-color;
 }
 
 // Styles for desktop apps only.

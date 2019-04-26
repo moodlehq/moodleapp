@@ -47,7 +47,7 @@
 
                 <ion-item text-wrap (longPress)="copyMessage(message)" class="addon-message" [class.addon-message-mine]="message.useridfrom == currentUserId" [class.addon-message-not-mine]="message.useridfrom != currentUserId" [class.addon-message-no-user]="!message.showUserData" [@coreSlideInOut]="message.useridfrom == currentUserId ? '' : 'fromLeft'">
                     <!-- User data. -->
-                    <h2 class="addon-message-user" >
+                    <h2 class="addon-message-user">
                         <ion-avatar item-start core-user-avatar [user]="members[message.useridfrom]" [linkProfile]="false" *ngIf="message.showUserData"></ion-avatar>
 
                         <div *ngIf="message.showUserData">{{ members[message.useridfrom].fullname }}</div>
@@ -64,6 +64,7 @@
                     <button ion-button icon-only clear="true" *ngIf="!message.sending && showDelete" (click)="deleteMessage(message, index)" class="addon-messages-delete-button" [@coreSlideInOut]="'fromRight'" [attr.aria-label]=" 'addon.messages.deletemessage' | translate">
                         <ion-icon name="trash" color="danger"></ion-icon>
                     </button>
+                    <div class="tail" *ngIf="message.showTail"></div>
                 </ion-item>
             </ng-container>
         </ion-list>
