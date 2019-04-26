@@ -866,7 +866,8 @@ export class CoreSite {
                 } else {
                     let responseData = this.textUtils.parseJSON(response.data);
                     // Match the behaviour of CoreWSProvider.call when no response is expected.
-                    if (!responseData && (typeof wsPresets.responseExpected == 'undefined' || wsPresets.responseExpected)) {
+                    const responseExpected = typeof wsPresets.responseExpected == 'undefined' || wsPresets.responseExpected;
+                    if (!responseExpected && (responseData == null || responseData === '')) {
                         responseData = {};
                     }
                     request.deferred.resolve(responseData);
