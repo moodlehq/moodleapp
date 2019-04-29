@@ -37,12 +37,29 @@ export class AddonNotificationsActionsComponent implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
-        if (!this.contextUrl) {
-            // No contexturl, nothing to do.
+        if (!this.contextUrl && (!this.data || !this.data.appurl)) {
+            // No URL, nothing to do.
             return;
         }
 
-        this.contentLinksDelegate.getActionsFor(this.contextUrl, this.courseId, undefined, this.data).then((actions) => {
+        let promise;
+
+        // Treat appurl first if any.
+        if (this.data && this.data.appurl) {
+            promise = this.contentLinksDelegate.getActionsFor(this.data.appurl, this.courseId, undefined, this.data);
+        } else {
+            promise = Promise.resolve([]);
+        }
+
+        promise.then((actions) => {
+            if (!actions.length && this.contextUrl) {
+                // No appurl or cannot handle it. Try with contextUrl.
+                return this.contentLinksDelegate.getActionsFor(this.contextUrl, this.courseId, undefined, this.data);
+            }
+
+            return actions;
+        }).then((actions) => {
+
             if (!actions.length) {
                 // URL is not supported. Add an action to open it in browser.
                 actions.push({
@@ -63,6 +80,8 @@ export class AddonNotificationsActionsComponent implements OnInit {
      * @param {NavController} [navCtrl] NavController.
      */
     protected defaultAction(siteId: string, navCtrl?: NavController): void {
-        this.sitesProvider.getCurrentSite().openInBrowserWithAutoLogin(this.contextUrl);
+        const url = (this.data && this.data.appurl) || this.contextUrl;
+
+        this.sitesProvider.getCurrentSite().openInBrowserWithAutoLogin(url);
     }
 }
