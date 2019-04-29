@@ -30,8 +30,8 @@
                         <h2 *ngIf="!submission.userfullname">{{ 'addon.mod_assign.hiddenuser' | translate }}{{submission.blindid}}</h2>
                         <p *ngIf="assign.teamsubmission">
                             <span *ngIf="submission.groupname">{{submission.groupname}}</span>
-                            <span *ngIf="assign.preventsubmissionnotingroup && !submission.groupname && !submission.manyGroups && !submission.blindid">{{ 'addon.mod_assign.noteam' | translate }}</span>
-                            <span *ngIf="assign.preventsubmissionnotingroup && !submission.groupname && submission.manyGroups && !submission.blindid">{{ 'addon.mod_assign.multipleteams' | translate }}</span>
+                            <span *ngIf="assign.preventsubmissionnotingroup && !submission.groupname && submission.noGroups && !submission.blindid" class="text-danger">{{ 'addon.mod_assign.noteam' | translate }}</span>
+                            <span *ngIf="assign.preventsubmissionnotingroup && !submission.groupname && submission.manyGroups && !submission.blindid" class="text-danger">{{ 'addon.mod_assign.multipleteams' | translate }}</span>
                             <span *ngIf="!assign.preventsubmissionnotingroup && !submission.groupname">{{ 'addon.mod_assign.defaultteam' | translate }}</span>
                         </p>
                         <ion-badge text-center text-wrap [color]="submission.statusColor" *ngIf="submission.statusTranslated">
