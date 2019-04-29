@@ -35,6 +35,7 @@ export class CoreRatingRateComponent implements OnChanges {
     @Input() aggregateMethod: number;
     @Input() scaleId: number;
     @Input() userId: number;
+    @Output() onLoading: EventEmitter<boolean>; // Eevent that indicates whether the component is loading data.
     @Output() onUpdate: EventEmitter<void>; // Event emitted when the rating is updated online.
 
     item: CoreRatingInfoItem;
@@ -43,6 +44,7 @@ export class CoreRatingRateComponent implements OnChanges {
 
     constructor(private domUtils: CoreDomUtilsProvider, private translate: TranslateService,
             private ratingProvider: CoreRatingProvider, private ratingOffline: CoreRatingOfflineProvider) {
+        this.onLoading = new EventEmitter<boolean>();
         this.onUpdate = new EventEmitter<void>();
     }
 
@@ -77,6 +79,7 @@ export class CoreRatingRateComponent implements OnChanges {
             });
         }
 
+        this.onLoading.emit(true);
         this.ratingOffline.getRating(this.contextLevel, this.instanceId, this.ratingInfo.component, this.ratingInfo.ratingarea,
                 this.itemId).then((rating) => {
             this.rating = rating.rating;
@@ -86,6 +89,8 @@ export class CoreRatingRateComponent implements OnChanges {
             } else {
                 this.rating = CoreRatingProvider.UNSET_RATING;
             }
+        }).finally(() => {
+            this.onLoading.emit(false);
         });
     }
 

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild, OnDestroy } from '@angular/core';
 import { Content, IonicPage, NavParams, NavController } from 'ionic-angular';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -51,6 +51,9 @@ export class AddonModDataEntryPage implements OnDestroy {
     moduleName = 'data';
     component = AddonModDataProvider.COMPONENT;
     entryLoaded = false;
+    renderingEntry = false;
+    loadingComments = false;
+    loadingRating = false;
     selectedGroup = 0;
     entry: any;
     offlineActions = [];
@@ -61,18 +64,19 @@ export class AddonModDataEntryPage implements OnDestroy {
     data: any;
     groupInfo: any;
     showComments: any;
-    entryRendered = '';
+    entryHtml = '';
     siteId: string;
     extraImports = [AddonModDataComponentsModule];
     jsData;
     ratingInfo: CoreRatingInfo;
+    isPullingToRefresh = false; // Whether the last fetching of data was started by a pull-to-refresh action
 
     constructor(params: NavParams, protected utils: CoreUtilsProvider, protected groupsProvider: CoreGroupsProvider,
             protected domUtils: CoreDomUtilsProvider, protected fieldsDelegate: AddonModDataFieldsDelegate,
             protected courseProvider: CoreCourseProvider, protected dataProvider: AddonModDataProvider,
             protected dataOffline: AddonModDataOfflineProvider, protected dataHelper: AddonModDataHelperProvider,
-            sitesProvider: CoreSitesProvider, protected navCtrl: NavController,
-            protected eventsProvider: CoreEventsProvider) {
+            sitesProvider: CoreSitesProvider, protected navCtrl: NavController, protected eventsProvider: CoreEventsProvider,
+            private cdr: ChangeDetectorRef) {
         this.module = params.get('module') || {};
         this.entryId = params.get('entryId') || null;
         this.courseId = params.get('courseId');
@@ -122,11 +126,14 @@ export class AddonModDataEntryPage implements OnDestroy {
     /**
      * Fetch the entry data.
      *
-     * @param  {boolean}      refresh If refresh the current data or not.
-     * @return {Promise<any>}         Resolved when done.
+     * @param  {boolean} [refresh] Whether to refresh the current data or not.
+     * @param  {boolean} [isPtr] Whether is a pull to refresh action.
+     * @return {Promise<any>} Resolved when done.
      */
-    protected fetchEntryData(refresh?: boolean): Promise<any> {
+    protected fetchEntryData(refresh?: boolean, isPtr?: boolean): Promise<any> {
         let fieldsArray;
+
+        this.isPullingToRefresh = isPtr;
 
         return this.dataProvider.getDatabase(this.courseId, this.module.id).then((data) => {
             this.title = data.name || this.title;
@@ -176,7 +183,7 @@ export class AddonModDataEntryPage implements OnDestroy {
             const actions = this.dataHelper.getActions(this.data, this.access, this.entry);
 
             const templte = this.data.singletemplate || this.dataHelper.getDefaultTemplate('single', fieldsArray);
-            this.entryRendered = this.dataHelper.displayShowFields(templte, fieldsArray, this.entry, this.offset, 'show', actions);
+            this.entryHtml = this.dataHelper.displayShowFields(templte, fieldsArray, this.entry, this.offset, 'show', actions);
             this.showComments = actions.comments;
 
             const entries = {};
@@ -191,7 +198,7 @@ export class AddonModDataEntryPage implements OnDestroy {
         }).catch((message) => {
             if (!refresh) {
                 // Some call failed, retry without using cache since it might be a new activity.
-                return this.refreshAllData();
+                return this.refreshAllData(isPtr);
             }
 
             this.domUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);
@@ -219,9 +226,10 @@ export class AddonModDataEntryPage implements OnDestroy {
     /**
      * Refresh all the data.
      *
+     * @param  {boolean} [isPtr] Whether is a pull to refresh action.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected refreshAllData(): Promise<any> {
+    protected refreshAllData(isPtr?: boolean): Promise<any> {
         const promises = [];
 
         promises.push(this.dataProvider.invalidateDatabaseData(this.courseId));
@@ -232,7 +240,7 @@ export class AddonModDataEntryPage implements OnDestroy {
         }
 
         return Promise.all(promises).finally(() => {
-            return this.fetchEntryData(true);
+            return this.fetchEntryData(true, isPtr);
         });
     }
 
@@ -244,7 +252,7 @@ export class AddonModDataEntryPage implements OnDestroy {
      */
     refreshDatabase(refresher?: any): Promise<any> {
         if (this.entryLoaded) {
-            return this.refreshAllData().finally(() => {
+            return this.refreshAllData(true).finally(() => {
                 refresher && refresher.complete();
             });
         }
@@ -308,6 +316,30 @@ export class AddonModDataEntryPage implements OnDestroy {
                 });
             }
         });
+    }
+
+    /**
+     * Function called when entry is being rendered.
+     */
+    setRenderingEntry(rendering: boolean): void {
+        this.renderingEntry = rendering;
+        this.cdr.detectChanges();
+    }
+
+    /**
+     * Function called when comments component is loading data.
+     */
+    setLoadingComments(loading: boolean): void {
+        this.loadingComments = loading;
+        this.cdr.detectChanges();
+    }
+
+    /**
+     * Function called when rate component is loading data.
+     */
+    setLoadingRating(loading: boolean): void {
+        this.loadingRating = loading;
+        this.cdr.detectChanges();
     }
 
     /**
