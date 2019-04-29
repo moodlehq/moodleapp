@@ -51,11 +51,18 @@ export class AddonModResourcePrefetchHandler extends CoreCourseResourcePrefetchH
      * @return {string} Status to display.
      */
     determineStatus(module: any, status: string, canCheck: boolean): string {
-        if (status == CoreConstants.DOWNLOADED && module && module.contents) {
-            // If the first file is an external file, always display the module as outdated.
-            const mainFile = module.contents[0];
-            if (mainFile && mainFile.isexternalfile) {
-                return CoreConstants.OUTDATED;
+        if (status == CoreConstants.DOWNLOADED && module) {
+            // If the main file is an external file, always display the module as outdated.
+            if (module.contentsinfo) {
+                if (module.contentsinfo.repositorytype) {
+                    // It's an external file.
+                    return CoreConstants.OUTDATED;
+                }
+            } else if (module.contents) {
+                const mainFile = module.contents[0];
+                if (mainFile && mainFile.isexternalfile) {
+                    return CoreConstants.OUTDATED;
+                }
             }
         }
 
