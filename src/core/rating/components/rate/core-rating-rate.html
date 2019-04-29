@@ -1,4 +1,4 @@
-<ion-item text-wrap *ngIf="item && (item.canrate || item.rating != null)">
+<ion-item text-wrap *ngIf="item && (item.canrate || item.rating != null) && !disabled">
     <ion-label>{{ 'core.rating.rating' | translate }}</ion-label>
     <ion-select text-start [(ngModel)]="rating" (ngModelChange)="userRatingChanged()" interface="action-sheet" [disabled]="!item.canrate">
         <ion-option *ngFor="let scaleItem of scale.items" [value]="scaleItem.value">{{ scaleItem.name }}</ion-option>
