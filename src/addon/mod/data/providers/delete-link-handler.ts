@@ -13,13 +13,10 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
 import { AddonModDataProvider } from './data';
-import { CoreCourseProvider } from '@core/course/providers/course';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreEventsProvider } from '@providers/events';
+import { AddonModDataHelperProvider } from './helper';
 
 /**
  * Content links handler for database delete entry.
@@ -31,28 +28,8 @@ export class AddonModDataDeleteLinkHandler extends CoreContentLinksHandlerBase {
     featureName = 'CoreCourseModuleDelegate_AddonModData';
     pattern = /\/mod\/data\/view\.php.*([\?\&](d|delete)=\d+)/;
 
-    constructor(private dataProvider: AddonModDataProvider, private courseProvider: CoreCourseProvider,
-            private domUtils: CoreDomUtilsProvider, private eventsProvider: CoreEventsProvider,
-            private translate: TranslateService) {
+    constructor(private dataProvider: AddonModDataProvider, private dataHelper: AddonModDataHelperProvider) {
         super();
-    }
-
-    /**
-     * Convenience function to help get courseId.
-     *
-     * @param {number} dataId   Database Id.
-     * @param {string} siteId   Site Id, if not set, current site will be used.
-     * @param {number} courseId Course Id if already set.
-     * @return {Promise<number>}   Resolved with course Id when done.
-     */
-    protected getActivityCourseIdIfNotSet(dataId: number, siteId: string, courseId: number): Promise<number> {
-        if (courseId) {
-            return Promise.resolve(courseId);
-        }
-
-        return this.courseProvider.getModuleBasicInfoByInstance(dataId, 'data', siteId).then((module) => {
-            return module.course;
-        });
     }
 
     /**
@@ -68,38 +45,10 @@ export class AddonModDataDeleteLinkHandler extends CoreContentLinksHandlerBase {
             CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: (siteId, navCtrl?): void => {
+                const dataId = parseInt(params.d, 10);
+                const entryId = parseInt(params.delete, 10);
 
-                this.domUtils.showConfirm(this.translate.instant('addon.mod_data.confirmdeleterecord')).then(() => {
-                    const modal = this.domUtils.showModalLoading(),
-                        dataId = parseInt(params.d, 10),
-                        entryId = parseInt(params.delete, 10);
-
-                    return this.getActivityCourseIdIfNotSet(dataId, siteId, courseId).then((cId) => {
-                        courseId = cId;
-
-                        // Delete entry.
-                        return this.dataProvider.deleteEntry(dataId, entryId, courseId, siteId).catch((message) => {
-                            this.domUtils.showErrorModalDefault(message, 'addon.mod_data.errordeleting', true);
-
-                            return Promise.reject(null);
-                        });
-                    }).then(() => {
-                        const promises = [];
-                        promises.push(this.dataProvider.invalidateEntryData(dataId, entryId, siteId));
-                        promises.push(this.dataProvider.invalidateEntriesData(dataId, siteId));
-
-                        return Promise.all(promises);
-                    }).then(() => {
-                        this.eventsProvider.trigger(AddonModDataProvider.ENTRY_CHANGED, {dataId: dataId, entryId: entryId,
-                            deleted: true}, siteId);
-
-                        this.domUtils.showToast('addon.mod_data.recorddeleted', true, 3000);
-                    }).finally(() => {
-                        modal.dismiss();
-                    });
-                }).catch(() => {
-                    // Nothing to do.
-                });
+                this.dataHelper.showDeleteEntryModal(dataId, entryId, courseId);
             }
         }];
     }

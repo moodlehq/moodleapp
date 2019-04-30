@@ -9,7 +9,7 @@
     </ion-refresher>
     <core-loading [hideUntil]="entryLoaded && (isPullingToRefresh || !renderingEntry && !loadingRating && !loadingComments)">
         <!-- Database entries found to be synchronized -->
-        <div class="core-warning-card" icon-start *ngIf="hasOffline">
+        <div class="core-warning-card" icon-start *ngIf="entry && entry.hasOffline">
             <ion-icon name="warning"></ion-icon>
             {{ 'core.hasdatatosync' | translate: {$a: moduleName} }}
         </div>
@@ -31,7 +31,7 @@
         <core-rating-rate *ngIf="data && entry && ratingInfo && (!data.approval || entry.approved)" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="data.coursemodule" [itemId]="entry.id" [itemSetId]="0" [courseId]="courseId" [aggregateMethod]="data.assessed" [scaleId]="data.scale" [userId]="entry.userid" (onLoading)="setLoadingRating($event)" (onUpdate)="ratingUpdated()"></core-rating-rate>
         <core-rating-aggregate *ngIf="data && entry && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="data.coursemodule" [itemId]="entry.id" [courseId]="courseId" [aggregateMethod]="data.assessed" [scaleId]="data.scale"></core-rating-aggregate>
 
-        <ion-item *ngIf="data && entry">
+        <ion-item *ngIf="data && entry && entry.id > 0">
             <core-comments contextLevel="module" [instanceId]="data.coursemodule" component="mod_data" [itemId]="entry.id" area="database_entry" [displaySpinner]="false" (onLoading)="setLoadingComments($event)"></core-comments>
         </ion-item>
 

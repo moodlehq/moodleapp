@@ -25,7 +25,7 @@ import { CoreCommentsProvider } from '@core/comments/providers/comments';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { CoreRatingProvider } from '@core/rating/providers/rating';
-import { AddonModDataProvider } from './data';
+import { AddonModDataProvider, AddonModDataEntry } from './data';
 import { AddonModDataSyncProvider } from './sync';
 import { AddonModDataHelperProvider } from './helper';
 
@@ -57,10 +57,10 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
      * @param  {boolean} [forceCache]   True to always get the value from cache, false otherwise. Default false.
      * @param  {boolean} [ignoreCache]  True if it should ignore cached data (it will always fail in offline or server down).
      * @param  {string}  [siteId]       Site ID.
-     * @return {Promise<any>}                All unique entries.
+     * @return {Promise<AddonModDataEntry[]>} All unique entries.
      */
     protected getAllUniqueEntries(dataId: number, groups: any[], forceCache: boolean = false, ignoreCache: boolean = false,
-            siteId?: string): Promise<any> {
+            siteId?: string): Promise<AddonModDataEntry[]> {
         const promises = groups.map((group) => {
             return this.dataProvider.fetchAllEntries(dataId, group.id, undefined, undefined, undefined, forceCache, ignoreCache,
                 siteId);
@@ -139,14 +139,14 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Returns the file contained in the entries.
      *
-     * @param  {any[]} entries  List of entries to get files from.
-     * @return {any[]}          List of files.
+     * @param {AddonModDataEntry[]} entries List of entries to get files from.
+     * @return {any[]} List of files.
      */
-    protected getEntriesFiles(entries: any[]): any[] {
+    protected getEntriesFiles(entries: AddonModDataEntry[]): any[] {
         let files = [];
 
         entries.forEach((entry) => {
-            entry.contents.forEach((content) => {
+            this.utils.objectToArray(entry.contents).forEach((content) => {
                 files = files.concat(content.files);
             });
         });
