@@ -243,7 +243,7 @@
             <p class="text-danger"><strong>{{ 'addon.mod_assign.noteam' | translate }}</strong></p>
             <p class="text-danger">{{ 'addon.mod_assign.noteam_desc' | translate }}</p>
         </ng-container>
-        <ng-container *ngIf="assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup && lastAttempt.usergroups && lastAttempt.usergroups.length > 0">
+        <ng-container *ngIf="assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup && lastAttempt.usergroups && lastAttempt.usergroups.length > 1">
             <p class="text-danger"><strong>{{ 'addon.mod_assign.multipleteams' | translate }}</strong></p>
             <p class="text-danger">{{ 'addon.mod_assign.multipleteams_desc' | translate }}</p>
         </ng-container>

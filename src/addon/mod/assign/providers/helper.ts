@@ -327,6 +327,7 @@ export class AddonModAssignHelperProvider {
                 }
 
                 submission.manyGroups = !!participant.groups && participant.groups.length > 1;
+                submission.noGroups = !!participant.groups && participant.groups.length == 0;
                 if (participant.groupname) {
                     submission.groupid = participant.groupid;
                     submission.groupname = participant.groupname;
@@ -368,6 +369,8 @@ export class AddonModAssignHelperProvider {
                         submission.blindid = participant.id;
                     }
 
+                    submission.manyGroups = !!participant.groups && participant.groups.length > 1;
+                    submission.noGroups = !!participant.groups && participant.groups.length == 0;
                     if (participant.groupname) {
                         submission.groupid = participant.groupid;
                         submission.groupname = participant.groupname;
