@@ -80,9 +80,10 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     isGroup = false;
     members: any = {}; // Members that wrote a message, indexed by ID.
     favouriteIcon = 'fa-star';
+    favouriteIconSlash = false;
     deleteIcon = 'trash';
     blockIcon = 'close-circle';
-    addRemoveIcon = 'add';
+    addRemoveIcon = 'person';
     otherMember: any; // Other member information (individual conversations only).
     footerType: 'message' | 'blocked' | 'requiresContact' | 'requestSent' | 'requestReceived' | 'unable';
     requestContactSent = false;
@@ -244,7 +245,6 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                                 this.title = member.fullname;
                             }
                             this.blockIcon = this.otherMember && this.otherMember.isblocked ? 'checkmark-circle' : 'close-circle';
-                            this.addRemoveIcon = this.otherMember && this.otherMember.iscontact ? 'remove' : 'add';
                         }));
                     } else {
                         this.otherMember = null;
@@ -446,7 +446,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                     this.title = conversation.name;
                     this.conversationImage = conversation.imageurl;
                     this.isGroup = conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP;
-                    this.favouriteIcon = conversation.isfavourite ? 'fa-star-o' : 'fa-star';
+                    this.favouriteIcon = 'fa-star';
+                    this.favouriteIconSlash = conversation.isfavourite;
                     this.muteIcon = conversation.ismuted ? 'volume-up' : 'volume-off';
                     if (!this.isGroup) {
                         this.userId = conversation.userid;
@@ -1118,7 +1119,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'Error changing favourite state.');
         }).finally(() => {
-            this.favouriteIcon = this.conversation.isfavourite ? 'fa-star-o' : 'fa-star';
+            this.favouriteIcon = 'fa-star';
+            this.favouriteIconSlash = this.conversation.isfavourite;
             done && done();
         });
     }
@@ -1306,7 +1308,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.error', true);
         }).finally(() => {
-            this.addRemoveIcon = this.otherMember.iscontact ? 'remove' : 'add';
+            this.addRemoveIcon = 'person';
         });
     }
 
@@ -1381,7 +1383,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.error', true);
         }).finally(() => {
-            this.addRemoveIcon = this.otherMember.iscontact ? 'remove' : 'add';
+            this.addRemoveIcon = 'person';
         });
     }
 
