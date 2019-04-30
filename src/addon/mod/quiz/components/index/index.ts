@@ -511,6 +511,12 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      */
     protected showStatus(status: string, previousStatus?: string): void {
         this.showStatusSpinner = status == CoreConstants.DOWNLOADING;
+
+        if (status == CoreConstants.DOWNLOADED && previousStatus == CoreConstants.DOWNLOADING) {
+            // Quiz downloaded now, maybe a new attempt was created. Load content again.
+            this.loaded = false;
+            this.loadContent();
+        }
     }
 
     /**
