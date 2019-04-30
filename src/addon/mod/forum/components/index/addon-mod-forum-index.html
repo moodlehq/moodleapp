@@ -45,7 +45,11 @@
                 <ion-card *ngFor="let discussion of discussions" (click)="openDiscussion(discussion)" [class.addon-forum-discussion-selected]="discussion.discussion == selectedDiscussion">
                     <ion-item text-wrap>
                         <ion-avatar core-user-avatar [user]="discussion" item-start [courseId]="courseId"></ion-avatar>
-                        <h2><core-icon name="fa-map-pin" *ngIf="discussion.pinned"></core-icon> <core-format-text [text]="discussion.subject"></core-format-text></h2>
+                        <h2>
+                            <core-icon name="fa-map-pin" *ngIf="discussion.pinned"></core-icon>
+                            <core-icon name="fa-star" class="addon-forum-star" *ngIf="!discussion.pinned && discussion.starred"></core-icon>
+                            <core-format-text [text]="discussion.subject"></core-format-text>
+                        </h2>
                         <p>
                             <ion-note float-end padding-left text-end>
                                 {{discussion.created | coreDateDayOrTime}}

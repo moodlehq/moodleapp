@@ -785,6 +785,46 @@ export class AddonModForumProvider {
     }
 
     /**
+     * Pin or unpin a discussion.
+     *
+     * @param {number} discussionId Discussion id.
+     * @param {boolean} locked True to pin, false to unpin.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resvoled when done.
+     * @since 3.7
+     */
+    setPinState(discussionId: number, pinned: boolean, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                discussionid: discussionId,
+                targetstate: pinned ? 1 : 0
+            };
+
+            return site.write('mod_forum_set_pin_state', params);
+        });
+    }
+
+    /**
+     * Star or unstar a discussion.
+     *
+     * @param {number} discussionId Discussion id.
+     * @param {boolean} starred True to star, false to unstar.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resvoled when done.
+     * @since 3.7
+     */
+    toggleFavouriteState(discussionId: number, starred: boolean, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                discussionid: discussionId,
+                targetstate: starred ? 1 : 0
+            };
+
+            return site.write('mod_forum_toggle_favourite_state', params);
+        });
+    }
+
+    /**
      * Store the users data from a discussions/posts list.
      *
      * @param {any[]} list Array of posts or discussions.

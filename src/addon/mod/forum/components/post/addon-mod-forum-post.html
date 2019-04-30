@@ -1,7 +1,11 @@
 <ion-card-header text-wrap no-padding id="addon-mod_forum-post-{{post.id}}">
     <ion-item text-wrap>
         <ion-avatar core-user-avatar [user]="post" item-start (click)="openUserProfile(post.userid)"></ion-avatar>
-        <h2><span [class.core-bold]="post.parent == 0"><core-format-text [text]="post.subject"></core-format-text></span></h2>
+        <h2>
+            <core-icon name="fa-map-pin" *ngIf="post.parent == 0 && post.pinned"></core-icon>
+            <core-icon name="fa-star" class="addon-forum-star" *ngIf="post.parent == 0 && !post.pinned && post.starred"></core-icon>
+            <span [class.core-bold]="post.parent == 0"><core-format-text [text]="post.subject"></core-format-text></span>
+        </h2>
         <p>
             <ion-note float-end padding-left *ngIf="!post.modified"><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ion-note>
             <ion-note float-end padding-left text-end *ngIf="post.modified">
