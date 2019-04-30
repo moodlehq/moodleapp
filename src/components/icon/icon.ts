@@ -29,6 +29,7 @@ export class CoreIconComponent implements OnInit, OnDestroy {
     // Common params.
     @Input() name: string;
     @Input('color') color?: string;
+    @Input('slash') slash?: boolean; // Display a red slash over the icon.
 
     // Ionicons params.
     @Input('isActive') isActive?: boolean;
@@ -92,6 +93,10 @@ export class CoreIconComponent implements OnInit, OnDestroy {
             } else {
                 this.newElement.setAttribute(attrs[i].name, attrs[i].value);
             }
+        }
+
+        if (this.slash) {
+            this.newElement.classList.add('icon-slash');
         }
 
         this.element.parentElement.replaceChild(this.newElement, this.element);
