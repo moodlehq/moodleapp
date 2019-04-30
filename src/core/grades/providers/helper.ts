@@ -544,8 +544,8 @@ export class CoreGradesHelperProvider {
                 row['image'] = src[1];
             } else if (text.indexOf('<i ') > -1) {
                 row['itemtype'] = 'unknown';
-                const src = text.match(/class="fa-([^ ]*)"/);
-                row['icon'] = src[1];
+                const src = text.match(/<i class="(?:[^"]*?\s)?(fa-[a-z0-9-]+)/);
+                row['icon'] = src ? src[1] : '';
             }
         }
 
