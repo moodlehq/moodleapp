@@ -23,6 +23,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { Keyboard } from '@ionic-native/keyboard';
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
+import { CoreConfigConstants } from '../configconstants';
 
 @Component({
     templateUrl: 'app.html'
@@ -43,10 +44,25 @@ export class MoodleMobileApp implements OnInit {
         platform.ready().then(() => {
             // Okay, so the platform is ready and our plugins are available.
             // Here you can do any higher level native things you might need.
-            if (platform.is('android')) {
-                statusBar.styleLightContent();
+
+            // Set StatusBar properties.
+            if (typeof CoreConfigConstants.statusbarbgios == 'string' && platform.is('ios')) {
+                // IOS Status bar properties.
+                statusBar.overlaysWebView(false);
+                statusBar.backgroundColorByHexString(CoreConfigConstants.statusbarbgios);
+                CoreConfigConstants.statusbarlighttextios ? statusBar.styleLightContent() : statusBar.styleDefault();
+            } else if (typeof CoreConfigConstants.statusbarbgandroid == 'string' && platform.is('android')) {
+                // Android Status bar properties.
+                statusBar.backgroundColorByHexString(CoreConfigConstants.statusbarbgandroid);
+                CoreConfigConstants.statusbarlighttextandroid ? statusBar.styleLightContent() : statusBar.styleDefault();
+            } else if (typeof CoreConfigConstants.statusbarbg == 'string') {
+                // Generic Status bar properties.
+                platform.is('ios') && statusBar.overlaysWebView(false);
+                statusBar.backgroundColorByHexString(CoreConfigConstants.statusbarbg);
+                CoreConfigConstants.statusbarlighttext ? statusBar.styleLightContent() : statusBar.styleDefault();
             } else {
-                statusBar.styleDefault();
+                // Default Status bar properties.
+                platform.is('android') ? statusBar.styleLightContent() : statusBar.styleDefault();
             }
 
             keyboard.hideFormAccessoryBar(false);
