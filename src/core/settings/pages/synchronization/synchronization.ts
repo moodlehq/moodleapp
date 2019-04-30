@@ -50,7 +50,7 @@ export class CoreSettingsSynchronizationPage implements OnDestroy {
                 const siteEntry = this.sites.find((siteEntry) => siteEntry.id == site.id);
                 if (siteEntry) {
                     siteEntry.siteUrl = siteInfo.siteurl;
-                    siteEntry.siteName = siteInfo.sitename;
+                    siteEntry.siteName = site.getSiteName();
                     siteEntry.fullName = siteInfo.fullname;
                 }
             });

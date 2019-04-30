@@ -338,6 +338,20 @@ export class CoreSite {
     }
 
     /**
+     * Get site name.
+     *
+     * @return {string} Site name.
+     */
+    getSiteName(): string {
+        if (CoreConfigConstants.sitename) {
+            // Overridden by config.
+            return CoreConfigConstants.sitename;
+        } else {
+            return this.infos && this.infos.sitename || '';
+        }
+    }
+
+    /**
      * Set site ID.
      *
      * @param {string} New ID.

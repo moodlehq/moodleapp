@@ -67,6 +67,7 @@
     },
     "customurlscheme": "moodlemobile",
     "siteurl": "",
+    "sitename": "",
     "multisitesdisplay": "",
     "skipssoconfirmation": false,
     "forcedefaultlanguage": false,
