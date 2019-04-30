@@ -47,6 +47,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     courseId: number;
     discussionId: number;
     forum: any;
+    accessInfo: any;
     discussion: any;
     posts: any[];
     discussionLoaded = false;
@@ -63,11 +64,13 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         subject: '',
         message: null, // Null means empty or just white space.
         files: [],
+        isprivatereply: false,
     };
     originalData = {
         subject: null, // Null means original data is not set.
         message: null, // Null means empty or just white space.
         files: [],
+        isprivatereply: false,
     };
     refreshIcon = 'spinner';
     syncIcon = 'spinner';
@@ -318,9 +321,14 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                 this.forumId = forum.id;
                 this.cmId = forum.cmid;
                 this.forum = forum;
+            }).then(() => {
+                return this.forumProvider.getAccessInformation(this.forum.id).then((accessInfo) => {
+                    this.accessInfo = accessInfo;
+                });
             }).catch(() => {
                 // Ignore errors.
                 this.forum = {};
+                this.accessInfo = {};
             });
         }).then(() => {
             return this.ratingOffline.hasRatings('mod_forum', 'post', 'module', this.cmId, this.discussionId).then((hasRatings) => {
@@ -420,7 +428,12 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         this.refreshIcon = 'spinner';
         this.syncIcon = 'spinner';
 
-        return this.forumProvider.invalidateDiscussionPosts(this.discussionId).catch(() => {
+        const promises = [
+            this.forumProvider.invalidateDiscussionPosts(this.discussionId),
+            this.forumProvider.invalidateAccessInformation(this.forumId)
+        ];
+
+        return this.utils.allPromises(promises).catch(() => {
             // Ignore errors.
         }).then(() => {
             return this.fetchPosts(sync, showErrors);
