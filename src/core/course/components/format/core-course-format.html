@@ -10,7 +10,7 @@
     <core-loading [hideUntil]="loaded">
         <!-- Section selector. -->
         <core-dynamic-component [component]="sectionSelectorComponent" [data]="data">
-            <div text-wrap *ngIf="displaySectionSelector && sections && sections.length" padding class="clearfix" ion-row justify-content-between class="safe-padding-horizontal">
+            <div text-wrap *ngIf="displaySectionSelector && sections && sections.length" padding class="clearfix" ion-row justify-content-between class="safe-padding-horizontal" [class.core-section-download]="downloadEnabled">
                 <button float-start ion-button icon-start icon-end (click)="showSectionSelector($event)" color="light" class="core-button-select button-no-uppercase" ion-col [attr.aria-label]="('core.course.sections' | translate) + ': ' + (selectedSection && (selectedSection.formattedName || selectedSection.name))" aria-haspopup="true" [attr.aria-expanded]="sectionSelectorExpanded" aria-controls="core-course-section-selector" id="core-course-section-button">
                     <core-icon name="fa-folder"></core-icon>
                     <span class="core-section-selector-text">{{selectedSection && (selectedSection.formattedName || selectedSection.name) || 'core.course.sections' | translate }}</span>
@@ -71,7 +71,7 @@
 <ng-template #sectionTemplate let-section="section">
     <section ion-list *ngIf="!section.hiddenbynumsections && section.id != allSectionsId && section.id != stealthModulesSectionId">
         <!-- Title is only displayed when viewing all sections. -->
-        <ion-item-divider text-wrap color="light" *ngIf="selectedSection.id == allSectionsId && section.name">
+        <ion-item-divider text-wrap color="light" *ngIf="selectedSection.id == allSectionsId && section.name" [class.core-section-download]="downloadEnabled">
             <core-format-text [text]="section.name"></core-format-text>
             <!-- Section download. -->
             <ng-container *ngTemplateOutlet="sectionDownloadTemplate; context: {section: section}"></ng-container>
