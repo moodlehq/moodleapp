@@ -23,6 +23,8 @@ export class CoreConstants {
     static SECONDS_MINUTE = 60;
     static WIFI_DOWNLOAD_THRESHOLD = 104857600; // 100MB.
     static DOWNLOAD_THRESHOLD = 10485760; // 10MB.
+    static MINIMUM_FREE_SPACE = 10485760; // 10MB.
+    static IOS_FREE_SPACE_THRESHOLD = 524288000; // 500MB.
     static DONT_SHOW_ERROR = 'CoreDontShowError';
     static NO_SITE_ID = 'NoSite';
 

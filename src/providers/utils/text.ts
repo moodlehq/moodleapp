@@ -113,7 +113,7 @@ export class CoreTextUtilsProvider {
      */
     bytesToSize(bytes: number, precision: number = 2): string {
 
-        if (typeof bytes == 'undefined' || bytes < 0) {
+        if (typeof bytes == 'undefined' || bytes === null || bytes < 0) {
             return this.translate.instant('core.notapplicable');
         }
 
