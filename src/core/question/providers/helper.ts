@@ -239,8 +239,9 @@ export class CoreQuestionHelperProvider {
      * It will also search for init_question functions of the question type and add the object to an 'initObjects' property.
      *
      * @param {any} question Question.
+     * @param {number} usageId Usage ID.
      */
-    extractQuestionScripts(question: any): void {
+    extractQuestionScripts(question: any, usageId: number): void {
         question.scriptsCode = '';
         question.initObjects = null;
         question.amdArgs = null;
@@ -272,7 +273,8 @@ export class CoreQuestionHelperProvider {
                 }
 
                 const amdRegExp = new RegExp('require\\(\\["qtype_' + question.type + '/question"\\], ' +
-                    'function\\(amd\\) \\{ amd\.init\\(("q' + question.slot + '".*?)\\); \\}\\);;', 'm');
+                    'function\\(amd\\) \\{ amd\.init\\(("(q|question-' + usageId + '-)' + question.slot +
+                    '".*?)\\); \\}\\);;', 'm');
                 const amdMatch = match.match(amdRegExp);
                 if (amdMatch) {
                     // Try to convert the arguments to an array and add them to the question.
@@ -506,9 +508,11 @@ export class CoreQuestionHelperProvider {
      * @param {string} [component] The component to link the files to. If not defined, question component.
      * @param {string|number} [componentId] An ID to use in conjunction with the component. If not defined, question ID.
      * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {number} [usageId] Usage ID. Required in Moodle 3.7+.
      * @return {Promise<any>} Promise resolved when all the files have been downloaded.
      */
-    prefetchQuestionFiles(question: any, component?: string, componentId?: string | number, siteId?: string): Promise<any> {
+    prefetchQuestionFiles(question: any, component?: string, componentId?: string | number, siteId?: string, usageId?: number)
+            : Promise<any> {
         const urls = this.domUtils.extractDownloadableFilesFromHtml(question.html);
 
         if (!component) {
@@ -516,7 +520,7 @@ export class CoreQuestionHelperProvider {
             componentId = question.id;
         }
 
-        urls.push(...this.questionDelegate.getAdditionalDownloadableFiles(question));
+        urls.push(...this.questionDelegate.getAdditionalDownloadableFiles(question, usageId));
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const promises = [];

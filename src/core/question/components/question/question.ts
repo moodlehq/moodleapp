@@ -34,6 +34,7 @@ export class CoreQuestionComponent implements OnInit {
     @Input() component: string; // The component the question belongs to.
     @Input() componentId: number; // ID of the component the question belongs to.
     @Input() attemptId: number; // Attempt ID.
+    @Input() usageId: number; // Usage ID.
     @Input() offlineEnabled?: boolean | string; // Whether the question can be answered in offline.
     @Output() buttonClicked: EventEmitter<any>; // Will emit an event when a behaviour button is clicked.
     @Output() onAbort: EventEmitter<void>; // Will emit an event if the question should be aborted.
@@ -86,7 +87,7 @@ export class CoreQuestionComponent implements OnInit {
                 };
 
                 // Treat the question.
-                this.questionHelper.extractQuestionScripts(this.question);
+                this.questionHelper.extractQuestionScripts(this.question, this.usageId);
 
                 // Handle question behaviour.
                 const behaviour = this.questionDelegate.getBehaviourForQuestion(this.question, this.question.preferredBehaviour);
