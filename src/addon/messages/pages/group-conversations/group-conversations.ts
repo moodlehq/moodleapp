@@ -166,8 +166,23 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         });
 
         // Update conversations if we receive an event to do so.
-        this.updateConversationListObserver = eventsProvider.on(AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT, () => {
+        this.updateConversationListObserver = eventsProvider.on(AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT, (data) => {
+            if (data && data.action == 'mute') {
+                // If the conversation is displayed, change its muted value.
+                const expandedOption = this.getExpandedOption();
+
+                if (expandedOption && expandedOption.conversations) {
+                    const conversation = this.findConversation(data.conversationId, undefined, expandedOption);
+                    if (conversation) {
+                        conversation.ismuted = data.value;
+                    }
+                }
+
+                return;
+            }
+
             this.refreshData();
+
         }, this.siteId);
 
         // If a message push notification is received, refresh the view.

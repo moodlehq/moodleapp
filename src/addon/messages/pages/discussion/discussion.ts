@@ -88,6 +88,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     requestContactSent = false;
     requestContactReceived = false;
     isSelf = false;
+    muteEnabled = false;
+    muteIcon = 'volume-off';
 
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, navParams: NavParams,
             private userProvider: CoreUserProvider, private navCtrl: NavController, private messagesSync: AddonMessagesSyncProvider,
@@ -99,6 +101,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         this.siteId = sitesProvider.getCurrentSiteId();
         this.currentUserId = sitesProvider.getCurrentSiteUserId();
         this.groupMessagingEnabled = this.messagesProvider.isGroupMessagingEnabled();
+        this.muteEnabled = this.messagesProvider.isMuteConversationEnabled();
 
         this.logger = logger.getInstance('AddonMessagesDiscussionPage');
 
@@ -443,6 +446,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                     this.conversationImage = conversation.imageurl;
                     this.isGroup = conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP;
                     this.favouriteIcon = conversation.isfavourite ? 'fa-star-o' : 'fa-star';
+                    this.muteIcon = conversation.ismuted ? 'volume-up' : 'volume-off';
                     if (!this.isGroup) {
                         this.userId = conversation.userid;
                     }
@@ -1103,6 +1107,33 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             this.domUtils.showErrorModalDefault(error, 'Error changing favourite state.');
         }).finally(() => {
             this.favouriteIcon = this.conversation.isfavourite ? 'fa-star-o' : 'fa-star';
+            done && done();
+        });
+    }
+
+    /**
+     * Change the mute state of the current conversation.
+     *
+     * @param {Function} [done] Function to call when done.
+     */
+    changeMute(done?: () => void): void {
+        this.muteIcon = 'spinner';
+
+        this.messagesProvider.muteConversation(this.conversation.id, !this.conversation.ismuted).then(() => {
+            this.conversation.ismuted = !this.conversation.ismuted;
+
+            // Get the conversation data so it's cached. Don't block the user for this.
+            this.messagesProvider.getConversation(this.conversation.id, undefined, true);
+
+            this.eventsProvider.trigger(AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT, {
+                conversationId: this.conversation.id,
+                action: 'mute',
+                value: this.conversation.ismuted
+            }, this.siteId);
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'Error changing muted state.');
+        }).finally(() => {
+            this.muteIcon = this.conversation.ismuted ? 'volume-up' : 'volume-off';
             done && done();
         });
     }
