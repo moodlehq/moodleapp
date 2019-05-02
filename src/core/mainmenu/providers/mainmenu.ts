@@ -170,7 +170,7 @@ export class CoreMainMenuProvider {
      * @return {number} Number of items depending on the device width.
      */
     getNumItems(): number {
-        if (window && window.innerWidth) {
+        if (!this.isResponsiveMainMenuItemsDisabledInCurrentSite() && window && window.innerWidth) {
             let numElements;
 
             if (this.tablet) {
@@ -206,5 +206,16 @@ export class CoreMainMenuProvider {
         }
 
         return tablet ? 'side' : 'bottom';
+    }
+
+    /**
+     * Check if responsive main menu items is disabled in the current site.
+     *
+     * @return {boolean} Whether it's disabled.
+     */
+    protected isResponsiveMainMenuItemsDisabledInCurrentSite(): boolean {
+        const site = this.sitesProvider.getCurrentSite();
+
+        return site && site.isFeatureDisabled('NoDelegate_ResponsiveMainMenuItems');
     }
 }
