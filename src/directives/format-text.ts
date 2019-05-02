@@ -590,7 +590,7 @@ export class CoreFormatTextDirective implements OnChanges {
             // Check if it's a Vimeo video. If it is, use the wsplayer script instead to make restricted videos work.
             const matches = iframe.src.match(/https?:\/\/player\.vimeo\.com\/video\/([0-9]+)/);
             if (matches && matches[1]) {
-                const newUrl = this.textUtils.concatenatePaths(site.getURL(), '/media/player/vimeo/wsplayer.php?video=') +
+                let newUrl = this.textUtils.concatenatePaths(site.getURL(), '/media/player/vimeo/wsplayer.php?video=') +
                     matches[1] + '&token=' + site.getToken();
 
                 // Width and height are mandatory, we need to calculate them.
@@ -614,8 +614,12 @@ export class CoreFormatTextDirective implements OnChanges {
                     }
                 }
 
-                // Always include the width and height in the URL.
-                iframe.src = newUrl + '&width=' + width + '&height=' + height;
+                // Width and height parameters are required in 3.6 and older sites.
+                if (!site.isVersionGreaterEqualThan('3.7')) {
+                    newUrl += '&width=' + width + '&height=' + height;
+                }
+                iframe.src = newUrl;
+
                 if (!iframe.width) {
                     iframe.width = width;
                 }
