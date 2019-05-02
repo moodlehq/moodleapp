@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreSite } from '@classes/site';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreGroupsProvider } from '@providers/groups';
@@ -782,6 +783,19 @@ export class AddonModForumProvider {
 
             return site.write('mod_forum_set_lock_state', params);
         });
+    }
+
+    /**
+     * Returns whether the set pin state WS is available.
+     *
+     * @param  {CoreSite} [site] Site. If not defined, current site.
+     * @return {boolean} Whether it's available.
+     * @since 3.7
+     */
+    isSetPinStateAvailableForSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return this.sitesProvider.wsAvailableInCurrentSite('mod_forum_set_pin_state');
     }
 
     /**

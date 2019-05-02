@@ -351,12 +351,16 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                 this.ratingInfo = ratingInfo;
             });
         }).then(() => {
-            // Use the canAddDiscussion WS to check if the user can pin discussions.
-            return this.forumProvider.canAddDiscussionToAll(this.forumId).then((response) => {
-                this.canPin = !!response.canpindiscussions;
-            }).catch(() => {
+            if (this.forumProvider.isSetPinStateAvailableForSite()) {
+                // Use the canAddDiscussion WS to check if the user can pin discussions.
+                return this.forumProvider.canAddDiscussionToAll(this.forumId).then((response) => {
+                    this.canPin = !!response.canpindiscussions;
+                }).catch(() => {
+                    this.canPin = false;
+                });
+            } else {
                 this.canPin = false;
-            });
+            }
         }).then(() => {
             return this.ratingOffline.hasRatings('mod_forum', 'post', 'module', this.cmId, this.discussionId).then((hasRatings) => {
                 this.hasOfflineRatings = hasRatings;
