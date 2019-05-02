@@ -293,6 +293,29 @@ export class CorePushNotificationsProvider {
     }
 
     /**
+     * Log a firebase event.
+     *
+     * @param {string} name Name of the event.
+     * @param {any} data Data of the event.
+     * @param {boolean} [filter] Whether to filter the data. This is useful when logging a full notification.
+     * @return {Promise<any>} Promise resolved when done. This promise is never rejected.
+     */
+    logEvent(name: string, data: any, filter?: boolean): Promise<any> {
+        const win = <any> window; // This feature is only present in our fork of the plugin.
+
+        if (win.PushNotification && win.PushNotification.logEvent) {
+            return new Promise((resolve, reject): void => {
+                win.PushNotification.logEvent(resolve, (error) => {
+                    this.logger.error('Error logging firebase event', name, error);
+                    resolve();
+                }, name, data, !!filter);
+            });
+        }
+
+        return Promise.resolve();
+    }
+
+    /**
      * Function called when a push notification is clicked. Redirect the user to the right state.
      *
      * @param {any} notification Notification.
