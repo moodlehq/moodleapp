@@ -2,6 +2,7 @@
     "addanewdiscussion": "Add a new discussion topic",
     "addanewquestion": "Add a new question",
     "addanewtopic": "Add a new topic",
+    "advanced": "Advanced",
     "cannotadddiscussion": "Adding discussions to this forum requires group membership.",
     "cannotadddiscussionall": "You do not have permission to add a new discussion topic for all participants.",
     "cannotcreatediscussion": "Could not create new discussion",
@@ -31,6 +32,7 @@
     "refreshdiscussions": "Refresh discussions",
     "refreshposts": "Refresh posts",
     "reply": "Reply",
+    "replyplaceholder": "Write your reply...",
     "subject": "Subject",
     "unread": "Unread",
     "unreadpostsnumber": "{{$a}} unread posts"

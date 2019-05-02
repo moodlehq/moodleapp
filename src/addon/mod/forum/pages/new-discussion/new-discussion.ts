@@ -61,6 +61,7 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
         pin: false,
         files: []
     };
+    advanced = false; // Display all form fields.
 
     protected courseId: number;
     protected cmId: number;
@@ -193,11 +194,19 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
                         this.messageControl.setValue(discussion.message);
 
                         // Treat offline attachments if any.
+                        let promise;
                         if (discussion.options.attachmentsid && discussion.options.attachmentsid.offline) {
-                            return this.forumHelper.getNewDiscussionStoredFiles(this.forumId, this.timeCreated).then((files) => {
+                            promise = this.forumHelper.getNewDiscussionStoredFiles(this.forumId, this.timeCreated).then((files) => {
                                 this.newDiscussion.files = files;
                             });
                         }
+
+                        return Promise.resolve(promise).then(() => {
+                            // Show advanced fields by default if any of them has not the default value.
+                            if (!this.newDiscussion.subscribe || this.newDiscussion.pin || this.newDiscussion.files.length) {
+                                this.advanced = true;
+                            }
+                        });
                     });
                 }));
             }
@@ -495,6 +504,13 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
         }).catch(() => {
             // Cancelled.
         });
+    }
+
+    /**
+     * Show or hide advanced form fields.
+     */
+    toggleAdvanced(): void {
+        this.advanced = !this.advanced;
     }
 
     /**

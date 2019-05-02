@@ -52,6 +52,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
     messageControl = new FormControl();
 
     uniqueId: string;
+    advanced = false; // Display all form fields.
 
     protected syncId: string;
 
@@ -119,6 +120,9 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
         this.originalData.message = this.replyData.message;
         this.originalData.files = this.replyData.files.slice();
         this.originalData.isprivatereply = this.replyData.isprivatereply;
+
+        // Show advanced fields if any of them has not the default value.
+        this.advanced = this.replyData.files.length > 0 || this.originalData.isprivatereply;
     }
 
     /**
@@ -323,6 +327,13 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
      */
     ratingUpdated(): void {
         this.forumProvider.invalidateDiscussionPosts(this.discussionId);
+    }
+
+    /**
+     * Show or hide advanced form fields.
+     */
+    toggleAdvanced(): void {
+        this.advanced = !this.advanced;
     }
 
     /**
