@@ -29,7 +29,7 @@
                 </ion-item>
                 <ion-card-content>
                     <core-format-text [text]="entry.summary" [component]="this.component" [componentId]="entry.id"></core-format-text>
-                    <ion-item>
+                    <ion-item *ngIf="commentsEnabled">
                         <core-comments [component]="this.component" [itemId]="entry.id" area="format_blog" [instanceId]="entry.userid" contextLevel="user"></core-comments>
                     </ion-item>
                     <core-file *ngFor="let file of entry.attachmentfiles" [file]="file" [component]="this.component" [componentId]="entry.id"></core-file>

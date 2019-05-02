@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnChanges, SimpleChange } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChange, OnDestroy } from '@angular/core';
 import { ModalController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreRatingProvider, CoreRatingInfo, CoreRatingInfoItem } from '@core/rating/providers/rating';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Component that displays the aggregation of a rating item.
@@ -24,7 +25,7 @@ import { CoreRatingProvider, CoreRatingInfo, CoreRatingInfoItem } from '@core/ra
     selector: 'core-rating-aggregate',
     templateUrl: 'core-rating-aggregate.html'
 })
-export class CoreRatingAggregateComponent implements OnChanges {
+export class CoreRatingAggregateComponent implements OnChanges, OnDestroy {
     @Input() ratingInfo: CoreRatingInfo;
     @Input() contextLevel: string;
     @Input() instanceId: number;
@@ -33,12 +34,23 @@ export class CoreRatingAggregateComponent implements OnChanges {
     @Input() scaleId: number;
     @Input() courseId?: number;
 
+    disabled = false;
     protected labelKey: string;
     protected showCount: boolean;
     protected item: CoreRatingInfoItem;
     protected aggregateObserver;
+    protected updateSiteObserver;
 
-    constructor(private eventsProvider: CoreEventsProvider, private modalCtrl: ModalController) {}
+    constructor(private eventsProvider: CoreEventsProvider, private modalCtrl: ModalController,
+            private ratingProvider: CoreRatingProvider, sitesProvider: CoreSitesProvider) {
+
+        this.disabled = this.ratingProvider.isRatingDisabledInSite();
+
+        // Update visibility if current site info is updated.
+        this.updateSiteObserver = eventsProvider.on(CoreEventsProvider.SITE_UPDATED, () => {
+            this.disabled = this.ratingProvider.isRatingDisabledInSite();
+        }, sitesProvider.getCurrentSiteId());
+    }
 
     /**
      * Detect changes on input properties.
@@ -86,7 +98,7 @@ export class CoreRatingAggregateComponent implements OnChanges {
      * Open the individual ratings page.
      */
     openRatings(): void {
-        if (!this.ratingInfo.canviewall || !this.item.count) {
+        if (!this.ratingInfo.canviewall || !this.item.count || this.disabled) {
             return;
         }
 
@@ -108,5 +120,6 @@ export class CoreRatingAggregateComponent implements OnChanges {
      */
     ngOnDestroy(): void {
         this.aggregateObserver && this.aggregateObserver.off();
+        this.updateSiteObserver && this.updateSiteObserver.off();
     }
 }

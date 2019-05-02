@@ -26,6 +26,7 @@ import { AddonModDataHelperProvider } from '../../providers/helper';
 import { AddonModDataSyncProvider } from '../../providers/sync';
 import { AddonModDataFieldsDelegate } from '../../providers/fields-delegate';
 import { AddonModDataComponentsModule } from '../../components/components.module';
+import { CoreCommentsProvider } from '@core/comments/providers/comments';
 
 /**
  * Page that displays the view entry page.
@@ -68,13 +69,14 @@ export class AddonModDataEntryPage implements OnDestroy {
     jsData;
     ratingInfo: CoreRatingInfo;
     isPullingToRefresh = false; // Whether the last fetching of data was started by a pull-to-refresh action
+    commentsEnabled: boolean;
 
     constructor(params: NavParams, protected utils: CoreUtilsProvider, protected groupsProvider: CoreGroupsProvider,
             protected domUtils: CoreDomUtilsProvider, protected fieldsDelegate: AddonModDataFieldsDelegate,
             protected courseProvider: CoreCourseProvider, protected dataProvider: AddonModDataProvider,
             protected dataHelper: AddonModDataHelperProvider,
             sitesProvider: CoreSitesProvider, protected navCtrl: NavController, protected eventsProvider: CoreEventsProvider,
-            private cdr: ChangeDetectorRef) {
+            private cdr: ChangeDetectorRef, protected commentsProvider: CoreCommentsProvider) {
         this.module = params.get('module') || {};
         this.entryId = params.get('entryId') || null;
         this.courseId = params.get('courseId');
@@ -91,6 +93,7 @@ export class AddonModDataEntryPage implements OnDestroy {
      * View loaded.
      */
     ionViewDidLoad(): void {
+        this.commentsEnabled = !this.commentsProvider.areCommentsDisabledInSite();
         this.fetchEntryData();
 
         // Refresh data if this discussion is synchronized automatically.

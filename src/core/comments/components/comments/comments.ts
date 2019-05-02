@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChange } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChange } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreCommentsProvider } from '../../providers/comments';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Component that displays the count of comments.
@@ -23,7 +25,7 @@ import { CoreCommentsProvider } from '../../providers/comments';
     selector: 'core-comments',
     templateUrl: 'core-comments.html',
 })
-export class CoreCommentsCommentsComponent implements OnChanges {
+export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
     @Input() contextLevel: string;
     @Input() instanceId: number;
     @Input() component: string;
@@ -36,9 +38,26 @@ export class CoreCommentsCommentsComponent implements OnChanges {
 
     commentsLoaded = false;
     commentsCount: number;
+    disabled = false;
 
-    constructor(private navCtrl: NavController, private commentsProvider: CoreCommentsProvider) {
+    protected updateSiteObserver;
+
+    constructor(private navCtrl: NavController, private commentsProvider: CoreCommentsProvider,
+            sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider) {
         this.onLoading = new EventEmitter<boolean>();
+
+        this.disabled = this.commentsProvider.areCommentsDisabledInSite();
+
+        // Update visibility if current site info is updated.
+        this.updateSiteObserver = eventsProvider.on(CoreEventsProvider.SITE_UPDATED, () => {
+            const wasDisabled = this.disabled;
+
+            this.disabled = this.commentsProvider.areCommentsDisabledInSite();
+
+            if (wasDisabled && !this.disabled) {
+                this.fetchData();
+            }
+        }, sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -59,6 +78,10 @@ export class CoreCommentsCommentsComponent implements OnChanges {
     }
 
     protected fetchData(): void {
+        if (this.disabled) {
+            return;
+        }
+
         this.commentsLoaded = false;
         this.onLoading.emit(true);
 
@@ -77,7 +100,7 @@ export class CoreCommentsCommentsComponent implements OnChanges {
      * Opens the comments page.
      */
     openComments(): void {
-        if (this.commentsCount > 0) {
+        if (!this.disabled && this.commentsCount > 0) {
             // Open a new state with the interpolated contents.
             this.navCtrl.push('CoreCommentsViewerPage', {
                 contextLevel: this.contextLevel,
@@ -89,5 +112,12 @@ export class CoreCommentsCommentsComponent implements OnChanges {
                 title: this.title,
             });
         }
+    }
+
+    /**
+     * Component destroyed.
+     */
+    ngOnDestroy(): void {
+        this.updateSiteObserver && this.updateSiteObserver.off();
     }
 }

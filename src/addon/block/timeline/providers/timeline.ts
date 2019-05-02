@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreCoursesDashboardProvider } from '@core/courses/providers/dashboard';
 import * as moment from 'moment';
 
 /**
@@ -26,7 +27,7 @@ export class AddonBlockTimelineProvider {
     // Cache key was maintained when moving the functions to this file. It comes from core myoverview.
     protected ROOT_CACHE_KEY = 'myoverview:';
 
-    constructor(private sitesProvider: CoreSitesProvider) { }
+    constructor(private sitesProvider: CoreSitesProvider, private dashboardProvider: CoreCoursesDashboardProvider) { }
 
     /**
      * Get calendar action events for the given course.
@@ -218,6 +219,11 @@ export class AddonBlockTimelineProvider {
      */
     isAvailable(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
+            // First check if dashboard is disabled.
+            if (this.dashboardProvider.isDisabledInSite(site)) {
+                return false;
+            }
+
             return site.wsAvailable('core_calendar_get_action_events_by_courses') &&
                 site.wsAvailable('core_calendar_get_action_events_by_timesort');
         });

@@ -18,6 +18,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonBlogProvider } from '../../providers/blog';
+import { CoreCommentsProvider } from '@core/comments/providers/comments';
 
 /**
  * Component that displays the blog entries.
@@ -47,9 +48,11 @@ export class AddonBlogEntriesComponent implements OnInit {
     showMyIssuesToggle = false;
     onlyMyEntries = false;
     component = AddonBlogProvider.COMPONENT;
+    commentsEnabled: boolean;
 
     constructor(protected blogProvider: AddonBlogProvider, protected domUtils: CoreDomUtilsProvider,
-            protected userProvider: CoreUserProvider, sitesProvider: CoreSitesProvider) {
+            protected userProvider: CoreUserProvider, sitesProvider: CoreSitesProvider,
+            protected commentsProvider: CoreCommentsProvider) {
         this.currentUserId = sitesProvider.getCurrentSiteUserId();
     }
 
@@ -80,6 +83,8 @@ export class AddonBlogEntriesComponent implements OnInit {
         if (this.tagId) {
             this.filter['tagid'] = this.tagId;
         }
+
+        this.commentsEnabled = !this.commentsProvider.areCommentsDisabledInSite();
 
         this.fetchEntries().then(() => {
             this.blogProvider.logView(this.filter).catch(() => {

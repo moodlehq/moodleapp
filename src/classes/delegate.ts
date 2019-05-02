@@ -15,6 +15,7 @@
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreEventsProvider } from '@providers/events';
+import { CoreSite } from '@classes/site';
 
 export interface CoreDelegateHandler {
     /**
@@ -272,10 +273,10 @@ export class CoreDelegate {
      * Check if feature is enabled or disabled in the site, depending on the feature prefix and the handler name.
      *
      * @param  {CoreDelegateHandler} handler Handler to check.
-     * @param  {any}                 site    Site to check.
-     * @return {boolean}                     Whether is enabled or disabled in site.
+     * @param  {CoreSite} site Site to check.
+     * @return {boolean} Whether is enabled or disabled in site.
      */
-    protected isFeatureDisabled(handler: CoreDelegateHandler, site: any): boolean {
+    protected isFeatureDisabled(handler: CoreDelegateHandler, site: CoreSite): boolean {
         return typeof this.featurePrefix != 'undefined' && site.isFeatureDisabled(this.featurePrefix + handler.name);
     }
 

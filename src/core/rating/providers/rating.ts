@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
@@ -299,6 +299,30 @@ export class CoreRatingProvider {
             const key = this.getItemRatingsCacheKey(contextLevel, instanceId, component, ratingArea, itemId, scaleId, sort);
 
             return site.invalidateWsCacheForKey(key);
+        });
+    }
+
+    /**
+     * Check if rating is disabled in a certain site.
+     *
+     * @param {CoreSite} [site] Site. If not defined, use current site.
+     * @return {boolean} Whether it's disabled.
+     */
+    isRatingDisabledInSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.isFeatureDisabled('NoDelegate_CoreRating');
+    }
+
+    /**
+     * Check if rating is disabled in a certain site.
+     *
+     * @param  {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<boolean>} Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    isRatingDisabled(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.isRatingDisabledInSite(site);
         });
     }
 
