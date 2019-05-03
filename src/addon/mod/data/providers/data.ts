@@ -928,15 +928,17 @@ export class AddonModDataProvider {
      * Report the database as being viewed.
      *
      * @param {number} id      Module ID.
+     * @param {string} [name] Name of the data.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(id: number, siteId?: string): Promise<any> {
+    logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             databaseid: id
         };
 
-        return this.logHelper.log('mod_data_view_database', params, AddonModDataProvider.COMPONENT, id, siteId);
+        return this.logHelper.logSingle('mod_data_view_database', params, AddonModDataProvider.COMPONENT, id, name, 'data', {},
+                    siteId);
     }
 
     /**

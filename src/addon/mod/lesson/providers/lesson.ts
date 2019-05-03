@@ -3017,10 +3017,11 @@ export class AddonModLessonProvider {
      *
      * @param {string} id Module ID.
      * @param {string} [password] Lesson password (if any).
+     * @param {string} [name] Name of the assign.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logViewLesson(id: number, password?: string, siteId?: string): Promise<any> {
+    logViewLesson(id: number, password?: string, name?: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params: any = {
                 lessonid: id
@@ -3030,7 +3031,8 @@ export class AddonModLessonProvider {
                 params.password = password;
             }
 
-            return this.logHelper.log('mod_lesson_view_lesson', params, AddonModLessonProvider.COMPONENT, id, siteId);
+            return this.logHelper.logSingle('mod_lesson_view_lesson', params, AddonModLessonProvider.COMPONENT, id, name,
+                    'lesson', {}, siteId);
         });
 
     }

@@ -27,6 +27,7 @@ import { CoreConstants } from '../../constants';
 import { CoreCourseOfflineProvider } from './course-offline';
 import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
 import { CoreCourseFormatDelegate } from './format-delegate';
+import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 
 /**
  * Service that provides some features regarding a course.
@@ -102,7 +103,7 @@ export class CoreCourseProvider {
             private utils: CoreUtilsProvider, private timeUtils: CoreTimeUtilsProvider, private translate: TranslateService,
             private courseOffline: CoreCourseOfflineProvider, private appProvider: CoreAppProvider,
             private courseFormatDelegate: CoreCourseFormatDelegate, private sitePluginsProvider: CoreSitePluginsProvider,
-            private domUtils: CoreDomUtilsProvider) {
+            private domUtils: CoreDomUtilsProvider, protected pushNotificationsProvider: CorePushNotificationsProvider) {
         this.logger = logger.getInstance('CoreCourseProvider');
 
         this.sitesProvider.registerSiteSchema(this.siteSchema);
@@ -811,18 +812,22 @@ export class CoreCourseProvider {
      * @param {number} courseId  Course ID.
      * @param {number} [sectionNumber] Section number.
      * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {string} [name] Name of the course.
      * @return {Promise<void>} Promise resolved when the WS call is successful.
      */
-    logView(courseId: number, sectionNumber?: number, siteId?: string): Promise<void> {
+    logView(courseId: number, sectionNumber?: number, siteId?: string, name?: string): Promise<void> {
         const params: any = {
-            courseid: courseId
-        };
+                courseid: courseId
+            },
+            wsName = 'core_course_view_course';
 
         if (typeof sectionNumber != 'undefined') {
             params.sectionnumber = sectionNumber;
         }
 
         return this.sitesProvider.getSite(siteId).then((site) => {
+            this.pushNotificationsProvider.logViewEvent(courseId, name, 'course', wsName, {sectionnumber: sectionNumber}, siteId);
+
             return site.write('core_course_view_course', params).then((response) => {
                 if (!response.status) {
                     return Promise.reject(null);

@@ -179,7 +179,7 @@ export class AddonModResourceHelperProvider {
         // Download and open the file from the resource contents.
         return this.courseHelper.downloadModuleAndOpenFile(module, courseId, AddonModResourceProvider.COMPONENT, module.id,
                 module.contents).then(() => {
-            this.resourceProvider.logView(module.instance).then(() => {
+            this.resourceProvider.logView(module.instance, module.name).then(() => {
                 this.courseProvider.checkModuleCompletion(courseId, module.completiondata);
             }).catch(() => {
                 // Ignore errors.

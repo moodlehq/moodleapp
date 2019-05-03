@@ -911,16 +911,19 @@ export class AddonModAssignProvider {
      * Report an assignment submission as being viewed.
      *
      * @param {number} assignId Assignment ID.
+     * @param {string} [name] Name of the assign.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logSubmissionView(assignId: number, siteId?: string): Promise<any> {
+    logSubmissionView(assignId: number, name?: string, siteId?: string): Promise<any> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 assignid: assignId
             };
 
-            return site.write('mod_assign_view_submission_status', params);
+            return this.logHelper.logSingle('mod_assign_view_submission_status', params, AddonModAssignProvider.COMPONENT,
+                    assignId, name, 'assign', {}, siteId);
         });
     }
 
@@ -928,30 +931,34 @@ export class AddonModAssignProvider {
      * Report an assignment grading table is being viewed.
      *
      * @param {number} assignId Assignment ID.
+     * @param {string} [name] Name of the assign.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logGradingView(assignId: number, siteId?: string): Promise<any> {
+    logGradingView(assignId: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             assignid: assignId
         };
 
-        return this.logHelper.log('mod_assign_view_grading_table', params, AddonModAssignProvider.COMPONENT, assignId, siteId);
+        return this.logHelper.logSingle('mod_assign_view_grading_table', params, AddonModAssignProvider.COMPONENT, assignId,
+                name, 'assign', {}, siteId);
     }
 
     /**
      * Report an assign as being viewed.
      *
      * @param {number} assignId Assignment ID.
+     * @param {string} [name] Name of the assign.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logView(assignId: number, siteId?: string): Promise<any> {
+    logView(assignId: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             assignid: assignId
         };
 
-        return this.logHelper.log('mod_assign_view_assign', params, AddonModAssignProvider.COMPONENT, assignId, siteId);
+        return this.logHelper.logSingle('mod_assign_view_assign', params, AddonModAssignProvider.COMPONENT, assignId, name,
+                'assign', {}, siteId);
     }
 
     /**

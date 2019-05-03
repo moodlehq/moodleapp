@@ -370,7 +370,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
         }
 
         // Trigger SCO launch event.
-        this.scormProvider.logLaunchSco(this.scorm.id, sco.id).catch(() => {
+        this.scormProvider.logLaunchSco(this.scorm.id, sco.id, this.scorm.name).catch(() => {
             // Ignore errors.
         });
     }

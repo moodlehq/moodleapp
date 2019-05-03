@@ -87,15 +87,16 @@ export class AddonModChatProvider {
      * Report a chat as being viewed.
      *
      * @param  {number} id Chat instance ID.
+     * @param {string} [name] Name of the chat.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(id: number, siteId?: string): Promise<any> {
+    logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             chatid: id
         };
 
-        return this.logHelper.log('mod_chat_view_chat', params, AddonModChatProvider.COMPONENT, id, siteId);
+        return this.logHelper.logSingle('mod_chat_view_chat', params, AddonModChatProvider.COMPONENT, id, name, 'chat', {}, siteId);
     }
 
     /**

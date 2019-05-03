@@ -1050,6 +1050,24 @@ export class CoreUtilsProvider {
     }
 
     /**
+     * Add a prefix to all the keys in an object.
+     *
+     * @param {any} data Object.
+     * @param {string} prefix Prefix to add.
+     * @return {any} Prefixed object.
+     */
+    prefixKeys(data: any, prefix: string): any {
+        const newObj = {},
+            keys = Object.keys(data);
+
+        keys.forEach((key) => {
+            newObj[prefix + key] = data[key];
+        });
+
+        return newObj;
+    }
+
+    /**
      * Similar to AngularJS $q.defer().
      *
      * @return {PromiseDefer} The deferred promise.

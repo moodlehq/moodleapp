@@ -85,7 +85,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
                 return;
             }
 
-            this.quizProvider.logViewQuiz(this.quizData.id).then(() => {
+            this.quizProvider.logViewQuiz(this.quizData.id, this.quizData.name).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch((error) => {
                 // Ignore errors.

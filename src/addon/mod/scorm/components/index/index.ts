@@ -83,7 +83,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
                 return;
             }
 
-            this.scormProvider.logView(this.scorm.id).then(() => {
+            this.scormProvider.logView(this.scorm.id, this.scorm.name).then(() => {
                 this.checkCompletion();
             }).catch((error) => {
                 // Ignore errors.

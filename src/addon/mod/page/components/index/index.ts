@@ -53,7 +53,7 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
         this.canGetPage = this.pageProvider.isGetPageWSAvailable();
 
         this.loadContent().then(() => {
-            this.pageProvider.logView(this.module.instance).then(() => {
+            this.pageProvider.logView(this.module.instance, this.module.name).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch(() => {
                 // Ignore errors.

@@ -130,7 +130,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.fetchSubmissionData().then(() => {
-            this.workshopProvider.logViewSubmission(this.submissionId, this.workshopId).then(() => {
+            this.workshopProvider.logViewSubmission(this.submissionId, this.workshopId, this.workshop.name).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch(() => {
                 // Ignore errors.

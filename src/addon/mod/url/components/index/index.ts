@@ -178,7 +178,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
      * @return {Promise<void>} Promise resolved when done.
      */
     protected logView(): Promise<void> {
-        return this.urlProvider.logView(this.module.instance).then(() => {
+        return this.urlProvider.logView(this.module.instance, this.module.name).then(() => {
             this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
         }).catch(() => {
             // Ignore errors.

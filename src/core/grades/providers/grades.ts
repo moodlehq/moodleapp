@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 
 /**
  * Service to provide grade functionalities.
@@ -33,7 +34,7 @@ export class CoreGradesProvider {
     protected logger;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider,
-            private coursesProvider: CoreCoursesProvider) {
+            private coursesProvider: CoreCoursesProvider, protected pushNotificationsProvider: CorePushNotificationsProvider) {
         this.logger = logger.getInstance('CoreGradesProvider');
     }
 
@@ -326,12 +327,25 @@ export class CoreGradesProvider {
      *
      * @param  {number}  courseId Course ID.
      * @param  {number}  userId   User ID.
+     * @param  {string}  [name]   Course name. If not set, it will be calculated.
      * @return {Promise<any>}     Promise resolved when done.
      */
-    logCourseGradesView(courseId: number, userId: number): Promise<any> {
+    logCourseGradesView(courseId: number, userId: number, name?: string): Promise<any> {
         userId = userId || this.sitesProvider.getCurrentSiteUserId();
 
-        return this.sitesProvider.getCurrentSite().write('gradereport_user_view_grade_report', {
+        const wsName = 'gradereport_user_view_grade_report';
+
+        if (!name) {
+            this.coursesProvider.getUserCourse(courseId, true).catch(() => {
+                return {};
+            }).then((course) => {
+                this.pushNotificationsProvider.logViewEvent(courseId, course.fullname || '', 'grades', wsName, {userid: userId});
+            });
+        } else {
+            this.pushNotificationsProvider.logViewEvent(courseId, name, 'grades', wsName, {userid: userId});
+        }
+
+        return this.sitesProvider.getCurrentSite().write(wsName, {
             courseid: courseId,
             userid: userId
         });
@@ -348,8 +362,12 @@ export class CoreGradesProvider {
             courseId = this.sitesProvider.getCurrentSiteHomeId();
         }
 
-        return this.sitesProvider.getCurrentSite().write('gradereport_overview_view_grade_report', {
+        const params = {
             courseid: courseId
-        });
+        };
+
+        this.pushNotificationsProvider.logViewListEvent('grades', 'gradereport_overview_view_grade_report', params);
+
+        return this.sitesProvider.getCurrentSite().write('gradereport_overview_view_grade_report', params);
     }
 }

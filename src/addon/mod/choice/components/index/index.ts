@@ -67,7 +67,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             if (!this.choice) {
                 return;
             }
-            this.choiceProvider.logView(this.choice.id).then(() => {
+            this.choiceProvider.logView(this.choice.id, this.choice.name).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch((error) => {
                 // Ignore errors.

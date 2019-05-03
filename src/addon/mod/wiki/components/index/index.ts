@@ -104,13 +104,13 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             }
 
             if (this.isMainPage) {
-                this.wikiProvider.logView(this.wiki.id).then(() => {
+                this.wikiProvider.logView(this.wiki.id, this.wiki.name).then(() => {
                     this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
                 }).catch((error) => {
                     // Ignore errors.
                 });
             } else {
-                this.wikiProvider.logPageView(this.pageId, this.wiki.id).catch(() => {
+                this.wikiProvider.logPageView(this.pageId, this.wiki.id, this.wiki.name).catch(() => {
                     // Ignore errors.
                 });
             }
@@ -341,7 +341,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                             this.currentPage = data.pageId;
 
                             this.showLoadingAndFetch(true, false).then(() => {
-                                this.wikiProvider.logPageView(this.currentPage, this.wiki.id).catch(() => {
+                                this.wikiProvider.logPageView(this.currentPage, this.wiki.id, this.wiki.name).catch(() => {
                                     // Ignore errors.
                                 });
                             });

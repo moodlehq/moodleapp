@@ -36,7 +36,7 @@ export class CoreCourseLogCronHandler implements CoreCronHandler {
      */
     execute(siteId?: string, force?: boolean): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-           return this.courseProvider.logView(site.getSiteHomeId(), undefined, site.getId());
+           return this.courseProvider.logView(site.getSiteHomeId(), undefined, site.getId(), site.getInfo().sitename);
         });
     }
 

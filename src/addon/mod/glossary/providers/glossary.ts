@@ -867,16 +867,18 @@ export class AddonModGlossaryProvider {
      *
      * @param  {number} glossaryId Glossary ID.
      * @param  {string} mode       The mode in which the glossary was viewed.
+     * @param {string} [name] Name of the glossary.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}      Promise resolved when the WS call is successful.
      */
-    logView(glossaryId: number, mode: string, siteId?: string): Promise<any> {
+    logView(glossaryId: number, mode: string, name?: string, siteId?: string): Promise<any> {
         const params = {
             id: glossaryId,
             mode: mode
         };
 
-        return this.logHelper.log('mod_glossary_view_glossary', params, AddonModGlossaryProvider.COMPONENT, glossaryId, siteId);
+        return this.logHelper.logSingle('mod_glossary_view_glossary', params, AddonModGlossaryProvider.COMPONENT, glossaryId, name,
+                'glossary', {mode: mode}, siteId);
     }
 
     /**
@@ -884,14 +886,16 @@ export class AddonModGlossaryProvider {
      *
      * @param  {number} entryId Entry ID.
      * @param  {number} glossaryId Glossary ID.
+     * @param {string} [name] Name of the glossary.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}   Promise resolved when the WS call is successful.
      */
-    logEntryView(entryId: number, glossaryId: number, siteId?: string): Promise<any> {
+    logEntryView(entryId: number, glossaryId: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             id: entryId
         };
 
-        return this.logHelper.log('mod_glossary_view_entry', params, AddonModGlossaryProvider.COMPONENT, glossaryId, siteId);
+        return this.logHelper.logSingle('mod_glossary_view_entry', params, AddonModGlossaryProvider.COMPONENT, glossaryId, name,
+                'glossary', {entryid: entryId}, siteId);
     }
 }
