@@ -14,7 +14,6 @@
 
 import { Component, OnInit, NgZone } from '@angular/core';
 import { Platform, IonicApp } from 'ionic-angular';
-import { StatusBar } from '@ionic-native/status-bar';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLangProvider } from '@providers/lang';
@@ -23,7 +22,6 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { Keyboard } from '@ionic-native/keyboard';
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
-import { CoreConfigConstants } from '../configconstants';
 
 @Component({
     templateUrl: 'app.html'
@@ -35,7 +33,7 @@ export class MoodleMobileApp implements OnInit {
     protected logger;
     protected lastUrls = {};
 
-    constructor(private platform: Platform, statusBar: StatusBar, logger: CoreLoggerProvider, keyboard: Keyboard,
+    constructor(private platform: Platform, logger: CoreLoggerProvider, keyboard: Keyboard,
             private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider, private zone: NgZone,
             private appProvider: CoreAppProvider, private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider,
             private screenOrientation: ScreenOrientation, app: IonicApp) {
@@ -46,24 +44,7 @@ export class MoodleMobileApp implements OnInit {
             // Here you can do any higher level native things you might need.
 
             // Set StatusBar properties.
-            if (typeof CoreConfigConstants.statusbarbgios == 'string' && platform.is('ios')) {
-                // IOS Status bar properties.
-                statusBar.overlaysWebView(false);
-                statusBar.backgroundColorByHexString(CoreConfigConstants.statusbarbgios);
-                CoreConfigConstants.statusbarlighttextios ? statusBar.styleLightContent() : statusBar.styleDefault();
-            } else if (typeof CoreConfigConstants.statusbarbgandroid == 'string' && platform.is('android')) {
-                // Android Status bar properties.
-                statusBar.backgroundColorByHexString(CoreConfigConstants.statusbarbgandroid);
-                CoreConfigConstants.statusbarlighttextandroid ? statusBar.styleLightContent() : statusBar.styleDefault();
-            } else if (typeof CoreConfigConstants.statusbarbg == 'string') {
-                // Generic Status bar properties.
-                platform.is('ios') && statusBar.overlaysWebView(false);
-                statusBar.backgroundColorByHexString(CoreConfigConstants.statusbarbg);
-                CoreConfigConstants.statusbarlighttext ? statusBar.styleLightContent() : statusBar.styleDefault();
-            } else {
-                // Default Status bar properties.
-                platform.is('android') ? statusBar.styleLightContent() : statusBar.styleDefault();
-            }
+            this.appProvider.setStatusBarColor();
 
             keyboard.hideFormAccessoryBar(false);
 

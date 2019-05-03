@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
+import { CoreAppProvider } from '@providers/app';
 import { CoreFileProvider } from '@providers/file';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -34,7 +35,8 @@ export class AddonRemoteThemesProvider {
     protected stylesEls: {[siteId: string]: {element: HTMLStyleElement, hash: string}} = {};
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private fileProvider: CoreFileProvider,
-            private filepoolProvider: CoreFilepoolProvider, private http: Http, private utils: CoreUtilsProvider) {
+            private filepoolProvider: CoreFilepoolProvider, private http: Http, private utils: CoreUtilsProvider,
+            private appProvider: CoreAppProvider) {
         this.logger = logger.getInstance('AddonRemoteThemesProvider');
     }
 
@@ -75,6 +77,9 @@ export class AddonRemoteThemesProvider {
         styles.forEach((style) => {
             this.disableElement(style, true);
         });
+
+        // Set StatusBar properties.
+        this.appProvider.setStatusBarColor();
     }
 
     /**
@@ -91,6 +96,10 @@ export class AddonRemoteThemesProvider {
         } else {
             element.disabled = false;
             element.removeAttribute('disabled');
+
+            if (element.innerHTML != '') {
+                this.appProvider.resetStatusBarColor();
+            }
         }
     }
 
