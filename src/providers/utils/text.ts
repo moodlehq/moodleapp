@@ -396,15 +396,19 @@ export class CoreTextUtilsProvider {
      * @param {boolean} [clean] Whether HTML tags should be removed.
      * @param {boolean} [singleLine] Whether new lines should be removed. Only valid if clean is true.
      * @param {number} [shortenLength] Number of characters to shorten the text.
+     * @param {number} [highlight] Text to highlight.
      * @return {Promise<string>} Promise resolved with the formatted text.
      */
-    formatText(text: string, clean?: boolean, singleLine?: boolean, shortenLength?: number): Promise<string> {
+    formatText(text: string, clean?: boolean, singleLine?: boolean, shortenLength?: number, highlight?: string): Promise<string> {
         return this.treatMultilangTags(text).then((formatted) => {
             if (clean) {
                 formatted = this.cleanTags(formatted, singleLine);
             }
             if (shortenLength > 0) {
                 formatted = this.shortenText(formatted, shortenLength);
+            }
+            if (highlight) {
+                formatted = this.highlightText(formatted, highlight);
             }
 
             return formatted;
@@ -450,6 +454,25 @@ export class CoreTextUtilsProvider {
      */
     hasHTMLTags(text: string): boolean {
         return /<[a-z][\s\S]*>/i.test(text);
+    }
+
+    /**
+     * Highlight all occurrences of a certain text inside another text. It will add some HTML code to highlight it.
+     *
+     * @param {string} text Full text.
+     * @param {string} searchText Text to search and highlight.
+     * @return {string} Highlighted text.
+     */
+    highlightText(text: string, searchText: string): string {
+        if (!text || typeof text != 'string') {
+            return '';
+        } else if (!searchText) {
+            return text;
+        }
+
+        const regex = new RegExp('(' + searchText + ')', 'gi');
+
+        return text.replace(regex, '<span class="matchtext">$1</span>');
     }
 
     /**

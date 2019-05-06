@@ -263,6 +263,8 @@ $core-rte-min-height: 80px;
 
 $core-toolbar-button-image-width: 32px;
 
+$core-text-hightlight-background-color: lighten($blue, 40%) !default;
+
 // Timer variables.
 $core-timer-warn-color:     $red !default;
 $core-timer-iterations:     15 !default;

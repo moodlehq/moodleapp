@@ -384,6 +384,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         this.messages.forEach((message, index): any => {
             message.showDate = this.showDate(message, this.messages[index - 1]);
             message.showUserData = this.showUserData(message, this.messages[index - 1]);
+            message.showTail = this.showTail(message, this.messages[index + 1]);
         });
 
         // Call resize to recalculate the dimensions.
@@ -1044,6 +1045,17 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     showUserData(message: any, prevMessage?: any): boolean {
         return this.isGroup && message.useridfrom != this.currentUserId && this.members[message.useridfrom] &&
             (!prevMessage || prevMessage.useridfrom != message.useridfrom || message.showDate);
+    }
+
+    /**
+     * Check if a css tail should be shown.
+     *
+     * @param {any} message Current message where to show the user info.
+     * @param {any} [nextMessage] Next message.
+     * @return {boolean} Whether user data should be shown.
+     */
+    showTail(message: any, nextMessage?: any): boolean {
+        return !nextMessage || nextMessage.useridfrom != message.useridfrom || nextMessage.showDate;
     }
 
     /**

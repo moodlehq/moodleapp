@@ -266,7 +266,12 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         const promises = [];
 
         promises.push(this.fetchConversationCounts());
-        promises.push(this.messagesProvider.getContactRequestsCount(this.siteId));  // View updated by the event observer.
+
+        // View updated by the events observers.
+        promises.push(this.messagesProvider.getContactRequestsCount(this.siteId));
+        if (refreshUnreadCounts) {
+            promises.push(this.messagesProvider.refreshUnreadConversationCounts(this.siteId));
+        }
 
         return Promise.all(promises).then(() => {
             if (typeof this.favourites.expanded == 'undefined') {
@@ -276,9 +281,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                     // We don't know which option it belongs to, so we need to fetch the data for all of them.
                     const promises = [];
 
-                    promises.push(this.fetchDataForOption(this.favourites, false, refreshUnreadCounts));
-                    promises.push(this.fetchDataForOption(this.group, false, refreshUnreadCounts));
-                    promises.push(this.fetchDataForOption(this.individual, false, refreshUnreadCounts));
+                    promises.push(this.fetchDataForOption(this.favourites, false));
+                    promises.push(this.fetchDataForOption(this.group, false));
+                    promises.push(this.fetchDataForOption(this.individual, false));
 
                     return Promise.all(promises).then(() => {
                         // All conversations have been loaded, find the one we need to load and expand its option.
@@ -286,13 +291,13 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                         if (conversation) {
                             const option = this.getConversationOption(conversation);
 
-                            return this.expandOption(option, refreshUnreadCounts);
+                            return this.expandOption(option);
                         } else {
                             // Conversation not found, just open the default option.
                             this.calculateExpandedStatus();
 
                             // Now load the data for the expanded option.
-                            return this.fetchDataForExpandedOption(refreshUnreadCounts);
+                            return this.fetchDataForExpandedOption();
                         }
                     });
                 }
@@ -302,7 +307,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             }
 
             // Now load the data for the expanded option.
-            return this.fetchDataForExpandedOption(refreshUnreadCounts);
+            return this.fetchDataForExpandedOption();
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
         }).finally(() => {
@@ -314,9 +319,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * Calculate which option should be expanded initially.
      */
     protected calculateExpandedStatus(): void {
-        this.favourites.expanded = this.favourites.count != 0;
-        this.group.expanded = this.favourites.count == 0 && this.group.count != 0;
-        this.individual.expanded = this.favourites.count == 0 && this.group.count == 0;
+        this.favourites.expanded = this.favourites.count != 0 && !this.group.unread && !this.individual.unread;
+        this.group.expanded = !this.favourites.expanded && this.group.count != 0 && !this.individual.unread;
+        this.individual.expanded = !this.favourites.expanded && !this.group.expanded;
 
         this.loadCurrentListElement();
     }
@@ -324,26 +329,16 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     /**
      * Fetch data for the expanded option.
      *
-     * @param {booleam} [refreshUnreadCounts=true] Whether to refresh unread counts.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected fetchDataForExpandedOption(refreshUnreadCounts: boolean = true): Promise<any> {
+    protected fetchDataForExpandedOption(): Promise<any> {
         const expandedOption = this.getExpandedOption();
 
         if (expandedOption) {
-            return this.fetchDataForOption(expandedOption, false, refreshUnreadCounts);
-        } else {
-            // All options are collapsed, update the counts.
-            const promises = [];
-
-            promises.push(this.fetchConversationCounts());
-            if (refreshUnreadCounts) {
-                // View updated by event observer.
-                promises.push(this.messagesProvider.refreshUnreadConversationCounts(this.siteId));
-            }
-
-            return Promise.all(promises);
+            return this.fetchDataForOption(expandedOption, false);
         }
+
+        return Promise.resolve();
     }
 
     /**
@@ -351,10 +346,10 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      *
      * @param {any} option The option to fetch data for.
      * @param {boolean} [loadingMore} Whether we are loading more data or just the first ones.
-     * @param {booleam} [refreshUnreadCounts=true] Whether to refresh unread counts.
+     * @param {booleam} [getCounts] Whether to get counts data.
      * @return {Promise<any>} Promise resolved when done.
      */
-    fetchDataForOption(option: any, loadingMore?: boolean, refreshUnreadCounts: boolean = true): Promise<void> {
+    fetchDataForOption(option: any, loadingMore?: boolean, getCounts?: boolean): Promise<void> {
         option.loadMoreError = false;
 
         const limitFrom = loadingMore ? option.conversations.length : 0,
@@ -375,12 +370,11 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             promises.push(this.messagesOffline.getAllMessages().then((data) => {
                 offlineMessages = data;
             }));
+        }
 
+        if (getCounts) {
             promises.push(this.fetchConversationCounts());
-            if (refreshUnreadCounts) {
-                // View updated by the event observer.
-                promises.push(this.messagesProvider.refreshUnreadConversationCounts(this.siteId));
-            }
+            promises.push(this.messagesProvider.refreshUnreadConversationCounts(this.siteId));
         }
 
         return Promise.all(promises).then(() => {
@@ -650,7 +644,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             option.expanded = false;
             this.loadCurrentListElement();
         } else {
-            this.expandOption(option).catch((error) => {
+            // Pass getCounts=true to update the counts everytime the user expands an option.
+            this.expandOption(option, true).catch((error) => {
                 this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
             });
         }
@@ -660,10 +655,10 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * Expand a certain option.
      *
      * @param {any} option The option to expand.
-     * @param {booleam} [refreshUnreadCounts=true] Whether to refresh unread counts.
+     * @param {booleam} [getCounts] Whether to get counts data.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected expandOption(option: any, refreshUnreadCounts: boolean = true): Promise<any> {
+    protected expandOption(option: any, getCounts?: boolean): Promise<any> {
         // Collapse all and expand the right one.
         this.favourites.expanded = false;
         this.group.expanded = false;
@@ -672,7 +667,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         option.expanded = true;
         option.loading = true;
 
-        return this.fetchDataForOption(option, false, refreshUnreadCounts).then(() => {
+        return this.fetchDataForOption(option, false, getCounts).then(() => {
             this.loadCurrentListElement();
         }).catch((error) => {
             option.expanded = false;

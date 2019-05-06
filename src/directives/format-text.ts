@@ -55,6 +55,7 @@ export class CoreFormatTextDirective implements OnChanges {
                                  // If you want to avoid this use class="inline" at the same time to use display: inline-block.
     @Input() fullOnClick?: boolean | string; // Whether it should open a new page with the full contents on click.
     @Input() fullTitle?: string; // Title to use in full view. Defaults to "Description".
+    @Input() highlight?: string; // Text to highlight.
     @Output() afterRender?: EventEmitter<any>; // Called when the data is rendered.
 
     protected element: HTMLElement;
@@ -348,7 +349,7 @@ export class CoreFormatTextDirective implements OnChanges {
 
             // Apply format text function.
             return this.textUtils.formatText(this.text, this.utils.isTrueOrOne(this.clean),
-                this.utils.isTrueOrOne(this.singleLine));
+                this.utils.isTrueOrOne(this.singleLine), undefined, this.highlight);
         }).then((formatted) => {
             const div = document.createElement('div'),
                 canTreatVimeo = site && site.isVersionGreaterEqualThan(['3.3.4', '3.4']);
