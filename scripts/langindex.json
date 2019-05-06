@@ -1231,6 +1231,7 @@
   "core.answered": "quiz",
   "core.areyousure": "moodle",
   "core.back": "moodle",
+  "core.block.blocks": "moodle",
   "core.cancel": "moodle",
   "core.cannotconnect": "local_moodlemobileapp",
   "core.cannotdownloadfiles": "local_moodlemobileapp",

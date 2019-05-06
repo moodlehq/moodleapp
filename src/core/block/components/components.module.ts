@@ -19,12 +19,14 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreBlockComponent } from './block/block';
 import { CoreBlockOnlyTitleComponent } from './only-title-block/only-title-block';
+import { CoreBlockCourseBlocksComponent } from './course-blocks/course-blocks';
 import { CoreComponentsModule } from '@components/components.module';
 
 @NgModule({
     declarations: [
         CoreBlockComponent,
-        CoreBlockOnlyTitleComponent
+        CoreBlockOnlyTitleComponent,
+        CoreBlockCourseBlocksComponent
     ],
     imports: [
         CommonModule,
@@ -37,10 +39,12 @@ import { CoreComponentsModule } from '@components/components.module';
     ],
     exports: [
         CoreBlockComponent,
-        CoreBlockOnlyTitleComponent
+        CoreBlockOnlyTitleComponent,
+        CoreBlockCourseBlocksComponent
     ],
     entryComponents: [
-        CoreBlockOnlyTitleComponent
+        CoreBlockOnlyTitleComponent,
+        CoreBlockCourseBlocksComponent
     ]
 })
 export class CoreBlockComponentsModule {}

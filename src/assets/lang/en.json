@@ -1231,6 +1231,7 @@
     "core.answered": "Answered",
     "core.areyousure": "Are you sure?",
     "core.back": "Back",
+    "core.block.blocks": "Blocks",
     "core.cancel": "Cancel",
     "core.cannotconnect": "Cannot connect: Verify that you have correctly typed the URL and that your site uses Moodle 2.4 or later.",
     "core.cannotdownloadfiles": "File downloading is disabled. Please contact your site administrator.",
