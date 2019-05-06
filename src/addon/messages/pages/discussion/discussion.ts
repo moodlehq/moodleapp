@@ -809,11 +809,25 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      * @param {number} index Index where the message is to delete it from the view.
      */
     deleteMessage(message: any, index: number): void {
-        const langKey = message.pending ? 'core.areyousure' : 'addon.messages.deletemessageconfirmation';
-        this.domUtils.showConfirm(this.translate.instant(langKey)).then(() => {
+        const canDeleteAll = this.conversation && this.conversation.candeletemessagesforallusers,
+            langKey = message.pending || canDeleteAll ? 'core.areyousure' : 'addon.messages.deletemessageconfirmation',
+            options: any = {};
+
+        if (canDeleteAll && !message.pending) {
+            // Show delete for all checkbox.
+            options.inputs = [{
+                type: 'checkbox',
+                name: 'deleteforall',
+                checked: false,
+                value: true,
+                label: this.translate.instant('addon.messages.deleteforeveryone')
+            }];
+        }
+
+        this.domUtils.showConfirm(this.translate.instant(langKey), undefined, undefined, undefined, options).then((data) => {
             const modal = this.domUtils.showModalLoading('core.deleting', true);
 
-            return this.messagesProvider.deleteMessage(message).then(() => {
+            return this.messagesProvider.deleteMessage(message, data && data[0]).then(() => {
                  // Remove message from the list without having to wait for re-fetch.
                 this.messages.splice(index, 1);
                 this.removeMessage(message.hash);

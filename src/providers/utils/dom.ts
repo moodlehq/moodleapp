@@ -991,9 +991,9 @@ export class CoreDomUtilsProvider {
      * @param {string} [okText] Text of the OK button.
      * @param {string} [cancelText] Text of the Cancel button.
      * @param {any} [options] More options. See https://ionicframework.com/docs/api/components/alert/AlertController/
-     * @return {Promise<void>} Promise resolved if the user confirms and rejected with a canceled error if he cancels.
+     * @return {Promise<any>} Promise resolved if the user confirms and rejected with a canceled error if he cancels.
      */
-    showConfirm(message: string, title?: string, okText?: string, cancelText?: string, options?: any): Promise<void> {
+    showConfirm(message: string, title?: string, okText?: string, cancelText?: string, options?: any): Promise<any> {
         return new Promise<void>((resolve, reject): void => {
             const hasHTMLTags = this.textUtils.hasHTMLTags(message);
             let promise;
@@ -1023,8 +1023,8 @@ export class CoreDomUtilsProvider {
                     },
                     {
                         text: okText || this.translate.instant('core.ok'),
-                        handler: (): void => {
-                            resolve();
+                        handler: (data: any): void => {
+                            resolve(data);
                         }
                     }
                 ];

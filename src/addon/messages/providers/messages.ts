@@ -244,12 +244,17 @@ export class AddonMessagesProvider {
      * Delete a message (online or offline).
      *
      * @param {any} message    Message to delete.
+     * @param {boolean} [deleteForAll] Whether the message should be deleted for all users.
      * @return {Promise<any>}  Promise resolved when the message has been deleted.
      */
-    deleteMessage(message: any): Promise<any> {
+    deleteMessage(message: any, deleteForAll?: boolean): Promise<any> {
         if (message.id) {
             // Message has ID, it means it has been sent to the server.
-            return this.deleteMessageOnline(message.id, message.read);
+            if (deleteForAll) {
+                return this.deleteMessageForAllOnline(message.id);
+            } else {
+                return this.deleteMessageOnline(message.id, message.read);
+            }
         }
 
         // It's an offline message.
@@ -279,6 +284,24 @@ export class AddonMessagesProvider {
         }
 
         return this.sitesProvider.getCurrentSite().write('core_message_delete_message', params).then(() => {
+            return this.invalidateDiscussionCache(userId);
+        });
+    }
+
+    /**
+     * Delete a message for all users.
+     *
+     * @param {number} id Message ID.
+     * @param {number} [userId] User we want to delete the message for. If not defined, use current user.
+     * @return {Promise<any>} Promise resolved when the message has been deleted.
+     */
+    deleteMessageForAllOnline(id: number, userId?: number): Promise<any> {
+        const params: any = {
+            messageid: id,
+            userid: userId || this.sitesProvider.getCurrentSiteUserId()
+        };
+
+        return this.sitesProvider.getCurrentSite().write('core_message_delete_message_for_all_users', params).then(() => {
             return this.invalidateDiscussionCache(userId);
         });
     }
