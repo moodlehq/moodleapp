@@ -977,14 +977,21 @@ export class CoreUtilsProvider {
     objectToArrayOfObjects(obj: object, keyName: string, valueName: string, sortByKey?: boolean, sortByValue?: boolean): any[] {
         // Get the entries from an object or primitive value.
         const getEntries = (elKey, value): any[] | any => {
-            if (typeof value == 'object') {
+            if (typeof value == 'undefined' || value == null) {
+                // Filter undefined and null values.
+                return;
+            } else if (typeof value == 'object') {
                 // It's an object, return at least an entry for each property.
                 const keys = Object.keys(value);
                 let entries = [];
 
                 keys.forEach((key) => {
-                    const newElKey = elKey ? elKey + '[' + key + ']' : key;
-                    entries = entries.concat(getEntries(newElKey, value[key]));
+                    const newElKey = elKey ? elKey + '[' + key + ']' : key,
+                        subEntries = getEntries(newElKey, value[key]);
+
+                    if (subEntries) {
+                        entries = entries.concat(subEntries);
+                    }
                 });
 
                 return entries;

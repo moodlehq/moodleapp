@@ -52,7 +52,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     courseHandlers: CoreCourseOptionsHandlerToDisplay[];
     courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];
     dataLoaded: boolean;
-    downloadEnabled: boolean;
+    downloadEnabled = false;
     downloadEnabledIcon = 'square-outline'; // Disabled by default.
     prefetchCourseData = {
         prefetchCourseIcon: 'spinner',
