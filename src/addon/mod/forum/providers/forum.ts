@@ -34,6 +34,7 @@ export class AddonModForumProvider {
     static NEW_DISCUSSION_EVENT = 'addon_mod_forum_new_discussion';
     static REPLY_DISCUSSION_EVENT = 'addon_mod_forum_reply_discussion';
     static VIEW_DISCUSSION_EVENT = 'addon_mod_forum_view_discussion';
+    static CHANGE_DISCUSSION_EVENT = 'addon_mod_forum_lock_discussion';
     static MARK_READ_EVENT = 'addon_mod_forum_mark_read';
 
     protected ROOT_CACHE_KEY = 'mmaModForum:';
@@ -758,6 +759,28 @@ export class AddonModForumProvider {
                     return response.postid;
                 }
             });
+        });
+    }
+
+    /**
+     * Lock or unlock a discussion.
+     *
+     * @param {number} forumId Forum id.
+     * @param {number} discussionId DIscussion id.
+     * @param {boolean} locked True to lock, false to unlock.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resvoled when done.
+     * @since 3.7
+     */
+    setLockState(forumId: number, discussionId: number, locked: boolean, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                forumid: forumId,
+                discussionid: discussionId,
+                targetstate: locked ? 0 : 1
+            };
+
+            return site.write('mod_forum_set_lock_state', params);
         });
     }
 

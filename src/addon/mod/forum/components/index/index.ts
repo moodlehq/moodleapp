@@ -58,6 +58,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     protected replyObserver: any;
     protected newDiscObserver: any;
     protected viewDiscObserver: any;
+    protected changeDiscObserver: any;
 
     hasOfflineRatings: boolean;
     protected ratingOfflineObserver: any;
@@ -93,6 +94,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         this.newDiscObserver = this.eventsProvider.on(AddonModForumProvider.NEW_DISCUSSION_EVENT,
                 this.eventReceived.bind(this, true));
         this.replyObserver = this.eventsProvider.on(AddonModForumProvider.REPLY_DISCUSSION_EVENT,
+                this.eventReceived.bind(this, false));
+        this.changeDiscObserver = this.eventsProvider.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT,
                 this.eventReceived.bind(this, false));
 
         // Select the current opened discussion.
@@ -446,9 +449,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             courseId: this.courseId,
             cmId: this.module.id,
             forumId: this.forum.id,
-            discussionId: discussion.discussion,
+            discussion: discussion,
             trackPosts: this.trackPosts,
-            locked: discussion.locked
         };
         this.splitviewCtrl.push('AddonModForumDiscussionPage', params);
     }
@@ -480,6 +482,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         this.newDiscObserver && this.newDiscObserver.off();
         this.replyObserver && this.replyObserver.off();
         this.viewDiscObserver && this.viewDiscObserver.off();
+        this.changeDiscObserver && this.changeDiscObserver.off();
         this.ratingOfflineObserver && this.ratingOfflineObserver.off();
         this.ratingSyncObserver && this.ratingSyncObserver.off();
     }

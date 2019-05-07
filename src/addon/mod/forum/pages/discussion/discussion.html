@@ -13,6 +13,8 @@
         <core-context-menu-item [hidden]="sort == 'flat-oldest'" [priority]="500" [content]="'addon.mod_forum.modeflatoldestfirst' | translate" (action)="changeSort('flat-oldest')" iconAction="arrow-round-down"></core-context-menu-item>
         <core-context-menu-item [hidden]="sort == 'flat-newest'" [priority]="450" [content]="'addon.mod_forum.modeflatnewestfirst' | translate" (action)="changeSort('flat-newest')" iconAction="arrow-round-up"></core-context-menu-item>
         <core-context-menu-item [hidden]="sort == 'nested'" [priority]="400" [content]="'addon.mod_forum.modenested' | translate" (action)="changeSort('nested')" iconAction="swap"></core-context-menu-item>
+        <core-context-menu-item [hidden]="!discussion || !discussion.canlock || discussion.locked" [priority]="300" [content]="'addon.mod_forum.notlocked' | translate" (action)="setLockState(true)" iconAction="fa-unlock"></core-context-menu-item>
+        <core-context-menu-item [hidden]="!discussion || !discussion.canlock || !discussion.locked" [priority]="300" [content]="'addon.mod_forum.locked' | translate" (action)="setLockState(false)" iconAction="fa-lock"></core-context-menu-item>
     </core-context-menu>
 </core-navbar-buttons>
 <ion-content>
@@ -26,7 +28,7 @@
             <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: discussionStr} }}
         </ion-card>
 
-        <ion-card class="core-warning-card" *ngIf="locked">
+        <ion-card class="core-warning-card" *ngIf="discussion && discussion.locked">
             <ion-icon name="warning"></ion-icon> {{ 'addon.mod_forum.discussionlocked' | translate }}
         </ion-card>
 
