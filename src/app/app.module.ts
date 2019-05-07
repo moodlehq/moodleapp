@@ -91,6 +91,7 @@ import { AddonCourseCompletionModule } from '@addon/coursecompletion/coursecompl
 import { AddonUserProfileFieldModule } from '@addon/userprofilefield/userprofilefield.module';
 import { AddonFilesModule } from '@addon/files/files.module';
 import { AddonBlockActivityModulesModule } from '@addon/block/activitymodules/activitymodules.module';
+import { AddonBlockCalendarMonthModule } from '@addon/block/calendarmonth/calendarmonth.module';
 import { AddonBlockMyOverviewModule } from '@addon/block/myoverview/myoverview.module';
 import { AddonBlockSiteMainMenuModule } from '@addon/block/sitemainmenu/sitemainmenu.module';
 import { AddonBlockTimelineModule } from '@addon/block/timeline/timeline.module';
@@ -213,6 +214,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonUserProfileFieldModule,
         AddonFilesModule,
         AddonBlockActivityModulesModule,
+        AddonBlockCalendarMonthModule,
         AddonBlockMyOverviewModule,
         AddonBlockSiteMainMenuModule,
         AddonBlockTimelineModule,

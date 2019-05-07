@@ -27,6 +27,7 @@
   "addon.badges.version": "badges",
   "addon.badges.warnexpired": "badges",
   "addon.block_activitymodules.pluginname": "block_activity_modules",
+  "addon.block_calendarmonth.pluginname": "block_calendar_month",
   "addon.block_myoverview.all": "block_myoverview",
   "addon.block_myoverview.favourites": "block_myoverview",
   "addon.block_myoverview.future": "block_myoverview",
