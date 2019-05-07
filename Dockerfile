@@ -11,15 +11,17 @@ EXPOSE 35729
 # Port 53703 is the Chrome dev logger port.
 EXPOSE 53703
 
-# MoodleMobile uses Cordova, Ionic, and Gulp.
-RUN npm install -g cordova ionic gulp && rm -rf /root/.npm
+# MoodleMobile uses Ionic and Gulp.
+RUN npm i -g ionic gulp && rm -rf /root/.npm
 
 WORKDIR /app
 
 COPY . /app
 
-# The setup script will handle npm installation, cordova setup, and gulp setup.
-RUN npm run setup && rm -rf /root/.npm
+# Install npm libraries and run gulp to initialize the project.
+RUN npm install && gulp && rm -rf /root/.npm
+
+RUN ionic info
 
 # Provide a Healthcheck command for easier use in CI.
 HEALTHCHECK --interval=10s --timeout=3s --start-period=30s CMD curl -f http://localhost:8100 || exit 1
