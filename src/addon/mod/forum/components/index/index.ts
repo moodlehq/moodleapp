@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Optional, Injector, ViewChild } from '@angular/core';
-import { Content, NavController } from 'ionic-angular';
+import { Content, ModalController, NavController } from 'ionic-angular';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
@@ -52,6 +52,11 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     addDiscussionText = this.translate.instant('addon.mod_forum.addanewdiscussion');
     availabilityMessage: string;
 
+    sortingAvailable: boolean;
+    sortOrders = [];
+    selectedSortOrder = null;
+    sortOrderSelectorExpanded = false;
+
     protected syncEventName = AddonModForumSyncProvider.AUTO_SYNCED;
     protected page = 0;
     protected trackPosts = false;
@@ -69,6 +74,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     constructor(injector: Injector,
             @Optional() protected content: Content,
             protected navCtrl: NavController,
+            protected modalCtrl: ModalController,
             protected groupsProvider: CoreGroupsProvider,
             protected userProvider: CoreUserProvider,
             protected forumProvider: AddonModForumProvider,
@@ -79,6 +85,9 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             protected prefetchHandler: AddonModForumPrefetchHandler,
             protected ratingOffline: CoreRatingOfflineProvider) {
         super(injector);
+
+        this.sortingAvailable = this.forumProvider.isDiscussionListSortingAvailable();
+        this.sortOrders = this.forumProvider.getAvailableSortOrders();
     }
 
     /**
@@ -162,7 +171,9 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
         this.loadMoreError = false;
 
-        return this.forumProvider.getForum(this.courseId, this.module.id).then((forum) => {
+        const promises = [];
+
+        promises.push(this.forumProvider.getForum(this.courseId, this.module.id).then((forum) => {
             this.forum = forum;
 
             this.description = forum.intro || this.description;
@@ -212,7 +223,11 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                     this.canAddDiscussion = this.forum.cancreatediscussions && !cutoffDateReached;
                 }),
             ]);
-        }).then(() => {
+        }));
+
+        promises.push(this.fetchSortOrderPreference());
+
+        return Promise.all(promises).then(() => {
             return Promise.all([
                 this.fetchOfflineDiscussion(),
                 this.fetchDiscussions(refresh),
@@ -291,7 +306,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             this.page = 0;
         }
 
-        return this.forumProvider.getDiscussions(this.forum.id, this.page).then((response) => {
+        return this.forumProvider.getDiscussions(this.forum.id, this.selectedSortOrder.value, this.page).then((response) => {
             let promise;
             if (this.usesGroups) {
                 promise = this.forumProvider.formatDiscussionsGroups(this.forum.cmid, response.discussions);
@@ -367,6 +382,27 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     }
 
     /**
+     * Convenience function to fetch the sort order preference.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected fetchSortOrderPreference(): Promise<any> {
+        let promise;
+        if (this.sortingAvailable) {
+            promise = this.userProvider.getUserPreference(AddonModForumProvider.PREFERENCE_SORTORDER).then((value) => {
+                return value ? parseInt(value, 10) : null;
+            });
+        } else {
+            // Use default.
+            promise = Promise.resolve(null);
+        }
+
+        return promise.then((value) => {
+           this.selectedSortOrder = this.sortOrders.find((sortOrder) => sortOrder.value === value) || this.sortOrders[0];
+        });
+    }
+
+    /**
      * Perform the invalidate content function.
      *
      * @return {Promise<any>} Resolved when done.
@@ -380,6 +416,10 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             promises.push(this.forumProvider.invalidateDiscussionsList(this.forum.id));
             promises.push(this.groupsProvider.invalidateActivityGroupMode(this.forum.cmid));
             promises.push(this.forumProvider.invalidateAccessInformation(this.forum.id));
+        }
+
+        if (this.sortingAvailable) {
+            promises.push(this.userProvider.invalidateUserPreference(AddonModForumProvider.PREFERENCE_SORTORDER));
         }
 
         return Promise.all(promises);
@@ -482,6 +522,37 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         this.splitviewCtrl.push('AddonModForumNewDiscussionPage', params);
 
         this.selectedDiscussion = 0;
+    }
+
+    /**
+     * Display the sort order selector modal.
+     *
+     * @param {MouseEvent} event Event.
+     */
+    showSortOrderSelector(event: MouseEvent): void {
+        if (!this.sortingAvailable) {
+            return;
+        }
+
+        const params = { sortOrders: this.sortOrders, selected: this.selectedSortOrder.value };
+        const modal = this.modalCtrl.create('AddonModForumSortOrderSelectorPage', params);
+        modal.onDidDismiss((sortOrder) => {
+            this.sortOrderSelectorExpanded = false;
+
+            if (sortOrder && sortOrder.value != this.selectedSortOrder.value) {
+                this.selectedSortOrder = sortOrder;
+                this.page = 0;
+                this.userProvider.setUserPreference(AddonModForumProvider.PREFERENCE_SORTORDER, sortOrder.value.toFixed(0))
+                        .then(() => {
+                    this.showLoadingAndFetch();
+                }).catch((error) => {
+                    this.domUtils.showErrorModalDefault(error, 'Error updating preference.');
+                });
+            }
+        });
+
+        modal.present({ev: event});
+        this.sortOrderSelectorExpanded = true;
     }
 
     /**

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreSite } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreGroupsProvider } from '@providers/groups';
@@ -37,6 +37,14 @@ export class AddonModForumProvider {
     static VIEW_DISCUSSION_EVENT = 'addon_mod_forum_view_discussion';
     static CHANGE_DISCUSSION_EVENT = 'addon_mod_forum_lock_discussion';
     static MARK_READ_EVENT = 'addon_mod_forum_mark_read';
+
+    static PREFERENCE_SORTORDER = 'forum_discussionlistsortorder';
+    static SORTORDER_LASTPOST_DESC = 1;
+    static SORTORDER_LASTPOST_ASC = 2;
+    static SORTORDER_CREATED_DESC = 3;
+    static SORTORDER_CREATED_ASC = 4;
+    static SORTORDER_REPLIES_DESC = 5;
+    static SORTORDER_REPLIES_ASC = 6;
 
     protected ROOT_CACHE_KEY = 'mmaModForum:';
 
@@ -105,10 +113,17 @@ export class AddonModForumProvider {
      * Get cache key for forum discussions list WS calls.
      *
      * @param  {number} forumId Forum ID.
-     * @return {string}         Cache key.
+     * @param  {number} sortOrder Sort order.
+     * @return {string} Cache key.
      */
-    protected getDiscussionsListCacheKey(forumId: number): string {
-        return this.ROOT_CACHE_KEY + 'discussions:' + forumId;
+    protected getDiscussionsListCacheKey(forumId: number, sortOrder: number): string {
+        let key = this.ROOT_CACHE_KEY + 'discussions:' + forumId;
+
+        if (sortOrder != AddonModForumProvider.SORTORDER_LASTPOST_DESC) {
+            key += ':' + sortOrder;
+        }
+
+        return key;
     }
 
     /**
@@ -453,9 +468,63 @@ export class AddonModForumProvider {
     }
 
     /**
+     * Return whether discussion lists can be sorted.
+     *
+     * @param {CoreSite} [site] Site. If not defined, current site.
+     * @return {boolean} True if discussion lists can be sorted.
+     */
+    isDiscussionListSortingAvailable(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.isVersionGreaterEqualThan('3.7');
+    }
+
+    /**
+     * Return the list of available sort orders.
+     *
+     * @return {{label: string, value: number}[]} List of sort orders.
+     */
+    getAvailableSortOrders(): {label: string, value: number}[] {
+        const sortOrders = [
+            {
+                label: 'addon.mod_forum.bylastpostdesc',
+                value: AddonModForumProvider.SORTORDER_LASTPOST_DESC
+            },
+        ];
+
+        if (this.isDiscussionListSortingAvailable()) {
+            sortOrders.push(
+                {
+                    label: 'addon.mod_forum.bylastpostasc',
+                    value: AddonModForumProvider.SORTORDER_LASTPOST_ASC
+                },
+                {
+                    label: 'addon.mod_forum.bycreateddesc',
+                    value: AddonModForumProvider.SORTORDER_CREATED_DESC
+                },
+                {
+                    label: 'addon.mod_forum.bycreatedasc',
+                    value: AddonModForumProvider.SORTORDER_CREATED_ASC
+                },
+                {
+                    label: 'addon.mod_forum.byrepliesdesc',
+                    value: AddonModForumProvider.SORTORDER_REPLIES_DESC
+                },
+                {
+                    label: 'addon.mod_forum.byrepliesasc',
+                    value: AddonModForumProvider.SORTORDER_REPLIES_ASC
+                }
+            );
+        }
+
+        return sortOrders;
+    }
+
+    /**
      * Get forum discussions.
      *
      * @param  {number}  forumId      Forum ID.
+     * @param  {number}  [sortOrder]  Sort order.
      * @param  {number}  [page=0]     Page.
      * @param  {boolean} [forceCache] True to always get the value from cache. false otherwise.
      * @param  {string}  [siteId]     Site ID. If not defined, current site.
@@ -463,23 +532,59 @@ export class AddonModForumProvider {
      *                                 - discussions: List of discussions.
      *                                 - canLoadMore: True if there may be more discussions to load.
      */
-    getDiscussions(forumId: number, page: number = 0, forceCache?: boolean, siteId?: string): Promise<any> {
+    getDiscussions(forumId: number, sortOrder?: number, page: number = 0, forceCache?: boolean, siteId?: string): Promise<any> {
+        sortOrder = sortOrder || AddonModForumProvider.SORTORDER_LASTPOST_DESC;
+
         return this.sitesProvider.getSite(siteId).then((site) => {
-            const params = {
+            let method = 'mod_forum_get_forum_discussions_paginated';
+            const params: any = {
                 forumid: forumId,
-                sortby:  'timemodified',
-                sortdirection:  'DESC',
                 page: page,
                 perpage: AddonModForumProvider.DISCUSSIONS_PER_PAGE
             };
-            const preSets: any = {
-                cacheKey: this.getDiscussionsListCacheKey(forumId)
+
+            if (site.wsAvailable('mod_forum_get_forum_discussions')) {
+                // Since Moodle 3.7.
+                method = 'mod_forum_get_forum_discussions';
+                params.sortorder = sortOrder;
+            } else {
+                if (sortOrder == AddonModForumProvider.SORTORDER_LASTPOST_DESC) {
+                    params.sortby = 'timemodified';
+                    params.sortdirection = 'DESC';
+                } else {
+                    // Sorting not supported with the old WS method.
+                    return Promise.reject(null);
+                }
+            }
+            const preSets: CoreSiteWSPreSets = {
+                cacheKey: this.getDiscussionsListCacheKey(forumId, sortOrder)
             };
             if (forceCache) {
                 preSets.omitExpires = true;
             }
 
-            return site.read('mod_forum_get_forum_discussions_paginated', params, preSets).then((response) => {
+            return site.read(method, params, preSets).catch((error) => {
+                // Try to get the data from cache stored with the old WS method.
+                if (!this.appProvider.isOnline() && method == 'mod_forum_get_forum_discussion' &&
+                        sortOrder == AddonModForumProvider.SORTORDER_LASTPOST_DESC) {
+
+                    const params = {
+                        forumid: forumId,
+                        page: page,
+                        perpage: AddonModForumProvider.DISCUSSIONS_PER_PAGE,
+                        sortby: 'timemodified',
+                        sortdirection: 'DESC'
+                    };
+                    const preSets: CoreSiteWSPreSets = {
+                        cacheKey: this.getDiscussionsListCacheKey(forumId, sortOrder),
+                        omitExpires: true
+                    };
+
+                    return site.read('mod_forum_get_forum_discussions_paginated', params, preSets);
+                }
+
+                return Promise.reject(error);
+            }).then((response) => {
                 if (response) {
                     this.storeUserData(response.discussions);
 
@@ -499,7 +604,8 @@ export class AddonModForumProvider {
      * If a page fails, the discussions until that page will be returned along with a flag indicating an error occurred.
      *
      * @param  {number}  forumId     Forum ID.
-     * @param  {boolean} forceCache  True to always get the value from cache, false otherwise.
+     * @param  {number}  [sortOrder] Sort order.
+     * @param  {boolean} [forceCache] True to always get the value from cache, false otherwise.
      * @param  {number}  [numPages]  Number of pages to get. If not defined, all pages.
      * @param  {number}  [startPage] Page to start. If not defined, first page.
      * @param  {string}  [siteId]    Site ID. If not defined, current site.
@@ -507,8 +613,8 @@ export class AddonModForumProvider {
      *                                - discussions: List of discussions.
      *                                - error: True if an error occurred, false otherwise.
      */
-    getDiscussionsInPages(forumId: number, forceCache?: boolean, numPages?: number, startPage?: number, siteId?: string)
-            : Promise<any> {
+    getDiscussionsInPages(forumId: number, sortOrder?: number, forceCache?: boolean, numPages?: number, startPage?: number,
+            siteId?: string): Promise<any> {
         if (typeof numPages == 'undefined') {
             numPages = -1;
         }
@@ -525,7 +631,7 @@ export class AddonModForumProvider {
 
         const getPage = (page: number): Promise<any> => {
             // Get page discussions.
-            return this.getDiscussions(forumId, page, forceCache, siteId).then((response) => {
+            return this.getDiscussions(forumId, sortOrder, page, forceCache, siteId).then((response) => {
                 result.discussions = result.discussions.concat(response.discussions);
                 numPages--;
 
@@ -569,22 +675,32 @@ export class AddonModForumProvider {
     invalidateContent(moduleId: number, courseId: number): Promise<any> {
         // Get the forum first, we need the forum ID.
         return this.getForum(courseId, moduleId).then((forum) => {
-            // We need to get the list of discussions to be able to invalidate their posts.
-            return this.getDiscussionsInPages(forum.id, true).then((response) => {
-                // Now invalidate the WS calls.
-                const promises = [];
+            const promises = [];
 
-                promises.push(this.invalidateForumData(courseId));
-                promises.push(this.invalidateDiscussionsList(forum.id));
-                promises.push(this.invalidateCanAddDiscussion(forum.id));
-                promises.push(this.invalidateAccessInformation(forum.id));
+            promises.push(this.invalidateForumData(courseId));
+            promises.push(this.invalidateDiscussionsList(forum.id));
+            promises.push(this.invalidateCanAddDiscussion(forum.id));
+            promises.push(this.invalidateAccessInformation(forum.id));
 
-                response.discussions.forEach((discussion) => {
-                    promises.push(this.invalidateDiscussionPosts(discussion.discussion));
-                });
+            this.getAvailableSortOrders().forEach((sortOrder) => {
+                // We need to get the list of discussions to be able to invalidate their posts.
+                promises.push(this.getDiscussionsInPages(forum.id, sortOrder.value, true).then((response) => {
+                    // Now invalidate the WS calls.
+                    const promises = [];
 
-                return this.utils.allPromises(promises);
+                    response.discussions.forEach((discussion) => {
+                        promises.push(this.invalidateDiscussionPosts(discussion.discussion));
+                    });
+
+                    return this.utils.allPromises(promises);
+                }));
             });
+
+            if (this.isDiscussionListSortingAvailable()) {
+                promises.push(this.userProvider.invalidateUserPreference(AddonModForumProvider.PREFERENCE_SORTORDER));
+            }
+
+            return this.utils.allPromises(promises);
         });
     }
 
@@ -623,7 +739,9 @@ export class AddonModForumProvider {
      */
     invalidateDiscussionsList(forumId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.invalidateWsCacheForKey(this.getDiscussionsListCacheKey(forumId));
+            return this.utils.allPromises(this.getAvailableSortOrders().map((sortOrder) => {
+                return site.invalidateWsCacheForKey(this.getDiscussionsListCacheKey(forumId, sortOrder.value));
+            }));
         });
     }
 
