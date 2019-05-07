@@ -39,6 +39,7 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
                                   // If is "spinner" an spinner will be shown.
                                   // If no icon or spinner is selected, no action or link will work.
                                   // If href but no iconAction is provided arrow-right will be used.
+    @Input() iconSlash?: boolean; // Display a red slash over the icon.
     @Input() ariaDescription?: string; // Aria label to add to iconDescription.
     @Input() ariaAction?: string; // Aria label to add to iconAction. If not set, it will be equal to content.
     @Input() href?: string; // Link to go if no action provided.

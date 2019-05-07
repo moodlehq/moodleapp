@@ -14,3 +14,42 @@
       transform: scale(-1, 1);
     }
 }
+
+// Center font awesome icons
+
+.icon.fa::before {
+  width: 1em;
+  text-align: center;
+}
+
+// Slash
+
+@font-face {
+  font-family: "Moodle Slash Icon";
+  font-style: normal;
+  font-weight: 400;
+  src: url("#{$font-path}/slash-icon.woff") format("woff");
+}
+
+.icon-slash {
+  position: relative;
+}
+
+.icon-slash::after {
+  content: "/";
+  font-family: "Moodle Slash Icon";
+  font-size: 0.75em;
+  margin-top: 0.125em;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: color($colors, danger);
+}
+
+.icon-slash.fa::after {
+  font-size: 1em;
+  margin-top: 0;
+}

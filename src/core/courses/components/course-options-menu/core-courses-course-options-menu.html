@@ -16,7 +16,7 @@
     <h2>{{ 'core.courses.addtofavourites' | translate }}</h2>
 </ion-item>
 <ion-item text-wrap (click)="action('unfavourite')" *ngIf="course.isfavourite">
-    <core-icon name="fa-star-o" item-start></core-icon>
+    <core-icon name="fa-star" [slash]="true" item-start></core-icon>
     <h2>{{ 'core.courses.removefromfavourites' | translate }}</h2>
 </ion-item>
 
