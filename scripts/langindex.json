@@ -182,6 +182,7 @@
   "addon.messages.deleteallconfirm": "message",
   "addon.messages.deleteallselfconfirm": "message",
   "addon.messages.deleteconversation": "message",
+  "addon.messages.deleteforeveryone": "message",
   "addon.messages.deletemessage": "local_moodlemobileapp",
   "addon.messages.deletemessageconfirmation": "local_moodlemobileapp",
   "addon.messages.errordeletemessage": "local_moodlemobileapp",
