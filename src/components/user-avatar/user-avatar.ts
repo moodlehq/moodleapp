@@ -38,6 +38,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
     @Input() protected userId?: number; // If provided or found it will be used to link the image to the profile.
     @Input() protected courseId?: number;
     @Input() checkOnline = false; // If want to check and show online status.
+    @Input() extraIcon?: string; // Extra icon to show near the avatar.
 
     avatarUrl?: string;
 

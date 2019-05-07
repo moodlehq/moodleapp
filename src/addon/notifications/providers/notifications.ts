@@ -52,9 +52,12 @@ export class AddonNotificationsProvider {
      */
     protected formatNotificationsData(notifications: any[], read?: boolean): Promise<any> {
         const promises = notifications.map((notification) => {
+
             // Set message to show.
-            if (notification.contexturl && notification.contexturl.indexOf('/mod/forum/') >= 0) {
+            if (notification.component && notification.component == 'mod_forum') {
                 notification.mobiletext = notification.smallmessage;
+            } else if (notification.component && notification.component == 'moodle' && notification.name == 'insights') {
+                notification.mobiletext = notification.fullmessagehtml;
             } else {
                 notification.mobiletext = notification.fullmessage;
             }
@@ -73,10 +76,10 @@ export class AddonNotificationsProvider {
             // Try to set courseid the notification belongs to.
             if (notification.customdata && notification.customdata.courseid) {
                 notification.courseid = notification.customdata.courseid;
-            } else {
+            } else if (!notification.courseid) {
                 const cid = notification.fullmessagehtml.match(/course\/view\.php\?id=([^"]*)/);
                 if (cid && cid[1]) {
-                    notification.courseid = cid[1];
+                    notification.courseid = parseInt(cid[1], 10);
                 }
             }
 
@@ -84,6 +87,7 @@ export class AddonNotificationsProvider {
                 // Try to get the profile picture of the user.
                 return this.userProvider.getProfile(notification.useridfrom, notification.courseid, true).then((user) => {
                     notification.profileimageurlfrom = user.profileimageurl;
+                    notification.userfromfullname = user.fullname;
 
                     return notification;
                 }).catch(() => {
