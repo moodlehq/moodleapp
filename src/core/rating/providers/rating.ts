@@ -327,6 +327,44 @@ export class CoreRatingProvider {
     }
 
     /**
+     * Convenience function to merge two or more rating infos of the same instance.
+     *
+     * @param {CoreRatingInfo[]} ratingInfos Array of rating infos.
+     * @return {CoreRatingInfo} Merged rating info or null.
+     */
+    mergeRatingInfos(ratingInfos: CoreRatingInfo[]): CoreRatingInfo {
+        let result: CoreRatingInfo = null;
+        const scales = {};
+        const ratings = {};
+
+        ratingInfos.forEach((ratingInfo) => {
+            if (!ratingInfo) {
+                // Skip null rating infos.
+                return;
+            }
+
+            if (!result) {
+                result = Object.assign({}, ratingInfo);
+            }
+
+            (ratingInfo.scales || []).forEach((scale) => {
+                scales[scale.id] = scale;
+            });
+
+            (ratingInfo.ratings || []).forEach((rating) => {
+                ratings[rating.itemid] = rating;
+            });
+        });
+
+        if (result) {
+            result.scales = this.utils.objectToArray(scales);
+            result.ratings = this.utils.objectToArray(ratings);
+        }
+
+        return result;
+    }
+
+    /**
      * Prefetch individual ratings.
      *
      * This function should be called from the prefetch handler of activities with ratings.
