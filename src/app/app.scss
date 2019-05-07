@@ -595,6 +595,25 @@ ion-app.app-root {
   .alert-message {
       overflow-y: auto;
   }
+  ion-alert.core-nohead {
+
+    &.alert-md .alert-message {
+      padding-top: $alert-md-message-padding-bottom;
+    }
+    &.alert-ios .alert-message {
+      padding-top: $alert-ios-message-padding-bottom;
+    }
+    &.alert-wp .alert-message {
+      padding-top: $alert-wp-message-padding-bottom;
+    }
+    .alert-head {
+      display: none;
+    }
+  }
+
+  ion-alert .alert-checkbox-group {
+    border: 0;
+  }
 
   ion-toast.core-toast-success .toast-wrapper{
       background: $green-dark;

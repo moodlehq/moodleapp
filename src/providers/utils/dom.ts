@@ -990,7 +990,7 @@ export class CoreDomUtilsProvider {
      * @param {string} [title] Title of the modal.
      * @param {string} [okText] Text of the OK button.
      * @param {string} [cancelText] Text of the Cancel button.
-     * @param {any} [options] More options. See https://ionicframework.com/docs/api/components/alert/AlertController/
+     * @param {any} [options] More options. See https://ionicframework.com/docs/v3/api/components/alert/AlertController/
      * @return {Promise<any>} Promise resolved if the user confirms and rejected with a canceled error if he cancels.
      */
     showConfirm(message: string, title?: string, okText?: string, cancelText?: string, options?: any): Promise<any> {
