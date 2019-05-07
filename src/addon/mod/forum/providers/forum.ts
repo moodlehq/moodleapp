@@ -58,7 +58,7 @@ export class AddonModForumProvider {
      * @return {string}         Cache key.
      */
     protected getCanAddDiscussionCacheKey(forumId: number, groupId: number): string {
-        return this.getCommonCanAddDiscussionCacheKey(forumId) + ':' + groupId;
+        return this.getCommonCanAddDiscussionCacheKey(forumId) + groupId;
     }
 
     /**
@@ -68,7 +68,7 @@ export class AddonModForumProvider {
      * @return {string}         Cache key.
      */
     protected getCommonCanAddDiscussionCacheKey(forumId: number): string {
-        return this.ROOT_CACHE_KEY + 'canadddiscussion:' + forumId;
+        return this.ROOT_CACHE_KEY + 'canadddiscussion:' + forumId + ':';
     }
 
     /**
