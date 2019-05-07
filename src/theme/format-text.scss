@@ -4,9 +4,8 @@ ion-app.app-root .item core-format-text,
 ion-app.app-root core-rich-text-editor .core-rte-editor {
   @include core-headings();
 
-  font-size: 1.4rem;
-
   p {
+    font-size: 1.4rem;
     margin-bottom: 1rem;
   }
 
