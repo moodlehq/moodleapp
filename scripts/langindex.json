@@ -1333,6 +1333,7 @@
   "core.dismiss": "local_moodlemobileapp",
   "core.done": "survey",
   "core.download": "moodle",
+  "core.downloaded": "local_moodlemobileapp",
   "core.downloading": "local_moodlemobileapp",
   "core.edit": "moodle",
   "core.emptysplit": "local_moodlemobileapp",

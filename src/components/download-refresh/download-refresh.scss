@@ -1,0 +1,13 @@
+ion-app.app-root core-download-refresh {
+    font-size: 1.4rem;
+
+    button, ion-icon {
+        cursor: pointer;
+        pointer-events: auto;
+        text-align: center;
+    }
+
+    ion-icon, .core-icon-downloaded {
+        font-size: 1.8em;
+    }
+}

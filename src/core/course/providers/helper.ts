@@ -197,11 +197,9 @@ export class CoreCourseHelperProvider {
                 result.status = CoreConstants.DOWNLOADING;
             }
 
+            section.downloadStatus = result.status;
+            section.canCheckUpdates = this.prefetchDelegate.canCheckUpdates();
             // Set this section data.
-            section.showDownload = result.status === CoreConstants.NOT_DOWNLOADED;
-            section.showRefresh = result.status === CoreConstants.OUTDATED ||
-                    (!this.prefetchDelegate.canCheckUpdates() && result.status === CoreConstants.DOWNLOADED);
-
             if (result.status !== CoreConstants.DOWNLOADING || !this.prefetchDelegate.isBeingDownloaded(section.id)) {
                 section.isDownloading = false;
                 section.total = 0;
@@ -250,9 +248,8 @@ export class CoreCourseHelperProvider {
         return Promise.all(promises).then(() => {
             if (allSectionsSection) {
                 // Set "All sections" data.
-                allSectionsSection.showDownload = allSectionsStatus === CoreConstants.NOT_DOWNLOADED;
-                allSectionsSection.showRefresh = allSectionsStatus === CoreConstants.OUTDATED ||
-                        (!this.prefetchDelegate.canCheckUpdates() && allSectionsStatus === CoreConstants.DOWNLOADED);
+                allSectionsSection.downloadStatus = allSectionsStatus;
+                allSectionsSection.canCheckUpdates = this.prefetchDelegate.canCheckUpdates();
                 allSectionsSection.isDownloading = allSectionsStatus === CoreConstants.DOWNLOADING;
             }
         }).finally(() => {
@@ -981,7 +978,7 @@ export class CoreCourseHelperProvider {
      */
     getCourseStatusIconAndTitleFromStatus(status: string): {icon: string, title: string} {
         if (status == CoreConstants.DOWNLOADED) {
-            // Always show refresh icon, we cannot knew if there's anything new in course options.
+            // Always show refresh icon, we cannot know if there's anything new in course options.
             return {
                 icon: 'refresh',
                 title: 'core.course.refreshcourse'
@@ -1330,9 +1327,8 @@ export class CoreCourseHelperProvider {
 
             return this.utils.allPromises(promises).then(() => {
                 // Set "All sections" data.
-                section.showDownload = allSectionsStatus === CoreConstants.NOT_DOWNLOADED;
-                section.showRefresh = allSectionsStatus === CoreConstants.OUTDATED ||
-                        (!this.prefetchDelegate.canCheckUpdates() && allSectionsStatus === CoreConstants.DOWNLOADED);
+                section.downloadStatus = allSectionsStatus;
+                section.canCheckUpdates = this.prefetchDelegate.canCheckUpdates();
                 section.isDownloading = allSectionsStatus === CoreConstants.DOWNLOADING;
             }).finally(() => {
                 section.isDownloading = false;

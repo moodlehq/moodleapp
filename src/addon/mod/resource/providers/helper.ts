@@ -115,6 +115,7 @@ export class AddonModResourceHelperProvider {
     isDisplayedEmbedded(module: any, display: number): boolean {
         if ((!module.contents.length && !module.contentsinfo) || !this.fileProvider.isAvailable() ||
                 (!this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.7') && this.isNextcloudFile(module))) {
+            return false;
         }
 
         let ext;

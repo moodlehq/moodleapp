@@ -44,9 +44,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
     @Input() showTime?: boolean | string = true; // Whether show file time modified.
     @Output() onDelete?: EventEmitter<void>; // Will notify when the delete button is clicked.
 
-    isDownloaded: boolean;
     isDownloading: boolean;
-    showDownload: boolean;
     fileIcon: string;
     fileName: string;
     fileSizeReadable: string;
@@ -110,13 +108,10 @@ export class CoreFileComponent implements OnInit, OnDestroy {
      */
     protected calculateState(): Promise<void> {
         return this.filepoolProvider.getFileStateByUrl(this.siteId, this.fileUrl, this.timemodified).then((state) => {
-            const canDownload = this.sitesProvider.getCurrentSite().canDownloadFiles();
+            this.canDownload = this.sitesProvider.getCurrentSite().canDownloadFiles();
 
             this.state = state;
-            this.isDownloaded = state === CoreConstants.DOWNLOADED || state === CoreConstants.OUTDATED;
-            this.isDownloading = canDownload && state === CoreConstants.DOWNLOADING;
-            this.showDownload = canDownload && (state === CoreConstants.NOT_DOWNLOADED || state === CoreConstants.OUTDATED ||
-                (this.alwaysDownload && state === CoreConstants.DOWNLOADED));
+            this.isDownloading = this.canDownload && state === CoreConstants.DOWNLOADING;
         });
     }
 
@@ -139,12 +134,12 @@ export class CoreFileComponent implements OnInit, OnDestroy {
     /**
      * Download a file and, optionally, open it afterwards.
      *
-     * @param {Event} e Click event.
+     * @param {Event} [e] Click event.
      * @param {boolean} openAfterDownload Whether the file should be opened after download.
      */
-    download(e: Event, openAfterDownload: boolean): void {
-        e.preventDefault();
-        e.stopPropagation();
+    download(e?: Event, openAfterDownload: boolean = false): void {
+        e && e.preventDefault();
+        e && e.stopPropagation();
 
         let promise;
 
@@ -168,7 +163,8 @@ export class CoreFileComponent implements OnInit, OnDestroy {
             return;
         }
 
-        if (!this.appProvider.isOnline() && (!openAfterDownload || (openAfterDownload && !this.isDownloaded))) {
+        if (!this.appProvider.isOnline() && (!openAfterDownload || (openAfterDownload &&
+                !(this.state === CoreConstants.DOWNLOADED || this.state === CoreConstants.OUTDATED)))) {
             this.domUtils.showErrorModal('core.networkerrormsg', true);
 
             return;
