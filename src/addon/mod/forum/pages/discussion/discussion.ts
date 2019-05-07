@@ -76,6 +76,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     discussionStr = '';
     component = AddonModForumProvider.COMPONENT;
     cmId: number;
+    canPin = false;
 
     protected forumId: number;
     protected postId: number;
@@ -350,6 +351,17 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                 this.ratingInfo = ratingInfo;
             });
         }).then(() => {
+            if (this.forumProvider.isSetPinStateAvailableForSite()) {
+                // Use the canAddDiscussion WS to check if the user can pin discussions.
+                return this.forumProvider.canAddDiscussionToAll(this.forumId).then((response) => {
+                    this.canPin = !!response.canpindiscussions;
+                }).catch(() => {
+                    this.canPin = false;
+                });
+            } else {
+                this.canPin = false;
+            }
+        }).then(() => {
             return this.ratingOffline.hasRatings('mod_forum', 'post', 'module', this.cmId, this.discussionId).then((hasRatings) => {
                 this.hasOfflineRatings = hasRatings;
             });
@@ -491,6 +503,62 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                 locked: this.discussion.locked
             };
             this.eventsProvider.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, this.sitesProvider.getCurrentSiteId());
+
+            this.domUtils.showToast('addon.mod_forum.lockupdated', true);
+        }).catch((error) => {
+            this.domUtils.showErrorModal(error);
+        }).finally(() => {
+            modal.dismiss();
+        });
+    }
+
+    /**
+     * Pin or unpin the discussion.
+     *
+     * @param {boolean} pinned True to pin the discussion, false to unpin it.
+     */
+    setPinState(pinned: boolean): void {
+        const modal = this.domUtils.showModalLoading('core.sending', true);
+
+        this.forumProvider.setPinState(this.discussionId, pinned).then(() => {
+            this.discussion.pinned = pinned;
+
+            const data = {
+                forumId: this.forumId,
+                discussionId: this.discussionId,
+                cmId: this.cmId,
+                pinned: this.discussion.pinned
+            };
+            this.eventsProvider.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, this.sitesProvider.getCurrentSiteId());
+
+            this.domUtils.showToast('addon.mod_forum.pinupdated', true);
+        }).catch((error) => {
+            this.domUtils.showErrorModal(error);
+        }).finally(() => {
+            modal.dismiss();
+        });
+    }
+
+    /**
+     * Star or unstar the discussion.
+     *
+     * @param {boolean} starred True to star the discussion, false to unstar it.
+     */
+    toggleFavouriteState(starred: boolean): void {
+        const modal = this.domUtils.showModalLoading('core.sending', true);
+
+        this.forumProvider.toggleFavouriteState(this.discussionId, starred).then(() => {
+            this.discussion.starred = starred;
+
+            const data = {
+                forumId: this.forumId,
+                discussionId: this.discussionId,
+                cmId: this.cmId,
+                starred: this.discussion.starred
+            };
+            this.eventsProvider.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, this.sitesProvider.getCurrentSiteId());
+
+            this.domUtils.showToast('addon.mod_forum.favouriteupdated', true);
         }).catch((error) => {
             this.domUtils.showErrorModal(error);
         }).finally(() => {

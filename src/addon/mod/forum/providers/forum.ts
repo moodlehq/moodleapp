@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreSite } from '@classes/site';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreGroupsProvider } from '@providers/groups';
@@ -781,6 +782,59 @@ export class AddonModForumProvider {
             };
 
             return site.write('mod_forum_set_lock_state', params);
+        });
+    }
+
+    /**
+     * Returns whether the set pin state WS is available.
+     *
+     * @param  {CoreSite} [site] Site. If not defined, current site.
+     * @return {boolean} Whether it's available.
+     * @since 3.7
+     */
+    isSetPinStateAvailableForSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return this.sitesProvider.wsAvailableInCurrentSite('mod_forum_set_pin_state');
+    }
+
+    /**
+     * Pin or unpin a discussion.
+     *
+     * @param {number} discussionId Discussion id.
+     * @param {boolean} locked True to pin, false to unpin.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resvoled when done.
+     * @since 3.7
+     */
+    setPinState(discussionId: number, pinned: boolean, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                discussionid: discussionId,
+                targetstate: pinned ? 1 : 0
+            };
+
+            return site.write('mod_forum_set_pin_state', params);
+        });
+    }
+
+    /**
+     * Star or unstar a discussion.
+     *
+     * @param {number} discussionId Discussion id.
+     * @param {boolean} starred True to star, false to unstar.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resvoled when done.
+     * @since 3.7
+     */
+    toggleFavouriteState(discussionId: number, starred: boolean, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                discussionid: discussionId,
+                targetstate: starred ? 1 : 0
+            };
+
+            return site.write('mod_forum_toggle_favourite_state', params);
         });
     }
 
