@@ -40,6 +40,7 @@
   "addon.block_myoverview.past": "block_myoverview",
   "addon.block_myoverview.pluginname": "block_myoverview",
   "addon.block_myoverview.title": "block_myoverview",
+  "addon.block_privatefiles.pluginname": "block_private_files",
   "addon.block_recentlyaccessedcourses.nocourses": "block_recentlyaccessedcourses",
   "addon.block_recentlyaccessedcourses.pluginname": "block_recentlyaccessedcourses",
   "addon.block_recentlyaccesseditems.noitems": "block_recentlyaccesseditems",

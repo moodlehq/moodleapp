@@ -94,6 +94,7 @@ import { AddonBlockActivityModulesModule } from '@addon/block/activitymodules/ac
 import { AddonBlockCalendarMonthModule } from '@addon/block/calendarmonth/calendarmonth.module';
 import { AddonBlockCalendarUpcomingModule } from '@addon/block/calendarupcoming/calendarupcoming.module';
 import { AddonBlockMyOverviewModule } from '@addon/block/myoverview/myoverview.module';
+import { AddonBlockPrivateFilesModule } from '@addon/block/privatefiles/privatefiles.module';
 import { AddonBlockSiteMainMenuModule } from '@addon/block/sitemainmenu/sitemainmenu.module';
 import { AddonBlockTimelineModule } from '@addon/block/timeline/timeline.module';
 import { AddonBlockRecentlyAccessedCoursesModule } from '@addon/block/recentlyaccessedcourses/recentlyaccessedcourses.module';
@@ -217,6 +218,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonBlockActivityModulesModule,
         AddonBlockCalendarMonthModule,
         AddonBlockCalendarUpcomingModule,
+        AddonBlockPrivateFilesModule,
         AddonBlockMyOverviewModule,
         AddonBlockSiteMainMenuModule,
         AddonBlockTimelineModule,
