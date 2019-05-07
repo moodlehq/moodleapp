@@ -87,6 +87,12 @@ export class CorePushNotificationsModule {
             pushNotificationsProvider.notificationClicked(notification);
         });
 
+        // Listen for local notification dismissed events.
+        localNotificationsProvider.registerObserver('clear', CorePushNotificationsProvider.COMPONENT, (notification: any) => {
+            // Log notification dismissed event.
+            pushNotificationsProvider.logEvent('moodle_notification_dismiss', notification, true);
+        });
+
         // Allow migrating the table from the old app to the new schema.
         updateManager.registerAppTableMigration({
             name: 'mma_pushnotifications_badge',
