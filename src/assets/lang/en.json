@@ -28,6 +28,7 @@
     "addon.badges.warnexpired": "(This badge has expired!)",
     "addon.block_activitymodules.pluginname": "Activities",
     "addon.block_calendarmonth.pluginname": "Calendar",
+    "addon.block_calendarupcoming.pluginname": " Upcoming events",
     "addon.block_myoverview.all": "All",
     "addon.block_myoverview.favourites": "Starred",
     "addon.block_myoverview.future": "Future",
