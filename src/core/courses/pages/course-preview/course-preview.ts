@@ -234,6 +234,18 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
                 });
             });
         }).finally(() => {
+            if (!this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.7')) {
+                return this.coursesProvider.isGetCoursesByFieldAvailableInSite().then((available) => {
+                    if (available) {
+                        return this.coursesProvider.getCourseByField('id', this.course.id).then((course) => {
+                            this.course.customfields = course.customfields;
+                        });
+                    }
+                }).catch(() => {
+                    // Ignore errors.
+                });
+            }
+        }).finally(() => {
             this.dataLoaded = true;
         });
     }
@@ -386,6 +398,9 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
         promises.push(this.coursesProvider.invalidateCourse(this.course.id));
         promises.push(this.coursesProvider.invalidateCourseEnrolmentMethods(this.course.id));
         promises.push(this.courseOptionsDelegate.clearAndInvalidateCoursesOptions(this.course.id));
+        if (this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.7')) {
+            promises.push(this.coursesProvider.invalidateCoursesByField('id', this.course.id));
+        }
         if (this.guestInstanceId) {
             promises.push(this.coursesProvider.invalidateCourseGuestEnrolmentInfo(this.guestInstanceId));
         }
