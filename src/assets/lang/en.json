@@ -47,6 +47,7 @@
     "addon.block_recentlyaccessedcourses.pluginname": "Recently accessed courses",
     "addon.block_recentlyaccesseditems.noitems": "No recent items",
     "addon.block_recentlyaccesseditems.pluginname": "Recently accessed items",
+    "addon.block_selfcompletion.pluginname": "Self completion",
     "addon.block_sitemainmenu.pluginname": "Main menu",
     "addon.block_starredcourses.nocourses": "No starred courses",
     "addon.block_starredcourses.pluginname": "Starred courses",

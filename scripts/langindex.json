@@ -47,6 +47,7 @@
   "addon.block_recentlyaccessedcourses.pluginname": "block_recentlyaccessedcourses",
   "addon.block_recentlyaccesseditems.noitems": "block_recentlyaccesseditems",
   "addon.block_recentlyaccesseditems.pluginname": "block_recentlyaccesseditems",
+  "addon.block_selfcompletion.pluginname": "block_selfcompletion",
   "addon.block_sitemainmenu.pluginname": "block_site_main_menu",
   "addon.block_starredcourses.nocourses": "block_starredcourses",
   "addon.block_starredcourses.pluginname": "block_starredcourses",

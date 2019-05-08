@@ -102,6 +102,7 @@ import { AddonBlockTimelineModule } from '@addon/block/timeline/timeline.module'
 import { AddonBlockRecentlyAccessedCoursesModule } from '@addon/block/recentlyaccessedcourses/recentlyaccessedcourses.module';
 import { AddonBlockRecentlyAccessedItemsModule } from '@addon/block/recentlyaccesseditems/recentlyaccesseditems.module';
 import { AddonBlockStarredCoursesModule } from '@addon/block/starredcourses/starredcourses.module';
+import { AddonBlockSelfCompletionModule } from '@addon/block/selfcompletion/selfcompletion.module';
 import { AddonModAssignModule } from '@addon/mod/assign/assign.module';
 import { AddonModBookModule } from '@addon/mod/book/book.module';
 import { AddonModChatModule } from '@addon/mod/chat/chat.module';
@@ -229,6 +230,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonBlockRecentlyAccessedCoursesModule,
         AddonBlockRecentlyAccessedItemsModule,
         AddonBlockStarredCoursesModule,
+        AddonBlockSelfCompletionModule,
         AddonModAssignModule,
         AddonModBookModule,
         AddonModChatModule,
