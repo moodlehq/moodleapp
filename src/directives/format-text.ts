@@ -442,6 +442,8 @@ export class CoreFormatTextDirective implements OnChanges {
                 this.iframeUtils.treatFrame(frame);
             });
 
+            this.domUtils.handleBootstrapTooltips(div);
+
             return div;
         });
     }

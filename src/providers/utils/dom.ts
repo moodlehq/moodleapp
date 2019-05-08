@@ -14,8 +14,8 @@
 
 import { Injectable, SimpleChange } from '@angular/core';
 import {
-    LoadingController, Loading, ToastController, Toast, AlertController, Alert, Platform, Content,
-    ModalController
+    LoadingController, Loading, ToastController, Toast, AlertController, Alert, Platform, Content, PopoverController,
+    ModalController,
 } from 'ionic-angular';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
@@ -24,6 +24,7 @@ import { CoreAppProvider } from '../app';
 import { CoreConfigProvider } from '../config';
 import { CoreUrlUtilsProvider } from './url';
 import { CoreConstants } from '@core/constants';
+import { CoreBSTooltipComponent } from '@components/bs-tooltip/bs-tooltip';
 import { Md5 } from 'ts-md5/dist/md5';
 import { Subject } from 'rxjs';
 
@@ -65,7 +66,7 @@ export class CoreDomUtilsProvider {
     constructor(private translate: TranslateService, private loadingCtrl: LoadingController, private toastCtrl: ToastController,
             private alertCtrl: AlertController, private textUtils: CoreTextUtilsProvider, private appProvider: CoreAppProvider,
             private platform: Platform, private configProvider: CoreConfigProvider, private urlUtils: CoreUrlUtilsProvider,
-            private modalCtrl: ModalController, private sanitizer: DomSanitizer) {
+            private modalCtrl: ModalController, private sanitizer: DomSanitizer, private popoverCtrl: PopoverController) {
 
         // Check if debug messages should be displayed.
         configProvider.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false).then((debugDisplay) => {
@@ -562,6 +563,45 @@ export class CoreDomUtilsProvider {
         const id = element.getAttribute(this.INSTANCE_ID_ATTR_NAME);
 
         return this.instances[id];
+    }
+
+    /**
+     * Handle bootstrap tooltips in a certain element.
+     *
+     * @param {HTMLElement} element Element to check.
+     */
+    handleBootstrapTooltips(element: HTMLElement): void {
+        const els = Array.from(element.querySelectorAll('[data-toggle="tooltip"]'));
+
+        els.forEach((el) => {
+            const content = el.getAttribute('title') || el.getAttribute('data-original-title'),
+                trigger = el.getAttribute('data-trigger') || 'hover focus',
+                treated = el.getAttribute('data-bstooltip-treated');
+
+            if (!content || treated === 'true' ||
+                    (trigger.indexOf('hover') == -1 && trigger.indexOf('focus') == -1 && trigger.indexOf('click') == -1)) {
+                return;
+            }
+
+            el.setAttribute('data-bstooltip-treated', 'true'); // Mark it as treated.
+
+            // Store the title in data-original-title instead of title, like BS does.
+            el.setAttribute('data-original-title', content);
+            el.setAttribute('title', '');
+
+            el.addEventListener('click', (e) => {
+                const html = el.getAttribute('data-html');
+
+                const popover = this.popoverCtrl.create(CoreBSTooltipComponent, {
+                    content: content,
+                    html: html === 'true'
+                });
+
+                popover.present({
+                    ev: e
+                });
+            });
+        });
     }
 
     /**

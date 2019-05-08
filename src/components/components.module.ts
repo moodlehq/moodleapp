@@ -52,6 +52,7 @@ import { CoreIonTabComponent } from './ion-tabs/ion-tab';
 import { CoreInfiniteLoadingComponent } from './infinite-loading/infinite-loading';
 import { CoreUserAvatarComponent } from './user-avatar/user-avatar';
 import { CoreStyleComponent } from './style/style';
+import { CoreBSTooltipComponent } from './bs-tooltip/bs-tooltip';
 
 @NgModule({
     declarations: [
@@ -89,12 +90,14 @@ import { CoreStyleComponent } from './style/style';
         CoreIonTabComponent,
         CoreInfiniteLoadingComponent,
         CoreUserAvatarComponent,
-        CoreStyleComponent
+        CoreStyleComponent,
+        CoreBSTooltipComponent
     ],
     entryComponents: [
         CoreContextMenuPopoverComponent,
         CoreCoursePickerMenuPopoverComponent,
-        CoreRecaptchaModalComponent
+        CoreRecaptchaModalComponent,
+        CoreBSTooltipComponent
     ],
     imports: [
         IonicModule,
@@ -134,7 +137,8 @@ import { CoreStyleComponent } from './style/style';
         CoreIonTabComponent,
         CoreInfiniteLoadingComponent,
         CoreUserAvatarComponent,
-        CoreStyleComponent
+        CoreStyleComponent,
+        CoreBSTooltipComponent
     ]
 })
 export class CoreComponentsModule {}
