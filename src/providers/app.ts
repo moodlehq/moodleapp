@@ -16,11 +16,13 @@ import { Injectable, NgZone } from '@angular/core';
 import { Platform, App, NavController, MenuController } from 'ionic-angular';
 import { Keyboard } from '@ionic-native/keyboard';
 import { Network } from '@ionic-native/network';
+import { StatusBar } from '@ionic-native/status-bar';
 
 import { CoreDbProvider } from './db';
 import { CoreLoggerProvider } from './logger';
 import { CoreEventsProvider } from './events';
 import { SQLiteDB } from '@classes/sqlitedb';
+import { CoreConfigConstants } from '../configconstants';
 
 /**
  * Data stored for a redirect to another page/site.
@@ -72,7 +74,7 @@ export class CoreAppProvider {
 
     constructor(dbProvider: CoreDbProvider, private platform: Platform, private keyboard: Keyboard, private appCtrl: App,
             private network: Network, logger: CoreLoggerProvider, events: CoreEventsProvider, zone: NgZone,
-            private menuCtrl: MenuController) {
+            private menuCtrl: MenuController, private statusBar: StatusBar) {
         this.logger = logger.getInstance('CoreAppProvider');
         this.db = dbProvider.getDB(this.DBNAME);
 
@@ -489,5 +491,45 @@ export class CoreAppProvider {
 
             return index >= 0 && !!this.backActions.splice(index, 1);
         };
+    }
+
+    /**
+     * Set StatusBar color depending on platform.
+     */
+    setStatusBarColor(): void {
+        if (typeof CoreConfigConstants.statusbarbgios == 'string' && this.platform.is('ios')) {
+            // IOS Status bar properties.
+            this.statusBar.overlaysWebView(false);
+            this.statusBar.backgroundColorByHexString(CoreConfigConstants.statusbarbgios);
+            CoreConfigConstants.statusbarlighttextios ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
+        } else if (typeof CoreConfigConstants.statusbarbgandroid == 'string' && this.platform.is('android')) {
+            // Android Status bar properties.
+            this.statusBar.backgroundColorByHexString(CoreConfigConstants.statusbarbgandroid);
+            CoreConfigConstants.statusbarlighttextandroid ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
+        } else if (typeof CoreConfigConstants.statusbarbg == 'string') {
+            // Generic Status bar properties.
+            this.platform.is('ios') && this.statusBar.overlaysWebView(false);
+            this.statusBar.backgroundColorByHexString(CoreConfigConstants.statusbarbg);
+            CoreConfigConstants.statusbarlighttext ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
+        } else {
+            // Default Status bar properties.
+            this.platform.is('android') ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
+        }
+    }
+
+    /**
+     * Reset StatusBar color if any was set.
+     */
+    resetStatusBarColor(): void {
+        if (typeof CoreConfigConstants.statusbarbgremotetheme == 'string' &&
+                ((typeof CoreConfigConstants.statusbarbgios == 'string' && this.platform.is('ios')) ||
+                (typeof CoreConfigConstants.statusbarbgandroid == 'string' && this.platform.is('android')) ||
+                typeof CoreConfigConstants.statusbarbg == 'string')) {
+            // If the status bar has been overriden and there's a fallback color for remote themes, use it now.
+            this.platform.is('ios') && this.statusBar.overlaysWebView(false);
+            this.statusBar.backgroundColorByHexString(CoreConfigConstants.statusbarbgremotetheme);
+            CoreConfigConstants.statusbarlighttextremotetheme ?
+                this.statusBar.styleLightContent() : this.statusBar.styleDefault();
+        }
     }
 }
