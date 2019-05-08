@@ -61,10 +61,37 @@ export class AddonNotificationsPushClickHandler implements CorePushNotifications
      * @return {Promise<any>} Promise resolved when done.
      */
     handleClick(notification: any): Promise<any> {
-        return this.notificationsProvider.invalidateNotificationsList(notification.site).catch(() => {
-            // Ignore errors.
-        }).then(() => {
-            return this.linkHelper.goInSite(undefined, 'AddonNotificationsListPage', undefined, notification.site);
+        let promise;
+
+        // Try to handle the appurl first.
+        if (notification.customdata && notification.customdata.appurl) {
+            promise = this.linkHelper.handleLink(notification.customdata.appurl);
+        } else {
+            promise = Promise.resolve(false);
+        }
+
+        return promise.then((treated) => {
+
+            if (!treated) {
+                // No link or cannot be handled by the app. Try to handle the contexturl now.
+                if (notification.contexturl) {
+                    return this.linkHelper.handleLink(notification.contexturl);
+                } else {
+                    return false;
+                }
+            }
+
+            return true;
+        }).then((treated) => {
+
+            if (!treated) {
+                // No link or cannot be handled by the app. Open the notifications page.
+                return this.notificationsProvider.invalidateNotificationsList(notification.site).catch(() => {
+                    // Ignore errors.
+                }).then(() => {
+                    return this.linkHelper.goInSite(undefined, 'AddonNotificationsListPage', undefined, notification.site);
+                });
+            }
         });
     }
 }
