@@ -29,6 +29,7 @@
   "addon.block_activitymodules.pluginname": "block_activity_modules",
   "addon.block_calendarmonth.pluginname": "block_calendar_month",
   "addon.block_calendarupcoming.pluginname": "block_calendar_upcoming",
+  "addon.block_completionstatus.pluginname": "block_completionstatus",
   "addon.block_learningplans.pluginname": "block_lp",
   "addon.block_myoverview.all": "block_myoverview",
   "addon.block_myoverview.favourites": "block_myoverview",
