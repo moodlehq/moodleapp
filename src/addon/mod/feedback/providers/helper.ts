@@ -22,6 +22,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { TranslateService } from '@ngx-translate/core';
 
 /**
@@ -38,7 +39,7 @@ export class AddonModFeedbackHelperProvider {
             protected textUtils: CoreTextUtilsProvider, protected translate: TranslateService,
             protected timeUtils: CoreTimeUtilsProvider, protected domUtils: CoreDomUtilsProvider,
             protected courseProvider: CoreCourseProvider, protected linkHelper: CoreContentLinksHelperProvider,
-            protected sitesProvider: CoreSitesProvider) {
+            protected sitesProvider: CoreSitesProvider, protected utils: CoreUtilsProvider) {
     }
 
     /**
@@ -346,9 +347,13 @@ export class AddonModFeedbackHelperProvider {
         item.template = 'numeric';
 
         const range = item.presentation.split(AddonModFeedbackProvider.LINE_SEP) || [];
-        item.rangefrom = range.length > 0 ? parseInt(range[0], 10) || '' : '';
-        item.rangeto = range.length > 1 ? parseInt(range[1], 10) || '' : '';
+        range[0] = range.length > 0 ? parseInt(range[0], 10) : undefined;
+        range[1] = range.length > 1 ? parseInt(range[1], 10) : undefined;
+
+        item.rangefrom = typeof range[0] == 'number' && !isNaN(range[0]) ? range[0] : '';
+        item.rangeto = typeof range[1] == 'number' && !isNaN(range[1]) ? range[1] : '';
         item.value = typeof item.rawValue != 'undefined' ? parseFloat(item.rawValue) : '';
+        item.postfix = this.getNumericBoundariesForDisplay(item.rangefrom, item.rangeto);
 
         return item;
     }
@@ -491,6 +496,29 @@ export class AddonModFeedbackHelperProvider {
         }
 
         return item;
+    }
+
+    /**
+     * Returns human-readable boundaries (min - max).
+     * Based on Moodle's get_boundaries_for_display.
+     *
+     * @param {number} rangeFrom Range from.
+     * @param {number} rangeTo Range to.
+     * @return {string} Human-readable boundaries.
+     */
+    protected getNumericBoundariesForDisplay(rangeFrom: number, rangeTo: number): string {
+        const rangeFromSet = typeof rangeFrom == 'number',
+            rangeToSet = typeof rangeTo == 'number';
+
+        if (!rangeFromSet && rangeToSet) {
+            return ' (' + this.translate.instant('addon.mod_feedback.maximal') + ': ' + this.utils.formatFloat(rangeTo) + ')';
+        } else if (rangeFromSet && !rangeToSet) {
+            return ' (' + this.translate.instant('addon.mod_feedback.minimal') + ': ' + this.utils.formatFloat(rangeFrom) + ')';
+        } else if (!rangeFromSet && !rangeToSet) {
+            return '';
+        }
+
+        return ' (' + this.utils.formatFloat(rangeFrom) + ' - ' + this.utils.formatFloat(rangeTo) + ')';
     }
 
 }
