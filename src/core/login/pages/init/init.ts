@@ -43,7 +43,7 @@ export class CoreLoginInitPage {
         this.initDelegate.ready().then(() => {
             // Check if there was a pending redirect.
             const redirectData = this.appProvider.getRedirect();
-            if (redirectData.siteId && redirectData.page) {
+            if (redirectData.siteId) {
                 // Unset redirect data.
                 this.appProvider.storeRedirect('', '', '');
 
@@ -63,8 +63,8 @@ export class CoreLoginInitPage {
                             return this.loadPage();
                         });
                     } else {
-                        // No site to load, just open the state.
-                        return this.navCtrl.setRoot(redirectData.page, redirectData.params, { animate: false });
+                        // No site to load, open the page.
+                        return this.loginHelper.goToNoSitePage(this.navCtrl, redirectData.page, redirectData.params);
                     }
                 }
             }

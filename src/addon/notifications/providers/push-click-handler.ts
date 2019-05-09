@@ -65,7 +65,7 @@ export class AddonNotificationsPushClickHandler implements CorePushNotifications
 
         // Try to handle the appurl first.
         if (notification.customdata && notification.customdata.appurl) {
-            promise = this.linkHelper.handleLink(notification.customdata.appurl);
+            promise = this.linkHelper.handleLink(notification.customdata.appurl, undefined, undefined, true);
         } else {
             promise = Promise.resolve(false);
         }

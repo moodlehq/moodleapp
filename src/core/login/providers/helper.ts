@@ -417,6 +417,43 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Open a page that doesn't belong to any site.
+     *
+     * @param {NavController} [navCtrl] Nav Controller.
+     * @param {string} [page] Page to open.
+     * @param {any} [params] Params of the page.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    goToNoSitePage(navCtrl: NavController, page: string, params?: any): Promise<any> {
+        navCtrl = navCtrl || this.appProvider.getRootNavController();
+
+        if (page == 'CoreLoginSitesPage') {
+            // Just open the page as root.
+            return navCtrl.setRoot(page, params);
+        } else {
+            // Check if there is any site stored.
+            return this.sitesProvider.hasSites().then((hasSites) => {
+                if (hasSites) {
+                    // There are sites stored, open sites page first to be able to go back.
+                    navCtrl.setRoot('CoreLoginSitesPage');
+
+                    return navCtrl.push(page, page, {animate: false});
+                } else {
+                    if (page != 'CoreLoginSitePage') {
+                        // Open the new site page to be able to go back.
+                        navCtrl.setRoot('CoreLoginSitePage');
+
+                        return navCtrl.push(page, page, {animate: false});
+                    } else {
+                        // Just open the page as root.
+                        return navCtrl.setRoot(page, params);
+                    }
+                }
+            });
+        }
+    }
+
+    /**
      * Go to the initial page of a site depending on 'userhomepage' setting.
      *
      * @param {NavController} [navCtrl] NavController to use. Defaults to app root NavController.

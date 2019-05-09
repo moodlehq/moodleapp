@@ -29,6 +29,7 @@ import { CoreContentLinksDelegate, CoreContentLinksAction } from './delegate';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../../../configconstants';
 import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service that provides some features regarding content links.
@@ -54,11 +55,27 @@ export class CoreContentLinksHelperProvider {
      * @param {string} url URL to handle.
      * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
      * @param {string} [username] Username to use to filter sites.
+     * @param {boolean} [checkRoot] Whether to check if the URL is the root URL of a site.
      * @return {Promise<boolean>} Promise resolved with a boolean: whether the URL can be handled.
      */
-    canHandleLink(url: string, courseId?: number, username?: string): Promise<boolean> {
-        return this.contentLinksDelegate.getActionsFor(url, undefined, username).then((actions) => {
-            return !!this.getFirstValidAction(actions);
+    canHandleLink(url: string, courseId?: number, username?: string, checkRoot?: boolean): Promise<boolean> {
+        let promise;
+
+        if (checkRoot) {
+            promise = this.isStoredRootURL(url, username);
+        } else {
+            promise = Promise.resolve({});
+        }
+
+        return promise.then((data) => {
+            if (data.site) {
+                // URL is the root of the site, can handle it.
+                return true;
+            }
+
+            return this.contentLinksDelegate.getActionsFor(url, undefined, username).then((actions) => {
+                return !!this.getFirstValidAction(actions);
+            });
         }).catch(() => {
             return false;
         });
@@ -148,10 +165,16 @@ export class CoreContentLinksHelperProvider {
 
         // Wait for the app to be ready.
         this.initDelegate.ready().then(() => {
-            // Check if the site is stored.
-            return this.sitesProvider.getSiteIdsFromUrl(url, false, username);
-        }).then((siteIds) => {
-            if (siteIds.length) {
+            // Check if it's the root URL.
+            return this.isStoredRootURL(url, username);
+        }).then((data) => {
+
+            if (data.site) {
+                // Root URL.
+                modal.dismiss();
+
+                return this.handleRootURL(data.site, false);
+            } else if (data.hasSites) {
                 modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
 
                 return this.handleLink(url, username).then((treated) => {
@@ -161,11 +184,13 @@ export class CoreContentLinksHelperProvider {
                 });
             } else {
                 // Get the site URL.
-                const siteUrl = this.contentLinksDelegate.getSiteUrl(url);
-                if (!siteUrl) {
-                    this.domUtils.showErrorModal('core.login.invalidsite', true);
+                let siteUrl = this.contentLinksDelegate.getSiteUrl(url),
+                    urlToOpen = url;
 
-                    return;
+                if (!siteUrl) {
+                    // Site URL not found, use the original URL since it could be the root URL of the site.
+                    siteUrl = url;
+                    urlToOpen = undefined;
                 }
 
                 // Check that site exists.
@@ -176,7 +201,7 @@ export class CoreContentLinksHelperProvider {
                         pageParams = {
                             siteUrl: result.siteUrl,
                             username: username,
-                            urlToOpen: url,
+                            urlToOpen: urlToOpen,
                             siteConfig: result.config
                         };
                     let promise,
@@ -210,14 +235,12 @@ export class CoreContentLinksHelperProvider {
                             this.loginHelper.confirmAndOpenBrowserForSSOLogin(
                                 result.siteUrl, result.code, result.service, result.config && result.config.launchurl);
                         } else if (!hasSitePluginsLoaded) {
-                            this.appProvider.getRootNavController().setRoot(pageName, pageParams);
+                            return this.loginHelper.goToNoSitePage(undefined, pageName, pageParams);
                         }
                     });
 
                 }).catch((error) => {
-                    if (error) {
-                        this.domUtils.showErrorModal(error);
-                    }
+                    this.domUtils.showErrorModalDefault(error, this.translate.instant('core.login.invalidsite'));
                 });
             }
         }).finally(() => {
@@ -234,42 +257,119 @@ export class CoreContentLinksHelperProvider {
      * @param {string} [username] Username related with the URL. E.g. in 'http://myuser@m.com', url would be 'http://m.com' and
      *                            the username 'myuser'. Don't use it if you don't want to filter by username.
      * @param {NavController} [navCtrl] Nav Controller to use to navigate.
+     * @param {boolean} [checkRoot] Whether to check if the URL is the root URL of a site.
+     * @param {boolean} [openBrowserRoot] Whether to open in browser if it's root URL and it belongs to current site.
      * @return {Promise<boolean>} Promise resolved with a boolean: true if URL was treated, false otherwise.
      */
-    handleLink(url: string, username?: string, navCtrl?: NavController): Promise<boolean> {
-        // Check if the link should be treated by some component/addon.
-        return this.contentLinksDelegate.getActionsFor(url, undefined, username).then((actions) => {
-            const action = this.getFirstValidAction(actions);
-            if (action) {
-                if (!this.sitesProvider.isLoggedIn()) {
-                    // No current site. Perform the action if only 1 site found, choose the site otherwise.
-                    if (action.sites.length == 1) {
-                        action.action(action.sites[0], navCtrl);
-                    } else {
-                        this.goToChooseSite(url);
-                    }
-                } else if (action.sites.length == 1 && action.sites[0] == this.sitesProvider.getCurrentSiteId()) {
-                    // Current site.
-                    action.action(action.sites[0], navCtrl);
-                } else {
-                    // Not current site or more than one site. Ask for confirmation.
-                    this.domUtils.showConfirm(this.translate.instant('core.contentlinks.confirmurlothersite')).then(() => {
+    handleLink(url: string, username?: string, navCtrl?: NavController, checkRoot?: boolean, openBrowserRoot?: boolean)
+            : Promise<boolean> {
+        let promise;
+
+        if (checkRoot) {
+            promise = this.isStoredRootURL(url, username);
+        } else {
+            promise = Promise.resolve({});
+        }
+
+        return promise.then((data) => {
+            if (data.site) {
+                // URL is the root of the site.
+                this.handleRootURL(data.site, openBrowserRoot);
+
+                return true;
+            }
+
+            // Check if the link should be treated by some component/addon.
+            return this.contentLinksDelegate.getActionsFor(url, undefined, username).then((actions) => {
+                const action = this.getFirstValidAction(actions);
+                if (action) {
+                    if (!this.sitesProvider.isLoggedIn()) {
+                        // No current site. Perform the action if only 1 site found, choose the site otherwise.
                         if (action.sites.length == 1) {
                             action.action(action.sites[0], navCtrl);
                         } else {
                             this.goToChooseSite(url);
                         }
-                    }).catch(() => {
-                        // User canceled.
-                    });
+                    } else if (action.sites.length == 1 && action.sites[0] == this.sitesProvider.getCurrentSiteId()) {
+                        // Current site.
+                        action.action(action.sites[0], navCtrl);
+                    } else {
+                        // Not current site or more than one site. Ask for confirmation.
+                        this.domUtils.showConfirm(this.translate.instant('core.contentlinks.confirmurlothersite')).then(() => {
+                            if (action.sites.length == 1) {
+                                action.action(action.sites[0], navCtrl);
+                            } else {
+                                this.goToChooseSite(url);
+                            }
+                        }).catch(() => {
+                            // User canceled.
+                        });
+                    }
+
+                    return true;
                 }
 
-                return true;
+                return false;
+            }).catch(() => {
+                return false;
+            });
+        });
+    }
+
+    /**
+     * Handle a root URL of a site.
+     *
+     * @param {CoreSite} site Site to handle.
+     * @param {boolean} [openBrowserRoot] Whether to open in browser if it's root URL and it belongs to current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    handleRootURL(site: CoreSite, openBrowserRoot?: boolean): Promise<any> {
+        const currentSite = this.sitesProvider.getCurrentSite();
+
+        if (currentSite && currentSite.getURL() == site.getURL()) {
+            // Already logged in.
+            if (openBrowserRoot) {
+                return site.openInBrowserWithAutoLogin(site.getURL());
             }
 
-            return false;
-        }).catch(() => {
-            return false;
+            return Promise.resolve();
+        } else {
+            // Login in the site.
+            return this.loginHelper.redirect('', {}, site.getId());
+        }
+    }
+
+    /**
+     * Check if a URL is the root URL of any of the stored sites. If so, return the site ID.
+     *
+     * @param {string} url URL to check.
+     * @param {string} username Username to check.
+     * @return {Promise<{site: CoreSite, hasSites: boolean}>} Promise resolved with site and whether there is any site to treat
+     *                                   the URL. Site will be undefined if it isn't the root URL of any stored site.
+     */
+    isStoredRootURL(url: string, username: string): Promise<{site: CoreSite, hasSites: boolean}> {
+        // Check if the site is stored.
+        return this.sitesProvider.getSiteIdsFromUrl(url, true, username).then((siteIds) => {
+            const result = {
+                hasSites: siteIds.length > 0,
+                site: undefined
+            };
+
+            if (result.hasSites) {
+                // If more than one site is returned it usually means there are different users stored. Use any of them.
+                return this.sitesProvider.getSite(siteIds[0]).then((site) => {
+                    const siteUrl = this.textUtils.removeEndingSlash(this.urlUtils.removeProtocolAndWWW(site.getURL())),
+                        treatedUrl = this.textUtils.removeEndingSlash(this.urlUtils.removeProtocolAndWWW(url));
+
+                    if (siteUrl == treatedUrl) {
+                        result.site = site;
+                    }
+
+                    return result;
+                });
+            }
+
+            return result;
         });
     }
 }
