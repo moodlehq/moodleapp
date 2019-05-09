@@ -43,6 +43,7 @@
     "addon.block_myoverview.past": "Past",
     "addon.block_myoverview.pluginname": "Course overview",
     "addon.block_myoverview.title": "Course name",
+    "addon.block_onlineusers.pluginname": "Online users",
     "addon.block_privatefiles.pluginname": "Private files",
     "addon.block_recentlyaccessedcourses.nocourses": "No recent courses",
     "addon.block_recentlyaccessedcourses.pluginname": "Recently accessed courses",

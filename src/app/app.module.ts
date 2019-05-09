@@ -97,6 +97,7 @@ import { AddonBlockCommentsModule } from '@addon/block/comments/comments.module'
 import { AddonBlockCompletionStatusModule } from '@addon/block/completionstatus/completionstatus.module';
 import { AddonBlockHtmlModule } from '@addon/block/html/html.module';
 import { AddonBlockMyOverviewModule } from '@addon/block/myoverview/myoverview.module';
+import { AddonBlockOnlineUsersModule } from '@addon/block/onlineusers/onlineusers.module';
 import { AddonBlockLearningPlansModule } from '@addon/block/learningplans/learningplans.module';
 import { AddonBlockPrivateFilesModule } from '@addon/block/privatefiles/privatefiles.module';
 import { AddonBlockSiteMainMenuModule } from '@addon/block/sitemainmenu/sitemainmenu.module';
@@ -228,6 +229,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonBlockHtmlModule,
         AddonBlockLearningPlansModule,
         AddonBlockMyOverviewModule,
+        AddonBlockOnlineUsersModule,
         AddonBlockPrivateFilesModule,
         AddonBlockSiteMainMenuModule,
         AddonBlockTimelineModule,
