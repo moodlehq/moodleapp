@@ -211,7 +211,8 @@ export const IONIC_NATIVE_PROVIDERS = [
     ]
 })
 export class CoreEmulatorModule {
-    constructor(appProvider: CoreAppProvider, initDelegate: CoreInitDelegate, helper: CoreEmulatorHelperProvider) {
+    constructor(appProvider: CoreAppProvider, initDelegate: CoreInitDelegate, helper: CoreEmulatorHelperProvider,
+            platform: Platform) {
         const win = <any> window; // Convert the "window" to "any" type to be able to use non-standard properties.
 
         // Emulate Custom URL Scheme plugin in desktop apps.
@@ -224,7 +225,7 @@ export class CoreEmulatorModule {
 
             // Listen for 'resume' events.
             require('electron').ipcRenderer.on('coreAppFocused', () => {
-                document.dispatchEvent(new Event('resume'));
+                platform.resume.emit();
             });
         }
 
