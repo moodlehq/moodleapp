@@ -255,7 +255,8 @@ export class CoreCourseProvider {
     getCourseBlocks(courseId: number, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
-                    courseid: courseId
+                    courseid: courseId,
+                    returncontents: 1
                 },
                 preSets: CoreSiteWSPreSets = {
                     cacheKey: this.getCourseBlocksCacheKey(courseId),

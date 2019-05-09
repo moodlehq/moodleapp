@@ -58,7 +58,9 @@ export class CoreBlockCourseBlocksCourseOptionHandler implements CoreCourseOptio
      * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
      */
     isEnabledForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any): boolean | Promise<boolean> {
-        return true;
+        return this.courseProvider.getCourseBlocks(courseId).then((blocks) => {
+            return blocks && blocks.length > 0;
+        });
     }
 
     /**
