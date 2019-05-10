@@ -453,6 +453,8 @@
   "addon.mod_feedback.feedbackclose": "feedback",
   "addon.mod_feedback.feedbackopen": "feedback",
   "addon.mod_feedback.mapcourses": "feedback",
+  "addon.mod_feedback.maximal": "feedback",
+  "addon.mod_feedback.minimal": "feedback",
   "addon.mod_feedback.mode": "feedback",
   "addon.mod_feedback.modulenameplural": "feedback",
   "addon.mod_feedback.next_page": "feedback",

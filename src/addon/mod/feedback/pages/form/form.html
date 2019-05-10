@@ -18,6 +18,7 @@
                         <ion-label *ngIf="item.name" [core-mark-required]="item.required" stacked>
                             <span *ngIf="feedback.autonumbering && item.itemnumber">{{item.itemnumber}}. </span>
                             <core-format-text  [component]="component" [componentId]="componentId" [text]="item.name"></core-format-text>
+                            <span *ngIf="item.postfix" class="addon-mod_feedback-postfix">{{item.postfix}}</span>
                         </ion-label>
                         <div item-content class="addon-mod_feedback-form-content" *ngIf="item.template">
                             <ng-container [ngSwitch]="item.template">

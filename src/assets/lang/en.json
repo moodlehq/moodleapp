@@ -453,6 +453,8 @@
     "addon.mod_feedback.feedbackclose": "Allow answers to",
     "addon.mod_feedback.feedbackopen": "Allow answers from",
     "addon.mod_feedback.mapcourses": "Map feedback to courses",
+    "addon.mod_feedback.maximal": "Maximum",
+    "addon.mod_feedback.minimal": "Minimum",
     "addon.mod_feedback.mode": "Mode",
     "addon.mod_feedback.modulenameplural": "Feedback",
     "addon.mod_feedback.next_page": "Next page",
