@@ -205,7 +205,7 @@ export class CoreSite {
         3.4: 2017111300,
         3.5: 2018051700,
         3.6: 2018120300,
-        3.7: 2019030700 // @todo: Replace it with the right 3.7 date when released
+        3.7: 2019052000
     };
 
     // Rest of variables.
