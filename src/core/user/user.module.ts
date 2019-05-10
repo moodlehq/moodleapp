@@ -26,6 +26,10 @@ import { CoreUserParticipantsCourseOptionHandler } from './providers/course-opti
 import { CoreUserParticipantsLinkHandler } from './providers/participants-link-handler';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
 import { CoreUserComponentsModule } from './components/components.module';
+import { CoreCronDelegate } from '@providers/cron';
+import { CoreUserOfflineProvider } from './providers/offline';
+import { CoreUserSyncProvider } from './providers/sync';
+import { CoreUserSyncCronHandler } from './providers/sync-cron-handler';
 
 // List of providers (without handlers).
 export const CORE_USER_PROVIDERS: any[] = [
@@ -33,6 +37,8 @@ export const CORE_USER_PROVIDERS: any[] = [
     CoreUserProfileFieldDelegate,
     CoreUserProvider,
     CoreUserHelperProvider,
+    CoreUserOfflineProvider,
+    CoreUserSyncProvider
 ];
 
 @NgModule({
@@ -46,10 +52,13 @@ export const CORE_USER_PROVIDERS: any[] = [
         CoreUserProfileFieldDelegate,
         CoreUserProvider,
         CoreUserHelperProvider,
+        CoreUserOfflineProvider,
+        CoreUserSyncProvider,
         CoreUserProfileMailHandler,
         CoreUserProfileLinkHandler,
         CoreUserParticipantsCourseOptionHandler,
-        CoreUserParticipantsLinkHandler
+        CoreUserParticipantsLinkHandler,
+        CoreUserSyncCronHandler,
     ]
 })
 export class CoreUserModule {
@@ -57,12 +66,14 @@ export class CoreUserModule {
             eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, userProvider: CoreUserProvider,
             contentLinksDelegate: CoreContentLinksDelegate, userLinkHandler: CoreUserProfileLinkHandler,
             courseOptionHandler: CoreUserParticipantsCourseOptionHandler, linkHandler: CoreUserParticipantsLinkHandler,
-            courseOptionsDelegate: CoreCourseOptionsDelegate) {
+            courseOptionsDelegate: CoreCourseOptionsDelegate, cronDelegate: CoreCronDelegate,
+            syncHandler: CoreUserSyncCronHandler) {
 
         userDelegate.registerHandler(userProfileMailHandler);
         courseOptionsDelegate.registerHandler(courseOptionHandler);
         contentLinksDelegate.registerHandler(userLinkHandler);
         contentLinksDelegate.registerHandler(linkHandler);
+        cronDelegate.register(syncHandler);
 
         eventsProvider.on(CoreEventsProvider.USER_DELETED, (data) => {
             // Search for userid in params.
