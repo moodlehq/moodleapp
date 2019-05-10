@@ -175,7 +175,9 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
             if (module.contentsinfo) {
                 // No need to use the list of files.
                 const mimetype = module.contentsinfo.mimetypes[0];
-                resourceData.icon = this.mimetypeUtils.getMimetypeIcon(mimetype);
+                if (mimetype) {
+                    resourceData.icon = this.mimetypeUtils.getMimetypeIcon(mimetype);
+                }
                 resourceData.extra = this.textUtils.cleanTags(module.afterlink);
 
             } else if (files && files.length) {
