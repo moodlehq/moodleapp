@@ -56,6 +56,7 @@
     "addon.block_sitemainmenu.pluginname": "Main menu",
     "addon.block_starredcourses.nocourses": "No starred courses",
     "addon.block_starredcourses.pluginname": "Starred courses",
+    "addon.block_tags.pluginname": "Tags",
     "addon.block_timeline.duedate": "Due date",
     "addon.block_timeline.next30days": "Next 30 days",
     "addon.block_timeline.next3months": "Next 3 months",
