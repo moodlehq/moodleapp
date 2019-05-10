@@ -31,6 +31,7 @@
   "addon.block_calendarupcoming.pluginname": "block_calendar_upcoming",
   "addon.block_comments.pluginname": "block_comments",
   "addon.block_completionstatus.pluginname": "block_completionstatus",
+  "addon.block_glossaryrandom.pluginname": "block_glossary_random",
   "addon.block_learningplans.pluginname": "block_lp",
   "addon.block_myoverview.all": "block_myoverview",
   "addon.block_myoverview.favourites": "block_myoverview",

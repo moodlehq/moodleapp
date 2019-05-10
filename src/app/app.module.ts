@@ -95,6 +95,7 @@ import { AddonBlockCalendarMonthModule } from '@addon/block/calendarmonth/calend
 import { AddonBlockCalendarUpcomingModule } from '@addon/block/calendarupcoming/calendarupcoming.module';
 import { AddonBlockCommentsModule } from '@addon/block/comments/comments.module';
 import { AddonBlockCompletionStatusModule } from '@addon/block/completionstatus/completionstatus.module';
+import { AddonBlockGlossaryRandomModule } from '@addon/block/glossaryrandom/glossaryrandom.module';
 import { AddonBlockHtmlModule } from '@addon/block/html/html.module';
 import { AddonBlockMyOverviewModule } from '@addon/block/myoverview/myoverview.module';
 import { AddonBlockNewsItemsModule } from '@addon/block/newsitems/newsitems.module';
@@ -227,6 +228,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonBlockCalendarUpcomingModule,
         AddonBlockCommentsModule,
         AddonBlockCompletionStatusModule,
+        AddonBlockGlossaryRandomModule,
         AddonBlockHtmlModule,
         AddonBlockLearningPlansModule,
         AddonBlockMyOverviewModule,
