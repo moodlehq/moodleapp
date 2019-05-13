@@ -318,6 +318,14 @@ export class AddonModForumDiscussionPage implements OnDestroy {
 
                 promises.push(this.forumProvider.getAccessInformation(this.forum.id).then((accessInfo) => {
                     this.accessInfo = accessInfo;
+
+                    // Disallow replying if cut-off date is reached and the user has not the capability to override it.
+                    // Just in case the posts were fetched from WS when the cut-off date was not reached but it is now.
+                    if (this.forumHelper.isCutoffDateReached(forum) && !accessInfo.cancanoverridecutoff) {
+                        posts.forEach((post) => {
+                            post.canreply = false;
+                        });
+                    }
                 }));
 
                 // Fetch the discussion if not passed as parameter.
