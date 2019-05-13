@@ -383,7 +383,7 @@ ion-app.app-root {
       color: $core-select-placeholder-color;
     }
 
-    &.select-disabled, .select-icon .select-icon-inner {
+    &.select-disabled .select-icon .select-icon-inner {
         color: $text-color;
     }
     @each $color-name, $color-base, $color-contrast in get-colors($colors) {
