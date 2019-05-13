@@ -92,6 +92,7 @@ import { AddonUserProfileFieldModule } from '@addon/userprofilefield/userprofile
 import { AddonFilesModule } from '@addon/files/files.module';
 import { AddonBlockActivityModulesModule } from '@addon/block/activitymodules/activitymodules.module';
 import { AddonBlockBadgesModule } from '@addon/block/badges/badges.module';
+import { AddonBlockBlogTagsModule } from '@addon/block/blogtags/blogtags.module';
 import { AddonBlockCalendarMonthModule } from '@addon/block/calendarmonth/calendarmonth.module';
 import { AddonBlockCalendarUpcomingModule } from '@addon/block/calendarupcoming/calendarupcoming.module';
 import { AddonBlockCommentsModule } from '@addon/block/comments/comments.module';
@@ -227,6 +228,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonFilesModule,
         AddonBlockActivityModulesModule,
         AddonBlockBadgesModule,
+        AddonBlockBlogTagsModule,
         AddonBlockCalendarMonthModule,
         AddonBlockCalendarUpcomingModule,
         AddonBlockCommentsModule,

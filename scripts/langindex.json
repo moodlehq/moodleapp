@@ -28,6 +28,7 @@
   "addon.badges.warnexpired": "badges",
   "addon.block_activitymodules.pluginname": "block_activity_modules",
   "addon.block_badges.pluginname": "block_badges",
+  "addon.block_blogtags.pluginname": "block_blog_tags",
   "addon.block_calendarmonth.pluginname": "block_calendar_month",
   "addon.block_calendarupcoming.pluginname": "block_calendar_upcoming",
   "addon.block_comments.pluginname": "block_comments",
