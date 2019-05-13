@@ -8,6 +8,7 @@
     "cannotadddiscussionall": "You do not have permission to add a new discussion topic for all participants.",
     "cannotcreatediscussion": "Could not create new discussion",
     "couldnotadd": "Could not add your post due to an unknown error",
+    "cutoffdatereached": "The cut-off date for posting to this forum is reached so you can no longer post to it.",
     "discussion": "Discussion",
     "discussionlocked": "This discussion has been locked so you can no longer reply to it.",
     "discussionpinned": "Pinned",
@@ -42,6 +43,8 @@
     "reply": "Reply",
     "replyplaceholder": "Write your reply...",
     "subject": "Subject",
+    "thisforumhasduedate": "The due date for posting to this forum is {{$a}}.",
+    "thisforumisdue": "The due date for posting to this forum was {{$a}}.",
     "unpindiscussion": "Unpin this discussion",
     "unread": "Unread",
     "unreadpostsnumber": "{{$a}} unread posts"

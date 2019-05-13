@@ -49,6 +49,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     offlineDiscussions = [];
     selectedDiscussion = 0; // Disucssion ID or negative timecreated if it's an offline discussion.
     addDiscussionText = this.translate.instant('addon.mod_forum.addanewdiscussion');
+    availabilityMessage: string;
 
     protected syncEventName = AddonModForumSyncProvider.AUTO_SYNCED;
     protected page = 0;
@@ -168,6 +169,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             if (typeof forum.istracked != 'undefined') {
                 this.trackPosts = forum.istracked;
             }
+            this.availabilityMessage = this.forumHelper.getAvailabilityMessage(forum);
 
             this.dataRetrieved.emit(forum);
 

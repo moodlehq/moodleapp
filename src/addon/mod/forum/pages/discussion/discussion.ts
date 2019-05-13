@@ -77,6 +77,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     component = AddonModForumProvider.COMPONENT;
     cmId: number;
     canPin = false;
+    availabilityMessage: string;
 
     protected forumId: number;
     protected postId: number;
@@ -311,6 +312,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                 this.forumId = forum.id;
                 this.cmId = forum.cmid;
                 this.forum = forum;
+                this.availabilityMessage = this.forumHelper.getAvailabilityMessage(forum);
 
                 const promises = [];
 
@@ -460,6 +462,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         this.syncIcon = 'spinner';
 
         const promises = [
+            this.forumProvider.invalidateForumData(this.courseId),
             this.forumProvider.invalidateDiscussionPosts(this.discussionId),
             this.forumProvider.invalidateAccessInformation(this.forumId)
         ];
