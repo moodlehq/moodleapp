@@ -29,6 +29,7 @@ import { CoreMainMenuProvider, CoreMainMenuCustomItem } from '../../providers/ma
 })
 export class CoreMainMenuMorePage implements OnDestroy {
     handlers: CoreMainMenuHandlerData[];
+    allHandlers: CoreMainMenuHandlerData[];
     handlersLoaded: boolean;
     siteInfo: any;
     siteName: string;
@@ -58,29 +59,41 @@ export class CoreMainMenuMorePage implements OnDestroy {
     ionViewDidLoad(): void {
         // Load the handlers.
         this.subscription = this.menuDelegate.getHandlers().subscribe((handlers) => {
-            // Calculate the main handlers to not display them in this view.
-            const mainHandlers = handlers.filter((handler) => {
-                return !handler.onlyInMore;
-            }).slice(0, CoreMainMenuProvider.NUM_MAIN_HANDLERS);
+            this.allHandlers = handlers;
 
-            // Get only the handlers that don't appear in the main view.
-            this.handlers = [];
-            handlers.forEach((handler) => {
-                if (mainHandlers.indexOf(handler) == -1) {
-                    this.handlers.push(handler);
-                }
-            });
-
-            this.handlersLoaded = this.menuDelegate.areHandlersLoaded();
+            this.initHandlers();
         });
+
+        window.addEventListener('resize', this.initHandlers.bind(this));
     }
 
     /**
      * Page destroyed.
      */
     ngOnDestroy(): void {
+        window.removeEventListener('resize', this.initHandlers.bind(this));
+
         if (this.subscription) {
             this.subscription.unsubscribe();
+        }
+    }
+
+    /**
+     * Init handlers on change (size or handlers).
+     */
+    initHandlers(): void {
+        if (this.allHandlers) {
+            // Calculate the main handlers not to display them in this view.
+            const mainHandlers = this.allHandlers.filter((handler) => {
+                return !handler.onlyInMore;
+            }).slice(0, this.mainMenuProvider.getNumItems());
+
+            // Get only the handlers that don't appear in the main view.
+            this.handlers = this.allHandlers.filter((handler) => {
+                return mainHandlers.indexOf(handler) == -1;
+            });
+
+            this.handlersLoaded = this.menuDelegate.areHandlersLoaded();
         }
     }
 
