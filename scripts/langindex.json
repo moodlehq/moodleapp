@@ -1264,6 +1264,7 @@
   "core.contentlinks.confirmurlothersite": "local_moodlemobileapp",
   "core.contentlinks.errornoactions": "local_moodlemobileapp",
   "core.contentlinks.errornosites": "local_moodlemobileapp",
+  "core.contentlinks.errorredirectothersite": "local_moodlemobileapp",
   "core.continue": "moodle",
   "core.copiedtoclipboard": "local_moodlemobileapp",
   "core.course": "moodle",

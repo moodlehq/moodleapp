@@ -44,9 +44,6 @@ export class CoreContentLinksHelperProvider {
             private initDelegate: CoreInitDelegate, eventsProvider: CoreEventsProvider, private textUtils: CoreTextUtilsProvider,
             private sitePluginsProvider: CoreSitePluginsProvider, private zone: NgZone, private utils: CoreUtilsProvider) {
         this.logger = logger.getInstance('CoreContentLinksHelperProvider');
-
-        // Listen for app launched URLs. If we receive one, check if it's a content link.
-        eventsProvider.on(CoreEventsProvider.APP_LAUNCHED_URL, this.handleCustomUrl.bind(this));
     }
 
     /**
@@ -62,7 +59,7 @@ export class CoreContentLinksHelperProvider {
         let promise;
 
         if (checkRoot) {
-            promise = this.isStoredRootURL(url, username);
+            promise = this.sitesProvider.isStoredRootURL(url, username);
         } else {
             promise = Promise.resolve({});
         }
@@ -139,6 +136,7 @@ export class CoreContentLinksHelperProvider {
      *
      * @param {string} url URL to handle.
      * @return {boolean} True if the URL should be handled by this component, false otherwise.
+     * @deprecated Please use CoreCustomURLSchemesProvider.handleCustomURL instead.
      */
     handleCustomUrl(url: string): boolean {
         const contentLinksScheme = CoreConfigConstants.customurlscheme + '://link';
@@ -166,7 +164,7 @@ export class CoreContentLinksHelperProvider {
         // Wait for the app to be ready.
         this.initDelegate.ready().then(() => {
             // Check if it's the root URL.
-            return this.isStoredRootURL(url, username);
+            return this.sitesProvider.isStoredRootURL(url, username);
         }).then((data) => {
 
             if (data.site) {
@@ -174,7 +172,7 @@ export class CoreContentLinksHelperProvider {
                 modal.dismiss();
 
                 return this.handleRootURL(data.site, false);
-            } else if (data.hasSites) {
+            } else if (data.siteIds.length > 0) {
                 modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
 
                 return this.handleLink(url, username).then((treated) => {
@@ -266,7 +264,7 @@ export class CoreContentLinksHelperProvider {
         let promise;
 
         if (checkRoot) {
-            promise = this.isStoredRootURL(url, username);
+            promise = this.sitesProvider.isStoredRootURL(url, username);
         } else {
             promise = Promise.resolve({});
         }
@@ -321,12 +319,14 @@ export class CoreContentLinksHelperProvider {
      *
      * @param {CoreSite} site Site to handle.
      * @param {boolean} [openBrowserRoot] Whether to open in browser if it's root URL and it belongs to current site.
+     * @param {boolean} [checkToken] Whether to check that token is the same to verify it's current site. If false or not defined,
+     *                               only the URL will be checked.
      * @return {Promise<any>} Promise resolved when done.
      */
-    handleRootURL(site: CoreSite, openBrowserRoot?: boolean): Promise<any> {
+    handleRootURL(site: CoreSite, openBrowserRoot?: boolean, checkToken?: boolean): Promise<any> {
         const currentSite = this.sitesProvider.getCurrentSite();
 
-        if (currentSite && currentSite.getURL() == site.getURL()) {
+        if (currentSite && currentSite.getURL() == site.getURL() && (!checkToken || currentSite.getToken() == site.getToken())) {
             // Already logged in.
             if (openBrowserRoot) {
                 return site.openInBrowserWithAutoLogin(site.getURL());
@@ -337,39 +337,5 @@ export class CoreContentLinksHelperProvider {
             // Login in the site.
             return this.loginHelper.redirect('', {}, site.getId());
         }
-    }
-
-    /**
-     * Check if a URL is the root URL of any of the stored sites. If so, return the site ID.
-     *
-     * @param {string} url URL to check.
-     * @param {string} username Username to check.
-     * @return {Promise<{site: CoreSite, hasSites: boolean}>} Promise resolved with site and whether there is any site to treat
-     *                                   the URL. Site will be undefined if it isn't the root URL of any stored site.
-     */
-    isStoredRootURL(url: string, username: string): Promise<{site: CoreSite, hasSites: boolean}> {
-        // Check if the site is stored.
-        return this.sitesProvider.getSiteIdsFromUrl(url, true, username).then((siteIds) => {
-            const result = {
-                hasSites: siteIds.length > 0,
-                site: undefined
-            };
-
-            if (result.hasSites) {
-                // If more than one site is returned it usually means there are different users stored. Use any of them.
-                return this.sitesProvider.getSite(siteIds[0]).then((site) => {
-                    const siteUrl = this.textUtils.removeEndingSlash(this.urlUtils.removeProtocolAndWWW(site.getURL())),
-                        treatedUrl = this.textUtils.removeEndingSlash(this.urlUtils.removeProtocolAndWWW(url));
-
-                    if (siteUrl == treatedUrl) {
-                        result.site = site;
-                    }
-
-                    return result;
-                });
-            }
-
-            return result;
-        });
     }
 }

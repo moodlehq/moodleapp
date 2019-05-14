@@ -59,6 +59,7 @@ import { CoreUpdateManagerProvider } from '@providers/update-manager';
 import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreFileHelperProvider } from '@providers/file-helper';
+import { CoreCustomURLSchemesProvider } from '@providers/urlschemes';
 
 // Core modules.
 import { CoreComponentsModule } from '@components/components.module';
@@ -161,7 +162,8 @@ export const CORE_PROVIDERS: any[] = [
     CoreUpdateManagerProvider,
     CorePluginFileDelegate,
     CoreSyncProvider,
-    CoreFileHelperProvider
+    CoreFileHelperProvider,
+    CoreCustomURLSchemesProvider
 ];
 
 @NgModule({
@@ -280,6 +282,7 @@ export const CORE_PROVIDERS: any[] = [
         CorePluginFileDelegate,
         CoreSyncProvider,
         CoreFileHelperProvider,
+        CoreCustomURLSchemesProvider,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: CoreInterceptor,

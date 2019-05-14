@@ -19,6 +19,8 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreIonTabsComponent } from '@components/ion-tabs/ion-tabs';
 import { CoreMainMenuProvider } from '../../providers/mainmenu';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from '../../providers/delegate';
+import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 
 /**
  * Page that displays the main menu of the app.
@@ -40,12 +42,14 @@ export class CoreMainMenuPage implements OnDestroy {
     protected subscription;
     protected redirectObs: any;
     protected pendingRedirect: any;
+    protected urlToOpen: string;
 
     @ViewChild('mainTabs') mainTabs: CoreIonTabsComponent;
 
     constructor(private menuDelegate: CoreMainMenuDelegate, private sitesProvider: CoreSitesProvider, navParams: NavParams,
             private navCtrl: NavController, private eventsProvider: CoreEventsProvider, private cdr: ChangeDetectorRef,
-            private mainMenuProvider: CoreMainMenuProvider) {
+            private mainMenuProvider: CoreMainMenuProvider, private linksDelegate: CoreContentLinksDelegate,
+            private linksHelper: CoreContentLinksHelperProvider) {
 
         // Check if the menu was loaded with a redirect.
         const redirectPage = navParams.get('redirectPage');
@@ -55,6 +59,8 @@ export class CoreMainMenuPage implements OnDestroy {
                 redirectParams: navParams.get('redirectParams')
             };
         }
+
+        this.urlToOpen = navParams.get('urlToOpen');
     }
 
     /**
@@ -155,6 +161,17 @@ export class CoreMainMenuPage implements OnDestroy {
             });
 
             this.loaded = this.menuDelegate.areHandlersLoaded();
+        });
+
+        if (this.urlToOpen) {
+            // There's a content link to open.
+            this.linksDelegate.getActionsFor(this.urlToOpen, undefined).then((actions) => {
+                const action = this.linksHelper.getFirstValidAction(actions);
+                if (action && action.sites.length) {
+                    // Action should only have 1 site because we're filtering by username.
+                    action.action(action.sites[0]);
+                }
+            });
         }
     }
 
