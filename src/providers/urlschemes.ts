@@ -130,7 +130,7 @@ export class CoreCustomURLSchemesProvider {
         }).then((result) => {
             data = result;
 
-            if (data.redirect && data.redirect.indexOf(data.siteUrl) == -1) {
+            if (data.redirect && data.redirect.match(/^https?:\/\//) && data.redirect.indexOf(data.siteUrl) == -1) {
                 // Redirect URL must belong to the same site. Reject.
                 return Promise.reject(this.translate.instant('core.contentlinks.errorredirectothersite'));
             }
@@ -171,6 +171,11 @@ export class CoreCustomURLSchemesProvider {
                 }
 
                 return;
+            }
+
+            if (data.redirect && !data.redirect.match(/^https?:\/\//)) {
+                // Redirect is a relative URL. Append the site URL.
+                data.redirect = this.textUtils.concatenatePaths(data.siteUrl, data.redirect);
             }
 
             let promise;
