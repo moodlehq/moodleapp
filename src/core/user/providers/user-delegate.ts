@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreEventsProvider } from '@providers/events';
@@ -173,7 +174,8 @@ export class CoreUserDelegate extends CoreDelegate {
         }} = {};
 
     constructor(protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
-            private coursesProvider: CoreCoursesProvider, protected eventsProvider: CoreEventsProvider) {
+            private coursesProvider: CoreCoursesProvider, protected eventsProvider: CoreEventsProvider,
+            protected utils: CoreUtilsProvider) {
         super('CoreUserDelegate', loggerProvider, sitesProvider, eventsProvider);
 
         eventsProvider.on(CoreUserDelegate.UPDATE_HANDLER_EVENT, (data) => {
@@ -266,25 +268,23 @@ export class CoreUserDelegate extends CoreDelegate {
             for (const name in this.enabledHandlers) {
                 // Checks if the handler is enabled for the user.
                 const handler = <CoreUserProfileHandler> this.handlers[name],
-                    isEnabledForUser = handler.isEnabledForUser(user, courseId, navOptions, admOptions),
-                    promise = Promise.resolve(isEnabledForUser).then((enabled) => {
-                        if (enabled) {
-                            userData.handlers.push({
-                                name: name,
-                                data: handler.getDisplayData(user, courseId),
-                                priority: handler.priority,
-                                type: handler.type || CoreUserDelegate.TYPE_NEW_PAGE
-                            });
-                        } else {
-                            return Promise.reject(null);
-                        }
-                    }).catch(() => {
-                        // Nothing to do here, it is not enabled for this user.
-                    });
-                promises.push(promise);
+                    isEnabledForUser = handler.isEnabledForUser(user, courseId, navOptions, admOptions);
+
+                promises.push(Promise.resolve(isEnabledForUser).then((enabled) => {
+                    if (enabled) {
+                        userData.handlers.push({
+                            name: name,
+                            data: handler.getDisplayData(user, courseId),
+                            priority: handler.priority,
+                            type: handler.type || CoreUserDelegate.TYPE_NEW_PAGE
+                        });
+                    }
+                }).catch(() => {
+                    // Nothing to do here, it is not enabled for this user.
+                }));
             }
 
-            return Promise.all(promises).then(() => {
+            return this.utils.allPromises(promises).then(() => {
                 // Sort them by priority.
                 userData.handlers.sort((a, b) => {
                     return b.priority - a.priority;

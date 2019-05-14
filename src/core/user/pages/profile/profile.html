@@ -8,7 +8,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="userLoaded">
-        <ion-list *ngIf="user && !isDeleted">
+        <ion-list *ngIf="user && !isDeleted && isEnrolled">
             <ion-item text-center>
                 <ion-avatar core-user-avatar class="item-avatar-center" [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="true">
                     <ion-icon name="create" class="core-icon-foreground" *ngIf="canChangeProfilePicture" (click)="changeProfilePicture()"></ion-icon>
@@ -58,8 +58,9 @@
                 </button>
             </ion-item>
         </ion-list>
-        <core-empty-box *ngIf="!user && !isDeleted" icon="person" [message]=" 'core.user.detailsnotavailable' | translate"></core-empty-box>
+        <core-empty-box *ngIf="!user && !isDeleted && isEnrolled" icon="person" [message]=" 'core.user.detailsnotavailable' | translate"></core-empty-box>
 
         <core-empty-box *ngIf="isDeleted" icon="person" [message]="'core.userdeleted' | translate"></core-empty-box>
+        <core-empty-box *ngIf="!isEnrolled" icon="person" [message]="'core.notenrolledprofile' | translate"></core-empty-box>
     </core-loading>
 </ion-content>
