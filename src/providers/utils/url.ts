@@ -245,7 +245,7 @@ export class CoreUrlUtilsProvider {
     getUsernameFromUrl(url: string): string {
         if (url.indexOf('@') > -1) {
             // Get URL without protocol.
-            const withoutProtocol = url.replace(/.*?:\/\//, ''),
+            const withoutProtocol = url.replace(/^[^?@\/]*:\/\//, ''),
                 matches = withoutProtocol.match(/[^@]*/);
 
             // Make sure that @ is at the start of the URL, not in a param at the end.

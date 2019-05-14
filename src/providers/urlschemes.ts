@@ -140,8 +140,23 @@ export class CoreCustomURLSchemesProvider {
 
             if (data.token) {
                 if (!currentSite || currentSite.getToken() != data.token) {
-                    return this.sitesProvider.newSite(data.siteUrl, data.token, data.privateToken, isSSOToken);
+                    // Token belongs to a different site, create it. It doesn't matter if it already exists.
+                    let promise;
+
+                    if (!data.siteUrl.match(/^https?:\/\//)) {
+                        // URL doesn't have a protocol and it's required to be able to create the site. Check which one to use.
+                        promise = this.sitesProvider.checkSite(data.siteUrl).then((result) => {
+                            data.siteUrl = result.siteUrl;
+                        });
+                    } else {
+                        promise = Promise.resolve();
+                    }
+
+                    return promise.then(() => {
+                        return this.sitesProvider.newSite(data.siteUrl, data.token, data.privateToken, isSSOToken);
+                    });
                 } else {
+                    // Token belongs to current site, no need to create it.
                     return this.sitesProvider.getCurrentSiteId();
                 }
             }
@@ -298,12 +313,33 @@ export class CoreCustomURLSchemesProvider {
             url = url.substr(0, url.indexOf('?'));
         }
 
-        return Promise.resolve({
-            siteUrl: url,
-            username: username,
-            token: params.token,
-            privateToken: params.privateToken,
-            redirect: params.redirect
+        let promise;
+
+        if (!url.match(/https?:\/\//)) {
+            // Url doesn't have a protocol. Check if the site is stored in the app to be able to determine the protocol.
+            promise = this.sitesProvider.getSiteIdsFromUrl(url, true, username).then((siteIds) => {
+                if (siteIds.length) {
+                    // There is at least 1 site with this URL. Use it to know the full URL.
+                    return this.sitesProvider.getSite(siteIds[0]).then((site) => {
+                        return site.getURL();
+                    });
+                } else {
+                    // No site stored with this URL, just use the URL as it is.
+                    return url;
+                }
+            });
+        } else {
+            promise = Promise.resolve(url);
+        }
+
+        return promise.then((url) => {
+            return {
+                siteUrl: url,
+                username: username,
+                token: params.token,
+                privateToken: params.privateToken,
+                redirect: params.redirect
+            };
         });
     }
 
