@@ -94,6 +94,7 @@ import { AddonBlockActivityModulesModule } from '@addon/block/activitymodules/ac
 import { AddonBlockBadgesModule } from '@addon/block/badges/badges.module';
 import { AddonBlockBlogMenuModule } from '@addon/block/blogmenu/blogmenu.module';
 import { AddonBlockBlogTagsModule } from '@addon/block/blogtags/blogtags.module';
+import { AddonBlockBlogRecentModule } from '@addon/block/blogrecent/blogrecent.module';
 import { AddonBlockCalendarMonthModule } from '@addon/block/calendarmonth/calendarmonth.module';
 import { AddonBlockCalendarUpcomingModule } from '@addon/block/calendarupcoming/calendarupcoming.module';
 import { AddonBlockCommentsModule } from '@addon/block/comments/comments.module';
@@ -231,6 +232,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonBlockActivityModulesModule,
         AddonBlockBadgesModule,
         AddonBlockBlogMenuModule,
+        AddonBlockBlogRecentModule,
         AddonBlockBlogTagsModule,
         AddonBlockCalendarMonthModule,
         AddonBlockCalendarUpcomingModule,

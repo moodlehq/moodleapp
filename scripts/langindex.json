@@ -29,6 +29,7 @@
   "addon.block_activitymodules.pluginname": "block_activity_modules",
   "addon.block_badges.pluginname": "block_badges",
   "addon.block_blogmenu.pluginname": "block_blog_menu",
+  "addon.block_blogrecent.nocourses": "block_blog_recent",
   "addon.block_blogtags.pluginname": "block_blog_tags",
   "addon.block_calendarmonth.pluginname": "block_calendar_month",
   "addon.block_calendarupcoming.pluginname": "block_calendar_upcoming",

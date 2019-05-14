@@ -29,6 +29,7 @@
     "addon.block_activitymodules.pluginname": "Activities",
     "addon.block_badges.pluginname": "Latest badges",
     "addon.block_blogmenu.pluginname": "Blog menu",
+    "addon.block_blogrecent.pluginname": "Recent blog entries",
     "addon.block_blogtags.pluginname": "Blog tags",
     "addon.block_calendarmonth.pluginname": "Calendar",
     "addon.block_calendarupcoming.pluginname": " Upcoming events",

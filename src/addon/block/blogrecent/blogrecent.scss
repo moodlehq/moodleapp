@@ -1,0 +1,13 @@
+.addon-block-blog-recent core-block-pre-rendered {
+    .core-block-content {
+        ul.list {
+            list-style: none;
+            @include margin-horizontal(0);
+            -webkit-padding-start: 0;
+
+            li {
+                padding-bottom: 8px;
+            }
+        }
+    }
+}
