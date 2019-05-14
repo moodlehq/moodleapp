@@ -111,6 +111,7 @@ import { AddonBlockTimelineModule } from '@addon/block/timeline/timeline.module'
 import { AddonBlockRecentlyAccessedCoursesModule } from '@addon/block/recentlyaccessedcourses/recentlyaccessedcourses.module';
 import { AddonBlockRecentlyAccessedItemsModule } from '@addon/block/recentlyaccesseditems/recentlyaccesseditems.module';
 import { AddonBlockRecentActivityModule } from '@addon/block/recentactivity/recentactivity.module';
+import { AddonBlockRssClientModule } from '@addon/block/rssclient/rssclient.module';
 import { AddonBlockStarredCoursesModule } from '@addon/block/starredcourses/starredcourses.module';
 import { AddonBlockSelfCompletionModule } from '@addon/block/selfcompletion/selfcompletion.module';
 import { AddonBlockTagsModule } from '@addon/block/tags/tags.module';
@@ -250,6 +251,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonBlockRecentlyAccessedCoursesModule,
         AddonBlockRecentlyAccessedItemsModule,
         AddonBlockRecentActivityModule,
+        AddonBlockRssClientModule,
         AddonBlockStarredCoursesModule,
         AddonBlockSelfCompletionModule,
         AddonBlockTagsModule,
