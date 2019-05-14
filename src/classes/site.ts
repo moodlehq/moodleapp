@@ -794,6 +794,17 @@ export class CoreSite {
             request.deferred.reject = reject;
         });
 
+        return this.enqueueRequest(request);
+    }
+
+    /**
+     * Adds a request to the queue.
+     *
+     * @param {RequestQueueItem} request The request to enqueue.
+     * @returns {Promise<any>} Promise resolved with the response when the WS is called.
+     */
+    protected enqueueRequest(request: RequestQueueItem): Promise<any> {
+
         this.requestQueue.push(request);
 
         if (this.requestQueue.length >= CoreSite.REQUEST_QUEUE_LIMIT) {
@@ -875,7 +886,7 @@ export class CoreSite {
 
                 if (!response) {
                     // Request not executed, enqueue again.
-                    this.callOrEnqueueRequest(request.method, request.data, request.preSets, request.wsPreSets);
+                    this.enqueueRequest(request);
                 } else if (response.error) {
                     request.deferred.reject(this.textUtils.parseJSON(response.exception));
                 } else {
