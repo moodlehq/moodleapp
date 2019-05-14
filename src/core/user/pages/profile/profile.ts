@@ -46,6 +46,7 @@ export class CoreUserProfilePage {
     user: any;
     title: string;
     isDeleted = false;
+    isEnrolled = true;
     canChangeProfilePicture = false;
     actionHandlers: CoreUserProfileHandlerData[] = [];
     newPageHandlers: CoreUserProfileHandlerData[] = [];
@@ -85,6 +86,7 @@ export class CoreUserProfilePage {
         this.fetchUser().then(() => {
             return this.userProvider.logView(this.userId, this.courseId).catch((error) => {
                 this.isDeleted = error.errorcode === 'userdeleted';
+                this.isEnrolled = error.errorcode !== 'notenrolledprofile';
             });
         }).finally(() => {
             this.userLoaded = true;

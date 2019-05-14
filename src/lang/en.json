@@ -172,6 +172,7 @@
     "nopermissions": "Sorry, but you do not currently have permissions to do that ({{$a}}).",
     "noresults": "No results",
     "notapplicable": "n/a",
+    "notenrolledprofile": "This profile is not available because this user is not enrolled in this course.",
     "notice": "Notice",
     "notingroup": "Sorry, but you need to be part of a group to see this page.",
     "notsent": "Not sent",
