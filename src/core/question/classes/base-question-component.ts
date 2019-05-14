@@ -461,6 +461,11 @@ export class CoreQuestionBaseComponent {
                     },
                     parent = element.parentElement;
 
+                if (option.value == '-1') {
+                    // It's the clear choice option, ignore it.
+                    continue;
+                }
+
                 this.question.optionsName = option.name;
 
                 this.question.disabled = this.question.disabled && element.disabled;
