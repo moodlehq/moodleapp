@@ -646,6 +646,7 @@ export class AddonCalendarProvider {
                         id: reminderId,
                         title: event.name,
                         text: this.timeUtils.userDate(event.timestart * 1000, 'core.strftimedaydatetime', true),
+                        icon: 'file://assets/img/icons/calendar.png',
                         trigger: {
                             at: new Date(time)
                         },
