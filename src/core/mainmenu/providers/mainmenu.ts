@@ -178,6 +178,9 @@ export class CoreMainMenuProvider {
                 numElements = Math.floor(window.innerHeight / CoreMainMenuProvider.ITEM_MIN_WIDTH);
             } else {
                 numElements = Math.floor(window.innerWidth / CoreMainMenuProvider.ITEM_MIN_WIDTH);
+
+                // Set a maximum elements to show and skip more button.
+                numElements = numElements >= 5 ? 5 : numElements;
             }
 
             // Set a mínimum elements to show and skip more button.
