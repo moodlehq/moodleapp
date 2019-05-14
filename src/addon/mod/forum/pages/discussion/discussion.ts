@@ -77,6 +77,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     component = AddonModForumProvider.COMPONENT;
     cmId: number;
     canPin = false;
+    availabilityMessage: string;
 
     protected forumId: number;
     protected postId: number;
@@ -311,11 +312,20 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                 this.forumId = forum.id;
                 this.cmId = forum.cmid;
                 this.forum = forum;
+                this.availabilityMessage = this.forumHelper.getAvailabilityMessage(forum);
 
                 const promises = [];
 
                 promises.push(this.forumProvider.getAccessInformation(this.forum.id).then((accessInfo) => {
                     this.accessInfo = accessInfo;
+
+                    // Disallow replying if cut-off date is reached and the user has not the capability to override it.
+                    // Just in case the posts were fetched from WS when the cut-off date was not reached but it is now.
+                    if (this.forumHelper.isCutoffDateReached(forum) && !accessInfo.cancanoverridecutoff) {
+                        posts.forEach((post) => {
+                            post.canreply = false;
+                        });
+                    }
                 }));
 
                 // Fetch the discussion if not passed as parameter.
@@ -460,6 +470,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         this.syncIcon = 'spinner';
 
         const promises = [
+            this.forumProvider.invalidateForumData(this.courseId),
             this.forumProvider.invalidateDiscussionPosts(this.discussionId),
             this.forumProvider.invalidateAccessInformation(this.forumId)
         ];

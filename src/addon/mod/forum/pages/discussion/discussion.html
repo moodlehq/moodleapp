@@ -32,8 +32,13 @@
             <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: discussionStr} }}
         </ion-card>
 
-        <ion-card class="core-warning-card" *ngIf="discussion && discussion.locked">
-            <ion-icon name="warning"></ion-icon> {{ 'addon.mod_forum.discussionlocked' | translate }}
+        <!-- Cut-off date or due date message -->
+        <ion-card class="core-info-card" icon-start *ngIf="availabilityMessage">
+            <ion-icon name="information-circle"></ion-icon> {{ availabilityMessage }}
+        </ion-card>
+
+        <ion-card class="core-info-card" icon-start *ngIf="discussion && discussion.locked">
+            <ion-icon name="information-circle"></ion-icon> {{ 'addon.mod_forum.discussionlocked' | translate }}
         </ion-card>
 
         <ion-card *ngIf="discussion" margin-bottom class="highlight">

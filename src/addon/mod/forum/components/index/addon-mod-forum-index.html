@@ -25,6 +25,11 @@
                 <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: moduleName} }}
             </ion-card>
 
+            <!-- Cut-off date or due date message -->
+            <ion-card class="core-info-card" icon-start *ngIf="availabilityMessage">
+                <ion-icon name="information-circle"></ion-icon> {{ availabilityMessage }}
+            </ion-card>
+
             <ng-container *ngIf="forum && discussions.length > 0">
                 <ion-card *ngFor="let discussion of offlineDiscussions" (click)="openNewDiscussion(discussion.timecreated)" [class.addon-forum-discussion-selected]="discussion.timecreated == -selectedDiscussion">
                     <ion-item text-wrap>
@@ -92,7 +97,7 @@
             <core-infinite-loading [enabled]="canLoadMore" (action)="fetchMoreDiscussions($event)" [error]="loadMoreError"></core-infinite-loading>
         </core-loading>
 
-        <ion-fab core-fab bottom end *ngIf="forum && forum.cancreatediscussions">
+        <ion-fab core-fab bottom end *ngIf="forum && canAddDiscussion">
             <button ion-fab (click)="openNewDiscussion()" [attr.aria-label]="addDiscussionText">
                 <ion-icon name="add"></ion-icon>
             </button>

@@ -48,7 +48,9 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     discussions = [];
     offlineDiscussions = [];
     selectedDiscussion = 0; // Disucssion ID or negative timecreated if it's an offline discussion.
+    canAddDiscussion = false;
     addDiscussionText = this.translate.instant('addon.mod_forum.addanewdiscussion');
+    availabilityMessage: string;
 
     protected syncEventName = AddonModForumSyncProvider.AUTO_SYNCED;
     protected page = 0;
@@ -168,6 +170,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             if (typeof forum.istracked != 'undefined') {
                 this.trackPosts = forum.istracked;
             }
+            this.availabilityMessage = this.forumHelper.getAvailabilityMessage(forum);
 
             this.dataRetrieved.emit(forum);
 
@@ -197,10 +200,18 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                 });
             }
         }).then(() => {
-            // Check if the activity uses groups.
-            return this.groupsProvider.getActivityGroupMode(this.forum.cmid).then((mode) => {
-                this.usesGroups = (mode === CoreGroupsProvider.SEPARATEGROUPS || mode === CoreGroupsProvider.VISIBLEGROUPS);
-            });
+            return Promise.all([
+                // Check if the activity uses groups.
+                this.groupsProvider.getActivityGroupMode(this.forum.cmid).then((mode) => {
+                    this.usesGroups = (mode === CoreGroupsProvider.SEPARATEGROUPS || mode === CoreGroupsProvider.VISIBLEGROUPS);
+                }),
+                this.forumProvider.getAccessInformation(this.forum.id).then((accessInfo) => {
+                    // Disallow adding discussions if cut-off date is reached and the user has not the capability to override it.
+                    // Just in case the forum was fetched from WS when the cut-off date was not reached but it is now.
+                    const cutoffDateReached = this.forumHelper.isCutoffDateReached(this.forum) && !accessInfo.cancanoverridecutoff;
+                    this.canAddDiscussion = this.forum.cancreatediscussions && !cutoffDateReached;
+                }),
+            ]);
         }).then(() => {
             return Promise.all([
                 this.fetchOfflineDiscussion(),
@@ -368,6 +379,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         if (this.forum) {
             promises.push(this.forumProvider.invalidateDiscussionsList(this.forum.id));
             promises.push(this.groupsProvider.invalidateActivityGroupMode(this.forum.cmid));
+            promises.push(this.forumProvider.invalidateAccessInformation(this.forum.id));
         }
 
         return Promise.all(promises);
