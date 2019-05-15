@@ -1258,18 +1258,16 @@ export class CoreUtilsProvider {
      */
     uniqueArray(array: any[], key?: string): any[] {
         const filtered = [],
-            unique = [],
-            len = array.length;
+            unique = {}; // Use an object to make it faster to check if it's duplicate.
 
-        for (let i = 0; i < len; i++) {
-            const entry = array[i],
-                value = key ? entry[key] : entry;
+        array.forEach((entry) => {
+            const value = key ? entry[key] : entry;
 
-            if (unique.indexOf(value) == -1) {
-                unique.push(value);
+            if (!unique[value]) {
+                unique[value] = true;
                 filtered.push(entry);
             }
-        }
+        });
 
         return filtered;
     }
