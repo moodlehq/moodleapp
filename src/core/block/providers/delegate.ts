@@ -19,6 +19,8 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreBlockDefaultHandler } from './default-block-handler';
 import { CoreSite } from '@classes/site';
+import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
+import { Subject } from 'rxjs';
 
 /**
  * Interface that all blocks must implement.
@@ -83,9 +85,12 @@ export class CoreBlockDelegate extends CoreDelegate {
 
     protected featurePrefix = 'CoreBlockDelegate_';
 
+    blocksUpdateObservable: Subject<void>;
+
     constructor(logger: CoreLoggerProvider, sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider,
-            protected defaultHandler: CoreBlockDefaultHandler) {
+            protected defaultHandler: CoreBlockDefaultHandler, protected sitePluginsProvider: CoreSitePluginsProvider) {
         super('CoreBlockDelegate', logger, sitesProvider, eventsProvider);
+        this.blocksUpdateObservable = new Subject<void>();
     }
 
     /**
@@ -156,5 +161,27 @@ export class CoreBlockDelegate extends CoreDelegate {
      */
     protected isFeatureDisabled(handler: CoreDelegateHandler, site: CoreSite): boolean {
         return this.areBlocksDisabledInSite(site) || super.isFeatureDisabled(handler, site);
+    }
+
+    /**
+     * Gets the handler name for a given block name.
+     *
+     * @param {string} name Block name e.g. 'activity_modules'
+     * @return {string} Full name of corresponding handler
+     */
+    getHandlerName(name: string): string {
+        if (!this.isBlockSupported(name)) {
+            return '';
+        }
+
+        return this.getHandler(name, true).name;
+    }
+
+    /**
+     * Called when there are new block handlers available. Informs anyone who subscribed to the
+     * observable.
+     */
+    updateData(): void {
+        this.blocksUpdateObservable.next();
     }
 }
