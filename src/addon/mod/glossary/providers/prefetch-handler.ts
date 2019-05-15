@@ -21,9 +21,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
-import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModGlossaryProvider } from './glossary';
-import { CoreRatingProvider } from '@core/rating/providers/rating';
 import { AddonModGlossarySyncProvider } from './sync';
 
 /**
@@ -43,8 +41,6 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
             filepoolProvider: CoreFilepoolProvider,
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
-            private userProvider: CoreUserProvider,
-            private ratingProvider: CoreRatingProvider,
             private glossaryProvider: AddonModGlossaryProvider,
             private syncProvider: AddonModGlossarySyncProvider) {
 
@@ -163,24 +159,18 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
             promises.push(this.glossaryProvider.fetchAllEntries(this.glossaryProvider.getEntriesByLetter,
                     [glossary.id, 'ALL'], false, siteId).then((entries) => {
                 const promises = [];
-                const userIds = [];
+                const avatars = {}; // List of user avatars, preventing duplicates.
 
-                // Fetch user avatars.
                 entries.forEach((entry) => {
                     // Fetch individual entries.
-                    promises.push(this.glossaryProvider.getEntry(entry.id, siteId).then((entry) => {
-                        // Fetch individual ratings.
-                        return this.ratingProvider.prefetchRatings('module', module.id, glossary.scale, courseId, entry.ratinginfo,
-                            siteId);
-                    }));
+                    promises.push(this.glossaryProvider.getEntry(entry.id, siteId));
 
-                    userIds.push(entry.userid);
+                    if (entry.userpictureurl) {
+                        avatars[entry.userpictureurl] = true;
+                    }
                 });
 
-                // Prefetch user profiles.
-                promises.push(this.userProvider.prefetchProfiles(userIds, courseId, siteId));
-
-                const files = this.getFilesFromGlossaryAndEntries(module, glossary, entries);
+                const files = this.getFilesFromGlossaryAndEntries(module, glossary, entries).concat(Object.keys(avatars));
                 promises.push(this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id));
 
                 return Promise.all(promises);

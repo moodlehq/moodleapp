@@ -22,10 +22,8 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { CoreGroupsProvider } from '@providers/groups';
-import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModForumProvider } from './forum';
 import { AddonModForumSyncProvider } from './sync';
-import { CoreRatingProvider, CoreRatingInfo } from '@core/rating/providers/rating';
 
 /**
  * Handler to prefetch forums.
@@ -45,9 +43,7 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
             private groupsProvider: CoreGroupsProvider,
-            private userProvider: CoreUserProvider,
             private forumProvider: AddonModForumProvider,
-            private ratingProvider: CoreRatingProvider,
             private syncProvider: AddonModForumSyncProvider) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
@@ -107,9 +103,6 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
      * @return {Promise<any[]>} Promise resolved with array of posts.
      */
     protected getPostsForPrefetch(forum: any): Promise<any[]> {
-        const posts = {};
-        const ratingInfos: CoreRatingInfo[] = [];
-
         const promises = this.forumProvider.getAvailableSortOrders().map((sortOrder) => {
             // Get discussions in first 2 pages.
             return this.forumProvider.getDiscussionsInPages(forum.id, sortOrder.value, false, 2).then((response) => {
@@ -120,25 +113,14 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
                 const promises = [];
 
                 response.discussions.forEach((discussion) => {
-                    promises.push(this.forumProvider.getDiscussionPosts(discussion.discussion).then((response) => {
-                        response.posts.forEach((post) => {
-                            posts[post.id] = post;
-                        });
-                        ratingInfos.push(response.ratinginfo);
-                    }));
+                    promises.push(this.forumProvider.getDiscussionPosts(discussion.discussion));
                 });
 
               return Promise.all(promises);
             });
         });
 
-        return Promise.all(promises).then(() => {
-            const ratingInfo = this.ratingProvider.mergeRatingInfos(ratingInfos);
-
-            return this.ratingProvider.prefetchRatings('module', forum.cmid, forum.scale, forum.course, ratingInfo).then(() => {
-                return this.utils.objectToArray(posts);
-            });
-        });
+        return Promise.all(promises);
     }
 
     /**
@@ -201,14 +183,18 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
             promises.push(this.getPostsForPrefetch(forum).then((posts) => {
                 const promises = [];
 
-                // Prefetch user profiles.
-                const userIds = posts.map((post) => post.userid).filter((userId) => !!userId);
-                promises.push(this.userProvider.prefetchProfiles(userIds).catch(() => {
-                    // Ignore failures.
-                }));
+                // Gather user profile images.
+                const avatars = {}; // List of user avatars, preventing duplicates.
 
-                // Prefetch intro files, attachments and embedded files.
-                const files = this.getIntroFilesFromInstance(module, forum).concat(this.getPostsFiles(posts));
+                posts.forEach((post) => {
+                    if (post.userpictureurl) {
+                        avatars[post.userpictureurl] = true;
+                    }
+                });
+
+                // Prefetch intro files, attachments, embedded files and user avatars.
+                const files = this.getIntroFilesFromInstance(module, forum).concat(this.getPostsFiles(posts))
+                        .concat(Object.keys(avatars));
                 promises.push(this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id));
 
                 // Prefetch groups data.
