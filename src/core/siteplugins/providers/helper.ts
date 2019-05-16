@@ -548,7 +548,7 @@ export class CoreSitePluginsHelperProvider {
         this.logger.debug('Register site plugin', plugin, handlerSchema);
 
         // Execute the main method and its JS. The template returned will be used in the right component.
-        return this.executeMethodAndJS(plugin, handlerSchema.method).then((result) => {
+        return this.executeMethodAndJS(plugin, handlerSchema.method).then((result): any => {
 
             // Create and register the handler.
             const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
@@ -571,7 +571,7 @@ export class CoreSitePluginsHelperProvider {
 
             delegate.registerHandler(handler);
 
-            return handlerSchema.moodlecomponent || plugin.component;
+            return uniqueName;
         }).catch((err) => {
             this.logger.error('Error executing main method', plugin.component, handlerSchema.method, err);
         });
@@ -654,7 +654,7 @@ export class CoreSitePluginsHelperProvider {
             formatName = (handlerSchema.moodlecomponent || plugin.component).replace('format_', '');
         this.courseFormatDelegate.registerHandler(new CoreSitePluginsCourseFormatHandler(uniqueName, formatName, handlerSchema));
 
-        return formatName;
+        return uniqueName;
     }
 
     /**
@@ -777,7 +777,7 @@ export class CoreSitePluginsHelperProvider {
                 this.sitePluginsProvider, plugin.component, uniqueName, modName, handlerSchema));
         }
 
-        return modName;
+        return uniqueName;
     }
 
     /**

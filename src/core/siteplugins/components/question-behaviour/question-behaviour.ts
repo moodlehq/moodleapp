@@ -16,6 +16,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { CoreSitePluginsCompileInitComponent } from '../../classes/compile-init-component';
+import { CoreQuestionBehaviourDelegate } from '@core/question/providers/behaviour-delegate';
 
 /**
  * Component that displays a question behaviour created using a site plugin.
@@ -33,7 +34,8 @@ export class CoreSitePluginsQuestionBehaviourComponent extends CoreSitePluginsCo
     @Output() buttonClicked: EventEmitter<any>; // Should emit an event when a behaviour button is clicked.
     @Output() onAbort: EventEmitter<void>; // Should emit an event if the question should be aborted.
 
-    constructor(sitePluginsProvider: CoreSitePluginsProvider, utils: CoreUtilsProvider) {
+    constructor(sitePluginsProvider: CoreSitePluginsProvider, utils: CoreUtilsProvider,
+            protected questionBehaviourDelegate: CoreQuestionBehaviourDelegate) {
         super(sitePluginsProvider, utils);
     }
 
@@ -51,7 +53,7 @@ export class CoreSitePluginsQuestionBehaviourComponent extends CoreSitePluginsCo
         this.jsData.onAbort = this.onAbort;
 
         if (this.question) {
-            this.getHandlerData('qbehaviour_' + this.question.preferredBehaviour);
+            this.getHandlerData(this.questionBehaviourDelegate.getHandlerName(this.question.preferredBehaviour));
         }
     }
 }

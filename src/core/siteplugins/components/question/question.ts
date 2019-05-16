@@ -16,6 +16,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { CoreSitePluginsCompileInitComponent } from '../../classes/compile-init-component';
+import { CoreQuestionDelegate } from '@core/question/providers/delegate';
 
 /**
  * Component that displays a question created using a site plugin.
@@ -33,7 +34,8 @@ export class CoreSitePluginsQuestionComponent extends CoreSitePluginsCompileInit
     @Output() buttonClicked: EventEmitter<any>; // Should emit an event when a behaviour button is clicked.
     @Output() onAbort: EventEmitter<void>; // Should emit an event if the question should be aborted.
 
-    constructor(sitePluginsProvider: CoreSitePluginsProvider, utils: CoreUtilsProvider) {
+    constructor(sitePluginsProvider: CoreSitePluginsProvider, utils: CoreUtilsProvider,
+            protected questionDelegate: CoreQuestionDelegate) {
         super(sitePluginsProvider, utils);
     }
 
@@ -51,7 +53,7 @@ export class CoreSitePluginsQuestionComponent extends CoreSitePluginsCompileInit
         this.jsData.onAbort = this.onAbort;
 
         if (this.question) {
-            this.getHandlerData('qtype_' + this.question.type);
+            this.getHandlerData(this.questionDelegate.getHandlerName('qtype_' + this.question.type));
         }
     }
 }

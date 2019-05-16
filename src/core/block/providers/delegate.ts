@@ -164,20 +164,6 @@ export class CoreBlockDelegate extends CoreDelegate {
     }
 
     /**
-     * Gets the handler name for a given block name.
-     *
-     * @param {string} name Block name e.g. 'activity_modules'
-     * @return {string} Full name of corresponding handler
-     */
-    getHandlerName(name: string): string {
-        if (!this.isBlockSupported(name)) {
-            return '';
-        }
-
-        return this.getHandler(name, true).name;
-    }
-
-    /**
      * Called when there are new block handlers available. Informs anyone who subscribed to the
      * observable.
      */
