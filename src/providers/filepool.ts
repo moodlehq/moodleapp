@@ -306,7 +306,7 @@ export class CoreFilepoolProvider {
             primaryKeys: ['siteId', 'fileId']
         }
     ];
-    protected siteSchma: CoreSiteSchema = {
+    protected siteSchema: CoreSiteSchema = {
         name: 'CoreFilepoolProvider',
         version: 1,
         tables: [
@@ -447,7 +447,7 @@ export class CoreFilepoolProvider {
         this.appDB = this.appProvider.getDB();
         this.appDB.createTablesFromSchema(this.appTablesSchema);
 
-        this.sitesProvider.registerSiteSchema(this.siteSchma);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
 
         initDelegate.ready().then(() => {
             // Waiting for the app to be ready to start processing the queue.
@@ -857,7 +857,10 @@ export class CoreFilepoolProvider {
      */
     clearFilepool(siteId: string): Promise<any> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.deleteRecords(this.FILES_TABLE);
+            return Promise.all([
+                db.deleteRecords(this.FILES_TABLE),
+                db.deleteRecords(this.LINKS_TABLE)
+            ]);
         });
     }
 

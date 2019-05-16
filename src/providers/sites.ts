@@ -146,6 +146,13 @@ export interface CoreSiteSchema {
     version: number;
 
     /**
+     * Names of the tables of the site schema that can be cleared.
+     *
+     * @type {string[]}
+     */
+    canBeCleared?: string[];
+
+    /**
      * Tables to create when installing or upgrading the schema.
      */
     tables?: SQLiteDBTableSchema[];
@@ -270,6 +277,7 @@ export class CoreSitesProvider {
     protected siteSchema: CoreSiteSchema = {
         name: 'CoreSitesProvider',
         version: 1,
+        canBeCleared: [ CoreSite.WS_CACHE_TABLE ],
         tables: [
             {
                 name: CoreSite.WS_CACHE_TABLE,
@@ -1520,5 +1528,21 @@ export class CoreSitesProvider {
 
             return result;
         });
+    }
+
+    /**
+     * Returns the Site Schema names that can be cleared on space storage.
+     *
+     * @return {string[]} Name of the site schemas.
+     */
+    getSiteTableSchemasToClear(): string[] {
+        let reset = [];
+        for (const name in this.siteSchemas) {
+            if (this.siteSchemas[name].canBeCleared) {
+                reset = reset.concat(this.siteSchemas[name].canBeCleared);
+            }
+        }
+
+        return reset;
     }
 }
