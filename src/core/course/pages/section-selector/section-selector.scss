@@ -10,6 +10,6 @@ ion-app.app-root page-core-course-section-selector {
     }
 
     ion-badge {
-        text-align: left;
+        @include text-align('start');
     }
 }
