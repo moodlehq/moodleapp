@@ -14,10 +14,12 @@
 
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
 import { CoreFileProvider } from '@providers/file';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModForumProvider } from './forum';
 import { AddonModForumOfflineProvider } from './offline';
@@ -33,8 +35,122 @@ export class AddonModForumHelperProvider {
             private uploaderProvider: CoreFileUploaderProvider,
             private timeUtils: CoreTimeUtilsProvider,
             private userProvider: CoreUserProvider,
+            private appProvider: CoreAppProvider,
+            private utils: CoreUtilsProvider,
             private forumProvider: AddonModForumProvider,
             private forumOffline: AddonModForumOfflineProvider) {}
+
+    /**
+     * Add a new discussion.
+     *
+     * @param {number} forumId Forum ID.
+     * @param {string} name Forum name.
+     * @param {number} courseId Course ID the forum belongs to.
+     * @param {string} subject New discussion's subject.
+     * @param {string} message New discussion's message.
+     * @param {any[]} [attachments] New discussion's attachments.
+     * @param {any} [options] Options (subscribe, pin, ...).
+     * @param {number[]} [groupIds] Groups this discussion belongs to.
+     * @param {number} [timeCreated] The time the discussion was created. Only used when editing discussion.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<number[]>} Promise resolved with ids of the created discussions or null if stored offline
+     */
+    addNewDiscussion(forumId: number, name: string, courseId: number, subject: string, message: string, attachments?: any[],
+            options?: any, groupIds?: number[], timeCreated?: number, siteId?: string): Promise<number[]> {
+
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+        groupIds = groupIds && groupIds.length > 0 ? groupIds : [0];
+
+        let saveOffline = false;
+        const attachmentsIds = [];
+        let offlineAttachments: any;
+
+        // Convenience function to store a message to be synchronized later.
+        const storeOffline = (): Promise<number[]> => {
+            // Multiple groups, the discussion is being posted to all groups.
+            const groupId = groupIds.length > 1 ? AddonModForumProvider.ALL_GROUPS : groupIds[0];
+
+            if (offlineAttachments) {
+                options.attachmentsid = offlineAttachments;
+            }
+
+            return this.forumOffline.addNewDiscussion(forumId, name, courseId, subject, message, options,
+                    groupId, timeCreated, siteId).then(() => {
+                return null;
+            });
+        };
+
+        // First try to upload attachments, once per group.
+        let promise;
+        if (attachments && attachments.length > 0) {
+            const promises = groupIds.map(() => {
+                return this.uploadOrStoreNewDiscussionFiles(forumId, timeCreated, attachments, false).then((attach) => {
+                    attachmentsIds.push(attach);
+                });
+            });
+
+            promise = Promise.all(promises).catch(() => {
+                // Cannot upload them in online, save them in offline.
+                saveOffline = true;
+
+                return this.uploadOrStoreNewDiscussionFiles(forumId, timeCreated, attachments, true).then((attach) => {
+                    offlineAttachments = attach;
+                });
+            });
+        } else {
+            promise = Promise.resolve();
+        }
+
+        return promise.then(() => {
+            // If we are editing an offline discussion, discard previous first.
+            let discardPromise;
+            if (timeCreated) {
+                discardPromise = this.forumOffline.deleteNewDiscussion(forumId, timeCreated, siteId);
+            } else {
+                discardPromise = Promise.resolve();
+            }
+
+            return discardPromise.then(() => {
+                if (saveOffline || !this.appProvider.isOnline()) {
+                    return storeOffline();
+                }
+
+                const errors = [];
+                const discussionIds = [];
+
+                const promises = groupIds.map((groupId, index) => {
+                    const grouOptions = this.utils.clone(options);
+                    if (attachmentsIds[index]) {
+                        grouOptions.attachmentsid = attachmentsIds[index];
+                    }
+
+                    return this.forumProvider.addNewDiscussionOnline(forumId, subject, message, grouOptions, groupId, siteId)
+                            .then((discussionId) => {
+                        discussionIds.push(discussionId);
+                    }).catch((error) => {
+                        errors.push(error);
+                    });
+                });
+
+                return Promise.all(promises).then(() => {
+                    if (errors.length == groupIds.length) {
+                        // All requests have failed.
+                        for (let i = 0; i < errors.length; i++) {
+                            if (this.utils.isWebServiceError(errors[i]) || attachments.length > 0) {
+                                // The WebService has thrown an error or offline not supported, reject.
+                                return Promise.reject(errors[i]);
+                            }
+                        }
+
+                        // Couldn't connect to server, store offline.
+                        return storeOffline();
+                    }
+
+                    return discussionIds;
+                });
+            });
+        });
+    }
 
     /**
      * Convert offline reply to online format in order to be compatible with them.

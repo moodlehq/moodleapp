@@ -31,7 +31,7 @@
                 <ion-icon name="information-circle"></ion-icon> {{ availabilityMessage }}
             </ion-card>
 
-            <core-empty-box *ngIf="forum && discussions.length == 0" icon="chatbubbles" [message]="'addon.mod_forum.forumnodiscussionsyet' | translate">
+            <core-empty-box *ngIf="forum && discussions.length == 0 && offlineDiscussions.length == 0" icon="chatbubbles" [message]="'addon.mod_forum.forumnodiscussionsyet' | translate">
             </core-empty-box>
 
             <div text-wrap *ngIf="sortingAvailable && selectedSortOrder" ion-row padding-horizontal padding-top margin-bottom>
@@ -41,7 +41,7 @@
                 </button>
             </div>
 
-            <ng-container *ngIf="forum && discussions.length > 0">
+            <ng-container *ngIf="forum">
                 <ion-card *ngFor="let discussion of offlineDiscussions" (click)="openNewDiscussion(discussion.timecreated)" [class.addon-forum-discussion-selected]="discussion.timecreated == -selectedDiscussion">
                     <ion-item text-wrap>
                         <ion-avatar core-user-avatar [user]="discussion" item-start [courseId]="courseId"></ion-avatar>

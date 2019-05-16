@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreFileProvider } from '@providers/file';
 import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { AddonModForumProvider } from './forum';
 
 /**
  * Service to handle offline forum.
@@ -248,7 +249,7 @@ export class AddonModForumOfflineProvider {
                 subject: subject,
                 message: message,
                 options: JSON.stringify(options || {}),
-                groupid: groupId || -1,
+                groupid: groupId || AddonModForumProvider.ALL_PARTICIPANTS,
                 userid: userId || site.getUserId(),
                 timecreated: timeCreated || new Date().getTime()
             };
