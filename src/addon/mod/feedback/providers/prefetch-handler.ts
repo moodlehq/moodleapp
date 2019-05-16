@@ -26,7 +26,6 @@ import { AddonModFeedbackHelperProvider } from './helper';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreGroupsProvider } from '@providers/groups';
 import { AddonModFeedbackSyncProvider } from './sync';
-import { CoreUserProvider } from '@core/user/providers/user';
 
 /**
  * Handler to prefetch feedbacks.
@@ -43,7 +42,7 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
     constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
             courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider, protected feedbackProvider: AddonModFeedbackProvider,
-            protected userProvider: CoreUserProvider, protected feedbackHelper: AddonModFeedbackHelperProvider,
+            protected feedbackHelper: AddonModFeedbackHelperProvider,
             protected timeUtils: CoreTimeUtilsProvider, protected groupsProvider: CoreGroupsProvider,
             protected injector: Injector) {
 
@@ -187,35 +186,21 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
                     p2.push(this.feedbackProvider.getAnalysis(feedback.id, undefined, true, siteId));
                     p2.push(this.groupsProvider.getActivityGroupInfo(feedback.coursemodule, true, undefined, siteId, true)
                             .then((groupInfo) => {
-                        const p3 = [],
-                            userIds = [];
+                        const p3 = [];
 
                         if (!groupInfo.groups || groupInfo.groups.length == 0) {
                             groupInfo.groups = [{id: 0}];
                         }
                         groupInfo.groups.forEach((group) => {
                             p3.push(this.feedbackProvider.getAnalysis(feedback.id, group.id, true, siteId));
-                            p3.push(this.feedbackProvider.getAllResponsesAnalysis(feedback.id, group.id, true, siteId)
-                                    .then((responses) => {
-                                responses.attempts.forEach((attempt) => {
-                                    userIds.push(attempt.userid);
-                                });
-                            }));
+                            p3.push(this.feedbackProvider.getAllResponsesAnalysis(feedback.id, group.id, true, siteId));
 
                             if (!accessData.isanonymous) {
-                                p3.push(this.feedbackProvider.getAllNonRespondents(feedback.id, group.id, true, siteId)
-                                        .then((responses) => {
-                                    responses.users.forEach((user) => {
-                                        userIds.push(user.userid);
-                                    });
-                                }));
+                                p3.push(this.feedbackProvider.getAllNonRespondents(feedback.id, group.id, true, siteId));
                             }
                         });
 
-                        return Promise.all(p3).then(() => {
-                            // Prefetch user profiles.
-                            return this.userProvider.prefetchProfiles(userIds, courseId, siteId);
-                        });
+                        return Promise.all(p3);
                     }));
                 }
 
