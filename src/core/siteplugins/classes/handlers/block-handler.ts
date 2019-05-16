@@ -33,7 +33,7 @@ export class CoreSitePluginsBlockHandler extends CoreSitePluginsBaseHandler impl
      * @param {Injector} injector Injector
      * @param {any} block Block data
      * @param {string} contextLevel Context level (not used)
-     * @param {number} instanceId Instance if (not used)
+     * @param {number} instanceId Instance id (not used)
      * @return {CoreBlockHandlerData|Promise<CoreBlockHandlerData>} Data or promise resolved with the data
      */
     getDisplayData(injector: Injector, block: any, contextLevel: string, instanceId: number):
