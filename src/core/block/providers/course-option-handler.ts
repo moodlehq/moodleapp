@@ -16,6 +16,7 @@ import { Injectable, Injector } from '@angular/core';
 import { CoreCourseOptionsHandler, CoreCourseOptionsHandlerData } from '@core/course/providers/options-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreBlockCourseBlocksComponent } from '../components/course-blocks/course-blocks';
+import { CoreBlockDelegate } from './delegate';
 
 /**
  * Course nav handler.
@@ -25,7 +26,7 @@ export class CoreBlockCourseBlocksCourseOptionHandler implements CoreCourseOptio
     name = 'CoreCourseBlocks';
     priority = 700;
 
-    constructor(private courseProvider: CoreCourseProvider) {}
+    constructor(private courseProvider: CoreCourseProvider, private blockDelegate: CoreBlockDelegate) {}
 
     /**
      * Should invalidate the data to determine if the handler is enabled for a certain course.
@@ -45,7 +46,7 @@ export class CoreBlockCourseBlocksCourseOptionHandler implements CoreCourseOptio
      * @return {boolean} Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
-        return this.courseProvider.canGetCourseBlocks();
+        return this.courseProvider.canGetCourseBlocks() && !this.blockDelegate.areBlocksDisabledInCourses();
     }
 
     /**
