@@ -487,7 +487,7 @@ export class AddonModForumProvider {
     getAvailableSortOrders(): {label: string, value: number}[] {
         const sortOrders = [
             {
-                label: 'addon.mod_forum.bylastpostdesc',
+                label: 'addon.mod_forum.discussionlistsortbylastpostdesc',
                 value: AddonModForumProvider.SORTORDER_LASTPOST_DESC
             },
         ];
@@ -495,23 +495,23 @@ export class AddonModForumProvider {
         if (this.isDiscussionListSortingAvailable()) {
             sortOrders.push(
                 {
-                    label: 'addon.mod_forum.bylastpostasc',
+                    label: 'addon.mod_forum.discussionlistsortbylastpostasc',
                     value: AddonModForumProvider.SORTORDER_LASTPOST_ASC
                 },
                 {
-                    label: 'addon.mod_forum.bycreateddesc',
+                    label: 'addon.mod_forum.discussionlistsortbycreateddesc',
                     value: AddonModForumProvider.SORTORDER_CREATED_DESC
                 },
                 {
-                    label: 'addon.mod_forum.bycreatedasc',
+                    label: 'addon.mod_forum.discussionlistsortbycreatedasc',
                     value: AddonModForumProvider.SORTORDER_CREATED_ASC
                 },
                 {
-                    label: 'addon.mod_forum.byrepliesdesc',
+                    label: 'addon.mod_forum.discussionlistsortbyrepliesdesc',
                     value: AddonModForumProvider.SORTORDER_REPLIES_DESC
                 },
                 {
-                    label: 'addon.mod_forum.byrepliesasc',
+                    label: 'addon.mod_forum.discussionlistsortbyrepliesasc',
                     value: AddonModForumProvider.SORTORDER_REPLIES_ASC
                 }
             );
