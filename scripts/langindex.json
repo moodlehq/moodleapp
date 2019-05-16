@@ -1654,6 +1654,7 @@
   "core.resourcedisplayopen": "moodle",
   "core.resources": "moodle",
   "core.restore": "moodle",
+  "core.restricted": "moodle",
   "core.retry": "local_moodlemobileapp",
   "core.save": "moodle",
   "core.search": "moodle",

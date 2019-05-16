@@ -51,6 +51,19 @@ ion-app.app-root core-course-module {
         }
     }
 
+    .core-module-more-info {
+        ion-badge {
+            @include text-align('start');
+        }
+
+        .core-module-availabilityinfo  {
+            font-size: 90%;
+            ul {
+                margin-block-start: 0.5em;
+            }
+        }
+    }
+
     .core-not-clickable:active,
     .core-not-clickable.activated {
         background-color: $list-background-color;

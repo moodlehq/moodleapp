@@ -1654,6 +1654,7 @@
     "core.resourcedisplayopen": "Open",
     "core.resources": "Resources",
     "core.restore": "Restore",
+    "core.restricted": "Restricted",
     "core.retry": "Retry",
     "core.save": "Save",
     "core.search": "Search",
