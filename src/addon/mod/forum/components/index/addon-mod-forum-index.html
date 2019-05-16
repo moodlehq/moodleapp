@@ -31,12 +31,7 @@
                 <ion-icon name="information-circle"></ion-icon> {{ availabilityMessage }}
             </ion-card>
 
-            <core-empty-box *ngIf="forum && discussions.length == 0" icon="chatbubbles" [message]="'addon.mod_forum.forumnodiscussionsyet' | translate" class="core-empty-box-clickable">
-                <div padding *ngIf="forum.cancreatediscussions">
-                    <button ion-button block (click)="openNewDiscussion()">
-                        {{ 'addon.mod_forum.addanewdiscussion' | translate }}
-                    </button>
-                </div>
+            <core-empty-box *ngIf="forum && discussions.length == 0" icon="chatbubbles" [message]="'addon.mod_forum.forumnodiscussionsyet' | translate">
             </core-empty-box>
 
             <div text-wrap *ngIf="sortingAvailable && selectedSortOrder" ion-row padding-horizontal padding-top margin-bottom>
