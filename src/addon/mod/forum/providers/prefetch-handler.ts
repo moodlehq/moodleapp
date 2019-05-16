@@ -25,7 +25,7 @@ import { CoreGroupsProvider } from '@providers/groups';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModForumProvider } from './forum';
 import { AddonModForumSyncProvider } from './sync';
-import { CoreRatingProvider } from '@core/rating/providers/rating';
+import { CoreRatingProvider, CoreRatingInfo } from '@core/rating/providers/rating';
 
 /**
  * Handler to prefetch forums.
@@ -107,26 +107,36 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
      * @return {Promise<any[]>} Promise resolved with array of posts.
      */
     protected getPostsForPrefetch(forum: any): Promise<any[]> {
-        // Get discussions in first 2 pages.
-        return this.forumProvider.getDiscussionsInPages(forum.id, false, 2).then((response) => {
-            if (response.error) {
-                return Promise.reject(null);
-            }
+        const posts = {};
+        const ratingInfos: CoreRatingInfo[] = [];
 
-            const promises = [];
-            let posts = [];
+        const promises = this.forumProvider.getAvailableSortOrders().map((sortOrder) => {
+            // Get discussions in first 2 pages.
+            return this.forumProvider.getDiscussionsInPages(forum.id, sortOrder.value, false, 2).then((response) => {
+                if (response.error) {
+                    return Promise.reject(null);
+                }
 
-            response.discussions.forEach((discussion) => {
-                promises.push(this.forumProvider.getDiscussionPosts(discussion.discussion).then((response) => {
-                    posts = posts.concat(response.posts);
+                const promises = [];
 
-                    return this.ratingProvider.prefetchRatings('module', forum.cmid, forum.scale, forum.course,
-                            response.ratinginfo);
-                }));
+                response.discussions.forEach((discussion) => {
+                    promises.push(this.forumProvider.getDiscussionPosts(discussion.discussion).then((response) => {
+                        response.posts.forEach((post) => {
+                            posts[post.id] = post;
+                        });
+                        ratingInfos.push(response.ratinginfo);
+                    }));
+                });
+
+              return Promise.all(promises);
             });
+        });
 
-            return Promise.all(promises).then(() => {
-                return posts;
+        return Promise.all(promises).then(() => {
+            const ratingInfo = this.ratingProvider.mergeRatingInfos(ratingInfos);
+
+            return this.ratingProvider.prefetchRatings('module', forum.cmid, forum.scale, forum.course, ratingInfo).then(() => {
+                return this.utils.objectToArray(posts);
             });
         });
     }
@@ -209,6 +219,11 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
 
             // Prefetch access information.
             promises.push(this.forumProvider.getAccessInformation(forum.id));
+
+            // Prefetch sort order preference.
+            if (this.forumProvider.isDiscussionListSortingAvailable()) {
+               promises.push(this.userProvider.getUserPreference(AddonModForumProvider.PREFERENCE_SORTORDER));
+            }
 
             return Promise.all(promises);
         });
