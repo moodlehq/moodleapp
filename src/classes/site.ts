@@ -1370,7 +1370,7 @@ export class CoreSite {
             return false;
         }
 
-        const siteUrl = this.urlUtils.removeProtocolAndWWW(this.siteUrl);
+        const siteUrl = this.textUtils.removeEndingSlash(this.urlUtils.removeProtocolAndWWW(this.siteUrl));
         url = this.urlUtils.removeProtocolAndWWW(url);
 
         return url.indexOf(siteUrl) == 0;

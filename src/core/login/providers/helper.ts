@@ -41,7 +41,7 @@ export interface CoreLoginSSOData {
      * The site's URL.
      * @type {string}
      */
-    siteUrl?: string;
+    siteUrl: string;
 
     /**
      * User's token.
@@ -78,7 +78,6 @@ export class CoreLoginHelperProvider {
     protected logger;
     protected isSSOConfirmShown = false;
     protected isOpenEditAlertShown = false;
-    lastInAppUrl: string;
     waitingForBrowser = false;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
@@ -126,6 +125,7 @@ export class CoreLoginHelperProvider {
      *
      * @param {string} url URL received.
      * @return {boolean} True if it's a SSO URL, false otherwise.
+     * @deprecated Please use CoreCustomURLSchemesProvider.handleCustomURL instead.
      */
     appLaunchedByURL(url: string): boolean {
         const ssoScheme = CoreConfigConstants.customurlscheme + '://token=';
@@ -417,16 +417,54 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Open a page that doesn't belong to any site.
+     *
+     * @param {NavController} [navCtrl] Nav Controller.
+     * @param {string} [page] Page to open.
+     * @param {any} [params] Params of the page.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    goToNoSitePage(navCtrl: NavController, page: string, params?: any): Promise<any> {
+        navCtrl = navCtrl || this.appProvider.getRootNavController();
+
+        if (page == 'CoreLoginSitesPage') {
+            // Just open the page as root.
+            return navCtrl.setRoot(page, params);
+        } else {
+            // Check if there is any site stored.
+            return this.sitesProvider.hasSites().then((hasSites) => {
+                if (hasSites) {
+                    // There are sites stored, open sites page first to be able to go back.
+                    navCtrl.setRoot('CoreLoginSitesPage');
+
+                    return navCtrl.push(page, params, {animate: false});
+                } else {
+                    if (page != 'CoreLoginSitePage') {
+                        // Open the new site page to be able to go back.
+                        navCtrl.setRoot('CoreLoginSitePage');
+
+                        return navCtrl.push(page, params, {animate: false});
+                    } else {
+                        // Just open the page as root.
+                        return navCtrl.setRoot(page, params);
+                    }
+                }
+            });
+        }
+    }
+
+    /**
      * Go to the initial page of a site depending on 'userhomepage' setting.
      *
      * @param {NavController} [navCtrl] NavController to use. Defaults to app root NavController.
      * @param {string} [page] Name of the page to load after loading the main page.
      * @param {any} [params] Params to pass to the page.
      * @param {NavOptions} [options] Navigation options.
+     * @param {string} [url] URL to open once the main menu is loaded.
      * @return {Promise<any>} Promise resolved when done.
      */
-    goToSiteInitialPage(navCtrl?: NavController, page?: string, params?: any, options?: NavOptions): Promise<any> {
-        return this.openMainMenu(navCtrl, page, params, options);
+    goToSiteInitialPage(navCtrl?: NavController, page?: string, params?: any, options?: NavOptions, url?: string): Promise<any> {
+        return this.openMainMenu(navCtrl, page, params, options, url);
     }
 
     /**
@@ -457,33 +495,10 @@ export class CoreLoginHelperProvider {
      * Function called when a page starts loading in any InAppBrowser window.
      *
      * @param {string} url Loaded url.
+     * @deprecated
      */
     inAppBrowserLoadStart(url: string): void {
-        // URLs with a custom scheme can be prefixed with "http://" or "https://", we need to remove this.
-        url = url.replace(/^https?:\/\//, '');
-
-        if (this.appLaunchedByURL(url)) {
-            // Close the browser if it's a valid SSO URL.
-            this.utils.closeInAppBrowser(false);
-        } else if (this.platform.is('android')) {
-            // Check if the URL has a custom URL scheme. In Android they need to be opened manually.
-            const urlScheme = this.urlUtils.getUrlProtocol(url);
-            if (urlScheme && urlScheme !== 'file' && urlScheme !== 'cdvfile') {
-                // Open in browser should launch the right app if found and do nothing if not found.
-                this.utils.openInBrowser(url);
-
-                // At this point the InAppBrowser is showing a "Webpage not available" error message.
-                // Try to navigate to last loaded URL so this error message isn't found.
-                if (this.lastInAppUrl) {
-                    this.utils.openInApp(this.lastInAppUrl);
-                } else {
-                    // No last URL loaded, close the InAppBrowser.
-                    this.utils.closeInAppBrowser(false);
-                }
-            } else {
-                this.lastInAppUrl = url;
-            }
-        }
+        // This function is deprecated.
     }
 
     /**
@@ -620,9 +635,10 @@ export class CoreLoginHelperProvider {
      * @param {string} page Name of the page to load.
      * @param {any} params Params to pass to the page.
      * @param {NavOptions} [options] Navigation options.
+     * @param {string} [url] URL to open once the main menu is loaded.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected openMainMenu(navCtrl: NavController, page: string, params: any, options?: NavOptions): Promise<any> {
+    protected openMainMenu(navCtrl: NavController, page: string, params: any, options?: NavOptions, url?: string): Promise<any> {
         navCtrl = navCtrl || this.appProvider.getRootNavController();
 
         // Due to DeepLinker, we need to remove the path from the URL before going to main menu.
@@ -636,7 +652,7 @@ export class CoreLoginHelperProvider {
             });
         } else {
             // Open the main menu.
-            return navCtrl.setRoot('CoreMainMenuPage', { redirectPage: page, redirectParams: params }, options);
+            return navCtrl.setRoot('CoreMainMenuPage', { redirectPage: page, redirectParams: params, urlToOpen: url }, options);
         }
     }
 

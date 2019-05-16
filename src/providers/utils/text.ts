@@ -552,6 +552,24 @@ export class CoreTextUtilsProvider {
     }
 
     /**
+     * Remove ending slash from a path or URL.
+     *
+     * @param {string} text Text to treat.
+     * @return {string} Treated text.
+     */
+    removeEndingSlash(text: string): string {
+        if (!text) {
+            return '';
+        }
+
+        if (text.slice(-1) == '/') {
+            return text.substr(0, text.length - 1);
+        }
+
+        return text;
+    }
+
+    /**
      * Replace all characters that cause problems with files in Android and iOS.
      *
      * @param {string} text Text to treat.

@@ -1264,6 +1264,7 @@
     "core.contentlinks.confirmurlothersite": "This link belongs to another site. Do you want to open it?",
     "core.contentlinks.errornoactions": "Couldn't find an action to perform with this link.",
     "core.contentlinks.errornosites": "Couldn't find any site to handle this link.",
+    "core.contentlinks.errorredirectothersite": "The redirect URL cannot point to a different site.",
     "core.continue": "Continue",
     "core.copiedtoclipboard": "Text copied to clipboard",
     "core.course": "Course",

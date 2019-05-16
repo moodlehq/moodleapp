@@ -52,11 +52,27 @@ export class CoreUrlUtilsProvider {
      */
     extractUrlParams(url: string): any {
         const regex = /[?&]+([^=&]+)=?([^&]*)?/gi,
+            subParamsPlaceholder = '@@@SUBPARAMS@@@',
             params: any = {},
-            urlAndHash = url.split('#');
+            urlAndHash = url.split('#'),
+            questionMarkSplit = urlAndHash[0].split('?');
+        let subParams;
+
+        if (questionMarkSplit.length > 2) {
+            // There is more than one question mark in the URL. This can happen if any of the params is a URL with params.
+            // We only want to treat the first level of params, so we'll remove this second list of params and restore it later.
+            questionMarkSplit.splice(0, 2);
+
+            subParams = '?' + questionMarkSplit.join('?');
+            urlAndHash[0] = urlAndHash[0].replace(subParams, subParamsPlaceholder);
+        }
 
         urlAndHash[0].replace(regex, (match: string, key: string, value: string): string => {
             params[key] = typeof value != 'undefined' ? value : '';
+
+            if (subParams) {
+                params[key] = params[key].replace(subParamsPlaceholder, subParams);
+            }
 
             return match;
         });
@@ -229,7 +245,7 @@ export class CoreUrlUtilsProvider {
     getUsernameFromUrl(url: string): string {
         if (url.indexOf('@') > -1) {
             // Get URL without protocol.
-            const withoutProtocol = url.replace(/.*?:\/\//, ''),
+            const withoutProtocol = url.replace(/^[^?@\/]*:\/\//, ''),
                 matches = withoutProtocol.match(/[^@]*/);
 
             // Make sure that @ is at the start of the URL, not in a param at the end.
