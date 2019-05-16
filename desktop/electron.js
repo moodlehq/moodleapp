@@ -6,6 +6,7 @@ const url = require('url');
 const fs = require('fs');
 const os = require('os');
 const userAgent = 'MoodleMobile';
+const isMac = os.platform().indexOf('darwin') != -1;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -68,6 +69,14 @@ function createWindow() {
 
     // Append some text to the user agent.
     mainWindow.webContents.setUserAgent(mainWindow.webContents.getUserAgent() + ' ' + userAgent);
+
+    // Add shortcut to open dev tools: Cmd + Option + I in MacOS, Ctrl + Shift + I in Windows/Linux.
+    mainWindow.webContents.on('before-input-event', function(e, input) {
+        if (input.type == 'keyDown' && !input.isAutoRepeat && input.code == 'KeyI' &&
+                ((isMac && input.alt && input.meta) || (!isMac && input.shift && input.control))) {
+            mainWindow.webContents.toggleDevTools();
+        }
+    }, true)
 }
 
 // Make sure that only a single instance of the app is running.
@@ -75,7 +84,7 @@ function createWindow() {
 // See https://github.com/electron/electron/issues/15958
 var gotTheLock = app.requestSingleInstanceLock();
 
-if (!gotTheLock && os.platform().indexOf('darwin') == -1) {
+if (!gotTheLock && !isMac) {
     // It's not the main instance of the app, kill it.
     app.exit();
     return;
@@ -221,22 +230,18 @@ function setAppMenu() {
             submenu: [
                 {
                     label: 'Cut',
-                    accelerator: 'CmdOrCtrl+X',
                     role: 'cut'
                 },
                 {
                     label: 'Copy',
-                    accelerator: 'CmdOrCtrl+C',
                     role: 'copy'
                 },
                 {
                     label: 'Paste',
-                    accelerator: 'CmdOrCtrl+V',
                     role: 'paste'
                 },
                 {
                     label: 'Select All',
-                    accelerator: 'CmdOrCtrl+A',
                     role: 'selectall'
                 }
             ]

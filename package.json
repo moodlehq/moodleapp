@@ -227,6 +227,9 @@
     },
     "snap": {
       "confinement": "classic"
+    },
+    "nsis": {
+      "deleteAppDataOnUninstall": true
     }
   }
 }

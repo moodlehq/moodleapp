@@ -27,6 +27,10 @@ if [ ! -z $GIT_ORG_PRIVATE ] && [ ! -z $GIT_TOKEN ] ; then
     mv *i386.AppImage linux-ia32.AppImage
     mv Moodle*.AppImage linux-x64.AppImage
     ls
+    
+    tar -czvf MoodleDesktop32.tar.gz linux-ia32.AppImage
+    tar -czvf MoodleDesktop64.tar.gz linux-x64.AppImage
+    rm *.AppImage
 
     git add .
     git commit -m "Linux desktop versions from Travis build $TRAVIS_BUILD_NUMBER"
