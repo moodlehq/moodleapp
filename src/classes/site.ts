@@ -124,6 +124,11 @@ export interface CoreSiteWSPreSets {
      * Whether the request will be be sent immediately as a single request. Defaults to false.
      */
     skipQueue?: boolean;
+
+    /**
+     * Cache the response if it returns an errorcode present in this list.
+     */
+    cacheErrors?: string[];
 }
 
 /**
@@ -714,6 +719,11 @@ export class CoreSite {
                     this.logger.debug(`WS call '${method}' failed. Emergency cache is forbidden, rejecting.`);
 
                     return Promise.reject(error);
+                } else if (preSets.cacheErrors && preSets.cacheErrors.indexOf(error.errorcode) != -1) {
+                    // Save the error instead of deleting the cache entry so the same content is displayed in offline.
+                    this.saveToCache(method, data, error, preSets);
+
+                    return Promise.reject(error);
                 }
 
                 if (preSets.deleteCacheIfWSError && this.utils.isWebServiceError(error)) {
@@ -735,7 +745,7 @@ export class CoreSite {
             });
         }).then((response) => {
             // Check if the response is an error, this happens if the error was stored in the cache.
-            if (response && typeof response.exception !== 'undefined') {
+            if (response && (typeof response.exception != 'undefined' || typeof response.errorcode != 'undefined')) {
                 return Promise.reject(response);
             }
 

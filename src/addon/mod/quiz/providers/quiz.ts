@@ -403,7 +403,8 @@ export class AddonModQuizProvider {
                     page: page
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getAttemptReviewCacheKey(attemptId, page)
+                    cacheKey: this.getAttemptReviewCacheKey(attemptId, page),
+                    cacheErrors: ['noreview']
                 };
 
             if (ignoreCache) {

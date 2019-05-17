@@ -119,7 +119,12 @@ export class AddonModQuizAttemptPage implements OnInit {
             accessInfo = quizAccessInfo;
 
             if (accessInfo.canreviewmyattempts) {
-                return this.quizProvider.getAttemptReview(this.attemptId, -1).catch(() => {
+                // Check if the user can review the attempt.
+                return this.quizProvider.invalidateAttemptReviewForPage(this.attemptId, -1).catch(() => {
+                    // Ignore errors.
+                }).then(() => {
+                    return this.quizProvider.getAttemptReview(this.attemptId, -1);
+                }).catch(() => {
                     // Error getting the review, assume the user cannot review the attempt.
                     accessInfo.canreviewmyattempts = false;
                 });
