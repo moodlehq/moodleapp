@@ -69,13 +69,13 @@ export class CoreBlockComponent implements OnInit, OnDestroy {
                 // Block not supported, don't render it. But, site plugins might not have finished loading.
                 // Subscribe to the observable in block delegate that will tell us if blocks are updated.
                 // We can retry init later if that happens.
-                this.blockSubscription = this.blockDelegate.blocksUpdateObservable.subscribe({
-                    next: (): void => {
+                this.blockSubscription = this.blockDelegate.blocksUpdateObservable.subscribe(
+                    (): void => {
                         this.blockSubscription.unsubscribe();
                         delete this.blockSubscription;
                         this.initBlock();
                     }
-                });
+                );
 
                 return;
             }
