@@ -5,14 +5,13 @@ ion-app.app-root core-ion-tabs {
         z-index: 101; // For some reason, the regular z-index isn't enough with our tabs, use a higher one.
 
         .core-ion-tabs-loading {
+            height: 100%;
             width: 100%;
-            display: table;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
             .core-ion-tabs-loading-spinner {
-                display: table-cell;
-                text-align: center;
-                vertical-align: middle;
-
                 .spinner circle, .spinner line {
                     stroke: $white;
                 }
