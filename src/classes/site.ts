@@ -117,11 +117,13 @@ export interface CoreSiteWSPreSets {
     /**
      * Wehther a pending request in the queue matching the same function and arguments can be reused instead of adding
      * a new request to the queue. Defaults to true for read requests.
+     * @type {boolean}
      */
     reusePending?: boolean;
 
     /**
      * Whether the request will be be sent immediately as a single request. Defaults to false.
+     * @type {boolean}
      */
     skipQueue?: boolean;
 
@@ -129,6 +131,14 @@ export interface CoreSiteWSPreSets {
      * Cache the response if it returns an errorcode present in this list.
      */
     cacheErrors?: string[];
+
+    /**
+     * Update frequency. This value determines how often the cached data will be updated. Possible values:
+     * CoreSite.FREQUENCY_USUALLY, CoreSite.FREQUENCY_OFTEN, CoreSite.FREQUENCY_SOMETIMES, CoreSite.FREQUENCY_RARELY.
+     * Defaults to CoreSite.FREQUENCY_USUALLY.
+     * @type {number}
+     */
+    updateFrequency?: number;
 }
 
 /**
@@ -184,6 +194,12 @@ export class CoreSite {
     // @todo Set REQUEST_QUEUE_FORCE_WS to false before the release.
     static REQUEST_QUEUE_FORCE_WS = true; // Use "tool_mobile_call_external_functions" even for calling a single function.
 
+    // Constants for cache update frequency.
+    static FREQUENCY_USUALLY = 0;
+    static FREQUENCY_OFTEN = 1;
+    static FREQUENCY_SOMETIMES = 2;
+    static FREQUENCY_RARELY = 3;
+
     // List of injected services. This class isn't injectable, so it cannot use DI.
     protected appProvider: CoreAppProvider;
     protected dbProvider: CoreDbProvider;
@@ -212,6 +228,14 @@ export class CoreSite {
         3.6: 2018120300,
         3.7: 2019052000
     };
+
+    // Possible cache update frequencies.
+    protected UPDATE_FREQUENCIES = [
+        CoreConfigConstants.cache_update_frequency_usually || 420000,
+        CoreConfigConstants.cache_update_frequency_often || 1200000,
+        CoreConfigConstants.cache_update_frequency_sometimes || 3600000,
+        CoreConfigConstants.cache_update_frequency_rarely || 43200000
+    ];
 
     // Rest of variables.
     protected logger;
@@ -1016,11 +1040,22 @@ export class CoreSite {
 
         return promise.then((entry) => {
             const now = Date.now();
+            let expirationTime;
 
             preSets.omitExpires = preSets.omitExpires || !this.appProvider.isOnline();
 
             if (!preSets.omitExpires) {
-                if (now > entry.expirationTime) {
+                let expirationDelay = this.UPDATE_FREQUENCIES[preSets.updateFrequency] ||
+                        this.UPDATE_FREQUENCIES[CoreSite.FREQUENCY_USUALLY];
+
+                if (this.appProvider.isNetworkAccessLimited()) {
+                    // Not WiFi, increase the expiration delay a 50% to decrease the data usage in this case.
+                    expirationDelay *= 1.5;
+                }
+
+                expirationTime = entry.expirationTime + expirationDelay;
+
+                if (now > expirationTime) {
                     this.logger.debug('Cached element found, but it is expired');
 
                     return Promise.reject(null);
@@ -1028,8 +1063,12 @@ export class CoreSite {
             }
 
             if (typeof entry != 'undefined' && typeof entry.data != 'undefined') {
-                const expires = (entry.expirationTime - now) / 1000;
-                this.logger.info(`Cached element found, id: ${id} expires in ${expires} seconds`);
+                if (!expirationTime) {
+                    this.logger.info(`Cached element found, id: ${id}. Expiration time ignored.`);
+                } else {
+                    const expires = (expirationTime - now) / 1000;
+                    this.logger.info(`Cached element found, id: ${id}. Expires in expires in ${expires} seconds`);
+                }
 
                 return this.textUtils.parseJSON(entry.data, {});
             }
@@ -1064,15 +1103,15 @@ export class CoreSite {
         }
 
         return promise.then(() => {
+            // Since 3.7, the expiration time contains the time the entry is modified instead of the expiration time.
+            // We decided to reuse this field to prevent modifying the database table.
             const id = this.getCacheId(method, data),
                 entry: any = {
                     id: id,
-                    data: JSON.stringify(response)
+                    data: JSON.stringify(response),
+                    expirationTime: Date.now()
                 };
-            let cacheExpirationTime = CoreConfigConstants.cache_expiration_time;
 
-            cacheExpirationTime = isNaN(cacheExpirationTime) ? 300000 : cacheExpirationTime;
-            entry.expirationTime = new Date().getTime() + cacheExpirationTime;
             if (preSets.cacheKey) {
                 entry.key = preSets.cacheKey;
             }

@@ -4,7 +4,10 @@
     "desktopappname": "Moodle Desktop",
     "versioncode": 3700,
     "versionname": "3.7.0-dev",
-    "cache_expiration_time": 300000,
+    "cache_update_frequency_usually": 420000,
+    "cache_update_frequency_often": 1200000,
+    "cache_update_frequency_sometimes": 3600000,
+    "cache_update_frequency_rarely": 43200000,
     "default_lang": "en",
     "languages": {
         "ar": "عربي",

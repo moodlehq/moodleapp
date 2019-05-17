@@ -4,6 +4,7 @@ information provided here is intended especially for developers.
 === 3.7.0 ===
 
 - The pushnotifications addon has been moved to core. All imports of that addon need to be fixed to use the right path and name.
+- Now the expirationTime of cache entries contains the time the entry was modified, not the expiration time. This is to allow calculating dynamic expiration times. We decided to reuse the same field to prevent modifying the database table.
 
 === 3.6.1 ===
 
