@@ -20,6 +20,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { CoreGroupsProvider } from '@providers/groups';
 import { AddonModForumProvider } from './forum';
@@ -42,6 +43,7 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
             filepoolProvider: CoreFilepoolProvider,
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
+            private userProvider: CoreUserProvider,
             private groupsProvider: CoreGroupsProvider,
             private forumProvider: AddonModForumProvider,
             private syncProvider: AddonModForumSyncProvider) {

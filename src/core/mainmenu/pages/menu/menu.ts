@@ -161,7 +161,7 @@ export class CoreMainMenuPage implements OnDestroy {
             });
 
             this.loaded = this.menuDelegate.areHandlersLoaded();
-        });
+        }
 
         if (this.urlToOpen) {
             // There's a content link to open.
