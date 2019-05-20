@@ -52,7 +52,7 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
         super.ngOnInit();
 
         this.loadContent().then(() => {
-            this.imscpProvider.logView(this.module.instance).then(() => {
+            this.imscpProvider.logView(this.module.instance, this.module.name).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch(() => {
                 // Ignore errors.

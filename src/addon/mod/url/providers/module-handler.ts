@@ -173,7 +173,7 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
      * @param {number} courseId The course ID.
      */
     protected openUrl(module: any, courseId: number): void {
-        this.urlProvider.logView(module.instance).then(() => {
+        this.urlProvider.logView(module.instance, module.name).then(() => {
             this.courseProvider.checkModuleCompletion(courseId, module.completiondata);
         }).catch(() => {
             // Ignore errors.

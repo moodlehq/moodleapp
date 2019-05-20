@@ -1421,21 +1421,19 @@ export class AddonModScormProvider {
      *
      * @param {number} scormId SCORM ID.
      * @param {number} scoId SCO ID.
+     * @param {string} [name] Name of the SCORM.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logLaunchSco(scormId: number, scoId: number, siteId?: string): Promise<any> {
+    logLaunchSco(scormId: number, scoId: number, name?: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 scormid: scormId,
                 scoid: scoId
             };
 
-            return site.write('mod_scorm_launch_sco', params).then((response) => {
-                if (!response || !response.status) {
-                    return Promise.reject(null);
-                }
-            });
+            return this.logHelper.logSingle('mod_scorm_launch_sco', params, AddonModScormProvider.COMPONENT, scormId, name,
+                    'scorm', {scoid: scoId}, siteId);
         });
     }
 
@@ -1443,15 +1441,17 @@ export class AddonModScormProvider {
      * Report a SCORM as being viewed.
      *
      * @param {string} id Module ID.
+     * @param {string} [name] Name of the SCORM.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logView(id: number, siteId?: string): Promise<any> {
+    logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             scormid: id
         };
 
-        return this.logHelper.log('mod_scorm_view_scorm', params, AddonModScormProvider.COMPONENT, id, siteId);
+        return this.logHelper.logSingle('mod_scorm_view_scorm', params, AddonModScormProvider.COMPONENT, id, name, 'scorm', {},
+                siteId);
 }
 
     /**

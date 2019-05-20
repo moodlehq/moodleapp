@@ -55,7 +55,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
             this.refreshIcon = 'refresh';
         } else {
             this.loadContent().then(() => {
-                this.folderProvider.logView(this.module.instance).then(() => {
+                this.folderProvider.logView(this.module.instance, this.module.name).then(() => {
                     this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
                 }).catch(() => {
                     // Ignore errors.

@@ -20,6 +20,7 @@ import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreAppProvider } from '@providers/app';
 import { CoreUserOfflineProvider } from './offline';
+import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 
 /**
  * Service to provide user functionalities.
@@ -63,7 +64,7 @@ export class CoreUserProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
             private filepoolProvider: CoreFilepoolProvider, private appProvider: CoreAppProvider,
-            private userOffline: CoreUserOfflineProvider) {
+            private userOffline: CoreUserOfflineProvider, private pushNotificationsProvider: CorePushNotificationsProvider) {
         this.logger = logger.getInstance('CoreUserProvider');
         this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
@@ -432,18 +433,22 @@ export class CoreUserProvider {
      * Log User Profile View in Moodle.
      * @param  {number}       userId   User ID.
      * @param  {number}       [courseId] Course ID.
+     * @param  {string}       [name] Name of the user.
      * @return {Promise<any>}          Promise resolved when done.
      */
-    logView(userId: number, courseId?: number): Promise<any> {
+    logView(userId: number, courseId?: number, name?: string): Promise<any> {
         const params = {
-            userid: userId
-        };
+                userid: userId
+            },
+            wsName = 'core_user_view_user_profile';
 
         if (courseId) {
             params['courseid'] = courseId;
         }
 
-        return this.sitesProvider.getCurrentSite().write('core_user_view_user_profile', params);
+        this.pushNotificationsProvider.logViewEvent(userId, name, 'user', wsName, {courseid: courseId});
+
+        return this.sitesProvider.getCurrentSite().write(wsName, params);
     }
 
     /**
@@ -452,9 +457,13 @@ export class CoreUserProvider {
      * @return {Promise<any>}          Promise resolved when done.
      */
     logParticipantsView(courseId?: number): Promise<any> {
-        return this.sitesProvider.getCurrentSite().write('core_user_view_user_list', {
+        const params = {
             courseid: courseId
-        });
+        };
+
+        this.pushNotificationsProvider.logViewListEvent('user', 'core_user_view_user_list', params);
+
+        return this.sitesProvider.getCurrentSite().write('core_user_view_user_list', params);
     }
 
     /**

@@ -95,7 +95,7 @@ export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityCompo
     launch(): void {
         this.ltiProvider.getLtiLaunchData(this.lti.id).then((launchData) => {
             // "View" LTI.
-            this.ltiProvider.logView(this.lti.id).then(() => {
+            this.ltiProvider.logView(this.lti.id, this.lti.name).then(() => {
                 this.checkCompletion();
             }).catch((error) => {
                 // Ignore errors.

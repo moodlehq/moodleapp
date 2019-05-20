@@ -293,6 +293,86 @@ export class CorePushNotificationsProvider {
     }
 
     /**
+     * Log a firebase event.
+     *
+     * @param {string} name Name of the event.
+     * @param {any} data Data of the event.
+     * @param {boolean} [filter] Whether to filter the data. This is useful when logging a full notification.
+     * @return {Promise<any>} Promise resolved when done. This promise is never rejected.
+     */
+    logEvent(name: string, data: any, filter?: boolean): Promise<any> {
+        const win = <any> window; // This feature is only present in our fork of the plugin.
+
+        if (CoreConfigConstants.enableanalytics && win.PushNotification && win.PushNotification.logEvent) {
+            return new Promise((resolve, reject): void => {
+                win.PushNotification.logEvent(resolve, (error) => {
+                    this.logger.error('Error logging firebase event', name, error);
+                    resolve();
+                }, name, data, !!filter);
+            });
+        }
+
+        return Promise.resolve();
+    }
+
+    /**
+     * Log a firebase view_item event.
+     *
+     * @param {number|string} itemId The item ID.
+     * @param {string} itemName The item name.
+     * @param {string} itemCategory The item category.
+     * @param {string} wsName Name of the WS.
+     * @param {any} [data] Other data to pass to the event.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done. This promise is never rejected.
+     */
+    logViewEvent(itemId: number | string, itemName: string, itemCategory: string, wsName: string, data?: any, siteId?: string)
+            : Promise<any> {
+        data = data || {};
+
+        // Add "moodle" to the name of all extra params.
+        data = this.utils.prefixKeys(data, 'moodle');
+        data['moodleaction'] = wsName;
+        data['moodlesiteid'] = siteId || this.sitesProvider.getCurrentSiteId();
+
+        if (itemId) {
+            data['item_id'] = itemId;
+        }
+        if (itemName) {
+            data['item_name'] = itemName;
+        }
+        if (itemCategory) {
+            data['item_category'] = itemCategory;
+        }
+
+        return this.logEvent('view_item', data, false);
+    }
+
+    /**
+     * Log a firebase view_item_list event.
+     *
+     * @param {string} itemCategory The item category.
+     * @param {string} wsName Name of the WS.
+     * @param {any} [data] Other data to pass to the event.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done. This promise is never rejected.
+     */
+    logViewListEvent(itemCategory: string, wsName: string, data?: any, siteId?: string): Promise<any> {
+        data = data || {};
+
+        // Add "moodle" to the name of all extra params.
+        data = this.utils.prefixKeys(data, 'moodle');
+        data['moodleaction'] = wsName;
+        data['moodlesiteid'] = siteId || this.sitesProvider.getCurrentSiteId();
+
+        if (itemCategory) {
+            data['item_category'] = itemCategory;
+        }
+
+        return this.logEvent('view_item_list', data, false);
+    }
+
+    /**
      * Function called when a push notification is clicked. Redirect the user to the right state.
      *
      * @param {any} notification Notification.

@@ -20,6 +20,7 @@ import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreBlockDelegate } from '@core/block/providers/delegate';
 import { CoreBlockComponent } from '@core/block/components/block/block';
+import { CoreSite } from '@classes/site';
 
 /**
  * Component that displays site home index.
@@ -37,12 +38,14 @@ export class CoreSiteHomeIndexComponent implements OnInit {
     hasSupportedBlock: boolean;
     items: any[] = [];
     siteHomeId: number;
+    currentSite: CoreSite;
     blocks = [];
 
-    constructor(private domUtils: CoreDomUtilsProvider, private sitesProvider: CoreSitesProvider,
+    constructor(private domUtils: CoreDomUtilsProvider, sitesProvider: CoreSitesProvider,
             private courseProvider: CoreCourseProvider, private courseHelper: CoreCourseHelperProvider,
             private prefetchDelegate: CoreCourseModulePrefetchDelegate, private blockDelegate: CoreBlockDelegate) {
-        this.siteHomeId = sitesProvider.getCurrentSite().getSiteHomeId();
+        this.currentSite = sitesProvider.getCurrentSite();
+        this.siteHomeId = this.currentSite.getSiteHomeId();
     }
 
     /**
@@ -60,14 +63,13 @@ export class CoreSiteHomeIndexComponent implements OnInit {
      * @param {any} refresher Refresher.
      */
     doRefresh(refresher: any): void {
-        const promises = [],
-            currentSite = this.sitesProvider.getCurrentSite();
+        const promises = [];
 
         promises.push(this.courseProvider.invalidateSections(this.siteHomeId));
-        promises.push(currentSite.invalidateConfig().then(() => {
+        promises.push(this.currentSite.invalidateConfig().then(() => {
             // Config invalidated, fetch it again.
-            return currentSite.getConfig().then((config) => {
-                currentSite.setConfig(config);
+            return this.currentSite.getConfig().then((config) => {
+                this.currentSite.setConfig(config);
             });
         }));
 
@@ -102,7 +104,7 @@ export class CoreSiteHomeIndexComponent implements OnInit {
     protected loadContent(): Promise<any> {
         this.hasContent = false;
 
-        const config = this.sitesProvider.getCurrentSite().getStoredConfig() || { numsections: 1 };
+        const config = this.currentSite.getStoredConfig() || { numsections: 1 };
 
         if (config.frontpageloggedin) {
             // Items with index 1 and 3 were removed on 2.5 and not being supported in the app.
@@ -142,7 +144,8 @@ export class CoreSiteHomeIndexComponent implements OnInit {
             }
 
             // Add log in Moodle.
-            this.courseProvider.logView(this.siteHomeId).catch(() => {
+            this.courseProvider.logView(this.siteHomeId, undefined, undefined,
+                    this.currentSite && this.currentSite.getInfo().sitename).catch(() => {
                 // Ignore errors.
             });
 

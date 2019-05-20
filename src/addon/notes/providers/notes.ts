@@ -21,6 +21,7 @@ import { CoreSiteWSPreSets } from '@classes/site';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonNotesOfflineProvider } from './notes-offline';
+import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 
 /**
  * Service to handle notes.
@@ -33,7 +34,7 @@ export class AddonNotesProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider,
             private utils: CoreUtilsProvider, private translate: TranslateService, private userProvider: CoreUserProvider,
-            private notesOffline: AddonNotesOfflineProvider) {
+            private notesOffline: AddonNotesOfflineProvider, protected pushNotificationsProvider: CorePushNotificationsProvider) {
         this.logger = logger.getInstance('AddonNotesProvider');
     }
 
@@ -317,6 +318,8 @@ export class AddonNotesProvider {
                 courseid: courseId,
                 userid: userId || 0
             };
+
+            this.pushNotificationsProvider.logViewListEvent('notes', 'core_notes_view_notes', params, site.getId());
 
             return site.write('core_notes_view_notes', params);
         });

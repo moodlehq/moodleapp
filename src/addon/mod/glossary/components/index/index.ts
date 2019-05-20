@@ -109,7 +109,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
                 }
             }
 
-            this.glossaryProvider.logView(this.glossary.id, this.viewMode).then(() => {
+            this.glossaryProvider.logView(this.glossary.id, this.viewMode, this.glossary.name).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch((error) => {
                 // Ignore errors.

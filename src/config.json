@@ -80,5 +80,6 @@
     "statusbarbgandroid": "#df7310",
     "statusbarlighttextandroid": true,
     "statusbarbgremotetheme": "#000000",
-    "statusbarlighttextremotetheme": true
+    "statusbarlighttextremotetheme": true,
+    "enableanalytics": false
 }

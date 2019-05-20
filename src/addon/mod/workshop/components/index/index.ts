@@ -107,7 +107,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
                 return;
             }
 
-            this.workshopProvider.logView(this.workshop.id).then(() => {
+            this.workshopProvider.logView(this.workshop.id, this.workshop.name).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch((error) => {
                 // Ignore errors.

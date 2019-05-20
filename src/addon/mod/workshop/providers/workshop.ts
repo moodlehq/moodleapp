@@ -1362,15 +1362,17 @@ export class AddonModWorkshopProvider {
      * Report the workshop as being viewed.
      *
      * @param  {number} id       Workshop ID.
+     * @param {string} [name] Name of the workshop.
      * @param  {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}    Promise resolved when the WS call is successful.
      */
-    logView(id: number, siteId?: string): Promise<any> {
+    logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             workshopid: id
         };
 
-        return this.logHelper.log('mod_workshop_view_workshop', params, AddonModWorkshopProvider.COMPONENT, id, siteId);
+        return this.logHelper.logSingle('mod_workshop_view_workshop', params, AddonModWorkshopProvider.COMPONENT, id, name,
+                'workshop', siteId);
     }
 
     /**
@@ -1378,14 +1380,16 @@ export class AddonModWorkshopProvider {
      *
      * @param  {number} id          Submission ID.
      * @param  {number} workshopId  Workshop ID.
+     * @param {string} [name] Name of the workshop.
      * @param  {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}    Promise resolved when the WS call is successful.
      */
-    logViewSubmission(id: number, workshopId: number, siteId?: string): Promise<any> {
+    logViewSubmission(id: number, workshopId: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             submissionid: id
         };
 
-        return this.logHelper.log('mod_workshop_view_submission', params, AddonModWorkshopProvider.COMPONENT, workshopId, siteId);
+        return this.logHelper.logSingle('mod_workshop_view_submission', params, AddonModWorkshopProvider.COMPONENT, workshopId,
+                name, 'workshop', params, siteId);
     }
 }

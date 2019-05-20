@@ -213,7 +213,7 @@ export class CoreCourseSectionPage implements OnDestroy {
                 let promise;
 
                 // Add log in Moodle.
-                this.courseProvider.logView(this.course.id, this.sectionNumber).catch(() => {
+                this.courseProvider.logView(this.course.id, this.sectionNumber, undefined, this.course.fullname).catch(() => {
                     // Ignore errors.
                 });
 

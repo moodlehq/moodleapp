@@ -1124,17 +1124,19 @@ export class AddonModFeedbackProvider {
      * Report the feedback as being viewed.
      *
      * @param {number} id                   Module ID.
+     * @param {string} [name] Name of the feedback.
      * @param  {boolean} [formViewed=false] True if form was viewed.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}               Promise resolved when the WS call is successful.
      */
-    logView(id: number, formViewed: boolean = false, siteId?: string): Promise<any> {
+    logView(id: number, name?: string, formViewed: boolean = false, siteId?: string): Promise<any> {
         const params = {
             feedbackid: id,
             moduleviewed: formViewed ? 1 : 0
         };
 
-        return this.logHelper.log('mod_feedback_view_feedback', params, AddonModFeedbackProvider.COMPONENT, id, siteId);
+        return this.logHelper.logSingle('mod_feedback_view_feedback', params, AddonModFeedbackProvider.COMPONENT, id, name,
+                'feedback', {moduleviewed: params.moduleviewed}, siteId);
     }
 
     /**

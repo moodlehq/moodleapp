@@ -771,15 +771,17 @@ export class AddonModForumProvider {
      * Report a forum as being viewed.
      *
      * @param  {number} id    Module ID.
+     * @param {string} [name] Name of the forum.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(id: number, siteId?: string): Promise<any> {
+    logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             forumid: id
         };
 
-        return this.logHelper.log('mod_forum_view_forum', params, AddonModForumProvider.COMPONENT, id, siteId);
+        return this.logHelper.logSingle('mod_forum_view_forum', params, AddonModForumProvider.COMPONENT, id, name, 'forum', {},
+                siteId);
     }
 
     /**
@@ -787,15 +789,17 @@ export class AddonModForumProvider {
      *
      * @param  {number} id    Discussion ID.
      * @param  {number} forumId  Forum ID.
+     * @param {string} [name] Name of the forum.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logDiscussionView(id: number, forumId: number, siteId?: string): Promise<any> {
+    logDiscussionView(id: number, forumId: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             discussionid: id
         };
 
-        return this.logHelper.log('mod_forum_view_forum_discussion', params, AddonModForumProvider.COMPONENT, forumId, siteId);
+        return this.logHelper.logSingle('mod_forum_view_forum_discussion', params, AddonModForumProvider.COMPONENT, forumId, name,
+                'forum', params, siteId);
     }
 
     /**

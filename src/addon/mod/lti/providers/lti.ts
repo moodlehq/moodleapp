@@ -213,14 +213,15 @@ export class AddonModLtiProvider {
      * Report the LTI as being viewed.
      *
      * @param {string} id LTI id.
+     * @param {string} [name] Name of the lti.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(id: number, siteId?: string): Promise<any> {
+    logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params: any = {
             ltiid: id
         };
 
-        return this.logHelper.log('mod_lti_view_lti', params, AddonModLtiProvider.COMPONENT, id, siteId);
+        return this.logHelper.logSingle('mod_lti_view_lti', params, AddonModLtiProvider.COMPONENT, id, name, 'lti', {}, siteId);
     }
 }

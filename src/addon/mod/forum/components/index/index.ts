@@ -152,7 +152,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                 }
             }
 
-            this.forumProvider.logView(this.forum.id).then(() => {
+            this.forumProvider.logView(this.forum.id, this.forum.name).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch((error) => {
                 // Ignore errors.

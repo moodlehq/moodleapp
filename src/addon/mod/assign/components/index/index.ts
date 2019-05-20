@@ -80,7 +80,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         this.userId = this.sitesProvider.getCurrentSiteUserId();
 
         this.loadContent(false, true).then(() => {
-            this.assignProvider.logView(this.assign.id).then(() => {
+            this.assignProvider.logView(this.assign.id, this.assign.name).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch(() => {
                 // Ignore errors.
@@ -88,12 +88,12 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
             if (this.canViewAllSubmissions) {
                 // User can see all submissions, log grading view.
-                this.assignProvider.logGradingView(this.assign.id).catch(() => {
+                this.assignProvider.logGradingView(this.assign.id, this.assign.name).catch(() => {
                     // Ignore errors.
                 });
             } else if (this.canViewOwnSubmission) {
                 // User can only see their own submission, log view the user submission.
-                this.assignProvider.logSubmissionView(this.assign.id).catch(() => {
+                this.assignProvider.logSubmissionView(this.assign.id, this.assign.name).catch(() => {
                     // Ignore errors.
                 });
             }

@@ -380,15 +380,17 @@ export class AddonModBookProvider {
      *
      * @param {number} id Module ID.
      * @param {string} chapterId Chapter ID.
+     * @param {string} [name] Name of the book.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logView(id: number, chapterId: string, siteId?: string): Promise<any> {
+    logView(id: number, chapterId: string, name?: string, siteId?: string): Promise<any> {
         const params = {
             bookid: id,
             chapterid: chapterId
         };
 
-        return this.logHelper.log('mod_book_view_book', params, AddonModBookProvider.COMPONENT, id, siteId);
+        return this.logHelper.logSingle('mod_book_view_book', params, AddonModBookProvider.COMPONENT, id, name, 'book',
+                {chapterid: chapterId}, siteId);
     }
 }

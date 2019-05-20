@@ -655,30 +655,34 @@ export class AddonModWikiProvider {
      *
      * @param {number} id Page ID.
      * @param {number} wikiId Wiki ID.
+     * @param {string} [name] Name of the wiki.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logPageView(id: number, wikiId: number, siteId?: string): Promise<any> {
+    logPageView(id: number, wikiId: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             pageid: id
         };
 
-        return this.logHelper.log('mod_wiki_view_page', params, AddonModWikiProvider.COMPONENT, wikiId, siteId);
+        return this.logHelper.logSingle('mod_wiki_view_page', params, AddonModWikiProvider.COMPONENT, wikiId, name, 'wiki',
+                params, siteId);
     }
 
     /**
      * Report the wiki as being viewed.
      *
      * @param {number} id Wiki ID.
+     * @param {string} [name] Name of the wiki.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logView(id: number, siteId?: string): Promise<any> {
+    logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             wikiid: id
         };
 
-        return this.logHelper.log('mod_wiki_view_wiki', params, AddonModWikiProvider.COMPONENT, id, siteId);
+        return this.logHelper.logSingle('mod_wiki_view_wiki', params, AddonModWikiProvider.COMPONENT, id, name, 'wiki', {},
+                siteId);
     }
 
     /**
