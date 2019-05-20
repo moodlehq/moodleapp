@@ -21,7 +21,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
 import { CoreQuestionDelegate } from '@core/question/providers/delegate';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
@@ -570,7 +570,8 @@ export class AddonModQuizProvider {
                     grade: grade
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getFeedbackForGradeCacheKey(quizId, grade)
+                    cacheKey: this.getFeedbackForGradeCacheKey(quizId, grade),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (ignoreCache) {
@@ -687,7 +688,8 @@ export class AddonModQuizProvider {
                     courseids: [courseId]
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getQuizDataCacheKey(courseId)
+                    cacheKey: this.getQuizDataCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (forceCache) {
@@ -829,7 +831,8 @@ export class AddonModQuizProvider {
                     quizid: quizId
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getQuizRequiredQtypesCacheKey(quizId)
+                    cacheKey: this.getQuizRequiredQtypesCacheKey(quizId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (ignoreCache) {
@@ -991,7 +994,8 @@ export class AddonModQuizProvider {
                     includepreviews: includePreviews ? 1 : 0
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getUserAttemptsCacheKey(quizId, userId)
+                    cacheKey: this.getUserAttemptsCacheKey(quizId, userId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (offline) {

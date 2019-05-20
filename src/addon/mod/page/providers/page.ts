@@ -19,6 +19,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service that provides some features for page.
@@ -63,7 +64,8 @@ export class AddonModPageProvider {
                     courseids: [courseId]
                 },
                 preSets = {
-                    cacheKey: this.getPageCacheKey(courseId)
+                    cacheKey: this.getPageCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('mod_page_get_pages_by_courses', params, preSets).then((response) => {

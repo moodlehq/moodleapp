@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service to handle caompetency learning plans.
@@ -156,7 +157,8 @@ export class AddonCompetencyProvider {
                     userid: userId
                 },
                 preSets = {
-                    cacheKey: this.getLearningPlansCacheKey(userId)
+                    cacheKey: this.getLearningPlansCacheKey(userId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('tool_lp_data_for_plans_page', params, preSets).then((response) => {
@@ -185,7 +187,8 @@ export class AddonCompetencyProvider {
                     planid: planId
                 },
                 preSets = {
-                    cacheKey: this.getLearningPlanCacheKey(planId)
+                    cacheKey: this.getLearningPlanCacheKey(planId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('tool_lp_data_for_plan_page', params, preSets).then((response) => {
@@ -216,7 +219,8 @@ export class AddonCompetencyProvider {
                     competencyid: competencyId
                 },
                 preSets = {
-                    cacheKey: this.getCompetencyInPlanCacheKey(planId, competencyId)
+                    cacheKey: this.getCompetencyInPlanCacheKey(planId, competencyId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             return site.read('tool_lp_data_for_user_competency_summary_in_plan', params, preSets).then((response) => {
@@ -253,7 +257,8 @@ export class AddonCompetencyProvider {
                     userid: userId
                 },
                 preSets: any = {
-                    cacheKey: this.getCompetencyInCourseCacheKey(courseId, competencyId, userId)
+                    cacheKey: this.getCompetencyInCourseCacheKey(courseId, competencyId, userId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (ignoreCache) {
@@ -291,7 +296,8 @@ export class AddonCompetencyProvider {
                     userid: userId
                 },
                 preSets: any = {
-                    cacheKey: this.getCompetencySummaryCacheKey(competencyId, userId)
+                    cacheKey: this.getCompetencySummaryCacheKey(competencyId, userId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (ignoreCache) {
@@ -327,7 +333,8 @@ export class AddonCompetencyProvider {
                     courseid: courseId
                 },
                 preSets: any = {
-                    cacheKey: this.getCourseCompetenciesCacheKey(courseId)
+                    cacheKey: this.getCourseCompetenciesCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (ignoreCache) {

@@ -20,6 +20,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreConstants } from '@core/constants';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service that provides some features for urls.
@@ -114,7 +115,8 @@ export class AddonModUrlProvider {
                     courseids: [courseId]
                 },
                 preSets = {
-                    cacheKey: this.getUrlCacheKey(courseId)
+                    cacheKey: this.getUrlCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('mod_url_get_urls_by_courses', params, preSets).then((response) => {

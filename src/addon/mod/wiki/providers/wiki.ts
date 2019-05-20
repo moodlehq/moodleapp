@@ -22,7 +22,7 @@ import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModWikiOfflineProvider } from './wiki-offline';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 
 export interface AddonModWikiSubwikiListData {
     /**
@@ -134,7 +134,8 @@ export class AddonModWikiProvider {
                     pageid: pageId
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getPageContentsCacheKey(pageId)
+                    cacheKey: this.getPageContentsCacheKey(pageId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (offline) {
@@ -215,7 +216,8 @@ export class AddonModWikiProvider {
                     userid: userId
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getSubwikiFilesCacheKey(wikiId, groupId, userId)
+                    cacheKey: this.getSubwikiFilesCacheKey(wikiId, groupId, userId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (offline) {
@@ -299,7 +301,8 @@ export class AddonModWikiProvider {
 
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getSubwikiPagesCacheKey(wikiId, groupId, userId)
+                    cacheKey: this.getSubwikiPagesCacheKey(wikiId, groupId, userId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (offline) {
@@ -352,7 +355,8 @@ export class AddonModWikiProvider {
                     wikiid: wikiId
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getSubwikisCacheKey(wikiId)
+                    cacheKey: this.getSubwikisCacheKey(wikiId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (offline) {
@@ -408,7 +412,8 @@ export class AddonModWikiProvider {
                     courseids: [courseId]
                 },
                 preSets = {
-                    cacheKey: this.getWikiDataCacheKey(courseId)
+                    cacheKey: this.getWikiDataCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('mod_wiki_get_wikis_by_courses', params, preSets).then((response) => {

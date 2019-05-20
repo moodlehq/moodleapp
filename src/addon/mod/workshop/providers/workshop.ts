@@ -19,6 +19,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModWorkshopOfflineProvider } from './offline';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service that provides some features for workshops.
@@ -212,7 +213,8 @@ export class AddonModWorkshopProvider {
                 courseids: [courseId]
             };
             const preSets: any = {
-                cacheKey: this.getWorkshopDataCacheKey(courseId)
+                cacheKey: this.getWorkshopDataCacheKey(courseId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY
             };
 
             if (forceCache) {
@@ -355,7 +357,8 @@ export class AddonModWorkshopProvider {
                 workshopid: workshopId
             };
             const preSets: any = {
-                cacheKey: this.getUserPlanDataCacheKey(workshopId)
+                cacheKey: this.getUserPlanDataCacheKey(workshopId),
+                updateFrequency: CoreSite.FREQUENCY_OFTEN
             };
 
             if (offline) {
@@ -408,7 +411,8 @@ export class AddonModWorkshopProvider {
                 groupid: groupId
             };
             const preSets: any = {
-                cacheKey: this.getSubmissionsDataCacheKey(workshopId, userId, groupId)
+                cacheKey: this.getSubmissionsDataCacheKey(workshopId, userId, groupId),
+                updateFrequency: CoreSite.FREQUENCY_OFTEN
             };
 
             if (offline) {
@@ -539,7 +543,8 @@ export class AddonModWorkshopProvider {
                 perpage: perPage || AddonModWorkshopProvider.PER_PAGE
             };
             const preSets: any = {
-                cacheKey: this.getGradesReportDataCacheKey(workshopId, groupId)
+                cacheKey: this.getGradesReportDataCacheKey(workshopId, groupId),
+                updateFrequency: CoreSite.FREQUENCY_OFTEN
             };
 
             if (offline) {
@@ -1004,7 +1009,8 @@ export class AddonModWorkshopProvider {
                 mode: mode || 'assessment'
             };
             const preSets: any = {
-                cacheKey: this.getAssessmentFormDataCacheKey(workshopId, assessmentId, mode)
+                cacheKey: this.getAssessmentFormDataCacheKey(workshopId, assessmentId, mode),
+                updateFrequency: CoreSite.FREQUENCY_RARELY
             };
 
             if (offline) {

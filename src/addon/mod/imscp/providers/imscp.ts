@@ -20,6 +20,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service that provides some features for IMSCP.
@@ -162,7 +163,8 @@ export class AddonModImscpProvider {
                 courseids: [courseId]
             };
             const preSets = {
-                cacheKey: this.getImscpDataCacheKey(courseId)
+                cacheKey: this.getImscpDataCacheKey(courseId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY
             };
 
             return site.read('mod_imscp_get_imscps_by_courses', params, preSets).then((response) => {

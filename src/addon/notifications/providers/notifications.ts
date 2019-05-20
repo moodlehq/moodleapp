@@ -21,6 +21,7 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
 import { AddonMessagesProvider } from '@addon/messages/providers/messages';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service to handle notifications.
@@ -121,7 +122,8 @@ export class AddonNotificationsProvider {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const preSets = {
-                cacheKey: this.getNotificationPreferencesCacheKey()
+                cacheKey: this.getNotificationPreferencesCacheKey(),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
             return site.read('core_message_get_user_notification_preferences', {}, preSets).then((data) => {

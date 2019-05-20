@@ -22,6 +22,7 @@ import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModDataOfflineProvider } from './offline';
 import { AddonModDataFieldsDelegate } from './fields-delegate';
 import { CoreRatingInfo } from '@core/rating/providers/rating';
+import { CoreSite } from '@classes/site';
 
 /**
  * Database entry (online or offline).
@@ -538,7 +539,8 @@ export class AddonModDataProvider {
                     courseids: [courseId]
                 },
                 preSets = {
-                    cacheKey: this.getDatabaseDataCacheKey(courseId)
+                    cacheKey: this.getDatabaseDataCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
             if (forceCache) {
                 preSets['omitExpires'] = true;
@@ -675,7 +677,8 @@ export class AddonModDataProvider {
                     order: order
                 },
                 preSets = {
-                    cacheKey: this.getEntriesCacheKey(dataId, groupId)
+                    cacheKey: this.getEntriesCacheKey(dataId, groupId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (forceCache) {
@@ -733,7 +736,8 @@ export class AddonModDataProvider {
                     returncontents: 1
                 },
                 preSets = {
-                    cacheKey: this.getEntryCacheKey(dataId, entryId)
+                    cacheKey: this.getEntryCacheKey(dataId, entryId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (ignoreCache) {
@@ -775,7 +779,8 @@ export class AddonModDataProvider {
                     databaseid: dataId
                 },
                 preSets = {
-                    cacheKey: this.getFieldsCacheKey(dataId)
+                    cacheKey: this.getFieldsCacheKey(dataId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (forceCache) {

@@ -22,7 +22,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreGradesProvider } from '@core/grades/providers/grades';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { AddonModLessonOfflineProvider } from './lesson-offline';
 
 /**
@@ -1436,7 +1436,8 @@ export class AddonModLessonProvider {
                     courseids: [courseId]
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getLessonDataCacheKey(courseId)
+                    cacheKey: this.getLessonDataCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (forceCache) {
@@ -1761,7 +1762,8 @@ export class AddonModLessonProvider {
                     lessonid: lessonId,
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getPagesCacheKey(lessonId)
+                    cacheKey: this.getPagesCacheKey(lessonId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (typeof password == 'string') {
@@ -2118,7 +2120,8 @@ export class AddonModLessonProvider {
                     groupid: groupId
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getRetakesOverviewCacheKey(lessonId, groupId)
+                    cacheKey: this.getRetakesOverviewCacheKey(lessonId, groupId),
+                    updateFrequency: CoreSite.FREQUENCY_OFTEN
                 };
 
             if (forceCache) {
@@ -2348,7 +2351,8 @@ export class AddonModLessonProvider {
                     lessonattempt: retake
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getUserRetakeCacheKey(lessonId, userId, retake)
+                    cacheKey: this.getUserRetakeCacheKey(lessonId, userId, retake),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (forceCache) {

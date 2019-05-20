@@ -258,7 +258,8 @@ export class CoreCourseProvider {
                     courseid: courseId
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getCourseBlocksCacheKey(courseId)
+                    cacheKey: this.getCourseBlocksCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('core_block_get_course_blocks', params, preSets).then((result) => {
@@ -336,7 +337,8 @@ export class CoreCourseProvider {
                 options: []
             };
             const preSets: CoreSiteWSPreSets = {
-                omitExpires: preferCache
+                omitExpires: preferCache,
+                updateFrequency: CoreSite.FREQUENCY_RARELY
             };
 
             if (includeStealth) {
@@ -446,7 +448,8 @@ export class CoreCourseProvider {
                     cmid: moduleId
                 },
                 preSets = {
-                    cacheKey: this.getModuleCacheKey(moduleId)
+                    cacheKey: this.getModuleCacheKey(moduleId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('core_course_get_course_module', params, preSets).then((response) => {
@@ -502,7 +505,8 @@ export class CoreCourseProvider {
                     module: module
                 },
                 preSets = {
-                    cacheKey: this.getModuleBasicInfoByInstanceCacheKey(id, module)
+                    cacheKey: this.getModuleBasicInfoByInstanceCacheKey(id, module),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('core_course_get_course_module_by_instance', params, preSets).then((response) => {
@@ -629,6 +633,7 @@ export class CoreCourseProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             preSets = preSets || {};
             preSets.cacheKey = this.getSectionsCacheKey(courseId);
+            preSets.updateFrequency = preSets.updateFrequency || CoreSite.FREQUENCY_RARELY;
 
             const params = {
                 courseid: courseId,

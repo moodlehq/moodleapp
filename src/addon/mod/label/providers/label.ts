@@ -59,7 +59,8 @@ export class AddonModLabelProvider {
                     courseids: [courseId]
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getLabelDataCacheKey(courseId)
+                    cacheKey: this.getLabelDataCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
              if (forceCache) {

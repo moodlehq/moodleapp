@@ -24,7 +24,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { AddonModScormOfflineProvider } from './scorm-offline';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreConstants } from '@core/constants';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 
@@ -547,7 +547,8 @@ export class AddonModScormProvider {
                     ignoremissingcompletion: ignoreMissing ? 1 : 0
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getAttemptCountCacheKey(scormId, userId)
+                    cacheKey: this.getAttemptCountCacheKey(scormId, userId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (ignoreCache) {
@@ -835,7 +836,8 @@ export class AddonModScormProvider {
                     scormid: scormId
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getScosCacheKey(scormId)
+                    cacheKey: this.getScosCacheKey(scormId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (ignoreCache) {
@@ -1070,7 +1072,8 @@ export class AddonModScormProvider {
                     courseids: [courseId]
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getScormDataCacheKey(courseId)
+                    cacheKey: this.getScormDataCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (forceCache) {

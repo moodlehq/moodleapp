@@ -21,6 +21,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
+import { CoreSite } from '@classes/site';
 
 export interface AddonModLtiParam {
     name: string;
@@ -108,7 +109,8 @@ export class AddonModLtiProvider {
             courseids: [courseId]
         };
         const preSets: any = {
-            cacheKey: this.getLtiCacheKey(courseId)
+            cacheKey: this.getLtiCacheKey(courseId),
+            updateFrequency: CoreSite.FREQUENCY_RARELY
         };
 
         return this.sitesProvider.getCurrentSite().read('mod_lti_get_ltis_by_courses', params, preSets).then((response) => {

@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreConfigConstants } from '../../../../configconstants';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service to handle Airnotifier message output.
@@ -81,7 +82,8 @@ export class AddonMessageOutputAirnotifierProvider {
                 appid: CoreConfigConstants.app_id
             };
             const preSets = {
-                cacheKey: this.getUserDevicesCacheKey()
+                cacheKey: this.getUserDevicesCacheKey(),
+                updateFrequency: CoreSite.FREQUENCY_RARELY
             };
 
             return site.read('message_airnotifier_get_user_devices', data, preSets).then((data) => {

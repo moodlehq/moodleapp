@@ -19,6 +19,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service that provides some features for resources.
@@ -61,7 +62,8 @@ export class AddonModResourceProvider {
                     courseids: [courseId]
                 },
                 preSets = {
-                    cacheKey: this.getResourceCacheKey(courseId)
+                    cacheKey: this.getResourceCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('mod_resource_get_resources_by_courses', params, preSets).then((response) => {

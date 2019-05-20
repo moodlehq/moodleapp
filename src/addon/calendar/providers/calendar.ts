@@ -292,7 +292,8 @@ export class AddonCalendarProvider {
     getEvent(id: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const preSets = {
-                    cacheKey: this.getEventCacheKey(id)
+                    cacheKey: this.getEventCacheKey(id),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 },
                 data = {
                     options: {
@@ -332,7 +333,8 @@ export class AddonCalendarProvider {
                     cacheKey: this.getEventCacheKey(id)
                 },
                 data = {
-                    eventid: id
+                    eventid: id,
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('core_calendar_get_calendar_event_by_id', data, preSets).then((response) => {
@@ -469,7 +471,8 @@ export class AddonCalendarProvider {
                 // We need to retrieve cached data using cache key because we have timestamp in the params.
                 const preSets = {
                     cacheKey: this.getEventsListCacheKey(daysToStart, daysInterval),
-                    getCacheUsingCacheKey: true
+                    getCacheUsingCacheKey: true,
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
                 return site.read('core_calendar_get_calendar_events', data, preSets).then((response) => {

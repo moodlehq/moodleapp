@@ -17,6 +17,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service to handle course completion.
@@ -108,6 +109,7 @@ export class AddonCourseCompletionProvider {
             };
 
             preSets.cacheKey = this.getCompletionCacheKey(courseId, userId);
+            preSets.updateFrequency = preSets.updateFrequency || CoreSite.FREQUENCY_SOMETIMES;
 
             return site.read('core_completion_get_course_completion_status', data, preSets).then((data) => {
                 if (data.completionstatus) {

@@ -298,7 +298,8 @@ export class AddonModForumProvider {
                 courseids: [courseId]
             };
             const preSets = {
-                cacheKey: this.getForumDataCacheKey(courseId)
+                cacheKey: this.getForumDataCacheKey(courseId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY
             };
 
             return site.read('mod_forum_get_forums_by_courses', params, preSets);
