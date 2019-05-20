@@ -16,6 +16,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { CoreSitePluginsCompileInitComponent } from '../../classes/compile-init-component';
+import { AddonModAssignSubmissionDelegate } from '@addon/mod/assign/providers/submission-delegate';
 
 /**
  * Component that displays an assign submission plugin created using a site plugin.
@@ -32,7 +33,8 @@ export class CoreSitePluginsAssignSubmissionComponent extends CoreSitePluginsCom
     @Input() edit: boolean; // Whether the user is editing.
     @Input() allowOffline: boolean; // Whether to allow offline.
 
-    constructor(sitePluginsProvider: CoreSitePluginsProvider, utils: CoreUtilsProvider) {
+    constructor(sitePluginsProvider: CoreSitePluginsProvider, utils: CoreUtilsProvider,
+            protected assignSubmissionDelegate: AddonModAssignSubmissionDelegate) {
         super(sitePluginsProvider, utils);
     }
 
@@ -49,7 +51,7 @@ export class CoreSitePluginsAssignSubmissionComponent extends CoreSitePluginsCom
         this.jsData.allowOffline = this.allowOffline;
 
         if (this.plugin) {
-            this.getHandlerData('assignsubmission_' + this.plugin.type);
+            this.getHandlerData(this.assignSubmissionDelegate.getHandlerName(this.plugin.type));
         }
     }
 

@@ -164,6 +164,23 @@ export class CoreDelegate {
     }
 
     /**
+     * Gets the handler full name for a given name. This is useful when the handlerNameProperty is different than "name".
+     * E.g. blocks are indexed by blockName. If you call this function passing the blockName it will return the name.
+     *
+     * @param {string} name Name used to indentify the handler.
+     * @return {string} Full name of corresponding handler.
+     */
+    getHandlerName(name: string): string {
+        const handler = this.getHandler(name, true);
+
+        if (!handler) {
+            return '';
+        }
+
+        return handler.name;
+    }
+
+    /**
      * Check if function exists on a handler.
      *
      * @param {string} handlerName         The handler name.

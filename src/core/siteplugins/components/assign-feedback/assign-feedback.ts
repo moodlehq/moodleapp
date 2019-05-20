@@ -16,6 +16,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { CoreSitePluginsCompileInitComponent } from '../../classes/compile-init-component';
+import { AddonModAssignFeedbackDelegate } from '@addon/mod/assign/providers/feedback-delegate';
 
 /**
  * Component that displays an assign feedback plugin created using a site plugin.
@@ -33,7 +34,8 @@ export class CoreSitePluginsAssignFeedbackComponent extends CoreSitePluginsCompi
     @Input() canEdit: boolean; // Whether the user can edit.
     @Input() edit: boolean; // Whether the user is editing.
 
-    constructor(sitePluginsProvider: CoreSitePluginsProvider, utils: CoreUtilsProvider) {
+    constructor(sitePluginsProvider: CoreSitePluginsProvider, utils: CoreUtilsProvider,
+            protected assignFeedbackDelegate: AddonModAssignFeedbackDelegate) {
         super(sitePluginsProvider, utils);
     }
 
@@ -51,7 +53,7 @@ export class CoreSitePluginsAssignFeedbackComponent extends CoreSitePluginsCompi
         this.jsData.canEdit = this.canEdit;
 
         if (this.plugin) {
-            this.getHandlerData('assignfeedback_' + this.plugin.type);
+            this.getHandlerData(this.assignFeedbackDelegate.getHandlerName(this.plugin.type));
         }
     }
 
