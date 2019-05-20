@@ -303,7 +303,7 @@ export class CorePushNotificationsProvider {
     logEvent(name: string, data: any, filter?: boolean): Promise<any> {
         const win = <any> window; // This feature is only present in our fork of the plugin.
 
-        if (win.PushNotification && win.PushNotification.logEvent) {
+        if (CoreConfigConstants.enableanalytics && win.PushNotification && win.PushNotification.logEvent) {
             return new Promise((resolve, reject): void => {
                 win.PushNotification.logEvent(resolve, (error) => {
                     this.logger.error('Error logging firebase event', name, error);
