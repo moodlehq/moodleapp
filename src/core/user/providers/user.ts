@@ -36,6 +36,7 @@ export class CoreUserProvider {
     protected siteSchema: CoreSiteSchema = {
         name: 'CoreUserProvider',
         version: 1,
+        canBeCleared: [ this.USERS_TABLE ],
         tables: [
             {
                 name: this.USERS_TABLE,
@@ -53,7 +54,7 @@ export class CoreUserProvider {
                         name: 'profileimageurl',
                         type: 'TEXT'
                     }
-                ]
+                ],
             }
         ]
     };

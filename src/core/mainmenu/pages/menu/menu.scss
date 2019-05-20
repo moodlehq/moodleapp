@@ -1,4 +1,10 @@
 ion-app.app-root page-core-mainmenu {
+    ion-icon {
+        text-overflow: unset;
+        overflow: visible;
+        text-align: center;
+    }
+
     .ion-md-fa-graduation-cap,
     .ion-ios-fa-graduation-cap,
     .ion-ios-fa-graduation-cap-outline,
@@ -8,6 +14,7 @@ ion-app.app-root page-core-mainmenu {
         @extend .fa;
         font-size: 21px;
         height: 21px;
+
     }
 
     .ion-ios-fa-graduation-cap-outline {
