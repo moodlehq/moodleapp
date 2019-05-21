@@ -136,8 +136,8 @@ export class CoreLocalNotificationsProvider {
                 this.handleEvent('cancel', notification);
             });
 
-            this.addSubscription = localNotifications.on('add').subscribe((notification: ILocalNotification) => {
-                this.handleEvent('add', notification);
+            this.addSubscription = localNotifications.on('schedule').subscribe((notification: ILocalNotification) => {
+                this.handleEvent('schedule', notification);
             });
 
             this.updateSubscription = localNotifications.on('update').subscribe((notification: ILocalNotification) => {
