@@ -16,6 +16,9 @@
        </ion-card>
         <ion-card *ngIf="plan">
             <ion-list>
+                <ion-item text-wrap *ngIf="plan.plan.description">
+                    <core-format-text [text]="plan.plan.description"></core-format-text>
+                </ion-item>
                 <ion-item text-wrap>
                     <strong>{{ 'addon.competency.status' | translate }}</strong>:
                     {{ plan.plan.statusname }}
@@ -36,13 +39,13 @@
             </ion-list>
         </ion-card>
         <ion-card *ngIf="plan">
-            <ion-card-header text-wrap>{{ 'addon.competency.learningplancompetencies' | translate }}</ion-card-header>
+            <ion-card-header text-wrap><h2>{{ 'addon.competency.learningplancompetencies' | translate }}</h2></ion-card-header>
             <ion-list>
                 <ion-item text-wrap *ngIf="plan.competencycount == 0">
                     {{ 'addon.competency.nocompetencies' | translate }}
                 </ion-item>
                 <a ion-item text-wrap *ngFor="let competency of plan.competencies" (click)="openCompetency(competency.competency.id)" [title]="competency.competency.shortname">
-                    {{competency.competency.shortname}} <small>{{competency.competency.idnumber}}</small>
+                    <h2>{{competency.competency.shortname}} <em>{{competency.competency.idnumber}}</em></h2>
                     <ion-badge item-end [color]="competency.usercompetency.proficiency ? 'success' : 'danger'">{{ competency.usercompetency.gradename }}</ion-badge>
                 </a>
             </ion-list>
