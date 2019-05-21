@@ -20,6 +20,7 @@ import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreCourseProvider } from '@core/course/providers/course';
 
 /**
  * Page that displays the space usage settings.
@@ -39,7 +40,8 @@ export class CoreSettingsSpaceUsagePage {
 
     constructor(private filePoolProvider: CoreFilepoolProvider,
             private sitesProvider: CoreSitesProvider, private textUtils: CoreTextUtilsProvider,
-            private translate: TranslateService, private domUtils: CoreDomUtilsProvider, appProvider: CoreAppProvider) {
+            private translate: TranslateService, private domUtils: CoreDomUtilsProvider, appProvider: CoreAppProvider,
+            private courseProvider: CoreCourseProvider) {
         this.currentSiteId = this.sitesProvider.getCurrentSiteId();
     }
 
@@ -178,6 +180,7 @@ export class CoreSettingsSpaceUsagePage {
                     this.filePoolProvider.clearAllPackagesStatus(site.id);
                     this.filePoolProvider.clearFilepool(site.id);
                     this.updateSiteUsage(siteData, 0);
+                    this.courseProvider.clearAllCoursesStatus(site.id);
                 }).catch((error) => {
                     if (error && error.code === FileError.NOT_FOUND_ERR) {
                         // Not found, set size 0.

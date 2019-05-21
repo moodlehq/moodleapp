@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, ElementRef, SimpleChange } from '@angular/core';
 import { Config } from 'ionic-angular';
 
 /**
@@ -25,7 +25,7 @@ import { Config } from 'ionic-angular';
     selector: 'core-icon',
     templateUrl: 'core-icon.html',
 })
-export class CoreIconComponent implements OnInit, OnDestroy {
+export class CoreIconComponent implements OnChanges, OnDestroy {
     // Common params.
     @Input() name: string;
     @Input('color') color?: string;
@@ -49,9 +49,15 @@ export class CoreIconComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Component being initialized.
+     * Detect changes on input properties.
      */
-    ngOnInit(): void {
+    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
+        if (!changes.name || !this.name) {
+            return;
+        }
+
+        const oldElement = this.newElement ? this.newElement : this.element;
+
         // Use a new created element to avoid ion-icon working.
         // This is necessary to make the FontAwesome stuff work.
         // It is also required to stop Ionic overriding the aria-label attribute.
@@ -99,7 +105,7 @@ export class CoreIconComponent implements OnInit, OnDestroy {
             this.newElement.classList.add('icon-slash');
         }
 
-        this.element.parentElement.replaceChild(this.newElement, this.element);
+        oldElement.parentElement.replaceChild(this.newElement, oldElement);
     }
 
     /**

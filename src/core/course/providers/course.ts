@@ -38,6 +38,7 @@ export class CoreCourseProvider {
     static STEALTH_MODULES_SECTION_ID = -1;
     static ACCESS_GUEST = 'courses_access_guest';
     static ACCESS_DEFAULT = 'courses_access_default';
+    static ALL_COURSES_CLEARED = -1;
 
     static COMPLETION_TRACKING_NONE = 0;
     static COMPLETION_TRACKING_MANUAL = 1;
@@ -158,7 +159,7 @@ export class CoreCourseProvider {
             this.logger.debug('Clear all course status for site ' + site.id);
 
             return site.getDb().deleteRecords(this.COURSE_STATUS_TABLE).then(() => {
-                this.triggerCourseStatusChanged(-1, CoreConstants.NOT_DOWNLOADED, site.id);
+                this.triggerCourseStatusChanged(CoreCourseProvider.ALL_COURSES_CLEARED, CoreConstants.NOT_DOWNLOADED, site.id);
             });
         });
     }
