@@ -811,7 +811,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      */
     deleteMessage(message: any, index: number): void {
         const canDeleteAll = this.conversation && this.conversation.candeletemessagesforallusers,
-            langKey = message.pending || canDeleteAll ? 'core.areyousure' : 'addon.messages.deletemessageconfirmation',
+            langKey = message.pending || canDeleteAll || this.isSelf ? 'core.areyousure' :
+                    'addon.messages.deletemessageconfirmation',
             options: any = {};
 
         if (canDeleteAll && !message.pending) {
