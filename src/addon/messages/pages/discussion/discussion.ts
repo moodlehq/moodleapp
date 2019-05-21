@@ -1253,8 +1253,6 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                     action: 'delete'
                 }, this.siteId);
 
-                this.conversationId = undefined;
-                this.conversation = undefined;
                 this.messages = [];
             }).finally(() => {
                 this.deleteIcon = 'trash';
