@@ -84,17 +84,19 @@ export class CoreUtilsProvider {
         return new Promise((resolve, reject): void => {
             const total = promises.length;
             let count = 0,
+                hasFailed = false,
                 error;
 
             promises.forEach((promise) => {
                 promise.catch((err) => {
+                    hasFailed = true;
                     error = err;
                 }).finally(() => {
                     count++;
 
                     if (count === total) {
                         // All promises have finished, reject/resolve.
-                        if (error) {
+                        if (hasFailed) {
                             reject(error);
                         } else {
                             resolve();
