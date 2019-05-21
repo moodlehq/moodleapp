@@ -2573,7 +2573,7 @@ export class CoreFilepoolProvider {
                 // Some Android devices restrict the amount of usable storage using quotas.
                 // If this quota would be exceeded by the download, it throws an exception.
                 // We catch this exception here, and report a meaningful error message to the user.
-                if (errorObject instanceof FileTransferError && errorObject.exception.includes('EDQUOT')) {
+                if (errorObject instanceof FileTransferError && errorObject.exception && errorObject.exception.includes('EDQUOT')) {
                     errorMessage = 'core.course.insufficientavailablequota';
                 }
 

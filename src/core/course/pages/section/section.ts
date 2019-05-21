@@ -114,7 +114,7 @@ export class CoreCourseSectionPage implements OnDestroy {
         if (this.downloadCourseEnabled) {
             // Listen for changes in course status.
             this.courseStatusObserver = eventsProvider.on(CoreEventsProvider.COURSE_STATUS_CHANGED, (data) => {
-                if (data.courseId == this.course.id) {
+                if (data.courseId == this.course.id || data.courseId == CoreCourseProvider.ALL_COURSES_CLEARED) {
                     this.updateCourseStatus(data.status);
                 }
             }, sitesProvider.getCurrentSiteId());
