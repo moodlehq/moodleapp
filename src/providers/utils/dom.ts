@@ -1250,11 +1250,14 @@ export class CoreDomUtilsProvider {
                 content: text
             }),
             dismiss = loader.dismiss.bind(loader);
-        let isDismissed = false;
+        let isPresented = false,
+            isDismissed = false;
 
         // Override dismiss to prevent dismissing a modal twice (it can throw an error and cause problems).
         loader.dismiss = (data, role, navOptions): Promise<any> => {
-            if (isDismissed) {
+            if (!isPresented || isDismissed) {
+                isDismissed = true;
+
                 return Promise.resolve();
             }
 
@@ -1263,7 +1266,13 @@ export class CoreDomUtilsProvider {
             return dismiss(data, role, navOptions);
         };
 
-        loader.present();
+        // Wait a bit before presenting the modal, to prevent it being displayed if dissmiss is called fast.
+        setTimeout(() => {
+            if (!isDismissed) {
+                isPresented = true;
+                loader.present();
+            }
+        }, 40);
 
         return loader;
     }

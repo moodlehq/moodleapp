@@ -167,7 +167,10 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
         Object.assign(params, { course: course });
 
         if (navCtrl) {
-            return navCtrl.push('CoreCourseSectionPage', params);
+            // Don't return the .push promise, we don't want to display a loading modal during the page transition.
+            navCtrl.push('CoreCourseSectionPage', params);
+
+            return Promise.resolve();
         } else {
             // Open the course in the "phantom" tab.
             this.loginHelper = this.loginHelper || this.injector.get(CoreLoginHelperProvider);
