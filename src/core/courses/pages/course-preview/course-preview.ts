@@ -44,6 +44,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     dataLoaded: boolean;
     avoidOpenCourse = false;
     prefetchCourseData = {
+        downloadSucceeded: false,
         prefetchCourseIcon: 'spinner',
         title: 'core.course.downloadcourse'
     };

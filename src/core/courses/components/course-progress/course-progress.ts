@@ -42,6 +42,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
 
     isDownloading: boolean;
     prefetchCourseData = {
+        downloadSucceeded: false,
         prefetchCourseIcon: 'spinner',
         title: 'core.course.downloadcourse'
     };

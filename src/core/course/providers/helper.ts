@@ -264,7 +264,7 @@ export class CoreCourseHelperProvider {
      * This function will set the icon to "spinner" when starting and it will also set it back to the initial icon if the
      * user cancels. All the other updates of the icon should be made when CoreEventsProvider.COURSE_STATUS_CHANGED is received.
      *
-     * @param {any} data An object where to store the course icon and title: "prefetchCourseIcon" and "title".
+     * @param {any} data An object where to store the course icon and title: "prefetchCourseIcon", "title" and "downloadSucceeded".
      * @param {any} course Course to prefetch.
      * @param {any[]} [sections] List of course sections.
      * @param {CoreCourseOptionsHandlerToDisplay[]} courseHandlers List of course handlers.
@@ -279,6 +279,7 @@ export class CoreCourseHelperProvider {
             siteId = this.sitesProvider.getCurrentSiteId();
         let promise;
 
+        data.downloadSucceeded = false;
         data.prefetchCourseIcon = 'spinner';
         data.title = 'core.downloading';
 
@@ -313,6 +314,8 @@ export class CoreCourseHelperProvider {
                     return this.prefetchCourse(course, sections, courseHandlers, menuHandlers, siteId);
                 }).then(() => {
                     // Download successful.
+                    data.downloadSucceeded = true;
+
                     return true;
                 });
             }, (error): any => {

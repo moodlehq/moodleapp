@@ -58,7 +58,8 @@
                 <p>{{ 'core.courses.notenrollable' | translate }}</p>
             </ion-item>
             <a ion-item *ngIf="canAccessCourse && downloadCourseEnabled" (click)="prefetchCourse()" detail-none [attr.aria-label]="prefetchCourseData.title | translate">
-                <core-icon *ngIf="prefetchCourseData.prefetchCourseIcon != 'spinner'" [name]="prefetchCourseData.prefetchCourseIcon" item-start></core-icon>
+                <core-icon *ngIf="!prefetchCourseData.downloadSucceeded && prefetchCourseData.prefetchCourseIcon != 'spinner'" [name]="prefetchCourseData.prefetchCourseIcon" item-start></core-icon>
+                <ion-icon *ngIf="prefetchCourseData.downloadSucceeded && prefetchCourseData.prefetchCourseIcon != 'spinner'" item-start name="cloud-done" color="success" [attr.aria-label]="'core.downloaded' | translate" role="status"></ion-icon>
                 <ion-spinner *ngIf="prefetchCourseData.prefetchCourseIcon == 'spinner'" item-start></ion-spinner>
                 <h2>{{ 'core.course.downloadcourse' | translate }}</h2>
             </a>
