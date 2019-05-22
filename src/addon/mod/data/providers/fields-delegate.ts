@@ -212,11 +212,13 @@ export class AddonModDataFieldsDelegate extends CoreDelegate {
      * @return {any}                     Data overriden
      */
     overrideData(field: any, originalContent: any, offlineContent: any, offlineFiles?: any): any {
+        originalContent = originalContent || {};
+
         if (!offlineContent) {
             return originalContent;
         }
 
-        return this.executeFunctionOnEnabled(field.type, 'overrideData', [originalContent || {}, offlineContent, offlineFiles]);
+        return this.executeFunctionOnEnabled(field.type, 'overrideData', [originalContent, offlineContent, offlineFiles]);
     }
 
 }
