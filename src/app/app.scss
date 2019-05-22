@@ -1010,7 +1010,7 @@ body.keyboard-is-open {
     }
   }
 
-  core-ion-tabs .tabbar {
+  core-ion-tabs[tabsplacement="bottom"] .tabbar {
       display: none;
   }
 }
