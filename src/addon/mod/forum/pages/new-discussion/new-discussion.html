@@ -27,9 +27,13 @@
                 {{ 'addon.mod_forum.advanced' | translate }}
             </ion-item-divider>
             <ng-container *ngIf="advanced">
+                <ion-item *ngIf="showGroups && groupIds.length > 1 && accessInfo.cancanposttomygroups">
+                    <ion-label>{{ 'addon.mod_forum.posttomygroups' | translate }}</ion-label>
+                    <ion-toggle [(ngModel)]="newDiscussion.postToAllGroups"></ion-toggle>
+                </ion-item>
                 <ion-item *ngIf="showGroups">
                     <ion-label id="addon-mod-forum-groupslabel">{{ 'addon.mod_forum.group' | translate }}</ion-label>
-                    <ion-select [(ngModel)]="newDiscussion.groupId" aria-labelledby="addon-mod-forum-groupslabel" interface="action-sheet">
+                    <ion-select [(ngModel)]="newDiscussion.groupId" [disabled]="newDiscussion.postToAllGroups" aria-labelledby="addon-mod-forum-groupslabel" interface="action-sheet">
                         <ion-option *ngFor="let group of groups" [value]="group.id">{{ group.name }}</ion-option>
                     </ion-select>
                 </ion-item>

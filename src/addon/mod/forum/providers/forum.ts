@@ -46,6 +46,9 @@ export class AddonModForumProvider {
     static SORTORDER_REPLIES_DESC = 5;
     static SORTORDER_REPLIES_ASC = 6;
 
+    static ALL_PARTICIPANTS = -1;
+    static ALL_GROUPS = -2;
+
     protected ROOT_CACHE_KEY = 'mmaModForum:';
 
     constructor(private appProvider: CoreAppProvider,
@@ -124,62 +127,6 @@ export class AddonModForumProvider {
         }
 
         return key;
-    }
-
-    /**
-     * Add a new discussion.
-     *
-     * @param  {number}  forumId       Forum ID.
-     * @param  {string}  name          Forum name.
-     * @param  {number}  courseId      Course ID the forum belongs to.
-     * @param  {string}  subject       New discussion's subject.
-     * @param  {string}  message       New discussion's message.
-     * @param  {any}     [options]     Options (subscribe, pin, ...).
-     * @param  {string}  [groupId]     Group this discussion belongs to.
-     * @param  {string}  [siteId]      Site ID. If not defined, current site.
-     * @param  {number}  [timeCreated] The time the discussion was created. Only used when editing discussion.
-     * @param  {boolean} allowOffline  True if it can be stored in offline, false otherwise.
-     * @return {Promise<any>}          Promise resolved with discussion ID if sent online, resolved with false if stored offline.
-     */
-    addNewDiscussion(forumId: number, name: string, courseId: number, subject: string, message: string, options?: any,
-            groupId?: number, siteId?: string, timeCreated?: number, allowOffline?: boolean): Promise<any> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
-
-        // Convenience function to store a message to be synchronized later.
-        const storeOffline = (): Promise<any> => {
-            return this.forumOffline.addNewDiscussion(forumId, name, courseId, subject, message, options,
-                    groupId, timeCreated, siteId).then(() => {
-                return false;
-            });
-        };
-
-        // If we are editing an offline discussion, discard previous first.
-        let discardPromise;
-        if (timeCreated) {
-            discardPromise = this.forumOffline.deleteNewDiscussion(forumId, timeCreated, siteId);
-        } else {
-            discardPromise = Promise.resolve();
-        }
-
-        return discardPromise.then(() => {
-            if (!this.appProvider.isOnline() && allowOffline) {
-                // App is offline, store the action.
-                return storeOffline();
-            }
-
-            return this.addNewDiscussionOnline(forumId, subject, message, options, groupId, siteId).then((id) => {
-                // Success, return the discussion ID.
-                return id;
-            }).catch((error) => {
-                if (!allowOffline || this.utils.isWebServiceError(error)) {
-                    // The WebService has thrown an error or offline not supported, reject.
-                    return Promise.reject(error);
-                }
-
-                // Couldn't connect to server, store in offline.
-                return storeOffline();
-            });
-        });
     }
 
     /**
@@ -268,7 +215,7 @@ export class AddonModForumProvider {
      *                           - cancreateattachment (boolean)
      */
     canAddDiscussionToAll(forumId: number): Promise<any> {
-        return this.canAddDiscussion(forumId, -1);
+        return this.canAddDiscussion(forumId, AddonModForumProvider.ALL_PARTICIPANTS);
     }
 
     /**
@@ -309,6 +256,7 @@ export class AddonModForumProvider {
 
         return this.groupsProvider.getActivityAllowedGroups(cmId).then((forumGroups) => {
             const strAllParts = this.translate.instant('core.allparticipants');
+            const strAllGroups = this.translate.instant('core.allgroups');
 
             // Turn groups into an object where each group is identified by id.
             const groups = {};
@@ -318,8 +266,11 @@ export class AddonModForumProvider {
 
             // Format discussions.
             discussions.forEach((disc) => {
-                if (disc.groupid === -1) {
+                if (disc.groupid == AddonModForumProvider.ALL_PARTICIPANTS) {
                     disc.groupname = strAllParts;
+                } else if (disc.groupid == AddonModForumProvider.ALL_GROUPS) {
+                    // Offline discussions only.
+                    disc.groupname = strAllGroups;
                 } else {
                     const group = groups[disc.groupid];
                     if (group) {
