@@ -122,7 +122,7 @@ export class CoreTabComponent implements OnInit, OnDestroy {
 
         // Setup tab scrolling.
         setTimeout(() => {
-            // Workarround to solve undefined this.scroll on tab change.
+            // Workaround to solve undefined this.scroll on tab change.
             const scroll: HTMLElement = this.content ? this.content.getScrollElement() :
                 this.element.querySelector('ion-content > .scroll-content');
 
