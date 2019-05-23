@@ -14,6 +14,7 @@
 
 import { Component, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { CoreAppProvider } from '@providers/app';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreIonTabsComponent } from '@components/ion-tabs/ion-tabs';
@@ -43,13 +44,16 @@ export class CoreMainMenuPage implements OnDestroy {
     protected redirectObs: any;
     protected pendingRedirect: any;
     protected urlToOpen: string;
+    protected mainMenuId: number;
 
     @ViewChild('mainTabs') mainTabs: CoreIonTabsComponent;
 
     constructor(private menuDelegate: CoreMainMenuDelegate, private sitesProvider: CoreSitesProvider, navParams: NavParams,
             private navCtrl: NavController, private eventsProvider: CoreEventsProvider, private cdr: ChangeDetectorRef,
             private mainMenuProvider: CoreMainMenuProvider, private linksDelegate: CoreContentLinksDelegate,
-            private linksHelper: CoreContentLinksHelperProvider) {
+            private linksHelper: CoreContentLinksHelperProvider, private appProvider: CoreAppProvider) {
+
+        this.mainMenuId = this.appProvider.getMainMenuId();
 
         // Check if the menu was loaded with a redirect.
         const redirectPage = navParams.get('redirectPage');
@@ -105,6 +109,8 @@ export class CoreMainMenuPage implements OnDestroy {
         });
 
         window.addEventListener('resize', this.initHandlers.bind(this));
+
+        this.appProvider.setMainMenuOpen(this.mainMenuId, true);
     }
 
     /**
@@ -211,5 +217,6 @@ export class CoreMainMenuPage implements OnDestroy {
         this.subscription && this.subscription.unsubscribe();
         this.redirectObs && this.redirectObs.off();
         window.removeEventListener('resize', this.initHandlers.bind(this));
+        this.appProvider.setMainMenuOpen(this.mainMenuId, false);
     }
 }
