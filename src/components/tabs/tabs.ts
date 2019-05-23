@@ -438,7 +438,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             this.originalTabsContainer.style.transform = 'translateY(-' + scroll + 'px)';
             this.originalTabsContainer.style.paddingBottom = this.tabBarHeight - scroll + 'px';
         }
-        this.lastScroll = parseInt(scrollElement.scrollTop, 10);
+        this.lastScroll = scroll;
     }
 
     /**
