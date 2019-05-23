@@ -82,6 +82,7 @@ export interface CoreCustomURLSchemesParams {
 @Injectable()
 export class CoreCustomURLSchemesProvider {
     protected logger;
+    protected lastUrls = {};
 
     constructor(logger: CoreLoggerProvider, private appProvider: CoreAppProvider, private utils: CoreUtilsProvider,
             private loginHelper: CoreLoginHelperProvider, private linksHelper: CoreContentLinksHelperProvider,
@@ -107,6 +108,15 @@ export class CoreCustomURLSchemesProvider {
             isSSOToken = false,
             data: CoreCustomURLSchemesParams;
 
+        /* First check that this URL hasn't been treated a few seconds ago. The function that handles custom URL schemes already
+           does this, but this function is called from other places so we need to handle it in here too. */
+        if (this.lastUrls[url] && Date.now() - this.lastUrls[url] < 3000) {
+            // Function called more than once, stop.
+            return;
+        }
+
+        this.lastUrls[url] = Date.now();
+
         // Wait for app to be ready.
         return this.initDelegate.ready().then(() => {
             url = this.textUtils.decodeURIComponent(url);
@@ -114,6 +124,10 @@ export class CoreCustomURLSchemesProvider {
             // Some platforms like Windows add a slash at the end. Remove it.
             // Some sites add a # at the end of the URL. If it's there, remove it.
             url = url.replace(/\/?#?\/?$/, '');
+
+            // In iOS, the protocol after the scheme doesn't have ":". Add it.
+            // E.g. "moodlemobile://https://..." is received as "moodlemobile://https//..."
+            url = url.replace(/\/\/(https?)\/\//, '//$1://');
 
             modal = this.domUtils.showModalLoading();
 
@@ -268,7 +282,9 @@ export class CoreCustomURLSchemesProvider {
             });
 
         }).catch((error) => {
-            if (error && isSSOToken) {
+            if (error == 'Duplicated') {
+                // Duplicated request
+            } else if (error && isSSOToken) {
                 // An error occurred, display the error and logout the user.
                 this.loginHelper.treatUserTokenError(data.siteUrl, error);
                 this.sitesProvider.logout();
@@ -426,7 +442,7 @@ export class CoreCustomURLSchemesProvider {
 
         if (this.appProvider.isSSOAuthenticationOngoing()) {
             // Authentication ongoing, probably duplicated request.
-            return Promise.reject(null);
+            return Promise.reject('Duplicated');
         }
 
         if (this.appProvider.isDesktop()) {
@@ -452,7 +468,7 @@ export class CoreCustomURLSchemesProvider {
             // Error decoding the parameter.
             this.logger.error('Error decoding parameter received for login SSO');
 
-            return null;
+            return Promise.reject(null);
         }
 
         return this.loginHelper.validateBrowserSSOLogin(url);
