@@ -2,7 +2,7 @@
     <ion-navbar core-back-button>
         <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
         <ion-buttons end>
-            <button ion-button clear (click)="save($event)" [attr.aria-label]="'core.save' | translate">
+            <button *ngIf="entry" ion-button clear (click)="save($event)" [attr.aria-label]="'core.save' | translate">
                 {{ 'core.save' | translate }}
             </button>
         </ion-buttons>

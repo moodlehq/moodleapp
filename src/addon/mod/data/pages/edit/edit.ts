@@ -94,7 +94,7 @@ export class AddonModDataEditPage {
      * @return {boolean | Promise<void>} Resolved if we can leave it, rejected if not.
      */
     ionViewCanLeave(): boolean | Promise<void> {
-        if (this.forceLeave) {
+        if (this.forceLeave || !this.entry) {
             return true;
         }
 
