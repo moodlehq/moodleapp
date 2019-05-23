@@ -15,7 +15,7 @@
                 <a ion-item text-wrap *ngFor="let plan of plans" [title]="plan.name" (click)="openPlan(plan.id)" [class.core-split-item-selected]="plan.id == planId">
                     <h2>{{ plan.name }}</h2>
                     <p *ngIf="plan.duedate > 0">{{ 'addon.competency.duedate' | translate }}: {{ plan.duedate * 1000 | coreFormatDate :'strftimedatetimeshort' }}</p>
-                    <ion-badge text-wrap [color]="plan.statuscolor">{{ plan.statusname }}</ion-badge>
+                    <ion-badge item-end text-wrap [color]="plan.statuscolor">{{ plan.statusname }}</ion-badge>
                 </a>
             </ion-list>
         </core-loading>
