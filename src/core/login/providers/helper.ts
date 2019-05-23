@@ -78,6 +78,7 @@ export class CoreLoginHelperProvider {
     protected logger;
     protected isSSOConfirmShown = false;
     protected isOpenEditAlertShown = false;
+    protected pageToLoad: {page: string, params: any, time: number}; // Page to load once main menu is opened.
     waitingForBrowser = false;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
@@ -87,6 +88,15 @@ export class CoreLoginHelperProvider {
             private initDelegate: CoreInitDelegate, private sitePluginsProvider: CoreSitePluginsProvider,
             private location: Location, private alertCtrl: AlertController, private courseProvider: CoreCourseProvider) {
         this.logger = logger.getInstance('CoreLoginHelper');
+
+        this.eventsProvider.on(CoreEventsProvider.MAIN_MENU_OPEN, () => {
+            /* If there is any page pending to be opened, do it now. Don't open pages stored more than 5 seconds ago, probably
+               the function to open the page was called when it shouldn't. */
+            if (this.pageToLoad && Date.now() - this.pageToLoad.time < 5000) {
+                this.loadPageInMainMenu(this.pageToLoad.page, this.pageToLoad.params);
+                delete this.pageToLoad;
+            }
+        });
     }
 
     /**
@@ -620,6 +630,17 @@ export class CoreLoginHelperProvider {
      * @param {any} params Params to pass to the page.
      */
     protected loadPageInMainMenu(page: string, params: any): void {
+        if (!this.appProvider.isMainMenuOpen()) {
+            // Main menu not open. Store the page to be loaded later.
+            this.pageToLoad = {
+                page: page,
+                params: params,
+                time: Date.now()
+            };
+
+            return;
+        }
+
         if (page == CoreLoginHelperProvider.OPEN_COURSE) {
             // Use the openCourse function.
             this.courseProvider.openCourse(undefined, params.course, params);

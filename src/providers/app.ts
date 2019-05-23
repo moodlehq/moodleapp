@@ -71,9 +71,11 @@ export class CoreAppProvider {
     protected ssoAuthenticationPromise: Promise<any>;
     protected isKeyboardShown = false;
     protected backActions = [];
+    protected mainMenuId = 0;
+    protected mainMenuOpen: number;
 
     constructor(dbProvider: CoreDbProvider, private platform: Platform, private keyboard: Keyboard, private appCtrl: App,
-            private network: Network, logger: CoreLoggerProvider, events: CoreEventsProvider, zone: NgZone,
+            private network: Network, logger: CoreLoggerProvider, private events: CoreEventsProvider, zone: NgZone,
             private menuCtrl: MenuController, private statusBar: StatusBar) {
         this.logger = logger.getInstance('CoreAppProvider');
         this.db = dbProvider.getDB(this.DBNAME);
@@ -136,6 +138,15 @@ export class CoreAppProvider {
      */
     getDB(): SQLiteDB {
         return this.db;
+    }
+
+    /**
+     * Get an ID for a main menu.
+     *
+     * @return {number} Main menu ID.
+     */
+    getMainMenuId(): number {
+        return this.mainMenuId++;
     }
 
     /**
@@ -211,6 +222,15 @@ export class CoreAppProvider {
         } catch (ex) {
             return false;
         }
+    }
+
+    /**
+     * Check if the main menu is open.
+     *
+     * @return {boolean} Whether the main menu is open.
+     */
+    isMainMenuOpen(): boolean {
+        return typeof this.mainMenuOpen != 'undefined';
     }
 
     /**
@@ -296,6 +316,21 @@ export class CoreAppProvider {
         // Open keyboard is not supported in desktop and in iOS.
         if (this.isMobile() && !this.platform.is('ios')) {
             this.keyboard.show();
+        }
+    }
+
+    /**
+     * Set a main menu as open or not.
+     *
+     * @param {number} id Main menu ID.
+     * @param {boolean} open Whether it's open or not.
+     */
+    setMainMenuOpen(id: number, open: boolean): void {
+        if (open) {
+            this.mainMenuOpen = id;
+            this.events.trigger(CoreEventsProvider.MAIN_MENU_OPEN);
+        } else if (this.mainMenuOpen == id) {
+            delete this.mainMenuOpen;
         }
     }
 
