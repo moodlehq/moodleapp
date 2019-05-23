@@ -10,10 +10,12 @@
                 <p class="item-heading">{{ 'core.contentlinks.chooseaccounttoopenlink' | translate }}</p>
                 <p>{{ url }}</p>
             </ion-item>
-            <a ion-item *ngFor="let site of sites" (click)="siteClicked(site.id)">
-                <img [src]="site.avatar" item-start>
+            <a ion-item *ngFor="let site of sites" (click)="siteClicked(site.id)" detail-none>
+                <ion-avatar item-start>
+                    <img [src]="site.avatar" core-external-content [siteId]="site.id" alt="{{ 'core.pictureof' | translate:{$a: site.fullname} }}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
+                </ion-avatar>
                 <h2>{{site.fullName}}</h2>
-                <p><core-format-text clean="true" [text]="site.siteName"></core-format-text></p>
+                <p><core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text></p>
                 <p>{{site.siteUrl}}</p>
             </a>
             <ion-item>
