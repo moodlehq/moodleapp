@@ -254,8 +254,10 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
 
     /**
      * Watch for changes on the status.
+     *
+     * @return {Promise<any>} Promise resolved when done.
      */
-    protected setStatusListener(): void {
+    protected setStatusListener(): Promise<any> {
         if (typeof this.statusObserver == 'undefined') {
             // Listen for changes on this module status.
             this.statusObserver = this.eventsProvider.on(CoreEventsProvider.PACKAGE_STATUS_CHANGED, (data) => {
@@ -269,11 +271,13 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
             }, this.siteId);
 
             // Also, get the current status.
-            this.modulePrefetchDelegate.getModuleStatus(this.module, this.courseId).then((status) => {
+            return this.modulePrefetchDelegate.getModuleStatus(this.module, this.courseId).then((status) => {
                 this.currentStatus = status;
                 this.showStatus(status);
             });
         }
+
+        return Promise.resolve();
     }
 
     /**

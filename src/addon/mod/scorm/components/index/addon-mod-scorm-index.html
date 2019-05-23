@@ -24,7 +24,7 @@
 
     <div *ngIf="scorm && loaded && !scorm.warningMessage">
         <!-- Attempts status. -->
-        <ion-card *ngIf="scorm.displayattemptstatus || (scorm.offlineAttempts && scorm.offlineAttempts.length)">
+        <ion-card *ngIf="(scorm.displayattemptstatus || (scorm.offlineAttempts && scorm.offlineAttempts.length)) && !skip">
             <ion-card-header text-wrap>
                 <h2>{{ 'addon.mod_scorm.attempts' | translate }}</h2>
             </ion-card-header>
@@ -75,7 +75,7 @@
         </div>
 
         <!-- TOC. -->
-        <ion-card *ngIf="scorm && organizations && ((scorm.displaycoursestructure && organizations.length) || organizations.length > 1)" class="addon-mod_scorm-toc">
+        <ion-card *ngIf="scorm && organizations && ((scorm.displaycoursestructure && organizations.length) || organizations.length > 1) && !skip" class="addon-mod_scorm-toc">
             <ion-card-header text-wrap>
                 <h2>{{ 'addon.mod_scorm.contents' | translate }}</h2>
             </ion-card-header>
@@ -128,7 +128,7 @@
         <ion-card *ngIf="!errorMessage && scorm && (!scorm.lastattemptlock || scorm.attemptsLeft > 0)">
             <ion-list>
                 <!-- Open mode (Preview or Normal) -->
-                <div *ngIf="!scorm.hidebrowse" radio-group [(ngModel)]="scormOptions.mode" name="mode">
+                <div *ngIf="!scorm.hidebrowse && !skip" radio-group [(ngModel)]="scormOptions.mode" name="mode">
                     <ion-item>
                         <p class="item-heading">{{ 'addon.mod_scorm.mode' | translate }}</p>
                     </ion-item>
@@ -143,14 +143,14 @@
                 </div>
 
                 <!-- Create new attempt -->
-                <ion-item text-wrap *ngIf="!scorm.forcenewattempt && scorm.numAttempts > 0 && !scorm.incomplete && scorm.attemptsLeft > 0">
+                <ion-item text-wrap *ngIf="!scorm.forcenewattempt && scorm.numAttempts > 0 && !scorm.incomplete && scorm.attemptsLeft > 0 && !skip">
                     <ion-label>{{ 'addon.mod_scorm.newattempt' | translate }}</ion-label>
                     <ion-checkbox item-end name="newAttempt" [(ngModel)]="scormOptions.newAttempt">
                     </ion-checkbox>
                 </ion-item>
 
                 <!-- Button to open the SCORM. -->
-                <ng-container *ngIf="!downloading">
+                <ng-container *ngIf="!downloading && !skip">
                     <ion-item text-wrap *ngIf="statusMessage">
                         <p >{{ statusMessage | translate }}</p>
                     </ion-item>
