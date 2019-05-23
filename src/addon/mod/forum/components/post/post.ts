@@ -122,7 +122,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
         this.originalData.isprivatereply = this.replyData.isprivatereply;
 
         // Show advanced fields if any of them has not the default value.
-        this.advanced = this.replyData.files.length > 0 || this.originalData.isprivatereply;
+        this.advanced = this.replyData.files.length > 0;
     }
 
     /**
