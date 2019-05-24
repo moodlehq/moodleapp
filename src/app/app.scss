@@ -982,6 +982,10 @@ ion-app.app-root {
       line-height: 1;
     }
   }
+
+  ion-alert .alert-checkbox-button .alert-checkbox-label {
+    white-space: normal;
+  }
 }
 
 @each $color-name, $color-base, $color-contrast in get-colors($colors) {
