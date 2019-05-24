@@ -137,7 +137,7 @@ export class CoreSiteHomeIndexComponent implements OnInit {
         return this.courseProvider.getSections(this.siteHomeId, false, true).then((sections) => {
 
             // Check "Include a topic section" setting from numsections.
-            this.section = config.numsections ? sections[1] : false;
+            this.section = config.numsections ? sections.find((section) => section.section == 1) : false;
             if (this.section) {
                 this.section.hasContent = this.courseHelper.sectionHasContent(this.section);
                 this.hasContent = this.courseHelper.addHandlerDataForModules([this.section], this.siteHomeId) || this.hasContent;
@@ -164,7 +164,8 @@ export class CoreSiteHomeIndexComponent implements OnInit {
                 this.blocks = [];
 
                 // Cannot get the blocks, just show site main menu if needed.
-                if (sections[0] && this.courseHelper.sectionHasContent(sections[0])) {
+                const section = sections.find((section) => section.section == 0);
+                if (section && this.courseHelper.sectionHasContent(section)) {
                     this.blocks.push({
                         name: 'site_main_menu'
                     });
