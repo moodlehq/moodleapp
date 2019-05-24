@@ -132,9 +132,9 @@ $core-star-color: $core-color !default;
 // --------------------------------------------------
 
 // Init screen.
-$core-color-init-screen:          #ff5c00 !default;
-$core-color-init-screen-alt:      #ff7600 !default;
-$core-init-screen-spinner-color:  $white !default;
+$core-color-init-screen:          #ffffff !default;
+$core-color-init-screen-alt:      #ffffff !default;
+$core-init-screen-spinner-color:  $core-color !default;
 $core-init-screen-logo-width:     60% !default;
 $core-init-screen-logo-max-width: 300px !default;
 
