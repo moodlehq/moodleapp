@@ -330,11 +330,11 @@ export class AddonCalendarProvider {
     getEventById(id: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const preSets = {
-                    cacheKey: this.getEventCacheKey(id)
+                    cacheKey: this.getEventCacheKey(id),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 },
                 data = {
-                    eventid: id,
-                    updateFrequency: CoreSite.FREQUENCY_RARELY
+                    eventid: id
                 };
 
             return site.read('core_calendar_get_calendar_event_by_id', data, preSets).then((response) => {
