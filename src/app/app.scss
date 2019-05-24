@@ -103,6 +103,11 @@ ion-app.app-root {
     border: 0;
   }
 
+  .item h2 {
+    text-overflow: inherit;
+    overflow: inherit;
+  }
+
   .core-nav-item-selected, .item.core-nav-item-selected {
     @include core-selected-item($core-splitview-selected);
   }

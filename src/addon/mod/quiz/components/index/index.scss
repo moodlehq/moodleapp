@@ -4,6 +4,10 @@ ion-app.app-root addon-mod-quiz-index {
         .addon-mod_quiz-table-header .item-inner {
             background-image: none;
             font-size: 0.9em;
+
+            .col[text-center] {
+                @include padding-horizontal(0);
+            }
         }
 
         .item-inner ion-label {
