@@ -20,7 +20,7 @@ import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreAppProvider } from '@providers/app';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModFeedbackOfflineProvider } from './offline';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 
 /**
  * Service that provides some features for feedbacks.
@@ -583,7 +583,8 @@ export class AddonModFeedbackProvider {
                     courseids: [courseId]
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getFeedbackCacheKey(courseId)
+                    cacheKey: this.getFeedbackCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (forceCache) {
@@ -650,7 +651,8 @@ export class AddonModFeedbackProvider {
                     feedbackid: feedbackId
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getItemsDataCacheKey(feedbackId)
+                    cacheKey: this.getItemsDataCacheKey(feedbackId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (ignoreCache) {

@@ -49,7 +49,8 @@ export class CoreCoursesDashboardProvider {
             const params = {
                 },
                 preSets = {
-                    cacheKey: this.getDashboardBlocksCacheKey(userId)
+                    cacheKey: this.getDashboardBlocksCacheKey(userId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (userId) {

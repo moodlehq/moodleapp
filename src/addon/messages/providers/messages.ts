@@ -571,7 +571,8 @@ export class AddonMessagesProvider {
                     userid: userId
                 },
                 preSets = {
-                    cacheKey: this.getCacheKeyForBlockedContacts(userId)
+                    cacheKey: this.getCacheKeyForBlockedContacts(userId),
+                    updateFrequency: CoreSite.FREQUENCY_OFTEN
                 };
 
             return site.read('core_message_get_blocked_users', params, preSets);
@@ -590,7 +591,8 @@ export class AddonMessagesProvider {
     getContacts(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const preSets = {
-                cacheKey: this.getCacheKeyForContacts()
+                cacheKey: this.getCacheKeyForContacts(),
+                updateFrequency: CoreSite.FREQUENCY_OFTEN
             };
 
             return site.read('core_message_get_contacts', undefined, preSets).then((contacts) => {
@@ -632,7 +634,8 @@ export class AddonMessagesProvider {
                 limitnum: limitNum <= 0 ? 0 : limitNum + 1
             };
             const preSets = {
-                cacheKey: this.getCacheKeyForUserContacts()
+                cacheKey: this.getCacheKeyForUserContacts(),
+                updateFrequency: CoreSite.FREQUENCY_OFTEN
             };
 
             return site.read('core_message_get_user_contacts', params, preSets).then((contacts) => {
@@ -673,7 +676,8 @@ export class AddonMessagesProvider {
                 limitnum: limitNum <= 0 ? 0 : limitNum + 1
             };
             const preSets = {
-                cacheKey: this.getCacheKeyForContactRequests()
+                cacheKey: this.getCacheKeyForContactRequests(),
+                updateFrequency: CoreSite.FREQUENCY_OFTEN
             };
 
             return site.read('core_message_get_contact_requests', data, preSets).then((requests) => {
@@ -837,7 +841,8 @@ export class AddonMessagesProvider {
             }
 
             const preSets = {
-                    cacheKey: this.getCacheKeyForConversationMembers(userId, conversationId)
+                    cacheKey: this.getCacheKeyForConversationMembers(userId, conversationId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 },
                 params: any = {
                     userid: userId,
@@ -1272,7 +1277,8 @@ export class AddonMessagesProvider {
             userId = userId || site.getUserId();
 
             const preSets = {
-                    cacheKey: this.getCacheKeyForMemberInfo(userId, otherUserId)
+                    cacheKey: this.getCacheKeyForMemberInfo(userId, otherUserId),
+                    updateFrequency: CoreSite.FREQUENCY_OFTEN
                 },
                 params: any = {
                     referenceuserid: userId,
@@ -1312,7 +1318,8 @@ export class AddonMessagesProvider {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const preSets = {
-                    cacheKey: this.getMessagePreferencesCacheKey()
+                    cacheKey: this.getMessagePreferencesCacheKey(),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             return site.read('core_message_get_user_message_preferences', {}, preSets).then((data) => {

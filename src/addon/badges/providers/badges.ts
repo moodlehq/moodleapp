@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service to handle badges.
@@ -79,11 +80,12 @@ export class AddonBadgesProvider {
                     courseid : courseId,
                     userid : userId
                 },
-                presets = {
-                    cacheKey: this.getBadgesCacheKey(courseId, userId)
+                preSets = {
+                    cacheKey: this.getBadgesCacheKey(courseId, userId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
-            return site.read('core_badges_get_user_badges', data, presets).then((response) => {
+            return site.read('core_badges_get_user_badges', data, preSets).then((response) => {
                 if (response && response.badges) {
                     return response.badges;
                 } else {

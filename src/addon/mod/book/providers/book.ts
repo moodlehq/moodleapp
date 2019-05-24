@@ -23,6 +23,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
+import { CoreSite } from '@classes/site';
 
 /**
  * A book chapter inside the toc list.
@@ -97,7 +98,8 @@ export class AddonModBookProvider {
                     courseids: [courseId]
                 },
                 preSets = {
-                    cacheKey: this.getBookDataCacheKey(courseId)
+                    cacheKey: this.getBookDataCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('mod_book_get_books_by_courses', params, preSets).then((response) => {

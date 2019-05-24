@@ -251,7 +251,8 @@ export class CoreRatingProvider {
                 sort: sort
             };
             const preSets: CoreSiteWSPreSets = {
-                cacheKey: this.getItemRatingsCacheKey(contextLevel, instanceId, component, ratingArea, itemId, scaleId, sort)
+                cacheKey: this.getItemRatingsCacheKey(contextLevel, instanceId, component, ratingArea, itemId, scaleId, sort),
+                updateFrequency: CoreSite.FREQUENCY_RARELY
             };
             if (ignoreCache) {
                 preSets.getFromCache = false;

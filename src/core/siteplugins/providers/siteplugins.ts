@@ -234,6 +234,8 @@ export class CoreSitePluginsProvider {
 
                 preSets = preSets || {};
                 preSets.cacheKey = this.getContentCacheKey(component, method, args);
+                preSets.updateFrequency = typeof preSets.updateFrequency != 'undefined' ? preSets.updateFrequency :
+                        CoreSite.FREQUENCY_OFTEN;
 
                 return this.sitesProvider.getCurrentSite().read('tool_mobile_get_content', data, preSets);
             }).then((result) => {

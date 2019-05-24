@@ -102,7 +102,8 @@ export class CoreCommentsProvider {
             };
 
             const preSets = {
-                cacheKey: this.getCommentsCacheKey(contextLevel, instanceId, component, itemId, area, page)
+                cacheKey: this.getCommentsCacheKey(contextLevel, instanceId, component, itemId, area, page),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
             return site.read('core_comment_get_comments', params, preSets).then((response) => {

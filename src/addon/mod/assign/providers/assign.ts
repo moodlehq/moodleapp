@@ -25,7 +25,7 @@ import { CoreGradesProvider } from '@core/grades/providers/grades';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { AddonModAssignOfflineProvider } from './assign-offline';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreInterceptor } from '@classes/interceptor';
 
 /**
@@ -146,7 +146,8 @@ export class AddonModAssignProvider {
                     includenotenrolledcourses: 1
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getAssignmentCacheKey(courseId)
+                    cacheKey: this.getAssignmentCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (ignoreCache) {
@@ -215,7 +216,8 @@ export class AddonModAssignProvider {
                     assignmentids: [assignId]
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getAssignmentUserMappingsCacheKey(assignId)
+                    cacheKey: this.getAssignmentUserMappingsCacheKey(assignId),
+                    updateFrequency: CoreSite.FREQUENCY_OFTEN
                 };
 
             if (ignoreCache) {
@@ -437,7 +439,8 @@ export class AddonModAssignProvider {
                     assignmentids: [assignId]
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getSubmissionsCacheKey(assignId)
+                    cacheKey: this.getSubmissionsCacheKey(assignId),
+                    updateFrequency: CoreSite.FREQUENCY_OFTEN
                 };
 
             if (ignoreCache) {
@@ -642,7 +645,8 @@ export class AddonModAssignProvider {
                     filter: ''
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.listParticipantsCacheKey(assignId, groupId)
+                    cacheKey: this.listParticipantsCacheKey(assignId, groupId),
+                    updateFrequency: CoreSite.FREQUENCY_OFTEN
                 };
 
             if (ignoreCache) {

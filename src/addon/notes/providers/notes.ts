@@ -17,7 +17,7 @@ import { CoreAppProvider } from '@providers/app';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonNotesOfflineProvider } from './notes-offline';
@@ -160,20 +160,23 @@ export class AddonNotesProvider {
             // The only way to detect if it's enabled is to perform a WS call.
             // We use an invalid user ID (-1) to avoid saving the note if the user has permissions.
             const data = {
-                notes: [
-                    {
-                        userid: -1,
-                        publishstate: 'personal',
-                        courseid: courseId,
-                        text: '',
-                        format: 1
-                    }
-                ]
-            };
+                    notes: [
+                        {
+                            userid: -1,
+                            publishstate: 'personal',
+                            courseid: courseId,
+                            text: '',
+                            format: 1
+                        }
+                    ]
+                },
+                preSets = {
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
+                };
 
             /* Use .read to cache data and be able to check it in offline. This means that, if a user loses the capabilities
                to add notes, he'll still see the option in the app. */
-            return this.utils.promiseWorks(site.read('core_notes_create_notes', data));
+            return this.utils.promiseWorks(site.read('core_notes_create_notes', data, preSets));
         });
     }
 
@@ -232,7 +235,8 @@ export class AddonNotesProvider {
             }
 
             const preSets: CoreSiteWSPreSets = {
-                cacheKey: this.getNotesCacheKey(courseId, userId)
+                cacheKey: this.getNotesCacheKey(courseId, userId),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
             if (ignoreCache) {

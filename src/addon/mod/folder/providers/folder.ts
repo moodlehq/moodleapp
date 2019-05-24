@@ -18,6 +18,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service that provides some features for folder.
@@ -61,7 +62,8 @@ export class AddonModFolderProvider {
                     courseids: [courseId]
                 },
                 preSets = {
-                    cacheKey: this.getFolderCacheKey(courseId)
+                    cacheKey: this.getFolderCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('mod_folder_get_folders_by_courses', params, preSets).then((response) => {

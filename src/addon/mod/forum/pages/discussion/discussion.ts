@@ -472,7 +472,8 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         const promises = [
             this.forumProvider.invalidateForumData(this.courseId),
             this.forumProvider.invalidateDiscussionPosts(this.discussionId),
-            this.forumProvider.invalidateAccessInformation(this.forumId)
+            this.forumProvider.invalidateAccessInformation(this.forumId),
+            this.forumProvider.invalidateCanAddDiscussion(this.forumId)
         ];
 
         return this.utils.allPromises(promises).catch(() => {

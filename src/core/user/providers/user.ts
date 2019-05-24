@@ -151,7 +151,8 @@ export class CoreUserProvider {
                         }
                     ]
                 }, preSets: any = {
-                    cacheKey: this.getParticipantsListCacheKey(courseId)
+                    cacheKey: this.getParticipantsListCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (ignoreCache) {
@@ -235,7 +236,8 @@ export class CoreUserProvider {
     protected getUserFromWS(userId: number, courseId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const presets = {
-                    cacheKey: this.getUserCacheKey(userId)
+                    cacheKey: this.getUserCacheKey(userId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
             let wsName, data;
 
@@ -329,7 +331,8 @@ export class CoreUserProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const data = { name };
             const preSets: CoreSiteWSPreSets = {
-                cacheKey: this.getUserPreferenceCacheKey(data.name)
+                cacheKey: this.getUserPreferenceCacheKey(data.name),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
             return site.read('core_user_get_user_preferences', data, preSets).then((result) => {

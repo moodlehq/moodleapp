@@ -77,7 +77,8 @@ export class AddonFilesProvider {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const preSets = {
-                cacheKey: this.getFilesListCacheKey(params)
+                cacheKey: this.getFilesListCacheKey(params),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
             return site.read('core_files_get_files', params, preSets);
@@ -171,7 +172,8 @@ export class AddonFilesProvider {
                 userid: userId
             },
                 preSets = {
-                    cacheKey: this.getPrivateFilesInfoCacheKey(userId)
+                    cacheKey: this.getPrivateFilesInfoCacheKey(userId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             return site.read('core_user_get_private_files_info', params, preSets);

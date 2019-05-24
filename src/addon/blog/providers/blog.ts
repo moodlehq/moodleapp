@@ -17,6 +17,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service to handle blog entries.
@@ -76,7 +77,8 @@ export class AddonBlogProvider {
             };
 
             const preSets = {
-                cacheKey: this.getEntriesCacheKey(filter)
+                cacheKey: this.getEntriesCacheKey(filter),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
             return site.read('core_blog_get_entries', data, preSets);
