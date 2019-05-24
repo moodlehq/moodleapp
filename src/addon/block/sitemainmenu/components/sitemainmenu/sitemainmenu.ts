@@ -75,7 +75,7 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
      */
     protected fetchContent(): Promise<any> {
         return this.courseProvider.getSections(this.siteHomeId, false, true).then((sections) => {
-            this.block = sections[0];
+            this.block = sections.find((section) => section.section == 0);
 
             if (this.block) {
                 this.block.hasContent = this.courseHelper.sectionHasContent(this.block);
