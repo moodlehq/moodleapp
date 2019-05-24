@@ -18,9 +18,16 @@ ion-app.app-root.wp {
 
   .item-wp ion-spinner[item-start] + .item-inner,
   .item-wp ion-spinner[item-start] + .item-input,
+  .item-wp ion-icon[item-start] + .item-inner,
+  .item-wp ion-icon[item-start] + .item-input,
   .item-wp img[item-start] + .item-inner,
   .item-wp img[item-start] + .item-input {
     @include margin-horizontal(($item-wp-padding-start / 2), null);
+  }
+
+  .item-wp ion-avatar[item-start] + .item-inner,
+  .item-wp ion-avatar[item-start] + .item-input {
+    @include margin-horizontal(0, null);
   }
 
   @each $color-name, $color-base, $color-contrast in get-colors($colors-wp) {
