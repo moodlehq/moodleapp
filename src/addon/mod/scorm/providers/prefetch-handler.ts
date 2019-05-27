@@ -123,6 +123,9 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
                 // Ignore errors.
             }));
 
+            // Prefetch access information.
+            promises.push(this.scormProvider.getAccessInformation(scorm.id));
+
             return Promise.all(promises);
         }).then(() => {
             // Success, return the hash.
