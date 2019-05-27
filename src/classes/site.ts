@@ -191,8 +191,7 @@ interface RequestQueueItem {
 export class CoreSite {
     static REQUEST_QUEUE_DELAY = 50; // Maximum number of miliseconds to wait before processing the queue.
     static REQUEST_QUEUE_LIMIT = 10; // Maximum number of requests allowed in the queue.
-    // @todo Set REQUEST_QUEUE_FORCE_WS to false before the release.
-    static REQUEST_QUEUE_FORCE_WS = true; // Use "tool_mobile_call_external_functions" even for calling a single function.
+    static REQUEST_QUEUE_FORCE_WS = false; // Use "tool_mobile_call_external_functions" even for calling a single function.
 
     // Constants for cache update frequency.
     static FREQUENCY_USUALLY = 0;
