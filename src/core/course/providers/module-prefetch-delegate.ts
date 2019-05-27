@@ -1168,7 +1168,12 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
      */
     syncModules(modules: any[], courseId: number): Promise<any> {
         return Promise.all(modules.map((module) => {
-            return this.syncModule(module, courseId);
+            return this.syncModule(module, courseId).then(() => {
+                // Invalidate course updates.
+                return this.invalidateCourseUpdates(courseId).catch(() => {
+                    // Ignore errors.
+                });
+            });
         }));
     }
 
@@ -1182,11 +1187,18 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
     syncModule(module: any, courseId: number): Promise<any> {
         const handler = this.getPrefetchHandlerFor(module);
 
-        const promise = handler && handler.sync ? handler.sync(module, courseId) : Promise.resolve();
+        if (handler && handler.sync) {
+            return handler.sync(module, courseId).then((result) => {
+                // Always invalidate status cache for this module. We cannot know if data was sent to server or not.
+                this.invalidateModuleStatusCache(module);
 
-        return promise.catch(() => {
-            // Ignore errors.
-        });
+                return result;
+            }).catch(() => {
+                // Ignore errors.
+            });
+        }
+
+        return Promise.resolve();
     }
 
     /**
