@@ -30,6 +30,7 @@ Feature: Test basic usage in app
     Then I should see "My happy subject"
     And I should see "An awesome message"
 
+  @app_upto3.6.1
   Scenario: Student posts a reply
     When I enter the app
     And I log in as "student1"
@@ -42,6 +43,23 @@ Feature: Test basic usage in app
     And I press "DiscussionSubject" in the app
     And I press "Reply" in the app
     And I set the field "Message" to "ReplyMessage" in the app
+    And I press "Post to forum" in the app
+    Then I should see "DiscussionMessage"
+    And I should see "ReplyMessage"
+
+  @app_from3.7
+  Scenario: Student posts a reply
+    When I enter the app
+    And I log in as "student1"
+    And I press "Course 1" near "Course overview" in the app
+    And I press "Test forum name" in the app
+    And I press "Add a new discussion topic" in the app
+    And I set the field "Subject" to "DiscussionSubject" in the app
+    And I set the field "Message" to "DiscussionMessage" in the app
+    And I press "Post to forum" in the app
+    And I press "DiscussionSubject" in the app
+    And I press "Reply" in the app
+    And I set the field "Write your reply" to "ReplyMessage" in the app
     And I press "Post to forum" in the app
     Then I should see "DiscussionMessage"
     And I should see "ReplyMessage"
