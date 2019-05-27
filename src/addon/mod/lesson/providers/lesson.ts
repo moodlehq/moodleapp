@@ -508,7 +508,12 @@ export class AddonModLessonProvider {
             return;
         }
 
-        if (typeof data['answer[text]'] != 'undefined') {
+        // The name was changed to "answer_editor" in 3.7. Before it was just "answer". Support both cases.
+        if (typeof data['answer_editor[text]'] != 'undefined') {
+            studentAnswer = data['answer_editor[text]'];
+        } else if (typeof data.answer_editor == 'object') {
+            studentAnswer = data.answer_editor.text;
+        } else if (typeof data['answer[text]'] != 'undefined') {
             studentAnswer = data['answer[text]'];
         } else if (typeof data.answer == 'object') {
             studentAnswer = data.answer.text;
