@@ -443,6 +443,8 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
             this.syncProvider = this.injector.get(AddonModScormSyncProvider);
         }
 
-        return this.syncProvider.syncScorm(module.instance, siteId);
+        return this.scormProvider.getScorm(courseId, module.id, module.url, false, siteId).then((scorm) => {
+            return this.syncProvider.syncScorm(scorm, siteId);
+        });
     }
 }
