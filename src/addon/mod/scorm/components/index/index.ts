@@ -245,12 +245,12 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
 
                 return Promise.all(promises).then(() => {
                     // Check whether to launch the SCORM immediately.
-                    if (typeof this.skip == 'undefined' && !this.hasOffline && !this.errorMessage &&
+                    if (typeof this.skip == 'undefined') {
+                        this.skip = !this.hasOffline && !this.errorMessage &&
                             (!this.scorm.lastattemptlock || this.scorm.attemptsLeft > 0) &&
                             this.accessInfo.canskipview && !this.accessInfo.canviewreport &&
                             this.scorm.skipview >= AddonModScormProvider.SKIPVIEW_FIRST &&
-                            (this.scorm.skipview == AddonModScormProvider.SKIPVIEW_ALWAYS || this.lastAttempt == 0)) {
-                        this.skip = true;
+                            (this.scorm.skipview == AddonModScormProvider.SKIPVIEW_ALWAYS || this.lastAttempt == 0);
                     }
                 });
             });
