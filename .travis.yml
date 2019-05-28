@@ -10,7 +10,7 @@ before_cache:
 
 cache:
   directories:
-    - node_modules
+    - $HOME/.npm
     - $HOME/.cache/electron
     - $HOME/.cache/electron-builder
 
