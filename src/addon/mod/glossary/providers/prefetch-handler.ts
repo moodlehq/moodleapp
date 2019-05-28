@@ -170,7 +170,11 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
                     }
                 });
 
-                const files = this.getFilesFromGlossaryAndEntries(module, glossary, entries).concat(Object.keys(avatars));
+                // Prefetch intro files, entries files and user avatars.
+                const avatarFiles = Object.keys(avatars).map((url) => {
+                    return { fileurl: url };
+                });
+                const files = this.getFilesFromGlossaryAndEntries(module, glossary, entries).concat(avatarFiles);
                 promises.push(this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id));
 
                 return Promise.all(promises);

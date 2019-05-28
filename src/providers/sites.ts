@@ -1182,6 +1182,13 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Unset current site.
+     */
+    unsetCurrentSite(): void {
+        this.currentSite = undefined;
+    }
+
+    /**
      * Updates a site's token.
      *
      * @param {string} siteUrl Site's URL.
