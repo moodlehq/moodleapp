@@ -299,8 +299,6 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                 const direction = this.sort == 'flat-newest' ? 'DESC' : 'ASC';
                 this.forumProvider.sortDiscussionPosts(posts, direction);
             }
-            this.defaultSubject = this.translate.instant('addon.mod_forum.re') + ' ' + this.discussion.subject;
-            this.replyData.subject = this.defaultSubject;
 
             // Now try to get the forum.
             return this.fetchForum().then((forum) => {
@@ -343,6 +341,10 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                 this.forum = {};
                 this.accessInfo = {};
             }).then(() => {
+                this.defaultSubject = this.translate.instant('addon.mod_forum.re') + ' ' +
+                    (this.discussion ? this.discussion.subject : "");
+                this.replyData.subject = this.defaultSubject;
+
                 const startingPost = this.forumProvider.extractStartingPost(posts);
                 if (startingPost) {
                     // Update discussion data from first post.

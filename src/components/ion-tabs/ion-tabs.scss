@@ -37,6 +37,13 @@ ion-app.app-root core-ion-tabs {
             }
         }
 
+        .tabbar[hidden] + .tabcontent {
+            width: 100%;
+            core-ion-tab {
+                @include position(0, 0, 0, 0);
+            }
+        }
+
         .tabcontent {
             width: calc(100% - #{($core-sidetab-size)});
             position: absolute;
