@@ -195,8 +195,10 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
                 });
 
                 // Prefetch intro files, attachments, embedded files and user avatars.
-                const files = this.getIntroFilesFromInstance(module, forum).concat(this.getPostsFiles(posts))
-                        .concat(Object.keys(avatars));
+                const avatarFiles = Object.keys(avatars).map((url) => {
+                    return { fileurl: url };
+                });
+                const files = this.getIntroFilesFromInstance(module, forum).concat(this.getPostsFiles(posts)).concat(avatarFiles);
                 promises.push(this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id));
 
                 // Prefetch groups data.
