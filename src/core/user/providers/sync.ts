@@ -80,7 +80,7 @@ export class CoreUserSyncProvider extends CoreSyncBaseProvider {
                         return this.userOffline.setPreference(preference.name, onlineValue, onlineValue, siteId);
                     }
 
-                    return this.userProvider.setUserPreference(name, preference.value, siteId).catch((error) => {
+                    return this.userProvider.setUserPreference(preference.name, preference.value, siteId).catch((error) => {
                         if (this.utils.isWebServiceError(error)) {
                             warnings.push(this.textUtils.getErrorMessageFromError(error));
                         } else {
