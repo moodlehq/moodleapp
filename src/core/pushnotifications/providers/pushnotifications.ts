@@ -201,6 +201,15 @@ export class CorePushNotificationsProvider {
     }
 
     /**
+     * Check whether the device can be registered in Moodle to receive push notifications.
+     *
+     * @return {boolean} Whether the device can be registered in Moodle.
+     */
+    canRegisterOnMoodle(): boolean {
+        return this.pushID && this.appProvider.isMobile();
+    }
+
+    /**
      * Delete all badge records for a given site.
      *
      * @param  {string} siteId Site ID.
@@ -658,7 +667,7 @@ export class CorePushNotificationsProvider {
     registerDeviceOnMoodle(siteId?: string, forceUnregister?: boolean): Promise<any> {
         this.logger.debug('Register device on Moodle.');
 
-        if (!this.pushID || !this.appProvider.isMobile()) {
+        if (!this.canRegisterOnMoodle()) {
             return Promise.reject(null);
         }
 
@@ -729,7 +738,7 @@ export class CorePushNotificationsProvider {
 
         if (siteId) {
             // Check if the site has a pending unregister.
-            promise = this.appDB.getRecords(CorePushNotificationsProvider.REGISTERED_DEVICES_TABLE, {siteid: siteId});
+            promise = this.appDB.getRecords(CorePushNotificationsProvider.PENDING_UNREGISTER_TABLE, {siteid: siteId});
         } else {
             // Get all pending unregisters.
             promise = this.appDB.getAllRecords(CorePushNotificationsProvider.PENDING_UNREGISTER_TABLE);

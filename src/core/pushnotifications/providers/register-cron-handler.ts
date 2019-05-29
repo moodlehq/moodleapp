@@ -42,7 +42,7 @@ export class CorePushNotificationsRegisterCronHandler implements CoreCronHandler
      * @return {Promise<any>}         Promise resolved when done, rejected if failure.
      */
     execute(siteId?: string): Promise<any> {
-        if (!siteId) {
+        if (!siteId || !this.pushNotificationsProvider.canRegisterOnMoodle()) {
             // It's not a specific site, don't do anything.
             return Promise.resolve();
         }
