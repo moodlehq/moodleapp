@@ -342,7 +342,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                 this.accessInfo = {};
             }).then(() => {
                 this.defaultSubject = this.translate.instant('addon.mod_forum.re') + ' ' +
-                    (this.discussion ? this.discussion.subject : "");
+                    (this.discussion ? this.discussion.subject : '');
                 this.replyData.subject = this.defaultSubject;
 
                 const startingPost = this.forumProvider.extractStartingPost(posts);
