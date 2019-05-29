@@ -680,6 +680,8 @@ export class CoreSite {
                     (error.errorcode == 'accessexception' && error.message.indexOf('Invalid token - token expired') > -1)) {
                     if (initialToken !== this.token && !retrying) {
                         // Token has changed, retry with the new token.
+                        preSets.getFromCache = false; // Don't check cache now. Also, it will skip ongoingRequests.
+
                         return this.request(method, data, preSets, true);
                     } else if (this.appProvider.isSSOAuthenticationOngoing()) {
                         // There's an SSO authentication ongoing, wait for it to finish and try again.

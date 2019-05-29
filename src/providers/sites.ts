@@ -582,22 +582,48 @@ export class CoreSitesProvider {
         }
 
         // Create a "candidate" site to fetch the site info.
-        const candidateSite = this.sitesFactory.makeSite(undefined, siteUrl, token, undefined, privateToken);
+        let candidateSite = this.sitesFactory.makeSite(undefined, siteUrl, token, undefined, privateToken),
+            isNewSite = true;
 
         return candidateSite.fetchSiteInfo().then((info) => {
             const result = this.isValidMoodleVersion(info);
             if (result == this.VALID_VERSION) {
-                // Set site ID and info.
                 const siteId = this.createSiteID(info.siteurl, info.username);
-                candidateSite.setId(siteId);
-                candidateSite.setInfo(info);
 
-                // Create database tables before login and before any WS call.
-                return this.migrateSiteSchemas(candidateSite).then(() => {
+                // Check if the site already exists.
+                return this.getSite(siteId).catch(() => {
+                    // Not exists.
+                }).then((site) => {
+                    if (site) {
+                        // Site already exists, update its data and use it.
+                        isNewSite = false;
+                        candidateSite = site;
+                        candidateSite.setToken(token);
+                        candidateSite.setPrivateToken(privateToken);
+                        candidateSite.setInfo(info);
+
+                    } else {
+                        // New site, set site ID and info.
+                        isNewSite = true;
+                        candidateSite.setId(siteId);
+                        candidateSite.setInfo(info);
+
+                        // Create database tables before login and before any WS call.
+                        return this.migrateSiteSchemas(candidateSite);
+                    }
+
+                }).then(() => {
 
                     // Try to get the site config.
-                    return this.getSiteConfig(candidateSite).then((config) => {
-                        candidateSite.setConfig(config);
+                    return this.getSiteConfig(candidateSite).catch((error) => {
+                        // Ignore errors if it's not a new site, we'll use the config already stored.
+                        if (isNewSite) {
+                            return Promise.reject(error);
+                        }
+                    }).then((config) => {
+                        if (typeof config != 'undefined') {
+                            candidateSite.setConfig(config);
+                        }
 
                         // Add site to sites list.
                         this.addSite(siteId, siteUrl, token, info, privateToken, config);
