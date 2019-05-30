@@ -403,6 +403,11 @@ export class CorePushNotificationsProvider {
         const data = notification ? notification.additionalData : {};
 
         this.sitesProvider.getSite(data.site).then(() => {
+
+            if (typeof data.customdata == 'string') {
+                data.customdata = this.textUtils.parseJSON(data.customdata, {});
+            }
+
             if (this.utils.isTrueOrOne(data.foreground)) {
                 // If the app is in foreground when the notification is received, it's not shown. Let's show it ourselves.
                 if (this.localNotificationsProvider.isAvailable()) {
