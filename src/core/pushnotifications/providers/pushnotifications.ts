@@ -419,6 +419,7 @@ export class CorePushNotificationsProvider {
                             channel: 'PushPluginChannel'
                         },
                         promises = [],
+                        isAndroid = this.platform.is('android'),
                         extraFeatures = this.utils.isTrueOrOne(data.extrafeatures);
 
                     // Apply formatText to title and message.
@@ -432,7 +433,7 @@ export class CorePushNotificationsProvider {
                         // Error formatting, use the original message.
                         return notification.message;
                     }).then((formattedMessage) => {
-                        if (extraFeatures && this.utils.isFalseOrZero(data.notif)) {
+                        if (extraFeatures && isAndroid && this.utils.isFalseOrZero(data.notif)) {
                             // It's a message, use messaging style. Ionic Native doesn't specify this option.
                             (<any> localNotif).text = [
                                 {
@@ -445,7 +446,7 @@ export class CorePushNotificationsProvider {
                         }
                     }));
 
-                    if (extraFeatures) {
+                    if (extraFeatures && isAndroid) {
                         // Use a different icon if needed.
                         localNotif.icon = notification.image;
                         // This feature isn't supported by the official plugin, we use a fork.
