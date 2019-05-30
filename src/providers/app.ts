@@ -73,6 +73,7 @@ export class CoreAppProvider {
     protected backActions = [];
     protected mainMenuId = 0;
     protected mainMenuOpen: number;
+    protected forceOffline = false;
 
     constructor(dbProvider: CoreDbProvider, private platform: Platform, private keyboard: Keyboard, private appCtrl: App,
             private network: Network, logger: CoreLoggerProvider, private events: CoreEventsProvider, zone: NgZone,
@@ -102,6 +103,9 @@ export class CoreAppProvider {
         this.platform.registerBackButtonAction(() => {
             this.backButtonAction();
         }, 100);
+
+        // Export the app provider so Behat tests can change the forceOffline flag.
+        (<any> window).appProvider = this;
     }
 
     /**
@@ -257,6 +261,10 @@ export class CoreAppProvider {
      * @return {boolean} Whether the app is online.
      */
     isOnline(): boolean {
+        if (this.forceOffline) {
+            return false;
+        }
+
         let online = this.network.type !== null && this.network.type != Connection.NONE && this.network.type != Connection.UNKNOWN;
         // Double check we are not online because we cannot rely 100% in Cordova APIs. Also, check it in browser.
         if (!online && navigator.onLine) {
@@ -566,5 +574,14 @@ export class CoreAppProvider {
             CoreConfigConstants.statusbarlighttextremotetheme ?
                 this.statusBar.styleLightContent() : this.statusBar.styleDefault();
         }
+    }
+
+    /**
+     * Set value of forceOffline flag. If true, the app will think the device is offline.
+     *
+     * @param {boolean} value Value to set.
+     */
+    setForceOffline(value: boolean): void {
+        this.forceOffline = !!value;
     }
 }
