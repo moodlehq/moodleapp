@@ -125,10 +125,6 @@ export class CoreCustomURLSchemesProvider {
             // Some sites add a # at the end of the URL. If it's there, remove it.
             url = url.replace(/\/?#?\/?$/, '');
 
-            // In iOS, the protocol after the scheme doesn't have ":". Add it.
-            // E.g. "moodlemobile://https://..." is received as "moodlemobile://https//..."
-            url = url.replace(/\/\/(https?)\/\//, '//$1://');
-
             modal = this.domUtils.showModalLoading();
 
             // Get the data from the URL.
@@ -137,8 +133,14 @@ export class CoreCustomURLSchemesProvider {
 
                 return this.getCustomURLTokenData(url);
             } else if (this.isCustomURLLink(url)) {
+                // In iOS, the protocol after the scheme doesn't have ":". Add it.
+                url = url.replace(/\/\/link=(https?)\/\//, '//link=$1://');
+
                 return this.getCustomURLLinkData(url);
             } else {
+                // In iOS, the protocol after the scheme doesn't have ":". Add it.
+                url = url.replace(/\/\/(https?)\/\//, '//$1://');
+
                 return this.getCustomURLData(url);
             }
         }).then((result) => {

@@ -27,6 +27,7 @@ import { CoreConfigConstants } from '../configconstants';
 import { CoreSite } from '@classes/site';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { Md5 } from 'ts-md5/dist/md5';
+import { Location } from '@angular/common';
 
 /**
  * Response of checking if a site exists and its configuration.
@@ -320,7 +321,7 @@ export class CoreSitesProvider {
 
     constructor(logger: CoreLoggerProvider, private http: HttpClient, private sitesFactory: CoreSitesFactoryProvider,
             private appProvider: CoreAppProvider, private translate: TranslateService, private urlUtils: CoreUrlUtilsProvider,
-            private eventsProvider: CoreEventsProvider,  private textUtils: CoreTextUtilsProvider,
+            private eventsProvider: CoreEventsProvider,  private textUtils: CoreTextUtilsProvider, private location: Location,
             private utils: CoreUtilsProvider) {
         this.logger = logger.getInstance('CoreSitesProvider');
 
@@ -1161,6 +1162,9 @@ export class CoreSitesProvider {
         promises.push(this.appDB.deleteRecords(this.CURRENT_SITE_TABLE, { id: 1 }));
 
         return Promise.all(promises).finally(() => {
+            // Due to DeepLinker, we need to remove the path from the URL, otherwise some pages are re-created when they shouldn't.
+            this.location.replaceState('');
+
             this.eventsProvider.trigger(CoreEventsProvider.LOGOUT, {}, siteId);
         });
     }
