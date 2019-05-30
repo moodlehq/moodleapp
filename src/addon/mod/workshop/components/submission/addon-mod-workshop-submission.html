@@ -32,7 +32,7 @@
             <core-local-file *ngIf="attachment.name" [file]="attachment"></core-local-file>
         </ion-item>
         <ion-item text-wrap *ngIf="viewDetails && submission.feedbackauthor">
-            <ion-avatar core-user-avatar [user]="evaluateByProfile" item-start [courseId]="courseId" [userId]="evaluateByProfile.id"></ion-avatar>
+            <ion-avatar *ngIf="evaluateByProfile" core-user-avatar [user]="evaluateByProfile" item-start [courseId]="courseId" [userId]="evaluateByProfile.id"></ion-avatar>
 
             <h2 *ngIf="evaluateByProfile && evaluateByProfile.fullname">{{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}</h2>
             <core-format-text [text]="submission.feedbackauthor"></core-format-text>
