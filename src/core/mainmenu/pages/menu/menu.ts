@@ -171,7 +171,10 @@ export class CoreMainMenuPage implements OnDestroy {
 
         if (this.urlToOpen) {
             // There's a content link to open.
-            this.linksDelegate.getActionsFor(this.urlToOpen, undefined).then((actions) => {
+            const url = this.urlToOpen;
+            delete this.urlToOpen;
+
+            this.linksDelegate.getActionsFor(url, undefined).then((actions) => {
                 const action = this.linksHelper.getFirstValidAction(actions);
                 if (action && action.sites.length) {
                     // Action should only have 1 site because we're filtering by username.
