@@ -10,7 +10,7 @@
             {{ 'addon.mod_workshop.assessmentstrategynotsupported' | translate:{$a: strategy} }}
         </div>
 
-        <ion-card *ngIf="assessmentStrategyLoaded && overallFeedkback && (edit || data.assessment.feedbackauthor || data.assessment.feedbackattachmentfiles.length) ">
+        <ion-card *ngIf="assessmentStrategyLoaded && overallFeedkback && (edit || data.assessment.feedbackauthor || data.assessment.feedbackattachmentfiles && data.assessment.feedbackattachmentfiles.length) ">
             <ion-item text-wrap>
                 <h2>{{ 'addon.mod_workshop.overallfeedback' | translate }}</h2>
             </ion-item>
