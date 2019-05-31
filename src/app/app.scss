@@ -224,6 +224,8 @@ ion-app.app-root {
   /** Styles of elements inside the directive should be placed in format-text.scss */
   core-format-text {
     user-select: text;
+    word-break: break-word;
+    word-wrap: break-word;
 
     &[maxHeight],
     &[ng-reflect-max-height] {
@@ -937,6 +939,12 @@ ion-app.app-root {
   // Fix modals displayed over action sheet.
   &.disable-scroll ion-modal .ion-page {
     pointer-events: initial;
+  }
+
+  // Avoid scroll bouncing on iOS if disabled.
+  &.disable-scroll .ion-page .content-ios .scroll-content::before,
+  &.disable-scroll .ion-page .content-ios .scroll-content::after {
+    content: none;
   }
 
   .core-iframe-offline-disabled {

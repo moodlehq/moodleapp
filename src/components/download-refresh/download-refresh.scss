@@ -1,5 +1,12 @@
 ion-app.app-root core-download-refresh {
     font-size: 1.4rem;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    z-index: 1;
+    justify-content: space-around;
+    align-content: center;
+    min-height: 44px;
 
     button, ion-icon {
         cursor: pointer;
