@@ -251,9 +251,11 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
 
     /**
      * Prefetch the module.
+     *
+     * @param {Function}  [done] Function to call when done.
      */
-    prefetch(): void {
-        this.courseHelper.contextMenuPrefetch(this, this.module, this.courseId);
+    prefetch(done?: () => void): void {
+        this.courseHelper.contextMenuPrefetch(this, this.module, this.courseId, done);
     }
 
     /**
