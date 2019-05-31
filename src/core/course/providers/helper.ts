@@ -465,9 +465,10 @@ export class CoreCourseHelperProvider {
      * @param {any} instance The component instance that has the context menu. It should have prefetchStatusIcon and isDestroyed.
      * @param {any} module Module to be prefetched
      * @param {number} courseId Course ID the module belongs to.
+     * @param {Function} [done] Function to call when done. It will close the context menu.
      * @return {Promise<any>} Promise resolved when done.
      */
-    contextMenuPrefetch(instance: any, module: any, courseId: number): Promise<any> {
+    contextMenuPrefetch(instance: any, module: any, courseId: number, done?: () => void): Promise<any> {
         const initialIcon = instance.prefetchStatusIcon;
 
         instance.prefetchStatusIcon = 'spinner'; // Show spinner since this operation might take a while.
@@ -477,6 +478,9 @@ export class CoreCourseHelperProvider {
             return this.domUtils.confirmDownloadSize(size).then(() => {
                 return this.prefetchDelegate.prefetchModule(module, courseId, true);
             });
+        }).then(() => {
+            // Success, close menu.
+            done && done();
         }).catch((error) => {
             instance.prefetchStatusIcon = initialIcon;
 
