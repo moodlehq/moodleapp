@@ -678,7 +678,7 @@ ion-app.app-root {
         > ion-icon {
           color: $color-base;
           position: absolute;
-          @include position(0, null, null, 16px)
+          @include position(0, null, null, 16px);
           height: 100%;
           font-size: 24px;
           display: flex;
@@ -1101,5 +1101,54 @@ ion-app.platform-desktop {
     video::-webkit-media-text-track-display {
       font-size: 0.6em;
     }
+  }
+}
+
+// Fix text wrapping in block buttons.
+.button-block[text-wrap] {
+  height: auto;
+
+  // Changed from "strict" because the size depends on child elements.
+  contain: content;
+
+  // Add vertical padding, we cannot rely on a fixed height + centering like in normal buttons.
+  .item-md & {
+    padding-top: .5357em;
+    padding-bottom: .5357em;
+  }
+  .item-md &.item-button {
+    padding-top: .6em;
+    padding-bottom: .6em;
+  }
+  .item-ios & {
+    padding-top: .9em;
+    padding-bottom: .9em;
+  }
+  .item-ios &.item-button {
+    padding-top: .7846em;
+    padding-bottom: .7846em;
+  }
+
+  // Keep a consistent height with normal buttons if text does not wrap.
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  &.button-md {
+    min-height: $button-md-height;
+  }
+  &.button-large-md {
+    min-height: $button-md-large-height;
+  }
+  &.button-small-md {
+    min-height: $button-md-small-height;
+  }
+  &.button-ios {
+    min-height: $button-ios-height;
+  }
+  &.button-large-ios {
+    min-height: $button-ios-large-height;
+  }
+  &.button-small-ios {
+    min-height: $button-ios-small-height;
   }
 }
