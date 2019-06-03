@@ -1,7 +1,7 @@
 <ion-item-divider>
     <h2>{{ 'addon.block_myoverview.pluginname' | translate }}</h2>
     <!-- Download all courses. -->
-    <div *ngIf="downloadEnabled && courses[selectedFilter] && courses[selectedFilter].length > 1 && !showFilter" class="core-button-spinner" item-end>
+    <div *ngIf="downloadCoursesEnabled && downloadEnabled && courses[selectedFilter] && courses[selectedFilter].length > 1 && !showFilter" class="core-button-spinner" item-end>
         <button *ngIf="prefetchCoursesData[selectedFilter].icon && prefetchCoursesData[selectedFilter].icon != 'spinner'" ion-button icon-only clear color="dark" (click)="prefetchCourses()">
             <core-icon [name]="prefetchCoursesData[selectedFilter].icon"></core-icon>
         </button>
@@ -36,7 +36,7 @@
         <ion-grid no-padding>
             <ion-row no-padding>
                 <ion-col *ngFor="let course of filteredCourses" no-padding col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 align-self-stretch>
-                    <core-courses-course-progress [course]="course" class="core-courseoverview" showAll="true" [showDownload]="downloadEnabled"></core-courses-course-progress>
+                    <core-courses-course-progress [course]="course" class="core-courseoverview" showAll="true" [showDownload]="downloadCourseEnabled && downloadEnabled"></core-courses-course-progress>
                 </ion-col>
             </ion-row>
         </ion-grid>

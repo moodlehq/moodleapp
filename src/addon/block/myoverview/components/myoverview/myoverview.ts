@@ -62,11 +62,14 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     showHidden = false;
     showSelectorFilter = false;
     showSortFilter = false;
+    downloadCourseEnabled: boolean;
+    downloadCoursesEnabled: boolean;
 
     protected prefetchIconsInitialized = false;
     protected isDestroyed;
     protected downloadButtonObserver;
     protected coursesObserver;
+    protected updateSiteObserver;
     protected courseIds = [];
     protected fetchContentDefaultError = 'Error getting my overview data.';
 
@@ -95,6 +98,16 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                 this.initPrefetchCoursesIcons();
             }
         });
+
+        this.downloadCourseEnabled = !this.coursesProvider.isDownloadCourseDisabledInSite();
+        this.downloadCoursesEnabled = !this.coursesProvider.isDownloadCoursesDisabledInSite();
+
+        // Refresh the enabled flags if site is updated.
+        this.updateSiteObserver = this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, () => {
+            this.downloadCourseEnabled = !this.coursesProvider.isDownloadCourseDisabledInSite();
+            this.downloadCoursesEnabled = !this.coursesProvider.isDownloadCoursesDisabledInSite();
+
+        }, this.sitesProvider.getCurrentSiteId());
 
         this.coursesObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, () => {
             this.refreshContent();
@@ -336,6 +349,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     ngOnDestroy(): void {
         this.isDestroyed = true;
         this.coursesObserver && this.coursesObserver.off();
+        this.updateSiteObserver && this.updateSiteObserver.off();
         this.downloadButtonObserver && this.downloadButtonObserver.off();
     }
 }

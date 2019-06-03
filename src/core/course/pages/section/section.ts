@@ -87,7 +87,8 @@ export class CoreCourseSectionPage implements OnDestroy {
 
         // Get the title to display. We dont't have sections yet.
         this.title = courseFormatDelegate.getCourseTitle(this.course);
-        this.displayEnableDownload = courseFormatDelegate.displayEnableDownload(this.course);
+        this.displayEnableDownload = !sitesProvider.getCurrentSite().isOfflineDisabled() &&
+            courseFormatDelegate.displayEnableDownload(this.course);
         this.downloadCourseEnabled = !this.coursesProvider.isDownloadCourseDisabledInSite();
 
         // Check if the course format requires the view to be refreshed when completion changes.
