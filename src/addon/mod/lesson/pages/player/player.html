@@ -108,7 +108,7 @@
                     </ng-container>
 
                     <ion-item>
-                        <button ion-button block (click)="submitQuestion($event)" class="button-no-uppercase">{{ question.submitLabel }}</button>
+                        <button ion-button block text-wrap (click)="submitQuestion($event)" class="button-no-uppercase">{{ question.submitLabel }}</button>
                     </ion-item>
                 </form>
             </ion-card>
@@ -175,7 +175,7 @@
                     <core-format-text [text]="eolData.displayofgrade.message"></core-format-text>
                 </ion-item>
                 <ion-item text-wrap *ngIf="eolData.reviewlesson">
-                    <a ion-button block (click)="reviewLesson(eolData.reviewlesson.pageid)" class="button-no-uppercase">
+                    <a ion-button block text-wrap (click)="reviewLesson(eolData.reviewlesson.pageid)" class="button-no-uppercase">
                         <core-format-text [text]="'addon.mod_lesson.reviewlesson' | translate"></core-format-text>
                     </a>
                 </ion-item>
@@ -185,7 +185,7 @@
                 <ion-item text-wrap *ngIf="eolData.activitylink && eolData.activitylink.value">
                     <ng-container *ngIf="eolData.activitylink.value.formatted">
                         <!-- Activity link was successfully formatted, render the button. -->
-                        <a ion-button block color="light" [href]="eolData.activitylink.value.href" core-link [capture]="true" class="button-no-uppercase">
+                        <a ion-button block text-wrap color="light" [href]="eolData.activitylink.value.href" core-link [capture]="true" class="button-no-uppercase">
                             <core-format-text [text]="eolData.activitylink.value.label"></core-format-text>
                         </a>
                     </ng-container>
@@ -212,8 +212,8 @@
                     </div>
                 </ion-item>
                 <ion-item text-wrap *ngIf="review || (processData.buttons && processData.buttons.length)">
-                    <a ion-button block color="light" *ngIf="review" (click)="changePage(LESSON_EOL)">{{ 'addon.mod_lesson.finish' | translate }}</a>
-                    <a ion-button block color="light" *ngFor="let button of processData.buttons" (click)="changePage(button.pageId, true)">{{ button.label | translate }}</a>
+                    <a ion-button block text-wrap color="light" *ngIf="review" (click)="changePage(LESSON_EOL)">{{ 'addon.mod_lesson.finish' | translate }}</a>
+                    <a ion-button block text-wrap color="light" *ngFor="let button of processData.buttons" (click)="changePage(button.pageId, true)">{{ button.label | translate }}</a>
                 </ion-item>
             </ion-list>
         </div>
