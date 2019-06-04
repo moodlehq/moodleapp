@@ -122,7 +122,24 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
             });
         });
 
-        return Promise.all(promises);
+        return Promise.all(promises).then((results) => {
+            // Each order has returned its own list of posts. Merge all the lists, preventing duplicates.
+            const posts = [],
+                postIds = {}; // To make the array unique.
+
+            results.forEach((orderResults) => {
+                orderResults.forEach((orderResult) => {
+                    orderResult.posts.forEach((post) => {
+                        if (!postIds[post.id]) {
+                            postIds[post.id] = true;
+                            posts.push(post);
+                        }
+                    });
+                });
+            });
+
+            return posts;
+        });
     }
 
     /**
