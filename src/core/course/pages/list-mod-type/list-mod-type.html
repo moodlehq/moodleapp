@@ -12,7 +12,7 @@
 
         <ion-list>
             <ng-container *ngFor="let module of modules">
-                <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [courseId]="courseId" downloadEnabled="true"></core-course-module>
+                <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [courseId]="courseId" [downloadEnabled]="downloadEnabled"></core-course-module>
             </ng-container>
         </ion-list>
     </core-loading>

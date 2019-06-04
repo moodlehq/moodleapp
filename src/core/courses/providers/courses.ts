@@ -167,7 +167,7 @@ export class CoreCoursesProvider {
     isDownloadCourseDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
 
-        return site.isFeatureDisabled('NoDelegate_CoreCourseDownload');
+        return site.isOfflineDisabled() || site.isFeatureDisabled('NoDelegate_CoreCourseDownload');
     }
 
     /**
@@ -191,7 +191,7 @@ export class CoreCoursesProvider {
     isDownloadCoursesDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
 
-        return site.isFeatureDisabled('NoDelegate_CoreCoursesDownload');
+        return site.isOfflineDisabled() || site.isFeatureDisabled('NoDelegate_CoreCoursesDownload');
     }
 
     /**

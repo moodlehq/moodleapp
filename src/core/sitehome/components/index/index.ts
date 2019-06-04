@@ -40,6 +40,7 @@ export class CoreSiteHomeIndexComponent implements OnInit {
     siteHomeId: number;
     currentSite: CoreSite;
     blocks = [];
+    downloadEnabled: boolean;
 
     constructor(private domUtils: CoreDomUtilsProvider, sitesProvider: CoreSitesProvider,
             private courseProvider: CoreCourseProvider, private courseHelper: CoreCourseHelperProvider,
@@ -52,6 +53,7 @@ export class CoreSiteHomeIndexComponent implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
+        this.downloadEnabled = !this.currentSite.isOfflineDisabled();
         this.loadContent().finally(() => {
             this.dataLoaded = true;
         });

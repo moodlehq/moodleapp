@@ -18,6 +18,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCourseProvider } from '../../providers/course';
 import { CoreCourseModuleDelegate } from '../../providers/module-delegate';
 import { CoreCourseHelperProvider } from '../../providers/helper';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreConstants } from '@core/constants';
 
 /**
@@ -33,13 +34,15 @@ export class CoreCourseListModTypePage {
     modules = [];
     title: string;
     loaded = false;
+    downloadEnabled = false;
 
     protected courseId: number;
     protected modName: string;
     protected archetypes = {}; // To speed up the check of modules.
 
     constructor(navParams: NavParams, private courseProvider: CoreCourseProvider, private moduleDelegate: CoreCourseModuleDelegate,
-             private domUtils: CoreDomUtilsProvider, private courseHelper: CoreCourseHelperProvider) {
+             private domUtils: CoreDomUtilsProvider, private courseHelper: CoreCourseHelperProvider,
+             private sitesProvider: CoreSitesProvider) {
 
         this.title = navParams.get('title');
         this.courseId = navParams.get('courseId');
@@ -50,6 +53,8 @@ export class CoreCourseListModTypePage {
      * View loaded.
      */
     ionViewDidLoad(): void {
+        this.downloadEnabled = !this.sitesProvider.getCurrentSite().isOfflineDisabled();
+
         this.fetchData().finally(() => {
             this.loaded = true;
         });
