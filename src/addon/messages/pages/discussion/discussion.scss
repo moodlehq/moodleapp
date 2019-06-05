@@ -176,12 +176,20 @@ ion-app.app-root page-addon-messages-discussion {
             @include margin-horizontal(null, -0.5rem);
             border-bottom-color: $item-message-mine-bg;
         }
+
+        &.activated .tail {
+            border-bottom-color: darken($item-message-mine-bg, 10%);
+        }
     }
 
     .addon-message-not-mine .tail {
         @include position(null, null, 0, 0);
         @include margin-horizontal(-0.5rem, null);
         border-bottom-color: $item-message-bg;
+    }
+
+    .addon-message-not-mine.activated .tail {
+        border-bottom-color: darken($item-message-bg, 10%);
     }
 
     .toolbar-title {
