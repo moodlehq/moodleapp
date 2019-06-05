@@ -23,6 +23,7 @@ import { AddonMessagesSyncProvider } from '../../providers/sync';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreAppProvider } from '@providers/app';
 import { coreSlideInOut } from '@classes/animations';
@@ -97,7 +98,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             private domUtils: CoreDomUtilsProvider, private messagesProvider: AddonMessagesProvider, logger: CoreLoggerProvider,
             private utils: CoreUtilsProvider, private appProvider: CoreAppProvider, private translate: TranslateService,
             @Optional() private svComponent: CoreSplitViewComponent, private messagesOffline: AddonMessagesOfflineProvider,
-            private modalCtrl: ModalController) {
+            private modalCtrl: ModalController, private textUtils: CoreTextUtilsProvider) {
 
         this.siteId = sitesProvider.getCurrentSiteId();
         this.currentUserId = sitesProvider.getCurrentSiteUserId();
@@ -800,7 +801,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      * @param {any} message Message to be copied.
      */
     copyMessage(message: any): void {
-        this.utils.copyToClipboard(message.smallmessage || message.text || '');
+        const text = this.textUtils.decodeHTMLEntities(message.smallmessage || message.text || '');
+        this.utils.copyToClipboard(text);
     }
 
     /**
