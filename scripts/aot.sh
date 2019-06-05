@@ -6,7 +6,7 @@ if [ $TRAVIS_BRANCH == 'integration' ] || [ $TRAVIS_BRANCH == 'master' ] || [ $T
     ./build_lang.sh
     cd ..
 
-    if [ $TRAVIS_BRANCH == 'master' ] && [ ! -z $GIT_TOKEN ] ; then
+    if [ "$TRAVIS_BRANCH" == 'master' ] && [ ! -z $GIT_TOKEN ] ; then
         git remote set-url origin https://$GIT_TOKEN@github.com/$TRAVIS_REPO_SLUG.git
         git fetch -q origin
         git add src/assets/lang
