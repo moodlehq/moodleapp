@@ -171,7 +171,7 @@ function build_lang($lang, $keys, $total) {
         $string = [];
         include($file);
 
-        if (!isset($string[$value->string])) {
+        if (!isset($string[$value->string]) || ($lang == 'en' && $value->file == 'local_moodlemobileapp')) {
             // Not yet translated. Do not override.
             if (!$langFile) {
                 // Load lang files just once.
