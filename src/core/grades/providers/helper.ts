@@ -559,18 +559,19 @@ export class CoreGradesHelperProvider {
      * Taken from make_grades_menu on moodlelib.php
      *
      * @param  {number} gradingType     If positive, max grade you can provide. If negative, scale Id.
-     * @param  {number} moduleId        Module Id needed to retrieve the scale.
+     * @param  {number} [moduleId]      Module ID. Used to retrieve the scale items when they are not passed as parameter.
+     *                                  If the user does not have permision to manage the activity an empty list is returned.
      * @param  {string} [defaultLabel]  Element that will become default option, if not defined, it won't be added.
      * @param  {any}    [defaultValue]  Element that will become default option value. Default ''.
      * @param  {string} [scale]         Scale csv list String. If not provided, it will take it from the module grade info.
      * @return {Promise<any[]>}         Array with objects with value and label to create a propper HTML select.
      */
-    makeGradesMenu(gradingType: number, moduleId: number, defaultLabel: string = '', defaultValue: any = '', scale?: string):
+    makeGradesMenu(gradingType: number, moduleId?: number, defaultLabel: string = '', defaultValue: any = '', scale?: string):
             Promise<any[]> {
         if (gradingType < 0) {
             if (scale) {
                 return Promise.resolve(this.utils.makeMenuFromList(scale, defaultLabel, undefined, defaultValue));
-            } else {
+            } else if (moduleId) {
                 return this.courseProvider.getModuleBasicGradeInfo(moduleId).then((gradeInfo) => {
                     if (gradeInfo.scale) {
                         return this.utils.makeMenuFromList(gradeInfo.scale, defaultLabel, undefined,  defaultValue);
@@ -578,6 +579,8 @@ export class CoreGradesHelperProvider {
 
                     return [];
                 });
+            } else {
+                return Promise.resolve([]);
             }
         }
 

@@ -467,6 +467,8 @@ export class CoreCourseProvider {
     /**
      * Gets a module basic grade info by module ID.
      *
+     * If the user does not have permision to manage the activity false is returned.
+     *
      * @param {number} moduleId Module ID.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved with the module's grade info.
