@@ -127,7 +127,7 @@
                 <ion-item text-wrap *ngIf="!assessments || !assessments.length">
                     <p>{{ 'addon.mod_workshop.assignedassessmentsnone' | translate }}</p>
                 </ion-item>
-                <ng-container *ngFor="let assessment of assessments">
+                <ng-container *ngFor="let assessment of (assessments || [])">
                     <addon-mod-workshop-submission [submission]="assessment.submission" [assessment]="assessment" [courseId]="workshop.course" [module]="module" [workshop]="workshop" [access]="access" summary="true"></addon-mod-workshop-submission>
                 </ng-container>
             </ion-card >
