@@ -63,8 +63,6 @@ export class AddonModWorkshopAssessmentStrategyAccumulativeHandler implements Ad
             field.dimtitle = this.translate.instant(
                     'addon.mod_workshop_assessment_accumulative.dimensionnumber', {$a: field.number});
 
-            const scale = parseInt(field.grade, 10) < 0 ? form.dimensionsinfo[n].scale : null;
-
             if (!form.current[n]) {
                 form.current[n] = {};
             }
@@ -76,7 +74,11 @@ export class AddonModWorkshopAssessmentStrategyAccumulativeHandler implements Ad
 
             form.current[n].grade = form.current[n].grade ? parseInt(form.current[n].grade, 10) : -1;
 
-            promises.push(this.gradesHelper.makeGradesMenu(field.grade, workshopId, defaultGrade, -1, scale).then((grades) => {
+            const gradingType = parseInt(field.grade, 10);
+            const dimension = form.dimensionsinfo.find((dimension) => dimension.id == field.dimensionid);
+            const scale = dimension && gradingType < 0 ? dimension.scale : null;
+
+            promises.push(this.gradesHelper.makeGradesMenu(gradingType, undefined, defaultGrade, -1, scale).then((grades) => {
                 field.grades = grades;
                 originalValues[n].grade = form.current[n].grade;
             }));

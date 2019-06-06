@@ -182,8 +182,8 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
 
                         if (accessData.canoverridegrades) {
                             defaultGrade = this.translate.instant('addon.mod_workshop.notoverridden');
-                            promise = this.gradesHelper.makeGradesMenu(this.workshop.gradinggrade, this.workshopId, defaultGrade,
-                                    -1).then((grades) => {
+                            promise = this.gradesHelper.makeGradesMenu(this.workshop.gradinggrade, undefined, defaultGrade, -1)
+                                    .then((grades) => {
                                 this.evaluationGrades = grades;
                             });
                         } else {

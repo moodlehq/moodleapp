@@ -259,8 +259,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
 
                 const defaultGrade = this.translate.instant('addon.mod_workshop.notoverridden');
 
-                promises.push(this.gradesHelper.makeGradesMenu(this.workshop.grade, this.workshopId, defaultGrade, -1)
-                        .then((grades) => {
+                promises.push(this.gradesHelper.makeGradesMenu(this.workshop.grade, undefined, defaultGrade, -1).then((grades) => {
                     this.evaluationGrades = grades;
 
                     this.evaluate.grade = {
