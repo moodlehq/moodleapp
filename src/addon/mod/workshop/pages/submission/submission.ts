@@ -202,7 +202,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
                 this.workshop.phase < AddonModWorkshopProvider.PHASE_CLOSED && this.access.canoverridegrades;
             this.ownAssessment = false;
 
-            if (this.access.canviewallassessments || this.currentUserId == this.userId) {
+            if (this.access.canviewallassessments) {
                 // Get new data, different that came from stateParams.
                 promises.push(this.workshopProvider.getSubmissionAssessments(this.workshopId, this.submissionId)
                         .then((subAssessments) => {
