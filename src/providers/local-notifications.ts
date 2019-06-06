@@ -206,6 +206,17 @@ export class CoreLocalNotificationsProvider {
     }
 
     /**
+     * Check whether sound can be disabled for notifications.
+     *
+     * @return {boolean} Whether sound can be disabled for notifications.
+     */
+    canDisableSound(): boolean {
+        // Only allow disabling sound in Android 7 or lower. In iOS and Android 8+ it can easily be done with system settings.
+        return this.isAvailable() && !this.appProvider.isDesktop() && this.platform.is('android') &&
+                this.platform.version().major < 8;
+    }
+
+    /**
      * Create the default channel. It is used to change the name.
      *
      * @return {Promise<any>} Promise resolved when done.
@@ -577,7 +588,15 @@ export class CoreLocalNotificationsProvider {
             return this.localNotifications.cancel(notification.id).finally(() => {
                 if (!triggered) {
                     // Check if sound is enabled for notifications.
-                    return this.configProvider.get(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true).then((soundEnabled) => {
+                    let promise;
+
+                    if (this.canDisableSound()) {
+                        promise = this.configProvider.get(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true);
+                    } else {
+                        promise = Promise.resolve(true);
+                    }
+
+                    return promise.then((soundEnabled) => {
                         if (!soundEnabled) {
                             notification.sound = null;
                         } else {
