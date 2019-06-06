@@ -246,7 +246,15 @@ export class CorePushNotificationsProvider {
      * @return {Promise<PushOptions>} Promise with the push options resolved when done.
      */
     protected getOptions(): Promise<PushOptions> {
-        return this.configProvider.get(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true).then((soundEnabled) => {
+        let promise;
+
+        if (this.localNotificationsProvider.canDisableSound()) {
+            promise = this.configProvider.get(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true);
+        } else {
+            promise = Promise.resolve(true);
+        }
+
+        return promise.then((soundEnabled) => {
             return {
                 android: {
                     sound: !!soundEnabled,

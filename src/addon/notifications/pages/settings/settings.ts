@@ -55,7 +55,8 @@ export class AddonNotificationsSettingsPage implements OnDestroy {
             @Optional() private svComponent: CoreSplitViewComponent) {
 
         this.notifPrefsEnabled = notificationsProvider.isNotificationPreferencesEnabled();
-        this.canChangeSound = localNotificationsProvider.isAvailable() && !appProvider.isDesktop();
+        this.canChangeSound = localNotificationsProvider.canDisableSound();
+
         if (this.canChangeSound) {
             configProvider.get(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true).then((enabled) => {
                 this.notificationSound = !!enabled;
