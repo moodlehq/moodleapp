@@ -319,17 +319,25 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
                             reportPromise = reportPromise.finally(() => {
                                 return this.workshopHelper.getReviewerAssessments(workshop.id, currentUserId, undefined,
                                         undefined, siteId).then((revAssessments) => {
-                                    let p = Promise.resolve();
+
+                                    const promises = [];
+                                    let files = []; // Files in each submission.
+
                                     revAssessments.forEach((assessment) => {
                                         if (assessment.submission.authorid == currentUserId) {
-                                            p = this.workshopProvider.getAssessment(workshop.id, assessment.id);
+                                            promises.push(this.workshopProvider.getAssessment(workshop.id, assessment.id));
                                         }
                                         userIds.push(assessment.reviewerid);
                                         userIds.push(assessment.gradinggradeoverby);
                                         assessments[assessment.id] = assessment;
+
+                                        files = files.concat(assessment.submission.attachmentfiles || [])
+                                                    .concat(assessment.submission.contentfiles || []);
                                     });
 
-                                    return p;
+                                    promises.push(this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id));
+
+                                    return Promise.all(promises);
                                 });
                             });
                         }
