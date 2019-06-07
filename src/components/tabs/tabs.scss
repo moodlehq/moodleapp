@@ -36,13 +36,6 @@ ion-app.app-root .core-tabs-bar {
             @include margin(null, 5px, null, null);
         }
 
-        ion-badge.tab-badge {
-            position: relative;
-            @include position(auto, auto, auto, auto);
-            @include margin(null, null, null, 5px);
-
-        }
-
         &[aria-selected=true] {
             color: $core-top-tabs-color-active !important;
             border-bottom-color: $core-top-tabs-border-active !important;
@@ -118,8 +111,10 @@ ion-app.app-root core-tabs {
     &.tabs-hidden {
         .core-tabs-bar {
             display: none !important;
+            transform: translateY(0) !important;
         }
         .core-tabs-content-container {
+            transform: translateY(0) !important;
             padding-bottom: 0 !important;
         }
     }

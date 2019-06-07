@@ -103,6 +103,11 @@ ion-app.app-root {
     border: 0;
   }
 
+  .item h2 {
+    text-overflow: inherit;
+    overflow: inherit;
+  }
+
   .core-nav-item-selected, .item.core-nav-item-selected {
     @include core-selected-item($core-splitview-selected);
   }
@@ -219,6 +224,8 @@ ion-app.app-root {
   /** Styles of elements inside the directive should be placed in format-text.scss */
   core-format-text {
     user-select: text;
+    word-break: break-word;
+    word-wrap: break-word;
 
     &[maxHeight],
     &[ng-reflect-max-height] {
@@ -383,7 +390,7 @@ ion-app.app-root {
       color: $core-select-placeholder-color;
     }
 
-    &.select-disabled, .select-icon .select-icon-inner {
+    &.select-disabled .select-icon .select-icon-inner {
         color: $text-color;
     }
     @each $color-name, $color-base, $color-contrast in get-colors($colors) {
@@ -595,6 +602,25 @@ ion-app.app-root {
   .alert-message {
       overflow-y: auto;
   }
+  ion-alert.core-nohead {
+
+    &.alert-md .alert-message {
+      padding-top: $alert-md-message-padding-bottom;
+    }
+    &.alert-ios .alert-message {
+      padding-top: $alert-ios-message-padding-bottom;
+    }
+    &.alert-wp .alert-message {
+      padding-top: $alert-wp-message-padding-bottom;
+    }
+    .alert-head {
+      display: none;
+    }
+  }
+
+  ion-alert .alert-checkbox-group {
+    border: 0;
+  }
 
   ion-toast.core-toast-success .toast-wrapper{
       background: $green-dark;
@@ -652,7 +678,7 @@ ion-app.app-root {
         > ion-icon {
           color: $color-base;
           position: absolute;
-          @include position(0, null, null, 16px)
+          @include position(0, null, null, 16px);
           height: 100%;
           font-size: 24px;
           display: flex;
@@ -915,6 +941,12 @@ ion-app.app-root {
     pointer-events: initial;
   }
 
+  // Avoid scroll bouncing on iOS if disabled.
+  &.disable-scroll .ion-page .content-ios .scroll-content::before,
+  &.disable-scroll .ion-page .content-ios .scroll-content::after {
+    content: none;
+  }
+
   .core-iframe-offline-disabled {
     display: none !important;
   }
@@ -963,6 +995,10 @@ ion-app.app-root {
       line-height: 1;
     }
   }
+
+  ion-alert .alert-checkbox-button .alert-checkbox-label {
+    white-space: normal;
+  }
 }
 
 @each $color-name, $color-base, $color-contrast in get-colors($colors) {
@@ -991,7 +1027,7 @@ body.keyboard-is-open {
     }
   }
 
-  core-ion-tabs .tabbar {
+  core-ion-tabs[tabsplacement="bottom"] .tabbar {
       display: none;
   }
 }
@@ -1050,6 +1086,11 @@ ion-modal,
   contain: size layout style;
 }
 
+// Highlight text.
+.matchtext {
+  background-color: $core-text-hightlight-background-color;
+}
+
 // Styles for desktop apps only.
 ion-app.platform-desktop {
   video::-webkit-media-text-track-display {
@@ -1060,5 +1101,54 @@ ion-app.platform-desktop {
     video::-webkit-media-text-track-display {
       font-size: 0.6em;
     }
+  }
+}
+
+// Fix text wrapping in block buttons.
+.button-block[text-wrap] {
+  height: auto;
+
+  // Changed from "strict" because the size depends on child elements.
+  contain: content;
+
+  // Add vertical padding, we cannot rely on a fixed height + centering like in normal buttons.
+  .item-md & {
+    padding-top: .5357em;
+    padding-bottom: .5357em;
+  }
+  .item-md &.item-button {
+    padding-top: .6em;
+    padding-bottom: .6em;
+  }
+  .item-ios & {
+    padding-top: .9em;
+    padding-bottom: .9em;
+  }
+  .item-ios &.item-button {
+    padding-top: .7846em;
+    padding-bottom: .7846em;
+  }
+
+  // Keep a consistent height with normal buttons if text does not wrap.
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  &.button-md {
+    min-height: $button-md-height;
+  }
+  &.button-large-md {
+    min-height: $button-md-large-height;
+  }
+  &.button-small-md {
+    min-height: $button-md-small-height;
+  }
+  &.button-ios {
+    min-height: $button-ios-height;
+  }
+  &.button-large-ios {
+    min-height: $button-ios-large-height;
+  }
+  &.button-small-ios {
+    min-height: $button-ios-small-height;
   }
 }

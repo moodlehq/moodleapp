@@ -17,6 +17,7 @@ import { CoreCronDelegate } from '@providers/cron';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
+import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers/delegate';
 import { AddonModQuizAccessRuleDelegate } from './providers/access-rules-delegate';
 import { AddonModQuizProvider } from './providers/quiz';
 import { AddonModQuizOfflineProvider } from './providers/quiz-offline';
@@ -29,6 +30,7 @@ import { AddonModQuizIndexLinkHandler } from './providers/index-link-handler';
 import { AddonModQuizGradeLinkHandler } from './providers/grade-link-handler';
 import { AddonModQuizReviewLinkHandler } from './providers/review-link-handler';
 import { AddonModQuizListLinkHandler } from './providers/list-link-handler';
+import { AddonModQuizPushClickHandler } from './providers/push-click-handler';
 import { AddonModQuizComponentsModule } from './components/components.module';
 import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
@@ -79,7 +81,8 @@ export const ADDON_MOD_QUIZ_PROVIDERS: any[] = [
         AddonModQuizIndexLinkHandler,
         AddonModQuizGradeLinkHandler,
         AddonModQuizReviewLinkHandler,
-        AddonModQuizListLinkHandler
+        AddonModQuizListLinkHandler,
+        AddonModQuizPushClickHandler
     ]
 })
 export class AddonModQuizModule {
@@ -88,7 +91,8 @@ export class AddonModQuizModule {
             cronDelegate: CoreCronDelegate, syncHandler: AddonModQuizSyncCronHandler, linksDelegate: CoreContentLinksDelegate,
             indexHandler: AddonModQuizIndexLinkHandler, gradeHandler: AddonModQuizGradeLinkHandler,
             reviewHandler: AddonModQuizReviewLinkHandler, updateManager: CoreUpdateManagerProvider,
-            listLinkHandler: AddonModQuizListLinkHandler) {
+            listLinkHandler: AddonModQuizListLinkHandler,
+            pushNotificationsDelegate: CorePushNotificationsDelegate, pushClickHandler: AddonModQuizPushClickHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
@@ -97,6 +101,7 @@ export class AddonModQuizModule {
         linksDelegate.registerHandler(gradeHandler);
         linksDelegate.registerHandler(reviewHandler);
         linksDelegate.registerHandler(listLinkHandler);
+        pushNotificationsDelegate.registerClickHandler(pushClickHandler);
 
         // Allow migrating the tables from the old app to the new schema.
         updateManager.registerSiteTableMigration({

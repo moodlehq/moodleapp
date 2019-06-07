@@ -119,7 +119,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 this.courseHelper.calculateSectionStatus(section, this.course.id, false).then(() => {
                     if (section.isDownloading && !prefetchDelegate.isBeingDownloaded(downloadId)) {
                         // All the modules are now downloading, set a download all promise.
-                        this.prefetch(section, false);
+                        this.prefetch(section);
                     }
                 });
             }
@@ -339,13 +339,10 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Confirm and prefetch a section. If the section is "all sections", prefetch all the sections.
      *
-     * @param {Event} e Click event.
      * @param {any} section Section to download.
+     * @param {boolean} refresh Refresh clicked (not used).
      */
-    prefetch(e: Event, section: any): void {
-        e.preventDefault();
-        e.stopPropagation();
-
+    prefetch(section: any, refresh: boolean = false): void {
         section.isCalculating = true;
         this.courseHelper.confirmDownloadSizeSection(this.course.id, section, this.sections).then(() => {
             this.prefetchSection(section, true);

@@ -17,7 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
-import { CoreCourseModuleMainComponent } from '@core/course/providers/module-delegate';
+import { CoreCourseModuleDelegate, CoreCourseModuleMainComponent } from '@core/course/providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-content';
@@ -60,7 +60,8 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
 
     constructor(protected sitePluginsProvider: CoreSitePluginsProvider, protected courseHelper: CoreCourseHelperProvider,
             protected prefetchDelegate: CoreCourseModulePrefetchDelegate, protected textUtils: CoreTextUtilsProvider,
-            protected translate: TranslateService, protected utils: CoreUtilsProvider) { }
+            protected translate: TranslateService, protected utils: CoreUtilsProvider,
+            protected moduleDelegate: CoreCourseModuleDelegate) { }
 
     /**
      * Component being initialized.
@@ -69,7 +70,9 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
         this.refreshIcon = 'spinner';
 
         if (this.module) {
-            const handler = this.sitePluginsProvider.getSitePluginHandler(this.module.modname);
+            const handlerName = this.moduleDelegate.getHandlerName(this.module.modname),
+                handler = this.sitePluginsProvider.getSitePluginHandler(handlerName);
+
             if (handler) {
                 this.component = handler.plugin.component;
                 this.method = handler.handlerSchema.method;

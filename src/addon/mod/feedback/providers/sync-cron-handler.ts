@@ -30,10 +30,11 @@ export class AddonModFeedbackSyncCronHandler implements CoreCronHandler {
      * Receives the ID of the site affected, undefined for all sites.
      *
      * @param  {string} [siteId] ID of the site affected, undefined for all sites.
+     * @param {boolean} [force] Wether the execution is forced (manual sync).
      * @return {Promise<any>}         Promise resolved when done, rejected if failure.
      */
-    execute(siteId?: string): Promise<any> {
-        return this.feedbackSync.syncAllFeedbacks(siteId);
+    execute(siteId?: string, force?: boolean): Promise<any> {
+        return this.feedbackSync.syncAllFeedbacks(siteId, force);
     }
 
     /**

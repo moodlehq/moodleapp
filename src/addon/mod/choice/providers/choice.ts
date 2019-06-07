@@ -19,7 +19,7 @@ import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModChoiceOfflineProvider } from './offline';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 
 /**
  * Service that provides some features for choices.
@@ -187,7 +187,8 @@ export class AddonModChoiceProvider {
             };
             const preSets: CoreSiteWSPreSets = {
                 cacheKey: this.getChoiceDataCacheKey(courseId),
-                omitExpires: forceCache
+                omitExpires: forceCache,
+                updateFrequency: CoreSite.FREQUENCY_RARELY
             };
 
             if (forceCache) {
@@ -252,7 +253,8 @@ export class AddonModChoiceProvider {
                 choiceid: choiceId
             };
             const preSets: CoreSiteWSPreSets = {
-                cacheKey: this.getChoiceOptionsCacheKey(choiceId)
+                cacheKey: this.getChoiceOptionsCacheKey(choiceId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY
             };
 
             if (ignoreCache) {
@@ -371,15 +373,17 @@ export class AddonModChoiceProvider {
      * Report the choice as being viewed.
      *
      * @param  {string} id Choice ID.
+     * @param {string} [name] Name of the choice.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(id: number, siteId?: string): Promise<any> {
+    logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             choiceid: id
         };
 
-        return this.logHelper.log('mod_choice_view_choice', params, AddonModChoiceProvider.COMPONENT, id, siteId);
+        return this.logHelper.logSingle('mod_choice_view_choice', params, AddonModChoiceProvider.COMPONENT, id, name, 'choice',
+                {}, siteId);
     }
 
     /**

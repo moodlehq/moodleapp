@@ -15,9 +15,12 @@
 import { Injectable } from '@angular/core';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSite } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreAppProvider } from '@providers/app';
+import { CoreUserOfflineProvider } from './offline';
+import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 
 /**
  * Service to provide user functionalities.
@@ -34,6 +37,7 @@ export class CoreUserProvider {
     protected siteSchema: CoreSiteSchema = {
         name: 'CoreUserProvider',
         version: 1,
+        canBeCleared: [ this.USERS_TABLE ],
         tables: [
             {
                 name: this.USERS_TABLE,
@@ -51,7 +55,7 @@ export class CoreUserProvider {
                         name: 'profileimageurl',
                         type: 'TEXT'
                     }
-                ]
+                ],
             }
         ]
     };
@@ -59,7 +63,8 @@ export class CoreUserProvider {
     protected logger;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
-            private filepoolProvider: CoreFilepoolProvider) {
+            private filepoolProvider: CoreFilepoolProvider, private appProvider: CoreAppProvider,
+            private userOffline: CoreUserOfflineProvider, private pushNotificationsProvider: CorePushNotificationsProvider) {
         this.logger = logger.getInstance('CoreUserProvider');
         this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
@@ -146,7 +151,8 @@ export class CoreUserProvider {
                         }
                     ]
                 }, preSets: any = {
-                    cacheKey: this.getParticipantsListCacheKey(courseId)
+                    cacheKey: this.getParticipantsListCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (ignoreCache) {
@@ -230,7 +236,8 @@ export class CoreUserProvider {
     protected getUserFromWS(userId: number, courseId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const presets = {
-                    cacheKey: this.getUserCacheKey(userId)
+                    cacheKey: this.getUserCacheKey(userId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
             let wsName, data;
 
@@ -250,8 +257,8 @@ export class CoreUserProvider {
                 this.logger.debug(`Get user with ID '${userId}'`);
                 wsName = 'core_user_get_users_by_field';
                 data = {
-                    'field': 'id',
-                    'values[0]': userId
+                    field: 'id',
+                    values: [userId]
                 };
             }
 
@@ -269,6 +276,68 @@ export class CoreUserProvider {
                 return user;
             });
 
+        });
+    }
+
+    /**
+     * Get a user preference (online or offline).
+     *
+     * @param {string} name Name of the preference.
+     * @param {string} [siteId] Site Id. If not defined, use current site.
+     * @return {string} Preference value or null if preference not set.
+     */
+    getUserPreference(name: string, siteId?: string): Promise<string> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        return this.userOffline.getPreference(name, siteId).catch(() => {
+            return null;
+        }).then((preference) => {
+            if (preference && !this.appProvider.isOnline()) {
+                // Offline, return stored value.
+                return preference.value;
+            }
+
+            return this.getUserPreferenceOnline(name, siteId).then((wsValue) => {
+                if (preference && preference.value != preference.onlinevalue && preference.onlinevalue == wsValue) {
+                    // Sync is pending for this preference, return stored value.
+                    return preference.value;
+                }
+
+                return this.userOffline.setPreference(name, wsValue, wsValue).then(() => {
+                    return wsValue;
+                });
+            });
+        });
+    }
+
+    /**
+     * Get cache key for a user preference WS call.
+     *
+     * @param {string} name Preference name.
+     * @return {string} Cache key.
+     */
+    protected getUserPreferenceCacheKey(name: string): string {
+        return this.ROOT_CACHE_KEY + 'preference:' + name;
+    }
+
+    /**
+     * Get a user preference online.
+     *
+     * @param {string} name Name of the preference.
+     * @param {string} [siteId] Site Id. If not defined, use current site.
+     * @return {string} Preference value or null if preference not set.
+     */
+    getUserPreferenceOnline(name: string, siteId?: string): Promise<string> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const data = { name };
+            const preSets: CoreSiteWSPreSets = {
+                cacheKey: this.getUserPreferenceCacheKey(data.name),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
+            };
+
+            return site.read('core_user_get_user_preferences', data, preSets).then((result) => {
+                return result.preferences[0] ? result.preferences[0].value : null;
+            });
         });
     }
 
@@ -295,6 +364,19 @@ export class CoreUserProvider {
     invalidateParticipantsList(courseId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKey(this.getParticipantsListCacheKey(courseId));
+        });
+    }
+
+    /**
+     * Invalidate user preference.
+     *
+     * @param {string} name Name of the preference.
+     * @param {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateUserPreference(name: string, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getUserPreferenceCacheKey(name));
         });
     }
 
@@ -354,18 +436,22 @@ export class CoreUserProvider {
      * Log User Profile View in Moodle.
      * @param  {number}       userId   User ID.
      * @param  {number}       [courseId] Course ID.
+     * @param  {string}       [name] Name of the user.
      * @return {Promise<any>}          Promise resolved when done.
      */
-    logView(userId: number, courseId?: number): Promise<any> {
+    logView(userId: number, courseId?: number, name?: string): Promise<any> {
         const params = {
-            userid: userId
-        };
+                userid: userId
+            },
+            wsName = 'core_user_view_user_profile';
 
         if (courseId) {
             params['courseid'] = courseId;
         }
 
-        return this.sitesProvider.getCurrentSite().write('core_user_view_user_profile', params);
+        this.pushNotificationsProvider.logViewEvent(userId, name, 'user', wsName, {courseid: courseId});
+
+        return this.sitesProvider.getCurrentSite().write(wsName, params);
     }
 
     /**
@@ -374,9 +460,13 @@ export class CoreUserProvider {
      * @return {Promise<any>}          Promise resolved when done.
      */
     logParticipantsView(courseId?: number): Promise<any> {
-        return this.sitesProvider.getCurrentSite().write('core_user_view_user_list', {
+        const params = {
             courseid: courseId
-        });
+        };
+
+        this.pushNotificationsProvider.logViewListEvent('user', 'core_user_view_user_list', params);
+
+        return this.sitesProvider.getCurrentSite().write('core_user_view_user_list', params);
     }
 
     /**
@@ -456,6 +546,45 @@ export class CoreUserProvider {
     }
 
     /**
+     * Set a user preference (online or offline).
+     *
+     * @param {string} name Name of the preference.
+     * @param {string} value Value of the preference.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved on success.
+     */
+    setUserPreference(name: string, value: string, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        let isOnline = this.appProvider.isOnline();
+        let promise: Promise<any>;
+
+        if (isOnline) {
+            const preferences = [{type: name, value}];
+            promise = this.updateUserPreferences(preferences, undefined, undefined, siteId).catch((error) => {
+                // Preference not saved online.
+                isOnline = false;
+
+                return Promise.reject(error);
+            });
+        } else {
+            promise = Promise.resolve();
+        }
+
+        return promise.finally(() => {
+            // Update stored online value if saved online.
+            const onlineValue = isOnline ? value : undefined;
+
+            return Promise.all([
+                this.userOffline.setPreference(name, value, onlineValue),
+                this.invalidateUserPreference(name).catch(() => {
+                    // Ignore error.
+                })
+            ]);
+        });
+    }
+
+    /**
      * Update a preference for a user.
      *
      * @param  {string} name     Preference name.
@@ -478,13 +607,14 @@ export class CoreUserProvider {
     /**
      * Update some preferences for a user.
      *
-     * @param  {any} preferences                List of preferences.
+     * @param  {{name: string, value: string}[]} preferences List of preferences.
      * @param  {boolean} [disableNotifications] Whether to disable all notifications. Undefined to not update this value.
      * @param  {number} [userId]                User ID. If not defined, site's current user.
      * @param  {string} [siteId]                Site ID. If not defined, current site.
      * @return {Promise<any>}                   Promise resolved if success.
      */
-    updateUserPreferences(preferences: any, disableNotifications: boolean, userId?: number, siteId?: string): Promise<any> {
+    updateUserPreferences(preferences: {type: string, value: string}[], disableNotifications?: boolean, userId?: number,
+            siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 

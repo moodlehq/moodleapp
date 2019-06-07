@@ -14,26 +14,27 @@
 
 import { Injectable } from '@angular/core';
 import { CoreCronHandler } from '@providers/cron';
-import { AddonPushNotificationsProvider } from './pushnotifications';
+import { CoreUserSyncProvider } from './sync';
 
 /**
- * Cron handler to retry pending unregisters.
+ * Synchronization cron handler.
  */
 @Injectable()
-export class AddonPushNotificationsUnregisterCronHandler implements CoreCronHandler {
-    name = 'AddonPushNotificationsUnregisterCronHandler';
+export class CoreUserSyncCronHandler implements CoreCronHandler {
+    name = 'CoreUserSyncCronHandler';
 
-    constructor(private pushNotificationsProvider: AddonPushNotificationsProvider) {}
+    constructor(private userSync: CoreUserSyncProvider) {}
 
     /**
      * Execute the process.
      * Receives the ID of the site affected, undefined for all sites.
      *
-     * @param  {string} [siteId] ID of the site affected, undefined for all sites.
+     * @param {string} [siteId] ID of the site affected, undefined for all sites.
+     * @param {boolean} [force] Wether the execution is forced (manual sync).
      * @return {Promise<any>} Promise resolved when done, rejected if failure.
      */
-    execute(siteId?: string): Promise<any> {
-        return this.pushNotificationsProvider.retryUnregisters(siteId);
+    execute(siteId?: string, force?: boolean): Promise<any> {
+        return this.userSync.syncPreferences(siteId);
     }
 
     /**
@@ -42,6 +43,6 @@ export class AddonPushNotificationsUnregisterCronHandler implements CoreCronHand
      * @return {number} Time between consecutive executions (in ms).
      */
     getInterval(): number {
-        return 300000;
+        return 300000; // 5 minutes.
     }
 }

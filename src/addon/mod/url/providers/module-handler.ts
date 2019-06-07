@@ -79,7 +79,7 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
                 handler.courseProvider.loadModuleContents(module, courseId, undefined, false, false, undefined, handler.modName)
                         .then(() => {
                     // Check if the URL can be handled by the app. If so, always open it directly.
-                    return handler.contentLinksHelper.canHandleLink(module.contents[0].fileurl, courseId);
+                    return handler.contentLinksHelper.canHandleLink(module.contents[0].fileurl, courseId, undefined, true);
                 }).then((canHandle) => {
                     if (canHandle) {
                         // URL handled by the app, open it directly.
@@ -173,7 +173,7 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
      * @param {number} courseId The course ID.
      */
     protected openUrl(module: any, courseId: number): void {
-        this.urlProvider.logView(module.instance).then(() => {
+        this.urlProvider.logView(module.instance, module.name).then(() => {
             this.courseProvider.checkModuleCompletion(courseId, module.completiondata);
         }).catch(() => {
             // Ignore errors.

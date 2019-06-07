@@ -22,7 +22,7 @@ import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModWikiOfflineProvider } from './wiki-offline';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 
 export interface AddonModWikiSubwikiListData {
     /**
@@ -134,7 +134,8 @@ export class AddonModWikiProvider {
                     pageid: pageId
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getPageContentsCacheKey(pageId)
+                    cacheKey: this.getPageContentsCacheKey(pageId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (offline) {
@@ -215,7 +216,8 @@ export class AddonModWikiProvider {
                     userid: userId
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getSubwikiFilesCacheKey(wikiId, groupId, userId)
+                    cacheKey: this.getSubwikiFilesCacheKey(wikiId, groupId, userId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (offline) {
@@ -299,7 +301,8 @@ export class AddonModWikiProvider {
 
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getSubwikiPagesCacheKey(wikiId, groupId, userId)
+                    cacheKey: this.getSubwikiPagesCacheKey(wikiId, groupId, userId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (offline) {
@@ -352,7 +355,8 @@ export class AddonModWikiProvider {
                     wikiid: wikiId
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getSubwikisCacheKey(wikiId)
+                    cacheKey: this.getSubwikisCacheKey(wikiId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (offline) {
@@ -408,7 +412,8 @@ export class AddonModWikiProvider {
                     courseids: [courseId]
                 },
                 preSets = {
-                    cacheKey: this.getWikiDataCacheKey(courseId)
+                    cacheKey: this.getWikiDataCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('mod_wiki_get_wikis_by_courses', params, preSets).then((response) => {
@@ -655,30 +660,34 @@ export class AddonModWikiProvider {
      *
      * @param {number} id Page ID.
      * @param {number} wikiId Wiki ID.
+     * @param {string} [name] Name of the wiki.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logPageView(id: number, wikiId: number, siteId?: string): Promise<any> {
+    logPageView(id: number, wikiId: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             pageid: id
         };
 
-        return this.logHelper.log('mod_wiki_view_page', params, AddonModWikiProvider.COMPONENT, wikiId, siteId);
+        return this.logHelper.logSingle('mod_wiki_view_page', params, AddonModWikiProvider.COMPONENT, wikiId, name, 'wiki',
+                params, siteId);
     }
 
     /**
      * Report the wiki as being viewed.
      *
      * @param {number} id Wiki ID.
+     * @param {string} [name] Name of the wiki.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logView(id: number, siteId?: string): Promise<any> {
+    logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             wikiid: id
         };
 
-        return this.logHelper.log('mod_wiki_view_wiki', params, AddonModWikiProvider.COMPONENT, id, siteId);
+        return this.logHelper.logSingle('mod_wiki_view_wiki', params, AddonModWikiProvider.COMPONENT, id, name, 'wiki', {},
+                siteId);
     }
 
     /**

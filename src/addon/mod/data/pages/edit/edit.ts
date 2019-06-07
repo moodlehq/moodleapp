@@ -45,7 +45,6 @@ export class AddonModDataEditPage {
     protected data: any;
     protected entryId: number;
     protected entry: any;
-    protected offlineActions = [];
     protected fields = {};
     protected fieldsArray = [];
     protected siteId: string;
@@ -95,7 +94,7 @@ export class AddonModDataEditPage {
      * @return {boolean | Promise<void>} Resolved if we can leave it, rejected if not.
      */
     ionViewCanLeave(): boolean | Promise<void> {
-        if (this.forceLeave) {
+        if (this.forceLeave || !this.entry) {
             return true;
         }
 
@@ -145,31 +144,14 @@ export class AddonModDataEditPage {
                 });
             }
         }).then(() => {
-            return this.dataOffline.getEntryActions(this.data.id, this.entryId);
-        }).then((actions) => {
-            this.offlineActions = actions;
-
             return this.dataProvider.getFields(this.data.id);
         }).then((fieldsData) => {
             this.fieldsArray = fieldsData;
             this.fields = this.utils.arrayToObject(fieldsData, 'id');
 
-            return this.dataHelper.getEntry(this.data, this.entryId, this.offlineActions);
+            return this.dataHelper.fetchEntry(this.data, fieldsData, this.entryId);
         }).then((entry) => {
-             if (entry) {
-                entry = entry.entry;
-
-                // Index contents by fieldid.
-                entry.contents = this.utils.arrayToObject(entry.contents, 'fieldid');
-            } else {
-                entry = {
-                    contents: {}
-                };
-            }
-
-            return this.dataHelper.applyOfflineActions(entry, this.offlineActions, this.fieldsArray);
-        }).then((entryData) => {
-            this.entry = entryData;
+            this.entry = entry.entry;
 
             this.editFormRender = this.displayEditFields();
         }).catch((message) => {

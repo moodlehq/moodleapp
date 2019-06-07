@@ -13,18 +13,19 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreLoggerProvider } from '@providers/logger';
+import { TranslateService } from '@ngx-translate/core';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
+import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreAppProvider } from '@providers/app';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSyncProvider } from '@providers/sync';
 import { CoreCourseOfflineProvider } from './course-offline';
 import { CoreCourseProvider } from './course';
-import { CoreEventsProvider } from '@providers/events';
-import { TranslateService } from '@ngx-translate/core';
-import { CoreSyncProvider } from '@providers/sync';
+import { CoreCourseLogHelperProvider } from './log-helper';
 
 /**
  * Service to sync course offline data. This only syncs the offline data of the course itself, not the offline data of
@@ -39,7 +40,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider {
             protected appProvider: CoreAppProvider, private courseOffline: CoreCourseOfflineProvider,
             private eventsProvider: CoreEventsProvider,  private courseProvider: CoreCourseProvider,
             translate: TranslateService, private utils: CoreUtilsProvider, protected textUtils: CoreTextUtilsProvider,
-            syncProvider: CoreSyncProvider, timeUtils: CoreTimeUtilsProvider) {
+            syncProvider: CoreSyncProvider, timeUtils: CoreTimeUtilsProvider, protected logHelper: CoreCourseLogHelperProvider) {
 
         super('CoreCourseSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate, timeUtils);
     }
@@ -48,25 +49,32 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider {
      * Try to synchronize all the courses in a certain site or in all sites.
      *
      * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} [force] Wether the execution is forced (manual sync).
      * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllCourses(siteId?: string): Promise<any> {
-        return this.syncOnSites('courses', this.syncAllCoursesFunc.bind(this), undefined, siteId);
+    syncAllCourses(siteId?: string, force?: boolean): Promise<any> {
+        return this.syncOnSites('courses', this.syncAllCoursesFunc.bind(this), [force], siteId);
     }
 
     /**
      * Sync all courses on a site.
      *
-     * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {string} siteId Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} force Wether the execution is forced (manual sync).
      * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected syncAllCoursesFunc(siteId?: string): Promise<any> {
-        return this.courseOffline.getAllManualCompletions(siteId).then((completions) => {
-            const promises = [];
+    protected syncAllCoursesFunc(siteId: string, force: boolean): Promise<any> {
+        const p1 = [];
 
+        p1.push(this.logHelper.syncSite(siteId));
+
+        p1.push(this.courseOffline.getAllManualCompletions(siteId).then((completions) => {
             // Sync all courses.
-            completions.forEach((completion) => {
-                promises.push(this.syncCourseIfNeeded(completion.courseid, siteId).then((result) => {
+            const p2 = completions.map((completion) => {
+                const promise = force ? this.syncCourse(completion.courseid, siteId) :
+                    this.syncCourseIfNeeded(completion.courseid, siteId);
+
+                return promise.then((result) => {
                     if (result && result.updated) {
                         // Sync successful, send event.
                         this.eventsProvider.trigger(CoreCourseSyncProvider.AUTO_SYNCED, {
@@ -74,9 +82,13 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider {
                             warnings: result.warnings
                         }, siteId);
                     }
-                }));
+                });
             });
-        });
+
+            return Promise.all(p2);
+        }));
+
+        return Promise.all(p1);
     }
 
     /**

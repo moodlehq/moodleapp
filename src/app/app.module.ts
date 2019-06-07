@@ -59,6 +59,7 @@ import { CoreUpdateManagerProvider } from '@providers/update-manager';
 import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreFileHelperProvider } from '@providers/file-helper';
+import { CoreCustomURLSchemesProvider } from '@providers/urlschemes';
 
 // Core modules.
 import { CoreComponentsModule } from '@components/components.module';
@@ -121,11 +122,12 @@ import { AddonMessageOutputModule } from '@addon/messageoutput/messageoutput.mod
 import { AddonMessageOutputAirnotifierModule } from '@addon/messageoutput/airnotifier/airnotifier.module';
 import { AddonMessagesModule } from '@addon/messages/messages.module';
 import { AddonNotesModule } from '../addon/notes/notes.module';
-import { AddonPushNotificationsModule } from '@addon/pushnotifications/pushnotifications.module';
+import { CorePushNotificationsModule } from '@core/pushnotifications/pushnotifications.module';
 import { AddonNotificationsModule } from '@addon/notifications/notifications.module';
 import { AddonRemoteThemesModule } from '@addon/remotethemes/remotethemes.module';
 import { AddonQbehaviourModule } from '@addon/qbehaviour/qbehaviour.module';
 import { AddonQtypeModule } from '@addon/qtype/qtype.module';
+import { AddonStorageManagerModule } from '@addon/storagemanager/storagemanager.module';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
@@ -160,7 +162,8 @@ export const CORE_PROVIDERS: any[] = [
     CoreUpdateManagerProvider,
     CorePluginFileDelegate,
     CoreSyncProvider,
-    CoreFileHelperProvider
+    CoreFileHelperProvider,
+    CoreCustomURLSchemesProvider
 ];
 
 @NgModule({
@@ -201,6 +204,7 @@ export const CORE_PROVIDERS: any[] = [
         CoreCommentsModule,
         CoreBlockModule,
         CoreRatingModule,
+        CorePushNotificationsModule,
         AddonBadgesModule,
         AddonBlogModule,
         AddonCalendarModule,
@@ -241,10 +245,10 @@ export const CORE_PROVIDERS: any[] = [
         AddonMessagesModule,
         AddonNotesModule,
         AddonNotificationsModule,
-        AddonPushNotificationsModule,
         AddonRemoteThemesModule,
         AddonQbehaviourModule,
-        AddonQtypeModule
+        AddonQtypeModule,
+        AddonStorageManagerModule
     ],
     bootstrap: [IonicApp],
     entryComponents: [
@@ -278,6 +282,7 @@ export const CORE_PROVIDERS: any[] = [
         CorePluginFileDelegate,
         CoreSyncProvider,
         CoreFileHelperProvider,
+        CoreCustomURLSchemesProvider,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: CoreInterceptor,

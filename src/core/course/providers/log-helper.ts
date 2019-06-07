@@ -18,6 +18,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreAppProvider } from '@providers/app';
+import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 
 /**
  * Helper to manage logging to Moodle.
@@ -62,7 +63,7 @@ export class CoreCourseLogHelperProvider {
 
     constructor(protected sitesProvider: CoreSitesProvider, protected timeUtils: CoreTimeUtilsProvider,
             protected textUtils: CoreTextUtilsProvider, protected utils: CoreUtilsProvider,
-            protected appProvider: CoreAppProvider) {
+            protected appProvider: CoreAppProvider, protected pushNotificationsProvider: CorePushNotificationsProvider) {
         this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
@@ -197,6 +198,47 @@ export class CoreCourseLogHelperProvider {
     }
 
     /**
+     * Perform log online. Data will be saved offline for syncing.
+     * It also triggers a Firebase view_item event.
+     *
+     * @param  {string}         ws          WS name.
+     * @param  {any}            data        Data to send to the WS.
+     * @param  {string}         component   Component name.
+     * @param  {number}         componentId Component ID.
+     * @param  {string}         [name] Name of the viewed item.
+     * @param  {string}         [category] Category of the viewed item.
+     * @param  {string}         [eventData] Data to pass to the Firebase event.
+     * @param  {string}         [siteId]    Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    logSingle(ws: string, data: any, component: string, componentId: number, name?: string, category?: string, eventData?: any,
+            siteId?: string): Promise<any> {
+        this.pushNotificationsProvider.logViewEvent(componentId, name, category, ws, eventData, siteId);
+
+        return this.log(ws, data, component, componentId, siteId);
+    }
+
+    /**
+     * Perform log online. Data will be saved offline for syncing.
+     * It also triggers a Firebase view_item_list event.
+     *
+     * @param  {string}         ws          WS name.
+     * @param  {any}            data        Data to send to the WS.
+     * @param  {string}         component   Component name.
+     * @param  {number}         componentId Component ID.
+     * @param  {string}         category    Category of the viewed item.
+     * @param  {string}         [eventData] Data to pass to the Firebase event.
+     * @param  {string}         [siteId]    Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    logList(ws: string, data: any, component: string, componentId: number, category: string, eventData?: any, siteId?: string)
+            : Promise<any> {
+        this.pushNotificationsProvider.logViewListEvent(category, ws, eventData, siteId);
+
+        return this.log(ws, data, component, componentId, siteId);
+    }
+
+    /**
      * Save activity log for offline sync.
      *
      * @param  {string}         ws          WS name.
@@ -227,7 +269,7 @@ export class CoreCourseLogHelperProvider {
      * @param  {string}         [siteId]    Site ID. If not defined, current site.
      * @return {Promise<any>}   Promise resolved when done.
      */
-    syncAll(siteId?: string): Promise<any> {
+    syncSite(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const siteId = site.getId();
 

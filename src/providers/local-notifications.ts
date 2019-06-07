@@ -25,6 +25,7 @@ import { CoreTextUtilsProvider } from './utils/text';
 import { CoreUtilsProvider } from './utils/utils';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreConstants } from '@core/constants';
+import { CoreConfigConstants } from '../configconstants';
 import { Subject, Subscription } from 'rxjs';
 
 /*
@@ -101,6 +102,10 @@ export class CoreLocalNotificationsProvider {
     };
     protected triggerSubscription: Subscription;
     protected clickSubscription: Subscription;
+    protected clearSubscription: Subscription;
+    protected cancelSubscription: Subscription;
+    protected addSubscription: Subscription;
+    protected updateSubscription: Subscription;
 
     constructor(logger: CoreLoggerProvider, private localNotifications: LocalNotifications, private platform: Platform,
             private appProvider: CoreAppProvider, private utils: CoreUtilsProvider, private configProvider: CoreConfigProvider,
@@ -112,16 +117,31 @@ export class CoreLocalNotificationsProvider {
         this.appDB.createTablesFromSchema(this.tablesSchema);
 
         platform.ready().then(() => {
+            // Listen to events.
             this.triggerSubscription = localNotifications.on('trigger').subscribe((notification: ILocalNotification) => {
                 this.trigger(notification);
+
+                this.handleEvent('trigger', notification);
             });
 
             this.clickSubscription = localNotifications.on('click').subscribe((notification: ILocalNotification) => {
-                if (notification && notification.data) {
-                    this.logger.debug('Notification clicked: ', notification.data);
+                this.handleEvent('click', notification);
+            });
 
-                    this.notifyClick(notification.data);
-                }
+            this.clearSubscription = localNotifications.on('clear').subscribe((notification: ILocalNotification) => {
+                this.handleEvent('clear', notification);
+            });
+
+            this.cancelSubscription = localNotifications.on('cancel').subscribe((notification: ILocalNotification) => {
+                this.handleEvent('cancel', notification);
+            });
+
+            this.addSubscription = localNotifications.on('schedule').subscribe((notification: ILocalNotification) => {
+                this.handleEvent('schedule', notification);
+            });
+
+            this.updateSubscription = localNotifications.on('update').subscribe((notification: ILocalNotification) => {
+                this.handleEvent('update', notification);
             });
 
             // Create the default channel for local notifications.
@@ -183,6 +203,17 @@ export class CoreLocalNotificationsProvider {
 
             return this.localNotifications.cancel(ids);
         });
+    }
+
+    /**
+     * Check whether sound can be disabled for notifications.
+     *
+     * @return {boolean} Whether sound can be disabled for notifications.
+     */
+    canDisableSound(): boolean {
+        // Only allow disabling sound in Android 7 or lower. In iOS and Android 8+ it can easily be done with system settings.
+        return this.isAvailable() && !this.appProvider.isDesktop() && this.platform.is('android') &&
+                this.platform.version().major < 8;
     }
 
     /**
@@ -290,6 +321,20 @@ export class CoreLocalNotificationsProvider {
     }
 
     /**
+     * Handle an event triggered by the local notifications plugin.
+     *
+     * @param {string} eventName Name of the event.
+     * @param {any} notification Notification.
+     */
+    protected handleEvent(eventName: string, notification: any): void {
+        if (notification && notification.data) {
+            this.logger.debug('Notification event: ' + eventName + '. Data:', notification.data);
+
+            this.notifyEvent(eventName, notification.data);
+        }
+    }
+
+    /**
      * Returns whether local notifications plugin is installed.
      *
      * @return {boolean} Whether local notifications plugin is installed.
@@ -327,12 +372,22 @@ export class CoreLocalNotificationsProvider {
      * @param {any} data Data received by the notification.
      */
     notifyClick(data: any): void {
+        this.notifyEvent('click', data);
+    }
+
+    /**
+     * Notify a certain event to observers. Only the observers with the same component as the notification will be notified.
+     *
+     * @param {string} eventName Name of the event to notify.
+     * @param {any} data Data received by the notification.
+     */
+    notifyEvent(eventName: string, data: any): void {
         // Execute the code in the Angular zone, so change detection doesn't stop working.
         this.zone.run(() => {
             const component = data.component;
             if (component) {
-                if (this.observables[component]) {
-                    this.observables[component].next(data);
+                if (this.observables[eventName] && this.observables[eventName][component]) {
+                    this.observables[eventName][component].next(data);
                 }
             }
         });
@@ -384,18 +439,34 @@ export class CoreLocalNotificationsProvider {
      * @return {any} Object with an "off" property to stop listening for clicks.
      */
     registerClick(component: string, callback: Function): any {
-        this.logger.debug(`Register observer '${component}' for notification click.`);
+        return this.registerObserver('click', component, callback);
+    }
 
-        if (typeof this.observables[component] == 'undefined') {
-            // No observable for this component, create a new one.
-            this.observables[component] = new Subject<any>();
+    /**
+     * Register an observer to be notified when a certain event is fired for a notification belonging to a certain component.
+     *
+     * @param {string} eventName Name of the event to listen to.
+     * @param {string} component Component to listen notifications for.
+     * @param {Function} callback Function to call with the data received by the notification.
+     * @return {any} Object with an "off" property to stop listening for events.
+     */
+    registerObserver(eventName: string, component: string, callback: Function): any {
+        this.logger.debug(`Register observer '${component}' for event '${eventName}'.`);
+
+        if (typeof this.observables[eventName] == 'undefined') {
+            this.observables[eventName] = {};
         }
 
-        this.observables[component].subscribe(callback);
+        if (typeof this.observables[eventName][component] == 'undefined') {
+            // No observable for this component, create a new one.
+            this.observables[eventName][component] = new Subject<any>();
+        }
+
+        this.observables[eventName][component].subscribe(callback);
 
         return {
             off: (): void => {
-                this.observables[component].unsubscribe(callback);
+                this.observables[eventName][component].unsubscribe(callback);
             }
         };
     }
@@ -469,10 +540,19 @@ export class CoreLocalNotificationsProvider {
      *                                          be unique inside its component and site.
      * @param {string} component Component triggering the notification. It is used to generate unique IDs.
      * @param {string} siteId Site ID.
+     * @param {boolean} [alreadyUnique] Whether the ID is already unique.
      * @return {Promise<any>} Promise resolved when the notification is scheduled.
      */
-    schedule(notification: ILocalNotification, component: string, siteId: string): Promise<any> {
-        return this.getUniqueNotificationId(notification.id, component, siteId).then((uniqueId) => {
+    schedule(notification: ILocalNotification, component: string, siteId: string, alreadyUnique?: boolean): Promise<any> {
+        let promise;
+
+        if (alreadyUnique) {
+            promise = Promise.resolve(notification.id);
+        } else {
+            promise = this.getUniqueNotificationId(notification.id, component, siteId);
+        }
+
+        return promise.then((uniqueId) => {
             notification.id = uniqueId;
             notification.data = notification.data || {};
             notification.data.component = component;
@@ -481,6 +561,7 @@ export class CoreLocalNotificationsProvider {
             if (this.platform.is('android')) {
                 notification.icon = notification.icon || 'res://icon';
                 notification.smallIcon = notification.smallIcon || 'res://smallicon';
+                notification.color = notification.color || CoreConfigConstants.notificoncolor;
 
                 const led: any = notification.led || {};
                 notification.led = {
@@ -507,7 +588,15 @@ export class CoreLocalNotificationsProvider {
             return this.localNotifications.cancel(notification.id).finally(() => {
                 if (!triggered) {
                     // Check if sound is enabled for notifications.
-                    return this.configProvider.get(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true).then((soundEnabled) => {
+                    let promise;
+
+                    if (this.canDisableSound()) {
+                        promise = this.configProvider.get(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true);
+                    } else {
+                        promise = Promise.resolve(true);
+                    }
+
+                    return promise.then((soundEnabled) => {
                         if (!soundEnabled) {
                             notification.sound = null;
                         } else {

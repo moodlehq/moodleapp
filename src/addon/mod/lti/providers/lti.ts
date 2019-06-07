@@ -21,6 +21,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
+import { CoreSite } from '@classes/site';
 
 export interface AddonModLtiParam {
     name: string;
@@ -108,7 +109,8 @@ export class AddonModLtiProvider {
             courseids: [courseId]
         };
         const preSets: any = {
-            cacheKey: this.getLtiCacheKey(courseId)
+            cacheKey: this.getLtiCacheKey(courseId),
+            updateFrequency: CoreSite.FREQUENCY_RARELY
         };
 
         return this.sitesProvider.getCurrentSite().read('mod_lti_get_ltis_by_courses', params, preSets).then((response) => {
@@ -213,14 +215,15 @@ export class AddonModLtiProvider {
      * Report the LTI as being viewed.
      *
      * @param {string} id LTI id.
+     * @param {string} [name] Name of the lti.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(id: number, siteId?: string): Promise<any> {
+    logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params: any = {
             ltiid: id
         };
 
-        return this.logHelper.log('mod_lti_view_lti', params, AddonModLtiProvider.COMPONENT, id, siteId);
+        return this.logHelper.logSingle('mod_lti_view_lti', params, AddonModLtiProvider.COMPONENT, id, name, 'lti', {}, siteId);
     }
 }

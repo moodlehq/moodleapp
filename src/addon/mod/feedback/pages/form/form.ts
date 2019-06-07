@@ -24,6 +24,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreSitesProvider } from '@providers/sites';
@@ -69,7 +70,7 @@ export class AddonModFeedbackFormPage implements OnDestroy {
             protected eventsProvider: CoreEventsProvider, protected feedbackSync: AddonModFeedbackSyncProvider, network: Network,
             protected translate: TranslateService, protected loginHelper: CoreLoginHelperProvider,
             protected linkHelper: CoreContentLinksHelperProvider, sitesProvider: CoreSitesProvider,
-            @Optional() private content: Content, zone: NgZone) {
+            @Optional() private content: Content, zone: NgZone, protected courseHelper: CoreCourseHelperProvider) {
 
         this.module = navParams.get('module');
         this.courseId = navParams.get('courseId');
@@ -94,7 +95,7 @@ export class AddonModFeedbackFormPage implements OnDestroy {
      */
     ionViewDidLoad(): void {
         this.fetchData().then(() => {
-            this.feedbackProvider.logView(this.feedback.id, true).then(() => {
+            this.feedbackProvider.logView(this.feedback.id, this.feedback.name, true).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch(() => {
                 // Ignore errors.
@@ -325,10 +326,7 @@ export class AddonModFeedbackFormPage implements OnDestroy {
                 modal.dismiss();
             });
         } else {
-            // Use redirect to make the course the new history root (to avoid "loops" in history).
-            this.loginHelper.redirect('CoreCourseSectionPage', {
-                course: { id: this.courseId }
-            }, this.currentSite.getId());
+            this.courseHelper.getAndOpenCourse(undefined, this.courseId, {}, this.currentSite.getId());
         }
     }
 

@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, ElementRef, SimpleChange } from '@angular/core';
+import { Config } from 'ionic-angular';
 
 /**
  * Core Icon is a component that enabled a posibility to add fontawesome icon to the html. It's recommended if both fontawesome
@@ -24,10 +25,11 @@ import { Component, Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
     selector: 'core-icon',
     templateUrl: 'core-icon.html',
 })
-export class CoreIconComponent implements OnInit, OnDestroy {
+export class CoreIconComponent implements OnChanges, OnDestroy {
     // Common params.
     @Input() name: string;
     @Input('color') color?: string;
+    @Input('slash') slash?: boolean; // Display a red slash over the icon.
 
     // Ionicons params.
     @Input('isActive') isActive?: boolean;
@@ -42,17 +44,25 @@ export class CoreIconComponent implements OnInit, OnDestroy {
     protected element: HTMLElement;
     protected newElement: HTMLElement;
 
-    constructor(el: ElementRef) {
+    constructor(el: ElementRef, private config: Config) {
         this.element = el.nativeElement;
     }
 
     /**
-     * Component being initialized.
+     * Detect changes on input properties.
      */
-    ngOnInit(): void {
+    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
+        if (!changes.name || !this.name) {
+            return;
+        }
+
+        const oldElement = this.newElement ? this.newElement : this.element;
+
+        // Use a new created element to avoid ion-icon working.
+        // This is necessary to make the FontAwesome stuff work.
+        // It is also required to stop Ionic overriding the aria-label attribute.
+        this.newElement = document.createElement('ion-icon');
         if (this.name.startsWith('fa-')) {
-            // Use a new created element to avoid ion-icon working.
-            this.newElement = document.createElement('ion-icon');
             this.newElement.classList.add('icon');
             this.newElement.classList.add('fa');
             this.newElement.classList.add(this.name);
@@ -63,7 +73,10 @@ export class CoreIconComponent implements OnInit, OnDestroy {
                 this.newElement.classList.add('fa-' + this.color);
             }
         } else {
-            this.newElement = <HTMLElement> this.element.firstElementChild;
+            const mode = this.config.get('iconMode');
+            this.newElement.classList.add('icon');
+            this.newElement.classList.add('icon-' + mode);
+            this.newElement.classList.add('ion-' + mode + '-' + this.name);
         }
 
         !this.ariaLabel && this.newElement.setAttribute('aria-hidden', 'true');
@@ -88,7 +101,11 @@ export class CoreIconComponent implements OnInit, OnDestroy {
             }
         }
 
-        this.element.parentElement.replaceChild(this.newElement, this.element);
+        if (this.slash) {
+            this.newElement.classList.add('icon-slash');
+        }
+
+        oldElement.parentElement.replaceChild(this.newElement, oldElement);
     }
 
     /**

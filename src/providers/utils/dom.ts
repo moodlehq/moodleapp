@@ -14,8 +14,8 @@
 
 import { Injectable, SimpleChange } from '@angular/core';
 import {
-    LoadingController, Loading, ToastController, Toast, AlertController, Alert, Platform, Content,
-    ModalController
+    LoadingController, Loading, ToastController, Toast, AlertController, Alert, Platform, Content, PopoverController,
+    ModalController,
 } from 'ionic-angular';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
@@ -23,7 +23,9 @@ import { CoreTextUtilsProvider } from './text';
 import { CoreAppProvider } from '../app';
 import { CoreConfigProvider } from '../config';
 import { CoreUrlUtilsProvider } from './url';
+import { CoreFileProvider } from '@providers/file';
 import { CoreConstants } from '@core/constants';
+import { CoreBSTooltipComponent } from '@components/bs-tooltip/bs-tooltip';
 import { Md5 } from 'ts-md5/dist/md5';
 import { Subject } from 'rxjs';
 
@@ -65,7 +67,8 @@ export class CoreDomUtilsProvider {
     constructor(private translate: TranslateService, private loadingCtrl: LoadingController, private toastCtrl: ToastController,
             private alertCtrl: AlertController, private textUtils: CoreTextUtilsProvider, private appProvider: CoreAppProvider,
             private platform: Platform, private configProvider: CoreConfigProvider, private urlUtils: CoreUrlUtilsProvider,
-            private modalCtrl: ModalController, private sanitizer: DomSanitizer) {
+            private modalCtrl: ModalController, private sanitizer: DomSanitizer, private popoverCtrl: PopoverController,
+            private fileProvider: CoreFileProvider) {
 
         // Check if debug messages should be displayed.
         configProvider.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false).then((debugDisplay) => {
@@ -127,28 +130,73 @@ export class CoreDomUtilsProvider {
      */
     confirmDownloadSize(size: any, message?: string, unknownMessage?: string, wifiThreshold?: number, limitedThreshold?: number,
             alwaysConfirm?: boolean): Promise<void> {
-        wifiThreshold = typeof wifiThreshold == 'undefined' ? CoreConstants.WIFI_DOWNLOAD_THRESHOLD : wifiThreshold;
-        limitedThreshold = typeof limitedThreshold == 'undefined' ? CoreConstants.DOWNLOAD_THRESHOLD : limitedThreshold;
+        const readableSize = this.textUtils.bytesToSize(size.size, 2);
 
-        if (size.size < 0 || (size.size == 0 && !size.total)) {
-            // Seems size was unable to be calculated. Show a warning.
-            unknownMessage = unknownMessage || 'core.course.confirmdownloadunknownsize';
+        const getAvailableBytes = new Promise((resolve): void => {
+            if (this.appProvider.isDesktop()) {
+                // Free space calculation is not supported on desktop.
+                resolve(null);
+            } else {
+                this.fileProvider.calculateFreeSpace().then((availableBytes) => {
+                    if (this.platform.is('android')) {
+                        return availableBytes;
+                    } else {
+                        // Space calculation is not accurate on iOS, but it gets more accurate when space is lower.
+                        // We'll only use it when space is <500MB, or we're downloading more than twice the reported space.
+                        if (availableBytes < CoreConstants.IOS_FREE_SPACE_THRESHOLD || size.size > availableBytes / 2) {
+                            return availableBytes;
+                        } else {
+                            return null;
+                        }
+                    }
+                }).then((availableBytes) => {
+                    resolve(availableBytes);
+                });
+            }
+        });
 
-            return this.showConfirm(this.translate.instant(unknownMessage));
-        } else if (!size.total) {
-            // Filesize is only partial.
-            const readableSize = this.textUtils.bytesToSize(size.size, 2);
+        const getAvailableSpace = getAvailableBytes.then((availableBytes: number) => {
+            if (availableBytes === null) {
+                return '';
+            } else {
+                const availableSize = this.textUtils.bytesToSize(availableBytes, 2);
+                if (this.platform.is('android') && size.size > availableBytes - CoreConstants.MINIMUM_FREE_SPACE) {
+                    return Promise.reject(this.translate.instant('core.course.insufficientavailablespace', { size: readableSize }));
+                }
 
-            return this.showConfirm(this.translate.instant('core.course.confirmpartialdownloadsize', { size: readableSize }));
-        } else if (alwaysConfirm || size.size >= wifiThreshold ||
+                return this.translate.instant('core.course.availablespace', {available: availableSize});
+            }
+        });
+
+        return getAvailableSpace.then((availableSpace) => {
+            wifiThreshold = typeof wifiThreshold == 'undefined' ? CoreConstants.WIFI_DOWNLOAD_THRESHOLD : wifiThreshold;
+            limitedThreshold = typeof limitedThreshold == 'undefined' ? CoreConstants.DOWNLOAD_THRESHOLD : limitedThreshold;
+
+            let wifiPrefix = '';
+            if (this.appProvider.isNetworkAccessLimited()) {
+                wifiPrefix = this.translate.instant('core.course.confirmlimiteddownload');
+            }
+
+            if (size.size < 0 || (size.size == 0 && !size.total)) {
+                // Seems size was unable to be calculated. Show a warning.
+                unknownMessage = unknownMessage || 'core.course.confirmdownloadunknownsize';
+
+                return this.showConfirm(wifiPrefix + this.translate.instant(unknownMessage, {availableSpace: availableSpace}));
+            } else if (!size.total) {
+                // Filesize is only partial.
+
+                return this.showConfirm(wifiPrefix + this.translate.instant('core.course.confirmpartialdownloadsize',
+                    { size: readableSize, availableSpace: availableSpace }));
+            } else if (alwaysConfirm || size.size >= wifiThreshold ||
                 (this.appProvider.isNetworkAccessLimited() && size.size >= limitedThreshold)) {
-            message = message || 'core.course.confirmdownload';
-            const readableSize = this.textUtils.bytesToSize(size.size, 2);
+                message = message || 'core.course.confirmdownload';
 
-            return this.showConfirm(this.translate.instant(message, { size: readableSize }));
-        }
+                return this.showConfirm(wifiPrefix + this.translate.instant(message,
+                    { size: readableSize, availableSpace: availableSpace }));
+            }
 
-        return Promise.resolve();
+            return Promise.resolve();
+        });
     }
 
     /**
@@ -562,6 +610,45 @@ export class CoreDomUtilsProvider {
         const id = element.getAttribute(this.INSTANCE_ID_ATTR_NAME);
 
         return this.instances[id];
+    }
+
+    /**
+     * Handle bootstrap tooltips in a certain element.
+     *
+     * @param {HTMLElement} element Element to check.
+     */
+    handleBootstrapTooltips(element: HTMLElement): void {
+        const els = Array.from(element.querySelectorAll('[data-toggle="tooltip"]'));
+
+        els.forEach((el) => {
+            const content = el.getAttribute('title') || el.getAttribute('data-original-title'),
+                trigger = el.getAttribute('data-trigger') || 'hover focus',
+                treated = el.getAttribute('data-bstooltip-treated');
+
+            if (!content || treated === 'true' ||
+                    (trigger.indexOf('hover') == -1 && trigger.indexOf('focus') == -1 && trigger.indexOf('click') == -1)) {
+                return;
+            }
+
+            el.setAttribute('data-bstooltip-treated', 'true'); // Mark it as treated.
+
+            // Store the title in data-original-title instead of title, like BS does.
+            el.setAttribute('data-original-title', content);
+            el.setAttribute('title', '');
+
+            el.addEventListener('click', (e) => {
+                const html = el.getAttribute('data-html');
+
+                const popover = this.popoverCtrl.create(CoreBSTooltipComponent, {
+                    content: content,
+                    html: html === 'true'
+                });
+
+                popover.present({
+                    ev: e
+                });
+            });
+        });
     }
 
     /**
@@ -990,10 +1077,10 @@ export class CoreDomUtilsProvider {
      * @param {string} [title] Title of the modal.
      * @param {string} [okText] Text of the OK button.
      * @param {string} [cancelText] Text of the Cancel button.
-     * @param {any} [options] More options. See https://ionicframework.com/docs/api/components/alert/AlertController/
-     * @return {Promise<void>} Promise resolved if the user confirms and rejected with a canceled error if he cancels.
+     * @param {any} [options] More options. See https://ionicframework.com/docs/v3/api/components/alert/AlertController/
+     * @return {Promise<any>} Promise resolved if the user confirms and rejected with a canceled error if he cancels.
      */
-    showConfirm(message: string, title?: string, okText?: string, cancelText?: string, options?: any): Promise<void> {
+    showConfirm(message: string, title?: string, okText?: string, cancelText?: string, options?: any): Promise<any> {
         return new Promise<void>((resolve, reject): void => {
             const hasHTMLTags = this.textUtils.hasHTMLTags(message);
             let promise;
@@ -1023,8 +1110,8 @@ export class CoreDomUtilsProvider {
                     },
                     {
                         text: okText || this.translate.instant('core.ok'),
-                        handler: (): void => {
-                            resolve();
+                        handler: (data: any): void => {
+                            resolve(data);
                         }
                     }
                 ];
@@ -1163,11 +1250,14 @@ export class CoreDomUtilsProvider {
                 content: text
             }),
             dismiss = loader.dismiss.bind(loader);
-        let isDismissed = false;
+        let isPresented = false,
+            isDismissed = false;
 
         // Override dismiss to prevent dismissing a modal twice (it can throw an error and cause problems).
         loader.dismiss = (data, role, navOptions): Promise<any> => {
-            if (isDismissed) {
+            if (!isPresented || isDismissed) {
+                isDismissed = true;
+
                 return Promise.resolve();
             }
 
@@ -1176,7 +1266,13 @@ export class CoreDomUtilsProvider {
             return dismiss(data, role, navOptions);
         };
 
-        loader.present();
+        // Wait a bit before presenting the modal, to prevent it being displayed if dissmiss is called fast.
+        setTimeout(() => {
+            if (!isDismissed) {
+                isPresented = true;
+                loader.present();
+            }
+        }, 40);
 
         return loader;
     }

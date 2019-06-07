@@ -190,19 +190,21 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
      * Try to synchronize all the quizzes in a certain site or in all sites.
      *
      * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllQuizzes(siteId?: string): Promise<any> {
-        return this.syncOnSites('all quizzes', this.syncAllQuizzesFunc.bind(this), [], siteId);
+    syncAllQuizzes(siteId?: string, force?: boolean): Promise<any> {
+        return this.syncOnSites('all quizzes', this.syncAllQuizzesFunc.bind(this), [force], siteId);
     }
 
     /**
      * Sync all quizzes on a site.
      *
-     * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param  {string} siteId Site ID to sync.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @param {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected syncAllQuizzesFunc(siteId?: string): Promise<any> {
+    protected syncAllQuizzesFunc(siteId?: string, force?: boolean): Promise<any> {
         // Get all offline attempts.
         return this.quizOfflineProvider.getAllAttempts(siteId).then((attempts) => {
             const quizzes = [],
@@ -227,7 +229,9 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
 
                     // Quiz not blocked, try to synchronize it.
                     promises.push(this.quizProvider.getQuizById(quiz.courseid, quiz.id, false, false, siteId).then((quiz) => {
-                        return this.syncQuizIfNeeded(quiz, false, siteId).then((data) => {
+                        const promise = force ? this.syncQuiz(quiz, false, siteId) : this.syncQuizIfNeeded(quiz, false, siteId);
+
+                        return promise.then((data) => {
                             if (data && data.warnings && data.warnings.length) {
                                 // Store the warnings to show them when the user opens the quiz.
                                 return this.setSyncWarnings(quiz.id, data.warnings, siteId).then(() => {
@@ -388,8 +392,9 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
 
                         // Answers sent, now set the current page if the attempt isn't finished.
                         if (!finish) {
+                            // Don't pass the quiz instance because we don't want to trigger a Firebase event in this case.
                             return this.quizProvider.logViewAttempt(onlineAttempt.id, offlineAttempt.currentpage, preflightData,
-                                    false).catch(() => {
+                                    false, undefined, siteId).catch(() => {
                                 // Ignore errors.
                             });
                         }

@@ -58,7 +58,7 @@
                         </ion-note>
                     </ion-item-divider>
                     <!-- Body of the question. -->
-                    <core-question text-wrap [question]="question" [component]="component" [componentId]="quiz.coursemodule" [attemptId]="attempt.id" [offlineEnabled]="offline" (onAbort)="abortQuiz()" (buttonClicked)="behaviourButtonClicked($event)"></core-question>
+                    <core-question text-wrap [question]="question" [component]="component" [componentId]="quiz.coursemodule" [attemptId]="attempt.id" [usageId]="attempt.uniqueid" [offlineEnabled]="offline" (onAbort)="abortQuiz()" (buttonClicked)="behaviourButtonClicked($event)"></core-question>
                 </ion-card>
             </div>
         </form>
@@ -135,8 +135,8 @@
             </ion-item>
             <ion-item>
                 <a ion-button block icon-end [href]="moduleUrl" core-link>
-                    <ion-icon name="open"></ion-icon>
                     {{ 'core.openinbrowser' | translate }}
+                    <ion-icon name="open"></ion-icon>
                 </a>
             </ion-item>
         </ion-card>

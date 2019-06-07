@@ -15,6 +15,8 @@
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
+import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service to handle caompetency learning plans.
@@ -38,8 +40,23 @@ export class AddonCompetencyProvider {
 
     protected logger;
 
-    constructor(loggerProvider: CoreLoggerProvider, private sitesProvider: CoreSitesProvider) {
+    constructor(loggerProvider: CoreLoggerProvider, private sitesProvider: CoreSitesProvider,
+            protected pushNotificationsProvider: CorePushNotificationsProvider) {
         this.logger = loggerProvider.getInstance('AddonCompetencyProvider');
+    }
+
+    /**
+     * Check if all competencies features are disabled.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<boolean>} Promise resolved with boolean: whether all competency features are disabled.
+     */
+    allCompetenciesDisabled(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.isFeatureDisabled('CoreMainMenuDelegate_AddonCompetency') &&
+                    site.isFeatureDisabled('CoreCourseOptionsDelegate_AddonCompetency') &&
+                    site.isFeatureDisabled('CoreUserDelegate_AddonCompetency');
+        });
     }
 
     /**
@@ -140,7 +157,8 @@ export class AddonCompetencyProvider {
                     userid: userId
                 },
                 preSets = {
-                    cacheKey: this.getLearningPlansCacheKey(userId)
+                    cacheKey: this.getLearningPlansCacheKey(userId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('tool_lp_data_for_plans_page', params, preSets).then((response) => {
@@ -169,7 +187,8 @@ export class AddonCompetencyProvider {
                     planid: planId
                 },
                 preSets = {
-                    cacheKey: this.getLearningPlanCacheKey(planId)
+                    cacheKey: this.getLearningPlanCacheKey(planId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('tool_lp_data_for_plan_page', params, preSets).then((response) => {
@@ -200,7 +219,8 @@ export class AddonCompetencyProvider {
                     competencyid: competencyId
                 },
                 preSets = {
-                    cacheKey: this.getCompetencyInPlanCacheKey(planId, competencyId)
+                    cacheKey: this.getCompetencyInPlanCacheKey(planId, competencyId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             return site.read('tool_lp_data_for_user_competency_summary_in_plan', params, preSets).then((response) => {
@@ -237,7 +257,8 @@ export class AddonCompetencyProvider {
                     userid: userId
                 },
                 preSets: any = {
-                    cacheKey: this.getCompetencyInCourseCacheKey(courseId, competencyId, userId)
+                    cacheKey: this.getCompetencyInCourseCacheKey(courseId, competencyId, userId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (ignoreCache) {
@@ -275,7 +296,8 @@ export class AddonCompetencyProvider {
                     userid: userId
                 },
                 preSets: any = {
-                    cacheKey: this.getCompetencySummaryCacheKey(competencyId, userId)
+                    cacheKey: this.getCompetencySummaryCacheKey(competencyId, userId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (ignoreCache) {
@@ -311,7 +333,8 @@ export class AddonCompetencyProvider {
                     courseid: courseId
                 },
                 preSets: any = {
-                    cacheKey: this.getCourseCompetenciesCacheKey(courseId)
+                    cacheKey: this.getCourseCompetenciesCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (ignoreCache) {
@@ -457,13 +480,15 @@ export class AddonCompetencyProvider {
      * @param  {number} planId    ID of the plan.
      * @param  {number} competencyId  ID of the competency.
      * @param  {number} planStatus    Current plan Status to decide what action should be logged.
+     * @param  {string} [name] Name of the competency.
      * @param  {number} [userId] User ID. If not defined, current user.
      * @param  {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logCompetencyInPlanView(planId: number, competencyId: number, planStatus: number, userId?: number, siteId?: string)
-            : Promise<any> {
+    logCompetencyInPlanView(planId: number, competencyId: number, planStatus: number, name?: string, userId?: number,
+            siteId?: string): Promise<any> {
         if (planId && competencyId) {
+
             return this.sitesProvider.getSite(siteId).then((site) => {
                 userId = userId || site.getUserId();
 
@@ -474,13 +499,17 @@ export class AddonCompetencyProvider {
                     },
                     preSets = {
                         typeExpected: 'boolean'
-                    };
+                    },
+                    wsName = planStatus == AddonCompetencyProvider.STATUS_COMPLETE ?
+                                'core_competency_user_competency_plan_viewed' : 'core_competency_user_competency_viewed_in_plan';
 
-                if (planStatus == AddonCompetencyProvider.STATUS_COMPLETE) {
-                    return site.write('core_competency_user_competency_plan_viewed', params, preSets);
-                } else {
-                    return site.write('core_competency_user_competency_viewed_in_plan', params, preSets);
-                }
+                this.pushNotificationsProvider.logViewEvent(competencyId, name, 'competency', wsName, {
+                    planid: planId,
+                    planstatus: planStatus,
+                    userid: userId
+                }, siteId);
+
+                return site.write(wsName, params, preSets);
             });
         }
 
@@ -492,11 +521,14 @@ export class AddonCompetencyProvider {
      *
      * @param  {number} courseId        ID of the course.
      * @param  {number} competencyId    ID of the competency.
+     * @param  {string} [name] Name of the competency.
      * @param  {number} [userId] User ID. If not defined, current user.
      * @param  {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logCompetencyInCourseView(courseId: number, competencyId: number, userId?: number, siteId?: string): Promise<any> {
+    logCompetencyInCourseView(courseId: number, competencyId: number, name?: string, userId?: number, siteId?: string)
+            : Promise<any> {
+
         if (courseId && competencyId) {
             return this.sitesProvider.getSite(siteId).then((site) => {
                 userId = userId || site.getUserId();
@@ -509,8 +541,14 @@ export class AddonCompetencyProvider {
                 const preSets = {
                     typeExpected: 'boolean'
                 };
+                const wsName = 'core_competency_user_competency_viewed_in_course';
 
-                return site.write('core_competency_user_competency_viewed_in_course', params, preSets);
+                this.pushNotificationsProvider.logViewEvent(competencyId, name, 'competency', wsName, {
+                    courseid: courseId,
+                    userid: userId
+                }, siteId);
+
+                return site.write(wsName, params, preSets);
             });
         }
 
@@ -521,10 +559,11 @@ export class AddonCompetencyProvider {
      * Report the competency as being viewed.
      *
      * @param  {number} competencyId    ID of the competency.
+     * @param  {string} [name] Name of the competency.
      * @param  {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logCompetencyView(competencyId: number, siteId?: string): Promise<any> {
+    logCompetencyView(competencyId: number, name?: string, siteId?: string): Promise<any> {
         if (competencyId) {
             return this.sitesProvider.getSite(siteId).then((site) => {
                 const params = {
@@ -533,6 +572,9 @@ export class AddonCompetencyProvider {
                 const preSets = {
                     typeExpected: 'boolean'
                 };
+                const wsName = 'core_competency_competency_viewed';
+
+                this.pushNotificationsProvider.logViewEvent(competencyId, name, 'competency', wsName, {}, siteId);
 
                 return site.write('core_competency_competency_viewed', params, preSets);
             });

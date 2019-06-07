@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
@@ -24,6 +24,7 @@ import { CoreFileProvider } from '@providers/file';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { AddonModScormProvider } from './scorm';
+import { AddonModScormSyncProvider } from './scorm-sync';
 
 /**
  * Progress event used when downloading a SCORM.
@@ -58,10 +59,12 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
     component = AddonModScormProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$|^tracks$/;
 
+    protected syncProvider: AddonModScormSyncProvider; // It will be injected later to prevent circular dependencies.
+
     constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
             courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider, protected fileProvider: CoreFileProvider, protected textUtils: CoreTextUtilsProvider,
-             protected scormProvider: AddonModScormProvider) {
+             protected scormProvider: AddonModScormProvider, protected injector: Injector) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
@@ -119,6 +122,9 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
                     module.id).catch(() => {
                 // Ignore errors.
             }));
+
+            // Prefetch access information.
+            promises.push(this.scormProvider.getAccessInformation(scorm.id));
 
             return Promise.all(promises);
         }).then(() => {
@@ -421,6 +427,24 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
             }));
 
             return Promise.all(promises);
+        });
+    }
+
+    /**
+     * Sync a module.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    sync(module: any, courseId: number, siteId?: any): Promise<any> {
+        if (!this.syncProvider) {
+            this.syncProvider = this.injector.get(AddonModScormSyncProvider);
+        }
+
+        return this.scormProvider.getScorm(courseId, module.id, module.url, false, siteId).then((scorm) => {
+            return this.syncProvider.syncScorm(scorm, siteId);
         });
     }
 }

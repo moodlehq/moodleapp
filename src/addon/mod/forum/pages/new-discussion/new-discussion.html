@@ -21,21 +21,32 @@
                 <ion-label stacked>{{ 'addon.mod_forum.message' | translate }}</ion-label>
                 <core-rich-text-editor item-content [control]="messageControl" (contentChanged)="onMessageChange($event)" [placeholder]="'addon.mod_forum.message' | translate" name="addon_mod_forum_new_discussion" [component]="component" [componentId]="forum.cmid"></core-rich-text-editor>
             </ion-item>
-            <ion-item *ngIf="showGroups">
-                <ion-label id="addon-mod-forum-groupslabel">{{ 'addon.mod_forum.group' | translate }}</ion-label>
-                <ion-select [(ngModel)]="newDiscussion.groupId" aria-labelledby="addon-mod-forum-groupslabel" interface="action-sheet">
-                    <ion-option *ngFor="let group of groups" [value]="group.id">{{ group.name }}</ion-option>
-                </ion-select>
-            </ion-item>
-            <ion-item>
-                <ion-label>{{ 'addon.mod_forum.discussionsubscription' | translate }}</ion-label>
-                <ion-toggle [(ngModel)]="newDiscussion.subscribe"></ion-toggle>
-            </ion-item>
-            <ion-item *ngIf="canPin">
-                <ion-label>{{ 'addon.mod_forum.discussionpinned' | translate }}</ion-label>
-                <ion-toggle [(ngModel)]="newDiscussion.pin"></ion-toggle>
-            </ion-item>
-            <core-attachments *ngIf="canCreateAttachments && forum && forum.maxattachments > 0" [files]="newDiscussion.files" [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments" [component]="component" [componentId]="forum.cmid" [allowOffline]="true"></core-attachments>
+            <ion-item-divider text-wrap (click)="toggleAdvanced()" class="core-expandable">
+                <core-icon *ngIf="!advanced" name="fa-caret-right" item-start></core-icon>
+                <core-icon *ngIf="advanced" name="fa-caret-down" item-start></core-icon>
+                {{ 'addon.mod_forum.advanced' | translate }}
+            </ion-item-divider>
+            <ng-container *ngIf="advanced">
+                <ion-item *ngIf="showGroups && groupIds.length > 1 && accessInfo.cancanposttomygroups">
+                    <ion-label>{{ 'addon.mod_forum.posttomygroups' | translate }}</ion-label>
+                    <ion-toggle [(ngModel)]="newDiscussion.postToAllGroups"></ion-toggle>
+                </ion-item>
+                <ion-item *ngIf="showGroups">
+                    <ion-label id="addon-mod-forum-groupslabel">{{ 'addon.mod_forum.group' | translate }}</ion-label>
+                    <ion-select [(ngModel)]="newDiscussion.groupId" [disabled]="newDiscussion.postToAllGroups" aria-labelledby="addon-mod-forum-groupslabel" interface="action-sheet">
+                        <ion-option *ngFor="let group of groups" [value]="group.id">{{ group.name }}</ion-option>
+                    </ion-select>
+                </ion-item>
+                <ion-item>
+                    <ion-label>{{ 'addon.mod_forum.discussionsubscription' | translate }}</ion-label>
+                    <ion-toggle [(ngModel)]="newDiscussion.subscribe"></ion-toggle>
+                </ion-item>
+                <ion-item *ngIf="canPin">
+                    <ion-label>{{ 'addon.mod_forum.discussionpinned' | translate }}</ion-label>
+                    <ion-toggle [(ngModel)]="newDiscussion.pin"></ion-toggle>
+                </ion-item>
+                <core-attachments *ngIf="canCreateAttachments && forum && forum.maxattachments > 0" [files]="newDiscussion.files" [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments" [component]="component" [componentId]="forum.cmid" [allowOffline]="true"></core-attachments>
+            </ng-container>
             <ion-item>
                 <ion-row>
                     <ion-col>

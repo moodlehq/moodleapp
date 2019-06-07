@@ -71,6 +71,7 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
                 if (element) {
                     const input = document.createElement('input');
                     input.setAttribute('type', 'file');
+                    input.classList.add('core-fileuploader-file-handler-input');
                     if (mimetypes && mimetypes.length && (!this.platform.is('android') || mimetypes.length == 1)) {
                         // Don't use accept attribute in Android with several mimetypes, it's not supported.
                         input.setAttribute('accept', mimetypes.join(', '));
@@ -112,7 +113,22 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
                         });
                     });
 
-                    element.appendChild(input);
+                    if (this.platform.is('ios')) {
+                        // In iOS, the click on the input stopped working for some reason. We need to put it 1 level higher.
+                        element.parentElement.appendChild(input);
+
+                        // Animate the button when the input is clicked.
+                        input.addEventListener('mousedown', () => {
+                            element.classList.add('activated');
+                        });
+                        input.addEventListener('mouseup', () => {
+                            this.platform.timeout(() => {
+                                element.classList.remove('activated');
+                            }, 80);
+                        });
+                    } else {
+                        element.appendChild(input);
+                    }
                 }
             }
         };

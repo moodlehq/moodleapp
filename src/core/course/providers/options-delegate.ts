@@ -32,6 +32,12 @@ export interface CoreCourseOptionsHandler extends CoreDelegateHandler {
     priority: number;
 
     /**
+     * True if this handler should appear in menu rather than as a tab.
+     * @type {boolean}
+     */
+    isMenuHandler?: boolean;
+
+    /**
      * Whether or not the handler is enabled for a certain course.
      *
      * @param {number} courseId The course ID.
@@ -71,6 +77,21 @@ export interface CoreCourseOptionsHandler extends CoreDelegateHandler {
 }
 
 /**
+ * Interface that course options handlers implement if they appear in the menu rather than as a tab.
+ */
+export interface CoreCourseOptionsMenuHandler extends CoreCourseOptionsHandler {
+    /**
+     * Returns the data needed to render the handler.
+     *
+     * @param {Injector} injector Injector.
+     * @param {number} courseId The course ID.
+     * @return {CoreCourseOptionsMenuHandlerData|Promise<CoreCourseOptionsMenuHandlerData>} Data or promise resolved with data.
+     */
+    getMenuDisplayData(injector: Injector, courseId: number):
+        CoreCourseOptionsMenuHandlerData | Promise<CoreCourseOptionsMenuHandlerData>;
+}
+
+/**
  * Data needed to render a course handler. It's returned by the handler.
  */
 export interface CoreCourseOptionsHandlerData {
@@ -97,6 +118,41 @@ export interface CoreCourseOptionsHandlerData {
      * @type {any}
      */
     componentData?: any;
+}
+
+/**
+ * Data needed to render a course menu handler. It's returned by the handler.
+ */
+export interface CoreCourseOptionsMenuHandlerData {
+    /**
+     * Title to display for the handler.
+     * @type {string}
+     */
+    title: string;
+
+    /**
+     * Class to add to the displayed handler.
+     * @type {string}
+     */
+    class?: string;
+
+    /**
+     * Name of the page to load for the handler.
+     * @type {string}
+     */
+    page: string;
+
+    /**
+     * Params to pass to the page (other than 'course' which is always sent).
+     * @type {any}
+     */
+    pageParams?: any;
+
+    /**
+     * Name of the icon to display for the handler.
+     * @type {string}
+     */
+    icon: string; // Name of the icon to display in the tab.
 }
 
 /**
@@ -131,6 +187,37 @@ export interface CoreCourseOptionsHandlerToDisplay {
 }
 
 /**
+ * Additional data returned if it is a menu item.
+ */
+export interface CoreCourseOptionsMenuHandlerToDisplay {
+    /**
+     * Data to display.
+     * @type {CoreCourseOptionsMenuHandlerData}
+     */
+    data: CoreCourseOptionsMenuHandlerData;
+
+    /**
+     * Name of the handler, or name and sub context (AddonMessages, AddonMessages:blockContact, ...).
+     * @type {string}
+     */
+    name: string;
+
+    /**
+     * The highest priority is displayed first.
+     * @type {number}
+     */
+    priority?: number;
+
+    /**
+     * Called when a course is downloaded. It should prefetch all the data to be able to see the addon in offline.
+     *
+     * @param {any} course The course.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetch?(course: any): Promise<any>;
+}
+
+/**
  * Service to interact with plugins to be shown in each course (participants, learning plans, ...).
  */
 @Injectable()
@@ -139,7 +226,8 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
     protected lastUpdateHandlersForCoursesStart: any = {};
     protected coursesHandlers: {
         [courseId: number]: {
-            access?: any, navOptions?: any, admOptions?: any, deferred?: PromiseDefer, enabledHandlers?: CoreCourseOptionsHandler[]
+            access?: any, navOptions?: any, admOptions?: any, deferred?: PromiseDefer,
+            enabledHandlers?: CoreCourseOptionsHandler[], enabledMenuHandlers?: CoreCourseOptionsMenuHandler[]
         }
     } = {};
 
@@ -258,6 +346,43 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
      */
     getHandlersToDisplay(injector: Injector, course: any, refresh?: boolean, isGuest?: boolean, navOptions?: any, admOptions?: any):
             Promise<CoreCourseOptionsHandlerToDisplay[]> {
+        return <Promise<CoreCourseOptionsHandlerToDisplay[]>> this.getHandlersToDisplayInternal(
+                false, injector, course, refresh, isGuest, navOptions, admOptions);
+    }
+
+    /**
+     * Get the list of menu handlers that should be displayed for a course.
+     * This function should be called only when the handlers need to be displayed, since it can call several WebServices.
+     *
+     * @param {Injector} injector Injector.
+     * @param {any} course The course object.
+     * @param {boolean} [refresh] True if it should refresh the list.
+     * @param {boolean} [isGuest] Whether it's guest.
+     * @param {any} [navOptions] Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
+     * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
+     * @return {Promise<CoreCourseOptionsMenuHandlerToDisplay[]>} Promise resolved with array of handlers.
+     */
+    getMenuHandlersToDisplay(injector: Injector, course: any, refresh?: boolean, isGuest?: boolean,
+            navOptions?: any, admOptions?: any): Promise<CoreCourseOptionsMenuHandlerToDisplay[]> {
+        return <Promise<CoreCourseOptionsMenuHandlerToDisplay[]>> this.getHandlersToDisplayInternal(
+                true, injector, course, refresh, isGuest, navOptions, admOptions);
+    }
+
+    /**
+     * Get the list of menu handlers that should be displayed for a course.
+     * This function should be called only when the handlers need to be displayed, since it can call several WebServices.
+     *
+     * @param {boolean} menu If true, gets menu handlers; false, gets tab handlers
+     * @param {Injector} injector Injector.
+     * @param {any} course The course object.
+     * @param {boolean} refresh True if it should refresh the list.
+     * @param {boolean} isGuest Whether it's guest.
+     * @param {any} navOptions Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
+     * @param {any} admOptions Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
+     * @return {Promise<any[]>} Promise resolved with array of handlers.
+     */
+    protected getHandlersToDisplayInternal(menu: boolean, injector: Injector, course: any, refresh: boolean, isGuest: boolean,
+            navOptions: any, admOptions: any): Promise<any[]> {
         course.id = parseInt(course.id, 10);
 
         const accessData = {
@@ -278,8 +403,16 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
         }).then(() => {
             const promises = [];
 
-            this.coursesHandlers[course.id].enabledHandlers.forEach((handler) => {
-                promises.push(Promise.resolve(handler.getDisplayData(injector, course)).then((data) => {
+            let handlerList;
+            if (menu) {
+                handlerList = this.coursesHandlers[course.id].enabledMenuHandlers;
+            } else {
+                handlerList = this.coursesHandlers[course.id].enabledHandlers;
+            }
+
+            handlerList.forEach((handler) => {
+                const getFunction = menu ? handler.getMenuDisplayData : handler.getDisplayData;
+                promises.push(Promise.resolve(getFunction.call(handler, injector, course)).then((data) => {
                     handlersToDisplay.push({
                         data: data,
                         priority: handler.priority,
@@ -444,6 +577,7 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
     updateHandlersForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any): Promise<any> {
         const promises = [],
             enabledForCourse = [],
+            enabledForCourseMenu = [],
             siteId = this.sitesProvider.getCurrentSiteId(),
             now = Date.now();
 
@@ -456,7 +590,11 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
             promises.push(Promise.resolve(handler.isEnabledForCourse(courseId, accessData, navOptions, admOptions))
                 .then((enabled) => {
                     if (enabled) {
-                        enabledForCourse.push(handler);
+                        if (handler.isMenuHandler) {
+                            enabledForCourseMenu.push(<CoreCourseOptionsMenuHandler> handler);
+                        } else {
+                            enabledForCourse.push(handler);
+                        }
                     } else {
                         return Promise.reject(null);
                     }
@@ -476,6 +614,7 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
             if (this.isLastUpdateCourseCall(courseId, now) && this.sitesProvider.getCurrentSiteId() === siteId) {
                 // Update the coursesHandlers array with the new enabled addons.
                 this.coursesHandlers[courseId].enabledHandlers = enabledForCourse;
+                this.coursesHandlers[courseId].enabledMenuHandlers = enabledForCourseMenu;
                 this.loaded[courseId] = true;
 
                 // Resolve the promise.

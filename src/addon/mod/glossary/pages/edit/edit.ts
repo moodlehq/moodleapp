@@ -88,6 +88,7 @@ export class AddonModGlossaryEditPage implements OnInit {
         if (entry) {
             this.entry.concept = entry.concept || '';
             this.entry.definition = entry.definition || '';
+            this.entry.timecreated = entry.timecreated || 0;
 
             this.originalData = {
                 concept: this.entry.concept,

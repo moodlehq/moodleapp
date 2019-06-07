@@ -63,7 +63,8 @@ export class CoreCoursesProvider {
                     addsubcategories: addSubcategories ? 1 : 0
                 },
                 preSets = {
-                    cacheKey: this.getCategoriesCacheKey(categoryId, addSubcategories)
+                    cacheKey: this.getCategoriesCacheKey(categoryId, addSubcategories),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('core_course_get_categories', data, preSets);
@@ -166,7 +167,7 @@ export class CoreCoursesProvider {
     isDownloadCourseDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
 
-        return site.isFeatureDisabled('NoDelegate_CoreCourseDownload');
+        return site.isOfflineDisabled() || site.isFeatureDisabled('NoDelegate_CoreCourseDownload');
     }
 
     /**
@@ -190,7 +191,7 @@ export class CoreCoursesProvider {
     isDownloadCoursesDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
 
-        return site.isFeatureDisabled('NoDelegate_CoreCoursesDownload');
+        return site.isOfflineDisabled() || site.isFeatureDisabled('NoDelegate_CoreCoursesDownload');
     }
 
     /**
@@ -271,7 +272,8 @@ export class CoreCoursesProvider {
                     courseid: id
                 },
                 preSets = {
-                    cacheKey: this.getCourseEnrolmentMethodsCacheKey(id)
+                    cacheKey: this.getCourseEnrolmentMethodsCacheKey(id),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('core_enrol_get_course_enrolment_methods', params, preSets);
@@ -301,7 +303,8 @@ export class CoreCoursesProvider {
                     instanceid: instanceId
                 },
                 preSets = {
-                    cacheKey: this.getCourseGuestEnrolmentInfoCacheKey(instanceId)
+                    cacheKey: this.getCourseGuestEnrolmentInfoCacheKey(instanceId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('enrol_guest_get_instance_info', params, preSets).then((response) => {
@@ -343,7 +346,8 @@ export class CoreCoursesProvider {
                     }
                 },
                 preSets = {
-                    cacheKey: this.getCoursesCacheKey(ids)
+                    cacheKey: this.getCoursesCacheKey(ids),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('core_course_get_courses', data, preSets);
@@ -445,7 +449,8 @@ export class CoreCoursesProvider {
                     value: field ? value : ''
                 },
                 preSets = {
-                    cacheKey: this.getCoursesByFieldCacheKey(field, value)
+                    cacheKey: this.getCoursesByFieldCacheKey(field, value),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('core_course_get_courses_by_field', data, preSets).then((courses) => {
@@ -604,7 +609,8 @@ export class CoreCoursesProvider {
                     courseids: courseIds
                 },
                 preSets = {
-                    cacheKey: this.getUserAdministrationOptionsCacheKey(courseIds)
+                    cacheKey: this.getUserAdministrationOptionsCacheKey(courseIds),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('core_course_get_user_administration_options', params, preSets).then((response) => {
@@ -650,7 +656,8 @@ export class CoreCoursesProvider {
                     courseids: courseIds
                 },
                 preSets = {
-                    cacheKey: this.getUserNavigationOptionsCacheKey(courseIds)
+                    cacheKey: this.getUserNavigationOptionsCacheKey(courseIds),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('core_course_get_user_navigation_options', params, preSets).then((response) => {
@@ -722,13 +729,19 @@ export class CoreCoursesProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
 
             const userId = site.getUserId(),
-                data = {
+                data: any = {
                     userid: userId
                 },
                 preSets = {
                     cacheKey: this.getUserCoursesCacheKey(),
-                    omitExpires: !!preferCache
+                    getCacheUsingCacheKey: true,
+                    omitExpires: !!preferCache,
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
+
+            if (site.isVersionGreaterEqualThan('3.7')) {
+                data.returnusercount = 0;
+            }
 
             return site.read('core_enrol_get_users_courses', data, preSets);
         });

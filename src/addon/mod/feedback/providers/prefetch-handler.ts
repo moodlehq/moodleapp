@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
@@ -25,7 +25,7 @@ import { AddonModFeedbackProvider } from './feedback';
 import { AddonModFeedbackHelperProvider } from './helper';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreGroupsProvider } from '@providers/groups';
-import { CoreUserProvider } from '@core/user/providers/user';
+import { AddonModFeedbackSyncProvider } from './sync';
 
 /**
  * Handler to prefetch feedbacks.
@@ -37,11 +37,14 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
     component = AddonModFeedbackProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$|^attemptsfinished|^attemptsunfinished$/;
 
+    protected syncProvider: AddonModFeedbackSyncProvider; // It will be injected later to prevent circular dependencies.
+
     constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
             courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider, protected feedbackProvider: AddonModFeedbackProvider,
-            protected userProvider: CoreUserProvider, protected feedbackHelper: AddonModFeedbackHelperProvider,
-            protected timeUtils: CoreTimeUtilsProvider, protected groupsProvider: CoreGroupsProvider) {
+            protected feedbackHelper: AddonModFeedbackHelperProvider,
+            protected timeUtils: CoreTimeUtilsProvider, protected groupsProvider: CoreGroupsProvider,
+            protected injector: Injector) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
@@ -183,35 +186,21 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
                     p2.push(this.feedbackProvider.getAnalysis(feedback.id, undefined, true, siteId));
                     p2.push(this.groupsProvider.getActivityGroupInfo(feedback.coursemodule, true, undefined, siteId, true)
                             .then((groupInfo) => {
-                        const p3 = [],
-                            userIds = [];
+                        const p3 = [];
 
                         if (!groupInfo.groups || groupInfo.groups.length == 0) {
                             groupInfo.groups = [{id: 0}];
                         }
                         groupInfo.groups.forEach((group) => {
                             p3.push(this.feedbackProvider.getAnalysis(feedback.id, group.id, true, siteId));
-                            p3.push(this.feedbackProvider.getAllResponsesAnalysis(feedback.id, group.id, true, siteId)
-                                    .then((responses) => {
-                                responses.attempts.forEach((attempt) => {
-                                    userIds.push(attempt.userid);
-                                });
-                            }));
+                            p3.push(this.feedbackProvider.getAllResponsesAnalysis(feedback.id, group.id, true, siteId));
 
                             if (!accessData.isanonymous) {
-                                p3.push(this.feedbackProvider.getAllNonRespondents(feedback.id, group.id, true, siteId)
-                                        .then((responses) => {
-                                    responses.users.forEach((user) => {
-                                        userIds.push(user.userid);
-                                    });
-                                }));
+                                p3.push(this.feedbackProvider.getAllNonRespondents(feedback.id, group.id, true, siteId));
                             }
                         });
 
-                        return Promise.all(p3).then(() => {
-                            // Prefetch user profiles.
-                            return this.userProvider.prefetchProfiles(userIds, courseId, siteId);
-                        });
+                        return Promise.all(p3);
                     }));
                 }
 
@@ -238,5 +227,21 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
                 return Promise.all(p2);
             });
         });
+    }
+
+    /**
+     * Sync a module.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    sync(module: any, courseId: number, siteId?: any): Promise<any> {
+        if (!this.syncProvider) {
+            this.syncProvider = this.injector.get(AddonModFeedbackSyncProvider);
+        }
+
+        return this.syncProvider.syncFeedback(module.instance, siteId);
     }
 }

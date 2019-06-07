@@ -6,7 +6,7 @@ if [ $TRAVIS_BRANCH == 'integration' ] || [ $TRAVIS_BRANCH == 'master' ] || [ $T
     ./build_lang.sh
     cd ..
 
-    if [ $TRAVIS_BRANCH == 'master' ] && [ ! -z $GIT_TOKEN ] ; then
+    if [ "$TRAVIS_BRANCH" == 'master' ] && [ ! -z $GIT_TOKEN ] ; then
         git remote set-url origin https://$GIT_TOKEN@github.com/$TRAVIS_REPO_SLUG.git
         git fetch -q origin
         git add src/assets/lang
@@ -17,7 +17,7 @@ if [ $TRAVIS_BRANCH == 'integration' ] || [ $TRAVIS_BRANCH == 'master' ] || [ $T
         version=`grep versionname src/config.json| cut -d: -f2|cut -d'"' -f2`
         date=`date +%Y%m%d`'00'
 
-        pushd ../../moodle-local_moodlemobileapp
+        pushd ../moodle-local_moodlemobileapp
         sed -ie "s/release[ ]*=[ ]*'[^']*';/release = '$version';/1" version.php
         sed -ie "s/version[ ]*=[ ]*[0-9]*;/version = $date;/1" version.php
         rm version.phpe

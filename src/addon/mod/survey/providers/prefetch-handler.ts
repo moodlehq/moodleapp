@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
@@ -22,6 +22,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { AddonModSurveyProvider } from './survey';
+import { AddonModSurveySyncProvider } from './sync';
 import { AddonModSurveyHelperProvider } from './helper';
 
 /**
@@ -34,10 +35,12 @@ export class AddonModSurveyPrefetchHandler extends CoreCourseActivityPrefetchHan
     component = AddonModSurveyProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$|^answers$/;
 
+    protected syncProvider: AddonModSurveySyncProvider; // It will be injected later to prevent circular dependencies.
+
     constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
             courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider, protected surveyProvider: AddonModSurveyProvider,
-            protected surveyHelper: AddonModSurveyHelperProvider) {
+            protected surveyHelper: AddonModSurveyHelperProvider, protected injector: Injector) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
@@ -125,5 +128,21 @@ export class AddonModSurveyPrefetchHandler extends CoreCourseActivityPrefetchHan
 
             return Promise.all(promises);
         });
+    }
+
+    /**
+     * Sync a module.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    sync(module: any, courseId: number, siteId?: any): Promise<any> {
+        if (!this.syncProvider) {
+            this.syncProvider = this.injector.get(AddonModSurveySyncProvider);
+        }
+
+        return this.syncProvider.syncSurvey(module.instance, undefined, siteId);
     }
 }

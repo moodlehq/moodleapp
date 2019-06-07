@@ -28,6 +28,7 @@ import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModAssignProvider } from './assign';
 import { AddonModAssignHelperProvider } from './helper';
+import { AddonModAssignSyncProvider } from './assign-sync';
 import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 
@@ -47,7 +48,8 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
             protected textUtils: CoreTextUtilsProvider, protected feedbackDelegate: AddonModAssignFeedbackDelegate,
             protected submissionDelegate: AddonModAssignSubmissionDelegate, protected courseHelper: CoreCourseHelperProvider,
             protected groupsProvider: CoreGroupsProvider, protected gradesHelper: CoreGradesHelperProvider,
-            protected userProvider: CoreUserProvider, protected assignHelper: AddonModAssignHelperProvider) {
+            protected userProvider: CoreUserProvider, protected assignHelper: AddonModAssignHelperProvider,
+            protected syncProvider: AddonModAssignSyncProvider) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
@@ -103,8 +105,8 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
 
                 if (data.canviewsubmissions) {
                     // Teacher, get all submissions.
-                    return this.assignProvider.getSubmissionsUserData(data.submissions, courseId, assign.id, blindMarking,
-                            undefined, false, siteId).then((submissions) => {
+                    return this.assignHelper.getSubmissionsUserData(assign, data.submissions, 0, false, siteId)
+                            .then((submissions) => {
 
                         const promises = [];
 
@@ -289,11 +291,10 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
     protected prefetchSubmissions(assign: any, courseId: number, moduleId: number, userId: number, siteId: string): Promise<any> {
         // Get submissions.
         return this.assignProvider.getSubmissions(assign.id, true, siteId).then((data) => {
-            const promises = [],
-                blindMarking = assign.blindmarking && !assign.revealidentities;
+            const promises = [];
 
             if (data.canviewsubmissions) {
-                // Teacher. Do not send participants to getSubmissionsUserData to retrieve user profiles.
+                // Teacher, prefetch all submissions.
                 promises.push(this.groupsProvider.getActivityGroupInfo(assign.cmid, false, undefined, siteId).then((groupInfo) => {
                     const groupProms = [];
                     if (!groupInfo.groups || groupInfo.groups.length == 0) {
@@ -301,8 +302,8 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                     }
 
                     groupInfo.groups.forEach((group) => {
-                        groupProms.push(this.assignProvider.getSubmissionsUserData(data.submissions, courseId, assign.id,
-                                blindMarking, undefined, true, siteId).then((submissions) => {
+                        groupProms.push(this.assignHelper.getSubmissionsUserData(assign, data.submissions, group.id, true, siteId)
+                                .then((submissions) => {
 
                             const subPromises = [];
 
@@ -334,36 +335,40 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                             }
 
                             return Promise.all(subPromises);
-                        }));
+                        }).then(() => {
+                            // Participiants already fetched, we don't need to ignore cache now.
+                            return this.assignHelper.getParticipants(assign, group.id, false, siteId).then((participants) => {
+                                const promises = [];
 
-                        // Get list participants.
-                        groupProms.push(this.assignHelper.getParticipants(assign, group.id, true, siteId).then((participants) => {
-                            participants.forEach((participant) => {
-                                if (participant.profileimageurl) {
-                                    this.filepoolProvider.addToQueueByUrl(siteId, participant.profileimageurl);
-                                }
+                                participants.forEach((participant) => {
+                                    if (participant.profileimageurl) {
+                                        promises.push(this.filepoolProvider.addToQueueByUrl(siteId, participant.profileimageurl));
+                                    }
+                                });
+
+                                return Promise.all(promises);
+                            }).catch(() => {
+                                // Fail silently (Moodle < 3.2).
                             });
-                        }).catch(() => {
-                            // Fail silently (Moodle < 3.2).
                         }));
                     });
 
                     return Promise.all(groupProms);
                 }));
-            } else {
-                // Student.
-                promises.push(
-                    this.assignProvider.getSubmissionStatusWithRetry(assign, userId, undefined, false, true, true, siteId)
-                            .then((subm) => {
-                        return this.prefetchSubmission(assign, courseId, moduleId, subm, userId, siteId);
-                    }).catch((error) => {
-                        // Ignore if the user can't view their own submission.
-                        if (error.errorcode != 'nopermission') {
-                            return Promise.reject(error);
-                        }
-                    })
-                );
             }
+
+            // Prefetch own submission, we need to do this for teachers too so the response with error is cached.
+            promises.push(
+                this.assignProvider.getSubmissionStatusWithRetry(assign, userId, undefined, false, true, true, siteId)
+                        .then((subm) => {
+                    return this.prefetchSubmission(assign, courseId, moduleId, subm, userId, siteId);
+                }).catch((error) => {
+                    // Ignore if the user can't view their own submission.
+                    if (error.errorcode != 'nopermission') {
+                        return Promise.reject(error);
+                    }
+                })
+            );
 
             promises.push(this.groupsProvider.activityHasGroups(assign.cmid, siteId, true));
             promises.push(this.groupsProvider.getActivityAllowedGroups(assign.cmid, undefined, siteId, true));
@@ -422,15 +427,16 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
             }
         }
 
+        // Prefetch grade items.
+        if (userId) {
+            promises.push(this.gradesHelper.getGradeModuleItems(courseId, moduleId, userId, undefined, siteId, true));
+        }
+
         // Prefetch feedback.
         if (submission.feedback) {
             // Get profile and image of the grader.
             if (submission.feedback.grade && submission.feedback.grade.grader > 0) {
                 userIds.push(submission.feedback.grade.grader);
-            }
-
-            if (userId) {
-                promises.push(this.gradesHelper.getGradeModuleItems(courseId, moduleId, userId, undefined, siteId, true));
             }
 
             // Prefetch feedback plugins data.
@@ -453,5 +459,17 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
         promises.push(this.userProvider.prefetchProfiles(userIds, courseId, siteId));
 
         return Promise.all(promises);
+    }
+
+    /**
+     * Sync a module.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    sync(module: any, courseId: number, siteId?: any): Promise<any> {
+        return this.syncProvider.syncAssign(module.instance, siteId);
     }
 }

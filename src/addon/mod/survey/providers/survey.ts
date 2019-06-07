@@ -20,7 +20,7 @@ import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModSurveyOfflineProvider } from './offline';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 
 /**
  * Service that provides some features for surveys.
@@ -52,7 +52,8 @@ export class AddonModSurveyProvider {
                     surveyid: surveyId
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getQuestionsCacheKey(surveyId)
+                    cacheKey: this.getQuestionsCacheKey(surveyId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (ignoreCache) {
@@ -106,7 +107,8 @@ export class AddonModSurveyProvider {
                     courseids: [courseId]
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getSurveyCacheKey(courseId)
+                    cacheKey: this.getSurveyCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (ignoreCache) {
@@ -213,15 +215,17 @@ export class AddonModSurveyProvider {
      * Report the survey as being viewed.
      *
      * @param {number} id Module ID.
+     * @param {string} [name] Name of the assign.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(id: number, siteId?: string): Promise<any> {
+    logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             surveyid: id
         };
 
-        return this.logHelper.log('mod_survey_view_survey', params, AddonModSurveyProvider.COMPONENT, id, siteId);
+        return this.logHelper.logSingle('mod_survey_view_survey', params, AddonModSurveyProvider.COMPONENT, id, name, 'survey',
+                {}, siteId);
     }
 
     /**

@@ -64,6 +64,8 @@ import { CoreSitePluginsQuizAccessRuleHandler } from '../classes/handlers/quiz-a
 import { CoreSitePluginsAssignFeedbackHandler } from '../classes/handlers/assign-feedback-handler';
 import { CoreSitePluginsAssignSubmissionHandler } from '../classes/handlers/assign-submission-handler';
 import { CoreSitePluginsWorkshopAssessmentStrategyHandler } from '../classes/handlers/workshop-assessment-strategy-handler';
+import { CoreBlockDelegate } from '@core/block/providers/delegate';
+import { CoreSitePluginsBlockHandler } from '@core/siteplugins/classes/handlers/block-handler';
 
 /**
  * Helper service to provide functionalities regarding site plugins. It basically has the features to load and register site
@@ -92,7 +94,7 @@ export class CoreSitePluginsHelperProvider {
             private assignSubmissionDelegate: AddonModAssignSubmissionDelegate, private translate: TranslateService,
             private assignFeedbackDelegate: AddonModAssignFeedbackDelegate, private appProvider: CoreAppProvider,
             private workshopAssessmentStrategyDelegate: AddonWorkshopAssessmentStrategyDelegate,
-            private courseProvider: CoreCourseProvider) {
+            private courseProvider: CoreCourseProvider, private blockDelegate: CoreBlockDelegate) {
 
         this.logger = logger.getInstance('CoreSitePluginsHelperProvider');
 
@@ -107,8 +109,9 @@ export class CoreSitePluginsHelperProvider {
                     }).finally(() => {
                         eventsProvider.trigger(CoreEventsProvider.SITE_PLUGINS_LOADED, {}, data.siteId);
                     });
-
                 }
+            }).finally(() => {
+                this.sitePluginsProvider.setPluginsFetched();
             });
         });
 
@@ -477,6 +480,10 @@ export class CoreSitePluginsHelperProvider {
                     promise = Promise.resolve(this.registerQuestionBehaviourHandler(plugin, handlerName, handlerSchema));
                     break;
 
+                case 'CoreBlockDelegate':
+                    promise = Promise.resolve(this.registerBlockHandler(plugin, handlerName, handlerSchema, result));
+                    break;
+
                 case 'AddonMessageOutputDelegate':
                     promise = Promise.resolve(this.registerMessageOutputHandler(plugin, handlerName, handlerSchema, result));
                     break;
@@ -541,7 +548,7 @@ export class CoreSitePluginsHelperProvider {
         this.logger.debug('Register site plugin', plugin, handlerSchema);
 
         // Execute the main method and its JS. The template returned will be used in the right component.
-        return this.executeMethodAndJS(plugin, handlerSchema.method).then((result) => {
+        return this.executeMethodAndJS(plugin, handlerSchema.method).then((result): any => {
 
             // Create and register the handler.
             const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
@@ -564,7 +571,7 @@ export class CoreSitePluginsHelperProvider {
 
             delegate.registerHandler(handler);
 
-            return handlerSchema.moodlecomponent || plugin.component;
+            return uniqueName;
         }).catch((err) => {
             this.logger.error('Error executing main method', plugin.component, handlerSchema.method, err);
         });
@@ -611,6 +618,27 @@ export class CoreSitePluginsHelperProvider {
     }
 
     /**
+     * Given a handler in a plugin, register it in the block delegate.
+     *
+     * @param {any} plugin Data of the plugin.
+     * @param {string} handlerName Name of the handler in the plugin.
+     * @param {any} handlerSchema Data about the handler.
+     * @param {any} initResult Result of init function.
+     * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
+     */
+    protected registerBlockHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any):
+            string | Promise<string> {
+
+        const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
+            blockName = (handlerSchema.moodlecomponent || plugin.component).replace('block_', '');
+
+        this.blockDelegate.registerHandler(
+            new CoreSitePluginsBlockHandler(uniqueName, blockName, handlerSchema, initResult));
+
+        return uniqueName;
+    }
+
+    /**
      * Given a handler in a plugin, register it in the course format delegate.
      *
      * @param {any} plugin Data of the plugin.
@@ -626,7 +654,7 @@ export class CoreSitePluginsHelperProvider {
             formatName = (handlerSchema.moodlecomponent || plugin.component).replace('format_', '');
         this.courseFormatDelegate.registerHandler(new CoreSitePluginsCourseFormatHandler(uniqueName, formatName, handlerSchema));
 
-        return formatName;
+        return uniqueName;
     }
 
     /**
@@ -749,7 +777,7 @@ export class CoreSitePluginsHelperProvider {
                 this.sitePluginsProvider, plugin.component, uniqueName, modName, handlerSchema));
         }
 
-        return modName;
+        return uniqueName;
     }
 
     /**

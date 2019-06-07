@@ -110,26 +110,28 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
      * Try to synchronize all the assignments in a certain site or in all sites.
      *
      * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} force Wether to force sync not depending on last execution.
      * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllAssignments(siteId?: string): Promise<any> {
-        return this.syncOnSites('all assignments', this.syncAllAssignmentsFunc.bind(this), [], siteId);
+    syncAllAssignments(siteId?: string, force?: boolean): Promise<any> {
+        return this.syncOnSites('all assignments', this.syncAllAssignmentsFunc.bind(this), [force], siteId);
     }
 
     /**
      * Sync all assignments on a site.
      *
      * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @param {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected syncAllAssignmentsFunc(siteId?: string): Promise<any> {
+    protected syncAllAssignmentsFunc(siteId?: string, force?: boolean): Promise<any> {
         // Get all assignments that have offline data.
         return this.assignOfflineProvider.getAllAssigns(siteId).then((assignIds) => {
-            const promises = [];
-
             // Sync all assignments that haven't been synced for a while.
-            assignIds.forEach((assignId) => {
-                promises.push(this.syncAssignIfNeeded(assignId, siteId).then((data) => {
+            const promises = assignIds.map((assignId) => {
+                const promise = force ? this.syncAssign(assignId, siteId) : this.syncAssignIfNeeded(assignId, siteId);
+
+                return promise.then((data) => {
                     if (data && data.updated) {
                         // Sync done. Send event.
                         this.eventsProvider.trigger(AddonModAssignSyncProvider.AUTO_SYNCED, {
@@ -137,7 +139,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
                             warnings: data.warnings
                         }, siteId);
                     }
-                }));
+                });
             });
 
             return Promise.all(promises);

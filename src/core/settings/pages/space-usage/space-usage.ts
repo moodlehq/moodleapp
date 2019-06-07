@@ -20,6 +20,7 @@ import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreCourseProvider } from '@core/course/providers/course';
 
 /**
  * Page that displays the space usage settings.
@@ -35,10 +36,12 @@ export class CoreSettingsSpaceUsagePage {
     sites = [];
     currentSiteId = '';
     totalUsage = 0;
+    totalEntries = 0;
 
     constructor(private filePoolProvider: CoreFilepoolProvider,
             private sitesProvider: CoreSitesProvider, private textUtils: CoreTextUtilsProvider,
-            private translate: TranslateService, private domUtils: CoreDomUtilsProvider, appProvider: CoreAppProvider) {
+            private translate: TranslateService, private domUtils: CoreDomUtilsProvider, appProvider: CoreAppProvider,
+            private courseProvider: CoreCourseProvider) {
         this.currentSiteId = this.sitesProvider.getCurrentSiteId();
     }
 
@@ -63,9 +66,17 @@ export class CoreSettingsSpaceUsagePage {
             // Get space usage.
             const promises = this.sites.map((siteEntry) => {
                 return this.sitesProvider.getSite(siteEntry.id).then((site) => {
-                    return site.getSpaceUsage().then((size) => {
+                    const proms2 = [];
+
+                    proms2.push(this.calcSiteClearRows(site).then((rows) => {
+                        siteEntry.cacheEntries = rows;
+                    }));
+
+                    proms2.push(site.getSpaceUsage().then((size) => {
                         siteEntry.spaceUsage = size;
-                    });
+                    }));
+
+                    return Promise.all(proms2);
                 });
             });
 
@@ -77,13 +88,14 @@ export class CoreSettingsSpaceUsagePage {
      * Convenience function to calculate total usage.
      */
     protected calculateTotalUsage(): void {
-        let total = 0;
+        let totalSize = 0,
+            totalEntries = 0;
         this.sites.forEach((site) => {
-            if (site.spaceUsage) {
-                total += parseInt(site.spaceUsage, 10);
-            }
+            totalSize += (site.spaceUsage ? parseInt(site.spaceUsage, 10) : 0);
+            totalEntries += (site.cacheEntries ? parseInt(site.cacheEntries, 10) : 0);
         });
-        this.totalUsage = total;
+        this.totalUsage = totalSize;
+        this.totalEntries = totalEntries;
     }
 
     /**
@@ -123,11 +135,33 @@ export class CoreSettingsSpaceUsagePage {
     }
 
     /**
-     * Deletes files of a site.
+     * Calculate the number of rows to be deleted on a site.
+     *
+     * @param  {any}             site Site object.
+     * @return {Promise<number>}      If there are rows to delete or not.
+     */
+    protected calcSiteClearRows(site: any): Promise<number> {
+        const clearTables = this.sitesProvider.getSiteTableSchemasToClear();
+
+        let totalEntries = 0;
+
+        const promises = clearTables.map((name) => {
+            return site.getDb().countRecords(name).then((rows) => {
+                totalEntries += rows;
+            });
+        });
+
+        return Promise.all(promises).then(() => {
+            return totalEntries;
+        });
+    }
+
+    /**
+     * Deletes files of a site and the tables that can be cleared.
      *
      * @param {any} siteData Site object with space usage.
      */
-    deleteSiteFiles(siteData: any): void {
+    deleteSiteStorage(siteData: any): void {
         this.textUtils.formatText(siteData.siteName).then((siteName) => {
             const title = this.translate.instant('core.settings.deletesitefilestitle');
             const message = this.translate.instant('core.settings.deletesitefiles', {sitename: siteName});
@@ -135,10 +169,18 @@ export class CoreSettingsSpaceUsagePage {
             this.domUtils.showConfirm(message, title).then(() => {
                 return this.sitesProvider.getSite(siteData.id);
             }).then((site) => {
-                site.deleteFolder().then(() => {
+
+                // Clear cache tables.
+                const cleanSchemas = this.sitesProvider.getSiteTableSchemasToClear();
+                const promises = cleanSchemas.map((name) => {
+                    return site.getDb().deleteRecords(name);
+                });
+
+                promises.push(site.deleteFolder().then(() => {
                     this.filePoolProvider.clearAllPackagesStatus(site.id);
                     this.filePoolProvider.clearFilepool(site.id);
                     this.updateSiteUsage(siteData, 0);
+                    this.courseProvider.clearAllCoursesStatus(site.id);
                 }).catch((error) => {
                     if (error && error.code === FileError.NOT_FOUND_ERR) {
                         // Not found, set size 0.
@@ -151,7 +193,13 @@ export class CoreSettingsSpaceUsagePage {
                             this.updateSiteUsage(siteData, size);
                         });
                     }
-                });
+                }).finally(() => {
+                    this.calcSiteClearRows(site).then((rows) => {
+                        siteData.cacheEntries = rows;
+                    });
+                }));
+
+                return Promise.all(promises);
             }).catch(() => {
                 // Ignore cancelled confirmation modal.
             });

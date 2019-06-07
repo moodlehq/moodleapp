@@ -22,8 +22,8 @@ import { CoreAppProvider } from '@providers/app';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
-import { AddonPushNotificationsProvider } from '@addon/pushnotifications/providers/pushnotifications';
-import { AddonPushNotificationsDelegate } from '@addon/pushnotifications/providers/delegate';
+import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
+import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers/delegate';
 import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
 
 /**
@@ -50,11 +50,11 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
     constructor(private messagesProvider: AddonMessagesProvider, private sitesProvider: CoreSitesProvider,
             eventsProvider: CoreEventsProvider, private appProvider: CoreAppProvider,
             private localNotificationsProvider: CoreLocalNotificationsProvider, private textUtils: CoreTextUtilsProvider,
-            private pushNotificationsProvider: AddonPushNotificationsProvider, utils: CoreUtilsProvider,
-            pushNotificationsDelegate: AddonPushNotificationsDelegate, private emulatorHelper: CoreEmulatorHelperProvider) {
+            private pushNotificationsProvider: CorePushNotificationsProvider, utils: CoreUtilsProvider,
+            pushNotificationsDelegate: CorePushNotificationsDelegate, private emulatorHelper: CoreEmulatorHelperProvider) {
 
         eventsProvider.on(AddonMessagesProvider.UNREAD_CONVERSATION_COUNTS_EVENT, (data) => {
-            this.unreadCount = data.favourites + data.individual + data.group;
+            this.unreadCount = data.favourites + data.individual + data.group + data.self;
             this.orMore = data.orMore;
             this.updateBadge(data.siteId);
         });
@@ -76,7 +76,8 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
         // If a message push notification is received, refresh the count.
         pushNotificationsDelegate.on('receive').subscribe((notification) => {
             // New message received. If it's from current site, refresh the data.
-            if (utils.isFalseOrZero(notification.notif) && this.sitesProvider.isCurrentSite(notification.site)) {
+            const isMessage = utils.isFalseOrZero(notification.notif) || notification.name == 'messagecontactrequests';
+            if (isMessage && this.sitesProvider.isCurrentSite(notification.site)) {
                 this.refreshBadge(notification.site);
             }
         });
@@ -165,9 +166,10 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
      * Receives the ID of the site affected, undefined for all sites.
      *
      * @param  {string} [siteId] ID of the site affected, undefined for all sites.
+     * @param {boolean} [force] Wether the execution is forced (manual sync).
      * @return {Promise<any>}         Promise resolved when done, rejected if failure.
      */
-    execute(siteId?: string): Promise<any> {
+    execute(siteId?: string, force?: boolean): Promise<any> {
         if (this.sitesProvider.isCurrentSite(siteId)) {
             this.refreshBadge();
         }
@@ -228,8 +230,59 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
      * @return {Promise<any>}    Promise resolved with the notifications.
      */
     protected fetchMessages(siteId?: string): Promise<any> {
-        return this.messagesProvider.getUnreadReceivedMessages(true, false, true, siteId).then((response) => {
-            return response.messages;
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            if (site.isVersionGreaterEqualThan('3.7')) {
+
+                // Use get conversations WS to be able to get group conversations messages.
+                return this.messagesProvider.getConversations(undefined, undefined, 0, site.id, undefined, false, true)
+                        .then((result) => {
+
+                    // Find the first unmuted conversation.
+                    const conv = result.conversations.find((conversation) => {
+                        return !conversation.ismuted;
+                    });
+
+                    if (conv.isread) {
+                        // The conversation is read, no unread messages.
+                        return [];
+                    }
+
+                    const currentUserId = site.getUserId(),
+                        message = conv.messages[0]; // Treat only the last message, is the one we're interested.
+
+                    if (!message || message.useridfrom == currentUserId) {
+                        // No last message or not from current user. Return empty list.
+                        return [];
+                    }
+
+                    // Add some calculated data.
+                    message.contexturl = '';
+                    message.contexturlname = '';
+                    message.convid = conv.id;
+                    message.fullmessage = message.text;
+                    message.fullmessageformat = 0;
+                    message.fullmessagehtml = '';
+                    message.notification = 0;
+                    message.read = 0;
+                    message.smallmessage = message.smallmessage || message.text;
+                    message.subject = conv.name;
+                    message.timecreated = message.timecreated * 1000;
+                    message.timeread = 0;
+                    message.useridto = currentUserId;
+                    message.usertofullname = site.getInfo().fullname;
+
+                    const userFrom = conv.members.find((member) => {
+                        return member.id == message.useridfrom;
+                    });
+                    message.userfromfullname = userFrom && userFrom.fullname;
+
+                    return [message];
+                });
+            } else {
+                return this.messagesProvider.getUnreadReceivedMessages(true, false, true, siteId).then((response) => {
+                    return response.messages;
+                });
+            }
         });
     }
 
@@ -241,7 +294,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
      */
     protected getTitleAndText(message: any): Promise<any> {
         const data = {
-            title: message.userfromfullname,
+            title: message.name || message.userfromfullname,
         };
 
         return this.textUtils.formatText(message.text, true, true).catch(() => {

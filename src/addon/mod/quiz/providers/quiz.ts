@@ -21,12 +21,13 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
 import { CoreQuestionDelegate } from '@core/question/providers/delegate';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
 import { AddonModQuizOfflineProvider } from './quiz-offline';
+import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 
 /**
  * Service that provides some features for quiz.
@@ -63,7 +64,8 @@ export class AddonModQuizProvider {
             private gradesHelper: CoreGradesHelperProvider, private questionDelegate: CoreQuestionDelegate,
             private filepoolProvider: CoreFilepoolProvider, private timeUtils: CoreTimeUtilsProvider,
             private accessRulesDelegate: AddonModQuizAccessRuleDelegate, private quizOfflineProvider: AddonModQuizOfflineProvider,
-            private domUtils: CoreDomUtilsProvider, private logHelper: CoreCourseLogHelperProvider) {
+            private domUtils: CoreDomUtilsProvider, private logHelper: CoreCourseLogHelperProvider,
+            protected pushNotificationsProvider: CorePushNotificationsProvider) {
         this.logger = logger.getInstance('AddonModQuizProvider');
     }
 
@@ -403,7 +405,8 @@ export class AddonModQuizProvider {
                     page: page
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getAttemptReviewCacheKey(attemptId, page)
+                    cacheKey: this.getAttemptReviewCacheKey(attemptId, page),
+                    cacheErrors: ['noreview']
                 };
 
             if (ignoreCache) {
@@ -567,7 +570,8 @@ export class AddonModQuizProvider {
                     grade: grade
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getFeedbackForGradeCacheKey(quizId, grade)
+                    cacheKey: this.getFeedbackForGradeCacheKey(quizId, grade),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (ignoreCache) {
@@ -684,7 +688,8 @@ export class AddonModQuizProvider {
                     courseids: [courseId]
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getQuizDataCacheKey(courseId)
+                    cacheKey: this.getQuizDataCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (forceCache) {
@@ -826,7 +831,8 @@ export class AddonModQuizProvider {
                     quizid: quizId
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getQuizRequiredQtypesCacheKey(quizId)
+                    cacheKey: this.getQuizRequiredQtypesCacheKey(quizId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (ignoreCache) {
@@ -988,7 +994,8 @@ export class AddonModQuizProvider {
                     includepreviews: includePreviews ? 1 : 0
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getUserAttemptsCacheKey(quizId, userId)
+                    cacheKey: this.getUserAttemptsCacheKey(quizId, userId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (offline) {
@@ -1532,10 +1539,13 @@ export class AddonModQuizProvider {
      * @param {number} [page=0] Page number.
      * @param {any} [preflightData] Preflight required data (like password).
      * @param {boolean} [offline] Whether attempt is offline.
+     * @param {string} [quiz] Quiz instance. If set, a Firebase event will be stored.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logViewAttempt(attemptId: number, page: number = 0, preflightData: any = {}, offline?: boolean, siteId?: string): Promise<any> {
+    logViewAttempt(attemptId: number, page: number = 0, preflightData: any = {}, offline?: boolean, quiz?: any,
+            siteId?: string): Promise<any> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     attemptid: attemptId,
@@ -1548,6 +1558,10 @@ export class AddonModQuizProvider {
             if (offline) {
                 promises.push(this.quizOfflineProvider.setAttemptCurrentPage(attemptId, page, site.getId()));
             }
+            if (quiz) {
+                this.pushNotificationsProvider.logViewEvent(quiz.id, quiz.name, 'quiz', 'mod_quiz_view_attempt',
+                        {attemptid: attemptId, page: page}, siteId);
+            }
 
             return Promise.all(promises);
         });
@@ -1558,15 +1572,17 @@ export class AddonModQuizProvider {
      *
      * @param {number} attemptId Attempt ID.
      * @param {number} quizId Quiz ID.
+     * @param {string} [name] Name of the quiz.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logViewAttemptReview(attemptId: number, quizId: number, siteId?: string): Promise<any> {
+    logViewAttemptReview(attemptId: number, quizId: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             attemptid: attemptId
         };
 
-        return this.logHelper.log('mod_quiz_view_attempt_review', params, AddonModQuizProvider.COMPONENT, quizId, siteId);
+        return this.logHelper.logSingle('mod_quiz_view_attempt_review', params, AddonModQuizProvider.COMPONENT, quizId, name,
+                'quiz', params, siteId);
     }
 
     /**
@@ -1575,31 +1591,35 @@ export class AddonModQuizProvider {
      * @param {number} attemptId Attempt ID.
      * @param {any} preflightData Preflight required data (like password).
      * @param {number} quizId Quiz ID.
+     * @param {string} [name] Name of the quiz.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logViewAttemptSummary(attemptId: number, preflightData: any, quizId: number, siteId?: string): Promise<any> {
+    logViewAttemptSummary(attemptId: number, preflightData: any, quizId: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             attemptid: attemptId,
             preflightdata: this.utils.objectToArrayOfObjects(preflightData, 'name', 'value', true)
         };
 
-        return this.logHelper.log('mod_quiz_view_attempt_summary', params, AddonModQuizProvider.COMPONENT, quizId, siteId);
+        return this.logHelper.logSingle('mod_quiz_view_attempt_summary', params, AddonModQuizProvider.COMPONENT, quizId, name,
+                'quiz', {attemptid: attemptId}, siteId);
     }
 
     /**
      * Report a quiz as being viewed.
      *
      * @param {number} id Module ID.
+     * @param {string} [name] Name of the quiz.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logViewQuiz(id: number, siteId?: string): Promise<any> {
+    logViewQuiz(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             quizid: id
         };
 
-        return this.logHelper.log('mod_quiz_view_quiz', params, AddonModQuizProvider.COMPONENT, id, siteId);
+        return this.logHelper.logSingle('mod_quiz_view_quiz', params, AddonModQuizProvider.COMPONENT, id, name, 'quiz', {},
+                siteId);
     }
 
     /**

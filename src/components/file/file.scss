@@ -7,6 +7,10 @@ ion-app.app-root {
     .card-ios core-file + core-file > .item-ios.item-block > .item-inner,
     core-file + core-file > .item-ios.item-block > .item-inner {
         border-top: $hairlines-width solid $list-ios-border-color;
+        .buttons {
+            min-height: 53px;
+            min-width: 58px;
+        }
     }
 
     .card-wp core-file + core-file > .item-wp.item-block > .item-inner,
@@ -16,5 +20,16 @@ ion-app.app-root {
 
     core-file > .item.item-block > .item-inner {
         border-bottom: 0;
+        @include padding(null, 0, null, null);
+        .buttons {
+            display: flex;
+            flex-flow: row;
+            align-items: center;
+            z-index: 1;
+            justify-content: space-around;
+            align-content: center;
+            min-height: 52px;
+            min-width: 53px;
+        }
     }
 }

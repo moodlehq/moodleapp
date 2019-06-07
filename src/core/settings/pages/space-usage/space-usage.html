@@ -9,16 +9,22 @@
     </ion-refresher>
     <core-loading [hideUntil]="usageLoaded">
         <ion-item *ngFor="let site of sites" [class.core-primary-selected-item]="site.id == currentSiteId">
-            <h2><core-format-text [text]="site.siteName"></core-format-text></h2>
-            <p>{{ site.fullName }}</p>
-            <p item-end>{{ site.spaceUsage | coreBytesToSize }}</p>
-            <button ion-button icon-only clear color="danger" item-end (click)="deleteSiteFiles(site)" [hidden]="!site.spaceUsage > '0'" [attr.aria-label]="'core.settings.deletesitefilestitle' | translate">
+            <h2 text-wrap><core-format-text [text]="site.siteName"></core-format-text></h2>
+            <p text-wrap>{{ site.fullName }}</p>
+            <div item-end>
+                <p>{{ site.spaceUsage | coreBytesToSize }}</p>
+                <p>{{ 'core.settings.entriesincache' | translate: { $a: site.cacheEntries } }}</p>
+            </div>
+            <button ion-button icon-only clear color="danger" item-end (click)="deleteSiteStorage(site)" [hidden]="!site.spaceUsage > '0' && !site.cacheEntries > '0'" [attr.aria-label]="'core.settings.deletesitefilestitle' | translate">
                 <ion-icon name="trash"></ion-icon>
             </button>
         </ion-item>
         <ion-item-divider>
             <p>{{ 'core.settings.total' | translate }}</p>
-            <p item-end>{{ totalUsage | coreBytesToSize }}</p>
+            <div item-end>
+                <p>{{ totalUsage | coreBytesToSize }}</p>
+                <p>{{ 'core.settings.entriesincache' | translate: { $a: totalEntries } }}</p>
+            </div>
         </ion-item-divider>
     </core-loading>
 </ion-content>

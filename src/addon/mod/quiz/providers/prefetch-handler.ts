@@ -239,7 +239,16 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
      * @return {Promise<any>} Promise resolved when done.
      */
     prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string, canStart: boolean = true): Promise<any> {
+        if (module.attemptFinished) {
+            // Delete the value so it does not block anything if true.
+            delete module.attemptFinished;
+
+            // Quiz got synced recently and an attempt has finished. Do not prefetch.
+            return Promise.resolve();
+        }
+
         return this.prefetchPackage(module, courseId, single, this.prefetchQuiz.bind(this), undefined, canStart);
+
     }
 
     /**
@@ -409,7 +418,7 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
 
                 data.questions.forEach((question) => {
                     questionPromises.push(this.questionHelper.prefetchQuestionFiles(
-                            question, this.component, quiz.coursemodule, siteId));
+                            question, this.component, quiz.coursemodule, siteId, attempt.uniqueid));
                 });
 
                 return Promise.all(questionPromises);
@@ -437,7 +446,7 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
 
                         data.questions.forEach((question) => {
                             questionPromises.push(this.questionHelper.prefetchQuestionFiles(
-                                    question, this.component, quiz.coursemodule, siteId));
+                                    question, this.component, quiz.coursemodule, siteId, attempt.uniqueid));
                         });
 
                         return Promise.all(questionPromises);
@@ -552,6 +561,32 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
 
                 return this.filepoolProvider.storePackageStatus(siteId, newStatus, this.component, quiz.coursemodule);
             }
+        });
+    }
+
+    /**
+     * Sync a module.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    sync(module: any, courseId: number, siteId?: any): Promise<any> {
+        if (!this.syncProvider) {
+            this.syncProvider = this.injector.get(AddonModQuizSyncProvider);
+        }
+
+        return this.quizProvider.getQuiz(courseId, module.id).then((quiz) => {
+            return this.syncProvider.syncQuiz(quiz, false, siteId).then((results) => {
+                module.attemptFinished = (results && results.attemptFinished) || false;
+
+                return results;
+            }).catch(() => {
+                // Ignore errors.
+
+                module.attemptFinished = false;
+            });
         });
     }
 }

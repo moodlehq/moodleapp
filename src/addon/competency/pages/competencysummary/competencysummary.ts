@@ -41,7 +41,10 @@ export class AddonCompetencyCompetencySummaryPage {
      */
     ionViewDidLoad(): void {
         this.fetchCompetency().then(() => {
-            this.competencyProvider.logCompetencyView(this.competencyId).catch(() => {
+            const name = this.competency.competency && this.competency.competency.competency &&
+                    this.competency.competency.competency.shortname;
+
+            this.competencyProvider.logCompetencyView(this.competencyId, name).catch(() => {
                 // Ignore errors.
             });
         }).finally(() => {

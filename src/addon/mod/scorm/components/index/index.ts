@@ -54,6 +54,8 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     organizations: any[]; // List of organizations.
     loadingToc: boolean; // Whether the TOC is being loaded.
     toc: any[]; // Table of contents (structure).
+    accessInfo: any; // Access information.
+    skip: boolean; // Launch immediately.
 
     protected fetchContentDefaultError = 'addon.mod_scorm.errorgetscorm'; // Default error to show when loading contents.
     protected syncEventName = AddonModScormSyncProvider.AUTO_SYNCED;
@@ -83,7 +85,11 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
                 return;
             }
 
-            this.scormProvider.logView(this.scorm.id).then(() => {
+            if (this.skip) {
+                this.open();
+            }
+
+            this.scormProvider.logView(this.scorm.id, this.scorm.name).then(() => {
                 this.checkCompletion();
             }).catch((error) => {
                 // Ignore errors.
@@ -181,54 +187,72 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
                     this.syncTime = syncTime;
                 });
 
-                // Get the number of attempts.
-                return this.scormProvider.getAttemptCount(this.scorm.id);
-            }).then((attemptsData) => {
-                this.attempts = attemptsData;
-                this.hasOffline = !!this.attempts.offline.length;
-
-                // Determine the attempt that will be continued or reviewed.
-                return this.scormHelper.determineAttemptToContinue(this.scorm, this.attempts);
-            }).then((attempt) => {
-                this.lastAttempt = attempt.number;
-                this.lastIsOffline = attempt.offline;
-
-                if (this.lastAttempt != this.attempts.lastAttempt.number) {
-                    this.attemptToContinue = this.lastAttempt;
-                } else {
-                    this.attemptToContinue = undefined;
-                }
-
-                // Check if the last attempt is incomplete.
-                return this.scormProvider.isAttemptIncomplete(this.scorm.id, this.lastAttempt, this.lastIsOffline);
-            }).then((incomplete) => {
                 const promises = [];
 
-                this.scorm.incomplete = incomplete;
-                this.scorm.numAttempts = this.attempts.total;
-                this.scorm.gradeMethodReadable = this.scormProvider.getScormGradeMethod(this.scorm);
-                this.scorm.attemptsLeft = this.scormProvider.countAttemptsLeft(this.scorm, this.attempts.lastAttempt.number);
+                // Get access information.
+                promises.push(this.scormProvider.getAccessInformation(this.scorm.id).then((accessInfo) => {
+                    this.accessInfo = accessInfo;
+                }));
 
-                if (this.scorm.forcenewattempt == AddonModScormProvider.SCORM_FORCEATTEMPT_ALWAYS ||
-                        (this.scorm.forcenewattempt && !this.scorm.incomplete)) {
-                    this.scormOptions.newAttempt = true;
-                }
+                // Get the number of attempts.
+                promises.push(this.scormProvider.getAttemptCount(this.scorm.id).then((attemptsData) => {
+                    this.attempts = attemptsData;
+                    this.hasOffline = !!this.attempts.offline.length;
 
-                promises.push(this.getReportedGrades());
+                    // Determine the attempt that will be continued or reviewed.
+                    return this.scormHelper.determineAttemptToContinue(this.scorm, this.attempts);
+                }).then((attempt) => {
+                    this.lastAttempt = attempt.number;
+                    this.lastIsOffline = attempt.offline;
 
-                promises.push(this.fetchStructure());
+                    if (this.lastAttempt != this.attempts.lastAttempt.number) {
+                        this.attemptToContinue = this.lastAttempt;
+                    } else {
+                        this.attemptToContinue = undefined;
+                    }
 
-                if (!this.scorm.packagesize && this.errorMessage === '') {
-                    // SCORM is supported but we don't have package size. Try to calculate it.
-                    promises.push(this.scormProvider.calculateScormSize(this.scorm).then((size) => {
-                        this.scorm.packagesize = size;
-                    }));
-                }
+                    // Check if the last attempt is incomplete.
+                    return this.scormProvider.isAttemptIncomplete(this.scorm.id, this.lastAttempt, this.lastIsOffline);
+                }).then((incomplete) => {
+                    const promises = [];
 
-                // Handle status.
-                this.setStatusListener();
+                    this.scorm.incomplete = incomplete;
+                    this.scorm.numAttempts = this.attempts.total;
+                    this.scorm.gradeMethodReadable = this.scormProvider.getScormGradeMethod(this.scorm);
+                    this.scorm.attemptsLeft = this.scormProvider.countAttemptsLeft(this.scorm, this.attempts.lastAttempt.number);
 
-                return Promise.all(promises);
+                    if (this.scorm.forcenewattempt == AddonModScormProvider.SCORM_FORCEATTEMPT_ALWAYS ||
+                            (this.scorm.forcenewattempt && !this.scorm.incomplete)) {
+                        this.scormOptions.newAttempt = true;
+                    }
+
+                    promises.push(this.getReportedGrades());
+
+                    promises.push(this.fetchStructure());
+
+                    if (!this.scorm.packagesize && this.errorMessage === '') {
+                        // SCORM is supported but we don't have package size. Try to calculate it.
+                        promises.push(this.scormProvider.calculateScormSize(this.scorm).then((size) => {
+                            this.scorm.packagesize = size;
+                        }));
+                    }
+
+                    // Handle status.
+                    promises.push(this.setStatusListener());
+
+                    return Promise.all(promises);
+                }));
+
+                return Promise.all(promises).then(() => {
+                    // Check whether to launch the SCORM immediately.
+                    if (typeof this.skip == 'undefined') {
+                        this.skip = !this.hasOffline && !this.errorMessage &&
+                            (!this.scorm.lastattemptlock || this.scorm.attemptsLeft > 0) &&
+                            this.accessInfo.canskipview && !this.accessInfo.canviewreport &&
+                            this.scorm.skipview >= AddonModScormProvider.SKIPVIEW_FIRST &&
+                            (this.scorm.skipview == AddonModScormProvider.SKIPVIEW_ALWAYS || this.lastAttempt == 0);
+                    }
+                });
             });
         }).then(() => {
             // All data obtained, now fill the context menu.
@@ -368,6 +392,9 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     ionViewDidLeave(): void {
         super.ionViewDidLeave();
 
+        // Display the full page when returning to the page.
+        this.skip = false;
+
         if (this.navCtrl.getActive().component.name == 'AddonModScormPlayerPage') {
             this.hasPlayed = true;
 
@@ -460,11 +487,17 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
         });
     }
 
-    // Open a SCORM. It will download the SCORM package if it's not downloaded or it has changed.
-    // The scoId param indicates the SCO that needs to be loaded when the SCORM is opened. If not defined, load first SCO.
-    open(e: Event, scoId: number): void {
-        e.preventDefault();
-        e.stopPropagation();
+    /**
+     * Open a SCORM. It will download the SCORM package if it's not downloaded or it has changed.
+     *
+     * @param {Event} [event] Event.
+     * @param {string} [scoId] SCO that needs to be loaded when the SCORM is opened. If not defined, load first SCO.
+     */
+    open(event?: Event, scoId?: number): void {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
 
         if (this.downloading) {
             // Scope is being downloaded, abort.

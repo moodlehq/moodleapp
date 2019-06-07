@@ -130,7 +130,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.fetchSubmissionData().then(() => {
-            this.workshopProvider.logViewSubmission(this.submissionId, this.workshopId).then(() => {
+            this.workshopProvider.logViewSubmission(this.submissionId, this.workshopId, this.workshop.name).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch(() => {
                 // Ignore errors.
@@ -202,7 +202,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
                 this.workshop.phase < AddonModWorkshopProvider.PHASE_CLOSED && this.access.canoverridegrades;
             this.ownAssessment = false;
 
-            if (this.access.canviewallassessments || this.currentUserId == this.userId) {
+            if (this.access.canviewallassessments) {
                 // Get new data, different that came from stateParams.
                 promises.push(this.workshopProvider.getSubmissionAssessments(this.workshopId, this.submissionId)
                         .then((subAssessments) => {
@@ -259,8 +259,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
 
                 const defaultGrade = this.translate.instant('addon.mod_workshop.notoverridden');
 
-                promises.push(this.gradesHelper.makeGradesMenu(this.workshop.grade, this.workshopId, defaultGrade, -1)
-                        .then((grades) => {
+                promises.push(this.gradesHelper.makeGradesMenu(this.workshop.grade, undefined, defaultGrade, -1).then((grades) => {
                     this.evaluationGrades = grades;
 
                     this.evaluate.grade = {

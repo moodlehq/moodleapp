@@ -25,6 +25,18 @@ ion-app.app-root.ios {
     @include margin($item-ios-padding-icon-top, null, $item-ios-padding-icon-bottom, 0);
   }
 
+  .item-ios ion-icon[item-start] + .item-inner,
+  .item-ios ion-icon[item-start] + .item-input,
+  .item-ios img[item-start] + .item-inner,
+  .item-ios img[item-start] + .item-input {
+    @include margin-horizontal($item-ios-padding-start, null);
+  }
+
+  .item-ios ion-avatar[item-start] + .item-inner,
+  .item-ios ion-avatar[item-start] + .item-input {
+    @include margin-horizontal(0, null);
+  }
+
 
   @each $color-name, $color-base, $color-contrast in get-colors($colors-ios) {
     .core-#{$color-name}-card {
@@ -85,5 +97,18 @@ ion-app.app-root.ios {
     border-style: $checkbox-ios-icon-border-style;
     border-color: $checkbox-ios-icon-border-color-off;
     background-color: $checkbox-ios-background-color-off;
+  }
+
+  // File Uploader
+  // In iOS the input is 1 level higher, so the styles are different.
+  .action-sheet-ios input.core-fileuploader-file-handler-input {
+    position: absolute;
+    @include position(null, 0, null, 0);
+    min-width: 100%;
+    min-height: $action-sheet-ios-button-min-height;
+    opacity: 0;
+    outline: none;
+    z-index: 100;
+    cursor: pointer;
   }
 }

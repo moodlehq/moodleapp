@@ -28,14 +28,15 @@ export class CoreCourseLogCronHandler implements CoreCronHandler {
 
     /**
      * Execute the process.
-     * Receives the ID of the site affected, undefined for the current site.
+     * Receives the ID of the site affected, undefined for all sites.
      *
-     * @param  {string} [siteId] ID of the site affected, undefined for the current site.
+     * @param  {string} [siteId] ID of the site affected, undefined for all sites.
+     * @param {boolean} [force] Wether the execution is forced (manual sync).
      * @return {Promise<any>}         Promise resolved when done, rejected if failure.
      */
-    execute(siteId?: string): Promise<any> {
+    execute(siteId?: string, force?: boolean): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-           return this.courseProvider.logView(site.getSiteHomeId(), undefined, site.getId());
+           return this.courseProvider.logView(site.getSiteHomeId(), undefined, site.getId(), site.getInfo().sitename);
         });
     }
 

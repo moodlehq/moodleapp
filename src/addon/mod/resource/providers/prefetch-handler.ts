@@ -51,11 +51,18 @@ export class AddonModResourcePrefetchHandler extends CoreCourseResourcePrefetchH
      * @return {string} Status to display.
      */
     determineStatus(module: any, status: string, canCheck: boolean): string {
-        if (status == CoreConstants.DOWNLOADED && module && module.contents) {
-            // If the first file is an external file, always display the module as outdated.
-            const mainFile = module.contents[0];
-            if (mainFile && mainFile.isexternalfile) {
-                return CoreConstants.OUTDATED;
+        if (status == CoreConstants.DOWNLOADED && module) {
+            // If the main file is an external file, always display the module as outdated.
+            if (module.contentsinfo) {
+                if (module.contentsinfo.repositorytype) {
+                    // It's an external file.
+                    return CoreConstants.OUTDATED;
+                }
+            } else if (module.contents) {
+                const mainFile = module.contents[0];
+                if (mainFile && mainFile.isexternalfile) {
+                    return CoreConstants.OUTDATED;
+                }
             }
         }
 
@@ -130,7 +137,12 @@ export class AddonModResourcePrefetchHandler extends CoreCourseResourcePrefetchH
      * @return {Promise<boolean>} Promise resolved with true if downloadable, resolved with false otherwise.
      */
     isDownloadable(module: any, courseId: number): Promise<boolean> {
-        // Don't allow downloading Nextcloud files for now.
+        if (this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.7')) {
+            // Nextcloud files are downloadable from 3.7 onwards.
+            return Promise.resolve(true);
+        }
+
+        // Don't allow downloading Nextcloud files in older sites.
         return this.loadContents(module, courseId, false).then(() => {
             return !this.resourceHelper.isNextcloudFile(module);
         });

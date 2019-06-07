@@ -80,7 +80,7 @@ export class CoreLoginReconnectPage {
 
             this.username = site.infos.username;
             this.siteUrl = site.infos.siteurl;
-            this.siteName = site.infos.sitename;
+            this.siteName = site.getSiteName();
 
             // Check logoURL if user avatar is not set.
             if (this.site.avatar.startsWith(site.infos.siteurl + '/theme/image.php')) {

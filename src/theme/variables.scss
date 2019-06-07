@@ -126,14 +126,15 @@ $popover-width: 280px !default;
 $item-divider-background: $gray-lighter !default;
 $item-divider-color: $black !default;
 
+$core-star-color: $core-color !default;
 
 // Moodle Mobile variables
 // --------------------------------------------------
 
 // Init screen.
-$core-color-init-screen:          #ff5c00 !default;
-$core-color-init-screen-alt:      #ff7600 !default;
-$core-init-screen-spinner-color:  $white !default;
+$core-color-init-screen:          #ffffff !default;
+$core-color-init-screen-alt:      #ffffff !default;
+$core-init-screen-spinner-color:  $core-color !default;
 $core-init-screen-logo-width:     60% !default;
 $core-init-screen-logo-max-width: 300px !default;
 
@@ -262,6 +263,8 @@ $core-user-profile-communication-icons-color: $core-color !default;
 $core-rte-min-height: 80px;
 
 $core-toolbar-button-image-width: 32px;
+
+$core-text-hightlight-background-color: lighten($blue, 40%) !default;
 
 // Timer variables.
 $core-timer-warn-color:     $red !default;

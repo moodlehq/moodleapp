@@ -26,7 +26,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
-import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreUtilsProvider, PromiseDefer } from '@providers/utils/utils';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../configconstants';
 import { Md5 } from 'ts-md5/dist/md5';
@@ -113,6 +113,32 @@ export interface CoreSiteWSPreSets {
      * @type {string}
      */
     typeExpected?: string;
+
+    /**
+     * Wehther a pending request in the queue matching the same function and arguments can be reused instead of adding
+     * a new request to the queue. Defaults to true for read requests.
+     * @type {boolean}
+     */
+    reusePending?: boolean;
+
+    /**
+     * Whether the request will be be sent immediately as a single request. Defaults to false.
+     * @type {boolean}
+     */
+    skipQueue?: boolean;
+
+    /**
+     * Cache the response if it returns an errorcode present in this list.
+     */
+    cacheErrors?: string[];
+
+    /**
+     * Update frequency. This value determines how often the cached data will be updated. Possible values:
+     * CoreSite.FREQUENCY_USUALLY, CoreSite.FREQUENCY_OFTEN, CoreSite.FREQUENCY_SOMETIMES, CoreSite.FREQUENCY_RARELY.
+     * Defaults to CoreSite.FREQUENCY_USUALLY.
+     * @type {number}
+     */
+    updateFrequency?: number;
 }
 
 /**
@@ -145,12 +171,34 @@ export interface LocalMobileResponse {
 }
 
 /**
+ * Info of a request waiting in the queue.
+ */
+interface RequestQueueItem {
+    cacheId: string;
+    method: string;
+    data: any;
+    preSets: CoreSiteWSPreSets;
+    wsPreSets: CoreWSPreSets;
+    deferred: PromiseDefer;
+}
+
+/**
  * Class that represents a site (combination of site + user).
  * It will have all the site data and provide utility functions regarding a site.
  * To add tables to the site's database, please use CoreSitesProvider.createTablesFromSchema. This will make sure that
  * the tables are created in all the sites, not just the current one.
  */
 export class CoreSite {
+    static REQUEST_QUEUE_DELAY = 50; // Maximum number of miliseconds to wait before processing the queue.
+    static REQUEST_QUEUE_LIMIT = 10; // Maximum number of requests allowed in the queue.
+    static REQUEST_QUEUE_FORCE_WS = false; // Use "tool_mobile_call_external_functions" even for calling a single function.
+
+    // Constants for cache update frequency.
+    static FREQUENCY_USUALLY = 0;
+    static FREQUENCY_OFTEN = 1;
+    static FREQUENCY_SOMETIMES = 2;
+    static FREQUENCY_RARELY = 3;
+
     // List of injected services. This class isn't injectable, so it cannot use DI.
     protected appProvider: CoreAppProvider;
     protected dbProvider: CoreDbProvider;
@@ -176,8 +224,17 @@ export class CoreSite {
         3.3: 2017051503,
         3.4: 2017111300,
         3.5: 2018051700,
-        3.6: 2018120300
+        3.6: 2018120300,
+        3.7: 2019052000
     };
+
+    // Possible cache update frequencies.
+    protected UPDATE_FREQUENCIES = [
+        CoreConfigConstants.cache_update_frequency_usually || 420000,
+        CoreConfigConstants.cache_update_frequency_often || 1200000,
+        CoreConfigConstants.cache_update_frequency_sometimes || 3600000,
+        CoreConfigConstants.cache_update_frequency_rarely || 43200000
+    ];
 
     // Rest of variables.
     protected logger;
@@ -186,6 +243,8 @@ export class CoreSite {
     protected lastAutoLogin = 0;
     protected offlineDisabled = false;
     protected ongoingRequests: { [cacheId: string]: Promise<any> } = {};
+    protected requestQueue: RequestQueueItem[] = [];
+    protected requestQueueTimeout = null;
 
     /**
      * Create a site.
@@ -217,6 +276,7 @@ export class CoreSite {
         this.wsProvider = injector.get(CoreWSProvider);
 
         this.logger = logger.getInstance('CoreWSProvider');
+        this.setInfo(infos);
         this.calculateOfflineDisabled();
 
         if (this.id) {
@@ -306,6 +366,20 @@ export class CoreSite {
     }
 
     /**
+     * Get site name.
+     *
+     * @return {string} Site name.
+     */
+    getSiteName(): string {
+        if (CoreConfigConstants.sitename) {
+            // Overridden by config.
+            return CoreConfigConstants.sitename;
+        } else {
+            return this.infos && this.infos.sitename || '';
+        }
+    }
+
+    /**
      * Set site ID.
      *
      * @param {string} New ID.
@@ -349,6 +423,14 @@ export class CoreSite {
      */
     setInfo(infos: any): void {
         this.infos = infos;
+
+        // Index function by name to speed up wsAvailable method.
+        if (infos && infos.functions) {
+            infos.functionsByName = {};
+            infos.functions.forEach((func) => {
+                infos.functionsByName[func.name] = func;
+            });
+        }
     }
 
     /**
@@ -442,7 +524,8 @@ export class CoreSite {
         // The get_site_info WS call won't be cached.
         const preSets = {
             getFromCache: false,
-            saveToCache: false
+            saveToCache: false,
+            skipQueue: true
         };
 
         // Reset clean Unicode to check if it's supported again.
@@ -466,6 +549,9 @@ export class CoreSite {
         }
         if (typeof preSets.saveToCache == 'undefined') {
             preSets.saveToCache = true;
+        }
+        if (typeof preSets.reusePending == 'undefined') {
+            preSets.reusePending = true;
         }
 
         return this.request(method, data, preSets);
@@ -564,10 +650,9 @@ export class CoreSite {
 
         const originalData = data;
 
-        // Convert the values to string before starting the cache process.
-        try {
-            data = this.wsProvider.convertValuesToString(data, wsPreSets.cleanUnicode);
-        } catch (e) {
+        // Convert arguments to strings before starting the cache process.
+        data = this.wsProvider.convertValuesToString(data, wsPreSets.cleanUnicode);
+        if (data == null) {
             // Empty cleaned text found.
             return Promise.reject(this.utils.createFakeWSError('core.unicodenotsupportedcleanerror', true));
         }
@@ -584,7 +669,7 @@ export class CoreSite {
 
         const promise = this.getFromCache(method, data, preSets, false, originalData).catch(() => {
             // Do not pass those options to the core WS factory.
-            return this.wsProvider.call(method, data, wsPreSets).then((response) => {
+            return this.callOrEnqueueRequest(method, data, preSets, wsPreSets).then((response) => {
                 if (preSets.saveToCache) {
                     this.saveToCache(method, data, response, preSets);
                 }
@@ -595,6 +680,8 @@ export class CoreSite {
                     (error.errorcode == 'accessexception' && error.message.indexOf('Invalid token - token expired') > -1)) {
                     if (initialToken !== this.token && !retrying) {
                         // Token has changed, retry with the new token.
+                        preSets.getFromCache = false; // Don't check cache now. Also, it will skip ongoingRequests.
+
                         return this.request(method, data, preSets, true);
                     } else if (this.appProvider.isSSOAuthenticationOngoing()) {
                         // There's an SSO authentication ongoing, wait for it to finish and try again.
@@ -657,6 +744,11 @@ export class CoreSite {
                     this.logger.debug(`WS call '${method}' failed. Emergency cache is forbidden, rejecting.`);
 
                     return Promise.reject(error);
+                } else if (preSets.cacheErrors && preSets.cacheErrors.indexOf(error.errorcode) != -1) {
+                    // Save the error instead of deleting the cache entry so the same content is displayed in offline.
+                    this.saveToCache(method, data, error, preSets);
+
+                    return Promise.reject(error);
                 }
 
                 if (preSets.deleteCacheIfWSError && this.utils.isWebServiceError(error)) {
@@ -678,7 +770,7 @@ export class CoreSite {
             });
         }).then((response) => {
             // Check if the response is an error, this happens if the error was stored in the cache.
-            if (response && typeof response.exception !== 'undefined') {
+            if (response && (typeof response.exception != 'undefined' || typeof response.errorcode != 'undefined')) {
                 return Promise.reject(response);
             }
 
@@ -700,6 +792,158 @@ export class CoreSite {
     }
 
     /**
+     * Adds a request to the queue or calls it immediately when not using the queue.
+     *
+     * @param {string} method The WebService method to be called.
+     * @param {any} data Arguments to pass to the method.
+     * @param {CoreSiteWSPreSets} preSets Extra options related to the site.
+     * @param {CoreWSPreSets} wsPreSets Extra options related to the WS call.
+     * @returns {Promise<any>} Promise resolved with the response when the WS is called.
+     */
+    protected callOrEnqueueRequest(method: string, data: any, preSets: CoreSiteWSPreSets, wsPreSets: CoreWSPreSets): Promise<any> {
+        if (preSets.skipQueue || !this.wsAvailable('tool_mobile_call_external_functions')) {
+            return this.wsProvider.call(method, data, wsPreSets);
+        }
+
+        const cacheId = this.getCacheId(method, data);
+
+        // Check if there is an identical request waiting in the queue (read requests only by default).
+        if (preSets.reusePending) {
+            const request = this.requestQueue.find((request) => request.cacheId == cacheId);
+            if (request) {
+                return request.deferred.promise;
+            }
+        }
+
+        const request: RequestQueueItem = {
+            cacheId,
+            method,
+            data,
+            preSets,
+            wsPreSets,
+            deferred: {}
+        };
+
+        request.deferred.promise = new Promise((resolve, reject): void => {
+            request.deferred.resolve = resolve;
+            request.deferred.reject = reject;
+        });
+
+        return this.enqueueRequest(request);
+    }
+
+    /**
+     * Adds a request to the queue.
+     *
+     * @param {RequestQueueItem} request The request to enqueue.
+     * @returns {Promise<any>} Promise resolved with the response when the WS is called.
+     */
+    protected enqueueRequest(request: RequestQueueItem): Promise<any> {
+
+        this.requestQueue.push(request);
+
+        if (this.requestQueue.length >= CoreSite.REQUEST_QUEUE_LIMIT) {
+            this.processRequestQueue();
+        } else if (!this.requestQueueTimeout) {
+            this.requestQueueTimeout = setTimeout(this.processRequestQueue.bind(this), CoreSite.REQUEST_QUEUE_DELAY);
+        }
+
+        return request.deferred.promise;
+    }
+
+    /**
+     * Call the enqueued web service requests.
+     */
+    protected processRequestQueue(): void {
+        this.logger.debug(`Processing request queue (${this.requestQueue.length} requests)`);
+
+        // Clear timeout if set.
+        if (this.requestQueueTimeout) {
+            clearTimeout(this.requestQueueTimeout);
+            this.requestQueueTimeout = null;
+        }
+
+        // Extract all requests from the queue.
+        const requests = this.requestQueue;
+        this.requestQueue = [];
+
+        if (requests.length == 1 && !CoreSite.REQUEST_QUEUE_FORCE_WS) {
+            // Only one request, do a regular web service call.
+            this.wsProvider.call(requests[0].method, requests[0].data, requests[0].wsPreSets).then((data) => {
+                requests[0].deferred.resolve(data);
+            }).catch((error) => {
+                requests[0].deferred.reject(error);
+            });
+
+            return;
+        }
+
+        const data = {
+            requests: requests.map((request) => {
+                const args = {};
+                const settings = {};
+
+                // Separate WS settings from function arguments.
+                Object.keys(request.data).forEach((key) => {
+                    let value = request.data[key];
+                    const match = /^moodlews(setting.*)$/.exec(key);
+                    if (match) {
+                        if (match[1] == 'settingfilter' || match[1] == 'settingfileurl') {
+                            // Undo special treatment of these settings in CoreWSProvider.convertValuesToString.
+                            value = (value == 'true' ? '1' : '0');
+                        }
+                        settings[match[1]] = value;
+                    } else {
+                        args[key] = value;
+                    }
+                });
+
+                return {
+                    function: request.method,
+                    arguments: JSON.stringify(args),
+                    ...settings
+                };
+            })
+        };
+
+        const wsPresets: CoreWSPreSets = {
+            siteUrl: this.siteUrl,
+            wsToken: this.token,
+        };
+
+        this.wsProvider.call('tool_mobile_call_external_functions', data, wsPresets).then((data) => {
+            if (!data || !data.responses) {
+                return Promise.reject(null);
+            }
+
+            requests.forEach((request, i) => {
+                const response = data.responses[i];
+
+                if (!response) {
+                    // Request not executed, enqueue again.
+                    this.enqueueRequest(request);
+                } else if (response.error) {
+                    request.deferred.reject(this.textUtils.parseJSON(response.exception));
+                } else {
+                    let responseData = this.textUtils.parseJSON(response.data);
+                    // Match the behaviour of CoreWSProvider.call when no response is expected.
+                    const responseExpected = typeof wsPresets.responseExpected == 'undefined' || wsPresets.responseExpected;
+                    if (!responseExpected && (responseData == null || responseData === '')) {
+                        responseData = {};
+                    }
+                    request.deferred.resolve(responseData);
+                }
+            });
+
+        }).catch((error) => {
+            // Error not specific to a single request, reject all promises.
+            requests.forEach((request) => {
+                request.deferred.reject(error);
+            });
+        });
+    }
+
+    /**
      * Check if a WS is available in this site.
      *
      * @param {string} method WS name.
@@ -711,11 +955,8 @@ export class CoreSite {
             return false;
         }
 
-        for (let i = 0; i < this.infos.functions.length; i++) {
-            const func = this.infos.functions[i];
-            if (func.name == method) {
-                return true;
-            }
+        if (this.infos.functionsByName[method]) {
+            return true;
         }
 
         // Let's try again with the compatibility prefix.
@@ -800,11 +1041,22 @@ export class CoreSite {
 
         return promise.then((entry) => {
             const now = Date.now();
+            let expirationTime;
 
             preSets.omitExpires = preSets.omitExpires || !this.appProvider.isOnline();
 
             if (!preSets.omitExpires) {
-                if (now > entry.expirationTime) {
+                let expirationDelay = this.UPDATE_FREQUENCIES[preSets.updateFrequency] ||
+                        this.UPDATE_FREQUENCIES[CoreSite.FREQUENCY_USUALLY];
+
+                if (this.appProvider.isNetworkAccessLimited()) {
+                    // Not WiFi, increase the expiration delay a 50% to decrease the data usage in this case.
+                    expirationDelay *= 1.5;
+                }
+
+                expirationTime = entry.expirationTime + expirationDelay;
+
+                if (now > expirationTime) {
                     this.logger.debug('Cached element found, but it is expired');
 
                     return Promise.reject(null);
@@ -812,8 +1064,12 @@ export class CoreSite {
             }
 
             if (typeof entry != 'undefined' && typeof entry.data != 'undefined') {
-                const expires = (entry.expirationTime - now) / 1000;
-                this.logger.info(`Cached element found, id: ${id} expires in ${expires} seconds`);
+                if (!expirationTime) {
+                    this.logger.info(`Cached element found, id: ${id}. Expiration time ignored.`);
+                } else {
+                    const expires = (expirationTime - now) / 1000;
+                    this.logger.info(`Cached element found, id: ${id}. Expires in expires in ${expires} seconds`);
+                }
 
                 return this.textUtils.parseJSON(entry.data, {});
             }
@@ -848,15 +1104,15 @@ export class CoreSite {
         }
 
         return promise.then(() => {
+            // Since 3.7, the expiration time contains the time the entry is modified instead of the expiration time.
+            // We decided to reuse this field to prevent modifying the database table.
             const id = this.getCacheId(method, data),
                 entry: any = {
                     id: id,
-                    data: JSON.stringify(response)
+                    data: JSON.stringify(response),
+                    expirationTime: Date.now()
                 };
-            let cacheExpirationTime = CoreConfigConstants.cache_expiration_time;
 
-            cacheExpirationTime = isNaN(cacheExpirationTime) ? 300000 : cacheExpirationTime;
-            entry.expirationTime = new Date().getTime() + cacheExpirationTime;
             if (preSets.cacheKey) {
                 entry.key = preSets.cacheKey;
             }
@@ -1164,7 +1420,7 @@ export class CoreSite {
             return false;
         }
 
-        const siteUrl = this.urlUtils.removeProtocolAndWWW(this.siteUrl);
+        const siteUrl = this.textUtils.removeEndingSlash(this.urlUtils.removeProtocolAndWWW(this.siteUrl));
         url = this.urlUtils.removeProtocolAndWWW(url);
 
         return url.indexOf(siteUrl) == 0;

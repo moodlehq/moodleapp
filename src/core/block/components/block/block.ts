@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, Injector, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Injector, ViewChild, OnDestroy } from '@angular/core';
 import { CoreBlockDelegate } from '../../providers/delegate';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
+import { Subscription } from 'rxjs';
+import { CoreEventsProvider } from '@providers/events';
 
 /**
  * Component to render a block.
@@ -23,7 +25,7 @@ import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-comp
     selector: 'core-block',
     templateUrl: 'core-block.html'
 })
-export class CoreBlockComponent implements OnInit {
+export class CoreBlockComponent implements OnInit, OnDestroy {
     @ViewChild(CoreDynamicComponent) dynamicComponent: CoreDynamicComponent;
 
     @Input() block: any; // The block to render.
@@ -37,7 +39,10 @@ export class CoreBlockComponent implements OnInit {
     class: string; // CSS class to apply to the block.
     loaded = false;
 
-    constructor(protected injector: Injector, protected blockDelegate: CoreBlockDelegate) { }
+    blockSubscription: Subscription;
+
+    constructor(protected injector: Injector, protected blockDelegate: CoreBlockDelegate,
+            protected eventsProvider: CoreEventsProvider) { }
 
     /**
      * Component being initialized.
@@ -50,9 +55,28 @@ export class CoreBlockComponent implements OnInit {
         }
 
         // Get the data to render the block.
+        this.initBlock();
+    }
+
+    /**
+     * Get block display data and initialises the block once this is available. If the block is not
+     * supported at the moment, try again if the available blocks are updated (because it comes
+     * from a site plugin).
+     */
+    initBlock(): void {
         this.blockDelegate.getBlockDisplayData(this.injector, this.block, this.contextLevel, this.instanceId).then((data) => {
             if (!data) {
-                // Block not supported, don't render it.
+                // Block not supported, don't render it. But, site plugins might not have finished loading.
+                // Subscribe to the observable in block delegate that will tell us if blocks are updated.
+                // We can retry init later if that happens.
+                this.blockSubscription = this.blockDelegate.blocksUpdateObservable.subscribe(
+                    (): void => {
+                        this.blockSubscription.unsubscribe();
+                        delete this.blockSubscription;
+                        this.initBlock();
+                    }
+                );
+
                 return;
             }
 
@@ -71,6 +95,16 @@ export class CoreBlockComponent implements OnInit {
         }).finally(() => {
             this.loaded = true;
         });
+    }
+
+    /**
+     * On destroy of the component, clear up any subscriptions.
+     */
+    ngOnDestroy(): void {
+        if (this.blockSubscription) {
+            this.blockSubscription.unsubscribe();
+            delete this.blockSubscription;
+        }
     }
 
     /**

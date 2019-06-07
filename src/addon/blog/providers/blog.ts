@@ -16,6 +16,8 @@ import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service to handle blog entries.
@@ -27,7 +29,8 @@ export class AddonBlogProvider {
     protected ROOT_CACHE_KEY = 'addonBlog:';
     protected logger;
 
-    constructor(logger: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider, protected utils: CoreUtilsProvider) {
+    constructor(logger: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider, protected utils: CoreUtilsProvider,
+            protected pushNotificationsProvider: CorePushNotificationsProvider) {
         this.logger = logger.getInstance('AddonBlogProvider');
     }
 
@@ -74,7 +77,8 @@ export class AddonBlogProvider {
             };
 
             const preSets = {
-                cacheKey: this.getEntriesCacheKey(filter)
+                cacheKey: this.getEntriesCacheKey(filter),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
             return site.read('core_blog_get_entries', data, preSets);
@@ -102,6 +106,8 @@ export class AddonBlogProvider {
      * @return {Promise<any>}         Promise to be resolved when done.
      */
     logView(filter: any = {}, siteId?: string): Promise<any> {
+        this.pushNotificationsProvider.logViewListEvent('blog', 'core_blog_view_entries', filter, siteId);
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const data = {
                 filters: this.utils.objectToArrayOfObjects(filter, 'name', 'value')

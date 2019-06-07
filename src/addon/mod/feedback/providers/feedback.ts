@@ -20,7 +20,7 @@ import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreAppProvider } from '@providers/app';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModFeedbackOfflineProvider } from './offline';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 
 /**
  * Service that provides some features for feedbacks.
@@ -583,7 +583,8 @@ export class AddonModFeedbackProvider {
                     courseids: [courseId]
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getFeedbackCacheKey(courseId)
+                    cacheKey: this.getFeedbackCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (forceCache) {
@@ -650,7 +651,8 @@ export class AddonModFeedbackProvider {
                     feedbackid: feedbackId
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getItemsDataCacheKey(feedbackId)
+                    cacheKey: this.getItemsDataCacheKey(feedbackId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (ignoreCache) {
@@ -1124,17 +1126,19 @@ export class AddonModFeedbackProvider {
      * Report the feedback as being viewed.
      *
      * @param {number} id                   Module ID.
+     * @param {string} [name] Name of the feedback.
      * @param  {boolean} [formViewed=false] True if form was viewed.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}               Promise resolved when the WS call is successful.
      */
-    logView(id: number, formViewed: boolean = false, siteId?: string): Promise<any> {
+    logView(id: number, name?: string, formViewed: boolean = false, siteId?: string): Promise<any> {
         const params = {
             feedbackid: id,
             moduleviewed: formViewed ? 1 : 0
         };
 
-        return this.logHelper.log('mod_feedback_view_feedback', params, AddonModFeedbackProvider.COMPONENT, id, siteId);
+        return this.logHelper.logSingle('mod_feedback_view_feedback', params, AddonModFeedbackProvider.COMPONENT, id, name,
+                'feedback', {moduleviewed: params.moduleviewed}, siteId);
     }
 
     /**

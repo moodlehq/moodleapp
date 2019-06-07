@@ -84,17 +84,19 @@ export class CoreUtilsProvider {
         return new Promise((resolve, reject): void => {
             const total = promises.length;
             let count = 0,
+                hasFailed = false,
                 error;
 
             promises.forEach((promise) => {
                 promise.catch((err) => {
+                    hasFailed = true;
                     error = err;
                 }).finally(() => {
                     count++;
 
                     if (count === total) {
                         // All promises have finished, reject/resolve.
-                        if (error) {
+                        if (hasFailed) {
                             reject(error);
                         } else {
                             resolve();
@@ -740,11 +742,11 @@ export class CoreUtilsProvider {
      * @return {boolean} Whether the error was returned by the WebService.
      */
     isWebServiceError(error: any): boolean {
-        return typeof error.warningcode != 'undefined' || (typeof error.errorcode != 'undefined' &&
+        return error && (typeof error.warningcode != 'undefined' || (typeof error.errorcode != 'undefined' &&
                 error.errorcode != 'invalidtoken' && error.errorcode != 'userdeleted' && error.errorcode != 'upgraderunning' &&
                 error.errorcode != 'forcepasswordchangenotice' && error.errorcode != 'usernotfullysetup' &&
                 error.errorcode != 'sitepolicynotagreed' && error.errorcode != 'sitemaintenance' &&
-                (error.errorcode != 'accessexception' || error.message.indexOf('Invalid token - token expired') == -1));
+                (error.errorcode != 'accessexception' || error.message.indexOf('Invalid token - token expired') == -1)));
     }
 
     /**
@@ -977,14 +979,21 @@ export class CoreUtilsProvider {
     objectToArrayOfObjects(obj: object, keyName: string, valueName: string, sortByKey?: boolean, sortByValue?: boolean): any[] {
         // Get the entries from an object or primitive value.
         const getEntries = (elKey, value): any[] | any => {
-            if (typeof value == 'object') {
+            if (typeof value == 'undefined' || value == null) {
+                // Filter undefined and null values.
+                return;
+            } else if (typeof value == 'object') {
                 // It's an object, return at least an entry for each property.
                 const keys = Object.keys(value);
                 let entries = [];
 
                 keys.forEach((key) => {
-                    const newElKey = elKey ? elKey + '[' + key + ']' : key;
-                    entries = entries.concat(getEntries(newElKey, value[key]));
+                    const newElKey = elKey ? elKey + '[' + key + ']' : key,
+                        subEntries = getEntries(newElKey, value[key]);
+
+                    if (subEntries) {
+                        entries = entries.concat(subEntries);
+                    }
                 });
 
                 return entries;
@@ -1040,6 +1049,24 @@ export class CoreUtilsProvider {
         });
 
         return mapped;
+    }
+
+    /**
+     * Add a prefix to all the keys in an object.
+     *
+     * @param {any} data Object.
+     * @param {string} prefix Prefix to add.
+     * @return {any} Prefixed object.
+     */
+    prefixKeys(data: any, prefix: string): any {
+        const newObj = {},
+            keys = Object.keys(data);
+
+        keys.forEach((key) => {
+            newObj[prefix + key] = data[key];
+        });
+
+        return newObj;
     }
 
     /**
@@ -1251,18 +1278,16 @@ export class CoreUtilsProvider {
      */
     uniqueArray(array: any[], key?: string): any[] {
         const filtered = [],
-            unique = [],
-            len = array.length;
+            unique = {}; // Use an object to make it faster to check if it's duplicate.
 
-        for (let i = 0; i < len; i++) {
-            const entry = array[i],
-                value = key ? entry[key] : entry;
+        array.forEach((entry) => {
+            const value = key ? entry[key] : entry;
 
-            if (unique.indexOf(value) == -1) {
-                unique.push(value);
+            if (!unique[value]) {
+                unique[value] = true;
                 filtered.push(entry);
             }
-        }
+        });
 
         return filtered;
     }

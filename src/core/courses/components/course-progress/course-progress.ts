@@ -42,6 +42,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
 
     isDownloading: boolean;
     prefetchCourseData = {
+        downloadSucceeded: false,
         prefetchCourseIcon: 'spinner',
         title: 'core.course.downloadcourse'
     };
@@ -97,7 +98,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
 
         // Listen for status change in course.
         this.courseStatusObserver = this.eventsProvider.on(CoreEventsProvider.COURSE_STATUS_CHANGED, (data) => {
-            if (data.courseId == this.course.id) {
+            if (data.courseId == this.course.id || data.courseId == CoreCourseProvider.ALL_COURSES_CLEARED) {
                 this.updateCourseStatus(data.status);
             }
         }, this.sitesProvider.getCurrentSiteId());

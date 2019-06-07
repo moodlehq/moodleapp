@@ -20,11 +20,11 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { CoreGroupsProvider } from '@providers/groups';
-import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModForumProvider } from './forum';
-import { CoreRatingProvider } from '@core/rating/providers/rating';
+import { AddonModForumSyncProvider } from './sync';
 
 /**
  * Handler to prefetch forums.
@@ -43,10 +43,10 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
             filepoolProvider: CoreFilepoolProvider,
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
-            private groupsProvider: CoreGroupsProvider,
             private userProvider: CoreUserProvider,
+            private groupsProvider: CoreGroupsProvider,
             private forumProvider: AddonModForumProvider,
-            private ratingProvider: CoreRatingProvider) {
+            private syncProvider: AddonModForumSyncProvider) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
@@ -105,27 +105,40 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
      * @return {Promise<any[]>} Promise resolved with array of posts.
      */
     protected getPostsForPrefetch(forum: any): Promise<any[]> {
-        // Get discussions in first 2 pages.
-        return this.forumProvider.getDiscussionsInPages(forum.id, false, 2).then((response) => {
-            if (response.error) {
-                return Promise.reject(null);
-            }
+        const promises = this.forumProvider.getAvailableSortOrders().map((sortOrder) => {
+            // Get discussions in first 2 pages.
+            return this.forumProvider.getDiscussionsInPages(forum.id, sortOrder.value, false, 2).then((response) => {
+                if (response.error) {
+                    return Promise.reject(null);
+                }
 
-            const promises = [];
-            let posts = [];
+                const promises = [];
 
-            response.discussions.forEach((discussion) => {
-                promises.push(this.forumProvider.getDiscussionPosts(discussion.discussion).then((response) => {
-                    posts = posts.concat(response.posts);
+                response.discussions.forEach((discussion) => {
+                    promises.push(this.forumProvider.getDiscussionPosts(discussion.discussion));
+                });
 
-                    return this.ratingProvider.prefetchRatings('module', forum.cmid, forum.scale, forum.course,
-                            response.ratinginfo);
-                }));
+              return Promise.all(promises);
+            });
+        });
+
+        return Promise.all(promises).then((results) => {
+            // Each order has returned its own list of posts. Merge all the lists, preventing duplicates.
+            const posts = [],
+                postIds = {}; // To make the array unique.
+
+            results.forEach((orderResults) => {
+                orderResults.forEach((orderResult) => {
+                    orderResult.posts.forEach((post) => {
+                        if (!postIds[post.id]) {
+                            postIds[post.id] = true;
+                            posts.push(post);
+                        }
+                    });
+                });
             });
 
-            return Promise.all(promises).then(() => {
-                return posts;
-            });
+            return posts;
         });
     }
 
@@ -183,25 +196,43 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
     protected prefetchForum(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
         // Get the forum data.
         return this.forumProvider.getForum(courseId, module.id).then((forum) => {
+            const promises = [];
+
             // Prefetch the posts.
-            return this.getPostsForPrefetch(forum).then((posts) => {
+            promises.push(this.getPostsForPrefetch(forum).then((posts) => {
                 const promises = [];
 
-                // Prefetch user profiles.
-                const userIds = posts.map((post) => post.userid).filter((userId) => !!userId);
-                promises.push(this.userProvider.prefetchProfiles(userIds).catch(() => {
-                    // Ignore failures.
-                }));
+                // Gather user profile images.
+                const avatars = {}; // List of user avatars, preventing duplicates.
 
-                // Prefetch intro files, attachments and embedded files.
-                const files = this.getIntroFilesFromInstance(module, forum).concat(this.getPostsFiles(posts));
+                posts.forEach((post) => {
+                    if (post.userpictureurl) {
+                        avatars[post.userpictureurl] = true;
+                    }
+                });
+
+                // Prefetch intro files, attachments, embedded files and user avatars.
+                const avatarFiles = Object.keys(avatars).map((url) => {
+                    return { fileurl: url };
+                });
+                const files = this.getIntroFilesFromInstance(module, forum).concat(this.getPostsFiles(posts)).concat(avatarFiles);
                 promises.push(this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id));
 
                 // Prefetch groups data.
                 promises.push(this.prefetchGroupsInfo(forum, courseId, forum.cancreatediscussions));
 
                 return Promise.all(promises);
-            });
+            }));
+
+            // Prefetch access information.
+            promises.push(this.forumProvider.getAccessInformation(forum.id));
+
+            // Prefetch sort order preference.
+            if (this.forumProvider.isDiscussionListSortingAvailable()) {
+               promises.push(this.userProvider.getUserPreference(AddonModForumProvider.PREFERENCE_SORTORDER));
+            }
+
+            return Promise.all(promises);
         });
     }
 
@@ -262,6 +293,29 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
             if (canCreateDiscussions) {
                 return Promise.reject(error);
             }
+        });
+    }
+
+    /**
+     * Sync a module.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    sync(module: any, courseId: number, siteId?: any): Promise<any> {
+        const promises = [];
+
+        promises.push(this.syncProvider.syncForumDiscussions(module.instance, undefined, siteId));
+        promises.push(this.syncProvider.syncForumReplies(module.instance, undefined, siteId));
+        promises.push(this.syncProvider.syncRatings(module.id, undefined, true, siteId));
+
+        return Promise.all(promises).then((results) => {
+            return results.reduce((a, b) => ({
+                updated: a.updated || b.updated,
+                warnings: (a.warnings || []).concat(b.warnings || []),
+            }), {updated: false});
         });
     }
 }

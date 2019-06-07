@@ -57,7 +57,7 @@
                 <h2>{{ 'addon.calendar.reminders' | translate }}</h2>
             </ion-item>
             <ng-container *ngFor="let reminder of reminders">
-                <ion-item  *ngIf="reminder.time > 0 || defaultTime > 0" [class.item-dimmed]="(reminder.time == -1 ? (event.timestart - defaultTime) : reminder.time) <= currentTime" >
+                <ion-item  text-wrap *ngIf="reminder.time > 0 || defaultTime > 0" [class.item-dimmed]="(reminder.time == -1 ? (event.timestart - defaultTime) : reminder.time) <= currentTime" >
                     <p *ngIf="reminder.time == -1">{{ 'core.defaultvalue' | translate :{$a: ((event.timestart - defaultTime) * 1000) | coreFormatDate } }}</p>
                     <p *ngIf="reminder.time > 0">{{ reminder.time * 1000 | coreFormatDate }}</p>
                     <button ion-button icon-only clear="true" (click)="cancelNotification(reminder.id, $event)" [attr.aria-label]=" 'core.delete' | translate" item-end *ngIf="(reminder.time == -1 ? (event.timestart - defaultTime) : reminder.time) > currentTime">
@@ -68,11 +68,11 @@
 
             <ng-container *ngIf="event.timestart + event.timeduration > currentTime">
                 <ion-item>
-                    <ion-label stacked>{{ 'addon.calendar.setnewreminder' | translate }}</ion-label>
+                    <ion-label stacked><h2>{{ 'addon.calendar.setnewreminder' | translate }}</h2></ion-label>
                     <ion-datetime [(ngModel)]="notificationTimeText" [placeholder]="'core.choosedots' | translate" [displayFormat]="notificationFormat" [min]="notificationMin" [max]="notificationMax"></ion-datetime>
                 </ion-item>
                 <ion-item>
-                    <button ion-button block color="primary" (click)="addNotificationTime($event)" [disabled]="!notificationTimeText">{{ 'addon.calendar.setnewreminder' | translate }}</button>
+                    <button ion-button block color="primary" (click)="addNotificationTime($event)" [disabled]="!notificationTimeText">{{ 'core.save' | translate }}</button>
                 </ion-item>
             </ng-container>
         </ion-card>

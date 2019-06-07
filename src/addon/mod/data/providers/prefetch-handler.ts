@@ -24,8 +24,8 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreCommentsProvider } from '@core/comments/providers/comments';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
-import { CoreRatingProvider } from '@core/rating/providers/rating';
-import { AddonModDataProvider } from './data';
+import { AddonModDataProvider, AddonModDataEntry } from './data';
+import { AddonModDataSyncProvider } from './sync';
 import { AddonModDataHelperProvider } from './helper';
 
 /**
@@ -43,7 +43,7 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
             domUtils: CoreDomUtilsProvider, protected dataProvider: AddonModDataProvider,
             protected timeUtils: CoreTimeUtilsProvider, protected dataHelper: AddonModDataHelperProvider,
             protected groupsProvider: CoreGroupsProvider, protected commentsProvider: CoreCommentsProvider,
-            private ratingProvider: CoreRatingProvider) {
+            protected syncProvider: AddonModDataSyncProvider) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
     }
@@ -56,10 +56,10 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
      * @param  {boolean} [forceCache]   True to always get the value from cache, false otherwise. Default false.
      * @param  {boolean} [ignoreCache]  True if it should ignore cached data (it will always fail in offline or server down).
      * @param  {string}  [siteId]       Site ID.
-     * @return {Promise<any>}                All unique entries.
+     * @return {Promise<AddonModDataEntry[]>} All unique entries.
      */
     protected getAllUniqueEntries(dataId: number, groups: any[], forceCache: boolean = false, ignoreCache: boolean = false,
-            siteId?: string): Promise<any> {
+            siteId?: string): Promise<AddonModDataEntry[]> {
         const promises = groups.map((group) => {
             return this.dataProvider.fetchAllEntries(dataId, group.id, undefined, undefined, undefined, forceCache, ignoreCache,
                 siteId);
@@ -138,14 +138,14 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Returns the file contained in the entries.
      *
-     * @param  {any[]} entries  List of entries to get files from.
-     * @return {any[]}          List of files.
+     * @param {AddonModDataEntry[]} entries List of entries to get files from.
+     * @return {any[]} List of files.
      */
-    protected getEntriesFiles(entries: any[]): any[] {
+    protected getEntriesFiles(entries: AddonModDataEntry[]): any[] {
         let files = [];
 
         entries.forEach((entry) => {
-            entry.contents.forEach((content) => {
+            this.utils.objectToArray(entry.contents).forEach((content) => {
                 files = files.concat(content.files);
             });
         });
@@ -284,10 +284,7 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
             });
 
             info.entries.forEach((entry) => {
-                promises.push(this.dataProvider.getEntry(database.id, entry.id, true, siteId).then((entry) => {
-                    return this.ratingProvider.prefetchRatings('module', module.id, database.scale, courseId, entry.ratinginfo,
-                        siteId);
-                }));
+                promises.push(this.dataProvider.getEntry(database.id, entry.id, true, siteId));
 
                 if (database.comments) {
                     promises.push(this.commentsProvider.getComments('module', database.coursemodule, 'mod_data', entry.id,
@@ -299,6 +296,28 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
             promises.push(this.courseProvider.getModuleBasicInfoByInstance(database.id, 'data', siteId));
 
             return Promise.all(promises);
+        });
+    }
+
+    /**
+     * Sync a module.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    sync(module: any, courseId: number, siteId?: any): Promise<any> {
+        const promises = [
+            this.syncProvider.syncDatabase(module.instance, siteId),
+            this.syncProvider.syncRatings(module.id, true, siteId)
+        ];
+
+        return Promise.all(promises).then((results) => {
+            return results.reduce((a, b) => ({
+                updated: a.updated || b.updated,
+                warnings: (a.warnings || []).concat(b.warnings || []),
+            }), {updated: false});
         });
     }
 }

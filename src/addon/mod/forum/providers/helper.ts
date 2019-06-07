@@ -13,8 +13,13 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
 import { CoreFileProvider } from '@providers/file';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModForumProvider } from './forum';
 import { AddonModForumOfflineProvider } from './offline';
@@ -24,10 +29,128 @@ import { AddonModForumOfflineProvider } from './offline';
  */
 @Injectable()
 export class AddonModForumHelperProvider {
-    constructor(private fileProvider: CoreFileProvider,
+    constructor(private translate: TranslateService,
+            private fileProvider: CoreFileProvider,
+            private sitesProvider: CoreSitesProvider,
             private uploaderProvider: CoreFileUploaderProvider,
+            private timeUtils: CoreTimeUtilsProvider,
             private userProvider: CoreUserProvider,
+            private appProvider: CoreAppProvider,
+            private utils: CoreUtilsProvider,
+            private forumProvider: AddonModForumProvider,
             private forumOffline: AddonModForumOfflineProvider) {}
+
+    /**
+     * Add a new discussion.
+     *
+     * @param {number} forumId Forum ID.
+     * @param {string} name Forum name.
+     * @param {number} courseId Course ID the forum belongs to.
+     * @param {string} subject New discussion's subject.
+     * @param {string} message New discussion's message.
+     * @param {any[]} [attachments] New discussion's attachments.
+     * @param {any} [options] Options (subscribe, pin, ...).
+     * @param {number[]} [groupIds] Groups this discussion belongs to.
+     * @param {number} [timeCreated] The time the discussion was created. Only used when editing discussion.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<number[]>} Promise resolved with ids of the created discussions or null if stored offline
+     */
+    addNewDiscussion(forumId: number, name: string, courseId: number, subject: string, message: string, attachments?: any[],
+            options?: any, groupIds?: number[], timeCreated?: number, siteId?: string): Promise<number[]> {
+
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+        groupIds = groupIds && groupIds.length > 0 ? groupIds : [0];
+
+        let saveOffline = false;
+        const attachmentsIds = [];
+        let offlineAttachments: any;
+
+        // Convenience function to store a message to be synchronized later.
+        const storeOffline = (): Promise<number[]> => {
+            // Multiple groups, the discussion is being posted to all groups.
+            const groupId = groupIds.length > 1 ? AddonModForumProvider.ALL_GROUPS : groupIds[0];
+
+            if (offlineAttachments) {
+                options.attachmentsid = offlineAttachments;
+            }
+
+            return this.forumOffline.addNewDiscussion(forumId, name, courseId, subject, message, options,
+                    groupId, timeCreated, siteId).then(() => {
+                return null;
+            });
+        };
+
+        // First try to upload attachments, once per group.
+        let promise;
+        if (attachments && attachments.length > 0) {
+            const promises = groupIds.map(() => {
+                return this.uploadOrStoreNewDiscussionFiles(forumId, timeCreated, attachments, false).then((attach) => {
+                    attachmentsIds.push(attach);
+                });
+            });
+
+            promise = Promise.all(promises).catch(() => {
+                // Cannot upload them in online, save them in offline.
+                saveOffline = true;
+
+                return this.uploadOrStoreNewDiscussionFiles(forumId, timeCreated, attachments, true).then((attach) => {
+                    offlineAttachments = attach;
+                });
+            });
+        } else {
+            promise = Promise.resolve();
+        }
+
+        return promise.then(() => {
+            // If we are editing an offline discussion, discard previous first.
+            let discardPromise;
+            if (timeCreated) {
+                discardPromise = this.forumOffline.deleteNewDiscussion(forumId, timeCreated, siteId);
+            } else {
+                discardPromise = Promise.resolve();
+            }
+
+            return discardPromise.then(() => {
+                if (saveOffline || !this.appProvider.isOnline()) {
+                    return storeOffline();
+                }
+
+                const errors = [];
+                const discussionIds = [];
+
+                const promises = groupIds.map((groupId, index) => {
+                    const grouOptions = this.utils.clone(options);
+                    if (attachmentsIds[index]) {
+                        grouOptions.attachmentsid = attachmentsIds[index];
+                    }
+
+                    return this.forumProvider.addNewDiscussionOnline(forumId, subject, message, grouOptions, groupId, siteId)
+                            .then((discussionId) => {
+                        discussionIds.push(discussionId);
+                    }).catch((error) => {
+                        errors.push(error);
+                    });
+                });
+
+                return Promise.all(promises).then(() => {
+                    if (errors.length == groupIds.length) {
+                        // All requests have failed.
+                        for (let i = 0; i < errors.length; i++) {
+                            if (this.utils.isWebServiceError(errors[i]) || attachments.length > 0) {
+                                // The WebService has thrown an error or offline not supported, reject.
+                                return Promise.reject(errors[i]);
+                            }
+                        }
+
+                        // Couldn't connect to server, store offline.
+                        return storeOffline();
+                    }
+
+                    return discussionIds;
+                });
+            });
+        });
+    }
 
     /**
      * Convert offline reply to online format in order to be compatible with them.
@@ -54,7 +177,8 @@ export class AddonModForumHelperProvider {
                 postread: false,
                 subject: offlineReply.subject,
                 totalscore: 0,
-                userid: offlineReply.userid
+                userid: offlineReply.userid,
+                isprivatereply: offlineReply.options && offlineReply.options.private
             },
             promises = [];
 
@@ -119,6 +243,60 @@ export class AddonModForumHelperProvider {
     }
 
     /**
+     * Returns the availability message of the given forum.
+     *
+     * @param {any} forum Forum instance.
+     * @return {string} Message or null if the forum has no cut-off or due date.
+     */
+    getAvailabilityMessage(forum: any): string {
+        if (this.isCutoffDateReached(forum)) {
+            return this.translate.instant('addon.mod_forum.cutoffdatereached');
+        } else if (this.isDueDateReached(forum)) {
+            const dueDate = this.timeUtils.userDate(forum.duedate * 1000);
+
+            return this.translate.instant('addon.mod_forum.thisforumisdue', {$a: dueDate});
+        } else if (forum.duedate > 0) {
+            const dueDate = this.timeUtils.userDate(forum.duedate * 1000);
+
+            return this.translate.instant('addon.mod_forum.thisforumhasduedate', {$a: dueDate});
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get a forum discussion by id.
+     *
+     * This function is inefficient because it needs to fetch all discussion pages in the worst case.
+     *
+     * @param {number} forumId Forum ID.
+     * @param {number} discussionId Discussion ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with the discussion data.
+     */
+    getDiscussionById(forumId: number, discussionId: number, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        const findDiscussion = (page: number): Promise<any> => {
+            return this.forumProvider.getDiscussions(forumId, undefined, page, false, siteId).then((response) => {
+                if (response.discussions && response.discussions.length > 0) {
+                    const discussion = response.discussions.find((discussion) => discussion.id == discussionId);
+                    if (discussion) {
+                        return discussion;
+                    }
+                    if (response.canLoadMore) {
+                        return findDiscussion(page + 1);
+                    }
+                }
+
+                return Promise.reject(null);
+            });
+        };
+
+        return findDiscussion(0);
+    }
+
+    /**
      * Get a list of stored attachment files for a new discussion. See AddonModForumHelper#storeNewDiscussionFiles.
      *
      * @param  {number} forumId     Forum ID.
@@ -164,7 +342,35 @@ export class AddonModForumHelperProvider {
             return true;
         }
 
+        if (post.isprivatereply != original.isprivatereply) {
+            return true;
+        }
+
         return this.uploaderProvider.areFileListDifferent(post.files, original.files);
+    }
+
+    /**
+     * Is the cutoff date for the forum reached?
+     *
+     * @param {any} forum Forum instance.
+     * @return {boolean}
+     */
+    isCutoffDateReached(forum: any): boolean {
+        const now = Date.now() / 1000;
+
+        return forum.cutoffdate > 0 && forum.cutoffdate < now;
+    }
+
+    /**
+     * Is the due date for the forum reached?
+     *
+     * @param {any} forum Forum instance.
+     * @return {boolean}
+     */
+    isDueDateReached(forum: any): boolean {
+        const now = Date.now() / 1000;
+
+        return forum.duedate > 0 && forum.duedate < now;
     }
 
     /**

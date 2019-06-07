@@ -206,6 +206,16 @@ export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
      * @return {Promise<any>} Promise resolved when done.
      */
     removeFiles?(module: any, courseId: number): Promise<any>;
+
+    /**
+     * Sync a module.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    sync?(module: any, courseId: number, siteId?: any): Promise<any>;
 }
 
 /**
@@ -377,6 +387,8 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
                 }
             } else if (handler.determineStatus) {
                 // The handler implements a determineStatus function. Apply it.
+                canCheck = canCheck || this.canCheckUpdates();
+
                 return handler.determineStatus(module, status, canCheck);
             }
         }
@@ -1139,7 +1151,51 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
 
         // Check if the module has a prefetch handler.
         if (handler) {
-            return handler.prefetch(module, courseId, single);
+            return this.syncModule(module, courseId).then(() => {
+                return handler.prefetch(module, courseId, single);
+            });
+        }
+
+        return Promise.resolve();
+    }
+
+    /**
+     * Sync a group of modules.
+     *
+     * @param  {any[]}        modules Array of modules to sync.
+     * @param {number} courseId Course ID the module belongs to.
+     * @return {Promise<any>}         Promise resolved when finished.
+     */
+    syncModules(modules: any[], courseId: number): Promise<any> {
+        return Promise.all(modules.map((module) => {
+            return this.syncModule(module, courseId).then(() => {
+                // Invalidate course updates.
+                return this.invalidateCourseUpdates(courseId).catch(() => {
+                    // Ignore errors.
+                });
+            });
+        }));
+    }
+
+    /**
+     * Sync a module.
+     *
+     * @param {any} module Module to sync.
+     * @param {number} courseId Course ID the module belongs to.
+     * @return {Promise<any>} Promise resolved when finished.
+     */
+    syncModule(module: any, courseId: number): Promise<any> {
+        const handler = this.getPrefetchHandlerFor(module);
+
+        if (handler && handler.sync) {
+            return handler.sync(module, courseId).then((result) => {
+                // Always invalidate status cache for this module. We cannot know if data was sent to server or not.
+                this.invalidateModuleStatusCache(module);
+
+                return result;
+            }).catch(() => {
+                // Ignore errors.
+            });
         }
 
         return Promise.resolve();

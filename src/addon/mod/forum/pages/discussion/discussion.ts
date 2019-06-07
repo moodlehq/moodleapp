@@ -47,13 +47,13 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     courseId: number;
     discussionId: number;
     forum: any;
+    accessInfo: any;
     discussion: any;
     posts: any[];
     discussionLoaded = false;
     defaultSubject: string;
     isOnline: boolean;
     isSplitViewOn: boolean;
-    locked: boolean;
     postHasOffline: boolean;
     sort: SortType = 'flat-oldest';
     trackPosts: boolean;
@@ -63,17 +63,21 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         subject: '',
         message: null, // Null means empty or just white space.
         files: [],
+        isprivatereply: false,
     };
     originalData = {
         subject: null, // Null means original data is not set.
         message: null, // Null means empty or just white space.
         files: [],
+        isprivatereply: false,
     };
     refreshIcon = 'spinner';
     syncIcon = 'spinner';
     discussionStr = '';
     component = AddonModForumProvider.COMPONENT;
     cmId: number;
+    canPin = false;
+    availabilityMessage: string;
 
     protected forumId: number;
     protected postId: number;
@@ -105,9 +109,9 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         this.courseId = navParams.get('courseId');
         this.cmId = navParams.get('cmId');
         this.forumId = navParams.get('forumId');
-        this.discussionId = navParams.get('discussionId');
+        this.discussion = navParams.get('discussion');
+        this.discussionId = this.discussion ? this.discussion.discussion : navParams.get('discussionId');
         this.trackPosts = navParams.get('trackPosts');
-        this.locked = navParams.get('locked');
         this.postId = navParams.get('postId');
 
         this.isOnline = this.appProvider.isOnline();
@@ -219,7 +223,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     }
 
     /**
-     * Convenience function to get forum discussions.
+     * Convenience function to get the posts.
      *
      * @param  {boolean} [sync]            Whether to try to synchronize the discussion.
      * @param  {boolean} [showErrors]      Whether to show errors in a modal.
@@ -240,11 +244,12 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         let onlinePosts = [];
         const offlineReplies = [];
         let hasUnreadPosts = false;
+        let ratingInfo;
 
         return syncPromise.then(() => {
             return this.forumProvider.getDiscussionPosts(this.discussionId).then((response) => {
                 onlinePosts = response.posts;
-                this.ratingInfo = response.ratinginfo;
+                ratingInfo = response.ratinginfo;
             }).then(() => {
                 // Check if there are responses stored in offline.
                 return this.forumOffline.getDiscussionReplies(this.discussionId).then((replies) => {
@@ -282,34 +287,21 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                 });
             });
         }).then(() => {
-            const posts = offlineReplies.concat(onlinePosts);
-            this.discussion = this.forumProvider.extractStartingPost(posts);
-
-            if (!this.discussion) {
-                return Promise.reject('Invalid forum discussion');
-            }
+            let posts = offlineReplies.concat(onlinePosts);
 
             // If sort type is nested, normal sorting is disabled and nested posts will be displayed.
             if (this.sort == 'nested') {
                 // Sort first by creation date to make format tree work.
                 this.forumProvider.sortDiscussionPosts(posts, 'ASC');
-                this.posts = this.utils.formatTree(posts, 'parent', 'id', this.discussion.id);
+                posts = this.utils.formatTree(posts, 'parent', 'id', this.discussion.id);
             } else {
                 // Set default reply subject.
                 const direction = this.sort == 'flat-newest' ? 'DESC' : 'ASC';
                 this.forumProvider.sortDiscussionPosts(posts, direction);
-                this.posts = posts;
             }
-            this.defaultSubject = this.translate.instant('addon.mod_forum.re') + ' ' + this.discussion.subject;
-            this.replyData.subject = this.defaultSubject;
 
             // Now try to get the forum.
             return this.fetchForum().then((forum) => {
-                if (this.discussion.userfullname && this.discussion.parent == 0 && forum.type == 'single') {
-                    // Hide author for first post and type single.
-                    this.discussion.userfullname = null;
-                }
-
                 // "forum.istracked" is more reliable than "trackPosts".
                 if (typeof forum.istracked != 'undefined') {
                     this.trackPosts = forum.istracked;
@@ -318,10 +310,69 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                 this.forumId = forum.id;
                 this.cmId = forum.cmid;
                 this.forum = forum;
+                this.availabilityMessage = this.forumHelper.getAvailabilityMessage(forum);
+
+                const promises = [];
+
+                promises.push(this.forumProvider.getAccessInformation(this.forum.id).then((accessInfo) => {
+                    this.accessInfo = accessInfo;
+
+                    // Disallow replying if cut-off date is reached and the user has not the capability to override it.
+                    // Just in case the posts were fetched from WS when the cut-off date was not reached but it is now.
+                    if (this.forumHelper.isCutoffDateReached(forum) && !accessInfo.cancanoverridecutoff) {
+                        posts.forEach((post) => {
+                            post.canreply = false;
+                        });
+                    }
+                }));
+
+                // Fetch the discussion if not passed as parameter.
+                if (!this.discussion) {
+                    promises.push(this.forumHelper.getDiscussionById(forum.id, this.discussionId).then((discussion) => {
+                        this.discussion = discussion;
+                    }).catch(() => {
+                        // Ignore errors.
+                    }));
+                }
+
+                return Promise.all(promises);
             }).catch(() => {
                 // Ignore errors.
                 this.forum = {};
+                this.accessInfo = {};
+            }).then(() => {
+                this.defaultSubject = this.translate.instant('addon.mod_forum.re') + ' ' +
+                    (this.discussion ? this.discussion.subject : '');
+                this.replyData.subject = this.defaultSubject;
+
+                const startingPost = this.forumProvider.extractStartingPost(posts);
+                if (startingPost) {
+                    // Update discussion data from first post.
+                    this.discussion = Object.assign(this.discussion || {}, startingPost);
+                } else if (!this.discussion) {
+                    // The discussion object was not passed as parameter and there is no starting post.
+                    return Promise.reject('Invalid forum discussion.');
+                }
+
+                if (this.discussion.userfullname && this.discussion.parent == 0 && this.forum.type == 'single') {
+                    // Hide author for first post and type single.
+                    this.discussion.userfullname = null;
+                }
+
+                this.posts = posts;
+                this.ratingInfo = ratingInfo;
             });
+        }).then(() => {
+            if (this.forumProvider.isSetPinStateAvailableForSite()) {
+                // Use the canAddDiscussion WS to check if the user can pin discussions.
+                return this.forumProvider.canAddDiscussionToAll(this.forumId).then((response) => {
+                    this.canPin = !!response.canpindiscussions;
+                }).catch(() => {
+                    this.canPin = false;
+                });
+            } else {
+                this.canPin = false;
+            }
         }).then(() => {
             return this.ratingOffline.hasRatings('mod_forum', 'post', 'module', this.cmId, this.discussionId).then((hasRatings) => {
                 this.hasOfflineRatings = hasRatings;
@@ -335,7 +386,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
 
             if (forceMarkAsRead || (hasUnreadPosts && this.trackPosts)) {
                 // // Add log in Moodle and mark unread posts as readed.
-                this.forumProvider.logDiscussionView(this.discussionId, this.forumId || -1).catch(() => {
+                this.forumProvider.logDiscussionView(this.discussionId, this.forumId || -1, this.forum.name).catch(() => {
                     // Ignore errors.
                 }).finally(() => {
                     // Trigger mark read posts.
@@ -420,7 +471,14 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         this.refreshIcon = 'spinner';
         this.syncIcon = 'spinner';
 
-        return this.forumProvider.invalidateDiscussionPosts(this.discussionId).catch(() => {
+        const promises = [
+            this.forumProvider.invalidateForumData(this.courseId),
+            this.forumProvider.invalidateDiscussionPosts(this.discussionId),
+            this.forumProvider.invalidateAccessInformation(this.forumId),
+            this.forumProvider.invalidateCanAddDiscussion(this.forumId)
+        ];
+
+        return this.utils.allPromises(promises).catch(() => {
             // Ignore errors.
         }).then(() => {
             return this.fetchPosts(sync, showErrors);
@@ -439,6 +497,87 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         this.domUtils.scrollToTop(this.content);
 
         return this.fetchPosts();
+    }
+
+    /**
+     * Lock or unlock the discussion.
+     *
+     * @param {boolean} locked True to lock the discussion, false to unlock.
+     */
+    setLockState(locked: boolean): void {
+        const modal = this.domUtils.showModalLoading('core.sending', true);
+
+        this.forumProvider.setLockState(this.forumId, this.discussionId, locked).then((response) => {
+            this.discussion.locked = response.locked;
+
+            const data = {
+                forumId: this.forumId,
+                discussionId: this.discussionId,
+                cmId: this.cmId,
+                locked: this.discussion.locked
+            };
+            this.eventsProvider.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, this.sitesProvider.getCurrentSiteId());
+
+            this.domUtils.showToast('addon.mod_forum.lockupdated', true);
+        }).catch((error) => {
+            this.domUtils.showErrorModal(error);
+        }).finally(() => {
+            modal.dismiss();
+        });
+    }
+
+    /**
+     * Pin or unpin the discussion.
+     *
+     * @param {boolean} pinned True to pin the discussion, false to unpin it.
+     */
+    setPinState(pinned: boolean): void {
+        const modal = this.domUtils.showModalLoading('core.sending', true);
+
+        this.forumProvider.setPinState(this.discussionId, pinned).then(() => {
+            this.discussion.pinned = pinned;
+
+            const data = {
+                forumId: this.forumId,
+                discussionId: this.discussionId,
+                cmId: this.cmId,
+                pinned: this.discussion.pinned
+            };
+            this.eventsProvider.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, this.sitesProvider.getCurrentSiteId());
+
+            this.domUtils.showToast('addon.mod_forum.pinupdated', true);
+        }).catch((error) => {
+            this.domUtils.showErrorModal(error);
+        }).finally(() => {
+            modal.dismiss();
+        });
+    }
+
+    /**
+     * Star or unstar the discussion.
+     *
+     * @param {boolean} starred True to star the discussion, false to unstar it.
+     */
+    toggleFavouriteState(starred: boolean): void {
+        const modal = this.domUtils.showModalLoading('core.sending', true);
+
+        this.forumProvider.toggleFavouriteState(this.discussionId, starred).then(() => {
+            this.discussion.starred = starred;
+
+            const data = {
+                forumId: this.forumId,
+                discussionId: this.discussionId,
+                cmId: this.cmId,
+                starred: this.discussion.starred
+            };
+            this.eventsProvider.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, this.sitesProvider.getCurrentSiteId());
+
+            this.domUtils.showToast('addon.mod_forum.favouriteupdated', true);
+        }).catch((error) => {
+            this.domUtils.showErrorModal(error);
+        }).finally(() => {
+            modal.dismiss();
+        });
     }
 
     /**

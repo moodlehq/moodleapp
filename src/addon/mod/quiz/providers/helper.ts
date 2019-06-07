@@ -13,13 +13,16 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { ModalController } from 'ionic-angular';
+import { ModalController, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { AddonModQuizProvider } from './quiz';
 import { AddonModQuizOfflineProvider } from './quiz-offline';
 import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
+import { CoreCourseHelperProvider } from '@core/course/providers/helper';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 
 /**
  * Helper service that provides some features for quiz.
@@ -29,7 +32,9 @@ export class AddonModQuizHelperProvider {
 
     constructor(private domUtils: CoreDomUtilsProvider, private translate: TranslateService, private utils: CoreUtilsProvider,
             private accessRuleDelegate: AddonModQuizAccessRuleDelegate, private quizProvider: AddonModQuizProvider,
-            private modalCtrl: ModalController, private quizOfflineProvider: AddonModQuizOfflineProvider) { }
+            private modalCtrl: ModalController, private quizOfflineProvider: AddonModQuizOfflineProvider,
+            private courseHelper: CoreCourseHelperProvider, private sitesProvider: CoreSitesProvider,
+            private linkHelper: CoreContentLinksHelperProvider) { }
 
     /**
      * Validate a preflight data or show a modal to input the preflight data if required.
@@ -49,7 +54,7 @@ export class AddonModQuizHelperProvider {
     getAndCheckPreflightData(quiz: any, accessInfo: any, preflightData: any, attempt: any, offline?: boolean, prefetch?: boolean,
             title?: string, siteId?: string, retrying?: boolean): Promise<any> {
 
-        const rules = accessInfo.activerulenames;
+        const rules = accessInfo && accessInfo.activerulenames;
         let isPreflightCheckRequired = false;
 
         // Check if the user needs to input preflight data.
@@ -154,6 +159,76 @@ export class AddonModQuizHelperProvider {
         const element = this.domUtils.convertToElement(html);
 
         return this.domUtils.getContentsOfElement(element, '.grade');
+    }
+
+    /**
+     * Get a quiz ID by attempt ID.
+     *
+     * @param {number} attemptId Attempt ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<number>} Promise resolved with the quiz ID.
+     */
+    getQuizIdByAttemptId(attemptId: number, siteId?: string): Promise<number> {
+        // Use getAttemptReview to retrieve the quiz ID.
+        return this.quizProvider.getAttemptReview(attemptId, undefined, false, siteId).then((reviewData) => {
+            if (reviewData.attempt && reviewData.attempt.quiz) {
+                return reviewData.attempt.quiz;
+            }
+
+            return Promise.reject(null);
+        });
+    }
+
+    /**
+     * Handle a review link.
+     *
+     * @param {NavController} navCtrl Nav controller, can be undefined/null.
+     * @param {number} attemptId Attempt ID.
+     * @param {number} [page] Page to load, -1 to all questions in same page.
+     * @param {number} [courseId] Course ID.
+     * @param {number} [quizId] Quiz ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    handleReviewLink(navCtrl: NavController, attemptId: number, page?: number, courseId?: number, quizId?: number,
+            siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        const modal = this.domUtils.showModalLoading();
+        let promise;
+
+        if (quizId) {
+            promise = Promise.resolve(quizId);
+        } else {
+            // Retrieve the quiz ID using the attempt ID.
+            promise = this.getQuizIdByAttemptId(attemptId);
+        }
+
+        return promise.then((id) => {
+            quizId = id;
+
+            // Get the courseId if we don't have it.
+            if (courseId) {
+                return courseId;
+            } else {
+                return this.courseHelper.getModuleCourseIdByInstance(quizId, 'quiz', siteId);
+            }
+        }).then((courseId) => {
+            // Go to the review page.
+            const pageParams = {
+                quizId: quizId,
+                attemptId: attemptId,
+                courseId: courseId,
+                page: isNaN(page) ? -1 : page
+            };
+
+            return this.linkHelper.goInSite(navCtrl, 'AddonModQuizReviewPage', pageParams, siteId);
+        }).catch((error) => {
+
+            this.domUtils.showErrorModalDefault(error, 'An error occurred while loading the required data.');
+        }).finally(() => {
+            modal.dismiss();
+        });
     }
 
     /**

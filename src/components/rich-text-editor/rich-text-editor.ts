@@ -148,7 +148,10 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
                 // Editor is ready, adjust Height if needed.
                 let height;
 
-                if (this.platform.is('ios') && this.kbHeight > 0) {
+                if (this.platform.is('android')) {
+                    // Android, ignore keyboard height because web view is resized.
+                    height = this.domUtils.getContentHeight(this.content) - this.getSurroundingHeight(this.element);
+                } else if (this.platform.is('ios') && this.kbHeight > 0) {
                     // Keyboard open in iOS.
                     // In this case, the header disappears or is scrollable, so we need to adjust the calculations.
                     height = window.innerHeight - this.getSurroundingHeight(this.element);

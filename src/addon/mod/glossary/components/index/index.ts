@@ -23,6 +23,7 @@ import { AddonModGlossaryProvider } from '../../providers/glossary';
 import { AddonModGlossaryOfflineProvider } from '../../providers/offline';
 import { AddonModGlossarySyncProvider } from '../../providers/sync';
 import { AddonModGlossaryModePickerPopoverComponent } from '../mode-picker/mode-picker';
+import { AddonModGlossaryPrefetchHandler } from '../../providers/prefetch-handler';
 
 type FetchMode = 'author_all' | 'cat_all' | 'newest_first' | 'recently_updated' | 'search' | 'letter_all';
 
@@ -68,7 +69,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
             private popoverCtrl: PopoverController,
             private glossaryProvider: AddonModGlossaryProvider,
             private glossaryOffline: AddonModGlossaryOfflineProvider,
-            private glossarySync: AddonModGlossarySyncProvider,
+            private prefetchHandler: AddonModGlossaryPrefetchHandler,
             private ratingOffline: CoreRatingOfflineProvider) {
         super(injector);
     }
@@ -108,7 +109,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
                 }
             }
 
-            this.glossaryProvider.logView(this.glossary.id, this.viewMode).then(() => {
+            this.glossaryProvider.logView(this.glossary.id, this.viewMode, this.glossary.name).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch((error) => {
                 // Ignore errors.
@@ -219,17 +220,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      * @return {Promise<any>} Promise resolved when done.
      */
     protected sync(): Promise<boolean> {
-        const promises = [
-            this.glossarySync.syncGlossaryEntries(this.glossary.id),
-            this.glossarySync.syncRatings(this.glossary.coursemodule)
-        ];
-
-        return Promise.all(promises).then((results) => {
-            return results.reduce((a, b) => ({
-                updated: a.updated || b.updated,
-                warnings: (a.warnings || []).concat(b.warnings || []),
-            }), {updated: false});
-        });
+        return this.prefetchHandler.sync(this.module, this.courseId);
     }
 
     /**

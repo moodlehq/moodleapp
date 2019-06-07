@@ -18,6 +18,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service that provides some features for folder.
@@ -61,7 +62,8 @@ export class AddonModFolderProvider {
                     courseids: [courseId]
                 },
                 preSets = {
-                    cacheKey: this.getFolderCacheKey(courseId)
+                    cacheKey: this.getFolderCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('mod_folder_get_folders_by_courses', params, preSets).then((response) => {
@@ -133,14 +135,16 @@ export class AddonModFolderProvider {
      * Report a folder as being viewed.
      *
      * @param {number} id Module ID.
+     * @param {string} [name] Name of the folder.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(id: number, siteId?: string): Promise<any> {
+    logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             folderid: id
         };
 
-        return this.logHelper.log('mod_folder_view_folder', params, AddonModFolderProvider.COMPONENT, id, siteId);
+        return this.logHelper.logSingle('mod_folder_view_folder', params, AddonModFolderProvider.COMPONENT, id, name, 'folder',
+                {}, siteId);
     }
 }

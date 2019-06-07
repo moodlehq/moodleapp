@@ -53,7 +53,7 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
         this.userId = this.sitesProvider.getCurrentSiteUserId();
 
         this.loadContent(false, true).then(() => {
-            this.surveyProvider.logView(this.survey.id).then(() => {
+            this.surveyProvider.logView(this.survey.id, this.survey.name).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch(() => {
                 // Ignore errors.

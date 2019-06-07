@@ -63,6 +63,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     numTabsShown = 0;
     direction = 'ltr';
     description = '';
+    lastScroll = 0;
 
     protected originalTabsContainer: HTMLElement; // The container of the original tabs. It will include each tab's content.
     protected initialized = false;
@@ -406,22 +407,38 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     /**
      * Show or hide the tabs. This is used when the user is scrolling inside a tab.
      *
-     * @param {any} e Scroll event.
+     * @param {any} scrollElement Scroll element to check scroll position.
      */
-    showHideTabs(e: any): void {
+    showHideTabs(scrollElement: any): void {
         if (!this.tabBarHeight) {
             // We don't have the tab bar height, this means the tab bar isn't shown.
             return;
         }
 
-        if (this.tabsShown && e.target.scrollTop - this.tabBarHeight > this.tabBarHeight) {
-            this.tabBarElement.classList.add('tabs-hidden');
+        const scroll = parseInt(scrollElement.scrollTop, 10);
+        if (scroll == this.lastScroll) {
+            // Ensure scroll has been modified to avoid flicks.
+            return;
+        }
+
+        if (this.tabsShown && scroll > this.tabBarHeight) {
             this.tabsShown = false;
-        } else if (!this.tabsShown && e.target.scrollTop < this.tabBarHeight) {
-            this.tabBarElement.classList.remove('tabs-hidden');
+
+            // Hide tabs.
+            this.tabBarElement.classList.add('tabs-hidden');
+        } else if (!this.tabsShown && scroll <= this.tabBarHeight) {
             this.tabsShown = true;
+            this.tabBarElement.classList.remove('tabs-hidden');
             this.calculateSlides();
         }
+
+        if (this.tabsShown) {
+            // Smooth translation.
+            this.topTabsElement.style.transform = 'translateY(-' + scroll + 'px)';
+            this.originalTabsContainer.style.transform = 'translateY(-' + scroll + 'px)';
+            this.originalTabsContainer.style.paddingBottom = this.tabBarHeight - scroll + 'px';
+        }
+        this.lastScroll = scroll;
     }
 
     /**

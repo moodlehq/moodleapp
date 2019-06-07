@@ -448,6 +448,8 @@ export class CoreQuestionBaseComponent {
 
             this.question.options = [];
 
+            this.question.disabled = true;
+
             for (const i in options) {
                 const element = options[i],
                     option: any = {
@@ -459,7 +461,14 @@ export class CoreQuestionBaseComponent {
                     },
                     parent = element.parentElement;
 
+                if (option.value == '-1') {
+                    // It's the clear choice option, ignore it.
+                    continue;
+                }
+
                 this.question.optionsName = option.name;
+
+                this.question.disabled = this.question.disabled && element.disabled;
 
                 // Get the label with the question text.
                 const label = questionEl.querySelector('label[for="' + option.id + '"]');

@@ -25,7 +25,8 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from './options-delegate';
+import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay,
+    CoreCourseOptionsMenuHandlerToDisplay } from './options-delegate';
 import { CoreSiteHomeProvider } from '@core/sitehome/providers/sitehome';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCourseProvider } from './course';
@@ -36,8 +37,6 @@ import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { CoreConstants } from '@core/constants';
 import { CoreSite } from '@classes/site';
 import * as moment from 'moment';
-import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
-import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
 
 /**
  * Prefetch info of a module.
@@ -125,8 +124,7 @@ export class CoreCourseHelperProvider {
         private courseOptionsDelegate: CoreCourseOptionsDelegate, private siteHomeProvider: CoreSiteHomeProvider,
         private eventsProvider: CoreEventsProvider, private fileHelper: CoreFileHelperProvider,
         private appProvider: CoreAppProvider, private fileProvider: CoreFileProvider, private injector: Injector,
-        private coursesProvider: CoreCoursesProvider, private courseOffline: CoreCourseOfflineProvider,
-        private courseFormatDelegate: CoreCourseFormatDelegate, private sitePluginsProvider: CoreSitePluginsProvider) { }
+        private coursesProvider: CoreCoursesProvider, private courseOffline: CoreCourseOfflineProvider) { }
 
     /**
      * This function treats every module on the sections provided to load the handler data, treat completion
@@ -199,11 +197,9 @@ export class CoreCourseHelperProvider {
                 result.status = CoreConstants.DOWNLOADING;
             }
 
+            section.downloadStatus = result.status;
+            section.canCheckUpdates = this.prefetchDelegate.canCheckUpdates();
             // Set this section data.
-            section.showDownload = result.status === CoreConstants.NOT_DOWNLOADED;
-            section.showRefresh = result.status === CoreConstants.OUTDATED ||
-                    (!this.prefetchDelegate.canCheckUpdates() && result.status === CoreConstants.DOWNLOADED);
-
             if (result.status !== CoreConstants.DOWNLOADING || !this.prefetchDelegate.isBeingDownloaded(section.id)) {
                 section.isDownloading = false;
                 section.total = 0;
@@ -252,9 +248,8 @@ export class CoreCourseHelperProvider {
         return Promise.all(promises).then(() => {
             if (allSectionsSection) {
                 // Set "All sections" data.
-                allSectionsSection.showDownload = allSectionsStatus === CoreConstants.NOT_DOWNLOADED;
-                allSectionsSection.showRefresh = allSectionsStatus === CoreConstants.OUTDATED ||
-                        (!this.prefetchDelegate.canCheckUpdates() && allSectionsStatus === CoreConstants.DOWNLOADED);
+                allSectionsSection.downloadStatus = allSectionsStatus;
+                allSectionsSection.canCheckUpdates = this.prefetchDelegate.canCheckUpdates();
                 allSectionsSection.isDownloading = allSectionsStatus === CoreConstants.DOWNLOADING;
             }
         }).finally(() => {
@@ -269,20 +264,22 @@ export class CoreCourseHelperProvider {
      * This function will set the icon to "spinner" when starting and it will also set it back to the initial icon if the
      * user cancels. All the other updates of the icon should be made when CoreEventsProvider.COURSE_STATUS_CHANGED is received.
      *
-     * @param {any} data An object where to store the course icon and title: "prefetchCourseIcon" and "title".
+     * @param {any} data An object where to store the course icon and title: "prefetchCourseIcon", "title" and "downloadSucceeded".
      * @param {any} course Course to prefetch.
      * @param {any[]} [sections] List of course sections.
      * @param {CoreCourseOptionsHandlerToDisplay[]} courseHandlers List of course handlers.
+     * @param {CoreCourseOptionsMenuHandlerToDisplay[]} menuHandlers List of course menu handlers.
      * @return {Promise<boolean>} Promise resolved when the download finishes, rejected if an error occurs or the user cancels.
      */
-    confirmAndPrefetchCourse(data: any, course: any, sections?: any[], courseHandlers?: CoreCourseOptionsHandlerToDisplay[])
-            : Promise<boolean> {
+    confirmAndPrefetchCourse(data: any, course: any, sections?: any[], courseHandlers?: CoreCourseOptionsHandlerToDisplay[],
+            menuHandlers?: CoreCourseOptionsMenuHandlerToDisplay[]): Promise<boolean> {
 
         const initialIcon = data.prefetchCourseIcon,
             initialTitle = data.title,
             siteId = this.sitesProvider.getCurrentSiteId();
         let promise;
 
+        data.downloadSucceeded = false;
         data.prefetchCourseIcon = 'spinner';
         data.title = 'core.downloading';
 
@@ -294,20 +291,31 @@ export class CoreCourseHelperProvider {
         }
 
         return promise.then((sections) => {
+
             // Confirm the download.
             return this.confirmDownloadSizeSection(course.id, undefined, sections, true).then(() => {
                 // User confirmed, get the course handlers if needed.
-                if (courseHandlers) {
-                    promise = Promise.resolve(courseHandlers);
-                } else {
-                    promise = this.courseOptionsDelegate.getHandlersToDisplay(this.injector, course);
+                const subPromises = [];
+                if (!courseHandlers) {
+                    subPromises.push(this.courseOptionsDelegate.getHandlersToDisplay(this.injector, course)
+                        .then((cHandlers) => {
+                        courseHandlers = cHandlers;
+                    }));
+                }
+                if (!menuHandlers) {
+                    subPromises.push(this.courseOptionsDelegate.getMenuHandlersToDisplay(this.injector, course)
+                        .then((mHandlers) => {
+                        menuHandlers = mHandlers;
+                    }));
                 }
 
-                return promise.then((handlers: CoreCourseOptionsHandlerToDisplay[]) => {
+                return Promise.all(subPromises).then(() => {
                     // Now we have all the data, download the course.
-                    return this.prefetchCourse(course, sections, handlers, siteId);
+                    return this.prefetchCourse(course, sections, courseHandlers, menuHandlers, siteId);
                 }).then(() => {
                     // Download successful.
+                    data.downloadSucceeded = true;
+
                     return true;
                 });
             }, (error): any => {
@@ -340,6 +348,7 @@ export class CoreCourseHelperProvider {
                 const subPromises = [];
                 let sections,
                     handlers,
+                    menuHandlers,
                     success = true;
 
                 // Get the sections and the handlers.
@@ -349,9 +358,12 @@ export class CoreCourseHelperProvider {
                 subPromises.push(this.courseOptionsDelegate.getHandlersToDisplay(this.injector, course).then((cHandlers) => {
                     handlers = cHandlers;
                 }));
+                subPromises.push(this.courseOptionsDelegate.getMenuHandlersToDisplay(this.injector, course).then((mHandlers) => {
+                    menuHandlers = mHandlers;
+                }));
 
                 promises.push(Promise.all(subPromises).then(() => {
-                    return this.prefetchCourse(course, sections, handlers, siteId);
+                    return this.prefetchCourse(course, sections, handlers, menuHandlers, siteId);
                 }).catch((error) => {
                     success = false;
 
@@ -453,9 +465,10 @@ export class CoreCourseHelperProvider {
      * @param {any} instance The component instance that has the context menu. It should have prefetchStatusIcon and isDestroyed.
      * @param {any} module Module to be prefetched
      * @param {number} courseId Course ID the module belongs to.
+     * @param {Function} [done] Function to call when done. It will close the context menu.
      * @return {Promise<any>} Promise resolved when done.
      */
-    contextMenuPrefetch(instance: any, module: any, courseId: number): Promise<any> {
+    contextMenuPrefetch(instance: any, module: any, courseId: number, done?: () => void): Promise<any> {
         const initialIcon = instance.prefetchStatusIcon;
 
         instance.prefetchStatusIcon = 'spinner'; // Show spinner since this operation might take a while.
@@ -465,6 +478,9 @@ export class CoreCourseHelperProvider {
             return this.domUtils.confirmDownloadSize(size).then(() => {
                 return this.prefetchDelegate.prefetchModule(module, courseId, true);
             });
+        }).then(() => {
+            // Success, close menu.
+            done && done();
         }).catch((error) => {
             instance.prefetchStatusIcon = initialIcon;
 
@@ -795,6 +811,30 @@ export class CoreCourseHelperProvider {
     }
 
     /**
+     * Get a course, wait for any course format plugin to load, and open the course page. It basically chains the functions
+     * getCourse and openCourse.
+     *
+     * @param {NavController} navCtrl The nav controller to use. If not defined, the course will be opened in main menu.
+     * @param {number} courseId Course ID.
+     * @param {any} [params] Other params to pass to the course page.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     */
+    getAndOpenCourse(navCtrl: NavController, courseId: number, params?: any, siteId?: string): Promise<any> {
+        const modal = this.domUtils.showModalLoading();
+
+        return this.getCourse(courseId, siteId).then((data) => {
+            return data.course;
+        }).catch(() => {
+            // Cannot get course, return a "fake".
+            return { id: courseId };
+        }).then((course) => {
+            modal.dismiss();
+
+            return this.openCourse(navCtrl, course, params, siteId);
+        });
+    }
+
+    /**
      * Check if the course has a block with that name.
      *
      * @param {number} courseId Course ID.
@@ -945,7 +985,7 @@ export class CoreCourseHelperProvider {
      */
     getCourseStatusIconAndTitleFromStatus(status: string): {icon: string, title: string} {
         if (status == CoreConstants.DOWNLOADED) {
-            // Always show refresh icon, we cannot knew if there's anything new in course options.
+            // Always show refresh icon, we cannot know if there's anything new in course options.
             return {
                 icon: 'refresh',
                 title: 'core.course.refreshcourse'
@@ -1121,14 +1161,17 @@ export class CoreCourseHelperProvider {
                 // Check if site home is available.
                 return this.siteHomeProvider.isAvailable().then(() => {
                     this.loginHelper.redirect('CoreSiteHomeIndexPage', params, siteId);
+                }).finally(() => {
+                    modal.dismiss();
                 });
             } else {
-                this.loginHelper.redirect('CoreCourseSectionPage', params, siteId);
+                modal.dismiss();
+
+                return this.getAndOpenCourse(undefined, courseId, params, siteId);
             }
         }).catch((error) => {
-            this.domUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
-        }).finally(() => {
             modal.dismiss();
+            this.domUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
         });
     }
 
@@ -1162,11 +1205,12 @@ export class CoreCourseHelperProvider {
      * @param {any} course The course to prefetch.
      * @param {any[]} sections List of course sections.
      * @param {CoreCourseOptionsHandlerToDisplay[]} courseHandlers List of course options handlers.
+     * @param {CoreCourseOptionsMenuHandlerToDisplay[]} courseMenuHandlers List of course menu handlers.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise}                Promise resolved when the download finishes.
      */
-    prefetchCourse(course: any, sections: any[], courseHandlers: CoreCourseOptionsHandlerToDisplay[], siteId?: string)
-            : Promise<any> {
+    prefetchCourse(course: any, sections: any[], courseHandlers: CoreCourseOptionsHandlerToDisplay[],
+           courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[], siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         if (this.courseDwnPromises[siteId] && this.courseDwnPromises[siteId][course.id]) {
@@ -1191,6 +1235,11 @@ export class CoreCourseHelperProvider {
 
             // Prefetch course options.
             courseHandlers.forEach((handler) => {
+                if (handler.prefetch) {
+                    promises.push(handler.prefetch(course));
+                }
+            });
+            courseMenuHandlers.forEach((handler) => {
                 if (handler.prefetch) {
                     promises.push(handler.prefetch(course));
                 }
@@ -1244,7 +1293,7 @@ export class CoreCourseHelperProvider {
             return promise.catch(() => {
                 // Ignore errors.
             }).then(() => {
-                return handler.prefetch(module, courseId, true);
+                return this.prefetchDelegate.prefetchModule(module, courseId, true);
             });
         });
     }
@@ -1285,9 +1334,8 @@ export class CoreCourseHelperProvider {
 
             return this.utils.allPromises(promises).then(() => {
                 // Set "All sections" data.
-                section.showDownload = allSectionsStatus === CoreConstants.NOT_DOWNLOADED;
-                section.showRefresh = allSectionsStatus === CoreConstants.OUTDATED ||
-                        (!this.prefetchDelegate.canCheckUpdates() && allSectionsStatus === CoreConstants.DOWNLOADED);
+                section.downloadStatus = allSectionsStatus;
+                section.canCheckUpdates = this.prefetchDelegate.canCheckUpdates();
                 section.isDownloading = allSectionsStatus === CoreConstants.DOWNLOADING;
             }).finally(() => {
                 section.isDownloading = false;
@@ -1317,18 +1365,22 @@ export class CoreCourseHelperProvider {
 
         section.isDownloading = true;
 
-        // Validate the section needs to be downloaded and calculate amount of modules that need to be downloaded.
-        promises.push(this.prefetchDelegate.getModulesStatus(section.modules, courseId, section.id).then((result) => {
-            if (result.status == CoreConstants.DOWNLOADED || result.status == CoreConstants.NOT_DOWNLOADABLE) {
-                // Section is downloaded or not downloadable, nothing to do.
-                return;
-            }
+        // Sync the modules first.
+        promises.push(this.prefetchDelegate.syncModules(section.modules, courseId).then(() => {
+            // Validate the section needs to be downloaded and calculate amount of modules that need to be downloaded.
+            return this.prefetchDelegate.getModulesStatus(section.modules, courseId, section.id).then((result) => {
+                if (result.status == CoreConstants.DOWNLOADED || result.status == CoreConstants.NOT_DOWNLOADABLE) {
+                    // Section is downloaded or not downloadable, nothing to do.
 
-            return this.prefetchSingleSection(section, result, courseId);
-        }, (error) => {
-            section.isDownloading = false;
+                    return ;
+                }
 
-            return Promise.reject(error);
+                return this.prefetchSingleSection(section, result, courseId);
+            }, (error) => {
+                section.isDownloading = false;
+
+                return Promise.reject(error);
+            });
         }));
 
         // Download the files in the section description.
@@ -1399,33 +1451,22 @@ export class CoreCourseHelperProvider {
      * will be displayed until it is complete, before the course page is opened.  If the promise is already complete,
      * they will see the result immediately.
      *
-     * @param {NavController} navCtrl The nav controller to use.
+     * @param {NavController} navCtrl The nav controller to use. If not defined, the course will be opened in main menu.
      * @param {any} course Course to open
+     * @param {any} [params] Params to pass to the course page.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
      */
-    openCourse(navCtrl: NavController, course: any): void {
-        if (this.sitePluginsProvider.sitePluginPromiseExists('format_' + course.format)) {
-            // This course uses a custom format plugin, wait for the format plugin to finish loading.
-            const loading = this.domUtils.showModalLoading();
-            this.sitePluginsProvider.sitePluginLoaded('format_' + course.format).then(() => {
-                // The format loaded successfully, but the handlers wont be registered until all site plugins have loaded.
-                if (this.sitePluginsProvider.sitePluginsFinishedLoading) {
-                    loading.dismiss();
-                    this.courseFormatDelegate.openCourse(navCtrl, course);
-                } else {
-                    const observer = this.eventsProvider.on(CoreEventsProvider.SITE_PLUGINS_LOADED, () => {
-                        loading.dismiss();
-                        this.courseFormatDelegate.openCourse(navCtrl, course);
-                        observer && observer.off();
-                    });
-                }
-            }).catch(() => {
-                // The site plugin failed to load. The user needs to restart the app to try loading it again.
-                loading.dismiss();
-                this.domUtils.showErrorModal('core.courses.errorloadplugins', true);
-            });
+    openCourse(navCtrl: NavController, course: any, params?: any, siteId?: string): Promise<any> {
+        if (!siteId || siteId == this.sitesProvider.getCurrentSiteId()) {
+            // Current site, we can open the course.
+            return this.courseProvider.openCourse(navCtrl, course, params);
         } else {
-            // No custom format plugin. We don't need to wait for anything.
-            this.courseFormatDelegate.openCourse(navCtrl, course);
+            // We need to load the site first.
+            params = params || {};
+            Object.assign(params, { course: course });
+
+            return this.loginHelper.redirect(CoreLoginHelperProvider.OPEN_COURSE, params, siteId);
         }
     }
 }

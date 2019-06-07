@@ -12,4 +12,7 @@ ion-app.app-root page-addon-mod-feedback-form {
     .item-wp .addon-mod_feedback-form-content {
         @include margin($item-wp-padding-media-top, ($item-wp-padding-end / 2), $item-wp-padding-media-bottom, 0);
     }
+    .addon-mod_feedback-postfix {
+        font-size: 1.4rem;
+    }
 }

@@ -153,7 +153,7 @@ export class AddonModAssignHelperProvider {
      * @param {number} [groupId] Group Id.
      * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]} Promise resolved with the list of participants and summary of submissions.
+     * @return {Promise<any[]>} Promise resolved with the list of participants and summary of submissions.
      */
     getParticipants(assign: any, groupId?: number, ignoreCache?: boolean, siteId?: string): Promise<any[]> {
         groupId = groupId || 0;
@@ -285,6 +285,104 @@ export class AddonModAssignHelperProvider {
 
         return Promise.all(promises).then(() => {
             return totalSize;
+        });
+    }
+
+    /**
+     * Get user data for submissions since they only have userid.
+     *
+     * @param {any} assign Assignment object.
+     * @param {any[]} submissions Submissions to get the data for.
+     * @param {number} [groupId] Group Id.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param {string} [siteId] Site id (empty for current site).
+     * @return {Promise<any[]>} Promise always resolved. Resolve param is the formatted submissions.
+     */
+    getSubmissionsUserData(assign: any, submissions: any[], groupId?: number, ignoreCache?: boolean, siteId?: string):
+            Promise<any[]> {
+        return this.getParticipants(assign, groupId).then((participants) => {
+            const blind = assign.blindmarking && !assign.revealidentities;
+            const promises = [];
+            const result = [];
+
+            participants = this.utils.arrayToObject(participants, 'id');
+
+            submissions.forEach((submission) => {
+                submission.submitid = submission.userid > 0 ? submission.userid : submission.blindid;
+                if (submission.submitid <= 0) {
+                    return;
+                }
+
+                const participant = participants[submission.submitid];
+                if (participant) {
+                    delete participants[submission.submitid];
+                } else {
+                    // Avoid permission denied error. Participant not found on list.
+                    return;
+                }
+
+                if (!blind) {
+                    submission.userfullname = participant.fullname;
+                    submission.userprofileimageurl = participant.profileimageurl;
+                }
+
+                submission.manyGroups = !!participant.groups && participant.groups.length > 1;
+                submission.noGroups = !!participant.groups && participant.groups.length == 0;
+                if (participant.groupname) {
+                    submission.groupid = participant.groupid;
+                    submission.groupname = participant.groupname;
+                }
+
+                let promise;
+                if (submission.userid > 0 && blind) {
+                    // Blind but not blinded! (Moodle < 3.1.1, 3.2).
+                    delete submission.userid;
+
+                    promise = this.assignProvider.getAssignmentUserMappings(assign.id, submission.submitid, ignoreCache, siteId).
+                            then((blindId) => {
+                        submission.blindid = blindId;
+                    });
+                }
+
+                promise = promise || Promise.resolve();
+
+                promises.push(promise.then(() => {
+                    // Add to the list.
+                    if (submission.userfullname || submission.blindid) {
+                        result.push(submission);
+                    }
+                }));
+            });
+
+            return Promise.all(promises).then(() => {
+                // Create a submission for each participant left in the list (the participants already treated were removed).
+                this.utils.objectToArray(participants).forEach((participant) => {
+                    const submission: any = {
+                        submitid: participant.id
+                    };
+
+                    if (!blind) {
+                        submission.userid = participant.id;
+                        submission.userfullname = participant.fullname;
+                        submission.userprofileimageurl = participant.profileimageurl;
+                    } else {
+                        submission.blindid = participant.id;
+                    }
+
+                    submission.manyGroups = !!participant.groups && participant.groups.length > 1;
+                    submission.noGroups = !!participant.groups && participant.groups.length == 0;
+                    if (participant.groupname) {
+                        submission.groupid = participant.groupid;
+                        submission.groupname = participant.groupname;
+                    }
+                    submission.status = participant.submitted ? AddonModAssignProvider.SUBMISSION_STATUS_SUBMITTED :
+                            AddonModAssignProvider.SUBMISSION_STATUS_NEW;
+
+                    result.push(submission);
+                });
+
+                return result;
+            });
         });
     }
 

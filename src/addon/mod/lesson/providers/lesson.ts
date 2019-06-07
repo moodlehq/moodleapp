@@ -22,7 +22,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreGradesProvider } from '@core/grades/providers/grades';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { AddonModLessonOfflineProvider } from './lesson-offline';
 
 /**
@@ -155,6 +155,8 @@ export class AddonModLessonProvider {
      * Constant used as a delimiter when parsing multianswer questions
      */
     static MULTIANSWER_DELIMITER = '@^#|';
+
+    static LESSON_OTHER_ANSWERS = '@#wronganswer#@';
 
     // Variables for database.
     static PASSWORD_TABLE = 'addon_mod_lesson_password';
@@ -506,7 +508,12 @@ export class AddonModLessonProvider {
             return;
         }
 
-        if (typeof data['answer[text]'] != 'undefined') {
+        // The name was changed to "answer_editor" in 3.7. Before it was just "answer". Support both cases.
+        if (typeof data['answer_editor[text]'] != 'undefined') {
+            studentAnswer = data['answer_editor[text]'];
+        } else if (typeof data.answer_editor == 'object') {
+            studentAnswer = data.answer_editor.text;
+        } else if (typeof data['answer[text]'] != 'undefined') {
             studentAnswer = data['answer[text]'];
         } else if (typeof data.answer == 'object') {
             studentAnswer = data.answer.text;
@@ -793,6 +800,8 @@ export class AddonModLessonProvider {
                 break;
             }
         }
+
+        this.checkOtherAnswers(lesson, pageData, result);
     }
 
     /**
@@ -907,6 +916,8 @@ export class AddonModLessonProvider {
             }
         }
 
+        this.checkOtherAnswers(lesson, pageData, result);
+
         result.userresponse = studentAnswer;
         result.studentanswer = this.textUtils.s(studentAnswer); // Clean student answer as it goes to output.
     }
@@ -941,6 +952,33 @@ export class AddonModLessonProvider {
                 result.response  = answer.response;
                 result.studentanswer = result.userresponse = answer.answer;
                 break;
+            }
+        }
+    }
+
+    /**
+     * Check the "other answers" value.
+     *
+     * @param {any} lesson Lesson.
+     * @param {any} pageData Result of getPageData for the page to process.
+     * @param {AddonModLessonCheckAnswerResult} result Object where to store the result.
+     */
+    protected checkOtherAnswers(lesson: any, pageData: any, result: AddonModLessonCheckAnswerResult): void {
+        // We could check here to see if we have a wrong answer jump to use.
+        if (result.answerid == 0) {
+            // Use the all other answers jump details if it is set up.
+            const lastAnswer = pageData.answers[pageData.answers.length - 1] || {};
+
+            // Double check that this is the OTHER_ANSWERS answer.
+            if (typeof lastAnswer.answer == 'string' &&
+                    lastAnswer.answer.indexOf(AddonModLessonProvider.LESSON_OTHER_ANSWERS) != -1) {
+                result.newpageid = lastAnswer.jumpto;
+                result.response = lastAnswer.response;
+
+                if (lesson.custom) {
+                    result.correctanswer = lastAnswer.score > 0;
+                }
+                result.answerid = lastAnswer.id;
             }
         }
     }
@@ -1403,7 +1441,8 @@ export class AddonModLessonProvider {
                     courseids: [courseId]
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getLessonDataCacheKey(courseId)
+                    cacheKey: this.getLessonDataCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (forceCache) {
@@ -1728,7 +1767,8 @@ export class AddonModLessonProvider {
                     lessonid: lessonId,
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getPagesCacheKey(lessonId)
+                    cacheKey: this.getPagesCacheKey(lessonId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (typeof password == 'string') {
@@ -2085,7 +2125,8 @@ export class AddonModLessonProvider {
                     groupid: groupId
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getRetakesOverviewCacheKey(lessonId, groupId)
+                    cacheKey: this.getRetakesOverviewCacheKey(lessonId, groupId),
+                    updateFrequency: CoreSite.FREQUENCY_OFTEN
                 };
 
             if (forceCache) {
@@ -2315,7 +2356,8 @@ export class AddonModLessonProvider {
                     lessonattempt: retake
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getUserRetakeCacheKey(lessonId, userId, retake)
+                    cacheKey: this.getUserRetakeCacheKey(lessonId, userId, retake),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (forceCache) {
@@ -2984,10 +3026,11 @@ export class AddonModLessonProvider {
      *
      * @param {string} id Module ID.
      * @param {string} [password] Lesson password (if any).
+     * @param {string} [name] Name of the assign.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logViewLesson(id: number, password?: string, siteId?: string): Promise<any> {
+    logViewLesson(id: number, password?: string, name?: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params: any = {
                 lessonid: id
@@ -2997,7 +3040,8 @@ export class AddonModLessonProvider {
                 params.password = password;
             }
 
-            return this.logHelper.log('mod_lesson_view_lesson', params, AddonModLessonProvider.COMPONENT, id, siteId);
+            return this.logHelper.logSingle('mod_lesson_view_lesson', params, AddonModLessonProvider.COMPONENT, id, name,
+                    'lesson', {}, siteId);
         });
 
     }

@@ -32,6 +32,9 @@
             <core-icon item-content *ngIf="option.isCorrect === 1" class="core-correct-icon" name="fa-check" color="success"></core-icon>
             <core-icon item-content *ngIf="option.isCorrect === 0" class="core-correct-icon" name="fa-remove" color="danger"></core-icon>
         </ion-item>
+        <div *ngIf="!question.disabled" padding-horizontal>
+            <button text-wrap [disabled]="!question.singleChoiceModel" ion-button full color="light" (click)="clear()" type="reset">{{ 'addon.mod_quiz.clearchoice' | translate }}</button>
+        </div>
 
         <!-- ion-radio doesn't use an input. Create a hidden input to hold the selected value. -->
         <input type="hidden" [ngModel]="question.singleChoiceModel" [attr.name]="question.optionsName">

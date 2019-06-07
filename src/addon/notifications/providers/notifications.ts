@@ -16,10 +16,12 @@ import { Injectable } from '@angular/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
 import { AddonMessagesProvider } from '@addon/messages/providers/messages';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service to handle notifications.
@@ -37,7 +39,8 @@ export class AddonNotificationsProvider {
 
     constructor(logger: CoreLoggerProvider, private appProvider: CoreAppProvider, private sitesProvider: CoreSitesProvider,
             private timeUtils: CoreTimeUtilsProvider, private userProvider: CoreUserProvider,
-            private emulatorHelper: CoreEmulatorHelperProvider, private messageProvider: AddonMessagesProvider) {
+            private emulatorHelper: CoreEmulatorHelperProvider, private messageProvider: AddonMessagesProvider,
+            private textUtils: CoreTextUtilsProvider) {
         this.logger = logger.getInstance('AddonNotificationsProvider');
     }
 
@@ -45,25 +48,47 @@ export class AddonNotificationsProvider {
      * Function to format notification data.
      *
      * @param {any[]} notifications List of notifications.
+     * @param {boolean} [read] Whether the notifications are read or unread.
      * @return {Promise<any[]>} Promise resolved with notifications.
      */
-    protected formatNotificationsData(notifications: any[]): Promise<any> {
+    protected formatNotificationsData(notifications: any[], read?: boolean): Promise<any> {
         const promises = notifications.map((notification) => {
+
             // Set message to show.
-            if (notification.contexturl && notification.contexturl.indexOf('/mod/forum/') >= 0) {
+            if (notification.component && notification.component == 'mod_forum') {
                 notification.mobiletext = notification.smallmessage;
+            } else if (notification.component && notification.component == 'moodle' && notification.name == 'insights') {
+                notification.mobiletext = notification.fullmessagehtml;
             } else {
                 notification.mobiletext = notification.fullmessage;
             }
-            // Try to set courseid the notification belongs to.
-            const cid = notification.fullmessagehtml.match(/course\/view\.php\?id=([^"]*)/);
-            if (cid && cid[1]) {
-                notification.courseid = cid[1];
+
+            notification.moodlecomponent = notification.component;
+            notification.notification = 1;
+            notification.notif = 1;
+            if (typeof read != 'undefined') {
+                notification.read = read;
             }
+
+            if (typeof notification.customdata == 'string') {
+                notification.customdata = this.textUtils.parseJSON(notification.customdata, {});
+            }
+
+            // Try to set courseid the notification belongs to.
+            if (notification.customdata && notification.customdata.courseid) {
+                notification.courseid = notification.customdata.courseid;
+            } else if (!notification.courseid) {
+                const cid = notification.fullmessagehtml.match(/course\/view\.php\?id=([^"]*)/);
+                if (cid && cid[1]) {
+                    notification.courseid = parseInt(cid[1], 10);
+                }
+            }
+
             if (notification.useridfrom > 0) {
                 // Try to get the profile picture of the user.
                 return this.userProvider.getProfile(notification.useridfrom, notification.courseid, true).then((user) => {
                     notification.profileimageurlfrom = user.profileimageurl;
+                    notification.userfromfullname = user.fullname;
 
                     return notification;
                 }).catch(() => {
@@ -97,7 +122,8 @@ export class AddonNotificationsProvider {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const preSets = {
-                cacheKey: this.getNotificationPreferencesCacheKey()
+                cacheKey: this.getNotificationPreferencesCacheKey(),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
             return site.read('core_message_get_user_notification_preferences', {}, preSets).then((data) => {
@@ -154,7 +180,7 @@ export class AddonNotificationsProvider {
                 if (response.messages) {
                     const notifications = response.messages;
 
-                    return this.formatNotificationsData(notifications).then(() => {
+                    return this.formatNotificationsData(notifications, read).then(() => {
                         if (this.appProvider.isDesktop() && toDisplay && !read && limitFrom === 0) {
                             // Store the last received notification. Don't block the user for this.
                             this.emulatorHelper.storeLastReceivedNotification(
@@ -162,6 +188,67 @@ export class AddonNotificationsProvider {
                         }
 
                         return notifications;
+                    });
+                } else {
+                    return Promise.reject(null);
+                }
+            });
+        });
+    }
+
+    /**
+     * Get notifications from site using the new WebService.
+     *
+     * @param {number} offset Position of the first notification to get.
+     * @param {number} [limit] Number of notifications to get. Defaults to LIST_LIMIT.
+     * @param {boolean} [toDisplay=true] True if notifications will be displayed to the user, either in view or in a notification.
+     * @param {boolean} [forceCache] True if it should return cached data. Has priority over ignoreCache.
+     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<{notifications: any[], canLoadMore: boolean}>} Promise resolved with notifications and if can load more.
+     * @since 3.2
+     */
+    getPopupNotifications(offset: number, limit?: number, toDisplay: boolean = true, forceCache?: boolean, ignoreCache?: boolean,
+            siteId?: string): Promise<{notifications: any[], canLoadMore: boolean}> {
+
+        limit = limit || AddonNotificationsProvider.LIST_LIMIT;
+
+        this.logger.debug('Get popup notifications from ' + offset + '. Limit: ' + limit);
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const data = {
+                    useridto: site.getUserId(),
+                    newestfirst: 1,
+                    offset: offset,
+                    limit: limit + 1 // Get one more to calculate canLoadMore.
+                },
+                preSets = {
+                    cacheKey: this.getNotificationsCacheKey(),
+                    omitExpires: forceCache,
+                    getFromCache: forceCache || !ignoreCache,
+                    emergencyCache: forceCache || !ignoreCache,
+                };
+
+            // Get notifications.
+            return site.read('message_popup_get_popup_notifications', data, preSets).then((response) => {
+                if (response.notifications) {
+                    const result: any = {
+                            canLoadMore: response.notifications.length > limit
+                        },
+                        notifications = response.notifications.slice(0, limit);
+
+                    result.notifications = notifications;
+
+                    return this.formatNotificationsData(notifications).then(() => {
+                        const first = notifications[0];
+
+                        if (this.appProvider.isDesktop() && toDisplay && offset === 0 && first && !first.read) {
+                            // Store the last received notification. Don't block the user for this.
+                            this.emulatorHelper.storeLastReceivedNotification(
+                                AddonNotificationsProvider.PUSH_SIMULATION_COMPONENT, first, siteId);
+                        }
+
+                        return result;
                     });
                 } else {
                     return Promise.reject(null);
@@ -245,6 +332,18 @@ export class AddonNotificationsProvider {
     }
 
     /**
+     * Returns whether or not popup WS is available for a certain site.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<boolean>} Promise resolved with true if available, resolved with false or rejected otherwise.
+     */
+    isPopupAvailable(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.wsAvailable('message_popup_get_popup_notifications');
+        });
+    }
+
+    /**
      * Mark all message notification as read.
      *
      * @returns {Promise<any>} Resolved when done.
@@ -262,23 +361,25 @@ export class AddonNotificationsProvider {
      * Mark a single notification as read.
      *
      * @param {number} notificationId ID of notification to mark as read
+     * @param {string} [siteId] Site ID. If not defined, current site.
      * @returns {Promise<any>} Resolved when done.
      * @since 3.5
      */
-    markNotificationRead(notificationId: number): Promise<any> {
-        const currentSite = this.sitesProvider.getCurrentSite();
+    markNotificationRead(notificationId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
 
-        if (currentSite.wsAvailable('core_message_mark_notification_read')) {
-            const params = {
-                notificationid: notificationId,
-                timeread: this.timeUtils.timestamp()
-            };
+            if (site.wsAvailable('core_message_mark_notification_read')) {
+                const params = {
+                    notificationid: notificationId,
+                    timeread: this.timeUtils.timestamp()
+                };
 
-            return currentSite.write('core_message_mark_notification_read', params);
-        } else {
-            // Fallback for versions prior to 3.5.
-            return this.messageProvider.markMessageRead(notificationId);
-        }
+                return site.write('core_message_mark_notification_read', params);
+            } else {
+                // Fallback for versions prior to 3.5.
+                return this.messageProvider.markMessageRead(notificationId, site.id);
+            }
+        });
     }
 
     /**

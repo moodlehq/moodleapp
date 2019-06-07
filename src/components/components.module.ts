@@ -34,6 +34,7 @@ import { CoreContextMenuPopoverComponent } from './context-menu/context-menu-pop
 import { CoreCoursePickerMenuPopoverComponent } from './course-picker-menu/course-picker-menu-popover';
 import { CoreChartComponent } from './chart/chart';
 import { CoreChronoComponent } from './chrono/chrono';
+import { CoreDownloadRefreshComponent } from './download-refresh/download-refresh';
 import { CoreLocalFileComponent } from './local-file/local-file';
 import { CoreSitePickerComponent } from './site-picker/site-picker';
 import { CoreTabsComponent } from './tabs/tabs';
@@ -52,6 +53,7 @@ import { CoreIonTabComponent } from './ion-tabs/ion-tab';
 import { CoreInfiniteLoadingComponent } from './infinite-loading/infinite-loading';
 import { CoreUserAvatarComponent } from './user-avatar/user-avatar';
 import { CoreStyleComponent } from './style/style';
+import { CoreBSTooltipComponent } from './bs-tooltip/bs-tooltip';
 
 @NgModule({
     declarations: [
@@ -72,6 +74,7 @@ import { CoreStyleComponent } from './style/style';
         CoreCoursePickerMenuPopoverComponent,
         CoreChartComponent,
         CoreChronoComponent,
+        CoreDownloadRefreshComponent,
         CoreLocalFileComponent,
         CoreSitePickerComponent,
         CoreTabsComponent,
@@ -89,12 +92,14 @@ import { CoreStyleComponent } from './style/style';
         CoreIonTabComponent,
         CoreInfiniteLoadingComponent,
         CoreUserAvatarComponent,
-        CoreStyleComponent
+        CoreStyleComponent,
+        CoreBSTooltipComponent
     ],
     entryComponents: [
         CoreContextMenuPopoverComponent,
         CoreCoursePickerMenuPopoverComponent,
-        CoreRecaptchaModalComponent
+        CoreRecaptchaModalComponent,
+        CoreBSTooltipComponent
     ],
     imports: [
         IonicModule,
@@ -118,6 +123,7 @@ import { CoreStyleComponent } from './style/style';
         CoreContextMenuItemComponent,
         CoreChartComponent,
         CoreChronoComponent,
+        CoreDownloadRefreshComponent,
         CoreLocalFileComponent,
         CoreSitePickerComponent,
         CoreTabsComponent,
@@ -134,7 +140,8 @@ import { CoreStyleComponent } from './style/style';
         CoreIonTabComponent,
         CoreInfiniteLoadingComponent,
         CoreUserAvatarComponent,
-        CoreStyleComponent
+        CoreStyleComponent,
+        CoreBSTooltipComponent
     ]
 })
 export class CoreComponentsModule {}

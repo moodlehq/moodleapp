@@ -292,7 +292,8 @@ export class AddonCalendarProvider {
     getEvent(id: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const preSets = {
-                    cacheKey: this.getEventCacheKey(id)
+                    cacheKey: this.getEventCacheKey(id),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 },
                 data = {
                     options: {
@@ -329,7 +330,8 @@ export class AddonCalendarProvider {
     getEventById(id: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const preSets = {
-                    cacheKey: this.getEventCacheKey(id)
+                    cacheKey: this.getEventCacheKey(id),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 },
                 data = {
                     eventid: id
@@ -469,7 +471,8 @@ export class AddonCalendarProvider {
                 // We need to retrieve cached data using cache key because we have timestamp in the params.
                 const preSets = {
                     cacheKey: this.getEventsListCacheKey(daysToStart, daysInterval),
-                    getCacheUsingCacheKey: true
+                    getCacheUsingCacheKey: true,
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
                 return site.read('core_calendar_get_calendar_events', data, preSets).then((response) => {
@@ -646,6 +649,7 @@ export class AddonCalendarProvider {
                         id: reminderId,
                         title: event.name,
                         text: this.timeUtils.userDate(event.timestart * 1000, 'core.strftimedaydatetime', true),
+                        icon: 'file://assets/img/icons/calendar.png',
                         trigger: {
                             at: new Date(time)
                         },

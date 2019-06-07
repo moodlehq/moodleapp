@@ -16,8 +16,13 @@ import { Injectable } from '@angular/core';
 import { NavController, ViewController } from 'ionic-angular';
 import { AddonModFeedbackProvider } from './feedback';
 import { CoreUserProvider } from '@core/user/providers/user';
+import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { TranslateService } from '@ngx-translate/core';
 
 /**
@@ -32,7 +37,9 @@ export class AddonModFeedbackHelperProvider {
 
     constructor(protected feedbackProvider: AddonModFeedbackProvider, protected userProvider: CoreUserProvider,
             protected textUtils: CoreTextUtilsProvider, protected translate: TranslateService,
-            protected timeUtils: CoreTimeUtilsProvider) {
+            protected timeUtils: CoreTimeUtilsProvider, protected domUtils: CoreDomUtilsProvider,
+            protected courseProvider: CoreCourseProvider, protected linkHelper: CoreContentLinksHelperProvider,
+            protected sitesProvider: CoreSitesProvider, protected utils: CoreUtilsProvider) {
     }
 
     /**
@@ -194,6 +201,48 @@ export class AddonModFeedbackHelperProvider {
     }
 
     /**
+     * Handle a show entries link.
+     *
+     * @param {NavController} navCtrl Nav controller to use to navigate. Can be undefined/null.
+     * @param {any} params URL params.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    handleShowEntriesLink(navCtrl: NavController, params: any, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        const modal = this.domUtils.showModalLoading(),
+            moduleId = params.id;
+
+        return this.courseProvider.getModuleBasicInfo(moduleId, siteId).then((module) => {
+            let stateParams;
+
+            if (typeof params.showcompleted == 'undefined') {
+                // Param showcompleted not defined. Show entry list.
+                stateParams = {
+                    module: module,
+                    courseId: module.course
+                };
+
+                return this.linkHelper.goInSite(navCtrl, 'AddonModFeedbackRespondentsPage', stateParams, siteId);
+            }
+
+            return this.feedbackProvider.getAttempt(module.instance, params.showcompleted, true, siteId).then((attempt) => {
+                stateParams = {
+                    moduleId: module.id,
+                    attempt: attempt,
+                    feedbackId: module.instance,
+                    courseId: module.course
+                };
+
+                return this.linkHelper.goInSite(navCtrl, 'AddonModFeedbackAttemptPage', stateParams, siteId);
+            });
+        }).finally(() => {
+            modal.dismiss();
+        });
+    }
+
+    /**
      * Add Image profile url field on attempts
      *
      * @param  {any}          attempts Attempts array to get profile from.
@@ -298,9 +347,13 @@ export class AddonModFeedbackHelperProvider {
         item.template = 'numeric';
 
         const range = item.presentation.split(AddonModFeedbackProvider.LINE_SEP) || [];
-        item.rangefrom = range.length > 0 ? parseInt(range[0], 10) || '' : '';
-        item.rangeto = range.length > 1 ? parseInt(range[1], 10) || '' : '';
+        range[0] = range.length > 0 ? parseInt(range[0], 10) : undefined;
+        range[1] = range.length > 1 ? parseInt(range[1], 10) : undefined;
+
+        item.rangefrom = typeof range[0] == 'number' && !isNaN(range[0]) ? range[0] : '';
+        item.rangeto = typeof range[1] == 'number' && !isNaN(range[1]) ? range[1] : '';
         item.value = typeof item.rawValue != 'undefined' ? parseFloat(item.rawValue) : '';
+        item.postfix = this.getNumericBoundariesForDisplay(item.rangefrom, item.rangeto);
 
         return item;
     }
@@ -443,6 +496,29 @@ export class AddonModFeedbackHelperProvider {
         }
 
         return item;
+    }
+
+    /**
+     * Returns human-readable boundaries (min - max).
+     * Based on Moodle's get_boundaries_for_display.
+     *
+     * @param {number} rangeFrom Range from.
+     * @param {number} rangeTo Range to.
+     * @return {string} Human-readable boundaries.
+     */
+    protected getNumericBoundariesForDisplay(rangeFrom: number, rangeTo: number): string {
+        const rangeFromSet = typeof rangeFrom == 'number',
+            rangeToSet = typeof rangeTo == 'number';
+
+        if (!rangeFromSet && rangeToSet) {
+            return ' (' + this.translate.instant('addon.mod_feedback.maximal') + ': ' + this.utils.formatFloat(rangeTo) + ')';
+        } else if (rangeFromSet && !rangeToSet) {
+            return ' (' + this.translate.instant('addon.mod_feedback.minimal') + ': ' + this.utils.formatFloat(rangeFrom) + ')';
+        } else if (!rangeFromSet && !rangeToSet) {
+            return '';
+        }
+
+        return ' (' + this.utils.formatFloat(rangeFrom) + ' - ' + this.utils.formatFloat(rangeTo) + ')';
     }
 
 }

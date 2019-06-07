@@ -24,7 +24,7 @@ import { AddonBlogProvider } from './blog';
 @Injectable()
 export class AddonBlogIndexLinkHandler extends CoreContentLinksHandlerBase {
     name = 'AddonBlogIndexLinkHandler';
-    featureName = 'CoreUserDelegate_AddonBlog';
+    featureName = 'CoreUserDelegate_AddonBlog:blogs';
     pattern = /\/blog\/index\.php/;
 
     constructor(private blogProvider: AddonBlogProvider, private loginHelper: CoreLoginHelperProvider) {

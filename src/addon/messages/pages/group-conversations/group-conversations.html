@@ -91,16 +91,17 @@
 <ng-template #conversationsTemplate let-conversations="conversations">
     <a ion-item text-wrap *ngFor="let conversation of conversations" [title]="conversation.name" (click)="gotoConversation(conversation.id, conversation.userid)" [class.core-split-item-selected]="(conversation.id && conversation.id == selectedConversationId) || (conversation.userid && conversation.userid == selectedUserId)" class="addon-message-discussion" id="addon-message-conversation-{{ conversation.id ? conversation.id : 'user-' + conversation.userid }}">
         <!-- Group conversation image. -->
-        <ion-avatar item-start *ngIf="conversation.type != typeIndividual">
+        <ion-avatar item-start *ngIf="conversation.type == typeGroup">
             <img [src]="conversation.imageurl" [alt]="conversation.name" core-external-content onError="this.src='assets/img/group-avatar.png'">
         </ion-avatar>
 
         <!-- Avatar for individual conversations. -->
-        <ion-avatar *ngIf="conversation.type == typeIndividual" core-user-avatar [user]="conversation.otherUser" [linkProfile]="false" [checkOnline]="conversation.showonlinestatus" item-start></ion-avatar>
+        <ion-avatar *ngIf="conversation.type != typeGroup" core-user-avatar [user]="conversation.otherUser" [linkProfile]="false" [checkOnline]="conversation.showonlinestatus" item-start></ion-avatar>
 
         <h2>
             <core-format-text [text]="conversation.name"></core-format-text>
             <core-icon name="fa-ban" *ngIf="conversation.isblocked" [label]="'addon.messages.contactblocked' | translate"></core-icon>
+            <core-icon *ngIf="conversation.ismuted" name="volume-off" [label]="'addon.messages.mutedconversation' | translate"></core-icon>
         </h2>
         <ion-note *ngIf="conversation.lastmessagedate > 0 || conversation.unreadcount">
             <ion-badge *ngIf="conversation.unreadcount > 0">{{ conversation.unreadcount }}</ion-badge>
@@ -109,7 +110,7 @@
         <p *ngIf="conversation.subname"><core-format-text [text]="conversation.subname"></core-format-text></p>
         <p class="addon-message-last-message">
             <span *ngIf="conversation.sentfromcurrentuser" class="addon-message-last-message-user">{{ 'addon.messages.you' | translate }}</span>
-            <core-format-text *ngIf="conversation.type != typeIndividual && conversation.members[0]" [text]="conversation.members[0].fullname + ':'" class="addon-message-last-message-user"></core-format-text>
+            <core-format-text *ngIf="!conversation.sentfromcurrentuser && conversation.type == typeGroup && conversation.members[0]" [text]="conversation.members[0].fullname + ':'" class="addon-message-last-message-user"></core-format-text>
             <core-format-text clean="true" singleLine="true" [text]="conversation.lastmessage" class="addon-message-last-message-text"></core-format-text>
         </p>
     </a>

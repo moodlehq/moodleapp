@@ -7,7 +7,7 @@
                 <core-format-text [text]="section.summary"></core-format-text>
             </ion-item>
 
-            <core-course-module *ngFor="let module of section.modules" [module]="module" [courseId]="siteHomeId" [downloadEnabled]="true" [section]="section"></core-course-module>
+            <core-course-module *ngFor="let module of section.modules" [module]="module" [courseId]="siteHomeId" [downloadEnabled]="downloadEnabled" [section]="section"></core-course-module>
         </ng-container>
 
         <!-- Site home items: news, categories, courses, etc. -->

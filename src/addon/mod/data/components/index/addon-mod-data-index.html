@@ -11,7 +11,7 @@
         <core-context-menu-item *ngIf="loaded && (hasOffline || hasOfflineRatings) && isOnline"  [priority]="600" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
         <core-context-menu-item [priority]="500" *ngIf="canAdd" [content]="'addon.mod_data.addentries' | translate" [iconAction]="'add'" (action)="gotoAddEntries($event)"></core-context-menu-item>
         <core-context-menu-item [priority]="400" *ngIf="firstEntry" [content]="'addon.mod_data.single' | translate" [iconAction]="'document'" (action)="gotoEntry(firstEntry)"></core-context-menu-item>
-        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="300" [content]="prefetchText" (action)="prefetch()" [iconAction]="prefetchStatusIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="300" [content]="prefetchText" (action)="prefetch($event)" [iconAction]="prefetchStatusIcon" [closeOnClick]="false"></core-context-menu-item>
         <core-context-menu-item *ngIf="size" [priority]="200" [content]="size" [iconDescription]="'cube'" (action)="removeFiles()" [iconAction]="'trash'"></core-context-menu-item>
     </core-context-menu>
 </core-navbar-buttons>

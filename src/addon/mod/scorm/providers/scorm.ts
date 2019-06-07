@@ -24,7 +24,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { AddonModScormOfflineProvider } from './scorm-offline';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreConstants } from '@core/constants';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 
@@ -82,6 +82,10 @@ export class AddonModScormProvider {
     static SCORM_FORCEATTEMPT_NO         = 0;
     static SCORM_FORCEATTEMPT_ONCOMPLETE = 1;
     static SCORM_FORCEATTEMPT_ALWAYS     = 2;
+
+    static SKIPVIEW_NEVER = 0;
+    static SKIPVIEW_FIRST = 1;
+    static SKIPVIEW_ALWAYS = 2;
 
     // Events.
     static LAUNCH_NEXT_SCO_EVENT = 'addon_mod_scorm_launch_next_sco';
@@ -443,6 +447,44 @@ export class AddonModScormProvider {
     }
 
     /**
+     * Get access information for a given SCORM.
+     *
+     * @param  {number}  scormId      SCORM ID.
+     * @param  {boolean} [forceCache] True to always get the value from cache. false otherwise.
+     * @param  {string}  [siteId]     Site ID. If not defined, current site.
+     * @return {Promise<any>} Object with access information.
+     * @since 3.7
+     */
+    getAccessInformation(scormId: number, forceCache?: boolean, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            if (!site.wsAvailable('mod_scorm_get_scorm_access_information')) {
+                // Access information not available for 3.6 or older sites.
+                return Promise.resolve({});
+            }
+
+            const params = {
+                scormid: scormId
+            };
+            const preSets = {
+                cacheKey: this.getAccessInformationCacheKey(scormId),
+                omitExpires: forceCache
+            };
+
+            return site.read('mod_scorm_get_scorm_access_information', params, preSets);
+        });
+    }
+
+    /**
+     * Get cache key for access information WS calls.
+     *
+     * @param {number} scormId SCORM ID.
+     * @return {string} Cache key.
+     */
+    protected getAccessInformationCacheKey(scormId: number): string {
+        return this.ROOT_CACHE_KEY + 'accessInfo:' + scormId;
+    }
+
+    /**
      * Get the number of attempts done by a user in the given SCORM.
      *
      * @param {number} scormId SCORM ID.
@@ -547,7 +589,8 @@ export class AddonModScormProvider {
                     ignoremissingcompletion: ignoreMissing ? 1 : 0
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getAttemptCountCacheKey(scormId, userId)
+                    cacheKey: this.getAttemptCountCacheKey(scormId, userId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (ignoreCache) {
@@ -835,7 +878,8 @@ export class AddonModScormProvider {
                     scormid: scormId
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getScosCacheKey(scormId)
+                    cacheKey: this.getScosCacheKey(scormId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (ignoreCache) {
@@ -1070,7 +1114,8 @@ export class AddonModScormProvider {
                     courseids: [courseId]
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getScormDataCacheKey(courseId)
+                    cacheKey: this.getScormDataCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (forceCache) {
@@ -1177,6 +1222,19 @@ export class AddonModScormProvider {
     }
 
     /**
+     * Invalidates access information.
+     *
+     * @param  {number} forumId  SCORM ID.
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateAccessInformation(scormId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getAccessInformationCacheKey(scormId));
+        });
+    }
+
+    /**
      * Invalidates all the data related to a certain SCORM.
      *
      * @param {number} scormId SCORM ID.
@@ -1190,6 +1248,7 @@ export class AddonModScormProvider {
         promises.push(this.invalidateAttemptCount(scormId, siteId, userId));
         promises.push(this.invalidateScos(scormId, siteId));
         promises.push(this.invalidateScormUserData(scormId, siteId));
+        promises.push(this.invalidateAccessInformation(scormId, siteId));
 
         return Promise.all(promises);
     }
@@ -1421,21 +1480,19 @@ export class AddonModScormProvider {
      *
      * @param {number} scormId SCORM ID.
      * @param {number} scoId SCO ID.
+     * @param {string} [name] Name of the SCORM.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logLaunchSco(scormId: number, scoId: number, siteId?: string): Promise<any> {
+    logLaunchSco(scormId: number, scoId: number, name?: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 scormid: scormId,
                 scoid: scoId
             };
 
-            return site.write('mod_scorm_launch_sco', params).then((response) => {
-                if (!response || !response.status) {
-                    return Promise.reject(null);
-                }
-            });
+            return this.logHelper.logSingle('mod_scorm_launch_sco', params, AddonModScormProvider.COMPONENT, scormId, name,
+                    'scorm', {scoid: scoId}, siteId);
         });
     }
 
@@ -1443,15 +1500,17 @@ export class AddonModScormProvider {
      * Report a SCORM as being viewed.
      *
      * @param {string} id Module ID.
+     * @param {string} [name] Name of the SCORM.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
-    logView(id: number, siteId?: string): Promise<any> {
+    logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             scormid: id
         };
 
-        return this.logHelper.log('mod_scorm_view_scorm', params, AddonModScormProvider.COMPONENT, id, siteId);
+        return this.logHelper.logSingle('mod_scorm_view_scorm', params, AddonModScormProvider.COMPONENT, id, name, 'scorm', {},
+                siteId);
 }
 
     /**

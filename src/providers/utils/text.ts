@@ -113,7 +113,7 @@ export class CoreTextUtilsProvider {
      */
     bytesToSize(bytes: number, precision: number = 2): string {
 
-        if (typeof bytes == 'undefined' || bytes < 0) {
+        if (typeof bytes == 'undefined' || bytes === null || bytes < 0) {
             return this.translate.instant('core.notapplicable');
         }
 
@@ -396,15 +396,19 @@ export class CoreTextUtilsProvider {
      * @param {boolean} [clean] Whether HTML tags should be removed.
      * @param {boolean} [singleLine] Whether new lines should be removed. Only valid if clean is true.
      * @param {number} [shortenLength] Number of characters to shorten the text.
+     * @param {number} [highlight] Text to highlight.
      * @return {Promise<string>} Promise resolved with the formatted text.
      */
-    formatText(text: string, clean?: boolean, singleLine?: boolean, shortenLength?: number): Promise<string> {
+    formatText(text: string, clean?: boolean, singleLine?: boolean, shortenLength?: number, highlight?: string): Promise<string> {
         return this.treatMultilangTags(text).then((formatted) => {
             if (clean) {
                 formatted = this.cleanTags(formatted, singleLine);
             }
             if (shortenLength > 0) {
                 formatted = this.shortenText(formatted, shortenLength);
+            }
+            if (highlight) {
+                formatted = this.highlightText(formatted, highlight);
             }
 
             return formatted;
@@ -450,6 +454,25 @@ export class CoreTextUtilsProvider {
      */
     hasHTMLTags(text: string): boolean {
         return /<[a-z][\s\S]*>/i.test(text);
+    }
+
+    /**
+     * Highlight all occurrences of a certain text inside another text. It will add some HTML code to highlight it.
+     *
+     * @param {string} text Full text.
+     * @param {string} searchText Text to search and highlight.
+     * @return {string} Highlighted text.
+     */
+    highlightText(text: string, searchText: string): string {
+        if (!text || typeof text != 'string') {
+            return '';
+        } else if (!searchText) {
+            return text;
+        }
+
+        const regex = new RegExp('(' + searchText + ')', 'gi');
+
+        return text.replace(regex, '<span class="matchtext">$1</span>');
     }
 
     /**
@@ -526,6 +549,24 @@ export class CoreTextUtilsProvider {
 
         // Error parsing, return the default value or the original value.
         return typeof defaultValue != 'undefined' ? defaultValue : json;
+    }
+
+    /**
+     * Remove ending slash from a path or URL.
+     *
+     * @param {string} text Text to treat.
+     * @return {string} Treated text.
+     */
+    removeEndingSlash(text: string): string {
+        if (!text) {
+            return '';
+        }
+
+        if (text.slice(-1) == '/') {
+            return text.substr(0, text.length - 1);
+        }
+
+        return text;
     }
 
     /**

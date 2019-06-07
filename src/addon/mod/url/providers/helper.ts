@@ -33,7 +33,7 @@ export class AddonModUrlHelperProvider {
      */
     open(url: string): void {
         const modal = this.domUtils.showModalLoading();
-        this.contentLinksHelper.handleLink(url).then((treated) => {
+        this.contentLinksHelper.handleLink(url, undefined, undefined, true, true).then((treated) => {
             if (!treated) {
                 return this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(url);
             }

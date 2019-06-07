@@ -139,6 +139,37 @@ export class CoreMimetypeUtilsProvider {
     }
 
     /**
+     * Get the URL of the icon of an extension.
+     *
+     * @param {string} extension Extension.
+     * @return {string} Icon URL.
+     */
+    getExtensionIcon(extension: string): string {
+        const icon = this.getExtensionIconName(extension) || 'unknown';
+
+        return this.getFileIconForType(icon);
+    }
+
+    /**
+     * Get the name of the icon of an extension.
+     *
+     * @param {string} extension Extension.
+     * @return {string} Icon. Undefined if not found.
+     */
+    getExtensionIconName(extension: string): string {
+        if (this.extToMime[extension]) {
+            if (this.extToMime[extension].icon) {
+                return this.extToMime[extension].icon;
+            } else {
+                const type = this.extToMime[extension].type.split('/')[0];
+                if (type == 'video' || type == 'text' || type == 'image' || type == 'document' || type == 'audio') {
+                    return type;
+                }
+            }
+        }
+    }
+
+    /**
      * Get the "type" (string) of an extension, something like "image", "video" or "audio".
      *
      * @param {string} extension Extension.
@@ -172,19 +203,8 @@ export class CoreMimetypeUtilsProvider {
      * @return {string} The path to a file icon.
      */
     getFileIcon(filename: string): string {
-        const ext = this.getFileExtension(filename);
-        let icon = 'unknown';
-
-        if (ext && this.extToMime[ext]) {
-            if (this.extToMime[ext].icon) {
-                icon = this.extToMime[ext].icon;
-            } else {
-                const type = this.extToMime[ext].type.split('/')[0];
-                if (type == 'video' || type == 'text' || type == 'image' || type == 'document' || type == 'audio') {
-                    icon = type;
-                }
-            }
-        }
+        const ext = this.getFileExtension(filename),
+            icon = this.getExtensionIconName(ext) || 'unknown';
 
         return this.getFileIconForType(icon);
     }
@@ -405,6 +425,30 @@ export class CoreMimetypeUtilsProvider {
                 return this.extToMime[extension].string;
             }
         }
+    }
+
+    /**
+     * Get the icon of a mimetype.
+     *
+     * @param {string} mimetype Mimetype.
+     * @return {string} Type of the mimetype.
+     */
+    getMimetypeIcon(mimetype: string): string {
+        mimetype = mimetype.split(';')[0]; // Remove codecs from the mimetype if any.
+
+        const extensions = this.mimeToExt[mimetype] || [];
+        let icon = 'unknown';
+
+        for (let i = 0; i < extensions.length; i++) {
+            const iconName = this.getExtensionIconName(extensions[i]);
+
+            if (iconName) {
+                icon = iconName;
+                break;
+            }
+        }
+
+        return this.getFileIconForType(icon);
     }
 
     /**

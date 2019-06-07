@@ -21,6 +21,7 @@ import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploa
 import { CoreAppProvider } from '@providers/app';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreEventsProvider } from '@providers/events';
+import { CoreGroupsProvider } from '@providers/groups';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -46,6 +47,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
             appProvider: CoreAppProvider,
             courseProvider: CoreCourseProvider,
             private eventsProvider: CoreEventsProvider,
+            private groupsProvider: CoreGroupsProvider,
             loggerProvider: CoreLoggerProvider,
             sitesProvider: CoreSitesProvider,
             syncProvider: CoreSyncProvider,
@@ -69,19 +71,21 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
      * Try to synchronize all the forums in a certain site or in all sites.
      *
      * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @return {Promise<any>}    Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllForums(siteId?: string): Promise<any> {
-        return this.syncOnSites('all forums', this.syncAllForumsFunc.bind(this), [], siteId);
+    syncAllForums(siteId?: string, force?: boolean): Promise<any> {
+        return this.syncOnSites('all forums', this.syncAllForumsFunc.bind(this), [force], siteId);
     }
 
     /**
      * Sync all forums on a site.
      *
-     * @param  {string}       [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param  {string} siteId Site ID to sync.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @return {Promise<any>}          Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected syncAllForumsFunc(siteId?: string): Promise<any> {
+    protected syncAllForumsFunc(siteId: string, force?: boolean): Promise<any> {
         const sitePromises = [];
 
         // Sync all new discussions.
@@ -94,8 +98,10 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
                     return;
                 }
 
-                promises[discussion.forumid] = this.syncForumDiscussionsIfNeeded(discussion.forumid, discussion.userid, siteId)
-                        .then((result) => {
+                promises[discussion.forumid] = force ? this.syncForumDiscussions(discussion.forumid, discussion.userid, siteId) :
+                    this.syncForumDiscussionsIfNeeded(discussion.forumid, discussion.userid, siteId);
+
+                promises[discussion.forumid].then((result) => {
                     if (result && result.updated) {
                         // Sync successful, send event.
                         this.eventsProvider.trigger(AddonModForumSyncProvider.AUTO_SYNCED, {
@@ -120,8 +126,10 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
                     return;
                 }
 
-                promises[reply.discussionid] = this.syncDiscussionRepliesIfNeeded(reply.discussionid, reply.userid, siteId)
-                        .then((result) => {
+                promises[reply.discussionid] = force ? this.syncDiscussionReplies(reply.discussionid, reply.userid, siteId) :
+                    this.syncDiscussionRepliesIfNeeded(reply.discussionid, reply.userid, siteId);
+
+                promises[reply.discussionid].then((result) => {
                     if (result && result.updated) {
                         // Sync successful, send event.
                         this.eventsProvider.trigger(AddonModForumSyncProvider.AUTO_SYNCED, {
@@ -137,7 +145,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
             return Promise.all(this.utils.objectToArray(promises));
         }));
 
-        sitePromises.push(this.syncRatings(undefined, undefined, siteId));
+        sitePromises.push(this.syncRatings(undefined, undefined, force, siteId));
 
         return Promise.all(sitePromises);
     }
@@ -216,38 +224,57 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
             const promises = [];
 
             discussions.forEach((data) => {
-                data.options = data.options || {};
+                let groupsPromise;
+                if (data.groupid == AddonModForumProvider.ALL_GROUPS) {
+                    // Fetch all group ids.
+                    groupsPromise = this.forumProvider.getForumById(data.courseid, data.forumid, siteId).then((forum) => {
+                        return this.groupsProvider.getActivityAllowedGroups(forum.cmid).then((groups) => {
+                            return groups.map((group) => group.id);
+                        });
+                    });
+                } else {
+                    groupsPromise = Promise.resolve([data.groupid]);
+                }
 
-                // First of all upload the attachments (if any).
-                const promise = this.uploadAttachments(forumId, data, true, siteId, userId).then((itemId) => {
-                    // Now try to add the discussion.
-                    data.options.attachmentsid = itemId;
+                promises.push(groupsPromise.then((groupIds) => {
+                    const errors = [];
 
-                    return this.forumProvider.addNewDiscussionOnline(forumId, data.subject, data.message,
-                            data.options, data.groupid, siteId);
-                });
+                    return Promise.all(groupIds.map((groupId) => {
+                        // First of all upload the attachments (if any).
+                        return this.uploadAttachments(forumId, data, true, siteId, userId).then((itemId) => {
+                            // Now try to add the discussion.
+                            const options = this.utils.clone(data.options || {});
+                            options.attachmentsid = itemId;
 
-                promises.push(promise.then(() => {
-                    result.updated = true;
+                            return this.forumProvider.addNewDiscussionOnline(forumId, data.subject, data.message, options,
+                                    groupId, siteId);
+                        }).catch((error) => {
+                            errors.push(error);
+                        });
+                    })).then(() => {
+                        if (errors.length == groupIds.length) {
+                            // All requests have failed, reject if errors were not returned by WS.
+                            for (let i = 0; i < errors.length; i++) {
+                                if (!this.utils.isWebServiceError(errors[i])) {
+                                    return Promise.reject(errors[i]);
+                                }
+                            }
+                        }
 
-                    return this.deleteNewDiscussion(forumId, data.timecreated, siteId, userId);
-                }).catch((error) => {
-                    if (this.utils.isWebServiceError(error)) {
-                        // The WebService has thrown an error, this means that responses cannot be submitted. Delete them.
+                        // All requests succeeded, some failed or all failed with a WS error.
                         result.updated = true;
 
                         return this.deleteNewDiscussion(forumId, data.timecreated, siteId, userId).then(() => {
-                            // Responses deleted, add a warning.
-                            result.warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
-                                component: this.componentTranslate,
-                                name: data.name,
-                                error: this.textUtils.getErrorMessageFromError(error)
-                            }));
+                            if (errors.length == groupIds.length) {
+                                // All requests failed with WS error.
+                                result.warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
+                                    component: this.componentTranslate,
+                                    name: data.name,
+                                    error: this.textUtils.getErrorMessageFromError(errors[0])
+                                }));
+                            }
                         });
-                    } else {
-                        // Couldn't connect to server, reject.
-                        return Promise.reject(error);
-                    }
+                    });
                 }));
             });
 
@@ -282,13 +309,14 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
      *
      * @param {number} [cmId] Course module to be synced. If not defined, sync all forums.
      * @param {number} [discussionId] Discussion id to be synced. If not defined, sync all discussions.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved if sync is successful, rejected otherwise.
      */
-    syncRatings(cmId?: number, discussionId?: number, siteId?: string): Promise<any> {
+    syncRatings(cmId?: number, discussionId?: number, force?: boolean, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        return this.ratingSync.syncRatings('mod_forum', 'post', 'module', cmId, discussionId, siteId).then((results) => {
+        return this.ratingSync.syncRatings('mod_forum', 'post', 'module', cmId, discussionId, force, siteId).then((results) => {
             let updated = false;
             const warnings = [];
             const promises = [];

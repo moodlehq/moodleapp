@@ -14,16 +14,16 @@
 
 import { Injectable } from '@angular/core';
 import { CoreCronHandler } from '@providers/cron';
-import { AddonPushNotificationsProvider } from './pushnotifications';
+import { CorePushNotificationsProvider } from './pushnotifications';
 
 /**
  * Cron handler to force a register on a Moodle site when a site is manually synchronized.
  */
 @Injectable()
-export class AddonPushNotificationsRegisterCronHandler implements CoreCronHandler {
-    name = 'AddonPushNotificationsRegisterCronHandler';
+export class CorePushNotificationsRegisterCronHandler implements CoreCronHandler {
+    name = 'CorePushNotificationsRegisterCronHandler';
 
-    constructor(private pushNotificationsProvider: AddonPushNotificationsProvider) {}
+    constructor(private pushNotificationsProvider: CorePushNotificationsProvider) {}
 
     /**
      * Check whether the sync can be executed manually. Call isSync if not defined.
@@ -42,7 +42,7 @@ export class AddonPushNotificationsRegisterCronHandler implements CoreCronHandle
      * @return {Promise<any>}         Promise resolved when done, rejected if failure.
      */
     execute(siteId?: string): Promise<any> {
-        if (!siteId) {
+        if (!siteId || !this.pushNotificationsProvider.canRegisterOnMoodle()) {
             // It's not a specific site, don't do anything.
             return Promise.resolve();
         }

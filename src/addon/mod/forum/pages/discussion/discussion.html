@@ -13,6 +13,12 @@
         <core-context-menu-item [hidden]="sort == 'flat-oldest'" [priority]="500" [content]="'addon.mod_forum.modeflatoldestfirst' | translate" (action)="changeSort('flat-oldest')" iconAction="arrow-round-down"></core-context-menu-item>
         <core-context-menu-item [hidden]="sort == 'flat-newest'" [priority]="450" [content]="'addon.mod_forum.modeflatnewestfirst' | translate" (action)="changeSort('flat-newest')" iconAction="arrow-round-up"></core-context-menu-item>
         <core-context-menu-item [hidden]="sort == 'nested'" [priority]="400" [content]="'addon.mod_forum.modenested' | translate" (action)="changeSort('nested')" iconAction="swap"></core-context-menu-item>
+        <core-context-menu-item [hidden]="!discussion || !discussion.canlock || discussion.locked" [priority]="300" [content]="'addon.mod_forum.lockdiscussion' | translate" (action)="setLockState(true)" iconAction="fa-lock"></core-context-menu-item>
+        <core-context-menu-item [hidden]="!discussion || !discussion.canlock || !discussion.locked" [priority]="300" [content]="'addon.mod_forum.unlockdiscussion' | translate" (action)="setLockState(false)" iconAction="fa-unlock"></core-context-menu-item>
+        <core-context-menu-item [hidden]="!discussion || !canPin || discussion.pinned" [priority]="250" [content]="'addon.mod_forum.pindiscussion' | translate" (action)="setPinState(true)" iconAction="fa-map-pin"></core-context-menu-item>
+        <core-context-menu-item [hidden]="!discussion || !canPin || !discussion.pinned" [priority]="250" [content]="'addon.mod_forum.unpindiscussion' | translate" (action)="setPinState(false)" iconAction="fa-map-pin" [iconSlash]="true"></core-context-menu-item>
+        <core-context-menu-item [hidden]="!discussion || !discussion.canfavourite || discussion.starred" [priority]="200" [content]="'addon.mod_forum.addtofavourites' | translate" (action)="toggleFavouriteState(true)" iconAction="fa-star"></core-context-menu-item>
+        <core-context-menu-item [hidden]="!discussion || !discussion.canfavourite || !discussion.starred" [priority]="200" [content]="'addon.mod_forum.removefromfavourites' | translate" (action)="toggleFavouriteState(false)" iconAction="fa-star" [iconSlash]="true"></core-context-menu-item>
     </core-context-menu>
 </core-navbar-buttons>
 <ion-content>
@@ -26,18 +32,23 @@
             <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: discussionStr} }}
         </ion-card>
 
-        <ion-card class="core-warning-card" *ngIf="locked">
-            <ion-icon name="warning"></ion-icon> {{ 'addon.mod_forum.discussionlocked' | translate }}
+        <!-- Cut-off date or due date message -->
+        <ion-card class="core-info-card" icon-start *ngIf="availabilityMessage">
+            <ion-icon name="information-circle"></ion-icon> {{ availabilityMessage }}
+        </ion-card>
+
+        <ion-card class="core-info-card" icon-start *ngIf="discussion && discussion.locked">
+            <ion-icon name="information-circle"></ion-icon> {{ 'addon.mod_forum.discussionlocked' | translate }}
         </ion-card>
 
         <ion-card *ngIf="discussion" margin-bottom class="highlight">
-            <addon-mod-forum-post [post]="discussion" [courseId]="courseId" [discussionId]="discussionId" [component]="component" [componentId]="cmId" [replyData]="replyData" [originalData]="originalData" [defaultSubject]="defaultSubject" [forum]="forum" [trackPosts]="trackPosts" [ratingInfo]="ratingInfo" (onPostChange)="postListChanged()"></addon-mod-forum-post>
+            <addon-mod-forum-post [post]="discussion" [courseId]="courseId" [discussionId]="discussionId" [component]="component" [componentId]="cmId" [replyData]="replyData" [originalData]="originalData" [defaultSubject]="defaultSubject" [forum]="forum" [accessInfo]="accessInfo" [trackPosts]="trackPosts" [ratingInfo]="ratingInfo" (onPostChange)="postListChanged()"></addon-mod-forum-post>
         </ion-card>
 
         <ion-card *ngIf="sort != 'nested'">
             <ng-container *ngFor="let post of posts; first as first">
                 <ion-item-divider *ngIf="!first"></ion-item-divider>
-                <addon-mod-forum-post [post]="post" [courseId]="courseId" [discussionId]="discussionId" [component]="component" [componentId]="cmId" [replyData]="replyData" [originalData]="originalData" [defaultSubject]="defaultSubject" [forum]="forum" [trackPosts]="trackPosts" [ratingInfo]="ratingInfo" (onPostChange)="postListChanged()"></addon-mod-forum-post>
+                <addon-mod-forum-post [post]="post" [courseId]="courseId" [discussionId]="discussionId" [component]="component" [componentId]="cmId" [replyData]="replyData" [originalData]="originalData" [defaultSubject]="defaultSubject" [forum]="forum" [accessInfo]="accessInfo" [trackPosts]="trackPosts" [ratingInfo]="ratingInfo" (onPostChange)="postListChanged()"></addon-mod-forum-post>
             </ng-container>
         </ion-card>
 
@@ -49,7 +60,7 @@
 
         <ng-template #nestedPosts let-post="post">
             <ion-card>
-                <addon-mod-forum-post [post]="post" [courseId]="courseId" [discussionId]="discussionId" [component]="component" [componentId]="cmId" [replyData]="replyData" [originalData]="originalData" [defaultSubject]="defaultSubject" [forum]="forum" [trackPosts]="trackPosts" [ratingInfo]="ratingInfo" (onPostChange)="postListChanged()"></addon-mod-forum-post>
+                <addon-mod-forum-post [post]="post" [courseId]="courseId" [discussionId]="discussionId" [component]="component" [componentId]="cmId" [replyData]="replyData" [originalData]="originalData" [defaultSubject]="defaultSubject" [forum]="forum" [accessInfo]="accessInfo" [trackPosts]="trackPosts" [ratingInfo]="ratingInfo" (onPostChange)="postListChanged()"></addon-mod-forum-post>
             </ion-card>
             <div padding-left *ngIf="post.children.length && post.children[0].subject">
                 <ng-container *ngFor="let child of post.children">

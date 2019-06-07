@@ -121,8 +121,16 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
      * @return {Promise<boolean>} Resolved when done.
      */
     protected hideOpenButton(module: any, courseId: number): Promise<boolean> {
-        return this.courseProvider.loadModuleContents(module, courseId, undefined, false, false, undefined, this.modName)
-                .then(() => {
+        let promise;
+
+        if (module.contentsinfo) {
+            // No need to load contents.
+            promise = Promise.resolve();
+        } else {
+            promise = this.courseProvider.loadModuleContents(module, courseId, undefined, false, false, undefined, this.modName);
+        }
+
+        return promise.then(() => {
             return this.prefetchDelegate.getModuleStatus(module, courseId).then((status) => {
                 return status !== CoreConstants.DOWNLOADED || this.resourceHelper.isDisplayedInIframe(module);
             });
@@ -141,7 +149,7 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
         let infoFiles = [],
             options: any = {};
 
-        // Check if the button needs to be shown or not. This also loads the module contents.
+        // Check if the button needs to be shown or not.
         promises.push(this.hideOpenButton(module, courseId).then((hideOpenButton) => {
             handlerData.buttons[0].hidden = hideOpenButton;
         }));
@@ -164,7 +172,15 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
                 },
                 extra = [];
 
-            if (files && files.length) {
+            if (module.contentsinfo) {
+                // No need to use the list of files.
+                const mimetype = module.contentsinfo.mimetypes[0];
+                if (mimetype) {
+                    resourceData.icon = this.mimetypeUtils.getMimetypeIcon(mimetype);
+                }
+                resourceData.extra = this.textUtils.cleanTags(module.afterlink);
+
+            } else if (files && files.length) {
                 const file = files[0];
 
                 resourceData.icon = this.mimetypeUtils.getFileIcon(file.filename);
@@ -178,11 +194,12 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
                             return result + file.filesize;
                         }, 0);
                     }
+
                     extra.push(this.textUtils.bytesToSize(size, 1));
                 }
 
                 if (options.showtype) {
-                    // We should take it from options.filedetails.size if avalaible ∫but it's already translated.
+                    // We should take it from options.filedetails.size if avalaible but it's already translated.
                     extra.push(this.mimetypeUtils.getMimetypeDescription(file));
                 }
 
@@ -203,12 +220,15 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
                             {$a: this.timeUtils.userDate(file.timecreated * 1000, 'core.strftimedatetimeshort') }));
                     }
                 }
-            }
 
-            if (resourceData.icon == '') {
+                if (resourceData.icon == '') {
+                    resourceData.icon = this.courseProvider.getModuleIconSrc(this.modName, module.modicon);
+                }
+                resourceData.extra += extra.join(' ');
+            } else {
+                // No files, just set the icon.
                 resourceData.icon = this.courseProvider.getModuleIconSrc(this.modName, module.modicon);
             }
-            resourceData.extra += extra.join(' ');
 
             return resourceData;
         });

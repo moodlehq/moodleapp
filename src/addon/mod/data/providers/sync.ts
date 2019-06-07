@@ -20,7 +20,7 @@ import { CoreAppProvider } from '@providers/app';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
-import { AddonModDataOfflineProvider } from './offline';
+import { AddonModDataOfflineProvider, AddonModDataOfflineAction } from './offline';
 import { AddonModDataProvider } from './data';
 import { AddonModDataHelperProvider } from './helper';
 import { CoreEventsProvider } from '@providers/events';
@@ -67,18 +67,21 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
      * Try to synchronize all the databases in a certain site or in all sites.
      *
      * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} force Wether to force sync not depending on last execution.
      * @return {Promise<any>}    Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllDatabases(siteId?: string): Promise<any> {
-        return this.syncOnSites('all databases', this.syncAllDatabasesFunc.bind(this), undefined, siteId);
+    syncAllDatabases(siteId?: string, force?: boolean): Promise<any> {
+        return this.syncOnSites('all databases', this.syncAllDatabasesFunc.bind(this), [force], siteId);
     }
 
     /**
      * Sync all pending databases on a site.
-     * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     *
+     * @param {string}  [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} force    Wether to force sync not depending on last execution.
      * @param {Promise<any>}     Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected syncAllDatabasesFunc(siteId?: string): Promise<any> {
+    protected syncAllDatabasesFunc(siteId?: string, force?: boolean): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const promises = [];
@@ -93,8 +96,10 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
                     return;
                 }
 
-                promises[action.dataid] = this.syncDatabaseIfNeeded(action.dataid, siteId)
-                        .then((result) => {
+                promises[action.dataid] = force ? this.syncDatabase(action.dataid, siteId) :
+                    this.syncDatabaseIfNeeded(action.dataid, siteId);
+
+                promises[action.dataid].then((result) => {
                     if (result && result.updated) {
                         // Sync done. Send event.
                         this.eventsProvider.trigger(AddonModDataSyncProvider.AUTO_SYNCED, {
@@ -109,7 +114,7 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
             return Promise.all(this.utils.objectToArray(promises));
         }));
 
-        promises.push(this.syncRatings(undefined, siteId));
+        promises.push(this.syncRatings(undefined, force, siteId));
 
         return Promise.all(promises);
     }
@@ -169,7 +174,7 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
                 // No offline data found, return empty object.
                 return [];
             });
-        }).then((offlineActions) => {
+        }).then((offlineActions: AddonModDataOfflineAction[]) => {
             if (!offlineActions.length) {
                 // Nothing to sync.
                 return;
@@ -221,35 +226,41 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
     /**
      * Synchronize an entry.
      *
-     * @param  {any} data          Database.
-     * @param  {any} entryActions  Entry actions.
-     * @param  {any} result        Object with the result of the sync.
-     * @param  {string} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise<any>}      Promise resolved if success, rejected otherwise.
+     * @param {any} data Database.
+     * @param {AddonModDataOfflineAction[]} entryActions  Entry actions.
+     * @param {any} result Object with the result of the sync.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved if success, rejected otherwise.
      */
-    protected syncEntry(data: any, entryActions: any[], result: any, siteId?: string): Promise<any> {
+    protected syncEntry(data: any, entryActions: AddonModDataOfflineAction[], result: any, siteId?: string): Promise<any> {
         let discardError,
             timePromise,
-            entryId = 0,
+            entryId = entryActions[0].entryid,
             offlineId,
             deleted = false;
 
-        const promises = [];
-
-        // Sort entries by timemodified.
-        entryActions = entryActions.sort((a: any, b: any) => a.timemodified - b.timemodified);
-
-        entryId = entryActions[0].entryid;
+        const editAction = entryActions.find((action) => action.action == 'add' || action.action == 'edit');
+        const approveAction = entryActions.find((action) => action.action == 'approve' || action.action == 'disapprove');
+        const deleteAction = entryActions.find((action) => action.action == 'delete');
 
         if (entryId > 0) {
-            timePromise = this.dataProvider.getEntry(data.id, entryId, false, siteId).then((entry) => {
+            timePromise = this.dataProvider.getEntry(data.id, entryId, true, siteId).then((entry) => {
                 return entry.entry.timemodified;
-            }).catch(() => {
-                return -1;
+            }).catch((error) => {
+                if (error && this.utils.isWebServiceError(error)) {
+                    // The WebService has thrown an error, this means the entry has been deleted.
+                    return Promise.resolve(-1);
+                }
+
+                return Promise.reject(error);
             });
-        } else {
+        } else if (editAction) {
+            // New entry.
             offlineId = entryId;
             timePromise = Promise.resolve(0);
+        } else {
+            // New entry but the add action is missing, discard.
+            timePromise = Promise.resolve(-1);
         }
 
         return timePromise.then((timemodified) => {
@@ -261,58 +272,11 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
                 return this.dataOffline.deleteAllEntryActions(data.id, entryId, siteId);
             }
 
-            entryActions.forEach((action) => {
-                let actionPromise;
-                const proms = [];
-
-                entryId = action.entryid > 0 ? action.entryid : entryId;
-
-                if (action.fields) {
-                    action.fields.forEach((field) => {
-                        // Upload Files if asked.
-                        const value = this.textUtils.parseJSON(field.value);
-                        if (value.online || value.offline) {
-                            let files = value.online || [];
-                            const fileProm = value.offline ? this.dataHelper.getStoredFiles(action.dataid, entryId, field.fieldid) :
-                                    Promise.resolve([]);
-
-                            proms.push(fileProm.then((offlineFiles) => {
-                                files = files.concat(offlineFiles);
-
-                                return this.dataHelper.uploadOrStoreFiles(action.dataid, 0, entryId, field.fieldid, files, false,
-                                        siteId).then((filesResult) => {
-                                    field.value = JSON.stringify(filesResult);
-                                });
-                            }));
-                        }
-                    });
-                }
-
-                actionPromise = Promise.all(proms).then(() => {
-                    // Perform the action.
-                    switch (action.action) {
-                        case 'add':
-                            return this.dataProvider.addEntryOnline(action.dataid, action.fields, data.groupid, siteId)
-                                    .then((result) => {
-                                entryId = result.newentryid;
-                            });
-                        case 'edit':
-                            return this.dataProvider.editEntryOnline(entryId, action.fields, siteId);
-                        case 'approve':
-                            return this.dataProvider.approveEntryOnline(entryId, true, siteId);
-                        case 'disapprove':
-                            return this.dataProvider.approveEntryOnline(entryId, false, siteId);
-                        case 'delete':
-                            return this.dataProvider.deleteEntryOnline(entryId, siteId).then(() => {
-                                deleted = true;
-                            });
-                        default:
-                            break;
-                    }
-                });
-
-                promises.push(actionPromise.catch((error) => {
-                    if (error && error.wserror) {
+            if (deleteAction) {
+                return this.dataProvider.deleteEntryOnline(entryId, siteId).then(() => {
+                    deleted = true;
+                }).catch((error) => {
+                    if (error && this.utils.isWebServiceError(error)) {
                         // The WebService has thrown an error, this means it cannot be performed. Discard.
                         discardError = this.textUtils.getErrorMessageFromError(error);
                     } else {
@@ -323,11 +287,79 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
                     // Delete the offline data.
                     result.updated = true;
 
-                    return this.dataOffline.deleteEntry(action.dataid, action.entryid, action.action, siteId);
-                }));
-            });
+                    return this.dataOffline.deleteAllEntryActions(deleteAction.dataid, deleteAction.entryid, siteId);
+                });
+            }
 
-            return Promise.all(promises);
+            let editPromise;
+
+            if (editAction) {
+                editPromise = Promise.all(editAction.fields.map((field) => {
+                    // Upload Files if asked.
+                    const value = this.textUtils.parseJSON(field.value);
+                    if (value.online || value.offline) {
+                        let files = value.online || [];
+                        const fileProm = value.offline ?
+                                this.dataHelper.getStoredFiles(editAction.dataid, entryId, field.fieldid) :
+                                Promise.resolve([]);
+
+                        return fileProm.then((offlineFiles) => {
+                            files = files.concat(offlineFiles);
+
+                            return this.dataHelper.uploadOrStoreFiles(editAction.dataid, 0, entryId, field.fieldid, files,
+                                    false, siteId).then((filesResult) => {
+                                field.value = JSON.stringify(filesResult);
+                            });
+                        });
+                    }
+                })).then(() => {
+                    if (editAction.action == 'add') {
+                        return this.dataProvider.addEntryOnline(editAction.dataid, editAction.fields, editAction.groupid, siteId)
+                                .then((result) => {
+                            entryId = result.newentryid;
+                        });
+                    } else {
+                        return this.dataProvider.editEntryOnline(entryId, editAction.fields, siteId);
+                    }
+                }).catch((error) => {
+                    if (error && this.utils.isWebServiceError(error)) {
+                        // The WebService has thrown an error, this means it cannot be performed. Discard.
+                        discardError = this.textUtils.getErrorMessageFromError(error);
+                    } else {
+                        // Couldn't connect to server, reject.
+                        return Promise.reject(error);
+                    }
+                }).then(() => {
+                    // Delete the offline data.
+                    result.updated = true;
+
+                    return this.dataOffline.deleteEntry(editAction.dataid, editAction.entryid, editAction.action, siteId);
+                });
+            } else {
+                editPromise = Promise.resolve();
+            }
+
+            if (approveAction) {
+                editPromise = editPromise.then(() => {
+                    return this.dataProvider.approveEntryOnline(entryId, approveAction.action == 'approve', siteId);
+                }).catch((error) => {
+                    if (error && this.utils.isWebServiceError(error)) {
+                        // The WebService has thrown an error, this means it cannot be performed. Discard.
+                        discardError = this.textUtils.getErrorMessageFromError(error);
+                    } else {
+                        // Couldn't connect to server, reject.
+                        return Promise.reject(error);
+                    }
+                }).then(() => {
+                    // Delete the offline data.
+                    result.updated = true;
+
+                    return this.dataOffline.deleteEntry(approveAction.dataid, approveAction.entryid, approveAction.action, siteId);
+                });
+            }
+
+            return editPromise;
+
         }).then(() => {
             if (discardError) {
                 // Submission was discarded, add a warning.
@@ -357,13 +389,14 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
      * Synchronize offline ratings.
      *
      * @param {number} [cmId] Course module to be synced. If not defined, sync all databases.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved if sync is successful, rejected otherwise.
      */
-    syncRatings(cmId?: number, siteId?: string): Promise<any> {
+    syncRatings(cmId?: number, force?: boolean, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-         return this.ratingSync.syncRatings('mod_data', 'entry', 'module', cmId, 0, siteId).then((results) => {
+         return this.ratingSync.syncRatings('mod_data', 'entry', 'module', cmId, 0, force, siteId).then((results) => {
             let updated = false;
             const warnings = [];
             const promises = [];

@@ -306,7 +306,7 @@ export class CoreFilepoolProvider {
             primaryKeys: ['siteId', 'fileId']
         }
     ];
-    protected siteSchma: CoreSiteSchema = {
+    protected siteSchema: CoreSiteSchema = {
         name: 'CoreFilepoolProvider',
         version: 1,
         tables: [
@@ -447,7 +447,7 @@ export class CoreFilepoolProvider {
         this.appDB = this.appProvider.getDB();
         this.appDB.createTablesFromSchema(this.appTablesSchema);
 
-        this.sitesProvider.registerSiteSchema(this.siteSchma);
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
 
         initDelegate.ready().then(() => {
             // Waiting for the app to be ready to start processing the queue.
@@ -857,7 +857,10 @@ export class CoreFilepoolProvider {
      */
     clearFilepool(siteId: string): Promise<any> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.deleteRecords(this.FILES_TABLE);
+            return Promise.all([
+                db.deleteRecords(this.FILES_TABLE),
+                db.deleteRecords(this.LINKS_TABLE)
+            ]);
         });
     }
 
@@ -1122,10 +1125,10 @@ export class CoreFilepoolProvider {
             return Promise.all(promises).then(() => {
                 // Success prefetching, store package as downloaded.
                 return this.storePackageStatus(siteId, CoreConstants.DOWNLOADED, component, componentId, extra);
-            }).catch(() => {
+            }).catch((error) => {
                 // Error downloading, go back to previous status and reject the promise.
                 return this.setPackagePreviousStatus(siteId, component, componentId).then(() => {
-                    return Promise.reject(null);
+                    return Promise.reject(error);
                 });
             });
 
@@ -2566,18 +2569,26 @@ export class CoreFilepoolProvider {
                     dropFromQueue = true;
                 }
 
+                let errorMessage = null;
+                // Some Android devices restrict the amount of usable storage using quotas.
+                // If this quota would be exceeded by the download, it throws an exception.
+                // We catch this exception here, and report a meaningful error message to the user.
+                if (errorObject instanceof FileTransferError && errorObject.exception && errorObject.exception.includes('EDQUOT')) {
+                    errorMessage = 'core.course.insufficientavailablequota';
+                }
+
                 if (dropFromQueue) {
                     this.logger.debug('Item dropped from queue due to error: ' + fileUrl, errorObject);
 
                     return this.removeFromQueue(siteId, fileId).catch(() => {
                         // Consider this as a silent error, never reject the promise here.
                     }).then(() => {
-                        this.treatQueueDeferred(siteId, fileId, false);
+                        this.treatQueueDeferred(siteId, fileId, false, errorMessage);
                         this.notifyFileDownloadError(siteId, fileId);
                     });
                 } else {
                     // We considered the file as legit but did not get it, failure.
-                    this.treatQueueDeferred(siteId, fileId, false);
+                    this.treatQueueDeferred(siteId, fileId, false, errorMessage);
                     this.notifyFileDownloadError(siteId, fileId);
 
                     return Promise.reject(errorObject);
@@ -2912,13 +2923,14 @@ export class CoreFilepoolProvider {
      * @param {string} siteId The site ID.
      * @param {string} fileId The file ID.
      * @param {boolean} resolve True if promise should be resolved, false if it should be rejected.
+     * @param {string} error String identifier for error message, if rejected.
      */
-    protected treatQueueDeferred(siteId: string, fileId: string, resolve: boolean): void {
+    protected treatQueueDeferred(siteId: string, fileId: string, resolve: boolean, error?: string): void {
         if (this.queueDeferreds[siteId] && this.queueDeferreds[siteId][fileId]) {
             if (resolve) {
                 this.queueDeferreds[siteId][fileId].resolve();
             } else {
-                this.queueDeferreds[siteId][fileId].reject();
+                this.queueDeferreds[siteId][fileId].reject(error);
             }
             delete this.queueDeferreds[siteId][fileId];
         }

@@ -184,9 +184,9 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
             this.nextChapter = this.bookProvider.getNextChapter(this.chapters, chapterId);
 
             // Chapter loaded, log view. We don't return the promise because we don't want to block the user for this.
-            this.bookProvider.logView(this.module.instance, chapterId).then(() => {
+            this.bookProvider.logView(this.module.instance, chapterId, this.module.name).then(() => {
                 // Module is completed when last chapter is viewed, so we only check completion if the last is reached.
-                if (!this.nextChapter) {
+                if (this.nextChapter == '0') {
                     this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
                 }
             }).catch(() => {

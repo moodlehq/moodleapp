@@ -27,6 +27,7 @@ import { CoreConfigConstants } from '../configconstants';
 import { CoreSite } from '@classes/site';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { Md5 } from 'ts-md5/dist/md5';
+import { Location } from '@angular/common';
 
 /**
  * Response of checking if a site exists and its configuration.
@@ -144,6 +145,13 @@ export interface CoreSiteSchema {
      * @type {number}
      */
     version: number;
+
+    /**
+     * Names of the tables of the site schema that can be cleared.
+     *
+     * @type {string[]}
+     */
+    canBeCleared?: string[];
 
     /**
      * Tables to create when installing or upgrading the schema.
@@ -270,6 +278,7 @@ export class CoreSitesProvider {
     protected siteSchema: CoreSiteSchema = {
         name: 'CoreSitesProvider',
         version: 1,
+        canBeCleared: [ CoreSite.WS_CACHE_TABLE ],
         tables: [
             {
                 name: CoreSite.WS_CACHE_TABLE,
@@ -312,7 +321,7 @@ export class CoreSitesProvider {
 
     constructor(logger: CoreLoggerProvider, private http: HttpClient, private sitesFactory: CoreSitesFactoryProvider,
             private appProvider: CoreAppProvider, private translate: TranslateService, private urlUtils: CoreUrlUtilsProvider,
-            private eventsProvider: CoreEventsProvider,  private textUtils: CoreTextUtilsProvider,
+            private eventsProvider: CoreEventsProvider,  private textUtils: CoreTextUtilsProvider, private location: Location,
             private utils: CoreUtilsProvider) {
         this.logger = logger.getInstance('CoreSitesProvider');
 
@@ -565,33 +574,69 @@ export class CoreSitesProvider {
      * @param {string} siteUrl The site url.
      * @param {string} token User's token.
      * @param {string} [privateToken=''] User's private token.
-     * @return {Promise<any>} A promise resolved when the site is added and the user is authenticated.
+     * @param {boolean} [login=true] Whether to login the user in the site. Defaults to true.
+     * @return {Promise<string>} A promise resolved with siteId when the site is added and the user is authenticated.
      */
-    newSite(siteUrl: string, token: string, privateToken: string = ''): Promise<any> {
+    newSite(siteUrl: string, token: string, privateToken: string = '', login: boolean = true): Promise<string> {
+        if (typeof login != 'boolean') {
+            login = true;
+        }
+
         // Create a "candidate" site to fetch the site info.
-        const candidateSite = this.sitesFactory.makeSite(undefined, siteUrl, token, undefined, privateToken);
+        let candidateSite = this.sitesFactory.makeSite(undefined, siteUrl, token, undefined, privateToken),
+            isNewSite = true;
 
         return candidateSite.fetchSiteInfo().then((info) => {
             const result = this.isValidMoodleVersion(info);
             if (result == this.VALID_VERSION) {
-                // Set site ID and info.
                 const siteId = this.createSiteID(info.siteurl, info.username);
-                candidateSite.setId(siteId);
-                candidateSite.setInfo(info);
 
-                // Create database tables before login and before any WS call.
-                return this.migrateSiteSchemas(candidateSite).then(() => {
+                // Check if the site already exists.
+                return this.getSite(siteId).catch(() => {
+                    // Not exists.
+                }).then((site) => {
+                    if (site) {
+                        // Site already exists, update its data and use it.
+                        isNewSite = false;
+                        candidateSite = site;
+                        candidateSite.setToken(token);
+                        candidateSite.setPrivateToken(privateToken);
+                        candidateSite.setInfo(info);
+
+                    } else {
+                        // New site, set site ID and info.
+                        isNewSite = true;
+                        candidateSite.setId(siteId);
+                        candidateSite.setInfo(info);
+
+                        // Create database tables before login and before any WS call.
+                        return this.migrateSiteSchemas(candidateSite);
+                    }
+
+                }).then(() => {
 
                     // Try to get the site config.
-                    return this.getSiteConfig(candidateSite).then((config) => {
-                        candidateSite.setConfig(config);
+                    return this.getSiteConfig(candidateSite).catch((error) => {
+                        // Ignore errors if it's not a new site, we'll use the config already stored.
+                        if (isNewSite) {
+                            return Promise.reject(error);
+                        }
+                    }).then((config) => {
+                        if (typeof config != 'undefined') {
+                            candidateSite.setConfig(config);
+                        }
+
                         // Add site to sites list.
                         this.addSite(siteId, siteUrl, token, info, privateToken, config);
-                        // Turn candidate site into current site.
-                        this.currentSite = candidateSite;
                         this.sites[siteId] = candidateSite;
-                        // Store session.
-                        this.login(siteId);
+
+                        if (login) {
+                            // Turn candidate site into current site.
+                            this.currentSite = candidateSite;
+                            // Store session.
+                            this.login(siteId);
+                        }
+
                         this.eventsProvider.trigger(CoreEventsProvider.SITE_ADDED, info, siteId);
 
                         return siteId;
@@ -1009,7 +1054,7 @@ export class CoreSitesProvider {
                             id: site.id,
                             siteUrl: site.siteUrl,
                             fullName: siteInfo && siteInfo.fullname,
-                            siteName: siteInfo && siteInfo.sitename,
+                            siteName: CoreConfigConstants.sitename ? CoreConfigConstants.sitename : siteInfo && siteInfo.sitename,
                             avatar: siteInfo && siteInfo.userpictureurl
                         };
                     formattedSites.push(basicInfo);
@@ -1117,6 +1162,9 @@ export class CoreSitesProvider {
         promises.push(this.appDB.deleteRecords(this.CURRENT_SITE_TABLE, { id: 1 }));
 
         return Promise.all(promises).finally(() => {
+            // Due to DeepLinker, we need to remove the path from the URL, otherwise some pages are re-created when they shouldn't.
+            this.location.replaceState('');
+
             this.eventsProvider.trigger(CoreEventsProvider.LOGOUT, {}, siteId);
         });
     }
@@ -1161,6 +1209,13 @@ export class CoreSitesProvider {
 
             return this.appDB.updateRecords(this.SITES_TABLE, newValues, { id: siteId });
         });
+    }
+
+    /**
+     * Unset current site.
+     */
+    unsetCurrentSite(): void {
+        this.currentSite = undefined;
     }
 
     /**
@@ -1476,5 +1531,55 @@ export class CoreSitesProvider {
         return promise.finally(() => {
             delete this.siteSchemasMigration[site.id];
         });
+    }
+
+    /**
+     * Check if a URL is the root URL of any of the stored sites.
+     *
+     * @param {string} url URL to check.
+     * @param {string} [username] Username to check.
+     * @return {Promise<{site: CoreSite, siteIds: string[]}>} Promise resolved with site to use and the list of sites that have
+     *                                   the URL. Site will be undefined if it isn't the root URL of any stored site.
+     */
+    isStoredRootURL(url: string, username?: string): Promise<{site: CoreSite, siteIds: string[]}> {
+        // Check if the site is stored.
+        return this.getSiteIdsFromUrl(url, true, username).then((siteIds) => {
+            const result = {
+                siteIds: siteIds,
+                site: undefined
+            };
+
+            if (siteIds.length > 0) {
+                // If more than one site is returned it usually means there are different users stored. Use any of them.
+                return this.getSite(siteIds[0]).then((site) => {
+                    const siteUrl = this.textUtils.removeEndingSlash(this.urlUtils.removeProtocolAndWWW(site.getURL())),
+                        treatedUrl = this.textUtils.removeEndingSlash(this.urlUtils.removeProtocolAndWWW(url));
+
+                    if (siteUrl == treatedUrl) {
+                        result.site = site;
+                    }
+
+                    return result;
+                });
+            }
+
+            return result;
+        });
+    }
+
+    /**
+     * Returns the Site Schema names that can be cleared on space storage.
+     *
+     * @return {string[]} Name of the site schemas.
+     */
+    getSiteTableSchemasToClear(): string[] {
+        let reset = [];
+        for (const name in this.siteSchemas) {
+            if (this.siteSchemas[name].canBeCleared) {
+                reset = reset.concat(this.siteSchemas[name].canBeCleared);
+            }
+        }
+
+        return reset;
     }
 }

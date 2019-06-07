@@ -28,6 +28,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
+import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreConfigConstants } from '../../../configconstants';
 import { CoreConstants } from '@core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
@@ -40,7 +41,7 @@ export interface CoreLoginSSOData {
      * The site's URL.
      * @type {string}
      */
-    siteUrl?: string;
+    siteUrl: string;
 
     /**
      * User's token.
@@ -72,10 +73,12 @@ export interface CoreLoginSSOData {
  */
 @Injectable()
 export class CoreLoginHelperProvider {
+    static OPEN_COURSE = 'open_course';
+
     protected logger;
     protected isSSOConfirmShown = false;
     protected isOpenEditAlertShown = false;
-    lastInAppUrl: string;
+    protected pageToLoad: {page: string, params: any, time: number}; // Page to load once main menu is opened.
     waitingForBrowser = false;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
@@ -83,8 +86,17 @@ export class CoreLoginHelperProvider {
             private eventsProvider: CoreEventsProvider, private appProvider: CoreAppProvider, private utils: CoreUtilsProvider,
             private urlUtils: CoreUrlUtilsProvider, private configProvider: CoreConfigProvider, private platform: Platform,
             private initDelegate: CoreInitDelegate, private sitePluginsProvider: CoreSitePluginsProvider,
-            private location: Location, private alertCtrl: AlertController) {
+            private location: Location, private alertCtrl: AlertController, private courseProvider: CoreCourseProvider) {
         this.logger = logger.getInstance('CoreLoginHelper');
+
+        this.eventsProvider.on(CoreEventsProvider.MAIN_MENU_OPEN, () => {
+            /* If there is any page pending to be opened, do it now. Don't open pages stored more than 5 seconds ago, probably
+               the function to open the page was called when it shouldn't. */
+            if (this.pageToLoad && Date.now() - this.pageToLoad.time < 5000) {
+                this.loadPageInMainMenu(this.pageToLoad.page, this.pageToLoad.params);
+                delete this.pageToLoad;
+            }
+        });
     }
 
     /**
@@ -123,6 +135,7 @@ export class CoreLoginHelperProvider {
      *
      * @param {string} url URL received.
      * @return {boolean} True if it's a SSO URL, false otherwise.
+     * @deprecated Please use CoreCustomURLSchemesProvider.handleCustomURL instead.
      */
     appLaunchedByURL(url: string): boolean {
         const ssoScheme = CoreConfigConstants.customurlscheme + '://token=';
@@ -414,22 +427,54 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Open a page that doesn't belong to any site.
+     *
+     * @param {NavController} [navCtrl] Nav Controller.
+     * @param {string} [page] Page to open.
+     * @param {any} [params] Params of the page.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    goToNoSitePage(navCtrl: NavController, page: string, params?: any): Promise<any> {
+        navCtrl = navCtrl || this.appProvider.getRootNavController();
+
+        if (page == 'CoreLoginSitesPage') {
+            // Just open the page as root.
+            return navCtrl.setRoot(page, params);
+        } else {
+            // Check if there is any site stored.
+            return this.sitesProvider.hasSites().then((hasSites) => {
+                if (hasSites) {
+                    // There are sites stored, open sites page first to be able to go back.
+                    navCtrl.setRoot('CoreLoginSitesPage');
+
+                    return navCtrl.push(page, params, {animate: false});
+                } else {
+                    if (page != 'CoreLoginSitePage') {
+                        // Open the new site page to be able to go back.
+                        navCtrl.setRoot('CoreLoginSitePage');
+
+                        return navCtrl.push(page, params, {animate: false});
+                    } else {
+                        // Just open the page as root.
+                        return navCtrl.setRoot(page, params);
+                    }
+                }
+            });
+        }
+    }
+
+    /**
      * Go to the initial page of a site depending on 'userhomepage' setting.
      *
      * @param {NavController} [navCtrl] NavController to use. Defaults to app root NavController.
      * @param {string} [page] Name of the page to load after loading the main page.
      * @param {any} [params] Params to pass to the page.
      * @param {NavOptions} [options] Navigation options.
+     * @param {string} [url] URL to open once the main menu is loaded.
      * @return {Promise<any>} Promise resolved when done.
      */
-    goToSiteInitialPage(navCtrl?: NavController, page?: string, params?: any, options?: NavOptions): Promise<any> {
-        navCtrl = navCtrl || this.appProvider.getRootNavController();
-
-        // Due to DeepLinker, we need to remove the path from the URL before going to main menu.
-        // IonTabs checks the URL to determine which path to load for deep linking, so we clear the URL.
-        this.location.replaceState('');
-
-        return navCtrl.setRoot('CoreMainMenuPage', { redirectPage: page, redirectParams: params }, options);
+    goToSiteInitialPage(navCtrl?: NavController, page?: string, params?: any, options?: NavOptions, url?: string): Promise<any> {
+        return this.openMainMenu(navCtrl, page, params, options, url);
     }
 
     /**
@@ -442,22 +487,8 @@ export class CoreLoginHelperProvider {
      * @return {Promise<any>} Promise resolved when the user is authenticated with the token.
      */
     handleSSOLoginAuthentication(siteUrl: string, token: string, privateToken?: string): Promise<any> {
-        if (this.sitesProvider.isLoggedIn()) {
-            // User logged in, he is reconnecting. Retrieve username.
-            const info = this.sitesProvider.getCurrentSite().getInfo();
-            if (typeof info != 'undefined' && typeof info.username != 'undefined') {
-                return this.sitesProvider.updateSiteToken(info.siteurl, info.username, token, privateToken).then(() => {
-                    return this.sitesProvider.updateSiteInfoByUrl(info.siteurl, info.username);
-                }, () => {
-                    // Error updating token, return proper error message.
-                    return Promise.reject(this.translate.instant('core.login.errorupdatesite'));
-                });
-            }
-
-            return Promise.reject(this.translate.instant('core.login.errorupdatesite'));
-        } else {
-            return this.sitesProvider.newSite(siteUrl, token, privateToken);
-        }
+        // Always create a new site to prevent overriding data if another user credentials were introduced.
+        return this.sitesProvider.newSite(siteUrl, token, privateToken);
     }
 
     /**
@@ -474,33 +505,10 @@ export class CoreLoginHelperProvider {
      * Function called when a page starts loading in any InAppBrowser window.
      *
      * @param {string} url Loaded url.
+     * @deprecated
      */
     inAppBrowserLoadStart(url: string): void {
-        // URLs with a custom scheme can be prefixed with "http://" or "https://", we need to remove this.
-        url = url.replace(/^https?:\/\//, '');
-
-        if (this.appLaunchedByURL(url)) {
-            // Close the browser if it's a valid SSO URL.
-            this.utils.closeInAppBrowser(false);
-        } else if (this.platform.is('android')) {
-            // Check if the URL has a custom URL scheme. In Android they need to be opened manually.
-            const urlScheme = this.urlUtils.getUrlProtocol(url);
-            if (urlScheme && urlScheme !== 'file' && urlScheme !== 'cdvfile') {
-                // Open in browser should launch the right app if found and do nothing if not found.
-                this.utils.openInBrowser(url);
-
-                // At this point the InAppBrowser is showing a "Webpage not available" error message.
-                // Try to navigate to last loaded URL so this error message isn't found.
-                if (this.lastInAppUrl) {
-                    this.utils.openInApp(this.lastInAppUrl);
-                } else {
-                    // No last URL loaded, close the InAppBrowser.
-                    this.utils.closeInAppBrowser(false);
-                }
-            } else {
-                this.lastInAppUrl = url;
-            }
-        }
+        // This function is deprecated.
     }
 
     /**
@@ -591,26 +599,24 @@ export class CoreLoginHelperProvider {
      * @param {string} page Name of the page to load.
      * @param {any} params Params to pass to the page.
      * @param {string} siteId Site to load.
+     * @return {Promise<any>} Promise resolved when done.
      */
-    protected loadSiteAndPage(page: string, params: any, siteId: string): void {
+    protected loadSiteAndPage(page: string, params: any, siteId: string): Promise<any> {
         const navCtrl = this.appProvider.getRootNavController();
 
         if (siteId == CoreConstants.NO_SITE_ID) {
             // Page doesn't belong to a site, just load the page.
-            navCtrl.setRoot(page, params);
+            return navCtrl.setRoot(page, params);
         } else {
             const modal = this.domUtils.showModalLoading();
-            this.sitesProvider.loadSite(siteId, page, params).then((loggedIn) => {
-                if (loggedIn) {
-                    // Due to DeepLinker, we need to remove the path from the URL before going to main menu.
-                    // IonTabs checks the URL to determine which path to load for deep linking, so we clear the URL.
-                    this.location.replaceState('');
 
-                    navCtrl.setRoot('CoreMainMenuPage', { redirectPage: page, redirectParams: params });
+            return this.sitesProvider.loadSite(siteId, page, params).then((loggedIn) => {
+                if (loggedIn) {
+                    return this.openMainMenu(navCtrl, page, params);
                 }
             }).catch((error) => {
                 // Site doesn't exist.
-                navCtrl.setRoot('CoreLoginSitesPage');
+                return navCtrl.setRoot('CoreLoginSitesPage');
             }).finally(() => {
                 modal.dismiss();
             });
@@ -624,7 +630,51 @@ export class CoreLoginHelperProvider {
      * @param {any} params Params to pass to the page.
      */
     protected loadPageInMainMenu(page: string, params: any): void {
-        this.eventsProvider.trigger(CoreEventsProvider.LOAD_PAGE_MAIN_MENU, { redirectPage: page, redirectParams: params });
+        if (!this.appProvider.isMainMenuOpen()) {
+            // Main menu not open. Store the page to be loaded later.
+            this.pageToLoad = {
+                page: page,
+                params: params,
+                time: Date.now()
+            };
+
+            return;
+        }
+
+        if (page == CoreLoginHelperProvider.OPEN_COURSE) {
+            // Use the openCourse function.
+            this.courseProvider.openCourse(undefined, params.course, params);
+        } else {
+            this.eventsProvider.trigger(CoreEventsProvider.LOAD_PAGE_MAIN_MENU, { redirectPage: page, redirectParams: params });
+        }
+    }
+
+    /**
+     * Open the main menu, loading a certain page.
+     *
+     * @param {NavController} navCtrl NavController.
+     * @param {string} page Name of the page to load.
+     * @param {any} params Params to pass to the page.
+     * @param {NavOptions} [options] Navigation options.
+     * @param {string} [url] URL to open once the main menu is loaded.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected openMainMenu(navCtrl: NavController, page: string, params: any, options?: NavOptions, url?: string): Promise<any> {
+        navCtrl = navCtrl || this.appProvider.getRootNavController();
+
+        // Due to DeepLinker, we need to remove the path from the URL before going to main menu.
+        // IonTabs checks the URL to determine which path to load for deep linking, so we clear the URL.
+        this.location.replaceState('');
+
+        if (page == CoreLoginHelperProvider.OPEN_COURSE) {
+            // Load the main menu first, and then open the course.
+            return navCtrl.setRoot('CoreMainMenuPage').finally(() => {
+                return this.courseProvider.openCourse(undefined, params.course, params);
+            });
+        } else {
+            // Open the main menu.
+            return navCtrl.setRoot('CoreMainMenuPage', { redirectPage: page, redirectParams: params, urlToOpen: url }, options);
+        }
     }
 
     /**
@@ -791,11 +841,12 @@ export class CoreLoginHelperProvider {
     /**
      * Redirect to a new page, setting it as the root page and loading the right site if needed.
      *
-     * @param {string} page Name of the page to load.
+     * @param {string} page Name of the page to load. Special cases: OPEN_COURSE (to open course page).
      * @param {any} params Params to pass to the page.
      * @param {string} [siteId] Site to load. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
      */
-    redirect(page: string, params?: any, siteId?: string): void {
+    redirect(page: string, params?: any, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         if (this.sitesProvider.isLoggedIn()) {
@@ -804,10 +855,11 @@ export class CoreLoginHelperProvider {
                 if (this.sitePluginsProvider.hasSitePluginsLoaded) {
                     // The site has site plugins so the app will be restarted. Store the data and logout.
                     this.appProvider.storeRedirect(siteId, page, params);
-                    this.sitesProvider.logout();
+
+                    return this.sitesProvider.logout();
                 } else {
-                    this.sitesProvider.logout().then(() => {
-                        this.loadSiteAndPage(page, params, siteId);
+                    return this.sitesProvider.logout().then(() => {
+                        return this.loadSiteAndPage(page, params, siteId);
                     });
                 }
             } else {
@@ -815,11 +867,13 @@ export class CoreLoginHelperProvider {
             }
         } else {
             if (siteId) {
-                this.loadSiteAndPage(page, params, siteId);
+                return this.loadSiteAndPage(page, params, siteId);
             } else {
-                this.appProvider.getRootNavController().setRoot('CoreLoginSitesPage');
+                return this.appProvider.getRootNavController().setRoot('CoreLoginSitesPage');
             }
         }
+
+        return Promise.resolve();
     }
 
     /**
@@ -884,6 +938,8 @@ export class CoreLoginHelperProvider {
 
                     promise.then(() => {
                         this.waitingForBrowser = true;
+                        this.sitesProvider.unsetCurrentSite(); // We need to unset current site to make authentication work fine.
+
                         this.openBrowserForSSOLogin(result.siteUrl, result.code, result.service,
                             result.config && result.config.launchurl, data.pageName, data.params);
                     }).catch(() => {

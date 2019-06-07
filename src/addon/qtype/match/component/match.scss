@@ -7,4 +7,11 @@ ion-app.app-root addon-qtype-match {
         bottom: 50%;
         margin-bottom: -7px;
     }
+
+    ion-col.col {
+        align-self: center;
+        > p {
+            margin: 0;
+        }
+    }
 }

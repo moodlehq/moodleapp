@@ -159,7 +159,7 @@ export class AddonModWorkshopHelperProvider {
      * @return {Promise<any>}        Resolved with the assessment.
      */
     getReviewerAssessmentById(workshopId: number, assessmentId: number, userId: number = 0, siteId?: string): Promise<any> {
-        return this.workshopProvider.getAssessment(workshopId, assessmentId, siteId).catch(() => {
+        return this.workshopProvider.getAssessment(workshopId, assessmentId, siteId).catch((error) => {
             return this.workshopProvider.getReviewerAssessments(workshopId, userId, undefined, undefined, siteId)
                     .then((assessments) => {
                 for (const x in assessments) {
@@ -168,13 +168,10 @@ export class AddonModWorkshopHelperProvider {
                     }
                 }
 
-                return false;
+                // Not found, return original error.
+                return Promise.reject(error);
             });
         }).then((assessment) => {
-            if (!assessment) {
-                return false;
-            }
-
             return this.workshopProvider.getAssessmentForm(workshopId, assessmentId, undefined, undefined, undefined, siteId)
                     .then((assessmentForm) => {
                 assessment.form = assessmentForm;

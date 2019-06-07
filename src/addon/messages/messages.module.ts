@@ -29,13 +29,14 @@ import { AddonMessagesContactRequestLinkHandler } from './providers/contact-requ
 import { AddonMessagesDiscussionLinkHandler } from './providers/discussion-link-handler';
 import { AddonMessagesIndexLinkHandler } from './providers/index-link-handler';
 import { AddonMessagesSyncCronHandler } from './providers/sync-cron-handler';
+import { AddonMessagesPushClickHandler } from './providers/push-click-handler';
 import { CoreAppProvider } from '@providers/app';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreSettingsDelegate } from '@core/settings/providers/delegate';
 import { AddonMessagesSettingsHandler } from './providers/settings-handler';
-import { AddonPushNotificationsDelegate } from '@addon/pushnotifications/providers/delegate';
+import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers/delegate';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
@@ -63,7 +64,8 @@ export const ADDON_MESSAGES_PROVIDERS: any[] = [
         AddonMessagesDiscussionLinkHandler,
         AddonMessagesIndexLinkHandler,
         AddonMessagesSyncCronHandler,
-        AddonMessagesSettingsHandler
+        AddonMessagesSettingsHandler,
+        AddonMessagesPushClickHandler
     ]
 })
 export class AddonMessagesModule {
@@ -75,9 +77,9 @@ export class AddonMessagesModule {
             localNotifications: CoreLocalNotificationsProvider, messagesProvider: AddonMessagesProvider,
             sitesProvider: CoreSitesProvider, linkHelper: CoreContentLinksHelperProvider, updateManager: CoreUpdateManagerProvider,
             settingsHandler: AddonMessagesSettingsHandler, settingsDelegate: CoreSettingsDelegate,
-            pushNotificationsDelegate: AddonPushNotificationsDelegate, utils: CoreUtilsProvider,
+            pushNotificationsDelegate: CorePushNotificationsDelegate, utils: CoreUtilsProvider,
             addContactHandler: AddonMessagesAddContactUserHandler, blockContactHandler: AddonMessagesBlockContactUserHandler,
-            contactRequestLinkHandler: AddonMessagesContactRequestLinkHandler) {
+            contactRequestLinkHandler: AddonMessagesContactRequestLinkHandler, pushClickHandler: AddonMessagesPushClickHandler) {
         // Register handlers.
         mainMenuDelegate.registerHandler(mainmenuHandler);
         contentLinksDelegate.registerHandler(indexLinkHandler);
@@ -89,6 +91,7 @@ export class AddonMessagesModule {
         cronDelegate.register(syncHandler);
         cronDelegate.register(mainmenuHandler);
         settingsDelegate.registerHandler(settingsHandler);
+        pushNotificationsDelegate.registerClickHandler(pushClickHandler);
 
         // Sync some discussions when device goes online.
         network.onConnect().subscribe(() => {
@@ -118,8 +121,8 @@ export class AddonMessagesModule {
                             // Check if we have enough information to open the conversation.
                             if (notification.convid && enabled) {
                                 pageParams.conversationId = Number(notification.convid);
-                            } else if (notification.userfromid) {
-                                pageParams.discussionUserId = Number(notification.userfromid);
+                            } else if (notification.userfromid || notification.useridfrom) {
+                                pageParams.discussionUserId = Number(notification.userfromid || notification.useridfrom);
                             }
 
                             linkHelper.goInSite(undefined, pageName, pageParams, notification.site);
@@ -133,18 +136,6 @@ export class AddonMessagesModule {
             // Listen for clicks in simulated push notifications.
             localNotifications.registerClick(AddonMessagesProvider.PUSH_SIMULATION_COMPONENT, notificationClicked);
         }
-
-        // Register push notification clicks.
-        pushNotificationsDelegate.on('click').subscribe((notification) => {
-            if (utils.isFalseOrZero(notification.notif)) {
-                // Execute the callback in the Angular zone, so change detection doesn't stop working.
-                zone.run(() => {
-                    notificationClicked(notification);
-                });
-
-                return true;
-            }
-        });
 
         // Allow migrating the table from the old app to the new schema.
         updateManager.registerSiteTableMigration({

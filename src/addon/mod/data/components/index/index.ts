@@ -20,13 +20,12 @@ import { CoreGroupsProvider, CoreGroupInfo } from '@providers/groups';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
 import { CoreCommentsProvider } from '@core/comments/providers/comments';
 import { CoreRatingProvider } from '@core/rating/providers/rating';
-import { CoreRatingOfflineProvider } from '@core/rating/providers/offline';
 import { CoreRatingSyncProvider } from '@core/rating/providers/sync';
 import { AddonModDataProvider } from '../../providers/data';
 import { AddonModDataHelperProvider } from '../../providers/helper';
-import { AddonModDataOfflineProvider } from '../../providers/offline';
 import { AddonModDataSyncProvider } from '../../providers/sync';
 import { AddonModDataComponentsModule } from '../components.module';
+import { AddonModDataPrefetchHandler } from '../../providers/prefetch-handler';
 
 /**
  * Component that displays a data index page.
@@ -64,8 +63,6 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         advanced: []
     };
     hasNextPage = false;
-    offlineActions: any;
-    offlineEntries: any;
     entriesRendered = '';
     extraImports = [AddonModDataComponentsModule];
     jsData;
@@ -80,12 +77,19 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     protected ratingOfflineObserver: any;
     protected ratingSyncObserver: any;
 
-    constructor(injector: Injector, private dataProvider: AddonModDataProvider, private dataHelper: AddonModDataHelperProvider,
-            private dataOffline: AddonModDataOfflineProvider, @Optional() content: Content,
-            private dataSync: AddonModDataSyncProvider, private timeUtils: CoreTimeUtilsProvider,
-            private groupsProvider: CoreGroupsProvider, private commentsProvider: CoreCommentsProvider,
-            private modalCtrl: ModalController, private utils: CoreUtilsProvider, protected navCtrl: NavController,
-            private ratingOffline: CoreRatingOfflineProvider) {
+    constructor(
+            injector: Injector,
+            @Optional() content: Content,
+            private dataProvider: AddonModDataProvider,
+            private dataHelper: AddonModDataHelperProvider,
+            private prefetchHandler: AddonModDataPrefetchHandler,
+            private timeUtils: CoreTimeUtilsProvider,
+            private groupsProvider: CoreGroupsProvider,
+            private commentsProvider: CoreCommentsProvider,
+            private modalCtrl: ModalController,
+            private utils: CoreUtilsProvider,
+            protected navCtrl: NavController) {
+
         super(injector, content);
 
         // Refresh entries on change.
@@ -125,7 +129,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                 return;
             }
 
-            this.dataProvider.logView(this.data.id).then(() => {
+            this.dataProvider.logView(this.data.id, this.data.name).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
             }).catch(() => {
                 // Ignore errors.
@@ -232,8 +236,6 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                         this.selectedGroup = groupInfo.groups[0].id;
                     }
                 }
-
-                return this.fetchOfflineEntries();
             });
         }).then(() => {
             return this.dataProvider.getFields(this.data.id).then((fields) => {
@@ -269,21 +271,19 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             // Update values for current group.
             this.access.canaddentry = accessData.canaddentry;
 
-            if (this.search.searching) {
-                const text = this.search.searchingAdvanced ? undefined : this.search.text,
-                    advanced = this.search.searchingAdvanced ? this.search.advanced : undefined;
+            const search = this.search.searching && !this.search.searchingAdvanced ? this.search.text : undefined;
+            const advSearch = this.search.searching && this.search.searchingAdvanced ? this.search.advanced : undefined;
 
-                return this.dataProvider.searchEntries(this.data.id, this.selectedGroup, text, advanced, this.search.sortBy,
-                    this.search.sortDirection, this.search.page);
-            } else {
-                return this.dataProvider.getEntries(this.data.id, this.selectedGroup, this.search.sortBy, this.search.sortDirection,
-                    this.search.page);
-            }
+            return this.dataHelper.fetchEntries(this.data, this.fieldsArray, this.selectedGroup, search, advSearch,
+                    this.search.sortBy, this.search.sortDirection, this.search.page);
         }).then((entries) => {
-            const numEntries = (entries && entries.entries && entries.entries.length) || 0;
-            this.isEmpty = !numEntries && !Object.keys(this.offlineActions).length && !Object.keys(this.offlineEntries).length;
+            const numEntries = entries.entries.length;
+            const numOfflineEntries = entries.offlineEntries.length;
+            this.isEmpty = !numEntries && !entries.offlineEntries.length;
             this.hasNextPage = numEntries >= AddonModDataProvider.PER_PAGE && ((this.search.page + 1) *
                 AddonModDataProvider.PER_PAGE) < entries.totalcount;
+            this.hasOffline = entries.hasOfflineActions;
+            this.hasOfflineRatings = entries.hasOfflineRatings;
             this.entriesRendered = '';
 
             if (typeof entries.maxcount != 'undefined') {
@@ -297,79 +297,40 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             }
 
             if (!this.isEmpty) {
-                const siteInfo = this.sitesProvider.getCurrentSite().getInfo(),
-                    promises = [];
+                this.entries = entries.offlineEntries.concat(entries.entries);
 
-                this.utils.objectToArray(this.offlineEntries).forEach((offlineActions) => {
-                    const offlineEntry = offlineActions.find((offlineEntry) => offlineEntry.action == 'add');
+                let entriesHTML = this.data.listtemplateheader || '';
 
-                    if (offlineEntry) {
-                        const entry = {
-                            id: offlineEntry.entryid,
-                            canmanageentry: true,
-                            approved: !this.data.approval || this.data.manageapproved,
-                            dataid: offlineEntry.dataid,
-                            groupid: offlineEntry.groupid,
-                            timecreated: -offlineEntry.entryid,
-                            timemodified: -offlineEntry.entryid,
-                            userid: siteInfo.userid,
-                            fullname: siteInfo.fullname,
-                            contents: {}
-                        };
+                // Get first entry from the whole list.
+                if (!this.search.searching || !this.firstEntry) {
+                    this.firstEntry = this.entries[0].id;
+                }
 
-                        if (offlineActions.length > 0) {
-                            promises.push(this.dataHelper.applyOfflineActions(entry, offlineActions, this.fieldsArray));
-                        } else {
-                            promises.push(Promise.resolve(entry));
-                        }
-                    }
+                const template = this.data.listtemplate || this.dataHelper.getDefaultTemplate('list', this.fieldsArray);
+
+                const entriesById = {};
+                this.entries.forEach((entry, index) => {
+                    entriesById[entry.id] = entry;
+
+                    const actions = this.dataHelper.getActions(this.data, this.access, entry);
+                    const offset = this.search.searching ? undefined :
+                            this.search.page * AddonModDataProvider.PER_PAGE + index - numOfflineEntries;
+
+                    entriesHTML += this.dataHelper.displayShowFields(template, this.fieldsArray, entry, offset, 'list',  actions);
                 });
+                entriesHTML += this.data.listtemplatefooter || '';
 
-                entries.entries.forEach((entry) => {
-                    // Index contents by fieldid.
-                    entry.contents = this.utils.arrayToObject(entry.contents, 'fieldid');
+                this.entriesRendered = entriesHTML;
 
-                    if (typeof this.offlineActions[entry.id] != 'undefined') {
-                        promises.push(this.dataHelper.applyOfflineActions(entry, this.offlineActions[entry.id], this.fieldsArray));
-                    } else {
-                        promises.push(Promise.resolve(entry));
-                    }
-                });
-
-                return Promise.all(promises).then((entries) => {
-                    this.entries = entries;
-
-                    let entriesHTML = this.data.listtemplateheader || '';
-
-                    // Get first entry from the whole list.
-                    if (entries && entries[0] && (!this.search.searching || !this.firstEntry)) {
-                        this.firstEntry = entries[0].id;
-                    }
-
-                    const template = this.data.listtemplate || this.dataHelper.getDefaultTemplate('list', this.fieldsArray);
-
-                    const entriesById = {};
-                    entries.forEach((entry, index) => {
-                        entriesById[entry.id] = entry;
-
-                        const actions = this.dataHelper.getActions(this.data, this.access, entry);
-                        const offset = this.search.page * AddonModDataProvider.PER_PAGE + index;
-
-                        entriesHTML += this.dataHelper.displayShowFields(template, this.fieldsArray, entry, offset, 'list',
-                                actions);
-                    });
-                    entriesHTML += this.data.listtemplatefooter || '';
-
-                    this.entriesRendered = entriesHTML;
-
-                    // Pass the input data to the component.
-                    this.jsData = {
-                        fields: this.fields,
-                        entries: entriesById,
-                        data: this.data,
-                        gotoEntry: this.gotoEntry.bind(this)
-                    };
-                });
+                // Pass the input data to the component.
+                this.jsData = {
+                    fields: this.fields,
+                    entries: entriesById,
+                    data: this.data,
+                    module: this.module,
+                    group: this.selectedGroup,
+                    gotoEntry: this.gotoEntry.bind(this)
+                };
             } else if (!this.search.searching) {
                 // Empty and no searching.
                 this.canSearch = false;
@@ -434,6 +395,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      */
     setGroup(groupId: number): Promise<any> {
         this.selectedGroup = groupId;
+        this.search.page = 0;
 
         return this.fetchEntriesData().catch((message) => {
             this.domUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);
@@ -479,58 +441,12 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     }
 
     /**
-     * Fetch offline entries.
-     *
-     * @return {Promise<any>} Resolved then done.
-     */
-    protected fetchOfflineEntries(): Promise<any> {
-        // Check if there are entries stored in offline.
-        return this.dataOffline.getDatabaseEntries(this.data.id).then((offlineEntries) => {
-            this.hasOffline = !!offlineEntries.length;
-
-            this.offlineActions = {};
-            this.offlineEntries = {};
-
-            // Only show offline entries on first page.
-            if (this.search.page == 0 && this.hasOffline) {
-                offlineEntries.forEach((entry) => {
-                    if (entry.entryid > 0) {
-                        if (typeof this.offlineActions[entry.entryid] == 'undefined') {
-                            this.offlineActions[entry.entryid] = [];
-                        }
-                        this.offlineActions[entry.entryid].push(entry);
-                    } else {
-                        if (typeof this.offlineActions[entry.entryid] == 'undefined') {
-                            this.offlineEntries[entry.entryid] = [];
-                        }
-                        this.offlineEntries[entry.entryid].push(entry);
-                    }
-                });
-            }
-        }).then(() => {
-            return this.ratingOffline.hasRatings('mod_data', 'entry', 'module', this.data.coursemodule).then((hasRatings) => {
-                this.hasOfflineRatings = hasRatings;
-            });
-        });
-    }
-
-    /**
      * Performs the sync of the activity.
      *
      * @return {Promise<any>} Promise resolved when done.
      */
     protected sync(): Promise<any> {
-        const promises = [
-            this.dataSync.syncDatabase(this.data.id),
-            this.dataSync.syncRatings(this.data.coursemodule)
-        ];
-
-        return Promise.all(promises).then((results) => {
-            return results.reduce((a, b) => ({
-                updated: a.updated || b.updated,
-                warnings: (a.warnings || []).concat(b.warnings || []),
-            }), {updated: false});
-        });
+        return this.prefetchHandler.sync(this.module, this.courseId);
     }
 
     /**

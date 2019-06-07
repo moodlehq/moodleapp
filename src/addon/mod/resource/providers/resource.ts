@@ -19,6 +19,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service that provides some features for resources.
@@ -61,7 +62,8 @@ export class AddonModResourceProvider {
                     courseids: [courseId]
                 },
                 preSets = {
-                    cacheKey: this.getResourceCacheKey(courseId)
+                    cacheKey: this.getResourceCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('mod_resource_get_resources_by_courses', params, preSets).then((response) => {
@@ -150,14 +152,16 @@ export class AddonModResourceProvider {
      * Report the resource as being viewed.
      *
      * @param {number} id Module ID.
+     * @param {string} [name] Name of the resource.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(id: number, siteId?: string): Promise<any> {
+    logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             resourceid: id
         };
 
-        return this.logHelper.log('mod_resource_view_resource', params, AddonModResourceProvider.COMPONENT, id, siteId);
+        return this.logHelper.logSingle('mod_resource_view_resource', params, AddonModResourceProvider.COMPONENT, id, name,
+                'resource', {}, siteId);
     }
 }

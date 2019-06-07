@@ -21,9 +21,8 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreLoginHelperProvider } from '../../providers/helper';
-import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
-import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CoreConfigConstants } from '../../../../configconstants';
 
 /**
  * Page to enter the user credentials.
@@ -55,8 +54,7 @@ export class CoreLoginCredentialsPage {
     constructor(private navCtrl: NavController, navParams: NavParams, fb: FormBuilder, private appProvider: CoreAppProvider,
             private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
             private domUtils: CoreDomUtilsProvider, private translate: TranslateService, private utils: CoreUtilsProvider,
-            private eventsProvider: CoreEventsProvider, private contentLinksDelegate: CoreContentLinksDelegate,
-            private contentLinksHelper: CoreContentLinksHelperProvider) {
+            private eventsProvider: CoreEventsProvider) {
 
         this.siteUrl = navParams.get('siteUrl');
         this.siteConfig = navParams.get('siteConfig');
@@ -142,7 +140,7 @@ export class CoreLoginCredentialsPage {
      */
     protected treatSiteConfig(): void {
         if (this.siteConfig) {
-            this.siteName = this.siteConfig.sitename;
+            this.siteName = CoreConfigConstants.sitename ? CoreConfigConstants.sitename : this.siteConfig.sitename;
             this.logoUrl = this.siteConfig.logourl || this.siteConfig.compactlogourl;
             this.authInstructions = this.siteConfig.authinstructions || this.translate.instant('core.login.loginsteps');
             this.canSignup = this.siteConfig.registerauth == 'email' && !this.loginHelper.isEmailSignupDisabled(this.siteConfig);
@@ -219,20 +217,7 @@ export class CoreLoginCredentialsPage {
 
                 this.siteId = id;
 
-                if (this.urlToOpen) {
-                    // There's a content link to open.
-                    return this.contentLinksDelegate.getActionsFor(this.urlToOpen, undefined, username).then((actions) => {
-                        const action = this.contentLinksHelper.getFirstValidAction(actions);
-                        if (action && action.sites.length) {
-                            // Action should only have 1 site because we're filtering by username.
-                            action.action(action.sites[0]);
-                        } else {
-                            return this.loginHelper.goToSiteInitialPage();
-                        }
-                    });
-                } else {
-                    return this.loginHelper.goToSiteInitialPage();
-                }
+                return this.loginHelper.goToSiteInitialPage(undefined, undefined, undefined, undefined, this.urlToOpen);
             });
         }).catch((error) => {
             this.loginHelper.treatUserTokenError(siteUrl, error, username, password);

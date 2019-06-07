@@ -21,9 +21,13 @@
             </ion-item>
             <ion-item text-wrap>
                 <strong>{{ 'addon.competency.path' | translate }}</strong>
-                {{ competency.competency.comppath.framework.name }}
+                <a *ngIf="competency.competency.comppath.showlinks" [href]="competency.competency.comppath.pluginbaseurl + '/competencies.php?competencyframeworkid=' + competency.competency.comppath.framework.id + '&pagecontextid=' + competency.competency.comppath.pagecontextid" core-link [title]="competency.competency.comppath.framework.name">{{ competency.competency.comppath.framework.name }}</a>
+                <ng-container *ngIf="!competency.competency.comppath.showlinks">{{ competency.competency.comppath.framework.name }}</ng-container>
+                &nbsp;/&nbsp;
                 <span *ngFor="let ancestor of competency.competency.comppath.ancestors">
-                    &nbsp;/&nbsp;<a (click)="openCompetencySummary(ancestor.id)">{{ ancestor.name }}</a>
+                    <a *ngIf="competency.competency.comppath.showlinks" (click)="openCompetencySummary(ancestor.id)">{{ ancestor.name }}</a>
+                    <ng-container *ngIf="!competency.competency.comppath.showlinks">{{ ancestor.name }}</ng-container>
+                    <ng-container *ngIf="!ancestor.last">&nbsp;/&nbsp;</ng-container>
                 </span>
             </ion-item>
             <ion-item text-wrap>
@@ -38,21 +42,21 @@
                 </div>
             </ion-item>
             <ion-item text-wrap *ngIf="coursemodules">
-                <strong>{{ 'addon.competency.activities' | translate }}</strong>:
-                <span *ngIf="coursemodules.length == 0">
+                <strong>{{ 'addon.competency.activities' | translate }}</strong>
+                <p *ngIf="coursemodules.length == 0">
                     {{ 'addon.competency.noactivities' | translate }}
-                </span>
+                </p>
                 <a ion-item text-wrap *ngFor="let activity of coursemodules" [href]="activity.url" [title]="activity.name" core-link capture="true">
                     <img item-start core-external-content [src]="activity.iconurl" alt="" role="presentation" *ngIf="activity.iconurl" class="core-module-icon">
                     <core-format-text [text]="activity.name"></core-format-text>
                 </a>
             </ion-item>
             <ion-item text-wrap *ngIf="competency.usercompetency.status">
-                <strong>{{ 'addon.competency.reviewstatus' | translate }}</strong>:
+                <strong>{{ 'addon.competency.reviewstatus' | translate }}</strong>
                 {{ competency.usercompetency.statusname }}
             </ion-item>
             <ion-item text-wrap>
-                <strong>{{ 'addon.competency.proficient' | translate }}</strong>:
+                <strong>{{ 'addon.competency.proficient' | translate }}</strong>
                 <ion-badge color="success" *ngIf="competency.usercompetency.proficiency">
                     {{ 'core.yes' | translate }}
                 </ion-badge>
@@ -61,7 +65,7 @@
                 </ion-badge>
             </ion-item>
             <ion-item text-wrap>
-                <strong>{{ 'addon.competency.rating' | translate }}</strong>:
+                <strong>{{ 'addon.competency.rating' | translate }}</strong>
                 <ion-badge color="dark">{{ competency.usercompetency.gradename }}</ion-badge>
             </ion-item>
         </ion-card>

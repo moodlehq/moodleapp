@@ -44,6 +44,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     dataLoaded: boolean;
     avoidOpenCourse = false;
     prefetchCourseData = {
+        downloadSucceeded: false,
         prefetchCourseIcon: 'spinner',
         title: 'core.course.downloadcourse'
     };
@@ -81,7 +82,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
         if (this.downloadCourseEnabled) {
             // Listen for status change in course.
             this.courseStatusObserver = this.eventsProvider.on(CoreEventsProvider.COURSE_STATUS_CHANGED, (data) => {
-                if (data.courseId == this.course.id) {
+                if (data.courseId == this.course.id || data.courseId == CoreCourseProvider.ALL_COURSES_CLEARED) {
                     this.updateCourseStatus(data.status);
                 }
             }, this.sitesProvider.getCurrentSiteId());
@@ -233,6 +234,18 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
                     this.canAccessCourse = false;
                 });
             });
+        }).finally(() => {
+            if (!this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.7')) {
+                return this.coursesProvider.isGetCoursesByFieldAvailableInSite().then((available) => {
+                    if (available) {
+                        return this.coursesProvider.getCourseByField('id', this.course.id).then((course) => {
+                            this.course.customfields = course.customfields;
+                        });
+                    }
+                }).catch(() => {
+                    // Ignore errors.
+                });
+            }
         }).finally(() => {
             this.dataLoaded = true;
         });
@@ -386,6 +399,9 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
         promises.push(this.coursesProvider.invalidateCourse(this.course.id));
         promises.push(this.coursesProvider.invalidateCourseEnrolmentMethods(this.course.id));
         promises.push(this.courseOptionsDelegate.clearAndInvalidateCoursesOptions(this.course.id));
+        if (this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.7')) {
+            promises.push(this.coursesProvider.invalidateCoursesByField('id', this.course.id));
+        }
         if (this.guestInstanceId) {
             promises.push(this.coursesProvider.invalidateCourseGuestEnrolmentInfo(this.guestInstanceId));
         }

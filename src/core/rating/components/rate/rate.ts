@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChange  } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChange, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreRatingProvider, CoreRatingInfo, CoreRatingInfoItem, CoreRatingScale } from '@core/rating/providers/rating';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreRatingOfflineProvider } from '@core/rating/providers/offline';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Component that displays the user rating select.
@@ -25,7 +27,7 @@ import { CoreRatingOfflineProvider } from '@core/rating/providers/offline';
     selector: 'core-rating-rate',
     templateUrl: 'core-rating-rate.html'
 })
-export class CoreRatingRateComponent implements OnChanges {
+export class CoreRatingRateComponent implements OnChanges, OnDestroy {
     @Input() ratingInfo: CoreRatingInfo;
     @Input() contextLevel: string; // Context level: course, module, user, etc.
     @Input() instanceId: number; // Context instance id.
@@ -35,15 +37,28 @@ export class CoreRatingRateComponent implements OnChanges {
     @Input() aggregateMethod: number;
     @Input() scaleId: number;
     @Input() userId: number;
+    @Output() onLoading: EventEmitter<boolean>; // Eevent that indicates whether the component is loading data.
     @Output() onUpdate: EventEmitter<void>; // Event emitted when the rating is updated online.
 
     item: CoreRatingInfoItem;
     scale: CoreRatingScale;
     rating: number;
+    disabled = false;
+    protected updateSiteObserver;
 
-    constructor(private domUtils: CoreDomUtilsProvider, private translate: TranslateService,
-            private ratingProvider: CoreRatingProvider, private ratingOffline: CoreRatingOfflineProvider) {
+    constructor(private domUtils: CoreDomUtilsProvider, private translate: TranslateService, eventsProvider: CoreEventsProvider,
+            private ratingProvider: CoreRatingProvider, private ratingOffline: CoreRatingOfflineProvider,
+            sitesProvider: CoreSitesProvider) {
+
+        this.onLoading = new EventEmitter<boolean>();
         this.onUpdate = new EventEmitter<void>();
+
+        this.disabled = this.ratingProvider.isRatingDisabledInSite();
+
+        // Update visibility if current site info is updated.
+        this.updateSiteObserver = eventsProvider.on(CoreEventsProvider.SITE_UPDATED, () => {
+            this.disabled = this.ratingProvider.isRatingDisabledInSite();
+        }, sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -77,6 +92,7 @@ export class CoreRatingRateComponent implements OnChanges {
             });
         }
 
+        this.onLoading.emit(true);
         this.ratingOffline.getRating(this.contextLevel, this.instanceId, this.ratingInfo.component, this.ratingInfo.ratingarea,
                 this.itemId).then((rating) => {
             this.rating = rating.rating;
@@ -86,6 +102,8 @@ export class CoreRatingRateComponent implements OnChanges {
             } else {
                 this.rating = CoreRatingProvider.UNSET_RATING;
             }
+        }).finally(() => {
+            this.onLoading.emit(false);
         });
     }
 
@@ -107,5 +125,12 @@ export class CoreRatingRateComponent implements OnChanges {
         }).finally(() => {
             modal.dismiss();
         });
+    }
+
+    /**
+     * Component being destroyed.
+     */
+    ngOnDestroy(): void {
+        this.updateSiteObserver && this.updateSiteObserver.off();
     }
 }

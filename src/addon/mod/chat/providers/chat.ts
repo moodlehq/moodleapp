@@ -18,7 +18,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 
 /**
  * Service that provides some features for chats.
@@ -47,7 +47,8 @@ export class AddonModChatProvider {
                 courseids: [courseId]
             };
             const preSets: CoreSiteWSPreSets = {
-                cacheKey: this.getChatsCacheKey(courseId)
+                cacheKey: this.getChatsCacheKey(courseId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY
             };
 
             return site.read('mod_chat_get_chats_by_courses', params, preSets).then((response) => {
@@ -87,15 +88,16 @@ export class AddonModChatProvider {
      * Report a chat as being viewed.
      *
      * @param  {number} id Chat instance ID.
+     * @param {string} [name] Name of the chat.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(id: number, siteId?: string): Promise<any> {
+    logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             chatid: id
         };
 
-        return this.logHelper.log('mod_chat_view_chat', params, AddonModChatProvider.COMPONENT, id, siteId);
+        return this.logHelper.logSingle('mod_chat_view_chat', params, AddonModChatProvider.COMPONENT, id, name, 'chat', {}, siteId);
     }
 
     /**
@@ -213,6 +215,7 @@ export class AddonModChatProvider {
             };
             const preSets: CoreSiteWSPreSets = {
                 cacheKey: this.getSessionsCacheKey(chatId, groupId, showAll),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
             if (ignoreCache) {
                 preSets.getFromCache = false;
@@ -251,7 +254,8 @@ export class AddonModChatProvider {
                 groupid: groupId
             };
             const preSets: CoreSiteWSPreSets = {
-                cacheKey: this.getSessionMessagesCacheKey(chatId, sessionStart, groupId)
+                cacheKey: this.getSessionMessagesCacheKey(chatId, sessionStart, groupId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY
             };
             if (ignoreCache) {
                 preSets.getFromCache = false;

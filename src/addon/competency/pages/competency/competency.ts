@@ -55,13 +55,16 @@ export class AddonCompetencyCompetencyPage {
      */
     ionViewDidLoad(): void {
         this.fetchCompetency().then(() => {
+            const name = this.competency && this.competency.competency && this.competency.competency.competency &&
+                    this.competency.competency.competency.shortname;
+
             if (this.planId) {
-                this.competencyProvider.logCompetencyInPlanView(this.planId, this.competencyId, this.planStatus, this.userId)
-                        .catch(() => {
+                this.competencyProvider.logCompetencyInPlanView(this.planId, this.competencyId, this.planStatus, name,
+                        this.userId).catch(() => {
                     // Ignore errors.
                 });
             } else {
-                this.competencyProvider.logCompetencyInCourseView(this.courseId, this.competencyId, this.userId).catch(() => {
+                this.competencyProvider.logCompetencyInCourseView(this.courseId, this.competencyId, name, this.userId).catch(() => {
                     // Ignore errors.
                 });
             }

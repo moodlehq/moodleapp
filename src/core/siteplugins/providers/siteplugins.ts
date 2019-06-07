@@ -21,7 +21,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreUtilsProvider, PromiseDefer } from '@providers/utils/utils';
 import { CoreConfigConstants } from '../../../configconstants';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreEventsProvider } from '@providers/events';
@@ -67,6 +67,7 @@ export class CoreSitePluginsProvider {
     protected logger;
     protected sitePlugins: {[name: string]: CoreSitePluginsHandler} = {}; // Site plugins registered.
     protected sitePluginPromises: {[name: string]: Promise<any>} = {}; // Promises of loading plugins.
+    protected fetchPluginsDeferred: PromiseDefer;
     hasSitePluginsLoaded = false;
     sitePluginsFinishedLoading = false;
 
@@ -75,9 +76,16 @@ export class CoreSitePluginsProvider {
             private filepoolProvider: CoreFilepoolProvider, private coursesProvider: CoreCoursesProvider,
             private textUtils: CoreTextUtilsProvider, private eventsProvider: CoreEventsProvider) {
         this.logger = logger.getInstance('CoreUserProvider');
+
         const observer = this.eventsProvider.on(CoreEventsProvider.SITE_PLUGINS_LOADED, () => {
             this.sitePluginsFinishedLoading = true;
             observer && observer.off();
+        });
+
+        // Initialize deferred at start and on logout.
+        this.fetchPluginsDeferred = this.utils.promiseDefer();
+        eventsProvider.on(CoreEventsProvider.LOGOUT, () => {
+            this.fetchPluginsDeferred = this.utils.promiseDefer();
         });
     }
 
@@ -226,6 +234,8 @@ export class CoreSitePluginsProvider {
 
                 preSets = preSets || {};
                 preSets.cacheKey = this.getContentCacheKey(component, method, args);
+                preSets.updateFrequency = typeof preSets.updateFrequency != 'undefined' ? preSets.updateFrequency :
+                        CoreSite.FREQUENCY_OFTEN;
 
                 return this.sitesProvider.getCurrentSite().read('tool_mobile_get_content', data, preSets);
             }).then((result) => {
@@ -532,6 +542,13 @@ export class CoreSitePluginsProvider {
     }
 
     /**
+     * Set plugins fetched.
+     */
+    setPluginsFetched(): void {
+        this.fetchPluginsDeferred.resolve();
+    }
+
+    /**
      * Is a plugin being initialised for the specified component?
      *
      * @param {String} component
@@ -549,5 +566,14 @@ export class CoreSitePluginsProvider {
      */
     sitePluginLoaded(component: string): Promise<any> {
         return this.sitePluginPromises[component];
+    }
+
+    /**
+     * Wait for fetch plugins to be done.
+     *
+     * @return {Promise<any>} Promise resolved when site plugins have been fetched.
+     */
+    waitFetchPlugins(): Promise<any> {
+        return this.fetchPluginsDeferred.promise;
     }
 }

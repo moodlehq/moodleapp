@@ -15,10 +15,8 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
-import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { AddonModFeedbackProvider } from './feedback';
-import { CoreCourseProvider } from '@core/course/providers/course';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { AddonModFeedbackHelperProvider } from './helper';
 
 /**
  * Content links handler for feedback show entries questions.
@@ -30,8 +28,7 @@ export class AddonModFeedbackShowEntriesLinkHandler extends CoreContentLinksHand
     featureName = 'CoreCourseModuleDelegate_AddonModFeedback';
     pattern = /\/mod\/feedback\/show_entries\.php.*([\?\&](id|showcompleted)=\d+)/;
 
-    constructor(private linkHelper: CoreContentLinksHelperProvider, private feedbackProvider: AddonModFeedbackProvider,
-            private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider) {
+    constructor(private feedbackProvider: AddonModFeedbackProvider, private feedbackHelper: AddonModFeedbackHelperProvider) {
         super();
     }
 
@@ -48,37 +45,7 @@ export class AddonModFeedbackShowEntriesLinkHandler extends CoreContentLinksHand
             CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: (siteId, navCtrl?): void => {
-                const modal = this.domUtils.showModalLoading(),
-                    moduleId = params.id;
-
-                this.courseProvider.getModuleBasicInfo(moduleId, siteId).then((module) => {
-                    let stateParams;
-
-                    if (typeof params.showcompleted == 'undefined') {
-                        // Param showcompleted not defined. Show entry list.
-                        stateParams = {
-                            moduleId: module.id,
-                            module: module,
-                            courseId: module.course
-                        };
-
-                        return this.linkHelper.goInSite(navCtrl, 'AddonModFeedbackRespondentsPage', stateParams, siteId);
-                    }
-
-                    return this.feedbackProvider.getAttempt(module.instance, params.showcompleted, true, siteId).then((attempt) => {
-                        stateParams = {
-                            moduleId: module.id,
-                            attempt: attempt,
-                            attemptId: attempt.id,
-                            feedbackId: module.instance,
-                            courseId: module.course
-                        };
-
-                        return this.linkHelper.goInSite(navCtrl, 'AddonModFeedbackAttemptPage', stateParams, siteId);
-                    });
-                }).finally(() => {
-                    modal.dismiss();
-                });
+                this.feedbackHelper.handleShowEntriesLink(navCtrl, params, siteId);
             }
         }];
     }

@@ -1,5 +1,3 @@
-$core-star-color: $core-color !default;
-
 ion-app.app-root core-courses-course-progress {
     ion-card.card {
         display: flex;
@@ -72,6 +70,12 @@ ion-app.app-root core-courses-course-progress {
 
             .core-button-spinner .spinner {
                 vertical-align: middle;
+            }
+
+            .core-button-spinner .core-icon-downloaded {
+                font-size: 28.8px;
+                margin-top: 8px;
+                vertical-align: top;
             }
 
             .item-button[icon-only] {

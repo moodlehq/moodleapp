@@ -68,23 +68,29 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
      * Try to synchronize all the surveys in a certain site or in all sites.
      *
      * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @return {Promise<any>}    Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllSurveys(siteId?: string): Promise<any> {
-        return this.syncOnSites('all surveys', this.syncAllSurveysFunc.bind(this), undefined, siteId);
+    syncAllSurveys(siteId?: string, force?: boolean): Promise<any> {
+        return this.syncOnSites('all surveys', this.syncAllSurveysFunc.bind(this), [force], siteId);
     }
 
     /**
      * Sync all pending surveys on a site.
-     * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     *
+     * @param  {string} siteId Site ID to sync.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
      * @param {Promise<any>}     Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected syncAllSurveysFunc(siteId?: string): Promise<any> {
+    protected syncAllSurveysFunc(siteId: string, force?: boolean): Promise<any> {
         // Get all survey answers pending to be sent in the site.
         return this.surveyOffline.getAllData(siteId).then((entries) => {
             // Sync all surveys.
             const promises = entries.map((entry) => {
-                return this.syncSurveyIfNeeded(entry.surveyid, entry.userid, siteId).then((result) => {
+                const promise = force ? this.syncSurvey(entry.surveyid, entry.userid, siteId) :
+                    this.syncSurveyIfNeeded(entry.surveyid, entry.userid, siteId);
+
+                return promise.then((result) => {
                     if (result && result.answersSent) {
                         // Sync successful, send event.
                         this.eventsProvider.trigger(AddonModSurveySyncProvider.AUTO_SYNCED, {
@@ -124,91 +130,94 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
      * Synchronize a survey.
      *
      * @param  {number} surveyId Survey ID.
-     * @param  {number} userId   User the answers belong to.
+     * @param  {number} [userId]   User the answers belong to. If not defined, current user.
      * @param  {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}    Promise resolved if sync is successful, rejected otherwise.
      */
-    syncSurvey(surveyId: number, userId: number, siteId?: string): Promise<any> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+    syncSurvey(surveyId: number, userId?: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+            siteId = site.getId();
 
-        const syncId = this.getSyncId(surveyId, userId);
-        if (this.isSyncing(syncId, siteId)) {
-            // There's already a sync ongoing for this survey and user, return the promise.
-            return this.getOngoingSync(syncId, siteId);
-        }
-
-        this.logger.debug(`Try to sync survey '${surveyId}' for user '${userId}'`);
-
-        let courseId;
-        const result = {
-            warnings: [],
-            answersSent: false
-        };
-
-        // Sync offline logs.
-        const syncPromise = this.logHelper.syncIfNeeded(AddonModSurveyProvider.COMPONENT, surveyId, siteId).catch(() => {
-            // Ignore errors.
-        }).then(() => {
-            // Get answers to be sent.
-            return this.surveyOffline.getSurveyData(surveyId, siteId, userId).catch(() => {
-                // No offline data found, return empty object.
-                return {};
-            });
-        }).then((data) => {
-            if (!data.answers || !data.answers.length) {
-                // Nothing to sync.
-                return;
+            const syncId = this.getSyncId(surveyId, userId);
+            if (this.isSyncing(syncId, siteId)) {
+                // There's already a sync ongoing for this survey and user, return the promise.
+                return this.getOngoingSync(syncId, siteId);
             }
 
-            if (!this.appProvider.isOnline()) {
-                // Cannot sync in offline.
-                return Promise.reject(null);
-            }
+            this.logger.debug(`Try to sync survey '${surveyId}' for user '${userId}'`);
 
-            courseId = data.courseid;
+            let courseId;
+            const result = {
+                warnings: [],
+                answersSent: false
+            };
 
-            // Send the answers.
-            return this.surveyProvider.submitAnswersOnline(surveyId, data.answers, siteId).then(() => {
-                result.answersSent = true;
-
-                // Answers sent, delete them.
-                return this.surveyOffline.deleteSurveyAnswers(surveyId, siteId, userId);
-            }).catch((error) => {
-                if (this.utils.isWebServiceError(error)) {
-
-                    // The WebService has thrown an error, this means that answers cannot be submitted. Delete them.
-                    result.answersSent = true;
-
-                    return this.surveyOffline.deleteSurveyAnswers(surveyId, siteId, userId).then(() => {
-                        // Answers deleted, add a warning.
-                        result.warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
-                            component: this.componentTranslate,
-                            name: data.name,
-                            error: this.textUtils.getErrorMessageFromError(error)
-                        }));
-                    });
+            // Sync offline logs.
+            const syncPromise = this.logHelper.syncIfNeeded(AddonModSurveyProvider.COMPONENT, surveyId, siteId).catch(() => {
+                // Ignore errors.
+            }).then(() => {
+                // Get answers to be sent.
+                return this.surveyOffline.getSurveyData(surveyId, siteId, userId).catch(() => {
+                    // No offline data found, return empty object.
+                    return {};
+                });
+            }).then((data) => {
+                if (!data.answers || !data.answers.length) {
+                    // Nothing to sync.
+                    return;
                 }
 
-                // Couldn't connect to server, reject.
-                return Promise.reject(error);
-            });
-        }).then(() => {
-            if (courseId) {
-                // Data has been sent to server, update survey data.
-                return this.courseProvider.getModuleBasicInfoByInstance(surveyId, 'survey', siteId).then((module) => {
-                    return this.prefetchAfterUpdate(module, courseId, undefined, siteId);
-                }).catch(() => {
-                    // Ignore errors.
-                });
-            }
-        }).then(() => {
-            // Sync finished, set sync time.
-            return this.setSyncTime(syncId, siteId);
-        }).then(() => {
-            return result;
-        });
+                if (!this.appProvider.isOnline()) {
+                    // Cannot sync in offline.
+                    return Promise.reject(null);
+                }
 
-        return this.addOngoingSync(syncId, syncPromise, siteId);
+                courseId = data.courseid;
+
+                // Send the answers.
+                return this.surveyProvider.submitAnswersOnline(surveyId, data.answers, siteId).then(() => {
+                    result.answersSent = true;
+
+                    // Answers sent, delete them.
+                    return this.surveyOffline.deleteSurveyAnswers(surveyId, siteId, userId);
+                }).catch((error) => {
+                    if (this.utils.isWebServiceError(error)) {
+
+                        // The WebService has thrown an error, this means that answers cannot be submitted. Delete them.
+                        result.answersSent = true;
+
+                        return this.surveyOffline.deleteSurveyAnswers(surveyId, siteId, userId).then(() => {
+                            // Answers deleted, add a warning.
+                            result.warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
+                                component: this.componentTranslate,
+                                name: data.name,
+                                error: this.textUtils.getErrorMessageFromError(error)
+                            }));
+                        });
+                    }
+
+                    // Couldn't connect to server, reject.
+                    return Promise.reject(error);
+                });
+            }).then(() => {
+                if (courseId) {
+                    // Data has been sent to server, update survey data.
+                    return this.courseProvider.getModuleBasicInfoByInstance(surveyId, 'survey', siteId).then((module) => {
+                        return this.prefetchAfterUpdate(module, courseId, undefined, siteId);
+                    }).catch(() => {
+                        // Ignore errors.
+                    });
+                }
+            }).then(() => {
+                // Sync finished, set sync time.
+                return this.setSyncTime(syncId, siteId);
+            }).then(() => {
+                return result;
+            });
+
+            return this.addOngoingSync(syncId, syncPromise, siteId);
+        });
     }
 
 }

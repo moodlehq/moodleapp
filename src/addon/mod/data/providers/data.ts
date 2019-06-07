@@ -21,6 +21,68 @@ import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModDataOfflineProvider } from './offline';
 import { AddonModDataFieldsDelegate } from './fields-delegate';
+import { CoreRatingInfo } from '@core/rating/providers/rating';
+import { CoreSite } from '@classes/site';
+
+/**
+ * Database entry (online or offline).
+ */
+export interface AddonModDataEntry {
+    id: number; // Negative for offline entries.
+    userid: number;
+    groupid: number;
+    dataid: number;
+    timecreated: number;
+    timemodified: number;
+    approved: boolean;
+    canmanageentry: boolean;
+    fullname: string;
+    contents: AddonModDataEntryFields;
+    deleted?: boolean; // Entry is deleted offline.
+    hasOffline?: boolean; // Entry has offline actions.
+}
+
+/**
+ * Entry field content.
+ */
+export interface AddonModDataEntryField {
+    fieldid: number;
+    content: string;
+    content1: string;
+    content2: string;
+    content3: string;
+    content4: string;
+    files: any[];
+}
+
+/**
+ * Entry contents indexed by field id.
+ */
+export interface AddonModDataEntryFields {
+    [fieldid: number]: AddonModDataEntryField;
+}
+
+/**
+ * List of entries returned by web service and helper functions.
+ */
+export interface AddonModDataEntries {
+    entries: AddonModDataEntry[]; // Online entries.
+    totalcount: number; // Total count of online entries or found entries.
+    maxcount?: number; // Total count of online entries. Only returned when searching.
+    offlineEntries?: AddonModDataEntry[]; // Offline entries.
+    hasOfflineActions?: boolean; // Whether the database has offline data.
+    hasOfflineRatings?: boolean; // Whether the database has offline ratings.
+}
+
+/**
+ * Subfield form data.
+ */
+export interface AddonModDataSubfieldData {
+    fieldid: number;
+    subfield?: string;
+    value?: string; // Value encoded in JSON.
+    files?: any[];
+}
 
 /**
  * Service that provides some features for databases.
@@ -49,13 +111,13 @@ export class AddonModDataProvider {
      * @param   {number}  courseId        Course ID.
      * @param   {any}     contents        The fields data to be created.
      * @param   {number}  [groupId]       Group id, 0 means that the function will determine the user group.
-     * @param   {any}     fields          The fields that define the contents.
+     * @param   {any[]}   fields          The fields that define the contents.
      * @param   {string}  [siteId]        Site ID. If not defined, current site.
      * @param   {boolean} [forceOffline]  Force editing entry in offline.
      * @return  {Promise<any>}            Promise resolved when the action is done.
      */
-    addEntry(dataId: number, entryId: number, courseId: number, contents: any, groupId: number = 0, fields: any, siteId?: string,
-            forceOffline: boolean = false): Promise<any> {
+    addEntry(dataId: number, entryId: number, courseId: number, contents: AddonModDataSubfieldData[], groupId: number = 0,
+            fields: any, siteId?: string, forceOffline: boolean = false): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         // Convenience function to store a data to be synchronized later.
@@ -76,6 +138,8 @@ export class AddonModDataProvider {
                     fieldnotifications: notifications
                 });
             }
+
+            return storeOffline();
         }
 
         return this.addEntryOnline(dataId, contents, groupId, siteId).catch((error) => {
@@ -93,12 +157,12 @@ export class AddonModDataProvider {
      * Adds a new entry to a database. It does not cache calls. It will fail if offline or cannot connect.
      *
      * @param   {number} dataId     Database ID.
-     * @param   {any}    data       The fields data to be created.
+     * @param   {any[]}  data       The fields data to be created.
      * @param   {number} [groupId]  Group id, 0 means that the function will determine the user group.
      * @param   {string} [siteId]   Site ID. If not defined, current site.
      * @return  {Promise<any>}      Promise resolved when the action is done.
      */
-    addEntryOnline(dataId: number, data: any, groupId?: number, siteId?: string): Promise<any> {
+    addEntryOnline(dataId: number, data: AddonModDataSubfieldData[], groupId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     databaseid: dataId,
@@ -184,7 +248,7 @@ export class AddonModDataProvider {
      * @param   {any}    contents  The contents data of the fields.
      * @return  {any}            Array of notifications if any or false.
      */
-    protected checkFields(fields: any, contents: any): any {
+    protected checkFields(fields: any, contents: AddonModDataSubfieldData[]): any[] | false {
         const notifications = [],
             contentsIndexed = {};
 
@@ -289,13 +353,13 @@ export class AddonModDataProvider {
      * @param   {number}  dataId          Database ID.
      * @param   {number}  entryId         Entry ID.
      * @param   {number}  courseId        Course ID.
-     * @param   {any}     contents        The contents data to be updated.
+     * @param   {any[]}   contents        The contents data to be updated.
      * @param   {any}     fields          The fields that define the contents.
      * @param   {string}  [siteId]        Site ID. If not defined, current site.
      * @param   {boolean} forceOffline    Force editing entry in offline.
      * @return  {Promise<any>}            Promise resolved when the action is done.
      */
-    editEntry(dataId: number, entryId: number, courseId: number, contents: any, fields: any, siteId?: string,
+    editEntry(dataId: number, entryId: number, courseId: number, contents: AddonModDataSubfieldData[], fields: any, siteId?: string,
             forceOffline: boolean = false): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
@@ -370,11 +434,11 @@ export class AddonModDataProvider {
      * Updates an existing entry. It does not cache calls. It will fail if offline or cannot connect.
      *
      * @param   {number}  entryId  Entry ID.
-     * @param   {any}     data     The fields data to be updated.
+     * @param   {any[]}   data     The fields data to be updated.
      * @param   {string}  [siteId] Site ID. If not defined, current site.
      * @return  {Promise<any>}     Promise resolved when the action is done.
      */
-    editEntryOnline(entryId: number, data: number, siteId?: string): Promise<any> {
+    editEntryOnline(entryId: number, data: AddonModDataSubfieldData[], siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     entryid: entryId,
@@ -397,11 +461,11 @@ export class AddonModDataProvider {
      * @param  {boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
      * @param  {boolean}   [ignoreCache]   True if it should ignore cached data (it will always fail in offline or server down).
      * @param  {string}    [siteId]        Site ID. If not defined, current site.
-     * @return {Promise<any>}              Promise resolved when done.
+     * @return {Promise<AddonModDataEntry[]>} Promise resolved when done.
      */
     fetchAllEntries(dataId: number, groupId: number = 0, sort: string = '0', order: string = 'DESC',
             perPage: number = AddonModDataProvider.PER_PAGE, forceCache: boolean = false, ignoreCache: boolean = false,
-            siteId?: string): Promise<any> {
+            siteId?: string): Promise<AddonModDataEntry[]> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         return this.fetchEntriesRecursive(dataId, groupId, sort, order, perPage, forceCache, ignoreCache, [], 0, siteId);
@@ -420,10 +484,10 @@ export class AddonModDataProvider {
      * @param  {any}       entries         Entries already fetch (just to concatenate them).
      * @param  {number}    page            Page of records to return.
      * @param  {string}    siteId          Site ID.
-     * @return {Promise<any>}              Promise resolved when done.
+     * @return {Promise<AddonModDataEntry[]>} Promise resolved when done.
      */
     protected fetchEntriesRecursive(dataId: number, groupId: number, sort: string, order: string, perPage: number,
-            forceCache: boolean, ignoreCache: boolean, entries: any, page: number, siteId: string): Promise<any> {
+            forceCache: boolean, ignoreCache: boolean, entries: any, page: number, siteId: string): Promise<AddonModDataEntry[]> {
         return this.getEntries(dataId, groupId, sort, order, page, perPage, forceCache, ignoreCache, siteId)
                 .then((result) => {
             entries = entries.concat(result.entries);
@@ -475,7 +539,8 @@ export class AddonModDataProvider {
                     courseids: [courseId]
                 },
                 preSets = {
-                    cacheKey: this.getDatabaseDataCacheKey(courseId)
+                    cacheKey: this.getDatabaseDataCacheKey(courseId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
             if (forceCache) {
                 preSets['omitExpires'] = true;
@@ -595,11 +660,11 @@ export class AddonModDataProvider {
      * @param   {boolean}   [forceCache=false]  True to always get the value from cache, false otherwise. Default false.
      * @param   {boolean}   [ignoreCache=false] True if it should ignore cached data (it'll always fail in offline or server down).
      * @param   {string}    [siteId]            Site ID. If not defined, current site.
-     * @return  {Promise<any>}                  Promise resolved when the database is retrieved.
+     * @return  {Promise<AddonModDataEntries>} Promise resolved when the database is retrieved.
      */
     getEntries(dataId: number, groupId: number = 0, sort: string = '0', order: string = 'DESC', page: number = 0,
             perPage: number = AddonModDataProvider.PER_PAGE, forceCache: boolean = false, ignoreCache: boolean = false,
-            siteId?: string): Promise<any> {
+            siteId?: string): Promise<AddonModDataEntries> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             // Always use sort and order params to improve cache usage (entries are identified by params).
             const params = {
@@ -612,7 +677,8 @@ export class AddonModDataProvider {
                     order: order
                 },
                 preSets = {
-                    cacheKey: this.getEntriesCacheKey(dataId, groupId)
+                    cacheKey: this.getEntriesCacheKey(dataId, groupId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (forceCache) {
@@ -622,7 +688,13 @@ export class AddonModDataProvider {
                 preSets['emergencyCache'] = false;
             }
 
-            return site.read('mod_data_get_entries', params, preSets);
+            return site.read('mod_data_get_entries', params, preSets).then((response) => {
+                response.entries.forEach((entry) => {
+                    entry.contents = this.utils.arrayToObject(entry.contents, 'fieldid');
+                });
+
+                return response;
+            });
         });
     }
 
@@ -654,16 +726,18 @@ export class AddonModDataProvider {
      * @param   {number}    entryId   Entry ID.
      * @param   {boolean}   [ignoreCache=false] True if it should ignore cached data (it'll always fail in offline or server down).
      * @param   {string}    [siteId]  Site ID. If not defined, current site.
-     * @return  {Promise<any>}        Promise resolved when the database entry is retrieved.
+     * @return {Promise<{entry: AddonModDataEntry, ratinginfo: CoreRatingInfo}>} Promise resolved when the entry is retrieved.
      */
-    getEntry(dataId: number, entryId: number, ignoreCache: boolean = false, siteId?: string): Promise<any> {
+    getEntry(dataId: number, entryId: number, ignoreCache: boolean = false, siteId?: string):
+             Promise<{entry: AddonModDataEntry, ratinginfo: CoreRatingInfo}> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     entryid: entryId,
                     returncontents: 1
                 },
                 preSets = {
-                    cacheKey: this.getEntryCacheKey(dataId, entryId)
+                    cacheKey: this.getEntryCacheKey(dataId, entryId),
+                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
             if (ignoreCache) {
@@ -671,7 +745,11 @@ export class AddonModDataProvider {
                 preSets['emergencyCache'] = false;
             }
 
-            return site.read('mod_data_get_entry', params, preSets);
+            return site.read('mod_data_get_entry', params, preSets).then((response) => {
+                response.entry.contents = this.utils.arrayToObject(response.entry.contents, 'fieldid');
+
+                return response;
+            });
         });
     }
 
@@ -701,7 +779,8 @@ export class AddonModDataProvider {
                     databaseid: dataId
                 },
                 preSets = {
-                    cacheKey: this.getFieldsCacheKey(dataId)
+                    cacheKey: this.getFieldsCacheKey(dataId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (forceCache) {
@@ -854,15 +933,17 @@ export class AddonModDataProvider {
      * Report the database as being viewed.
      *
      * @param {number} id      Module ID.
+     * @param {string} [name] Name of the data.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
-    logView(id: number, siteId?: string): Promise<any> {
+    logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             databaseid: id
         };
 
-        return this.logHelper.log('mod_data_view_database', params, AddonModDataProvider.COMPONENT, id, siteId);
+        return this.logHelper.logSingle('mod_data_view_database', params, AddonModDataProvider.COMPONENT, id, name, 'data', {},
+                    siteId);
     }
 
     /**
@@ -871,16 +952,16 @@ export class AddonModDataProvider {
      * @param {number} dataId             The data instance id.
      * @param {number} [groupId=0]        Group id, 0 means that the function will determine the user group.
      * @param {string} [search]           Search text. It will be used if advSearch is not defined.
-     * @param {any}    [advSearch]        Advanced search data.
+     * @param {any[]}  [advSearch]        Advanced search data.
      * @param {string} [sort]             Sort by this field.
      * @param {string} [order]            The direction of the sorting.
      * @param {number} [page=0]           Page of records to return.
      * @param {number} [perPage=PER_PAGE] Records per page to return. Default on AddonModDataProvider.PER_PAGE.
      * @param {string} [siteId]           Site ID. If not defined, current site.
-     * @return  {Promise<any>}            Promise resolved when the action is done.
+     * @return {Promise<AddonModDataEntries>} Promise resolved when the action is done.
      */
     searchEntries(dataId: number, groupId: number = 0, search?: string, advSearch?: any, sort?: string, order?: string,
-            page: number = 0, perPage: number = AddonModDataProvider.PER_PAGE, siteId?: string): Promise<any> {
+            page: number = 0, perPage: number = AddonModDataProvider.PER_PAGE, siteId?: string): Promise<AddonModDataEntries> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     databaseid: dataId,
@@ -911,7 +992,13 @@ export class AddonModDataProvider {
                 params['advsearch'] = advSearch;
             }
 
-            return site.read('mod_data_search_entries', params, preSets);
+            return site.read('mod_data_search_entries', params, preSets).then((response) => {
+                response.entries.forEach((entry) => {
+                    entry.contents = this.utils.arrayToObject(entry.contents, 'fieldid');
+                });
+
+                return response;
+            });
         });
     }
 }

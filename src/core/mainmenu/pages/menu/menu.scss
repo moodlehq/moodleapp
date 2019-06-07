@@ -1,4 +1,10 @@
 ion-app.app-root page-core-mainmenu {
+    ion-icon {
+        text-overflow: unset;
+        overflow: visible;
+        text-align: center;
+    }
+
     .ion-md-fa-graduation-cap,
     .ion-ios-fa-graduation-cap,
     .ion-ios-fa-graduation-cap-outline,
@@ -8,12 +14,29 @@ ion-app.app-root page-core-mainmenu {
         @extend .fa;
         font-size: 21px;
         height: 21px;
+
     }
 
     .ion-ios-fa-graduation-cap-outline {
         color: transparent;
         -webkit-text-stroke-width: 0.8px;
         -webkit-text-stroke-color: $tabs-tab-color-inactive;
+        font-size: 23px;
+        height: 23px;
+    }
+
+    .ion-md-fa-newspaper-o,
+    .ion-ios-fa-newspaper-o,
+    .ion-ios-fa-newspaper-o-outline,
+    .ion-wp-fa-newspaper-o,
+    .ion-fa-newspaper-o {
+        @extend .fa-newspaper-o;
+        @extend .fa;
+        font-size: 22px;
+        height: 22px;
+    }
+
+    .ion-ios-fa-newspaper-o-outline {
         font-size: 23px;
         height: 23px;
     }

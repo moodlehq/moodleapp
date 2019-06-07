@@ -3,14 +3,14 @@ dist: xenial
 group: edge
 
 language: node_js
-node_js: stable
+node_js: 11
 
 before_cache:
   - rm -rf $HOME/.cache/electron-builder/wine
 
 cache:
   directories:
-    - node_modules
+    - $HOME/.npm
     - $HOME/.cache/electron
     - $HOME/.cache/electron-builder
 

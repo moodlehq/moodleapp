@@ -1,0 +1,28 @@
+ion-app.app-root page-addon-storagemanager-course-storage {
+    .item-md.item-block .item-inner {
+        padding-right: 0;
+        padding-left: 0;
+    }
+    ion-card.section ion-card-header.card-header {
+        border-bottom: 1px solid $list-border-color;
+        margin-bottom: 8px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+    ion-card.section h2 {
+        font-weight: bold;
+        font-size: 2rem;
+    }
+    .size {
+        margin-top: 4px;
+    }
+    .size ion-icon {
+        margin-right: 4px;
+    }
+    .core-module-icon {
+        margin-right: 4px;
+        width: 16px;
+        height: 16px;
+        display: inline;
+    }
+}

@@ -68,7 +68,7 @@ export class CoreLinkDirective implements OnInit {
                     event.stopPropagation();
 
                     if (this.utils.isTrueOrOne(this.capture)) {
-                        this.contentLinksHelper.handleLink(href, undefined, navCtrl).then((treated) => {
+                        this.contentLinksHelper.handleLink(href, undefined, navCtrl, true, true).then((treated) => {
                             if (!treated) {
                                 this.navigate(href);
                             }

@@ -112,9 +112,10 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      * Get the list of files that needs to be downloaded in addition to the files embedded in the HTML.
      *
      * @param {any} question Question.
+     * @param {number} usageId Usage ID.
      * @return {string[]} List of URLs.
      */
-    getAdditionalDownloadableFiles?(question: any): string[];
+    getAdditionalDownloadableFiles?(question: any, usageId: number): string[];
 }
 
 /**
@@ -274,11 +275,12 @@ export class CoreQuestionDelegate extends CoreDelegate {
      * Get the list of files that needs to be downloaded in addition to the files embedded in the HTML.
      *
      * @param {any} question Question.
+     * @param {number} usageId Usage ID.
      * @return {string[]} List of URLs.
      */
-    getAdditionalDownloadableFiles(question: any): string[] {
+    getAdditionalDownloadableFiles(question: any, usageId: number): string[] {
         const type = this.getTypeName(question);
 
-        return this.executeFunctionOnEnabled(type, 'getAdditionalDownloadableFiles', [question]) || [];
+        return this.executeFunctionOnEnabled(type, 'getAdditionalDownloadableFiles', [question, usageId]) || [];
     }
 }

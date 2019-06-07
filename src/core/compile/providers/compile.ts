@@ -35,6 +35,7 @@ import { CORE_QUESTION_PROVIDERS } from '@core/question/question.module';
 import { CORE_SHAREDFILES_PROVIDERS } from '@core/sharedfiles/sharedfiles.module';
 import { CORE_SITEHOME_PROVIDERS } from '@core/sitehome/sitehome.module';
 import { CORE_USER_PROVIDERS } from '@core/user/user.module';
+import { CORE_PUSHNOTIFICATIONS_PROVIDERS } from '@core/pushnotifications/pushnotifications.module';
 import { IONIC_NATIVE_PROVIDERS } from '@core/emulator/emulator.module';
 
 // Import only this provider to prevent circular dependencies.
@@ -77,6 +78,7 @@ import { CoreBlockComponentsModule } from '@core/block/components/components.mod
 import { CoreCourseUnsupportedModuleComponent } from '@core/course/components/unsupported-module/unsupported-module';
 import { CoreCourseFormatSingleActivityComponent } from '@core/course/formats/singleactivity/components/singleactivity';
 import { CoreSitePluginsModuleIndexComponent } from '@core/siteplugins/components/module-index/module-index';
+import { CoreSitePluginsBlockComponent } from '@core/siteplugins/components/block/block';
 import { CoreSitePluginsCourseOptionComponent } from '@core/siteplugins/components/course-option/course-option';
 import { CoreSitePluginsCourseFormatComponent } from '@core/siteplugins/components/course-format/course-format';
 import { CoreSitePluginsQuestionComponent } from '@core/siteplugins/components/question/question';
@@ -114,7 +116,6 @@ import { ADDON_MOD_WIKI_PROVIDERS } from '@addon/mod/wiki/wiki.module';
 import { ADDON_MOD_WORKSHOP_PROVIDERS } from '@addon/mod/workshop/workshop.module';
 import { ADDON_NOTES_PROVIDERS } from '@addon/notes/notes.module';
 import { ADDON_NOTIFICATIONS_PROVIDERS } from '@addon/notifications/notifications.module';
-import { ADDON_PUSHNOTIFICATIONS_PROVIDERS } from '@addon/pushnotifications/pushnotifications.module';
 import { ADDON_REMOTETHEMES_PROVIDERS } from '@addon/remotethemes/remotethemes.module';
 
 // Import some addon modules that define components, directives and pipes. Only import the important ones.
@@ -233,7 +234,7 @@ export class CoreCompileProvider {
                 .concat(ADDON_MOD_QUIZ_PROVIDERS).concat(ADDON_MOD_RESOURCE_PROVIDERS).concat(ADDON_MOD_SCORM_PROVIDERS)
                 .concat(ADDON_MOD_SURVEY_PROVIDERS).concat(ADDON_MOD_URL_PROVIDERS).concat(ADDON_MOD_WIKI_PROVIDERS)
                 .concat(ADDON_MOD_WORKSHOP_PROVIDERS).concat(ADDON_NOTES_PROVIDERS).concat(ADDON_NOTIFICATIONS_PROVIDERS)
-                .concat(ADDON_PUSHNOTIFICATIONS_PROVIDERS).concat(ADDON_REMOTETHEMES_PROVIDERS).concat(CORE_BLOCK_PROVIDERS);
+                .concat(CORE_PUSHNOTIFICATIONS_PROVIDERS).concat(ADDON_REMOTETHEMES_PROVIDERS).concat(CORE_BLOCK_PROVIDERS);
 
         // We cannot inject anything to this constructor. Use the Injector to inject all the providers into the instance.
         for (const i in providers) {
@@ -269,6 +270,7 @@ export class CoreCompileProvider {
         instance['CoreCourseUnsupportedModuleComponent'] = CoreCourseUnsupportedModuleComponent;
         instance['CoreCourseFormatSingleActivityComponent'] = CoreCourseFormatSingleActivityComponent;
         instance['CoreSitePluginsModuleIndexComponent'] = CoreSitePluginsModuleIndexComponent;
+        instance['CoreSitePluginsBlockComponent'] = CoreSitePluginsBlockComponent;
         instance['CoreSitePluginsCourseOptionComponent'] = CoreSitePluginsCourseOptionComponent;
         instance['CoreSitePluginsCourseFormatComponent'] = CoreSitePluginsCourseFormatComponent;
         instance['CoreSitePluginsQuestionComponent'] = CoreSitePluginsQuestionComponent;

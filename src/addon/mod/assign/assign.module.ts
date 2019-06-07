@@ -17,6 +17,7 @@ import { CoreCronDelegate } from '@providers/cron';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
+import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers/delegate';
 import { AddonModAssignProvider } from './providers/assign';
 import { AddonModAssignOfflineProvider } from './providers/assign-offline';
 import { AddonModAssignSyncProvider } from './providers/assign-sync';
@@ -30,6 +31,7 @@ import { AddonModAssignPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModAssignSyncCronHandler } from './providers/sync-cron-handler';
 import { AddonModAssignIndexLinkHandler } from './providers/index-link-handler';
 import { AddonModAssignListLinkHandler } from './providers/list-link-handler';
+import { AddonModAssignPushClickHandler } from './providers/push-click-handler';
 import { AddonModAssignSubmissionModule } from './submission/submission.module';
 import { AddonModAssignFeedbackModule } from './feedback/feedback.module';
 import { CoreUpdateManagerProvider } from '@providers/update-manager';
@@ -64,7 +66,8 @@ export const ADDON_MOD_ASSIGN_PROVIDERS: any[] = [
         AddonModAssignPrefetchHandler,
         AddonModAssignSyncCronHandler,
         AddonModAssignIndexLinkHandler,
-        AddonModAssignListLinkHandler
+        AddonModAssignListLinkHandler,
+        AddonModAssignPushClickHandler
     ]
 })
 export class AddonModAssignModule {
@@ -72,13 +75,15 @@ export class AddonModAssignModule {
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModAssignPrefetchHandler,
             cronDelegate: CoreCronDelegate, syncHandler: AddonModAssignSyncCronHandler, updateManager: CoreUpdateManagerProvider,
             contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModAssignIndexLinkHandler,
-            listLinkHandler: AddonModAssignListLinkHandler) {
+            listLinkHandler: AddonModAssignListLinkHandler, pushNotificationsDelegate: CorePushNotificationsDelegate,
+            pushClickHandler: AddonModAssignPushClickHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         cronDelegate.register(syncHandler);
         contentLinksDelegate.registerHandler(linkHandler);
         contentLinksDelegate.registerHandler(listLinkHandler);
+        pushNotificationsDelegate.registerClickHandler(pushClickHandler);
 
         // Allow migrating the tables from the old app to the new schema.
         updateManager.registerSiteTablesMigration([

@@ -103,11 +103,9 @@ export class AddonModDataFieldTextareaHandler extends AddonModDataFieldTextHandl
                 return this.translate.instant('addon.mod_data.errormustsupplyvalue');
             }
 
-            const found = inputData.some((input) => {
-                return !input.subfield && this.textUtils.htmlIsBlank(input.value);
-            });
+            const value = inputData.find((value) => value.subfield == '');
 
-            if (!found) {
+            if (!value || this.textUtils.htmlIsBlank(value.value)) {
                 return this.translate.instant('addon.mod_data.errormustsupplyvalue');
             }
         }

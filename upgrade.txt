@@ -1,6 +1,11 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 3.7.0 ===
+
+- The pushnotifications addon has been moved to core. All imports of that addon need to be fixed to use the right path and name.
+- Now the expirationTime of cache entries contains the time the entry was modified, not the expiration time. This is to allow calculating dynamic expiration times. We decided to reuse the same field to prevent modifying the database table.
+
 === 3.6.1 ===
 
 - The local notifications plugin was updated to its latest version. The new API has some breaking changes, so please check its documentation if you're using local notifications. Also, you need to run "npm install" to update the ionic-native library.

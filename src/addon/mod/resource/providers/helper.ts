@@ -113,11 +113,18 @@ export class AddonModResourceHelperProvider {
      * @return {boolean}         Whether the resource should be displayed embeded.
      */
     isDisplayedEmbedded(module: any, display: number): boolean {
-        if (!module.contents.length || !this.fileProvider.isAvailable() || this.isNextcloudFile(module)) {
+        if ((!module.contents.length && !module.contentsinfo) || !this.fileProvider.isAvailable() ||
+                (!this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.7') && this.isNextcloudFile(module))) {
             return false;
         }
 
-        const ext = this.mimetypeUtils.getFileExtension(module.contents[0].filename);
+        let ext;
+
+        if (module.contentsinfo) {
+            ext = this.mimetypeUtils.getExtension(module.contentsinfo.mimetypes[0]);
+        } else {
+            ext = this.mimetypeUtils.getFileExtension(module.contents[0].filename);
+        }
 
         return (display == this.DISPLAY_EMBED || display == this.DISPLAY_AUTO) && this.mimetypeUtils.canBeEmbedded(ext);
     }
@@ -129,12 +136,18 @@ export class AddonModResourceHelperProvider {
      * @return {boolean}   Whether the resource should be displayed in an iframe.
      */
     isDisplayedInIframe(module: any): boolean {
-        if (!module.contents.length || !this.fileProvider.isAvailable()) {
+        if ((!module.contents.length && !module.contentsinfo) || !this.fileProvider.isAvailable()) {
             return false;
         }
 
-        const ext = this.mimetypeUtils.getFileExtension(module.contents[0].filename),
+        let mimetype;
+
+        if (module.contentsinfo) {
+            mimetype = module.contentsinfo.mimetypes[0];
+        } else {
+            const ext = this.mimetypeUtils.getFileExtension(module.contents[0].filename);
             mimetype = this.mimetypeUtils.getMimeType(ext);
+        }
 
         return mimetype == 'text/html';
     }
@@ -146,6 +159,10 @@ export class AddonModResourceHelperProvider {
      * @return {boolean} Whether it's a Nextcloud file.
      */
     isNextcloudFile(module: any): boolean {
+        if (module.contentsinfo) {
+            return module.contentsinfo.repositorytype == 'nextcloud';
+        }
+
         return module.contents && module.contents[0] && module.contents[0].repositorytype == 'nextcloud';
     }
 
@@ -162,7 +179,7 @@ export class AddonModResourceHelperProvider {
         // Download and open the file from the resource contents.
         return this.courseHelper.downloadModuleAndOpenFile(module, courseId, AddonModResourceProvider.COMPONENT, module.id,
                 module.contents).then(() => {
-            this.resourceProvider.logView(module.instance).then(() => {
+            this.resourceProvider.logView(module.instance, module.name).then(() => {
                 this.courseProvider.checkModuleCompletion(courseId, module.completiondata);
             }).catch(() => {
                 // Ignore errors.

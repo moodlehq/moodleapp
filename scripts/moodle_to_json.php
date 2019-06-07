@@ -34,9 +34,11 @@ $config_langs = array_keys(get_object_vars($config['languages']));
 // Set languages to do. If script is called using a language it will be used as unique.
 if (isset($argv[1]) && !empty($argv[1])) {
     $forcedetect = false;
+    define('TOTRANSLATE', true);
     $languages = explode(',', $argv[1]);
 } else {
     $forcedetect = true;
+    define('TOTRANSLATE', false);
     $languages = $config_langs;
 }
 
@@ -160,22 +162,28 @@ function build_lang($lang, $keys, $total) {
         $file = LANGPACKSFOLDER.'/'.$langfoldername.'/'.$value->file.'.php';
         // Apply translations.
         if (!file_exists($file)) {
+            if (TOTRANSLATE) {
+                echo "\n\t\To translate $value->string on $value->file";
+            }
             continue;
         }
 
         $string = [];
         include($file);
 
-        if (!isset($string[$value->string])) {
+        if (!isset($string[$value->string]) || ($lang == 'en' && $value->file == 'local_moodlemobileapp')) {
             // Not yet translated. Do not override.
             if (!$langFile) {
-                // Load lang fils just once.
+                // Load lang files just once.
                 $langFile = file_get_contents(ASSETSPATH.$lang.'.json');
                 $langFile = (array) json_decode($langFile);
             }
             if (is_array($langFile) && isset($langFile[$key])) {
                 $translations[$key] = $langFile[$key];
                 $local++;
+            }
+            if (TOTRANSLATE) {
+                echo "\n\t\tTo translate $value->string on $value->file";
             }
             continue;
         } else {

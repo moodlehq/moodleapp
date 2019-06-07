@@ -68,25 +68,28 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
      * Try to synchronize all the choices in a certain site or in all sites.
      *
      * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} force Wether to force sync not depending on last execution.
      * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllChoices(siteId?: string): Promise<any> {
-        return this.syncOnSites('choices', this.syncAllChoicesFunc.bind(this), undefined, siteId);
+    syncAllChoices(siteId?: string, force?: boolean): Promise<any> {
+        return this.syncOnSites('choices', this.syncAllChoicesFunc.bind(this), [force], siteId);
     }
 
     /**
      * Sync all pending choices on a site.
      *
-     * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {string}  [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} force    Wether to force sync not depending on last execution.
      * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected syncAllChoicesFunc(siteId?: string): Promise<any> {
+    protected syncAllChoicesFunc(siteId?: string, force?: boolean): Promise<any> {
         return this.choiceOffline.getResponses(siteId).then((responses) => {
-            const promises = [];
-
             // Sync all responses.
-            responses.forEach((response) => {
-                promises.push(this.syncChoiceIfNeeded(response.choiceid, response.userid, siteId).then((result) => {
+            const promises = responses.map((response) => {
+                const promise = force ? this.syncChoice(response.choiceid, response.userid, siteId) :
+                    this.syncChoiceIfNeeded(response.choiceid, response.userid, siteId);
+
+                return promise.then((result) => {
                     if (result && result.updated) {
                         // Sync successful, send event.
                         this.eventsProvider.trigger(AddonModChoiceSyncProvider.AUTO_SYNCED, {
@@ -95,8 +98,10 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
                             warnings: result.warnings
                         }, siteId);
                     }
-                }));
+                });
             });
+
+            return Promise.all(promises);
         });
     }
 
@@ -122,98 +127,101 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
      * Synchronize a choice.
      *
      * @param  {number} choiceId Choice ID to be synced.
-     * @param  {number} userId   User the answers belong to.
+     * @param  {number} [userId] User the answers belong to.
      * @param  {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved if sync is successful, rejected otherwise.
      */
-    syncChoice(choiceId: number, userId: number, siteId?: string): Promise<any> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+    syncChoice(choiceId: number, userId?: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+            siteId = site.getId();
 
-        const syncId = this.getSyncId(choiceId, userId);
-        if (this.isSyncing(syncId, siteId)) {
-            // There's already a sync ongoing for this discussion, return the promise.
-            return this.getOngoingSync(syncId, siteId);
-        }
-
-        this.logger.debug(`Try to sync choice '${choiceId}' for user '${userId}'`);
-
-        let courseId;
-        const result = {
-            warnings: [],
-            updated: false
-        };
-
-        // Sync offline logs.
-        const syncPromise = this.logHelper.syncIfNeeded(AddonModChoiceProvider.COMPONENT, choiceId, siteId).catch(() => {
-            // Ignore errors.
-        }).then(() => {
-            return this.choiceOffline.getResponse(choiceId, siteId, userId).catch(() => {
-                // No offline data found, return empty object.
-                return {};
-            });
-        }).then((data) => {
-            if (!data.choiceid) {
-                // Nothing to sync.
-                return;
+            const syncId = this.getSyncId(choiceId, userId);
+            if (this.isSyncing(syncId, siteId)) {
+                // There's already a sync ongoing for this discussion, return the promise.
+                return this.getOngoingSync(syncId, siteId);
             }
 
-            if (!this.appProvider.isOnline()) {
-                // Cannot sync in offline.
-                return Promise.reject(null);
-            }
+            this.logger.debug(`Try to sync choice '${choiceId}' for user '${userId}'`);
 
-            courseId = data.courseid;
+            let courseId;
+            const result = {
+                warnings: [],
+                updated: false
+            };
 
-            // Send the responses.
-            let promise;
-
-            if (data.deleting) {
-                // A user has deleted some responses.
-                promise = this.choiceProvider.deleteResponsesOnline(choiceId, data.responses, siteId);
-            } else {
-                // A user has added some responses.
-                promise = this.choiceProvider.submitResponseOnline(choiceId, data.responses, siteId);
-            }
-
-            return promise.then(() => {
-                result.updated = true;
-
-                return this.choiceOffline.deleteResponse(choiceId, siteId, userId);
-            }).catch((error) => {
-                if (this.utils.isWebServiceError(error)) {
-                    // The WebService has thrown an error, this means that responses cannot be submitted. Delete them.
-                    result.updated = true;
-
-                    return this.choiceOffline.deleteResponse(choiceId, siteId, userId).then(() => {
-                        // Responses deleted, add a warning.
-                        result.warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
-                            component: this.componentTranslate,
-                            name: data.name,
-                            error: this.textUtils.getErrorMessageFromError(error)
-                        }));
-                    });
+            // Sync offline logs.
+            const syncPromise = this.logHelper.syncIfNeeded(AddonModChoiceProvider.COMPONENT, choiceId, siteId).catch(() => {
+                // Ignore errors.
+            }).then(() => {
+                return this.choiceOffline.getResponse(choiceId, siteId, userId).catch(() => {
+                    // No offline data found, return empty object.
+                    return {};
+                });
+            }).then((data) => {
+                if (!data.choiceid) {
+                    // Nothing to sync.
+                    return;
                 }
 
-                // Couldn't connect to server, reject.
-                return Promise.reject(error);
-            });
-        }).then(() => {
-            if (courseId) {
-                // Data has been sent to server, prefetch choice if needed.
-                return this.courseProvider.getModuleBasicInfoByInstance(choiceId, 'choice', siteId).then((module) => {
-                    return this.prefetchAfterUpdate(module, courseId, undefined, siteId);
-                }).catch(() => {
-                    // Ignore errors.
-                });
-            }
-        }).then(() => {
-            // Sync finished, set sync time.
-            return this.setSyncTime(syncId, siteId);
-        }).then(() => {
-            // All done, return the warnings.
-            return result;
-        });
+                if (!this.appProvider.isOnline()) {
+                    // Cannot sync in offline.
+                    return Promise.reject(null);
+                }
 
-        return this.addOngoingSync(syncId, syncPromise, siteId);
+                courseId = data.courseid;
+
+                // Send the responses.
+                let promise;
+
+                if (data.deleting) {
+                    // A user has deleted some responses.
+                    promise = this.choiceProvider.deleteResponsesOnline(choiceId, data.responses, siteId);
+                } else {
+                    // A user has added some responses.
+                    promise = this.choiceProvider.submitResponseOnline(choiceId, data.responses, siteId);
+                }
+
+                return promise.then(() => {
+                    result.updated = true;
+
+                    return this.choiceOffline.deleteResponse(choiceId, siteId, userId);
+                }).catch((error) => {
+                    if (this.utils.isWebServiceError(error)) {
+                        // The WebService has thrown an error, this means that responses cannot be submitted. Delete them.
+                        result.updated = true;
+
+                        return this.choiceOffline.deleteResponse(choiceId, siteId, userId).then(() => {
+                            // Responses deleted, add a warning.
+                            result.warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
+                                component: this.componentTranslate,
+                                name: data.name,
+                                error: this.textUtils.getErrorMessageFromError(error)
+                            }));
+                        });
+                    }
+
+                    // Couldn't connect to server, reject.
+                    return Promise.reject(error);
+                });
+            }).then(() => {
+                if (courseId) {
+                    // Data has been sent to server, prefetch choice if needed.
+                    return this.courseProvider.getModuleBasicInfoByInstance(choiceId, 'choice', siteId).then((module) => {
+                        return this.prefetchAfterUpdate(module, courseId, undefined, siteId);
+                    }).catch(() => {
+                        // Ignore errors.
+                    });
+                }
+            }).then(() => {
+                // Sync finished, set sync time.
+                return this.setSyncTime(syncId, siteId);
+            }).then(() => {
+                // All done, return the warnings.
+                return result;
+            });
+
+            return this.addOngoingSync(syncId, syncPromise, siteId);
+        });
     }
 }

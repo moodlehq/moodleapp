@@ -23,10 +23,12 @@ import { AddonMessagesSyncProvider } from '../../providers/sync';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreAppProvider } from '@providers/app';
 import { coreSlideInOut } from '@classes/animations';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreInfiniteLoadingComponent } from '@components/infinite-loading/infinite-loading';
 import { Md5 } from 'ts-md5/dist/md5';
 import * as moment from 'moment';
 
@@ -41,6 +43,7 @@ import * as moment from 'moment';
 })
 export class AddonMessagesDiscussionPage implements OnDestroy {
     @ViewChild(Content) content: Content;
+    @ViewChild(CoreInfiniteLoadingComponent) infinite: CoreInfiniteLoadingComponent;
 
     siteId: string;
     protected fetching: boolean;
@@ -78,24 +81,29 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     isGroup = false;
     members: any = {}; // Members that wrote a message, indexed by ID.
     favouriteIcon = 'fa-star';
+    favouriteIconSlash = false;
     deleteIcon = 'trash';
     blockIcon = 'close-circle';
-    addRemoveIcon = 'add';
+    addRemoveIcon = 'person';
     otherMember: any; // Other member information (individual conversations only).
     footerType: 'message' | 'blocked' | 'requiresContact' | 'requestSent' | 'requestReceived' | 'unable';
     requestContactSent = false;
     requestContactReceived = false;
+    isSelf = false;
+    muteEnabled = false;
+    muteIcon = 'volume-off';
 
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, navParams: NavParams,
             private userProvider: CoreUserProvider, private navCtrl: NavController, private messagesSync: AddonMessagesSyncProvider,
             private domUtils: CoreDomUtilsProvider, private messagesProvider: AddonMessagesProvider, logger: CoreLoggerProvider,
             private utils: CoreUtilsProvider, private appProvider: CoreAppProvider, private translate: TranslateService,
             @Optional() private svComponent: CoreSplitViewComponent, private messagesOffline: AddonMessagesOfflineProvider,
-            private modalCtrl: ModalController) {
+            private modalCtrl: ModalController, private textUtils: CoreTextUtilsProvider) {
 
         this.siteId = sitesProvider.getCurrentSiteId();
         this.currentUserId = sitesProvider.getCurrentSiteUserId();
         this.groupMessagingEnabled = this.messagesProvider.isGroupMessagingEnabled();
+        this.muteEnabled = this.messagesProvider.isMuteConversationEnabled();
 
         this.logger = logger.getInstance('AddonMessagesDiscussionPage');
 
@@ -238,7 +246,6 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                                 this.title = member.fullname;
                             }
                             this.blockIcon = this.otherMember && this.otherMember.isblocked ? 'checkmark-circle' : 'close-circle';
-                            this.addRemoveIcon = this.otherMember && this.otherMember.iscontact ? 'remove' : 'add';
                         }));
                     } else {
                         this.otherMember = null;
@@ -378,13 +385,22 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         this.messages.forEach((message, index): any => {
             message.showDate = this.showDate(message, this.messages[index - 1]);
             message.showUserData = this.showUserData(message, this.messages[index - 1]);
+            message.showTail = this.showTail(message, this.messages[index + 1]);
         });
+
+        // Call resize to recalculate the dimensions.
+        this.content && this.content.resize();
+
+        // If we received a new message while using group messaging, force mark messages as read.
+        const last = this.messages[this.messages.length - 1],
+            forceMark = this.groupMessagingEnabled && last && last.useridfrom != this.currentUserId && this.lastMessage.text != ''
+                    && (last.text !== this.lastMessage.text || last.timecreated !== this.lastMessage.timecreated);
 
         // Notify that there can be a new message.
         this.notifyNewMessage();
 
         // Mark retrieved messages as read if they are not.
-        this.markMessagesAsRead();
+        this.markMessagesAsRead(forceMark);
     }
 
     /**
@@ -402,7 +418,13 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         if (conversationId) {
             promise = Promise.resolve(conversationId);
         } else {
-            promise = this.messagesProvider.getConversationBetweenUsers(userId, undefined, true).then((conversation) => {
+            if (userId == this.currentUserId && this.messagesProvider.isSelfConversationEnabled()) {
+                promise = this.messagesProvider.getSelfConversation();
+            } else {
+                promise = this.messagesProvider.getConversationBetweenUsers(userId, undefined, true);
+            }
+
+            promise = promise.then((conversation) => {
                 fallbackConversation = conversation;
 
                 return conversation.id;
@@ -430,10 +452,13 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                     this.title = conversation.name;
                     this.conversationImage = conversation.imageurl;
                     this.isGroup = conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP;
-                    this.favouriteIcon = conversation.isfavourite ? 'fa-star-o' : 'fa-star';
+                    this.favouriteIcon = 'fa-star';
+                    this.favouriteIconSlash = conversation.isfavourite;
+                    this.muteIcon = conversation.ismuted ? 'volume-up' : 'volume-off';
                     if (!this.isGroup) {
                         this.userId = conversation.userid;
                     }
+                    this.isSelf = conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_SELF;
 
                     return true;
                 } else {
@@ -442,7 +467,9 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             });
         }, (error) => {
             // Probably conversation does not exist or user is offline. Try to load offline messages.
-            return this.messagesOffline.getMessages(userId).then((messages) => {
+            this.isSelf = userId == this.currentUserId;
+
+            return this.messagesOffline.getMessages(userId).then((messages): any => {
                 if (messages && messages.length) {
                     // We have offline messages, this probably means that the conversation didn't exist. Don't display error.
                     messages.forEach((message) => {
@@ -455,6 +482,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                     // Display the error.
                     return Promise.reject(error);
                 }
+
+                return false;
             });
         });
     }
@@ -553,7 +582,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Mark messages as read.
      */
-    protected markMessagesAsRead(): void {
+    protected markMessagesAsRead(forceMark: boolean): void {
         let readChanged = false;
         const promises = [];
 
@@ -561,7 +590,9 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             let messageUnreadFound = false;
 
             // Mark all messages at a time if there is any unread message.
-            if (this.groupMessagingEnabled) {
+            if (forceMark) {
+                messageUnreadFound = true;
+            } else if (this.groupMessagingEnabled) {
                 messageUnreadFound = this.conversation && this.conversation.unreadcount > 0 && this.conversationId > 0;
             } else {
                 for (const x in this.messages) {
@@ -625,6 +656,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         const last = this.messages[this.messages.length - 1];
 
         let trigger = false;
+
         if (!last) {
             this.lastMessage = {text: '', timecreated: 0};
             trigger = true;
@@ -777,7 +809,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      * @param {any} message Message to be copied.
      */
     copyMessage(message: any): void {
-        this.utils.copyToClipboard(message.smallmessage || message.text || '');
+        const text = this.textUtils.decodeHTMLEntities(message.smallmessage || message.text || '');
+        this.utils.copyToClipboard(text);
     }
 
     /**
@@ -787,11 +820,26 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      * @param {number} index Index where the message is to delete it from the view.
      */
     deleteMessage(message: any, index: number): void {
-        const langKey = message.pending ? 'core.areyousure' : 'addon.messages.deletemessageconfirmation';
-        this.domUtils.showConfirm(this.translate.instant(langKey)).then(() => {
+        const canDeleteAll = this.conversation && this.conversation.candeletemessagesforallusers,
+            langKey = message.pending || canDeleteAll || this.isSelf ? 'core.areyousure' :
+                    'addon.messages.deletemessageconfirmation',
+            options: any = {};
+
+        if (canDeleteAll && !message.pending) {
+            // Show delete for all checkbox.
+            options.inputs = [{
+                type: 'checkbox',
+                name: 'deleteforall',
+                checked: false,
+                value: true,
+                label: this.translate.instant('addon.messages.deleteforeveryone')
+            }];
+        }
+
+        this.domUtils.showConfirm(this.translate.instant(langKey), undefined, undefined, undefined, options).then((data) => {
             const modal = this.domUtils.showModalLoading('core.deleting', true);
 
-            return this.messagesProvider.deleteMessage(message).then(() => {
+            return this.messagesProvider.deleteMessage(message, data && data[0]).then(() => {
                  // Remove message from the list without having to wait for re-fetch.
                 this.messages.splice(index, 1);
                 this.removeMessage(message.hash);
@@ -813,11 +861,28 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      * @return {Promise<any>} Resolved when done.
      */
     loadPrevious(infiniteComplete?: any): Promise<any> {
+        let infiniteHeight = this.infinite ? this.infinite.getHeight() : 0;
+        const scrollHeight = this.domUtils.getScrollHeight(this.content);
+
         // If there is an ongoing fetch, wait for it to finish.
         return this.waitForFetch().finally(() => {
             this.pagesLoaded++;
 
-            this.fetchMessages().catch((error) => {
+            this.fetchMessages().then(() => {
+
+                // Try to keep the scroll position.
+                const scrollBottom = scrollHeight - this.domUtils.getScrollTop(this.content);
+
+                if (this.canLoadMore && infiniteHeight && this.infinite) {
+                    // The height of the infinite is different while spinner is shown. Add that difference.
+                    infiniteHeight = infiniteHeight - this.infinite.getHeight();
+                } else if (!this.canLoadMore) {
+                    // Can't load more, take into account the full height of the infinite loading since it will disappear now.
+                    infiniteHeight = infiniteHeight || (this.infinite ? this.infinite.getHeight() : 0);
+                }
+
+                this.keepScroll(scrollHeight, scrollBottom, infiniteHeight);
+            }).catch((error) => {
                 this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
                 this.pagesLoaded--;
                 this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingmessages', true);
@@ -825,6 +890,31 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                 infiniteComplete && infiniteComplete();
             });
         });
+    }
+
+    /**
+     * Keep scroll position after loading previous messages.
+     * We don't use resizeContent because the approach used is different and it isn't easy to calculate these positions.
+     */
+    protected keepScroll(oldScrollHeight: number, oldScrollBottom: number, infiniteHeight: number, retries?: number): void {
+        retries = retries || 0;
+
+        setTimeout(() => {
+            const newScrollHeight = this.domUtils.getScrollHeight(this.content);
+
+            if (newScrollHeight == oldScrollHeight) {
+                // Height hasn't changed yet. Retry if max retries haven't been reached.
+                if (retries <= 10) {
+                    this.keepScroll(oldScrollHeight, oldScrollBottom, infiniteHeight, retries + 1);
+                }
+
+                return;
+            }
+
+            const scrollTo = newScrollHeight - oldScrollBottom + infiniteHeight;
+
+            this.domUtils.scrollTo(this.content, 0, scrollTo, 0);
+        }, 30);
     }
 
     /**
@@ -984,6 +1074,17 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     }
 
     /**
+     * Check if a css tail should be shown.
+     *
+     * @param {any} message Current message where to show the user info.
+     * @param {any} [nextMessage] Next message.
+     * @return {boolean} Whether user data should be shown.
+     */
+    showTail(message: any, nextMessage?: any): boolean {
+        return !nextMessage || nextMessage.useridfrom != message.useridfrom || nextMessage.showDate;
+    }
+
+    /**
      * Toggles delete state.
      */
     toggleDelete(): void {
@@ -1043,7 +1144,35 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'Error changing favourite state.');
         }).finally(() => {
-            this.favouriteIcon = this.conversation.isfavourite ? 'fa-star-o' : 'fa-star';
+            this.favouriteIcon = 'fa-star';
+            this.favouriteIconSlash = this.conversation.isfavourite;
+            done && done();
+        });
+    }
+
+    /**
+     * Change the mute state of the current conversation.
+     *
+     * @param {Function} [done] Function to call when done.
+     */
+    changeMute(done?: () => void): void {
+        this.muteIcon = 'spinner';
+
+        this.messagesProvider.muteConversation(this.conversation.id, !this.conversation.ismuted).then(() => {
+            this.conversation.ismuted = !this.conversation.ismuted;
+
+            // Get the conversation data so it's cached. Don't block the user for this.
+            this.messagesProvider.getConversation(this.conversation.id, undefined, true);
+
+            this.eventsProvider.trigger(AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT, {
+                conversationId: this.conversation.id,
+                action: 'mute',
+                value: this.conversation.ismuted
+            }, this.siteId);
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'Error changing muted state.');
+        }).finally(() => {
+            this.muteIcon = this.conversation.ismuted ? 'volume-up' : 'volume-off';
             done && done();
         });
     }
@@ -1123,7 +1252,9 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      * @param {Function} [done] Function to call when done.
      */
     deleteConversation(done?: () => void): void {
-        this.domUtils.showConfirm(this.translate.instant('addon.messages.deleteallconfirm')).then(() => {
+        const confirmMessage = 'addon.messages.' + (this.isSelf ? 'deleteallselfconfirm' : 'deleteallconfirm');
+
+        this.domUtils.showConfirm(this.translate.instant(confirmMessage)).then(() => {
             this.deleteIcon = 'spinner';
 
             return this.messagesProvider.deleteConversation(this.conversation.id).then(() => {
@@ -1132,8 +1263,6 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                     action: 'delete'
                 }, this.siteId);
 
-                this.conversationId = undefined;
-                this.conversation = undefined;
                 this.messages = [];
             }).finally(() => {
                 this.deleteIcon = 'trash';
@@ -1202,7 +1331,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.error', true);
         }).finally(() => {
-            this.addRemoveIcon = this.otherMember.iscontact ? 'remove' : 'add';
+            this.addRemoveIcon = 'person';
         });
     }
 
@@ -1277,7 +1406,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.error', true);
         }).finally(() => {
-            this.addRemoveIcon = this.otherMember.iscontact ? 'remove' : 'add';
+            this.addRemoveIcon = 'person';
         });
     }
 

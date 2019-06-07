@@ -71,7 +71,8 @@ export class AddonModGlossaryProvider {
                 courseids: [courseId]
             };
             const preSets = {
-                cacheKey: this.getCourseGlossariesCacheKey(courseId)
+                cacheKey: this.getCourseGlossariesCacheKey(courseId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY
             };
 
             return site.read('mod_glossary_get_glossaries_by_courses', params, preSets).then((result) => {
@@ -134,7 +135,8 @@ export class AddonModGlossaryProvider {
             };
             const preSets = {
                 cacheKey: this.getEntriesByAuthorCacheKey(glossaryId, letter, field, sort),
-                omitExpires: forceCache
+                omitExpires: forceCache,
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
             return site.read('mod_glossary_get_entries_by_author', params, preSets);
@@ -182,7 +184,8 @@ export class AddonModGlossaryProvider {
             };
             const preSets = {
                 cacheKey: this.getEntriesByCategoryCacheKey(glossaryId, categoryId),
-                omitExpires: forceCache
+                omitExpires: forceCache,
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
             return site.read('mod_glossary_get_entries_by_category', params, preSets);
@@ -254,7 +257,8 @@ export class AddonModGlossaryProvider {
             };
             const preSets = {
                 cacheKey: this.getEntriesByDateCacheKey(glossaryId, order, sort),
-                omitExpires: forceCache
+                omitExpires: forceCache,
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
             return site.read('mod_glossary_get_entries_by_date', params, preSets);
@@ -311,7 +315,8 @@ export class AddonModGlossaryProvider {
             };
             const preSets = {
                 cacheKey: this.getEntriesByLetterCacheKey(glossaryId, letter),
-                omitExpires: forceCache
+                omitExpires: forceCache,
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
             return site.read('mod_glossary_get_entries_by_letter', params, preSets);
@@ -378,6 +383,7 @@ export class AddonModGlossaryProvider {
             const preSets = {
                 cacheKey: this.getEntriesBySearchCacheKey(glossaryId, query, fullSearch, order, sort),
                 omitExpires: forceCache,
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
             return site.read('mod_glossary_get_entries_by_search', params, preSets);
@@ -444,7 +450,8 @@ export class AddonModGlossaryProvider {
             limit: limit
         };
         const preSets = {
-            cacheKey: this.getCategoriesCacheKey(glossaryId)
+            cacheKey: this.getCategoriesCacheKey(glossaryId),
+            updateFrequency: CoreSite.FREQUENCY_SOMETIMES
         };
 
         return site.read('mod_glossary_get_categories', params, preSets).then((response) => {
@@ -496,7 +503,8 @@ export class AddonModGlossaryProvider {
                 id: entryId
             };
             const preSets = {
-                cacheKey: this.getEntryCacheKey(entryId)
+                cacheKey: this.getEntryCacheKey(entryId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY
             };
 
             return site.read('mod_glossary_get_entry_by_id', params, preSets).then((response) => {
@@ -867,16 +875,18 @@ export class AddonModGlossaryProvider {
      *
      * @param  {number} glossaryId Glossary ID.
      * @param  {string} mode       The mode in which the glossary was viewed.
+     * @param {string} [name] Name of the glossary.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}      Promise resolved when the WS call is successful.
      */
-    logView(glossaryId: number, mode: string, siteId?: string): Promise<any> {
+    logView(glossaryId: number, mode: string, name?: string, siteId?: string): Promise<any> {
         const params = {
             id: glossaryId,
             mode: mode
         };
 
-        return this.logHelper.log('mod_glossary_view_glossary', params, AddonModGlossaryProvider.COMPONENT, glossaryId, siteId);
+        return this.logHelper.logSingle('mod_glossary_view_glossary', params, AddonModGlossaryProvider.COMPONENT, glossaryId, name,
+                'glossary', {mode: mode}, siteId);
     }
 
     /**
@@ -884,14 +894,16 @@ export class AddonModGlossaryProvider {
      *
      * @param  {number} entryId Entry ID.
      * @param  {number} glossaryId Glossary ID.
+     * @param {string} [name] Name of the glossary.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}   Promise resolved when the WS call is successful.
      */
-    logEntryView(entryId: number, glossaryId: number, siteId?: string): Promise<any> {
+    logEntryView(entryId: number, glossaryId: number, name?: string, siteId?: string): Promise<any> {
         const params = {
             id: entryId
         };
 
-        return this.logHelper.log('mod_glossary_view_entry', params, AddonModGlossaryProvider.COMPONENT, glossaryId, siteId);
+        return this.logHelper.logSingle('mod_glossary_view_entry', params, AddonModGlossaryProvider.COMPONENT, glossaryId, name,
+                'glossary', {entryid: entryId}, siteId);
     }
 }

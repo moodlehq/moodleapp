@@ -48,7 +48,7 @@ export class CoreUserProfileMailHandler implements CoreUserProfileHandler {
      */
     isEnabledForUser(user: any, courseId: number, navOptions?: any, admOptions?: any): boolean | Promise<boolean> {
         // Not current user required.
-        return user.id != this.sitesProvider.getCurrentSite().getUserId() && user.email;
+        return user.id != this.sitesProvider.getCurrentSite().getUserId() && !!user.email;
     }
 
     /**

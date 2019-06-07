@@ -16,6 +16,7 @@ import { Component, OnChanges, Input, ViewChild, Output, EventEmitter } from '@a
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-content';
 import { CoreCourseFormatComponent } from '@core/course/components/format/format';
+import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
 
 /**
  * Component that displays the index of a course format site plugin.
@@ -46,7 +47,8 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
     initResult: any;
     data: any;
 
-    constructor(protected sitePluginsProvider: CoreSitePluginsProvider) { }
+    constructor(protected sitePluginsProvider: CoreSitePluginsProvider,
+            protected courseFormatDelegate: CoreCourseFormatDelegate) { }
 
     /**
      * Detect changes on input properties.
@@ -55,7 +57,9 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
         if (this.course && this.course.format) {
             if (!this.component) {
                 // Initialize the data.
-                const handler = this.sitePluginsProvider.getSitePluginHandler(this.course.format);
+                const handlerName = this.courseFormatDelegate.getHandlerName(this.course.format),
+                    handler = this.sitePluginsProvider.getSitePluginHandler(handlerName);
+
                 if (handler) {
                     this.component = handler.plugin.component;
                     this.method = handler.handlerSchema.method;

@@ -2,7 +2,7 @@
     <ion-navbar core-back-button>
         <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
         <ion-buttons end [hidden]="!loaded">
-            <button *ngIf="assessmentId" ion-button clear (click)="saveAssessment()" [attr.aria-label]="'core.save' | translate">
+            <button *ngIf="assessmentId && access.assessingallowed" ion-button clear (click)="saveAssessment()" [attr.aria-label]="'core.save' | translate">
                 {{ 'core.save' | translate }}
             </button>
             <button *ngIf="canAddFeedback" ion-button clear (click)="saveEvaluation()" [attr.aria-label]="'core.save' | translate">

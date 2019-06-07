@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service that provides some features regarding comments.
@@ -24,6 +25,30 @@ export class CoreCommentsProvider {
     protected ROOT_CACHE_KEY = 'mmComments:';
 
     constructor(private sitesProvider: CoreSitesProvider) {}
+
+    /**
+     * Check if Calendar is disabled in a certain site.
+     *
+     * @param {CoreSite} [site] Site. If not defined, use current site.
+     * @return {boolean} Whether it's disabled.
+     */
+    areCommentsDisabledInSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.isFeatureDisabled('NoDelegate_CoreComments');
+    }
+
+    /**
+     * Check if comments are disabled in a certain site.
+     *
+     * @param  {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<boolean>} Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    areCommentsDisabled(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.areCommentsDisabledInSite(site);
+        });
+    }
 
     /**
      * Get cache key for get comments data WS calls.
@@ -77,7 +102,8 @@ export class CoreCommentsProvider {
             };
 
             const preSets = {
-                cacheKey: this.getCommentsCacheKey(contextLevel, instanceId, component, itemId, area, page)
+                cacheKey: this.getCommentsCacheKey(contextLevel, instanceId, component, itemId, area, page),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
             return site.read('core_comment_get_comments', params, preSets).then((response) => {

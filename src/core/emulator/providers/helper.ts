@@ -161,17 +161,15 @@ export class CoreEmulatorHelperProvider implements CoreInitHandler {
 
                 // There is a new notification, show it.
                 return getDataFn(notification).then((titleAndText) => {
+                    // Set some calculated data.
+                    notification.site = siteId;
+                    notification.name = notification.name || notification.eventtype;
+
                     const localNotif: ILocalNotification = {
                         id: 1,
-                        trigger: {
-                            at: new Date()
-                        },
                         title: titleAndText.title,
                         text: titleAndText.text,
-                        data: {
-                            notif: notification,
-                            site: siteId
-                        }
+                        data: notification
                     };
 
                     return this.localNotifProvider.schedule(localNotif, component, siteId);

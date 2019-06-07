@@ -44,6 +44,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
     @Input() originalData: any; // Object with the original post data. Usually shared between posts.
     @Input() trackPosts: boolean; // True if post is being tracked.
     @Input() forum: any; // The forum the post belongs to. Required for attachments and offline posts.
+    @Input() accessInfo: any; // Forum access information.
     @Input() defaultSubject: string; // Default subject to set to new posts.
     @Input() ratingInfo?: CoreRatingInfo; // Rating info item.
     @Output() onPostChange: EventEmitter<void>; // Event emitted when a reply is posted or modified.
@@ -51,6 +52,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
     messageControl = new FormControl();
 
     uniqueId: string;
+    advanced = false; // Display all form fields.
 
     protected syncId: string;
 
@@ -95,9 +97,11 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
      * @param {boolean} [isEditing] True it's an offline reply beeing edited, false otherwise.
      * @param {string} [subject] Subject of the reply.
      * @param {string} [message] Message of the reply.
+     * @param {boolean} [isPrivate] True if it's private reply.
      * @param {any[]} [files] Reply attachments.
      */
-    protected setReplyData(replyingTo?: number, isEditing?: boolean, subject?: string, message?: string, files?: any[]): void {
+    protected setReplyData(replyingTo?: number, isEditing?: boolean, subject?: string, message?: string, files?: any[],
+            isPrivate?: boolean): void {
         // Delete the local files from the tmp folder if any.
         this.uploaderProvider.clearTmpFiles(this.replyData.files);
 
@@ -106,6 +110,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
         this.replyData.subject = subject || this.defaultSubject || '';
         this.replyData.message = message || null;
         this.replyData.files = files || [];
+        this.replyData.isprivatereply = !!isPrivate;
 
         // Update rich text editor.
         this.messageControl.setValue(this.replyData.message);
@@ -114,6 +119,10 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
         this.originalData.subject = this.replyData.subject;
         this.originalData.message = this.replyData.message;
         this.originalData.files = this.replyData.files.slice();
+        this.originalData.isprivatereply = this.replyData.isprivatereply;
+
+        // Show advanced fields if any of them has not the default value.
+        this.advanced = this.replyData.files.length > 0;
     }
 
     /**
@@ -163,7 +172,8 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
             this.syncId = this.forumSync.getDiscussionSyncId(this.discussionId);
             this.syncProvider.blockOperation(AddonModForumProvider.COMPONENT, this.syncId);
 
-            this.setReplyData(this.post.parent, true, this.post.subject, this.post.message, this.post.attachments);
+            this.setReplyData(this.post.parent, true, this.post.subject, this.post.message, this.post.attachments,
+                    this.post.isprivatereply);
         }).catch(() => {
             // Cancelled.
         });
@@ -205,6 +215,11 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
 
         // Add some HTML to the message if needed.
         message = this.textUtils.formatHtmlLines(message);
+
+        // Set private option if checked.
+        if (this.replyData.isprivatereply) {
+            options.private = true;
+        }
 
         // Upload attachments first if any.
         if (files.length) {
@@ -312,6 +327,13 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
      */
     ratingUpdated(): void {
         this.forumProvider.invalidateDiscussionPosts(this.discussionId);
+    }
+
+    /**
+     * Show or hide advanced form fields.
+     */
+    toggleAdvanced(): void {
+        this.advanced = !this.advanced;
     }
 
     /**

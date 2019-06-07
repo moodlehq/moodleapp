@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
@@ -251,7 +251,8 @@ export class CoreRatingProvider {
                 sort: sort
             };
             const preSets: CoreSiteWSPreSets = {
-                cacheKey: this.getItemRatingsCacheKey(contextLevel, instanceId, component, ratingArea, itemId, scaleId, sort)
+                cacheKey: this.getItemRatingsCacheKey(contextLevel, instanceId, component, ratingArea, itemId, scaleId, sort),
+                updateFrequency: CoreSite.FREQUENCY_RARELY
             };
             if (ignoreCache) {
                 preSets.getFromCache = false;
@@ -300,6 +301,68 @@ export class CoreRatingProvider {
 
             return site.invalidateWsCacheForKey(key);
         });
+    }
+
+    /**
+     * Check if rating is disabled in a certain site.
+     *
+     * @param {CoreSite} [site] Site. If not defined, use current site.
+     * @return {boolean} Whether it's disabled.
+     */
+    isRatingDisabledInSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.isFeatureDisabled('NoDelegate_CoreRating');
+    }
+
+    /**
+     * Check if rating is disabled in a certain site.
+     *
+     * @param  {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<boolean>} Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    isRatingDisabled(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.isRatingDisabledInSite(site);
+        });
+    }
+
+    /**
+     * Convenience function to merge two or more rating infos of the same instance.
+     *
+     * @param {CoreRatingInfo[]} ratingInfos Array of rating infos.
+     * @return {CoreRatingInfo} Merged rating info or null.
+     */
+    mergeRatingInfos(ratingInfos: CoreRatingInfo[]): CoreRatingInfo {
+        let result: CoreRatingInfo = null;
+        const scales = {};
+        const ratings = {};
+
+        ratingInfos.forEach((ratingInfo) => {
+            if (!ratingInfo) {
+                // Skip null rating infos.
+                return;
+            }
+
+            if (!result) {
+                result = Object.assign({}, ratingInfo);
+            }
+
+            (ratingInfo.scales || []).forEach((scale) => {
+                scales[scale.id] = scale;
+            });
+
+            (ratingInfo.ratings || []).forEach((rating) => {
+                ratings[rating.itemid] = rating;
+            });
+        });
+
+        if (result) {
+            result.scales = this.utils.objectToArray(scales);
+            result.ratings = this.utils.objectToArray(ratings);
+        }
+
+        return result;
     }
 
     /**

@@ -1,0 +1,17 @@
+<ng-container *ngIf="enabled && !(loading || status === statusDownloading)">
+    <!-- Download button. -->
+    <button *ngIf="status == statusNotDownloaded" ion-button icon-only clear (click)="download($event, false)" color="dark" class="core-animate-show-hide" [attr.aria-label]="'core.download' | translate">
+        <ion-icon name="cloud-download"></ion-icon>
+    </button>
+
+    <!-- Refresh button. -->
+    <button *ngIf="status == statusOutdated || (status == statusDownloaded && !canTrustDownload)" ion-button icon-only clear (click)="download($event, true)" color="dark" class="core-animate-show-hide" [attr.aria-label]="'core.refresh' | translate">
+        <ion-icon name="refresh"></ion-icon>
+    </button>
+
+    <!-- Downloaded status icon. -->
+    <ion-icon *ngIf="status == statusDownloaded && canTrustDownload" class="core-icon-downloaded" color="success" name="cloud-done" [attr.aria-label]="'core.downloaded' | translate" role="status"></ion-icon>
+</ng-container>
+
+<!-- Spinner. -->
+<ion-spinner *ngIf="loading || status === statusDownloading" class="core-animate-show-hide"></ion-spinner>

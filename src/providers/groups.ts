@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreSitesProvider } from './sites';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 
 /**
  * Group info for an activity.
@@ -89,7 +89,8 @@ export class CoreGroupsProvider {
                     userid: userId
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getActivityAllowedGroupsCacheKey(cmId, userId)
+                    cacheKey: this.getActivityAllowedGroupsCacheKey(cmId, userId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (ignoreCache) {
@@ -196,7 +197,8 @@ export class CoreGroupsProvider {
                     cmid: cmId
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getActivityGroupModeCacheKey(cmId)
+                    cacheKey: this.getActivityGroupModeCacheKey(cmId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             if (ignoreCache) {
@@ -283,7 +285,8 @@ export class CoreGroupsProvider {
                     courseid: courseId
                 },
                 preSets = {
-                    cacheKey: this.getUserGroupsInCourseCacheKey(courseId, userId)
+                    cacheKey: this.getUserGroupsInCourseCacheKey(courseId, userId),
+                    updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
             return site.read('core_group_get_course_user_groups', data, preSets).then((response) => {

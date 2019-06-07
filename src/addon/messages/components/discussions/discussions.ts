@@ -21,7 +21,7 @@ import { AddonMessagesProvider } from '../../providers/messages';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreAppProvider } from '@providers/app';
-import { AddonPushNotificationsDelegate } from '@addon/pushnotifications/providers/delegate';
+import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers/delegate';
 
 /**
  * Component that displays the list of discussions.
@@ -54,7 +54,7 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, translate: TranslateService,
             private messagesProvider: AddonMessagesProvider, private domUtils: CoreDomUtilsProvider, navParams: NavParams,
             private appProvider: CoreAppProvider, platform: Platform, private utils: CoreUtilsProvider,
-            pushNotificationsDelegate: AddonPushNotificationsDelegate) {
+            pushNotificationsDelegate: CorePushNotificationsDelegate) {
 
         this.search.loading =  translate.instant('core.searching');
         this.loadingMessages = translate.instant('core.loading');

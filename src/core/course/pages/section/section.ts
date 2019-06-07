@@ -24,7 +24,8 @@ import { CoreCourseProvider } from '../../providers/course';
 import { CoreCourseHelperProvider } from '../../providers/helper';
 import { CoreCourseFormatDelegate } from '../../providers/format-delegate';
 import { CoreCourseModulePrefetchDelegate } from '../../providers/module-prefetch-delegate';
-import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from '../../providers/options-delegate';
+import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay,
+    CoreCourseOptionsMenuHandlerToDisplay } from '../../providers/options-delegate';
 import { CoreCourseSyncProvider } from '../../providers/sync';
 import { CoreCourseFormatComponent } from '../../components/format/format';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
@@ -49,8 +50,9 @@ export class CoreCourseSectionPage implements OnDestroy {
     sectionId: number;
     sectionNumber: number;
     courseHandlers: CoreCourseOptionsHandlerToDisplay[];
+    courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];
     dataLoaded: boolean;
-    downloadEnabled: boolean;
+    downloadEnabled = false;
     downloadEnabledIcon = 'square-outline'; // Disabled by default.
     prefetchCourseData = {
         prefetchCourseIcon: 'spinner',
@@ -85,7 +87,8 @@ export class CoreCourseSectionPage implements OnDestroy {
 
         // Get the title to display. We dont't have sections yet.
         this.title = courseFormatDelegate.getCourseTitle(this.course);
-        this.displayEnableDownload = courseFormatDelegate.displayEnableDownload(this.course);
+        this.displayEnableDownload = !sitesProvider.getCurrentSite().isOfflineDisabled() &&
+            courseFormatDelegate.displayEnableDownload(this.course);
         this.downloadCourseEnabled = !this.coursesProvider.isDownloadCourseDisabledInSite();
 
         // Check if the course format requires the view to be refreshed when completion changes.
@@ -112,7 +115,7 @@ export class CoreCourseSectionPage implements OnDestroy {
         if (this.downloadCourseEnabled) {
             // Listen for changes in course status.
             this.courseStatusObserver = eventsProvider.on(CoreEventsProvider.COURSE_STATUS_CHANGED, (data) => {
-                if (data.courseId == this.course.id) {
+                if (data.courseId == this.course.id || data.courseId == CoreCourseProvider.ALL_COURSES_CLEARED) {
                     this.updateCourseStatus(data.status);
                 }
             }, sitesProvider.getCurrentSiteId());
@@ -211,7 +214,7 @@ export class CoreCourseSectionPage implements OnDestroy {
                 let promise;
 
                 // Add log in Moodle.
-                this.courseProvider.logView(this.course.id, this.sectionNumber).catch(() => {
+                this.courseProvider.logView(this.course.id, this.sectionNumber, undefined, this.course.fullname).catch(() => {
                     // Ignore errors.
                 });
 
@@ -301,12 +304,17 @@ export class CoreCourseSectionPage implements OnDestroy {
                 }
             }));
 
+            // Load the course menu handlers.
+            promises.push(this.courseOptionsDelegate.getMenuHandlersToDisplay(this.injector, this.course).then((handlers) => {
+                this.courseMenuHandlers = handlers;
+            }));
+
             // Load the course format options when course completion is enabled to show completion progress on sections.
             if (this.course.enablecompletion && this.coursesProvider.isGetCoursesByFieldAvailable()) {
-                promises.push(this.coursesProvider.getCoursesByField('id', this.course.id).catch(() => {
+                promises.push(this.coursesProvider.getCourseByField('id', this.course.id).catch(() => {
                     // Ignore errors.
-                }).then((courses) => {
-                    courses && courses[0] && Object.assign(this.course, courses[0]);
+                }).then((course) => {
+                    course && Object.assign(this.course, course);
 
                     if (this.course.courseformatoptions) {
                         this.course.courseformatoptions = this.utils.objectToKeyValueMap(this.course.courseformatoptions,
@@ -417,7 +425,8 @@ export class CoreCourseSectionPage implements OnDestroy {
      * Prefetch the whole course.
      */
     prefetchCourse(): void {
-        this.courseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course, this.sections, this.courseHandlers)
+        this.courseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course, this.sections,
+                this.courseHandlers, this.courseMenuHandlers)
                 .then(() => {
             if (this.downloadEnabled) {
                 // Recalculate the status.
@@ -457,6 +466,16 @@ export class CoreCourseSectionPage implements OnDestroy {
      */
     openCourseSummary(): void {
         this.navCtrl.push('CoreCoursesCoursePreviewPage', {course: this.course, avoidOpenCourse: true});
+    }
+
+    /**
+     * Opens a menu item registered to the delegate.
+     *
+     * @param {CoreCourseMenuHandlerToDisplay} item Item to open
+     */
+    openMenuItem(item: CoreCourseOptionsMenuHandlerToDisplay): void {
+        const params = Object.assign({ course: this.course}, item.data.pageParams);
+        this.navCtrl.push(item.data.page, params);
     }
 
     /**
