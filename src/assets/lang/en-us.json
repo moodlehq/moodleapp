@@ -10,6 +10,7 @@
     "core.labelsep": ":",
     "core.listsep": ",",
     "core.login.loginsteps": "For full access to this site, you first need to create an account.",
+    "core.notenrolledprofile": "This profile is not available because this user is not enrolled in this course.",
     "core.paymentinstant": "Use the button below to pay and be enrolled within minutes!",
     "core.settings.license": "License",
     "core.strftimedate": "%B %d, %Y",

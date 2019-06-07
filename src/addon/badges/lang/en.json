@@ -1,5 +1,5 @@
 {
-    "alignment": "Competency",
+    "alignment": "Alignment",
     "badgedetails": "Badge details",
     "badges": "Badges",
     "bendorsement": "Endorsement",
@@ -19,7 +19,7 @@
     "issuername": "Issuer name",
     "issuerurl": "Issuer URL",
     "language": "Language",
-    "noalignment": "This badge does not have any competencies specified.",
+    "noalignment": "This badge does not have any external skills or standards specified.",
     "nobadges": "There are no badges available.",
     "norelated": "This badge does not have any related badges.",
     "recipientdetails": "Recipient details",
