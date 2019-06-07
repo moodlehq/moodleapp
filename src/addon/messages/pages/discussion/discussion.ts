@@ -391,11 +391,16 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         // Call resize to recalculate the dimensions.
         this.content && this.content.resize();
 
+        // If we received a new message while using group messaging, force mark messages as read.
+        const last = this.messages[this.messages.length - 1],
+            forceMark = this.groupMessagingEnabled && last && last.useridfrom != this.currentUserId && this.lastMessage.text != ''
+                    && (last.text !== this.lastMessage.text || last.timecreated !== this.lastMessage.timecreated);
+
         // Notify that there can be a new message.
         this.notifyNewMessage();
 
         // Mark retrieved messages as read if they are not.
-        this.markMessagesAsRead();
+        this.markMessagesAsRead(forceMark);
     }
 
     /**
@@ -577,7 +582,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Mark messages as read.
      */
-    protected markMessagesAsRead(): void {
+    protected markMessagesAsRead(forceMark: boolean): void {
         let readChanged = false;
         const promises = [];
 
@@ -585,7 +590,9 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             let messageUnreadFound = false;
 
             // Mark all messages at a time if there is any unread message.
-            if (this.groupMessagingEnabled) {
+            if (forceMark) {
+                messageUnreadFound = true;
+            } else if (this.groupMessagingEnabled) {
                 messageUnreadFound = this.conversation && this.conversation.unreadcount > 0 && this.conversationId > 0;
             } else {
                 for (const x in this.messages) {
@@ -649,6 +656,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         const last = this.messages[this.messages.length - 1];
 
         let trigger = false;
+
         if (!last) {
             this.lastMessage = {text: '', timecreated: 0};
             trigger = true;
