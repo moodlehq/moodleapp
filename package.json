@@ -124,7 +124,7 @@
     "@ionic/app-scripts": "^3.2.2",
     "electron-builder-lib": "^20.23.1",
     "electron-rebuild": "^1.8.1",
-    "gulp": "^4.0.0",
+    "gulp": "^4.0.2",
     "gulp-clip-empty-files": "^0.1.2",
     "gulp-concat": "^2.6.1",
     "gulp-flatten": "^0.4.0",
