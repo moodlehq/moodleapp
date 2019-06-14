@@ -37,7 +37,7 @@
     "postionic:build": "gulp copy-component-templates",
     "desktop.pack": "electron-builder --dir",
     "desktop.dist": "electron-builder -p never",
-    "windows.store": "electron-windows-store --input-directory .\\desktop\\dist\\win-unpacked --output-directory .\\desktop\\store --flatten true -a .\\resources\\desktop -m .\\desktop\\assets\\windows\\AppXManifest.xml --package-version 0.0.0.0 --package-name MoodleDesktop"
+    "windows.store": "electron-windows-store --input-directory .\\desktop\\dist\\win-unpacked --output-directory .\\desktop\\store -a .\\resources\\desktop -m .\\desktop\\assets\\windows\\AppXManifest.xml --package-version 0.0.0.0 --package-name MoodleDesktop"
   },
   "dependencies": {
     "@angular/animations": "^5.2.10",
@@ -210,7 +210,7 @@
       }
     ],
     "compression": "maximum",
-    "electronVersion": "4.0.1",
+    "electronVersion": "5.0.4",
     "mac": {
       "category": "public.app-category.education",
       "icon": "resources/desktop/icon.icns",

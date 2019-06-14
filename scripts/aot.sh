@@ -40,17 +40,34 @@ if [ ! -z $GIT_ORG ] && [ ! -z $GIT_TOKEN ] ; then
     gitfolder=${PWD##*/}
     git clone --depth 1 --no-single-branch https://github.com/$GIT_ORG/moodlemobile-phonegapbuild.git ../pgb
     pushd ../pgb
+
+    mkdir /tmp/travistemp
+    cp .travis.yml /tmp/travistemp
+    mkdir /tmp/travistemp/scripts
+    cp scripts/* /tmp/travistemp/scripts
+
     git checkout $TRAVIS_BRANCH
-    rm -Rf assets build index.html templates
-    cp -Rf ../$gitfolder/www/* ./
-    rm -Rf assets/countries assets/mimetypes
+
+    rm -Rf assets build index.html templates www destkop
+
+    if [ $TRAVIS_BRANCH == 'desktop' ] ; then
+        cp -Rf ../$gitfolder/desktop ./
+        cp -Rf ../$gitfolder/package.json ./
+        cp -Rf ../$gitfolder/www ./
+        rm -Rf www/assets/countries www/assets/mimetypes
+    else
+        cp -Rf ../$gitfolder/www/* ./
+        rm -Rf assets/countries assets/mimetypes
+    fi
+
+    cp /tmp/travistemp/.travis.yml .travis.yml
+    mkdir scripts
+    cp /tmp/travistemp/scripts/* scripts
+
+
     git add .
     git commit -m "Travis build: $TRAVIS_BUILD_NUMBER"
     git push https://$GIT_TOKEN@github.com/$GIT_ORG/moodlemobile-phonegapbuild.git
     popd
-fi
-
-if [ ! -z $GIT_ORG_PRIVATE ] && [ ! -z $GIT_TOKEN ] && [ $TRAVIS_BRANCH == 'desktop' ] && [ $TRAVIS_OS_NAME == 'linux' ]; then
-    ./scripts/linux.sh
 fi
 
