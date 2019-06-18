@@ -1260,6 +1260,8 @@
     "core.completion-alt-manual-y-override": "Completed: {{$a.modname}} (set by {{$a.overrideuser}}). Select to mark as not complete.",
     "core.confirmcanceledit": "Are you sure you want to leave this page? All changes will be lost.",
     "core.confirmdeletefile": "Are you sure you want to delete this file?",
+    "core.confirmgotabroot": "Are you sure you want to go back to {{name}}?",
+    "core.confirmgotabrootdefault": "Are you sure you want to go to the initial page of the current tab?",
     "core.confirmloss": "Are you sure? All changes will be lost.",
     "core.confirmopeninbrowser": "Do you want to open it in a web browser?",
     "core.considereddigitalminor": "You are too young to create an account on this site.",
