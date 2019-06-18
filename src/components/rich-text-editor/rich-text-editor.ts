@@ -136,7 +136,11 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         const deferred = this.utils.promiseDefer();
 
         setTimeout(() => {
-            const contentVisibleHeight = this.domUtils.getContentHeight(this.content) - this.kbHeight;
+            let contentVisibleHeight = this.domUtils.getContentHeight(this.content);
+            if (!this.platform.is('android')) {
+                // In Android we ignore the keyboard height because it is not part of the web view.
+                contentVisibleHeight -= this.kbHeight;
+            }
 
             if (contentVisibleHeight <= 0) {
                 deferred.resolve(0);
@@ -149,7 +153,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
                 let height;
 
                 if (this.platform.is('android')) {
-                    // Android, ignore keyboard height because web view is resized.
+                    // In Android we ignore the keyboard height because it is not part of the web view.
                     height = this.domUtils.getContentHeight(this.content) - this.getSurroundingHeight(this.element);
                 } else if (this.platform.is('ios') && this.kbHeight > 0) {
                     // Keyboard open in iOS.
