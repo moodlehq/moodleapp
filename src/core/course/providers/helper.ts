@@ -119,15 +119,16 @@ export class CoreCourseHelperProvider {
     protected logger;
 
     constructor(private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
-        private moduleDelegate: CoreCourseModuleDelegate, private prefetchDelegate: CoreCourseModulePrefetchDelegate,
-        private filepoolProvider: CoreFilepoolProvider, private sitesProvider: CoreSitesProvider,
-        private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider,
-        private utils: CoreUtilsProvider, private translate: TranslateService, private loginHelper: CoreLoginHelperProvider,
-        private courseOptionsDelegate: CoreCourseOptionsDelegate, private siteHomeProvider: CoreSiteHomeProvider,
-        private eventsProvider: CoreEventsProvider, private fileHelper: CoreFileHelperProvider,
-        private appProvider: CoreAppProvider, private fileProvider: CoreFileProvider, private injector: Injector,
-        private coursesProvider: CoreCoursesProvider, private courseOffline: CoreCourseOfflineProvider,
-        private loggerProvider: CoreLoggerProvider) {
+            private moduleDelegate: CoreCourseModuleDelegate, private prefetchDelegate: CoreCourseModulePrefetchDelegate,
+            private filepoolProvider: CoreFilepoolProvider, private sitesProvider: CoreSitesProvider,
+            private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider,
+            private utils: CoreUtilsProvider, private translate: TranslateService, private loginHelper: CoreLoginHelperProvider,
+            private courseOptionsDelegate: CoreCourseOptionsDelegate, private siteHomeProvider: CoreSiteHomeProvider,
+            private eventsProvider: CoreEventsProvider, private fileHelper: CoreFileHelperProvider,
+            private appProvider: CoreAppProvider, private fileProvider: CoreFileProvider, private injector: Injector,
+            private coursesProvider: CoreCoursesProvider, private courseOffline: CoreCourseOfflineProvider,
+            loggerProvider: CoreLoggerProvider) {
+
         this.logger = loggerProvider.getInstance('CoreCourseHelperProvider');
     }
 
@@ -1170,7 +1171,7 @@ export class CoreCourseHelperProvider {
                 // Otherwise, we will redirect below.
                 modal.dismiss();
 
-                return module.handlerData.action(event, navCtrl, module, courseId);
+                return module.handlerData.action(new Event('click'), navCtrl, module, courseId);
             }
 
             this.logger.warn('navCtrl was not passed to navigateToModule by the link handler for ' + module.modname);

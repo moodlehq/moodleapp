@@ -40,8 +40,9 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
             private domUtils: CoreDomUtilsProvider,
             private translate: TranslateService, private courseProvider: CoreCourseProvider,
             private textUtils: CoreTextUtilsProvider, private courseHelper: CoreCourseHelperProvider,
-            private loggerProvider: CoreLoggerProvider) {
+            loggerProvider: CoreLoggerProvider) {
         super();
+
         this.logger = loggerProvider.getInstance('CoreCoursesCourseLinkHandler');
     }
 
@@ -80,9 +81,17 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
             action: (siteId, navCtrl?): void => {
                 siteId = siteId || this.sitesProvider.getCurrentSiteId();
                 if (siteId == this.sitesProvider.getCurrentSiteId()) {
-                    this.actionEnrol(courseId, url, pageParams, navCtrl).catch(() => {
-                        // Ignore errors.
-                    });
+                    // Check if we already are in the course index page.
+                    if (this.courseProvider.currentViewIsCourse(navCtrl, courseId)) {
+                        // Current view is this course, just select the contents tab.
+                        this.courseProvider.selectCourseTab('', pageParams);
+
+                        return;
+                    } else {
+                        this.actionEnrol(courseId, url, pageParams, navCtrl).catch(() => {
+                            // Ignore errors.
+                        });
+                    }
                 } else {
                     // Don't pass the navCtrl to make the course the new history root (to avoid "loops" in history).
                     this.courseHelper.getAndOpenCourse(undefined, courseId, pageParams, siteId);

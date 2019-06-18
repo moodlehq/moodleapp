@@ -43,7 +43,7 @@ export class CoreCoursesDashboardLinkHandler extends CoreContentLinksHandlerBase
             CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: (siteId, navCtrl?): void => {
-                // Always use redirect to make it the new history root (to avoid "loops" in history).
+                // Use redirect to select the tab.
                 this.loginHelper.redirect('CoreCoursesDashboardPage', undefined, siteId);
             }
         }];

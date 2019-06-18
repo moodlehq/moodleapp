@@ -629,7 +629,7 @@ export class CoreLoginHelperProvider {
      * @param {string} page Name of the page to load.
      * @param {any} params Params to pass to the page.
      */
-    protected loadPageInMainMenu(page: string, params: any): void {
+    loadPageInMainMenu(page: string, params: any): void {
         if (!this.appProvider.isMainMenuOpen()) {
             // Main menu not open. Store the page to be loaded later.
             this.pageToLoad = {

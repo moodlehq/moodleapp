@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
-import { CoreLoginHelperProvider } from '@core/login/providers/helper';
+import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreUserProvider } from './user';
@@ -30,9 +30,9 @@ export class CoreUserParticipantsLinkHandler extends CoreContentLinksHandlerBase
     featureName = 'CoreCourseOptionsDelegate_CoreUserParticipants';
     pattern = /\/user\/index\.php/;
 
-    constructor(private userProvider: CoreUserProvider, private loginHelper: CoreLoginHelperProvider,
+    constructor(private userProvider: CoreUserProvider,
             private courseHelper: CoreCourseHelperProvider, private domUtils: CoreDomUtilsProvider,
-            private linkHelper: CoreContentLinksHelperProvider) {
+            private linkHelper: CoreContentLinksHelperProvider, private courseProvider: CoreCourseProvider) {
         super();
     }
 
@@ -51,6 +51,14 @@ export class CoreUserParticipantsLinkHandler extends CoreContentLinksHandlerBase
 
         return [{
             action: (siteId, navCtrl?): void => {
+                // Check if we already are in the course index page.
+                if (this.courseProvider.currentViewIsCourse(navCtrl, courseId)) {
+                    // Current view is this course, just select the participants tab.
+                    this.courseProvider.selectCourseTab('CoreUserParticipants');
+
+                    return;
+                }
+
                 const modal = this.domUtils.showModalLoading();
 
                 this.courseHelper.getCourse(courseId, siteId).then((result) => {
@@ -59,8 +67,9 @@ export class CoreUserParticipantsLinkHandler extends CoreContentLinksHandlerBase
                         selectedTab: 'CoreUserParticipants'
                     };
 
-                    // Always use redirect to make it the new history root (to avoid "loops" in history).
-                    return this.loginHelper.redirect('CoreCourseSectionPage', params, siteId);
+                    return this.linkHelper.goInSite(navCtrl, 'CoreCourseSectionPage', params, siteId).catch(() => {
+                        // Ignore errors.
+                    });
                 }).catch(() => {
                     // Cannot get course for some reason, just open the participants page.
                     return this.linkHelper.goInSite(navCtrl, 'CoreUserParticipantsPage', {courseId: courseId}, siteId);

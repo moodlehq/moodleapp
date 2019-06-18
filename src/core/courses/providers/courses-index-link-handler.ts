@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
-import { CoreLoginHelperProvider } from '@core/login/providers/helper';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreCoursesProvider } from './courses';
 
 /**
@@ -27,7 +27,7 @@ export class CoreCoursesIndexLinkHandler extends CoreContentLinksHandlerBase {
     featureName = 'CoreMainMenuDelegate_CoreCourses';
     pattern = /\/course\/?(index\.php.*)?$/;
 
-    constructor(private coursesProvider: CoreCoursesProvider, private loginHelper: CoreLoginHelperProvider) {
+    constructor(private coursesProvider: CoreCoursesProvider, private linkHelper: CoreContentLinksHelperProvider) {
         super();
     }
 
@@ -56,8 +56,7 @@ export class CoreCoursesIndexLinkHandler extends CoreContentLinksHandlerBase {
                     }
                 }
 
-                // Always use redirect to make it the new history root (to avoid "loops" in history).
-                this.loginHelper.redirect(page, pageParams, siteId);
+                this.linkHelper.goInSite(navCtrl, page, pageParams, siteId);
             }
         }];
     }

@@ -67,6 +67,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     protected modParams: any;
     protected completionObserver;
     protected courseStatusObserver;
+    protected selectTabObserver;
     protected syncObserver;
     protected firstTabName: string;
     protected isDestroyed = false;
@@ -120,6 +121,26 @@ export class CoreCourseSectionPage implements OnDestroy {
                 }
             }, sitesProvider.getCurrentSiteId());
         }
+
+        this.selectTabObserver = eventsProvider.on(CoreEventsProvider.SELECT_COURSE_TAB, (data) => {
+
+            if (!data.name) {
+                // If needed, set sectionId and sectionNumber. They'll only be used if the content tabs hasn't been loaded yet.
+                this.sectionId = data.sectionId || this.sectionId;
+                this.sectionNumber = data.sectionNumber || this.sectionNumber;
+
+                // Select course contents.
+                this.tabsComponent && this.tabsComponent.selectTab(0);
+            } else if (this.courseHandlers) {
+                const index = this.courseHandlers.findIndex((handler) => {
+                    return handler.name == data.name;
+                });
+
+                if (index >= 0) {
+                    this.tabsComponent && this.tabsComponent.selectTab(index + 1);
+                }
+            }
+        });
     }
 
     /**
@@ -483,9 +504,8 @@ export class CoreCourseSectionPage implements OnDestroy {
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;
-        if (this.completionObserver) {
-            this.completionObserver.off();
-        }
+        this.completionObserver && this.completionObserver.off();
+        this.selectTabObserver && this.selectTabObserver.off();
     }
 
     /**

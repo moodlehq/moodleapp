@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
-import { CoreLoginHelperProvider } from '@core/login/providers/helper';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { AddonBadgesProvider } from './badges';
 
 /**
@@ -26,7 +26,7 @@ export class AddonBadgesBadgeLinkHandler extends CoreContentLinksHandlerBase {
     name = 'AddonBadgesBadgeLinkHandler';
     pattern = /\/badges\/badge\.php.*([\?\&]hash=)/;
 
-    constructor(private badgesProvider: AddonBadgesProvider, private loginHelper: CoreLoginHelperProvider) {
+    constructor(private badgesProvider: AddonBadgesProvider, private linkHelper: CoreContentLinksHelperProvider) {
         super();
     }
 
@@ -44,8 +44,7 @@ export class AddonBadgesBadgeLinkHandler extends CoreContentLinksHandlerBase {
 
         return [{
             action: (siteId, navCtrl?): void => {
-                // Always use redirect to make it the new history root (to avoid "loops" in history).
-                this.loginHelper.redirect('AddonBadgesIssuedBadgePage', {courseId: 0, badgeHash: params.hash}, siteId);
+                this.linkHelper.goInSite(navCtrl, 'AddonBadgesIssuedBadgePage', {courseId: 0, badgeHash: params.hash}, siteId);
             }
         }];
     }
