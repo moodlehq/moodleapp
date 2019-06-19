@@ -10,52 +10,52 @@
     <ion-slides [slidesPerView]="numToolbarButtons" (ionSlideDidChange)="updateToolbarArrows()">
         <!-- https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand -->
         <ion-slide>
-            <button [disabled]="!rteEnabled" (click)="buttonAction($event, 'bold')">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.b" (click)="buttonAction($event, 'bold')">
                 <core-icon name="fa-bold"></core-icon>
             </button>
         </ion-slide>
         <ion-slide>
-            <button [disabled]="!rteEnabled" (click)="buttonAction($event, 'italic')">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.i" (click)="buttonAction($event, 'italic')">
                 <core-icon name="fa-italic"></core-icon>
             </button>
         </ion-slide>
         <ion-slide>
-            <button [disabled]="!rteEnabled" (click)="buttonAction($event, 'underline')">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.u" (click)="buttonAction($event, 'underline')">
                 <core-icon name="fa-underline"></core-icon>
             </button>
         </ion-slide>
         <ion-slide>
-            <button [disabled]="!rteEnabled" (click)="buttonAction($event, 'strikeThrough')">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.strike" (click)="buttonAction($event, 'strikeThrough')">
                 <core-icon name="fa-strikethrough"></core-icon>
             </button>
         </ion-slide>
         <ion-slide>
-            <button [disabled]="!rteEnabled" (click)="buttonAction($event, 'formatBlock|<p>')">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.p" (click)="buttonAction($event, 'formatBlock|<p>')">
                 <core-icon name="fa-paragraph"></core-icon>
             </button>
         </ion-slide>
         <ion-slide>
-            <button [disabled]="!rteEnabled" (click)="buttonAction($event, 'formatBlock|<h1>')">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.h1" (click)="buttonAction($event, 'formatBlock|<h1>')">
                 <core-icon name="fa-header"></core-icon>1
             </button>
         </ion-slide>
         <ion-slide>
-            <button [disabled]="!rteEnabled" (click)="buttonAction($event, 'formatBlock|<h2>')">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.h2" (click)="buttonAction($event, 'formatBlock|<h2>')">
                 <core-icon name="fa-header"></core-icon>2
             </button>
         </ion-slide>
         <ion-slide>
-            <button [disabled]="!rteEnabled" (click)="buttonAction($event, 'formatBlock|<h3>')">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.h3" (click)="buttonAction($event, 'formatBlock|<h3>')">
                 <core-icon name="fa-header"></core-icon>3
             </button>
         </ion-slide>
         <ion-slide>
-            <button [disabled]="!rteEnabled"(click)="buttonAction($event, 'insertUnorderedList')">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.ul" (click)="buttonAction($event, 'insertUnorderedList')">
                 <core-icon name="fa-list-ul"></core-icon>
             </button>
         </ion-slide>
         <ion-slide>
-            <button [disabled]="!rteEnabled" (click)="buttonAction($event, 'insertOrderedList')">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.ol" (click)="buttonAction($event, 'insertOrderedList')">
                 <core-icon name="fa-list-ol"></core-icon>
             </button>
         </ion-slide>

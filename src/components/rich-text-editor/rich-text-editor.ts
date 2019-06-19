@@ -59,7 +59,6 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
 
     protected element: HTMLDivElement;
     protected editorElement: HTMLDivElement;
-    protected resizeFunction;
     protected kbHeight = 0; // Last known keyboard height.
     protected minHeight = 200; // Minimum height of the editor.
 
@@ -79,7 +78,18 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     toolbarArrows = false;
     toolbarPrevHidden = true;
     toolbarNextHidden = false;
-
+    toolbarStyles = {
+        b: 'false',
+        i: 'false',
+        u: 'false',
+        strike: 'false',
+        p: 'false',
+        h1: 'false',
+        h2: 'false',
+        h3: 'false',
+        ul: 'false',
+        ol: 'false',
+    };
     protected isCurrentView = true;
     protected toolbarButtonWidth = 40;
     protected toolbarArrowWidth = 28;
@@ -119,8 +129,8 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         // Use paragraph on enter.
         document.execCommand('DefaultParagraphSeparator', false, 'p');
 
-        this.resizeFunction = this.maximizeEditorSize.bind(this);
-        window.addEventListener('resize', this.resizeFunction);
+        window.addEventListener('resize', this.maximizeEditorSize);
+        document.addEventListener('selectionchange', this.updateToolbarStyles);
 
         let i = 0;
         this.initHeightInterval = setInterval(() => {
@@ -145,7 +155,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
      *
      * @return {Promise<number>} Resolved with calculated editor size.
      */
-    protected maximizeEditorSize(): Promise<number> {
+    protected maximizeEditorSize = (): Promise<number> => {
         this.content.resize();
 
         const deferred = this.utils.promiseDefer();
@@ -618,6 +628,35 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     }
 
     /**
+     * Update highlighted toolbar styles.
+     */
+    updateToolbarStyles = (): void => {
+        const node = document.getSelection().focusNode;
+        if (!node) {
+            return;
+        }
+
+        let element = node.nodeType == 1 ? node as HTMLElement : node.parentElement;
+        const styles = {};
+
+        while (element != null && element !== this.editorElement) {
+            const tagName = element.tagName.toLowerCase();
+            if (this.toolbarStyles[tagName]) {
+                styles[tagName] = 'true';
+            }
+            element = element.parentElement;
+        }
+
+        for (const tagName in this.toolbarStyles) {
+            this.toolbarStyles[tagName] = 'false';
+        }
+
+        if (element === this.editorElement) {
+            Object.assign(this.toolbarStyles, styles);
+        }
+    }
+
+    /**
      * User entered the page that contains the component.
      */
     ionViewDidEnter(): void {
@@ -638,7 +677,8 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
      */
     ngOnDestroy(): void {
         this.valueChangeSubscription && this.valueChangeSubscription.unsubscribe();
-        window.removeEventListener('resize', this.resizeFunction);
+        window.removeEventListener('resize', this.maximizeEditorSize);
+        document.removeEventListener('selectionchange', this.updateToolbarStyles);
         clearInterval(this.initHeightInterval);
         this.keyboardObs && this.keyboardObs.off();
     }
