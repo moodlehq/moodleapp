@@ -14,7 +14,7 @@
 
 import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterContentInit, OnDestroy, Optional }
     from '@angular/core';
-import { TextInput, Content, Platform } from 'ionic-angular';
+import { TextInput, Content, Platform, Slides } from 'ionic-angular';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -56,7 +56,6 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
 
     @ViewChild('editor') editor: ElementRef; // WYSIWYG editor.
     @ViewChild('textarea') textarea: TextInput; // Textarea editor.
-    @ViewChild('decorate') decorate: ElementRef; // Buttons.
 
     protected element: HTMLDivElement;
     protected editorElement: HTMLDivElement;
@@ -70,6 +69,20 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
 
     rteEnabled = false;
     editorSupported = true;
+
+    // Toolbar.
+    @ViewChild('toolbar') toolbar: ElementRef;
+    @ViewChild(Slides) toolbarSlides: Slides;
+    isPhone = this.platform.is('mobile') && !this.platform.is('tablet');
+    toolbarHidden = this.isPhone;
+    numToolbarButtons = 6;
+    toolbarArrows = false;
+    toolbarPrevHidden = true;
+    toolbarNextHidden = false;
+
+    protected isCurrentView = true;
+    protected toolbarButtonWidth = 40;
+    protected toolbarArrowWidth = 28;
 
     constructor(private domUtils: CoreDomUtilsProvider, private urlUtils: CoreUrlUtilsProvider,
             private sitesProvider: CoreSitesProvider, private filepoolProvider: CoreFilepoolProvider,
@@ -123,6 +136,8 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
             this.kbHeight = kbHeight;
             this.maximizeEditorSize();
         });
+
+        this.updateToolbarButtons();
     }
 
     /**
@@ -390,13 +405,16 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         this.rteEnabled = !this.rteEnabled;
 
         // Set focus and cursor at the end.
-        setTimeout(() => {
-            if (this.rteEnabled) {
-                this.editorElement.focus();
-            } else {
-                this.textarea.setFocus();
-            }
-        });
+        // Modify the DOM directly so the keyboard stays open.
+        if (this.rteEnabled) {
+            this.editorElement.removeAttribute('hidden');
+            this.textarea.getNativeElement().setAttribute('hidden', '');
+            this.editorElement.focus();
+        } else {
+            this.editorElement.setAttribute('hidden', '');
+            this.textarea.getNativeElement().removeAttribute('hidden');
+            this.textarea.setFocus();
+        }
     }
 
     /**
@@ -508,6 +526,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     protected buttonAction($event: any, command: string): void {
         $event.preventDefault();
         $event.stopPropagation();
+        this.editorElement.focus();
 
         if (command) {
             if (command.includes('|')) {
@@ -519,6 +538,99 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
                 document.execCommand(command, false);
             }
         }
+    }
+
+    /**
+     * Hide the toolbar.
+     */
+    hideToolbar(): void {
+        this.editorElement.focus();
+        this.toolbarHidden = true;
+    }
+
+    /**
+     * Show the toolbar.
+     */
+    showToolbar(): void {
+        this.editorElement.focus();
+        this.toolbarHidden = false;
+    }
+
+    /**
+     * Method that shows the next toolbar buttons.
+     */
+    toolbarNext(): void {
+        if (!this.toolbarNextHidden) {
+            const currentIndex = this.toolbarSlides.getActiveIndex() || 0;
+            this.toolbarSlides.slideTo(currentIndex + this.numToolbarButtons);
+        }
+        this.editorElement.focus();
+    }
+
+    /**
+     * Method that shows the previous toolbar buttons.
+     */
+    toolbarPrev(): void {
+        if (!this.toolbarPrevHidden) {
+            const currentIndex = this.toolbarSlides.getActiveIndex() || 0;
+            this.toolbarSlides.slideTo(currentIndex - this.numToolbarButtons);
+        }
+        this.editorElement.focus();
+    }
+
+    /**
+     * Update the number of toolbar buttons displayed.
+     */
+    updateToolbarButtons(): void {
+        if (!this.isCurrentView) {
+            // Don't calculate if component isn't in current view, the calculations are wrong.
+            return;
+        }
+
+        if (!(this.toolbarSlides as any)._init) {
+            // Slides is not initialized yet, try later.
+            setTimeout(this.updateToolbarButtons.bind(this), 100);
+
+            return;
+        }
+
+        const width = this.domUtils.getElementWidth(this.toolbar.nativeElement);
+        if (width > this.toolbarSlides.length() * this.toolbarButtonWidth) {
+            this.numToolbarButtons = this.toolbarSlides.length();
+            this.toolbarArrows = false;
+        } else {
+            this.numToolbarButtons = Math.floor((width - this.toolbarArrowWidth * 2) / this.toolbarButtonWidth);
+            this.toolbarArrows = true;
+        }
+
+        this.toolbarSlides.update();
+
+        this.updateToolbarArrows();
+    }
+
+    /**
+     * Show or hide next/previous toolbar arrows.
+     */
+    updateToolbarArrows(): void {
+        const currentIndex = this.toolbarSlides.getActiveIndex() || 0;
+        this.toolbarPrevHidden = currentIndex <= 0;
+        this.toolbarNextHidden = currentIndex + this.numToolbarButtons >= this.toolbarSlides.length();
+    }
+
+    /**
+     * User entered the page that contains the component.
+     */
+    ionViewDidEnter(): void {
+        this.isCurrentView = true;
+
+        this.updateToolbarButtons();
+    }
+
+    /**
+     * User left the page that contains the component.
+     */
+    ionViewDidLeave(): void {
+        this.isCurrentView = false;
     }
 
     /**
