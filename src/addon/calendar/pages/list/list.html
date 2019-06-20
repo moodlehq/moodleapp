@@ -40,5 +40,12 @@
 
             <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreEvents($event)" [error]="loadMoreError"></core-infinite-loading>
         </core-loading>
+
+        <!-- Create a calendar event. -->
+        <ion-fab core-fab bottom end *ngIf="canCreate">
+            <button ion-fab (click)="openCreate()" [attr.aria-label]="'addon.calendar.newevent' | translate">
+                <ion-icon name="add"></ion-icon>
+            </button>
+        </ion-fab>
     </ion-content>
 </core-split-view>

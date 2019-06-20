@@ -54,6 +54,7 @@ export class AddonCalendarListPage implements OnDestroy {
     protected obsDefaultTimeChange: any;
     protected eventId: number;
     protected preSelectedCourseId: number;
+    protected newEventObserver: any;
 
     courses: any[];
     eventsLoaded = false;
@@ -65,6 +66,7 @@ export class AddonCalendarListPage implements OnDestroy {
     filter = {
         course: this.allCourses
     };
+    canCreate = false;
 
     constructor(private translate: TranslateService, private calendarProvider: AddonCalendarProvider, navParams: NavParams,
             private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider, private utils: CoreUtilsProvider,
@@ -74,6 +76,7 @@ export class AddonCalendarListPage implements OnDestroy {
 
         this.siteHomeId = sitesProvider.getCurrentSite().getSiteHomeId();
         this.notificationsEnabled = localNotificationsProvider.isAvailable();
+
         if (this.notificationsEnabled) {
             // Re-schedule events if default time changes.
             this.obsDefaultTimeChange = eventsProvider.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
@@ -83,6 +86,30 @@ export class AddonCalendarListPage implements OnDestroy {
 
         this.eventId = navParams.get('eventId') || false;
         this.preSelectedCourseId = navParams.get('courseId') || null;
+
+        // Listen for events added. When an event is added, we reload the data.
+        this.newEventObserver = eventsProvider.on(AddonCalendarProvider.NEW_EVENT_EVENT, (data) => {
+            if (data && data.event) {
+                if (this.splitviewCtrl.isOn()) {
+                    // Discussion added, clear details page.
+                    this.splitviewCtrl.emptyDetails();
+                }
+
+                this.eventsLoaded = false;
+                this.refreshEvents(false).finally(() => {
+                    this.eventsLoaded = true;
+
+                    // In tablet mode try to open the event.
+                    if (this.splitviewCtrl.isOn()) {
+                        if (data.event.id) {
+                            this.gotoEvent(data.event.id);
+                        } else {
+                            // It's an offline event.
+                        }
+                    }
+                });
+            }
+        }, sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -114,8 +141,19 @@ export class AddonCalendarListPage implements OnDestroy {
         this.daysLoaded = 0;
         this.emptyEventsTimes = 0;
 
+        const promises = [];
+
+        if (this.calendarProvider.canEditEventsInSite()) {
+            // Site allows creating events. Check if the user has permissions to do so.
+            promises.push(this.calendarProvider.getAllowedEventTypes().then((types) => {
+                this.canCreate = Object.keys(types).length > 0;
+            }).catch(() => {
+                this.canCreate = false;
+            }));
+        }
+
         // Load courses for the popover.
-        return this.coursesProvider.getUserCourses(false).then((courses) => {
+        promises.push(this.coursesProvider.getUserCourses(false).then((courses) => {
             // Add "All courses".
             courses.unshift(this.allCourses);
             this.courses = courses;
@@ -127,7 +165,9 @@ export class AddonCalendarListPage implements OnDestroy {
             }
 
             return this.fetchEvents(refresh);
-        });
+        }));
+
+        return Promise.all(promises);
     }
 
     /**
@@ -308,21 +348,23 @@ export class AddonCalendarListPage implements OnDestroy {
     /**
      * Refresh the events.
      *
-     * @param {any} refresher Refresher.
+     * @param {any} [refresher] Refresher.
+     * @return {Promise<any>} Promise resolved when done.
      */
-    refreshEvents(refresher: any): void {
+    refreshEvents(refresher?: any): Promise<any> {
         const promises = [];
 
         promises.push(this.calendarProvider.invalidateEventsList());
+        promises.push(this.calendarProvider.invalidateAllowedEventTypes());
 
         if (this.categoriesRetrieved) {
             promises.push(this.coursesProvider.invalidateCategories(0, true));
             this.categoriesRetrieved = false;
         }
 
-        Promise.all(promises).finally(() => {
-            this.fetchData(true).finally(() => {
-                refresher.complete();
+        return Promise.all(promises).finally(() => {
+            return this.fetchData(true).finally(() => {
+                refresher && refresher.complete();
             });
         });
     }
@@ -385,6 +427,18 @@ export class AddonCalendarListPage implements OnDestroy {
     }
 
     /**
+     * Open page to create an event.
+     */
+    openCreate(): void {
+        const params: any = {};
+        if (this.filter.course.id != this.allCourses.id) {
+            params.courseId = this.filter.course.id;
+        }
+
+        this.splitviewCtrl.push('AddonCalendarEditEventPage', params);
+    }
+
+    /**
      * Open calendar events settings.
      */
     openSettings(): void {
@@ -406,5 +460,6 @@ export class AddonCalendarListPage implements OnDestroy {
      */
     ngOnDestroy(): void {
         this.obsDefaultTimeChange && this.obsDefaultTimeChange.off();
+        this.newEventObserver && this.newEventObserver.off();
     }
 }
