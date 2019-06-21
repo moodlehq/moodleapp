@@ -308,7 +308,22 @@ export class CoreTimeUtilsProvider {
     toDatetimeFormat(timestamp?: number): string {
         timestamp = timestamp || Date.now();
 
-        return this.userDate(timestamp, 'core.dfdatetimeinput', false);
+        return this.userDate(timestamp, 'YYYY-MM-DDTHH:mm:ss.SSS', false);
+    }
+
+    /**
+     * Convert the value of a ion-datetime to a Date.
+     *
+     * @param {string} value Value of ion-datetime.
+     * @return {Date} Date.
+     */
+    datetimeToDate(value: string): Date {
+        if (typeof value == 'string' && value.slice(-1) == 'Z') {
+            // The value shoudln't have the timezone because it causes problems, remove it.
+            value = value.substr(0, value.length - 1);
+        }
+
+        return new Date(value);
     }
 
     /**

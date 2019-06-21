@@ -1,5 +1,6 @@
 {
     "calendar": "Calendar",
+    "calendarevent": "Calendar event",
     "calendarevents": "Calendar events",
     "calendarreminders": "Calendar reminders",
     "defaultnotificationtime": "Default notification time",

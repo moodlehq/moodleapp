@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Optional, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, Optional, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreGroupsProvider } from '@providers/groups';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreSyncProvider } from '@providers/sync';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -28,6 +29,7 @@ import { CoreRichTextEditorComponent } from '@components/rich-text-editor/rich-t
 import { AddonCalendarProvider } from '../../providers/calendar';
 import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
 import { AddonCalendarHelperProvider } from '../../providers/helper';
+import { AddonCalendarSyncProvider } from '../../providers/calendar-sync';
 import { CoreSite } from '@classes/site';
 
 /**
@@ -38,7 +40,7 @@ import { CoreSite } from '@classes/site';
     selector: 'page-addon-calendar-edit-event',
     templateUrl: 'edit-event.html',
 })
-export class AddonCalendarEditEventPage implements OnInit {
+export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
 
     @ViewChild(CoreRichTextEditorComponent) descriptionEditor: CoreRichTextEditorComponent;
 
@@ -68,6 +70,7 @@ export class AddonCalendarEditEventPage implements OnInit {
     protected currentSite: CoreSite;
     protected types: any; // Object with the supported types.
     protected showAll: boolean;
+    protected isDestroyed = false;
 
     constructor(navParams: NavParams,
             private navCtrl: NavController,
@@ -82,7 +85,9 @@ export class AddonCalendarEditEventPage implements OnInit {
             private calendarProvider: AddonCalendarProvider,
             private calendarOffline: AddonCalendarOfflineProvider,
             private calendarHelper: AddonCalendarHelperProvider,
+            private calendarSync: AddonCalendarSyncProvider,
             private fb: FormBuilder,
+            private syncProvider: CoreSyncProvider,
             @Optional() private svComponent: CoreSplitViewComponent) {
 
         this.eventId = navParams.get('eventId');
@@ -142,10 +147,10 @@ export class AddonCalendarEditEventPage implements OnInit {
         let accessInfo;
 
         // Get access info.
-        return this.calendarProvider.getAccessInformation().then((info) => {
+        return this.calendarProvider.getAccessInformation(this.courseId).then((info) => {
             accessInfo = info;
 
-            return this.calendarProvider.getAllowedEventTypes();
+            return this.calendarProvider.getAllowedEventTypes(this.courseId);
         }).then((types) => {
             this.types = types;
 
@@ -157,29 +162,38 @@ export class AddonCalendarEditEventPage implements OnInit {
             }
 
             if (this.eventId && !refresh) {
-                // Get the event data if there's any.
-                promises.push(this.calendarOffline.getEvent(this.eventId).then((event) => {
-                    this.hasOffline = true;
+                // If editing an event, get offline data. Wait for sync first.
 
-                    // Load the data in the form.
-                    this.eventForm.controls.name.setValue(event.name);
-                    this.eventForm.controls.timestart.setValue(this.timeUtils.toDatetimeFormat(event.timestart * 1000));
-                    this.eventForm.controls.eventtype.setValue(event.eventtype);
-                    this.eventForm.controls.categoryid.setValue(event.categoryid || '');
-                    this.eventForm.controls.courseid.setValue(event.courseid || '');
-                    this.eventForm.controls.groupcourseid.setValue(event.groupcourseid || '');
-                    this.eventForm.controls.groupid.setValue(event.groupid || '');
-                    this.eventForm.controls.description.setValue(event.description);
-                    this.eventForm.controls.location.setValue(event.location);
-                    this.eventForm.controls.duration.setValue(event.duration);
-                    this.eventForm.controls.timedurationuntil.setValue(
-                            this.timeUtils.toDatetimeFormat((event.timedurationuntil * 1000) || Date.now()));
-                    this.eventForm.controls.timedurationminutes.setValue(event.timedurationminutes || '');
-                    this.eventForm.controls.repeat.setValue(!!event.repeat);
-                    this.eventForm.controls.repeats.setValue(event.repeats || '1');
-                }).catch(() => {
-                    // No offline data.
-                    this.hasOffline = false;
+                promises.push(this.calendarSync.waitForSync(AddonCalendarSyncProvider.SYNC_ID).then(() => {
+                    // Do not block if the scope is already destroyed.
+                    if (!this.isDestroyed) {
+                        this.syncProvider.blockOperation(AddonCalendarProvider.COMPONENT, this.eventId);
+                    }
+
+                    // Get the event data if there's any.
+                    return this.calendarOffline.getEvent(this.eventId).then((event) => {
+                        this.hasOffline = true;
+
+                        // Load the data in the form.
+                        this.eventForm.controls.name.setValue(event.name);
+                        this.eventForm.controls.timestart.setValue(this.timeUtils.toDatetimeFormat(event.timestart * 1000));
+                        this.eventForm.controls.eventtype.setValue(event.eventtype);
+                        this.eventForm.controls.categoryid.setValue(event.categoryid || '');
+                        this.eventForm.controls.courseid.setValue(event.courseid || '');
+                        this.eventForm.controls.groupcourseid.setValue(event.groupcourseid || '');
+                        this.eventForm.controls.groupid.setValue(event.groupid || '');
+                        this.eventForm.controls.description.setValue(event.description);
+                        this.eventForm.controls.location.setValue(event.location);
+                        this.eventForm.controls.duration.setValue(event.duration);
+                        this.eventForm.controls.timedurationuntil.setValue(
+                                this.timeUtils.toDatetimeFormat((event.timedurationuntil * 1000) || Date.now()));
+                        this.eventForm.controls.timedurationminutes.setValue(event.timedurationminutes || '');
+                        this.eventForm.controls.repeat.setValue(!!event.repeat);
+                        this.eventForm.controls.repeats.setValue(event.repeats || '1');
+                    }).catch(() => {
+                        // No offline data.
+                        this.hasOffline = false;
+                    });
                 }));
             }
 
@@ -305,8 +319,8 @@ export class AddonCalendarEditEventPage implements OnInit {
     submit(): void {
         // Validate data.
         const formData = this.eventForm.value,
-            timeStartDate = new Date(formData.timestart),
-            timeUntilDate = new Date(formData.timedurationuntil),
+            timeStartDate = this.timeUtils.datetimeToDate(formData.timestart),
+            timeUntilDate = this.timeUtils.datetimeToDate(formData.timedurationuntil),
             timeDurationMinutes = parseInt(formData.timedurationminutes || '', 10);
         let error;
 
@@ -382,6 +396,9 @@ export class AddonCalendarEditEventPage implements OnInit {
      * @param {number} [event] Event.
      */
     protected returnToList(event?: any): void {
+        // Unblock the sync because the view will be destroyed and the sync process could be triggered before ngOnDestroy.
+        this.unblockSync();
+
         if (event) {
             const data: any = {
                 event: event
@@ -431,5 +448,19 @@ export class AddonCalendarEditEventPage implements OnInit {
         } else {
             return Promise.resolve();
         }
+    }
+
+    protected unblockSync(): void {
+        if (this.eventId) {
+            this.syncProvider.unblockOperation(AddonCalendarProvider.COMPONENT, this.eventId);
+        }
+    }
+
+    /**
+     * Page destroyed.
+     */
+    ngOnDestroy(): void {
+        this.unblockSync();
+        this.isDestroyed = true;
     }
 }

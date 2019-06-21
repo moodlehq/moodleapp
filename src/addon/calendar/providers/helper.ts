@@ -33,8 +33,31 @@ export class AddonCalendarHelperProvider {
         category: 'fa-cubes'
     };
 
-    constructor(logger: CoreLoggerProvider, private courseProvider: CoreCourseProvider) {
+    constructor(logger: CoreLoggerProvider, private courseProvider: CoreCourseProvider,
+            private calendarProvider: AddonCalendarProvider) {
         this.logger = logger.getInstance('AddonCalendarHelperProvider');
+    }
+
+    /**
+     * Check if current user can create/edit events.
+     *
+     * @param {number} [courseId] Course ID. If not defined, site calendar.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<boolean>} Promise resolved with boolean: whether the user can create events.
+     */
+    canEditEvents(courseId?: number, siteId?: string): Promise<boolean> {
+        return this.calendarProvider.canEditEvents(siteId).then((canEdit) => {
+            if (!canEdit) {
+                return false;
+            }
+
+            // Site allows creating events. Check if the user has permissions to do so.
+            return this.calendarProvider.getAllowedEventTypes(courseId, siteId).then((types) => {
+                return Object.keys(types).length > 0;
+            });
+        }).catch(() => {
+            return false;
+        });
     }
 
     /**

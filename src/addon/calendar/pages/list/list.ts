@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, OnDestroy } from '@angular/core';
+import { Component, ViewChild, OnDestroy, NgZone } from '@angular/core';
 import { IonicPage, Content, PopoverController, NavParams, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { AddonCalendarProvider } from '../../providers/calendar';
 import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
 import { AddonCalendarHelperProvider } from '../../providers/helper';
+import { AddonCalendarSyncProvider } from '../../providers/calendar-sync';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -28,6 +29,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreAppProvider } from '@providers/app';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import * as moment from 'moment';
+import { Network } from '@ionic-native/network';
 
 /**
  * Page that displays the list of calendar events.
@@ -57,6 +59,8 @@ export class AddonCalendarListPage implements OnDestroy {
     protected preSelectedCourseId: number;
     protected newEventObserver: any;
     protected discardedObserver: any;
+    protected syncObserver: any;
+    protected onlineObserver: any;
 
     courses: any[];
     eventsLoaded = false;
@@ -71,13 +75,16 @@ export class AddonCalendarListPage implements OnDestroy {
     };
     canCreate = false;
     hasOffline = false;
+    isOnline = false;
+    syncIcon: string; // Sync icon.
 
     constructor(private translate: TranslateService, private calendarProvider: AddonCalendarProvider, navParams: NavParams,
             private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider, private utils: CoreUtilsProvider,
-            private calendarHelper: AddonCalendarHelperProvider, sitesProvider: CoreSitesProvider,
+            private calendarHelper: AddonCalendarHelperProvider, private sitesProvider: CoreSitesProvider, zone: NgZone,
             localNotificationsProvider: CoreLocalNotificationsProvider, private popoverCtrl: PopoverController,
-            eventsProvider: CoreEventsProvider, private navCtrl: NavController, appProvider: CoreAppProvider,
-            private calendarOffline: AddonCalendarOfflineProvider) {
+            private eventsProvider: CoreEventsProvider, private navCtrl: NavController, private appProvider: CoreAppProvider,
+            private calendarOffline: AddonCalendarOfflineProvider, private calendarSync: AddonCalendarSyncProvider,
+            network: Network) {
 
         this.siteHomeId = sitesProvider.getCurrentSite().getSiteHomeId();
         this.notificationsEnabled = localNotificationsProvider.isAvailable();
@@ -101,7 +108,7 @@ export class AddonCalendarListPage implements OnDestroy {
                 }
 
                 this.eventsLoaded = false;
-                this.refreshEvents(false).finally(() => {
+                this.refreshEvents(true, false).finally(() => {
 
                     // In tablet mode try to open the event (only if it's an online event).
                     if (this.splitviewCtrl.isOn() && data.event.id > 0) {
@@ -119,8 +126,22 @@ export class AddonCalendarListPage implements OnDestroy {
             }
 
             this.eventsLoaded = false;
-            this.refreshEvents(false);
+            this.refreshEvents(true, false);
         }, sitesProvider.getCurrentSiteId());
+
+        // Refresh data if calendar events are synchronized automatically.
+        this.syncObserver = eventsProvider.on(AddonCalendarSyncProvider.AUTO_SYNCED, (data) => {
+            this.eventsLoaded = false;
+            this.refreshEvents();
+        }, sitesProvider.getCurrentSiteId());
+
+        // Refresh online status when changes.
+        this.onlineObserver = network.onchange().subscribe((online) => {
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            zone.run(() => {
+                this.isOnline = online;
+            });
+        });
     }
 
     /**
@@ -132,7 +153,9 @@ export class AddonCalendarListPage implements OnDestroy {
             this.gotoEvent(this.eventId);
         }
 
-        this.fetchData().then(() => {
+        this.syncIcon = 'spinner';
+
+        this.fetchData(false, true, false).then(() => {
             if (!this.eventId && this.splitviewCtrl.isOn() && this.events.length > 0) {
                 // Take first and load it.
                 this.gotoEvent(this.events[0].id);
@@ -144,49 +167,76 @@ export class AddonCalendarListPage implements OnDestroy {
      * Fetch all the data required for the view.
      *
      * @param {boolean} [refresh] Empty events array first.
+     * @param {boolean} [sync] Whether it should try to synchronize offline events.
+     * @param {boolean} [showErrors] Whether to show sync errors to the user.
      * @return {Promise<any>} Promise resolved when done.
      */
-    fetchData(refresh: boolean = false): Promise<any> {
+    fetchData(refresh?: boolean, sync?: boolean, showErrors?: boolean): Promise<any> {
         this.daysLoaded = 0;
         this.emptyEventsTimes = 0;
+        this.isOnline = this.appProvider.isOnline();
 
-        const promises = [];
+        let promise;
 
-        if (this.calendarProvider.canEditEventsInSite()) {
-            // Site allows creating events. Check if the user has permissions to do so.
-            promises.push(this.calendarProvider.getAllowedEventTypes().then((types) => {
-                this.canCreate = Object.keys(types).length > 0;
-            }).catch(() => {
-                this.canCreate = false;
-            }));
+        if (sync) {
+            // Try to synchronize offline events.
+            promise = this.calendarSync.syncEvents().then((result) => {
+                if (result.warnings && result.warnings.length) {
+                    this.domUtils.showErrorModal(result.warnings[0]);
+                }
+
+                if (result.updated) {
+                    // Trigger a manual sync event.
+                    this.eventsProvider.trigger(AddonCalendarSyncProvider.MANUAL_SYNCED, {
+                        source: 'list'
+                    }, this.sitesProvider.getCurrentSiteId());
+                }
+            }).catch((error) => {
+                if (showErrors) {
+                    this.domUtils.showErrorModalDefault(error, 'core.errorsync', true);
+                }
+            });
+        } else {
+            promise = Promise.resolve();
         }
 
-        // Load courses for the popover.
-        promises.push(this.coursesProvider.getUserCourses(false).then((courses) => {
-            // Add "All courses".
-            courses.unshift(this.allCourses);
-            this.courses = courses;
+        return promise.then(() => {
 
-            if (this.preSelectedCourseId) {
-                this.filter.course = courses.find((course) => {
-                    return course.id == this.preSelectedCourseId;
-                });
-            }
+            const promises = [];
+            const courseId = this.filter.course.id != this.allCourses.id ? this.filter.course.id : undefined;
 
-            return this.fetchEvents(refresh);
-        }));
+            promises.push(this.calendarHelper.canEditEvents(courseId).then((canEdit) => {
+                this.canCreate = canEdit;
+            }));
 
-        // Get offline events.
-        promises.push(this.calendarOffline.getAllEvents().then((events) => {
-            this.hasOffline = !!events.length;
+            // Load courses for the popover.
+            promises.push(this.coursesProvider.getUserCourses(false).then((courses) => {
+                // Add "All courses".
+                courses.unshift(this.allCourses);
+                this.courses = courses;
 
-            // Format data and sort by timestart.
-            events.forEach(this.calendarHelper.formatEventData.bind(this.calendarHelper));
-            this.offlineEvents = events.sort((a, b) => a.timestart - b.timestart);
-        }));
+                if (this.preSelectedCourseId) {
+                    this.filter.course = courses.find((course) => {
+                        return course.id == this.preSelectedCourseId;
+                    });
+                }
 
-        return Promise.all(promises).finally(() => {
+                return this.fetchEvents(refresh);
+            }));
+
+            // Get offline events.
+            promises.push(this.calendarOffline.getAllEvents().then((events) => {
+                this.hasOffline = !!events.length;
+
+                // Format data and sort by timestart.
+                events.forEach(this.calendarHelper.formatEventData.bind(this.calendarHelper));
+                this.offlineEvents = events.sort((a, b) => a.timestart - b.timestart);
+            }));
+
+            return Promise.all(promises);
+        }).finally(() => {
             this.eventsLoaded = true;
+            this.syncIcon = 'sync';
         });
     }
 
@@ -196,7 +246,7 @@ export class AddonCalendarListPage implements OnDestroy {
      * @param {boolean} [refresh] Empty events array first.
      * @return {Promise<any>} Promise resolved when done.
      */
-    fetchEvents(refresh: boolean = false): Promise<any> {
+    fetchEvents(refresh?: boolean): Promise<any> {
         this.loadMoreError = false;
 
         return this.calendarProvider.getEventsList(this.daysLoaded, AddonCalendarProvider.DAYS_INTERVAL).then((events) => {
@@ -367,12 +417,34 @@ export class AddonCalendarListPage implements OnDestroy {
     }
 
     /**
-     * Refresh the events.
+     * Refresh the data.
      *
      * @param {any} [refresher] Refresher.
+     * @param {Function} [done] Function to call when done.
+     * @param {boolean} [showErrors] Whether to show sync errors to the user.
      * @return {Promise<any>} Promise resolved when done.
      */
-    refreshEvents(refresher?: any): Promise<any> {
+    doRefresh(refresher?: any, done?: () => void, showErrors?: boolean): Promise<any> {
+        if (this.eventsLoaded) {
+            return this.refreshEvents(true, showErrors).finally(() => {
+                refresher && refresher.complete();
+                done && done();
+            });
+        }
+
+        return Promise.resolve();
+    }
+
+    /**
+     * Refresh the events.
+     *
+     * @param {boolean} [sync] Whether it should try to synchronize offline events.
+     * @param {boolean} [showErrors] Whether to show sync errors to the user.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    refreshEvents(sync?: boolean, showErrors?: boolean): Promise<any> {
+        this.syncIcon = 'spinner';
+
         const promises = [];
 
         promises.push(this.calendarProvider.invalidateEventsList());
@@ -384,9 +456,7 @@ export class AddonCalendarListPage implements OnDestroy {
         }
 
         return Promise.all(promises).finally(() => {
-            return this.fetchData(true).finally(() => {
-                refresher && refresher.complete();
-            });
+            return this.fetchData(true, sync, showErrors);
         });
     }
 
@@ -440,6 +510,13 @@ export class AddonCalendarListPage implements OnDestroy {
                 this.domUtils.scrollToTop(this.content);
 
                 this.filteredEvents = this.getFilteredEvents();
+
+                // Course viewed has changed, check if the user can create events for this course calendar.
+                const courseId = this.filter.course.id != this.allCourses.id ? this.filter.course.id : undefined;
+
+                this.calendarHelper.canEditEvents(courseId).then((canEdit) => {
+                    this.canCreate = canEdit;
+                });
             }
         });
         popover.present({
@@ -496,5 +573,8 @@ export class AddonCalendarListPage implements OnDestroy {
     ngOnDestroy(): void {
         this.obsDefaultTimeChange && this.obsDefaultTimeChange.off();
         this.newEventObserver && this.newEventObserver.off();
+        this.discardedObserver && this.discardedObserver.off();
+        this.syncObserver && this.syncObserver.off();
+        this.onlineObserver && this.onlineObserver.off();
     }
 }

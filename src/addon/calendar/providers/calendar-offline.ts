@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
-import { AddonCalendarProvider } from './calendar';
 
 /**
  * Service to handle offline calendar events.
