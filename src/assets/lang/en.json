@@ -1389,6 +1389,7 @@
     "core.deleteduser": "Deleted user",
     "core.deleting": "Deleting",
     "core.description": "Description",
+    "core.dfdatetimeinput": "YYYY-MM-DDThh:mm:ss.SSS",
     "core.dfdaymonthyear": "MM-DD-YYYY",
     "core.dfdayweekmonth": "ddd, D MMM",
     "core.dffulldate": "dddd, D MMMM YYYY h[:]mm A",

@@ -17,8 +17,27 @@
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
         <core-loading [hideUntil]="eventsLoaded">
+            <!-- There is data to be synchronized -->
+            <ion-card class="core-warning-card" icon-start *ngIf="hasOffline">
+                <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendar' | translate} }}
+            </ion-card>
+
             <core-empty-box *ngIf="!filteredEvents || !filteredEvents.length" icon="calendar" [message]="'addon.calendar.noevents' | translate">
             </core-empty-box>
+
+            <ion-list *ngIf="offlineEvents && offlineEvents.length" no-margin>
+                <ng-container *ngFor="let event of offlineEvents">
+                    <ion-item-divider> {{ 'core.notsent' | translate }}</ion-item-divider>
+                    <a ion-item text-wrap [title]="event.name" (click)="gotoEvent(event.id)" [class.core-split-item-selected]="event.id == eventId">
+                        <core-icon *ngIf="event.icon" [name]="event.icon" item-start></core-icon>
+                        <h2><core-format-text [text]="event.name"></core-format-text></h2>
+                        <p>
+                            {{ event.timestart * 1000 | coreFormatDate: "strftimedatetimeshort" }}
+                            <span *ngIf="event.timeduration"> - {{ (event.timestart + event.timeduration) * 1000 | coreFormatDate: "strftimedatetimeshort" }}</span>
+                        </p>
+                    </a>
+                </ng-container>
+            </ion-list>
 
             <ion-list *ngIf="filteredEvents && filteredEvents.length" no-margin>
                 <ng-container *ngFor="let event of filteredEvents">
@@ -43,7 +62,7 @@
 
         <!-- Create a calendar event. -->
         <ion-fab core-fab bottom end *ngIf="canCreate">
-            <button ion-fab (click)="openCreate()" [attr.aria-label]="'addon.calendar.newevent' | translate">
+            <button ion-fab (click)="openEdit()" [attr.aria-label]="'addon.calendar.newevent' | translate">
                 <ion-icon name="add"></ion-icon>
             </button>
         </ion-fab>

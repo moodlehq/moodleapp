@@ -16,6 +16,7 @@ import { Component, ViewChild, OnDestroy } from '@angular/core';
 import { IonicPage, Content, PopoverController, NavParams, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { AddonCalendarProvider } from '../../providers/calendar';
+import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
 import { AddonCalendarHelperProvider } from '../../providers/helper';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -55,10 +56,12 @@ export class AddonCalendarListPage implements OnDestroy {
     protected eventId: number;
     protected preSelectedCourseId: number;
     protected newEventObserver: any;
+    protected discardedObserver: any;
 
     courses: any[];
     eventsLoaded = false;
     events = [];
+    offlineEvents = [];
     notificationsEnabled = false;
     filteredEvents = [];
     canLoadMore = false;
@@ -67,12 +70,14 @@ export class AddonCalendarListPage implements OnDestroy {
         course: this.allCourses
     };
     canCreate = false;
+    hasOffline = false;
 
     constructor(private translate: TranslateService, private calendarProvider: AddonCalendarProvider, navParams: NavParams,
             private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider, private utils: CoreUtilsProvider,
             private calendarHelper: AddonCalendarHelperProvider, sitesProvider: CoreSitesProvider,
             localNotificationsProvider: CoreLocalNotificationsProvider, private popoverCtrl: PopoverController,
-            eventsProvider: CoreEventsProvider, private navCtrl: NavController, appProvider: CoreAppProvider) {
+            eventsProvider: CoreEventsProvider, private navCtrl: NavController, appProvider: CoreAppProvider,
+            private calendarOffline: AddonCalendarOfflineProvider) {
 
         this.siteHomeId = sitesProvider.getCurrentSite().getSiteHomeId();
         this.notificationsEnabled = localNotificationsProvider.isAvailable();
@@ -87,7 +92,7 @@ export class AddonCalendarListPage implements OnDestroy {
         this.eventId = navParams.get('eventId') || false;
         this.preSelectedCourseId = navParams.get('courseId') || null;
 
-        // Listen for events added. When an event is added, we reload the data.
+        // Listen for events added. When an event is added, reload the data.
         this.newEventObserver = eventsProvider.on(AddonCalendarProvider.NEW_EVENT_EVENT, (data) => {
             if (data && data.event) {
                 if (this.splitviewCtrl.isOn()) {
@@ -97,18 +102,24 @@ export class AddonCalendarListPage implements OnDestroy {
 
                 this.eventsLoaded = false;
                 this.refreshEvents(false).finally(() => {
-                    this.eventsLoaded = true;
 
-                    // In tablet mode try to open the event.
-                    if (this.splitviewCtrl.isOn()) {
-                        if (data.event.id) {
-                            this.gotoEvent(data.event.id);
-                        } else {
-                            // It's an offline event.
-                        }
+                    // In tablet mode try to open the event (only if it's an online event).
+                    if (this.splitviewCtrl.isOn() && data.event.id > 0) {
+                        this.gotoEvent(data.event.id);
                     }
                 });
             }
+        }, sitesProvider.getCurrentSiteId());
+
+        // Listen for new event discarded event. When it does, reload the data.
+        this.discardedObserver = eventsProvider.on(AddonCalendarProvider.NEW_EVENT_DISCARDED_EVENT, () => {
+            if (this.splitviewCtrl.isOn()) {
+                // Discussion added, clear details page.
+                this.splitviewCtrl.emptyDetails();
+            }
+
+            this.eventsLoaded = false;
+            this.refreshEvents(false);
         }, sitesProvider.getCurrentSiteId());
     }
 
@@ -126,8 +137,6 @@ export class AddonCalendarListPage implements OnDestroy {
                 // Take first and load it.
                 this.gotoEvent(this.events[0].id);
             }
-        }).finally(() => {
-            this.eventsLoaded = true;
         });
     }
 
@@ -167,7 +176,18 @@ export class AddonCalendarListPage implements OnDestroy {
             return this.fetchEvents(refresh);
         }));
 
-        return Promise.all(promises);
+        // Get offline events.
+        promises.push(this.calendarOffline.getAllEvents().then((events) => {
+            this.hasOffline = !!events.length;
+
+            // Format data and sort by timestart.
+            events.forEach(this.calendarHelper.formatEventData.bind(this.calendarHelper));
+            this.offlineEvents = events.sort((a, b) => a.timestart - b.timestart);
+        }));
+
+        return Promise.all(promises).finally(() => {
+            this.eventsLoaded = true;
+        });
     }
 
     /**
@@ -194,6 +214,8 @@ export class AddonCalendarListPage implements OnDestroy {
                     return this.fetchEvents();
                 }
             } else {
+                events.forEach(this.calendarHelper.formatEventData.bind(this.calendarHelper));
+
                 // Sort the events by timestart, they're ordered by id.
                 events.sort((a, b) => {
                     if (a.timestart == b.timestart) {
@@ -203,7 +225,6 @@ export class AddonCalendarListPage implements OnDestroy {
                     return a.timestart - b.timestart;
                 });
 
-                events.forEach(this.calendarHelper.formatEventData.bind(this.calendarHelper));
                 this.getCategories = this.shouldLoadCategories(events);
 
                 if (refresh) {
@@ -427,10 +448,16 @@ export class AddonCalendarListPage implements OnDestroy {
     }
 
     /**
-     * Open page to create an event.
+     * Open page to create/edit an event.
+     *
+     * @param {number} [eventId] Event ID to edit.
      */
-    openCreate(): void {
+    openEdit(eventId?: number): void {
         const params: any = {};
+
+        if (eventId) {
+            params.eventId = eventId;
+        }
         if (this.filter.course.id != this.allCourses.id) {
             params.courseId = this.filter.course.id;
         }
@@ -452,7 +479,15 @@ export class AddonCalendarListPage implements OnDestroy {
      */
     gotoEvent(eventId: number): void {
         this.eventId = eventId;
-        this.splitviewCtrl.push('AddonCalendarEventPage', { id: eventId });
+
+        if (eventId < 0) {
+            // It's an offline event, go to the edit page.
+            this.openEdit(eventId);
+        } else {
+            this.splitviewCtrl.push('AddonCalendarEventPage', {
+                id: eventId
+            });
+        }
     }
 
     /**

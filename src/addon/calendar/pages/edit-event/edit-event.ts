@@ -26,6 +26,7 @@ import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreRichTextEditorComponent } from '@components/rich-text-editor/rich-text-editor.ts';
 import { AddonCalendarProvider } from '../../providers/calendar';
+import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
 import { AddonCalendarHelperProvider } from '../../providers/helper';
 import { CoreSite } from '@classes/site';
 
@@ -79,6 +80,7 @@ export class AddonCalendarEditEventPage implements OnInit {
             private coursesProvider: CoreCoursesProvider,
             private utils: CoreUtilsProvider,
             private calendarProvider: AddonCalendarProvider,
+            private calendarOffline: AddonCalendarOfflineProvider,
             private calendarHelper: AddonCalendarHelperProvider,
             private fb: FormBuilder,
             @Optional() private svComponent: CoreSplitViewComponent) {
@@ -102,8 +104,10 @@ export class AddonCalendarEditEventPage implements OnInit {
         this.groupControl = this.fb.control('');
         this.descriptionControl = this.fb.control('');
 
+        const currentDate = this.timeUtils.toDatetimeFormat();
+
         this.eventForm.addControl('name', this.fb.control('', Validators.required));
-        this.eventForm.addControl('timestart', this.fb.control(new Date().toISOString(), Validators.required));
+        this.eventForm.addControl('timestart', this.fb.control(currentDate, Validators.required));
         this.eventForm.addControl('eventtype', this.eventTypeControl);
         this.eventForm.addControl('categoryid', this.fb.control(''));
         this.eventForm.addControl('courseid', this.fb.control(this.courseId));
@@ -112,7 +116,7 @@ export class AddonCalendarEditEventPage implements OnInit {
         this.eventForm.addControl('description', this.descriptionControl);
         this.eventForm.addControl('location', this.fb.control(''));
         this.eventForm.addControl('duration', this.fb.control(0));
-        this.eventForm.addControl('timedurationuntil', this.fb.control(new Date().toISOString()));
+        this.eventForm.addControl('timedurationuntil', this.fb.control(currentDate));
         this.eventForm.addControl('timedurationminutes', this.fb.control(''));
         this.eventForm.addControl('repeat', this.fb.control(false));
         this.eventForm.addControl('repeats', this.fb.control('1'));
@@ -131,9 +135,10 @@ export class AddonCalendarEditEventPage implements OnInit {
     /**
      * Fetch the data needed to render the form.
      *
+     * @param {boolean} [refresh] Whether it's refreshing data.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected fetchData(): Promise<any> {
+    protected fetchData(refresh?: boolean): Promise<any> {
         let accessInfo;
 
         // Get access info.
@@ -149,6 +154,33 @@ export class AddonCalendarEditEventPage implements OnInit {
 
             if (!eventTypes.length) {
                 return Promise.reject(this.translate.instant('addon.calendar.nopermissiontoupdatecalendar'));
+            }
+
+            if (this.eventId && !refresh) {
+                // Get the event data if there's any.
+                promises.push(this.calendarOffline.getEvent(this.eventId).then((event) => {
+                    this.hasOffline = true;
+
+                    // Load the data in the form.
+                    this.eventForm.controls.name.setValue(event.name);
+                    this.eventForm.controls.timestart.setValue(this.timeUtils.toDatetimeFormat(event.timestart * 1000));
+                    this.eventForm.controls.eventtype.setValue(event.eventtype);
+                    this.eventForm.controls.categoryid.setValue(event.categoryid || '');
+                    this.eventForm.controls.courseid.setValue(event.courseid || '');
+                    this.eventForm.controls.groupcourseid.setValue(event.groupcourseid || '');
+                    this.eventForm.controls.groupid.setValue(event.groupid || '');
+                    this.eventForm.controls.description.setValue(event.description);
+                    this.eventForm.controls.location.setValue(event.location);
+                    this.eventForm.controls.duration.setValue(event.duration);
+                    this.eventForm.controls.timedurationuntil.setValue(
+                            this.timeUtils.toDatetimeFormat((event.timedurationuntil * 1000) || Date.now()));
+                    this.eventForm.controls.timedurationminutes.setValue(event.timedurationminutes || '');
+                    this.eventForm.controls.repeat.setValue(!!event.repeat);
+                    this.eventForm.controls.repeats.setValue(event.repeats || '1');
+                }).catch(() => {
+                    // No offline data.
+                    this.hasOffline = false;
+                }));
             }
 
             if (types.category) {
@@ -185,11 +217,13 @@ export class AddonCalendarEditEventPage implements OnInit {
             }
 
             return Promise.all(promises).then(() => {
-                // Set event types. If course is allowed, select it first.
-                if (types.course) {
-                    this.eventTypeControl.setValue(AddonCalendarProvider.TYPE_COURSE);
-                } else {
-                    this.eventTypeControl.setValue(eventTypes[0].value);
+                if (!this.eventTypeControl.value) {
+                    // Initialize event type value. If course is allowed, select it first.
+                    if (types.course) {
+                        this.eventTypeControl.setValue(AddonCalendarProvider.TYPE_COURSE);
+                    } else {
+                        this.eventTypeControl.setValue(eventTypes[0].value);
+                    }
                 }
 
                 this.eventTypes = eventTypes;
@@ -227,7 +261,7 @@ export class AddonCalendarEditEventPage implements OnInit {
         }
 
         Promise.all(promises).finally(() => {
-            this.fetchData().finally(() => {
+            this.fetchData(true).finally(() => {
                 refresher.complete();
             });
         });
@@ -333,8 +367,8 @@ export class AddonCalendarEditEventPage implements OnInit {
         // Send the data.
         const modal = this.domUtils.showModalLoading('core.sending');
 
-        this.calendarProvider.submitEvent(this.eventId, data).then((event) => {
-            this.returnToList(event);
+        this.calendarProvider.submitEvent(this.eventId, data).then((result) => {
+            this.returnToList(result.event);
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'Error sending data.');
         }).finally(() => {
@@ -348,10 +382,14 @@ export class AddonCalendarEditEventPage implements OnInit {
      * @param {number} [event] Event.
      */
     protected returnToList(event?: any): void {
-        const data: any = {
-            event: event
-        };
-        this.eventsProvider.trigger(AddonCalendarProvider.NEW_EVENT_EVENT, data, this.currentSite.getId());
+        if (event) {
+            const data: any = {
+                event: event
+            };
+            this.eventsProvider.trigger(AddonCalendarProvider.NEW_EVENT_EVENT, data, this.currentSite.getId());
+        } else {
+            this.eventsProvider.trigger(AddonCalendarProvider.NEW_EVENT_DISCARDED_EVENT, {}, this.currentSite.getId());
+        }
 
         if (this.svComponent && this.svComponent.isOn()) {
             // Empty form.
@@ -369,7 +407,12 @@ export class AddonCalendarEditEventPage implements OnInit {
      */
     discard(): void {
         this.domUtils.showConfirm(this.translate.instant('core.areyousure')).then(() => {
-            // @todo.
+            this.calendarOffline.deleteEvent(this.eventId).then(() => {
+                this.returnToList();
+            }).catch(() => {
+                // Shouldn't happen.
+                this.domUtils.showErrorModal('Error discarding event.');
+            });
         }).catch(() => {
             // Cancelled.
         });

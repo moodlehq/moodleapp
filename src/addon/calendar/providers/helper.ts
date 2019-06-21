@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { AddonCalendarProvider } from './calendar';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Service that provides some features regarding lists of courses and categories.
@@ -46,6 +47,20 @@ export class AddonCalendarHelperProvider {
         if (!e.icon) {
             e.icon = this.courseProvider.getModuleIconSrc(e.modulename);
             e.moduleIcon = e.icon;
+        }
+
+        if (e.id < 0) {
+            // It's an offline event, add some calculated data.
+            e.format = 1;
+            e.visible = 1;
+
+            if (e.duration == 1) {
+                e.timeduration = e.timedurationuntil - e.timestart;
+            } else if (e.duration == 2) {
+                e.timeduration = e.timedurationminutes * CoreConstants.SECONDS_MINUTE;
+            } else {
+                e.timeduration = 0;
+            }
         }
     }
 

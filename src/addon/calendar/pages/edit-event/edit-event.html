@@ -44,7 +44,7 @@
             <ion-item text-wrap *ngIf="eventTypeControl.value == 'course'">
                 <ion-label id="addon-calendar-course-label"><h2 [core-mark-required]="true">{{ 'core.course' | translate }}</h2></ion-label>
                 <ion-select [formControlName]="'courseid'" aria-labelledby="addon-calendar-course-label" interface="action-sheet" [placeholder]="'core.noselection' | translate">
-                    <ion-option *ngFor="let course of courses" [value]="course.id">{{ course.fullname }}</ion-option>
+                    <ion-option *ngFor="let course of courses" [value]="course.id"><core-format-text [text]="course.fullname"></core-format-text></ion-option>
                 </ion-select>
             </ion-item>
 
@@ -54,7 +54,7 @@
                 <ion-item text-wrap>
                     <ion-label id="addon-calendar-groupcourse-label"><h2 [core-mark-required]="true">{{ 'core.course' | translate }}</h2></ion-label>
                     <ion-select [formControlName]="'groupcourseid'" aria-labelledby="addon-calendar-groupcourse-label" interface="action-sheet" [placeholder]="'core.noselection' | translate" (ionChange)="groupCourseSelected($event)">
-                        <ion-option *ngFor="let course of courses" [value]="course.id">{{ course.fullname }}</ion-option>
+                        <ion-option *ngFor="let course of courses" [value]="course.id"><core-format-text [text]="course.fullname"></core-format-text></ion-option>
                     </ion-select>
                 </ion-item>
                 <!-- The course has no groups. -->

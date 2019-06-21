@@ -14,6 +14,7 @@
 
 import { NgModule } from '@angular/core';
 import { AddonCalendarProvider } from './providers/calendar';
+import { AddonCalendarOfflineProvider } from './providers/calendar-offline';
 import { AddonCalendarHelperProvider } from './providers/helper';
 import { AddonCalendarMainMenuHandler } from './providers/mainmenu-handler';
 import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
@@ -25,6 +26,7 @@ import { CoreUpdateManagerProvider } from '@providers/update-manager';
 // List of providers (without handlers).
 export const ADDON_CALENDAR_PROVIDERS: any[] = [
     AddonCalendarProvider,
+    AddonCalendarOfflineProvider,
     AddonCalendarHelperProvider
 ];
 
@@ -35,6 +37,7 @@ export const ADDON_CALENDAR_PROVIDERS: any[] = [
     ],
     providers: [
         AddonCalendarProvider,
+        AddonCalendarOfflineProvider,
         AddonCalendarHelperProvider,
         AddonCalendarMainMenuHandler
     ]

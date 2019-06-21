@@ -300,6 +300,18 @@ export class CoreTimeUtilsProvider {
     }
 
     /**
+     * Convert a timestamp to the format to set to a datetime input.
+     *
+     * @param {number} [timestamp] Timestamp to convert (in ms). If not provided, current time.
+     * @return {string} Formatted time.
+     */
+    toDatetimeFormat(timestamp?: number): string {
+        timestamp = timestamp || Date.now();
+
+        return this.userDate(timestamp, 'core.dfdatetimeinput', false);
+    }
+
+    /**
      * Convert a text into user timezone timestamp.
      *
      * @param {number} date To convert to timestamp.
