@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChildren, Input, OnInit, QueryList } from '@angular/core';
+import { Component, ViewChildren, Input, OnInit, QueryList, ElementRef, Optional } from '@angular/core';
+import { Content } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreBlockComponent } from '../block/block';
-import { CoreBlockDelegate } from '../../providers/delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreBlockComponent } from '../block/block';
+import { CoreBlockHelperProvider } from '../../providers/helper';
 
 /**
  * Component that displays the list of course blocks.
@@ -28,16 +29,22 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 export class CoreBlockCourseBlocksComponent implements OnInit {
 
     @Input() courseId: number;
+    @Input() hideBlocks = false;
+    @Input() downloadEnabled: boolean;
 
     @ViewChildren(CoreBlockComponent) blocksComponents: QueryList<CoreBlockComponent>;
 
     dataLoaded = false;
-    hasContent: boolean;
-    hasSupportedBlock: boolean;
     blocks = [];
 
+    protected element: HTMLElement;
+    protected parentContent: HTMLElement;
+
     constructor(private domUtils: CoreDomUtilsProvider, private courseProvider: CoreCourseProvider,
-            private blockDelegate: CoreBlockDelegate) {
+            protected blockHelper: CoreBlockHelperProvider, element: ElementRef,
+            @Optional() content: Content) {
+        this.element = element.nativeElement;
+        this.parentContent = content.getElementRef().nativeElement;
     }
 
     /**
@@ -50,14 +57,14 @@ export class CoreBlockCourseBlocksComponent implements OnInit {
     }
 
     /**
-     * Refresh the data.
+     * Invalidate blocks data.
      *
-     * @param {any} refresher Refresher.
+     * @return {Promise<any>} Promise resolved when done.
      */
-    doRefresh(refresher: any): void {
+    invalidateBlocks(): Promise<any> {
         const promises = [];
 
-        if (this.courseProvider.canGetCourseBlocks()) {
+        if (this.blockHelper.canGetCourseBlocks()) {
             promises.push(this.courseProvider.invalidateCourseBlocks(this.courseId));
         }
 
@@ -68,11 +75,7 @@ export class CoreBlockCourseBlocksComponent implements OnInit {
             }));
         });
 
-        Promise.all(promises).finally(() => {
-            this.loadContent().finally(() => {
-                refresher.complete();
-            });
-        });
+        return Promise.all(promises);
     }
 
     /**
@@ -80,21 +83,24 @@ export class CoreBlockCourseBlocksComponent implements OnInit {
      *
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected loadContent(): Promise<any> {
-        // Get site home blocks.
-        const canGetBlocks = this.courseProvider.canGetCourseBlocks(),
-            promise = canGetBlocks ? this.courseProvider.getCourseBlocks(this.courseId) : Promise.reject(null);
-
-        return promise.then((blocks) => {
+    loadContent(): Promise<any> {
+        return this.blockHelper.getCourseBlocks(this.courseId).then((blocks) => {
             this.blocks = blocks;
-            this.hasSupportedBlock = this.blockDelegate.hasSupportedBlock(blocks);
-
         }).catch((error) => {
-            if (canGetBlocks) {
-                this.domUtils.showErrorModal(error);
-            }
-            this.blocks = [];
-        });
+            this.domUtils.showErrorModal(error);
 
+            this.blocks = [];
+        }).finally(() => {
+            if (this.blocks.length > 0) {
+                this.element.classList.add('core-has-blocks');
+                this.element.classList.remove('core-no-blocks');
+
+                this.parentContent.classList.add('core-course-block-with-blocks');
+            } else {
+                this.element.classList.remove('core-has-blocks');
+                this.element.classList.add('core-no-blocks');
+                this.parentContent.classList.remove('core-course-block-with-blocks');
+            }
+        });
     }
 }

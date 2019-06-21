@@ -20,6 +20,8 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreTabsComponent } from '@components/tabs/tabs';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCourseProvider } from '../../providers/course';
 import { CoreCourseHelperProvider } from '../../providers/helper';
 import { CoreCourseFormatDelegate } from '../../providers/format-delegate';
@@ -28,8 +30,6 @@ import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay,
     CoreCourseOptionsMenuHandlerToDisplay } from '../../providers/options-delegate';
 import { CoreCourseSyncProvider } from '../../providers/sync';
 import { CoreCourseFormatComponent } from '../../components/format/format';
-import { CoreCoursesProvider } from '@core/courses/providers/courses';
-import { CoreTabsComponent } from '@components/tabs/tabs';
 
 /**
  * Page that displays the list of courses the user is enrolled in.

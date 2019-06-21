@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {
-    Component, Input, OnInit, OnChanges, OnDestroy, SimpleChange, Output, EventEmitter, ViewChildren, QueryList, Injector
+    Component, Input, OnInit, OnChanges, OnDestroy, SimpleChange, Output, EventEmitter, ViewChildren, QueryList, Injector, ViewChild
 } from '@angular/core';
 import { Content, ModalController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
@@ -24,6 +24,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
+import { CoreBlockCourseBlocksComponent } from '@core/block/components/course-blocks/course-blocks';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 
 /**
@@ -52,6 +53,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Output() completionChanged?: EventEmitter<any>; // Will emit an event when any module completion changes.
 
     @ViewChildren(CoreDynamicComponent) dynamicComponents: QueryList<CoreDynamicComponent>;
+    @ViewChild(CoreBlockCourseBlocksComponent) courseBlocksComponent: CoreBlockCourseBlocksComponent;
 
     // All the possible component classes.
     courseFormatComponent: any;
@@ -419,6 +421,10 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         this.dynamicComponents.forEach((component) => {
             promises.push(Promise.resolve(component.callComponentFunction('doRefresh', [refresher, done, afterCompletionChange])));
         });
+
+        promises.push(this.courseBlocksComponent.invalidateBlocks().finally(() => {
+            return this.courseBlocksComponent.loadContent();
+        }));
 
         return Promise.all(promises);
     }
