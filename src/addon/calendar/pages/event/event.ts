@@ -24,6 +24,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreGroupsProvider } from '@providers/groups';
 
 /**
  * Page that displays a single calendar event.
@@ -46,6 +47,7 @@ export class AddonCalendarEventPage {
     event: any = {};
     title: string;
     courseName: string;
+    groupName: string;
     courseUrl = '';
     notificationsEnabled = false;
     moduleUrl = '';
@@ -58,7 +60,8 @@ export class AddonCalendarEventPage {
             private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider,
             private calendarHelper: AddonCalendarHelperProvider, private sitesProvider: CoreSitesProvider,
             localNotificationsProvider: CoreLocalNotificationsProvider, private courseProvider: CoreCourseProvider,
-            private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider) {
+            private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider,
+            private groupsProvider: CoreGroupsProvider) {
 
         this.eventId = navParams.get('id');
         this.notificationsEnabled = localNotificationsProvider.isAvailable();
@@ -162,6 +165,21 @@ export class AddonCalendarEventPage {
                             '/course/view.php?id=' + event.courseid) : '';
                 }).catch(() => {
                     // Error getting course, just don't show the course name.
+                }));
+            }
+
+            // If it's a group event, get the name of the group.
+            const courseId = canGetById && event.course ? event.course.id : event.courseid;
+            if (courseId && event.groupid) {
+                promises.push(this.groupsProvider.getUserGroupsInCourse(event.courseid).then((groups) => {
+                    const group = groups.find((group) => {
+                        return group.id == event.groupid;
+                    });
+
+                    this.groupName = group ? group.name : '';
+                }).catch(() => {
+                    // Error getting groups, just don't show the group name.
+                    this.groupName = '';
                 }));
             }
 
