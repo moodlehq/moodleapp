@@ -21,6 +21,7 @@ import { AddonCalendarHelperProvider } from '../../providers/helper';
 import { AddonCalendarSyncProvider } from '../../providers/calendar-sync';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
@@ -43,6 +44,7 @@ export class AddonCalendarListPage implements OnDestroy {
     @ViewChild(Content) content: Content;
     @ViewChild(CoreSplitViewComponent) splitviewCtrl: CoreSplitViewComponent;
 
+    protected initialTime = 0;
     protected daysLoaded = 0;
     protected emptyEventsTimes = 0; // Variable to identify consecutive calls returning 0 events.
     protected categoriesRetrieved = false;
@@ -87,7 +89,7 @@ export class AddonCalendarListPage implements OnDestroy {
             localNotificationsProvider: CoreLocalNotificationsProvider, private popoverCtrl: PopoverController,
             private eventsProvider: CoreEventsProvider, private navCtrl: NavController, private appProvider: CoreAppProvider,
             private calendarOffline: AddonCalendarOfflineProvider, private calendarSync: AddonCalendarSyncProvider,
-            network: Network) {
+            network: Network, private timeUtils: CoreTimeUtilsProvider) {
 
         this.siteHomeId = sitesProvider.getCurrentSite().getSiteHomeId();
         this.notificationsEnabled = localNotificationsProvider.isAvailable();
@@ -192,6 +194,7 @@ export class AddonCalendarListPage implements OnDestroy {
      * @return {Promise<any>} Promise resolved when done.
      */
     fetchData(refresh?: boolean, sync?: boolean, showErrors?: boolean): Promise<any> {
+        this.initialTime = this.timeUtils.timestamp();
         this.daysLoaded = 0;
         this.emptyEventsTimes = 0;
         this.isOnline = this.appProvider.isOnline();
@@ -269,7 +272,9 @@ export class AddonCalendarListPage implements OnDestroy {
     fetchEvents(refresh?: boolean): Promise<any> {
         this.loadMoreError = false;
 
-        return this.calendarProvider.getEventsList(this.daysLoaded, AddonCalendarProvider.DAYS_INTERVAL).then((events) => {
+        return this.calendarProvider.getEventsList(this.initialTime, this.daysLoaded, AddonCalendarProvider.DAYS_INTERVAL)
+                .then((events) => {
+
             this.daysLoaded += AddonCalendarProvider.DAYS_INTERVAL;
             if (events.length === 0) {
                 this.emptyEventsTimes++;

@@ -537,16 +537,20 @@ export class AddonCalendarProvider {
      * Get the events in a certain period. The period is calculated like this:
      *     start time: now + daysToStart
      *     end time: start time + daysInterval
-     * E.g. using provider.getEventsList(30, 30) is going to get the events starting after 30 days from now
+     * E.g. using provider.getEventsList(undefined, 30, 30) is going to get the events starting after 30 days from now
      * and ending before 60 days from now.
      *
-     * @param {number} [daysToStart=0]   Number of days from now to start getting events.
+     * @param {number} [initialTime] Timestamp when the first fetch was done. If not defined, current time.
+     * @param {number} [daysToStart=0] Number of days from now to start getting events.
      * @param {number} [daysInterval=30] Number of days between timestart and timeend.
      * @param {string} [siteId]          Site to get the events from. If not defined, use current site.
      * @return {Promise<any[]>}          Promise to be resolved when the participants are retrieved.
      */
-    getEventsList(daysToStart: number = 0, daysInterval: number = AddonCalendarProvider.DAYS_INTERVAL, siteId?: string)
-            : Promise<any[]> {
+    getEventsList(initialTime?: number, daysToStart: number = 0, daysInterval: number = AddonCalendarProvider.DAYS_INTERVAL,
+            siteId?: string): Promise<any[]> {
+
+        initialTime = initialTime || this.timeUtils.timestamp();
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             siteId = site.getId();
             const promises = [];
@@ -561,9 +565,8 @@ export class AddonCalendarProvider {
             }));
 
             return Promise.all(promises).then(() => {
-                const now = this.timeUtils.timestamp(),
-                    start = now + (CoreConstants.SECONDS_DAY * daysToStart),
-                    end = start + (CoreConstants.SECONDS_DAY * daysInterval),
+                const start = initialTime + (CoreConstants.SECONDS_DAY * daysToStart),
+                    end = start + (CoreConstants.SECONDS_DAY * daysInterval) - 1,
                     data = {
                         options: {
                             userevents: 1,
@@ -733,7 +736,7 @@ export class AddonCalendarProvider {
                         return this.isDisabled(siteId).then((disabled) => {
                             if (!disabled) {
                                 // Get first events.
-                                return this.getEventsList(undefined, undefined, siteId).then((events) => {
+                                return this.getEventsList(undefined, undefined, undefined, siteId).then((events) => {
                                     return this.scheduleEventsNotifications(events, siteId);
                                 });
                             }
