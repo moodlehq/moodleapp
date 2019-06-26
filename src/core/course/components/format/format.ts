@@ -82,7 +82,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     constructor(private cfDelegate: CoreCourseFormatDelegate, translate: TranslateService, private injector: Injector,
             private courseHelper: CoreCourseHelperProvider, private domUtils: CoreDomUtilsProvider,
             eventsProvider: CoreEventsProvider, private sitesProvider: CoreSitesProvider, private content: Content,
-            prefetchDelegate: CoreCourseModulePrefetchDelegate, private modalCtrl: ModalController) {
+            prefetchDelegate: CoreCourseModulePrefetchDelegate, private modalCtrl: ModalController,
+            private courseProvider: CoreCourseProvider) {
 
         this.selectOptions.title = translate.instant('core.course.sections');
         this.completionChanged = new EventEmitter();
@@ -334,6 +335,13 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             }, 200);
         } else {
             this.domUtils.scrollToTop(this.content, 0);
+        }
+
+        if (!previousValue || previousValue.id != newSection.id) {
+            // First load or section changed, add log in Moodle.
+            this.courseProvider.logView(this.course.id, newSection.section, undefined, this.course.fullname).catch(() => {
+                // Ignore errors.
+            });
         }
     }
 
