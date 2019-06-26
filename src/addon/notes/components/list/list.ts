@@ -22,6 +22,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { coreSlideInOut } from '@classes/animations';
 import { AddonNotesProvider } from '../../providers/notes';
+import { AddonNotesOfflineProvider } from '../../providers/notes-offline';
 import { AddonNotesSyncProvider } from '../../providers/notes-sync';
 
 /**
@@ -54,7 +55,8 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
     constructor(private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
             sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider, private modalCtrl: ModalController,
             private notesProvider: AddonNotesProvider, private notesSync: AddonNotesSyncProvider,
-            private userProvider: CoreUserProvider, private translate: TranslateService) {
+            private userProvider: CoreUserProvider, private translate: TranslateService,
+            private notesOffline: AddonNotesOfflineProvider) {
         // Refresh data if notes are synchronized automatically.
         this.syncObserver = eventsProvider.on(AddonNotesSyncProvider.AUTO_SYNCED, (data) => {
             if (data.courseId == this.courseId) {
@@ -101,20 +103,23 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
             return this.notesProvider.getNotes(this.courseId, this.userId).then((notes) => {
                 notes = notes[this.type + 'notes'] || [];
 
-                this.hasOffline = notes.some((note) => note.offline);
+                return this.notesProvider.setOfflineDeletedNotes(notes, this.courseId).then((notes) => {
 
-                if (this.userId) {
-                    this.notes = notes;
+                    this.hasOffline = notes.some((note) => note.offline || note.deleted);
 
-                    // Get the user profile to retrieve the user image.
-                    return this.userProvider.getProfile(this.userId, this.courseId, true).then((user) => {
-                        this.user = user;
-                    });
-                } else {
-                    return this.notesProvider.getNotesUserData(notes, this.courseId).then((notes) => {
+                    if (this.userId) {
                         this.notes = notes;
-                    });
-                }
+
+                        // Get the user profile to retrieve the user image.
+                        return this.userProvider.getProfile(this.userId, this.courseId, true).then((user) => {
+                            this.user = user;
+                        });
+                    } else {
+                        return this.notesProvider.getNotesUserData(notes, this.courseId).then((notes) => {
+                            this.notes = notes;
+                        });
+                    }
+                });
             });
         }).catch((message) => {
             this.domUtils.showErrorModal(message);
@@ -201,7 +206,7 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
         e.stopPropagation();
 
         this.domUtils.showConfirm(this.translate.instant('addon.notes.deleteconfirm')).then(() => {
-            this.notesProvider.deleteNote(note).then(() => {
+            this.notesProvider.deleteNote(note, this.courseId).then(() => {
                 this.showDelete = false;
 
                 this.refreshNotes(true);
@@ -212,6 +217,21 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
             });
         }).catch(() => {
             // User cancelled, nothing to do.
+        });
+    }
+
+    /**
+     * Restore a note.
+     *
+     * @param {Event} e Click event.
+     * @param {any} note Note to delete.
+     */
+    undoDeleteNote(e: Event, note: any): void {
+        e.preventDefault();
+        e.stopPropagation();
+
+        this.notesOffline.undoDeleteNote(note.id).then(() => {
+            this.refreshNotes(true);
         });
     }
 

@@ -63,18 +63,24 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider {
      * @return {Promise<any>}  Promise resolved if sync is successful, rejected if sync fails.
      */
     private syncAllNotesFunc(siteId: string, force: boolean): Promise<any> {
-        return this.notesOffline.getAllNotes(siteId).then((notes) => {
-            // Get all the courses to be synced.
-            const courseIds = [];
-            notes.forEach((note) => {
-                if (courseIds.indexOf(note.courseid) == -1) {
-                    courseIds.push(note.courseid);
-                }
-            });
+        const proms = [];
 
+        proms.push(this.notesOffline.getAllNotes(siteId));
+        proms.push(this.notesOffline.getAllDeletedNotes(siteId));
+
+        return Promise.all(proms).then((notesArray) => {
+            // Get all the courses to be synced.
+            const courseIds = {};
+            notesArray.forEach((notes) => {
+                notes.forEach((note) => {
+                    courseIds[note.courseid] = note.courseid;
+                });
+            });
             // Sync all courses.
-            const promises = courseIds.map((courseId) => {
-                const promise = force ? this.syncNotes(courseId, siteId) : this.syncNotesIfNeeded(courseId, siteId);
+            const promises = Object.keys(courseIds).map((courseId) => {
+                const cId = parseInt(courseIds[courseId], 10);
+
+                const promise = force ? this.syncNotes(cId, siteId) : this.syncNotesIfNeeded(cId, siteId);
 
                 return promise.then((warnings) => {
                     if (typeof warnings != 'undefined') {
@@ -124,9 +130,12 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider {
         this.logger.debug('Try to sync notes for course ' + courseId);
 
         const warnings = [];
+        const errors = [];
+
+        const proms = [];
 
         // Get offline notes to be sent.
-        const syncPromise = this.notesOffline.getNotesForCourse(courseId, siteId).then((notes) => {
+        proms.push(this.notesOffline.getNotesForCourse(courseId, siteId).then((notes) => {
             if (!notes.length) {
                 // Nothing to sync.
                 return;
@@ -157,12 +166,6 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider {
                     }
                 });
 
-                // Fetch the notes from server to be sure they're up to date.
-                return this.notesProvider.invalidateNotes(courseId, undefined, siteId).then(() => {
-                    return this.notesProvider.getNotes(courseId, undefined, false, true, siteId);
-                }).catch(() => {
-                    // Ignore errors.
-                });
             }).catch((error) => {
                 if (this.utils.isWebServiceError(error)) {
                     // It's a WebService error, this means the user cannot send notes.
@@ -174,26 +177,69 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider {
             }).then(() => {
                 // Notes were sent, delete them from local DB.
                 const promises = notes.map((note) => {
-                    return this.notesOffline.deleteNote(note.userid, note.content, note.created, siteId);
+                    return this.notesOffline.deleteOfflineNote(note.userid, note.content, note.created, siteId);
                 });
 
                 return Promise.all(promises);
-            }).then(() => {
-                if (errors && errors.length) {
-                    // At least an error occurred, get course name and add errors to warnings array.
-                    return this.coursesProvider.getUserCourse(courseId, true, siteId).catch(() => {
-                        // Ignore errors.
-                        return {};
-                    }).then((course) => {
-                        errors.forEach((error) => {
-                            warnings.push(this.translate.instant('addon.notes.warningnotenotsent', {
-                                course: course.fullname ? course.fullname : courseId,
-                                error: error
-                            }));
-                        });
-                    });
-                }
             });
+        }));
+
+        // Get offline notes to be sent.
+        proms.push(this.notesOffline.getCourseDeletedNotes(courseId, siteId).then((notes) => {
+            if (!notes.length) {
+                // Nothing to sync.
+                return;
+            } else if (!this.appProvider.isOnline()) {
+                // Cannot sync in offline.
+                return Promise.reject(this.translate.instant('core.networkerrormsg'));
+            }
+
+            // Format the notes to be sent.
+            const notesToDelete = notes.map((note) => {
+                return note.noteid;
+            });
+
+            // Delete the notes.
+            return this.notesProvider.deleteNotesOnline(notesToDelete, courseId, siteId).catch((error) => {
+                if (this.utils.isWebServiceError(error)) {
+                    // It's a WebService error, this means the user cannot send notes.
+                    errors.push(error);
+                } else {
+                    // Not a WebService error, reject the synchronization to try again.
+                    return Promise.reject(error);
+                }
+            }).then(() => {
+                // Notes were sent, delete them from local DB.
+                const promises = notes.map((noteId) => {
+                    return this.notesOffline.undoDeleteNote(noteId, siteId);
+                });
+
+                return Promise.all(promises);
+            });
+        }));
+
+        const syncPromise = Promise.all(proms).then(() => {
+            // Fetch the notes from server to be sure they're up to date.
+            return this.notesProvider.invalidateNotes(courseId, undefined, siteId).then(() => {
+                return this.notesProvider.getNotes(courseId, undefined, false, true, siteId);
+            }).catch(() => {
+                // Ignore errors.
+            });
+        }).then(() => {
+            if (errors && errors.length) {
+                // At least an error occurred, get course name and add errors to warnings array.
+                return this.coursesProvider.getUserCourse(courseId, true, siteId).catch(() => {
+                    // Ignore errors.
+                    return {};
+                }).then((course) => {
+                    errors.forEach((error) => {
+                        warnings.push(this.translate.instant('addon.notes.warningnotenotsent', {
+                            course: course.fullname ? course.fullname : courseId,
+                            error: error
+                        }));
+                    });
+                });
+            }
         }).then(() => {
             // All done, return the warnings.
             return warnings;
