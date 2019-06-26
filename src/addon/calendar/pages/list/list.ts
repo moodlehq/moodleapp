@@ -59,8 +59,11 @@ export class AddonCalendarListPage implements OnDestroy {
     protected preSelectedCourseId: number;
     protected newEventObserver: any;
     protected discardedObserver: any;
+    protected editEventObserver: any;
     protected syncObserver: any;
+    protected manualSyncObserver: any;
     protected onlineObserver: any;
+    protected currentSiteId: string;
 
     courses: any[];
     eventsLoaded = false;
@@ -80,7 +83,7 @@ export class AddonCalendarListPage implements OnDestroy {
 
     constructor(private translate: TranslateService, private calendarProvider: AddonCalendarProvider, navParams: NavParams,
             private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider, private utils: CoreUtilsProvider,
-            private calendarHelper: AddonCalendarHelperProvider, private sitesProvider: CoreSitesProvider, zone: NgZone,
+            private calendarHelper: AddonCalendarHelperProvider, sitesProvider: CoreSitesProvider, zone: NgZone,
             localNotificationsProvider: CoreLocalNotificationsProvider, private popoverCtrl: PopoverController,
             private eventsProvider: CoreEventsProvider, private navCtrl: NavController, private appProvider: CoreAppProvider,
             private calendarOffline: AddonCalendarOfflineProvider, private calendarSync: AddonCalendarSyncProvider,
@@ -88,12 +91,13 @@ export class AddonCalendarListPage implements OnDestroy {
 
         this.siteHomeId = sitesProvider.getCurrentSite().getSiteHomeId();
         this.notificationsEnabled = localNotificationsProvider.isAvailable();
+        this.currentSiteId = sitesProvider.getCurrentSiteId();
 
         if (this.notificationsEnabled) {
             // Re-schedule events if default time changes.
             this.obsDefaultTimeChange = eventsProvider.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
                 calendarProvider.scheduleEventsNotifications(this.events);
-            }, sitesProvider.getCurrentSiteId());
+            }, this.currentSiteId);
         }
 
         this.eventId = navParams.get('eventId') || false;
@@ -116,7 +120,7 @@ export class AddonCalendarListPage implements OnDestroy {
                     }
                 });
             }
-        }, sitesProvider.getCurrentSiteId());
+        }, this.currentSiteId);
 
         // Listen for new event discarded event. When it does, reload the data.
         this.discardedObserver = eventsProvider.on(AddonCalendarProvider.NEW_EVENT_DISCARDED_EVENT, () => {
@@ -127,13 +131,29 @@ export class AddonCalendarListPage implements OnDestroy {
 
             this.eventsLoaded = false;
             this.refreshEvents(true, false);
-        }, sitesProvider.getCurrentSiteId());
+        }, this.currentSiteId);
+
+        // Listen for events edited. When an event is edited, reload the data.
+        this.editEventObserver = eventsProvider.on(AddonCalendarProvider.EDIT_EVENT_EVENT, (data) => {
+            if (data && data.event) {
+                this.eventsLoaded = false;
+                this.refreshEvents(true, false);
+            }
+        }, this.currentSiteId);
 
         // Refresh data if calendar events are synchronized automatically.
         this.syncObserver = eventsProvider.on(AddonCalendarSyncProvider.AUTO_SYNCED, (data) => {
             this.eventsLoaded = false;
             this.refreshEvents();
-        }, sitesProvider.getCurrentSiteId());
+        }, this.currentSiteId);
+
+        // Refresh data if calendar events are synchronized manually but not by this page.
+        this.manualSyncObserver = eventsProvider.on(AddonCalendarSyncProvider.MANUAL_SYNCED, (data) => {
+            if (data && data.source != 'list') {
+                this.eventsLoaded = false;
+                this.refreshEvents();
+            }
+        }, this.currentSiteId);
 
         // Refresh online status when changes.
         this.onlineObserver = network.onchange().subscribe((online) => {
@@ -187,9 +207,9 @@ export class AddonCalendarListPage implements OnDestroy {
 
                 if (result.updated) {
                     // Trigger a manual sync event.
-                    this.eventsProvider.trigger(AddonCalendarSyncProvider.MANUAL_SYNCED, {
-                        source: 'list'
-                    }, this.sitesProvider.getCurrentSiteId());
+                    result.source = 'list';
+
+                    this.eventsProvider.trigger(AddonCalendarSyncProvider.MANUAL_SYNCED, result, this.currentSiteId);
                 }
             }).catch((error) => {
                 if (showErrors) {
@@ -530,6 +550,8 @@ export class AddonCalendarListPage implements OnDestroy {
      * @param {number} [eventId] Event ID to edit.
      */
     openEdit(eventId?: number): void {
+        this.eventId = undefined;
+
         const params: any = {};
 
         if (eventId) {
@@ -574,7 +596,9 @@ export class AddonCalendarListPage implements OnDestroy {
         this.obsDefaultTimeChange && this.obsDefaultTimeChange.off();
         this.newEventObserver && this.newEventObserver.off();
         this.discardedObserver && this.discardedObserver.off();
+        this.editEventObserver && this.editEventObserver.off();
         this.syncObserver && this.syncObserver.off();
-        this.onlineObserver && this.onlineObserver.off();
+        this.manualSyncObserver && this.manualSyncObserver.off();
+        this.onlineObserver && this.onlineObserver.unsubscribe();
     }
 }

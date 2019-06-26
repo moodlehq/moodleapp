@@ -1058,7 +1058,7 @@ export class CoreUtilsProvider {
      * Convert an object to a format of GET param. E.g.: {a: 1, b: 2} -> a=1&b=2
      *
      * @param {any} object Object to convert.
-     * @param {boolean} [removeEmpty=true] Whether to remove params whose value is empty/null/undefined.
+     * @param {boolean} [removeEmpty=true] Whether to remove params whose value is null/undefined.
      * @return {string} GET params.
      */
     objectToGetParams(object: any, removeEmpty: boolean = true): string {
@@ -1070,7 +1070,7 @@ export class CoreUtilsProvider {
         for (const name in flattened) {
             let value = flattened[name];
 
-            if (removeEmpty && (value === null || typeof value == 'undefined' || value === '')) {
+            if (removeEmpty && (value === null || typeof value == 'undefined')) {
                 continue;
             }
 

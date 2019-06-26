@@ -27,6 +27,7 @@ import { CoreConfigProvider } from '@providers/config';
 import { ILocalNotification } from '@ionic-native/local-notifications';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { AddonCalendarOfflineProvider } from './calendar-offline';
+import { TranslateService } from '@ngx-translate/core';
 
 /**
  * Service to handle calendar events.
@@ -40,6 +41,7 @@ export class AddonCalendarProvider {
     static DEFAULT_NOTIFICATION_TIME = 60;
     static NEW_EVENT_EVENT = 'addon_calendar_new_event';
     static NEW_EVENT_DISCARDED_EVENT = 'addon_calendar_new_event_discarded';
+    static EDIT_EVENT_EVENT = 'addon_calendar_edit_event';
     static TYPE_CATEGORY = 'category';
     static TYPE_COURSE = 'course';
     static TYPE_GROUP = 'group';
@@ -218,7 +220,7 @@ export class AddonCalendarProvider {
             private coursesProvider: CoreCoursesProvider, private timeUtils: CoreTimeUtilsProvider,
             private localNotificationsProvider: CoreLocalNotificationsProvider, private configProvider: CoreConfigProvider,
             private utils: CoreUtilsProvider, private calendarOffline: AddonCalendarOfflineProvider,
-            private appProvider: CoreAppProvider) {
+            private appProvider: CoreAppProvider, private translate: TranslateService) {
         this.logger = logger.getInstance('AddonCalendarProvider');
         this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
@@ -980,7 +982,12 @@ export class AddonCalendarProvider {
             formData.userid = site.getUserId();
             formData.visible = 1;
             formData.instance = 0;
-            formData['_qf__core_calendar_local_event_forms_create'] = 1;
+
+            if (eventId > 0) {
+                formData['_qf__core_calendar_local_event_forms_update'] = 1;
+            } else {
+                formData['_qf__core_calendar_local_event_forms_create'] = 1;
+            }
 
             const params = {
                 formdata: this.utils.objectToGetParams(formData)
@@ -988,7 +995,11 @@ export class AddonCalendarProvider {
 
             return site.write('core_calendar_submit_create_update_form', params).then((result) => {
                 if (result.validationerror) {
-                    return Promise.reject(this.utils.createFakeWSError(''));
+                    // Simulate a WS error.
+                    return Promise.reject({
+                        message: this.translate.instant('core.invalidformdata'),
+                        errorcode: 'validationerror'
+                    });
                 }
 
                 return result.event;

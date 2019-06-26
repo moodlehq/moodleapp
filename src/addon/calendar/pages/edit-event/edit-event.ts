@@ -162,7 +162,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
             }
 
             if (this.eventId && !refresh) {
-                // If editing an event, get offline data. Wait for sync first.
+                // Editing an event, get the event data. Wait for sync first.
 
                 promises.push(this.calendarSync.waitForSync(AddonCalendarSyncProvider.SYNC_ID).then(() => {
                     // Do not block if the scope is already destroyed.
@@ -170,29 +170,38 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
                         this.syncProvider.blockOperation(AddonCalendarProvider.COMPONENT, this.eventId);
                     }
 
-                    // Get the event data if there's any.
+                    // Get the event offline data if there's any.
                     return this.calendarOffline.getEvent(this.eventId).then((event) => {
                         this.hasOffline = true;
 
-                        // Load the data in the form.
-                        this.eventForm.controls.name.setValue(event.name);
-                        this.eventForm.controls.timestart.setValue(this.timeUtils.toDatetimeFormat(event.timestart * 1000));
-                        this.eventForm.controls.eventtype.setValue(event.eventtype);
-                        this.eventForm.controls.categoryid.setValue(event.categoryid || '');
-                        this.eventForm.controls.courseid.setValue(event.courseid || '');
-                        this.eventForm.controls.groupcourseid.setValue(event.groupcourseid || '');
-                        this.eventForm.controls.groupid.setValue(event.groupid || '');
-                        this.eventForm.controls.description.setValue(event.description);
-                        this.eventForm.controls.location.setValue(event.location);
-                        this.eventForm.controls.duration.setValue(event.duration);
-                        this.eventForm.controls.timedurationuntil.setValue(
-                                this.timeUtils.toDatetimeFormat((event.timedurationuntil * 1000) || Date.now()));
-                        this.eventForm.controls.timedurationminutes.setValue(event.timedurationminutes || '');
-                        this.eventForm.controls.repeat.setValue(!!event.repeat);
-                        this.eventForm.controls.repeats.setValue(event.repeats || '1');
+                        return event;
                     }).catch(() => {
                         // No offline data.
                         this.hasOffline = false;
+
+                        if (this.eventId > 0) {
+                            // It's an online event. get its data from server.
+                            return this.calendarProvider.getEventById(this.eventId);
+                        }
+                    }).then((event) => {
+                        if (event) {
+                            // Load the data in the form.
+                            this.eventForm.controls.name.setValue(event.name);
+                            this.eventForm.controls.timestart.setValue(this.timeUtils.toDatetimeFormat(event.timestart * 1000));
+                            this.eventForm.controls.eventtype.setValue(event.eventtype);
+                            this.eventForm.controls.categoryid.setValue(event.categoryid || '');
+                            this.eventForm.controls.courseid.setValue(event.courseid || '');
+                            this.eventForm.controls.groupcourseid.setValue(event.groupcourseid || '');
+                            this.eventForm.controls.groupid.setValue(event.groupid || '');
+                            this.eventForm.controls.description.setValue(event.description);
+                            this.eventForm.controls.location.setValue(event.location);
+                            this.eventForm.controls.duration.setValue(event.duration);
+                            this.eventForm.controls.timedurationuntil.setValue(
+                                    this.timeUtils.toDatetimeFormat((event.timedurationuntil * 1000) || Date.now()));
+                            this.eventForm.controls.timedurationminutes.setValue(event.timedurationminutes || '');
+                            this.eventForm.controls.repeat.setValue(!!event.repeat);
+                            this.eventForm.controls.repeats.setValue(event.repeats || '1');
+                        }
                     });
                 }));
             }
@@ -379,7 +388,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
         }
 
         // Send the data.
-        const modal = this.domUtils.showModalLoading('core.sending');
+        const modal = this.domUtils.showModalLoading('core.sending', true);
 
         this.calendarProvider.submitEvent(this.eventId, data).then((result) => {
             this.returnToList(result.event);
@@ -399,13 +408,21 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
         // Unblock the sync because the view will be destroyed and the sync process could be triggered before ngOnDestroy.
         this.unblockSync();
 
-        if (event) {
+        if (this.eventId > 0) {
+            // Editing an event.
             const data: any = {
                 event: event
             };
-            this.eventsProvider.trigger(AddonCalendarProvider.NEW_EVENT_EVENT, data, this.currentSite.getId());
+            this.eventsProvider.trigger(AddonCalendarProvider.EDIT_EVENT_EVENT, data, this.currentSite.getId());
         } else {
-            this.eventsProvider.trigger(AddonCalendarProvider.NEW_EVENT_DISCARDED_EVENT, {}, this.currentSite.getId());
+            if (event) {
+                const data: any = {
+                    event: event
+                };
+                this.eventsProvider.trigger(AddonCalendarProvider.NEW_EVENT_EVENT, data, this.currentSite.getId());
+            } else {
+                this.eventsProvider.trigger(AddonCalendarProvider.NEW_EVENT_DISCARDED_EVENT, {}, this.currentSite.getId());
+            }
         }
 
         if (this.svComponent && this.svComponent.isOn()) {

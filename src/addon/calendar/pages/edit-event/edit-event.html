@@ -134,7 +134,7 @@
                     <ion-col>
                         <button ion-button block (click)="submit()" [disabled]="!eventForm.valid">{{ 'core.save' | translate }}</button>
                     </ion-col>
-                    <ion-col *ngIf="hasOffline">
+                    <ion-col *ngIf="hasOffline && eventId < 0">
                         <button ion-button block color="light" (click)="discard()">{{ 'core.discard' | translate }}</button>
                     </ion-col>
                 </ion-row>

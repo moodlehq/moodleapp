@@ -1484,6 +1484,7 @@
     "core.image": "Image",
     "core.imageviewer": "Image viewer",
     "core.info": "Information",
+    "core.invalidformdata": "Incorrect form data",
     "core.ios": "iOS",
     "core.labelsep": ":",
     "core.lastaccess": "Last access",
