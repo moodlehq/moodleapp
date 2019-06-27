@@ -1,5 +1,5 @@
 ion-app.app-root page-addon-calendar-edit-event {
-    .addon-calendar-duration-container ion-item:not(.addon-calendar-duration-title) {
+    .addon-calendar-radio-container ion-item:not(.addon-calendar-radio-title) {
         &.item-ios {
             @include padding-horizontal($item-ios-padding-start * 2, null);
 

@@ -57,6 +57,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     courseGroupSet = false;
     advanced = false;
     errors: any;
+    event: any; // The event object (when editing an event).
 
     // Form variables.
     eventForm: FormGroup;
@@ -72,6 +73,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     protected showAll: boolean;
     protected isDestroyed = false;
     protected error = false;
+    protected gotEventData = false;
 
     constructor(navParams: NavParams,
             private navCtrl: NavController,
@@ -126,6 +128,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
         this.eventForm.addControl('timedurationminutes', this.fb.control(''));
         this.eventForm.addControl('repeat', this.fb.control(false));
         this.eventForm.addControl('repeats', this.fb.control('1'));
+        this.eventForm.addControl('repeateditall', this.fb.control(1));
     }
 
     /**
@@ -164,7 +167,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
                 return Promise.reject(this.translate.instant('addon.calendar.nopermissiontoupdatecalendar'));
             }
 
-            if (this.eventId && !refresh) {
+            if (this.eventId && !this.gotEventData) {
                 // Editing an event, get the event data. Wait for sync first.
 
                 promises.push(this.calendarSync.waitForSync(AddonCalendarSyncProvider.SYNC_ID).then(() => {
@@ -173,20 +176,35 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
                         this.syncProvider.blockOperation(AddonCalendarProvider.COMPONENT, this.eventId);
                     }
 
+                    const promises = [];
+
                     // Get the event offline data if there's any.
-                    return this.calendarOffline.getEvent(this.eventId).then((event) => {
+                    promises.push(this.calendarOffline.getEvent(this.eventId).then((event) => {
                         this.hasOffline = true;
 
                         return event;
                     }).catch(() => {
                         // No offline data.
                         this.hasOffline = false;
+                    }));
 
-                        if (this.eventId > 0) {
-                            // It's an online event. get its data from server.
-                            return this.calendarProvider.getEventById(this.eventId);
-                        }
-                    }).then((event) => {
+                    if (this.eventId > 0) {
+                        // It's an online event. get its data from server.
+                        promises.push(this.calendarProvider.getEventById(this.eventId).then((event) => {
+                            this.event = event;
+                            if (event && event.repeatid) {
+                                event.othereventscount = event.eventcount ? event.eventcount - 1 : '';
+                            }
+
+                            return event;
+                        }));
+                    }
+
+                    return Promise.all(promises).then((result) => {
+                        this.gotEventData = true;
+
+                        const event = result[0] || result[1]; // Use offline data first.
+
                         if (event) {
                             // Load the data in the form.
                             this.eventForm.controls.name.setValue(event.name);
@@ -204,6 +222,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
                             this.eventForm.controls.timedurationminutes.setValue(event.timedurationminutes || '');
                             this.eventForm.controls.repeat.setValue(!!event.repeat);
                             this.eventForm.controls.repeats.setValue(event.repeats || '1');
+                            this.eventForm.controls.repeateditall.setValue(event.repeateditall || 1);
                         }
                     });
                 }));
@@ -392,6 +411,11 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
 
         if (formData.repeat) {
             data.repeats = formData.repeats;
+        }
+
+        if (this.event && this.event.repeatid) {
+            data.repeatid = this.event.repeatid;
+            data.repeateditall = formData.repeateditall;
         }
 
         // Send the data.
