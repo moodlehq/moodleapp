@@ -591,6 +591,7 @@ export class AddonCalendarProvider {
                 const preSets = {
                     cacheKey: this.getEventsListCacheKey(daysToStart, daysInterval),
                     getCacheUsingCacheKey: true,
+                    uniqueCacheKey: true,
                     updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 

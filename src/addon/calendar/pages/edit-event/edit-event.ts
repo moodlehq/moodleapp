@@ -71,6 +71,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     protected types: any; // Object with the supported types.
     protected showAll: boolean;
     protected isDestroyed = false;
+    protected error = false;
 
     constructor(navParams: NavParams,
             private navCtrl: NavController,
@@ -145,6 +146,8 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
      */
     protected fetchData(refresh?: boolean): Promise<any> {
         let accessInfo;
+
+        this.error = false;
 
         // Get access info.
         return this.calendarProvider.getAccessInformation(this.courseId).then((info) => {
@@ -254,8 +257,12 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
 
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'Error getting data.');
-            this.originalData = null; // Avoid asking for confirmation.
-            this.navCtrl.pop();
+            this.error = true;
+
+            if (!this.svComponent || !this.svComponent.isOn()) {
+                this.originalData = null; // Avoid asking for confirmation.
+                this.navCtrl.pop();
+            }
         });
     }
 

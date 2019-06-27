@@ -31,6 +31,7 @@ import { CoreAppProvider } from '@providers/app';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import * as moment from 'moment';
 import { Network } from '@ionic-native/network';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Page that displays the list of calendar events.
@@ -69,7 +70,8 @@ export class AddonCalendarListPage implements OnDestroy {
 
     courses: any[];
     eventsLoaded = false;
-    events = [];
+    events = []; // Events (both online and offline).
+    onlineEvents = [];
     offlineEvents = [];
     notificationsEnabled = false;
     filteredEvents = [];
@@ -98,7 +100,7 @@ export class AddonCalendarListPage implements OnDestroy {
         if (this.notificationsEnabled) {
             // Re-schedule events if default time changes.
             this.obsDefaultTimeChange = eventsProvider.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
-                calendarProvider.scheduleEventsNotifications(this.events);
+                calendarProvider.scheduleEventsNotifications(this.onlineEvents);
             }, this.currentSiteId);
         }
 
@@ -179,8 +181,12 @@ export class AddonCalendarListPage implements OnDestroy {
 
         this.fetchData(false, true, false).then(() => {
             if (!this.eventId && this.splitviewCtrl.isOn() && this.events.length > 0) {
-                // Take first and load it.
-                this.gotoEvent(this.events[0].id);
+                // Take first online event and load it. If no online event, load the first offline.
+                if (this.onlineEvents[0]) {
+                    this.gotoEvent(this.onlineEvents[0].id);
+                } else {
+                    this.gotoEvent(this.offlineEvents[0].id);
+                }
             }
         });
     }
@@ -252,8 +258,11 @@ export class AddonCalendarListPage implements OnDestroy {
                 this.hasOffline = !!events.length;
 
                 // Format data and sort by timestart.
-                events.forEach(this.calendarHelper.formatEventData.bind(this.calendarHelper));
-                this.offlineEvents = events.sort((a, b) => a.timestart - b.timestart);
+                events.forEach((event) => {
+                    event.offline = true;
+                    this.calendarHelper.formatEventData(event);
+                });
+                this.offlineEvents = this.sortEvents(events);
             }));
 
             return Promise.all(promises);
@@ -273,39 +282,37 @@ export class AddonCalendarListPage implements OnDestroy {
         this.loadMoreError = false;
 
         return this.calendarProvider.getEventsList(this.initialTime, this.daysLoaded, AddonCalendarProvider.DAYS_INTERVAL)
-                .then((events) => {
+                .then((onlineEvents) => {
 
-            this.daysLoaded += AddonCalendarProvider.DAYS_INTERVAL;
-            if (events.length === 0) {
+            if (onlineEvents.length === 0) {
                 this.emptyEventsTimes++;
                 if (this.emptyEventsTimes > 5) { // Stop execution if we retrieve empty list 6 consecutive times.
                     this.canLoadMore = false;
                     if (refresh) {
-                        this.events = [];
+                        this.onlineEvents = [];
                         this.filteredEvents = [];
+                        this.events = this.offlineEvents;
                     }
                 } else {
                     // No events returned, load next events.
+                    this.daysLoaded += AddonCalendarProvider.DAYS_INTERVAL;
+
                     return this.fetchEvents();
                 }
             } else {
-                events.forEach(this.calendarHelper.formatEventData.bind(this.calendarHelper));
+                onlineEvents.forEach(this.calendarHelper.formatEventData.bind(this.calendarHelper));
 
-                // Sort the events by timestart, they're ordered by id.
-                events.sort((a, b) => {
-                    if (a.timestart == b.timestart) {
-                        return a.timeduration - b.timeduration;
-                    }
+                // Get the merged events of this period.
+                const events = this.mergeEvents(onlineEvents);
 
-                    return a.timestart - b.timestart;
-                });
-
-                this.getCategories = this.shouldLoadCategories(events);
+                this.getCategories = this.shouldLoadCategories(onlineEvents);
 
                 if (refresh) {
+                    this.onlineEvents = onlineEvents;
                     this.events = events;
                 } else {
                     // Filter events with same ID. Repeated events are returned once per WS call, show them only once.
+                    this.onlineEvents = this.utils.mergeArraysWithoutDuplicates(this.onlineEvents, onlineEvents, 'id');
                     this.events = this.utils.mergeArraysWithoutDuplicates(this.events, events, 'id');
                 }
                 this.filteredEvents = this.getFilteredEvents();
@@ -318,7 +325,9 @@ export class AddonCalendarListPage implements OnDestroy {
                 this.canLoadMore = true;
 
                 // Schedule notifications for the events retrieved (might have new events).
-                this.calendarProvider.scheduleEventsNotifications(this.events);
+                this.calendarProvider.scheduleEventsNotifications(this.onlineEvents);
+
+                this.daysLoaded += AddonCalendarProvider.DAYS_INTERVAL;
             }
 
             // Resize the content so infinite loading is able to calculate if it should load more items or not.
@@ -438,6 +447,61 @@ export class AddonCalendarListPage implements OnDestroy {
             });
         }).catch(() => {
             // Ignore errors.
+        });
+    }
+
+    /**
+     * Merge a period of online events with the offline events of that period.
+     *
+     * @param {any[]} onlineEvents Online events.
+     * @return {any[]} Merged events.
+     */
+    protected mergeEvents(onlineEvents: any[]): any[] {
+        if (!this.offlineEvents || !this.offlineEvents.length) {
+            // No offline events, nothing to merge.
+            return onlineEvents;
+        }
+
+        const start = this.initialTime + (CoreConstants.SECONDS_DAY * this.daysLoaded),
+            end = start + (CoreConstants.SECONDS_DAY * AddonCalendarProvider.DAYS_INTERVAL) - 1;
+
+        // First of all, remove the online events that were modified in offline.
+        let result = onlineEvents.filter((event) => {
+            const offlineEvent = this.offlineEvents.find((ev) => {
+                return ev.id == event.id;
+            });
+
+            return !offlineEvent;
+        });
+
+        // Now get the offline events that belong to this period.
+        const periodOfflineEvents = this.offlineEvents.filter((event) => {
+            if (this.daysLoaded == 0 && event.timestart < start) {
+                // Display offline events that are previous to current time to allow editing them.
+                return true;
+            }
+
+            return (event.timestart >= start || event.timestart + event.timeduration >= start) && event.timestart <= end;
+        });
+
+        // Merge both arrays and sort them.
+        result = result.concat(periodOfflineEvents);
+
+        return this.sortEvents(result);
+    }
+
+    /**
+     * Sort events by timestart.
+     *
+     * @param {any[]} events List to sort.
+     */
+    protected sortEvents(events: any[]): any[] {
+        return events.sort((a, b) => {
+            if (a.timestart == b.timestart) {
+                return a.timeduration - b.timeduration;
+            }
+
+            return a.timestart - b.timestart;
         });
     }
 
