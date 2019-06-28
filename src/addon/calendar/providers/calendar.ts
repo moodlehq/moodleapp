@@ -42,6 +42,8 @@ export class AddonCalendarProvider {
     static NEW_EVENT_EVENT = 'addon_calendar_new_event';
     static NEW_EVENT_DISCARDED_EVENT = 'addon_calendar_new_event_discarded';
     static EDIT_EVENT_EVENT = 'addon_calendar_edit_event';
+    static DELETED_EVENT_EVENT = 'addon_calendar_deleted_event';
+    static UNDELETED_EVENT_EVENT = 'addon_calendar_undeleted_event';
     static TYPE_CATEGORY = 'category';
     static TYPE_COURSE = 'course';
     static TYPE_GROUP = 'group';
@@ -226,10 +228,37 @@ export class AddonCalendarProvider {
     }
 
     /**
+     * Check if a certain site allows deleting events.
+     *
+     * @param {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<boolean>} Promise resolved with true if can delete.
+     * @since 3.3
+     */
+    canDeleteEvents(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.canDeleteEventsInSite(site);
+        });
+    }
+
+    /**
+     * Check if a certain site allows deleting events.
+     *
+     * @param {CoreSite} [site] Site. If not defined, use current site.
+     * @return {boolean} Whether events can be deleted.
+     * @since 3.3
+     */
+    canDeleteEventsInSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.wsAvailable('core_calendar_delete_calendar_events');
+    }
+
+    /**
      * Check if a certain site allows creating and editing events.
      *
      * @param {string} [siteId] Site Id. If not defined, use current site.
      * @return {Promise<boolean>} Promise resolved with true if can create/edit.
+     * @since 3.7.1
      */
     canEditEvents(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -242,6 +271,7 @@ export class AddonCalendarProvider {
      *
      * @param {CoreSite} [site] Site. If not defined, use current site.
      * @return {boolean} Whether events can be created and edited.
+     * @since 3.7.1
      */
     canEditEventsInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
@@ -261,20 +291,89 @@ export class AddonCalendarProvider {
             return site.getDb().getRecordsSelect(AddonCalendarProvider.EVENTS_TABLE, 'timestart + timeduration < ?',
                     [this.timeUtils.timestamp()]).then((events) => {
                 return Promise.all(events.map((event) => {
-                    return this.deleteEvent(event.id, siteId);
+                    return this.deleteLocalEvent(event.id, siteId);
                 }));
             });
         });
     }
 
     /**
-     * Delete event cancelling all the reminders and notifications.
+     * Delete an event.
+     *
+     * @param {number} eventId Event ID to delete.
+     * @param {string} name Name of the event to delete.
+     * @param {boolean} [deleteAll] If it's a repeated event. whether to delete all events of the series.
+     * @param {boolean} [forceOffline] True to always save it in offline.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    deleteEvent(eventId: number, name: string, deleteAll?: boolean, forceOffline?: boolean, siteId?: string): Promise<boolean> {
+
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        // Function to store the submission to be synchronized later.
+        const storeOffline = (): Promise<boolean> => {
+            return this.calendarOffline.markDeleted(eventId, name, deleteAll, siteId).then(() => {
+                return false;
+            });
+        };
+
+        if (forceOffline || !this.appProvider.isOnline()) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
+
+        // If the event is already stored, discard it first.
+        return this.calendarOffline.unmarkDeleted(eventId, siteId).then(() => {
+            return this.deleteEventOnline(eventId, deleteAll, siteId).then(() => {
+                return true;
+            }).catch((error) => {
+                if (error && !this.utils.isWebServiceError(error)) {
+                    // Couldn't connect to server, store in offline.
+                    return storeOffline();
+                } else {
+                    // The WebService has thrown an error, reject.
+                    return Promise.reject(error);
+                }
+            });
+        });
+    }
+
+    /**
+     * Delete an event. It will fail if offline or cannot connect.
+     *
+     * @param {number} eventId Event ID to delete.
+     * @param {boolean} [deleteAll] If it's a repeated event. whether to delete all events of the series.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    deleteEventOnline(eventId: number, deleteAll?: boolean, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+
+            const params = {
+                    events: [
+                        {
+                            eventid: eventId,
+                            repeat: deleteAll ? 1 : 0
+                        }
+                    ]
+                },
+                preSets = {
+                    responseExpected: false
+                };
+
+            return site.write('core_calendar_delete_calendar_events', params, preSets);
+        });
+    }
+
+    /**
+     * Delete a locally stored event cancelling all the reminders and notifications.
      *
      * @param  {number}       eventId Event ID.
      * @param  {string}       [siteId] ID of the site the event belongs to. If not defined, use current site.
      * @return {Promise<any>}         Resolved when done.
      */
-    protected deleteEvent(eventId: number, siteId?: string): Promise<any> {
+    protected deleteLocalEvent(eventId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             siteId = site.getId();
 
@@ -833,7 +932,7 @@ export class AddonCalendarProvider {
 
                 if (timeEnd <= new Date().getTime()) {
                     // The event has finished already, don't schedule it.
-                    return this.deleteEvent(event.id, siteId);
+                    return this.deleteLocalEvent(event.id, siteId);
                 }
 
                 return this.getEventReminders(event.id, siteId).then((reminders) => {

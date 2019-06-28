@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
  * Service to handle offline calendar events.
@@ -23,6 +24,7 @@ export class AddonCalendarOfflineProvider {
 
     // Variables for database.
     static EVENTS_TABLE = 'addon_calendar_offline_events';
+    static DELETED_EVENTS_TABLE = 'addon_calendar_deleted_events';
 
     protected siteSchema: CoreSiteSchema = {
         name: 'AddonCalendarOfflineProvider',
@@ -34,6 +36,7 @@ export class AddonCalendarOfflineProvider {
                     {
                         name: 'id', // Negative for offline entries.
                         type: 'INTEGER',
+                        primaryKey: true
                     },
                     {
                         name: 'name',
@@ -110,13 +113,35 @@ export class AddonCalendarOfflineProvider {
                         name: 'timecreated',
                         type: 'INTEGER',
                     }
-                ],
-                primaryKeys: ['id']
+                ]
+            },
+            {
+                name: AddonCalendarOfflineProvider.DELETED_EVENTS_TABLE,
+                columns: [
+                    {
+                        name: 'id',
+                        type: 'INTEGER',
+                        primaryKey: true
+                    },
+                    {
+                        name: 'name', // Save the name to be able to notify the user.
+                        type: 'TEXT',
+                        notNull: true
+                    },
+                    {
+                        name: 'repeat',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER',
+                    }
+                ]
             }
         ]
     };
 
-    constructor(private sitesProvider: CoreSitesProvider) {
+    constructor(private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider) {
         this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
 
@@ -138,14 +163,88 @@ export class AddonCalendarOfflineProvider {
     }
 
     /**
-     * Get all offline events.
+     * Get the IDs of all the events created/edited/deleted in offline.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<number[]>} Promise resolved with the IDs.
+     */
+    getAllEventsIds(siteId?: string): Promise<number[]> {
+        const promises = [];
+
+        promises.push(this.getAllDeletedEventsIds(siteId));
+        promises.push(this.getAllEditedEventsIds(siteId));
+
+        return Promise.all(promises).then((result) => {
+            return this.utils.mergeArraysWithoutDuplicates(result[0], result[1]);
+        });
+    }
+
+    /**
+     * Get all the events deleted in offline.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any[]>} Promise resolved with all the events deleted in offline.
+     */
+    getAllDeletedEvents(siteId?: string): Promise<any[]> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.getDb().getRecords(AddonCalendarOfflineProvider.DELETED_EVENTS_TABLE);
+        });
+    }
+
+    /**
+     * Get the IDs of all the events deleted in offline.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<number[]>} Promise resolved with the IDs of all the events deleted in offline.
+     */
+    getAllDeletedEventsIds(siteId?: string): Promise<number[]> {
+        return this.getAllDeletedEvents(siteId).then((events) => {
+            return events.map((event) => {
+                return event.id;
+            });
+        });
+    }
+
+    /**
+     * Get all the events created/edited in offline.
      *
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any[]>} Promise resolved with events.
      */
-    getAllEvents(siteId?: string): Promise<any[]> {
+    getAllEditedEvents(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.getDb().getRecords(AddonCalendarOfflineProvider.EVENTS_TABLE);
+        });
+    }
+
+    /**
+     * Get the IDs of all the events created/edited in offline.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<number[]>} Promise resolved with events IDs.
+     */
+    getAllEditedEventsIds(siteId?: string): Promise<number[]> {
+        return this.getAllEditedEvents(siteId).then((events) => {
+            return events.map((event) => {
+                return event.id;
+            });
+        });
+    }
+
+    /**
+     * Get an event deleted in offline.
+     *
+     * @param {number} eventId Event ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with the deleted event.
+     */
+    getDeletedEvent(eventId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const conditions: any = {
+                id: eventId
+            };
+
+            return site.getDb().getRecord(AddonCalendarOfflineProvider.DELETED_EVENTS_TABLE, conditions);
         });
     }
 
@@ -172,12 +271,49 @@ export class AddonCalendarOfflineProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<boolean>} Promise resolved with boolean: true if has offline events, false otherwise.
      */
-    hasEvents(siteId?: string): Promise<boolean> {
-        return this.getAllEvents(siteId).then((events) => {
+    hasEditedEvents(siteId?: string): Promise<boolean> {
+        return this.getAllEditedEvents(siteId).then((events) => {
             return !!events.length;
         }).catch(() => {
             // No offline data found, return false.
             return false;
+        });
+    }
+
+    /**
+     * Check if an event is deleted.
+     *
+     * @param {number} eventId Event ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<boolean>} Promise resolved with boolean: whether the event is deleted.
+     */
+    isEventDeleted(eventId: number, siteId?: string): Promise<boolean> {
+        return this.getDeletedEvent(eventId, siteId).then((event) => {
+            return !!event;
+        }).catch(() => {
+            return false;
+        });
+    }
+
+    /**
+     * Mark an event as deleted.
+     *
+     * @param {number} eventId Event ID to delete.
+     * @param {number} name Name of the event to delete.
+     * @param {boolean} [deleteAll] If it's a repeated event. whether to delete all events of the series.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    markDeleted(eventId: number, name: string, deleteAll?: boolean, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const event = {
+                id: eventId,
+                name: name || '',
+                repeat: deleteAll ? 1 : 0,
+                timemodified: Date.now()
+            };
+
+            return site.getDb().insertRecord(AddonCalendarOfflineProvider.DELETED_EVENTS_TABLE, event);
         });
     }
 
@@ -219,6 +355,23 @@ export class AddonCalendarOfflineProvider {
             return site.getDb().insertRecord(AddonCalendarOfflineProvider.EVENTS_TABLE, event).then(() => {
                 return event;
             });
+        });
+    }
+
+    /**
+     * Unmark an event as deleted.
+     *
+     * @param {number} eventId Event ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved if deleted, rejected if failure.
+     */
+    unmarkDeleted(eventId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const conditions: any = {
+                id: eventId
+            };
+
+            return site.getDb().deleteRecords(AddonCalendarOfflineProvider.DELETED_EVENTS_TABLE, conditions);
         });
     }
 }
