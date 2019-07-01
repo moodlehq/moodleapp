@@ -64,6 +64,11 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     showSortFilter = false;
     downloadCourseEnabled: boolean;
     downloadCoursesEnabled: boolean;
+    disableInProgress = false;
+    disablePast = false;
+    disableFuture = false;
+    disableFavourite = false;
+    disableHidden = false;
 
     protected prefetchIconsInitialized = false;
     protected isDestroyed;
@@ -173,12 +178,17 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
             this.courses.filter = '';
             this.showFilter = false;
+            this.disableInProgress = this.courses.inprogress.length === 0;
+            this.disablePast = this.courses.past.length === 0;
+            this.disableFuture = this.courses.future.length === 0;
             this.showSelectorFilter = courses.length > 0 && (this.courses.past.length > 0 || this.courses.future.length > 0 ||
-                typeof courses[0].enddate != 'undefined');
+                   typeof courses[0].enddate != 'undefined');
             this.showHidden = this.showSelectorFilter && typeof courses[0].hidden != 'undefined';
+            this.disableHidden = this.courses.hidden.length === 0;
             this.showFavourite = this.showSelectorFilter && typeof courses[0].isfavourite != 'undefined';
-            if (!this.showSelectorFilter) {
-                // No selector, show all.
+            this.disableFavourite = this.courses.favourite.length === 0;
+            if (!this.showSelectorFilter || (this.selectedFilter === 'inprogress' && this.disableInProgress)) {
+                // No selector, or the default option is disabled, show all.
                 this.selectedFilter = 'all';
             }
             this.filteredCourses = this.courses[this.selectedFilter];
