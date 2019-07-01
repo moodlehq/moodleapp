@@ -237,6 +237,8 @@ export class AddonCalendarProvider {
     canDeleteEvents(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return this.canDeleteEventsInSite(site);
+        }).catch(() => {
+            return false;
         });
     }
 
@@ -263,6 +265,8 @@ export class AddonCalendarProvider {
     canEditEvents(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return this.canEditEventsInSite(site);
+        }).catch(() => {
+            return false;
         });
     }
 
@@ -278,6 +282,34 @@ export class AddonCalendarProvider {
 
         // The WS to create/edit events requires a fix that was integrated in 3.7.1.
         return site.isVersionGreaterEqualThan('3.7.1');
+    }
+
+    /**
+     * Check if a certain site allows viewing events in monthly view.
+     *
+     * @param {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<boolean>} Promise resolved with true if monthly view is supported.
+     * @since 3.4
+     */
+    canViewMonth(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.canViewMonthInSite(site);
+        }).catch(() => {
+            return false;
+        });
+    }
+
+    /**
+     * Check if a certain site allows viewing events in monthly view.
+     *
+     * @param {CoreSite} [site] Site. If not defined, use current site.
+     * @return {boolean} Whether monthly view is supported.
+     * @since 3.4
+     */
+    canViewMonthInSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.wsAvailable('core_calendar_get_calendar_monthly_view');
     }
 
     /**
@@ -724,6 +756,126 @@ export class AddonCalendarProvider {
     }
 
     /**
+     * Get monthly calendar events.
+     *
+     * @param {number} year Year to get.
+     * @param {number} month Month to get.
+     * @param {number} [courseId] Course to get.
+     * @param {number} [categoryId] Category to get.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with the response.
+     */
+    getMonthlyEvents(year: number, month: number, courseId?: number, categoryId?: number, siteId?: string): Promise<any> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+
+            const data: any = {
+                year: year,
+                month: month,
+                mini: 1 // Set mini to 1 to prevent returning the course selector HTML.
+            };
+
+            if (courseId) {
+                data.courseid = courseId;
+            }
+            if (categoryId) {
+                data.categoryid = categoryId;
+            }
+
+            const preSets = {
+                cacheKey: this.getMonthlyEventsCacheKey(year, month, courseId, categoryId),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
+            };
+
+            return site.read('core_calendar_get_calendar_monthly_view', data, preSets);
+        });
+    }
+
+    /**
+     * Get prefix cache key for monthly events WS calls.
+     *
+     * @return {string} Prefix Cache key.
+     */
+    protected getMonthlyEventsPrefixCacheKey(): string {
+        return this.ROOT_CACHE_KEY + 'monthly:';
+    }
+
+    /**
+     * Get prefix cache key for a certain month for monthly events WS calls.
+     *
+     * @param {number} year Year to get.
+     * @param {number} month Month to get.
+     * @return {string} Prefix Cache key.
+     */
+    protected getMonthlyEventsMonthPrefixCacheKey(year: number, month: number): string {
+        return this.getMonthlyEventsPrefixCacheKey() + year + ':' + month + ':';
+    }
+
+    /**
+     * Get cache key for monthly events WS calls.
+     *
+     * @param {number} year Year to get.
+     * @param {number} month Month to get.
+     * @param {number} [courseId] Course to get.
+     * @param {number} [categoryId] Category to get.
+     * @return {string} Cache key.
+     */
+    protected getMonthlyEventsCacheKey(year: number, month: number, courseId?: number, categoryId?: number): string {
+        return this.getMonthlyEventsMonthPrefixCacheKey(year, month) + (courseId ? courseId : '') + ':' +
+                (categoryId ? categoryId : '');
+    }
+
+    /**
+     * Get upcoming calendar events.
+     *
+     * @param {number} [courseId] Course to get.
+     * @param {number} [categoryId] Category to get.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with the response.
+     */
+    getUpcomingEvents(courseId?: number, categoryId?: number, siteId?: string): Promise<any> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+
+            const data: any = {};
+
+            if (courseId) {
+                data.courseid = courseId;
+            }
+            if (categoryId) {
+                data.categoryid = categoryId;
+            }
+
+            const preSets = {
+                cacheKey: this.getUpcomingEventsCacheKey(courseId, categoryId),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
+            };
+
+            return site.read('core_calendar_get_calendar_upcoming_view', data, preSets);
+        });
+    }
+
+    /**
+     * Get prefix cache key for upcoming events WS calls.
+     *
+     * @return {string} Prefix Cache key.
+     */
+    protected getUpcomingEventsPrefixCacheKey(): string {
+        return this.ROOT_CACHE_KEY + 'upcoming:';
+    }
+
+    /**
+     * Get cache key for upcoming events WS calls.
+     *
+     * @param {number} [courseId] Course to get.
+     * @param {number} [categoryId] Category to get.
+     * @return {string} Cache key.
+     */
+    protected getUpcomingEventsCacheKey(courseId?: number, categoryId?: number): string {
+        return this.getUpcomingEventsPrefixCacheKey() + (courseId ? courseId : '') + ':' + (categoryId ? categoryId : '');
+    }
+
+    /**
      * Invalidates access information.
      *
      * @param {number} [courseId] Course ID. If not defined, site calendar.
@@ -779,6 +931,56 @@ export class AddonCalendarProvider {
     invalidateEvent(eventId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKey(this.getEventCacheKey(eventId));
+        });
+    }
+
+    /**
+     * Invalidates monthly events for all months.
+     *
+     * @param {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateAllMonthlyEvents(siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKeyStartingWith(this.getMonthlyEventsPrefixCacheKey());
+        });
+    }
+
+    /**
+     * Invalidates monthly events for a certain months.
+     *
+     * @param {number} year Year.
+     * @param {number} month Month.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateMonthlyEvents(year: number, month: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKeyStartingWith(this.getMonthlyEventsMonthPrefixCacheKey(year, month));
+        });
+    }
+
+    /**
+     * Invalidates upcoming events for all courses and categories.
+     *
+     * @param {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateAllUpcomingEvents(siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKeyStartingWith(this.getUpcomingEventsPrefixCacheKey());
+        });
+    }
+
+    /**
+     * Invalidates upcoming events for a certain course or category.
+     *
+     * @param {number} [courseId] Course ID.
+     * @param {number} [categoryId] Category ID.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateUpcomingEvents(courseId?: number, categoryId?: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKeyStartingWith(this.getUpcomingEventsCacheKey(courseId, categoryId));
         });
     }
 

@@ -70,7 +70,13 @@ export class AddonCalendarModule {
                             return;
                         }
 
-                        loginHelper.redirect('AddonCalendarListPage', {eventId: data.eventid}, data.siteId);
+                        // Check which page we should load.
+                        calendarProvider.canViewMonth(data.siteId).then((canView) => {
+                            const pageName = canView ? 'AddonCalendarIndexPage' : 'AddonCalendarListPage';
+
+                            loginHelper.redirect(pageName, {eventId: data.eventid}, data.siteId);
+                        });
+
                     });
                 });
             }
