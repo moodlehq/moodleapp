@@ -1,0 +1,7 @@
+{
+    "addcomment": "Add a comment...",
+    "comments": "Comments",
+    "commentscount": "Comments ({{$a}})",
+    "commentsnotworking": "Comments cannot be retrieved",
+    "nocomments": "No comments"
+}

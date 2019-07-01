@@ -100,7 +100,7 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
      * Opens the comments page.
      */
     openComments(): void {
-        if (!this.disabled && this.commentsCount > 0) {
+        if (!this.disabled && this.commentsCount >= 0) {
             // Open a new state with the interpolated contents.
             this.navCtrl.push('CoreCommentsViewerPage', {
                 contextLevel: this.contextLevel,

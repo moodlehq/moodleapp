@@ -51,6 +51,24 @@ export class CoreCommentsProvider {
     }
 
     /**
+     * Returns whether WS to add/delete comments are available in site.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<boolean>} Promise resolved with true if available, resolved with false or rejected otherwise.
+     * @since 3.8
+     */
+    isAddCommentsAvailable(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            // First check if it's disabled.
+            if (this.areCommentsDisabledInSite(site)) {
+                return false;
+            }
+
+            return site.wsAvailable('core_comment_add_comments');
+        });
+    }
+
+    /**
      * Get cache key for get comments data WS calls.
      *
      * @param  {string} contextLevel Contextlevel system, course, user...

@@ -8,7 +8,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="commentsLoaded">
-        <core-empty-box *ngIf="!comments || !comments.length" icon="chatbubbles" [message]="'core.nocomments' | translate"></core-empty-box>
+        <core-empty-box *ngIf="!comments || !comments.length" icon="chatbubbles" [message]="'core.comments.nocomments' | translate"></core-empty-box>
 
         <ion-card *ngFor="let comment of comments">
             <ion-item text-wrap>
@@ -21,4 +21,10 @@
             </ion-item>
         </ion-card>
     </core-loading>
+
+    <ion-fab core-fab bottom end *ngIf="addCommentsAvailable">
+        <button ion-fab (click)="addComment()" [attr.aria-label]="'core.comments.addcomment' | translate">
+            <ion-icon name="add"></ion-icon>
+        </button>
+    </ion-fab>
 </ion-content>

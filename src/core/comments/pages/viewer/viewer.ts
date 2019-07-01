@@ -40,6 +40,7 @@ export class CoreCommentsViewerPage {
     area: string;
     page: number;
     title: string;
+    addCommentsAvailable = false;
 
     constructor(navParams: NavParams, sitesProvider: CoreSitesProvider, private userProvider: CoreUserProvider,
              private domUtils: CoreDomUtilsProvider, private translate: TranslateService,
@@ -51,13 +52,17 @@ export class CoreCommentsViewerPage {
         this.itemId = navParams.get('itemId');
         this.area = navParams.get('area') || '';
         this.page = navParams.get('page') || 0;
-        this.title = navParams.get('title') || this.translate.instant('core.comments');
+        this.title = navParams.get('title') || this.translate.instant('core.comments.comments');
     }
 
     /**
      * View loaded.
      */
     ionViewDidLoad(): void {
+        this.commentsProvider.isAddCommentsAvailable().then((enabled) => {
+            this.addCommentsAvailable = enabled;
+        });
+
         this.fetchComments().finally(() => {
             this.commentsLoaded = true;
         });
@@ -84,7 +89,7 @@ export class CoreCommentsViewerPage {
             });
         }).catch((error) => {
             if (error && this.component == 'assignsubmission_comments') {
-                this.domUtils.showAlertTranslated('core.notice', 'core.commentsnotworking');
+                this.domUtils.showAlertTranslated('core.notice', 'core.comments.commentsnotworking');
             } else {
                 this.domUtils.showErrorModalDefault(error, this.translate.instant('core.error') + ': get_comments');
             }
