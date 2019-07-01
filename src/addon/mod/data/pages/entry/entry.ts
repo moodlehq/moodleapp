@@ -218,6 +218,10 @@ export class AddonModDataEntryPage implements OnDestroy {
 
         promises.push(this.dataProvider.invalidateDatabaseData(this.courseId));
         if (this.data) {
+            if (this.data.comments && this.entry && this.entry.id > 0 && this.commentsEnabled) {
+                promises.push(this.commentsProvider.invalidateCommentsData('module', this.data.coursemodule, 'mod_data',
+                    this.entry.id, 'database_entry'));
+            }
             promises.push(this.dataProvider.invalidateEntryData(this.data.id, this.entryId));
             promises.push(this.groupsProvider.invalidateActivityGroupInfo(this.data.coursemodule));
             promises.push(this.dataProvider.invalidateEntriesData(this.data.id));

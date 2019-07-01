@@ -31,7 +31,6 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
     @Input() component: string;
     @Input() itemId: number;
     @Input() area = '';
-    @Input() page = 0;
     @Input() title?: string;
     @Input() displaySpinner = true; // Whether to display the loading spinner.
     @Output() onLoading: EventEmitter<boolean>; // Eevent that indicates whether the component is loading data.
@@ -72,7 +71,7 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         // If something change, update the fields.
-        if (changes) {
+        if (changes && this.commentsLoaded) {
             this.fetchData();
         }
     }
@@ -108,7 +107,6 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
                 component: this.component,
                 itemId: this.itemId,
                 area: this.area,
-                page: this.page,
                 title: this.title,
             });
         }

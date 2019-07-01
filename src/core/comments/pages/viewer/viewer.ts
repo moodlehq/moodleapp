@@ -51,8 +51,8 @@ export class CoreCommentsViewerPage {
         this.component = navParams.get('component');
         this.itemId = navParams.get('itemId');
         this.area = navParams.get('area') || '';
-        this.page = navParams.get('page') || 0;
         this.title = navParams.get('title') || this.translate.instant('core.comments.comments');
+        this.page = 0;
     }
 
     /**

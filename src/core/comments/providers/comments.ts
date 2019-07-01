@@ -76,12 +76,11 @@ export class CoreCommentsProvider {
      * @param  {string} component    Component name.
      * @param  {number} itemId       Associated id.
      * @param  {string} [area='']    String comment area. Default empty.
-     * @param  {number} [page=0]     Page number (0 based). Default 0.
      * @return {string} Cache key.
      */
-    protected getCommentsCacheKey(contextLevel: string, instanceId: number, component: string,
-            itemId: number, area: string = '', page: number = 0): string {
-        return this.getCommentsPrefixCacheKey(contextLevel, instanceId) + ':' + component + ':' + itemId + ':' + area + ':' + page;
+    protected getCommentsCacheKey(contextLevel: string, instanceId: number, component: string, itemId: number,
+            area: string = ''): string {
+        return this.getCommentsPrefixCacheKey(contextLevel, instanceId) + ':' + component + ':' + itemId + ':' + area;
     }
 
     /**
@@ -107,8 +106,8 @@ export class CoreCommentsProvider {
      * @param  {string} [siteId]     Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved with the comments.
      */
-    getComments(contextLevel: string, instanceId: number, component: string, itemId: number,
-            area: string = '', page: number = 0, siteId?: string): Promise<any> {
+    getComments(contextLevel: string, instanceId: number, component: string, itemId: number, area: string = '', page: number = 0,
+            siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params: any = {
                 contextlevel: contextLevel,
@@ -120,7 +119,7 @@ export class CoreCommentsProvider {
             };
 
             const preSets = {
-                cacheKey: this.getCommentsCacheKey(contextLevel, instanceId, component, itemId, area, page),
+                cacheKey: this.getCommentsCacheKey(contextLevel, instanceId, component, itemId, area),
                 updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
@@ -142,14 +141,17 @@ export class CoreCommentsProvider {
      * @param  {string} component    Component name.
      * @param  {number} itemId       Associated id.
      * @param  {string} [area='']    String comment area. Default empty.
-     * @param  {number} [page=0]     Page number (0 based). Default 0.
      * @param  {string} [siteId]     Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
     invalidateCommentsData(contextLevel: string, instanceId: number, component: string, itemId: number,
-            area: string = '', page: number = 0, siteId?: string): Promise<any> {
+            area: string = '', siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.invalidateWsCacheForKey(this.getCommentsCacheKey(contextLevel, instanceId, component, itemId, area, page));
+            // This is done with starting with to avoid conflicts with previous keys that were including page.
+            site.invalidateWsCacheForKeyStartingWith(this.getCommentsCacheKey(contextLevel, instanceId, component, itemId,
+                area) + ':');
+
+            return site.invalidateWsCacheForKey(this.getCommentsCacheKey(contextLevel, instanceId, component, itemId, area));
         });
     }
 
