@@ -23,6 +23,8 @@ import { CoreSite } from '@classes/site';
 export class CoreCommentsProvider {
 
     protected ROOT_CACHE_KEY = 'mmComments:';
+    static pageSize = null;
+    static pageSizeOK = false; // If true, the pageSize is definitive. If not, it's a temporal value to reduce WS calls.
 
     constructor(private sitesProvider: CoreSitesProvider) {}
 
@@ -125,10 +127,66 @@ export class CoreCommentsProvider {
 
             return site.read('core_comment_get_comments', params, preSets).then((response) => {
                 if (response.comments) {
-                    return response.comments;
+                    return response;
                 }
 
                 return Promise.reject(null);
+            });
+        });
+    }
+
+    /**
+     * Get comments count number to show ont he comments component.
+     *
+     * @param  {string} contextLevel Contextlevel system, course, user...
+     * @param  {number} instanceId   The Instance id of item associated with the context level.
+     * @param  {string} component    Component name.
+     * @param  {number} itemId       Associated id.
+     * @param  {string} [area='']    String comment area. Default empty.
+     * @param  {string} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise<string>}     Comments count with plus sign if needed.
+     */
+    getCommentsCount(contextLevel: string, instanceId: number, component: string, itemId: number, area: string = '',
+            siteId?: string): Promise<string> {
+
+        siteId = siteId ? siteId : this.sitesProvider.getCurrentSiteId();
+
+        // Convenience function to get comments number on a page.
+        const getCommentsPageCount = (page: number): Promise<number> => {
+            return this.getComments(contextLevel, instanceId, component, itemId, area, page, siteId).then((response) => {
+                if (response.comments) {
+                    // Update pageSize with the greatest count at the moment.
+                    if (response.comments && response.comments.length > CoreCommentsProvider.pageSize) {
+                        CoreCommentsProvider.pageSize = response.comments.length;
+                    }
+
+                    return response.comments && response.comments.length ? response.comments.length : 0;
+                }
+
+                return -1;
+            }).catch(() => {
+                return -1;
+            });
+        };
+
+        return getCommentsPageCount(0).then((count) => {
+            if (CoreCommentsProvider.pageSizeOK && count >= CoreCommentsProvider.pageSize) {
+                // Page Size is ok, show + in case it reached the limit.
+                return (CoreCommentsProvider.pageSize - 1) + '+';
+            } else if (count < 0 || (CoreCommentsProvider.pageSize && count < CoreCommentsProvider.pageSize)) {
+                return count + '';
+            }
+
+            // Call to update page size.
+            return getCommentsPageCount(1).then((countMore) => {
+                // Page limit was reached on the previous call.
+                if (countMore > 0) {
+                    CoreCommentsProvider.pageSizeOK = true;
+
+                    return (CoreCommentsProvider.pageSize - 1) + '+';
+                }
+
+                return count + '';
             });
         });
     }

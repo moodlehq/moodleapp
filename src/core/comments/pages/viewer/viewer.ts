@@ -40,7 +40,11 @@ export class CoreCommentsViewerPage {
     area: string;
     page: number;
     title: string;
-    addCommentsAvailable = false;
+    canLoadMore = false;
+    loadMoreError = false;
+    canAddComments = false;
+
+    protected addCommentsAvailable = false;
 
     constructor(navParams: NavParams, sitesProvider: CoreSitesProvider, private userProvider: CoreUserProvider,
              private domUtils: CoreDomUtilsProvider, private translate: TranslateService,
@@ -74,11 +78,16 @@ export class CoreCommentsViewerPage {
      * @return {Promise<any>} Resolved when done.
      */
     protected fetchComments(): Promise<any> {
+        this.loadMoreError = false;
+
         // Get comments data.
         return this.commentsProvider.getComments(this.contextLevel, this.instanceId, this.component, this.itemId,
-                this.area, this.page).then((comments) => {
-            this.comments = comments;
-            this.comments.sort((a, b) => b.timecreated - a.timecreated);
+                this.area, this.page).then((response) => {
+            this.canAddComments = this.addCommentsAvailable && response.canpost;
+
+            const comments = response.comments.sort((a, b) => b.timecreated - a.timecreated);
+            this.canLoadMore = comments.length >= CoreCommentsProvider.pageSize;
+
             this.comments.forEach((comment) => {
                 // Get the user profile image.
                 this.userProvider.getProfile(comment.userid, undefined, true).then((user) => {
@@ -87,12 +96,31 @@ export class CoreCommentsViewerPage {
                     // Ignore errors.
                 });
             });
+
+            this.comments = this.comments.concat(comments);
+
         }).catch((error) => {
+            this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
             if (error && this.component == 'assignsubmission_comments') {
                 this.domUtils.showAlertTranslated('core.notice', 'core.comments.commentsnotworking');
             } else {
                 this.domUtils.showErrorModalDefault(error, this.translate.instant('core.error') + ': get_comments');
             }
+        });
+    }
+
+    /**
+     * Function to load more cp,,emts.
+     *
+     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
+     * @return {Promise<any>} Resolved when done.
+     */
+    loadMore(infiniteComplete?: any): Promise<any> {
+        this.page++;
+        this.canLoadMore = false;
+
+        return this.fetchComments().finally(() => {
+            infiniteComplete && infiniteComplete();
         });
     }
 
@@ -103,7 +131,10 @@ export class CoreCommentsViewerPage {
      */
     refreshComments(refresher: any): void {
         this.commentsProvider.invalidateCommentsData(this.contextLevel, this.instanceId, this.component,
-                this.itemId, this.area, this.page).finally(() => {
+                this.itemId, this.area).finally(() => {
+            this.page = 0;
+            this.comments = [];
+
             return this.fetchComments().finally(() => {
                 refresher.complete();
             });

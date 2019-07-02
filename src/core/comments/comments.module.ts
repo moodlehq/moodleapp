@@ -14,6 +14,7 @@
 
 import { NgModule } from '@angular/core';
 import { CoreCommentsProvider } from './providers/comments';
+import { CoreEventsProvider } from '@providers/events';
 
 @NgModule({
     declarations: [
@@ -24,4 +25,12 @@ import { CoreCommentsProvider } from './providers/comments';
         CoreCommentsProvider
     ]
 })
-export class CoreCommentsModule {}
+export class CoreCommentsModule {
+    constructor(eventsProvider: CoreEventsProvider) {
+        // Reset comments page size.
+        eventsProvider.on(CoreEventsProvider.LOGIN, () => {
+            CoreCommentsProvider.pageSize = null;
+            CoreCommentsProvider.pageSizeOK = false;
+        });
+    }
+}
