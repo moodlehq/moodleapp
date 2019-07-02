@@ -3,5 +3,7 @@
     "comments": "Comments",
     "commentscount": "Comments ({{$a}})",
     "commentsnotworking": "Comments cannot be retrieved",
-    "nocomments": "No comments"
+    "eventcommentcreated": "Comment created",
+    "nocomments": "No comments",
+    "savecomment": "Save comment"
 }

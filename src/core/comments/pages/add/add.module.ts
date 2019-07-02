@@ -14,24 +14,18 @@
 
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
+import { CoreCommentsAddPage } from './add';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreCommentsViewerPage } from './viewer';
-import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
-import { CorePipesModule } from '@pipes/pipes.module';
-import { CoreCommentsComponentsModule } from '../../components/components.module';
 
 @NgModule({
     declarations: [
-        CoreCommentsViewerPage
+        CoreCommentsAddPage
     ],
     imports: [
-        CoreComponentsModule,
         CoreDirectivesModule,
-        CorePipesModule,
-        CoreCommentsComponentsModule,
-        IonicPageModule.forChild(CoreCommentsViewerPage),
+        IonicPageModule.forChild(CoreCommentsAddPage),
         TranslateModule.forChild()
-    ],
+    ]
 })
-export class CoreCommentsViewerPageModule {}
+export class CoreCommentsAddPageModule {}

@@ -13,8 +13,11 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreAppProvider } from '@providers/app';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSite } from '@classes/site';
+import { CoreCommentsOfflineProvider } from './offline';
 
 /**
  * Service that provides some features regarding comments.
@@ -26,7 +29,107 @@ export class CoreCommentsProvider {
     static pageSize = null;
     static pageSizeOK = false; // If true, the pageSize is definitive. If not, it's a temporal value to reduce WS calls.
 
-    constructor(private sitesProvider: CoreSitesProvider) {}
+    constructor(private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider, private appProvider: CoreAppProvider,
+        private commentsOffline: CoreCommentsOfflineProvider) {}
+
+    /**
+     * Add a comment.
+     *
+     * @param  {string} content      Comment text.
+     * @param  {string} contextLevel Contextlevel system, course, user...
+     * @param  {number} instanceId   The Instance id of item associated with the context level.
+     * @param  {string} component    Component name.
+     * @param  {number} itemId       Associated id.
+     * @param  {string} [area='']    String comment area. Default empty.
+     * @param  {string} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise<boolean>}    Promise resolved with boolean: true if comment was sent to server, false if stored in device.
+     */
+    addComment(content: string, contextLevel: string, instanceId: number, component: string, itemId: number, area: string = '',
+            siteId?: string): Promise<boolean> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        // Convenience function to store a note to be synchronized later.
+        const storeOffline = (): Promise<any> => {
+            return this.commentsOffline.saveComment(content, contextLevel, instanceId, component, itemId, area, siteId).then(() => {
+                return Promise.resolve(false);
+            });
+        };
+
+        if (!this.appProvider.isOnline()) {
+            // App is offline, store the note.
+            return storeOffline();
+        }
+
+        // Send note to server.
+        return this.addCommentOnline(content, contextLevel, instanceId, component, itemId, area, siteId).then((comments) => {
+            return comments;
+        }).catch((error) => {
+            if (this.utils.isWebServiceError(error)) {
+                // It's a WebService error, the user cannot send the message so don't store it.
+                return Promise.reject(error);
+            }
+
+            // Error sending note, store it to retry later.
+            return storeOffline();
+        });
+    }
+
+    /**
+     * Add a comment. It will fail if offline or cannot connect.
+     *
+     * @param  {string} content      Comment text.
+     * @param  {string} contextLevel Contextlevel system, course, user...
+     * @param  {number} instanceId   The Instance id of item associated with the context level.
+     * @param  {string} component    Component name.
+     * @param  {number} itemId       Associated id.
+     * @param  {string} [area='']    String comment area. Default empty.
+     * @param  {string} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise<any>}        Promise resolved when added, rejected otherwise.
+     */
+    addCommentOnline(content: string, contextLevel: string, instanceId: number, component: string, itemId: number,
+            area: string = '', siteId?: string): Promise<any> {
+        const comments = [
+            {
+                contextlevel: contextLevel,
+                instanceid: instanceId,
+                component: component,
+                itemid: itemId,
+                area: area,
+                content: content
+            }
+        ];
+
+        return this.addCommentsOnline(comments, siteId).then((commentsResponse) => {
+               // A cooment was added, invalidate them.
+            return this.invalidateCommentsData(contextLevel, instanceId, component, itemId, area, siteId).catch(() => {
+                // Ignore errors.
+            }).then(() => {
+                return commentsResponse;
+            });
+        });
+    }
+
+    /**
+     * Add several comments. It will fail if offline or cannot connect.
+     *
+     * @param  {any[]}  comments Comments to save.
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}    Promise resolved when added, rejected otherwise. Promise resolved doesn't mean that comments
+     *                           have been added, the resolve param can contain errors for notes not sent.
+     */
+    addCommentsOnline(comments: any[], siteId?: string): Promise<any> {
+        if (!comments || !comments.length) {
+            return Promise.resolve();
+        }
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const data = {
+                comments: comments
+            };
+
+            return site.write('core_comment_add_comments', data);
+        });
+    }
 
     /**
      * Check if Calendar is disabled in a certain site.

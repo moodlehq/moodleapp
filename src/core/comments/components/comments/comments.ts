@@ -103,7 +103,7 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
             this.navCtrl.push('CoreCommentsViewerPage', {
                 contextLevel: this.contextLevel,
                 instanceId: this.instanceId,
-                component: this.component,
+                componentName: this.component,
                 itemId: this.itemId,
                 area: this.area,
                 title: this.title,
