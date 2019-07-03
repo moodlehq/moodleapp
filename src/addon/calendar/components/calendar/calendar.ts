@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, Input, OnChanges, SimpleChange } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input, OnChanges, SimpleChange, Output, EventEmitter } from '@angular/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -20,6 +20,7 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { AddonCalendarProvider } from '../../providers/calendar';
 import { AddonCalendarHelperProvider } from '../../providers/helper';
+import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 
 /**
@@ -35,6 +36,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     @Input() courseId: number | string;
     @Input() categoryId: number | string; // Category ID the course belongs to.
     @Input() canNavigate?: string | boolean; // Whether to include arrows to change the month. Defaults to true.
+    @Output() onEventClicked = new EventEmitter<number>();
 
     periodName: string;
     weekDays: any[];
@@ -45,16 +47,39 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     protected month: number;
     protected categoriesRetrieved = false;
     protected categories = {};
+    protected currentSiteId: string;
+    protected offlineEvents: {[monthId: string]: {[day: number]: any[]}} = {}; // Offline events classified in month & day.
+    protected offlineEditedEventsIds = []; // IDs of events edited in offline.
+    protected deletedEvents = []; // Events deleted in offline.
+
+    // Observers.
+    protected undeleteEventObserver: any;
 
     constructor(eventsProvider: CoreEventsProvider,
             sitesProvider: CoreSitesProvider,
             private calendarProvider: AddonCalendarProvider,
             private calendarHelper: AddonCalendarHelperProvider,
+            private calendarOffline: AddonCalendarOfflineProvider,
             private domUtils: CoreDomUtilsProvider,
             private timeUtils: CoreTimeUtilsProvider,
             private utils: CoreUtilsProvider,
             private coursesProvider: CoreCoursesProvider) {
 
+        this.currentSiteId = sitesProvider.getCurrentSiteId();
+
+        // Listen for events "undeleted" (offline).
+        this.undeleteEventObserver = eventsProvider.on(AddonCalendarProvider.UNDELETED_EVENT_EVENT, (data) => {
+            if (data && data.eventId) {
+                // Mark it as undeleted, no need to refresh.
+                this.undeleteEvent(data.eventId);
+
+                // Remove it from the list of deleted events if it's there.
+                const index = this.deletedEvents.indexOf(data.eventId);
+                if (index != -1) {
+                    this.deletedEvents.splice(index, 1);
+                }
+            }
+        }, this.currentSiteId);
     }
 
     /**
@@ -76,27 +101,63 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
 
         if ((changes.courseId || changes.categoryId) && this.weeks) {
-            const courseId = this.courseId ? Number(this.courseId) : undefined,
-                categoryId = this.categoryId ? Number(this.categoryId) : undefined;
-
-            this.filterEvents(courseId, categoryId);
+            this.filterEvents();
         }
     }
 
     /**
      * Fetch contacts.
      *
-     * @param {boolean} [refresh=false] True if we are refreshing contacts, false if we are loading more.
+     * @param {boolean} [refresh=false] True if we are refreshing events.
      * @return {Promise<any>} Promise resolved when done.
      */
     fetchData(refresh: boolean = false): Promise<any> {
-        const courseId = this.courseId ? Number(this.courseId) : undefined,
-            categoryId = this.categoryId ? Number(this.categoryId) : undefined,
-            promises = [];
+        const promises = [];
 
         promises.push(this.loadCategories());
 
-        promises.push(this.calendarProvider.getMonthlyEvents(this.year, this.month, courseId, categoryId).then((result) => {
+        // Get offline events.
+        promises.push(this.calendarOffline.getAllEditedEvents().then((events) => {
+            // Format data.
+            events.forEach((event) => {
+                event.offline = true;
+                this.calendarHelper.formatEventData(event);
+            });
+
+            // Classify them by month.
+            this.offlineEvents = this.calendarHelper.classifyIntoMonths(events);
+
+            // Get the IDs of events edited in offline.
+            const filtered = events.filter((event) => {
+                return event.id > 0;
+            });
+            this.offlineEditedEventsIds = filtered.map((event) => {
+                return event.id;
+            });
+        }));
+
+        // Get events deleted in offline.
+        promises.push(this.calendarOffline.getAllDeletedEventsIds().then((ids) => {
+            this.deletedEvents = ids;
+        }));
+
+        return Promise.all(promises).then(() => {
+            return this.fetchEvents();
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+        }).finally(() => {
+            this.loaded = true;
+        });
+    }
+
+    /**
+     * Fetch the events for current month.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    fetchEvents(): Promise<any> {
+        // Don't pass courseId and categoryId, we'll filter them locally.
+        return this.calendarProvider.getMonthlyEvents(this.year, this.month).then((result) => {
 
             // Calculate the period name. We don't use the one in result because it's in server's language.
             this.periodName = this.timeUtils.userDate(new Date(this.year, this.month - 1).getTime(), 'core.strftimemonthyear');
@@ -104,13 +165,11 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
             this.weekDays = this.calendarProvider.getWeekDays(result.daynames[0].dayno);
             this.weeks = result.weeks;
 
-            this.filterEvents(courseId, categoryId);
-        }));
+            // Merge the online events with offline data.
+            this.mergeEvents();
 
-        return Promise.all(promises).catch((error) => {
-            this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
-        }).finally(() => {
-            this.loaded = true;
+            // Filter events by course.
+            this.filterEvents();
         });
     }
 
@@ -140,11 +199,10 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
 
     /**
      * Filter events to only display events belonging to a certain course.
-     *
-     * @param {number} courseId Course ID.
-     * @param {number} categoryId Category the course belongs to.
      */
-    filterEvents(courseId: number, categoryId: number): void {
+    filterEvents(): void {
+        const courseId = this.courseId ? Number(this.courseId) : undefined,
+            categoryId = this.categoryId ? Number(this.categoryId) : undefined;
 
         this.weeks.forEach((week) => {
             week.days.forEach((day) => {
@@ -165,9 +223,11 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     /**
      * Refresh events.
      *
+     * @param {boolean} [sync] Whether it should try to synchronize offline events.
+     * @param {boolean} [showErrors] Whether to show sync errors to the user.
      * @return {Promise<any>} Promise resolved when done.
      */
-    refreshData(): Promise<any> {
+    refreshData(sync?: boolean, showErrors?: boolean): Promise<any> {
         const promises = [];
 
         promises.push(this.calendarProvider.invalidateMonthlyEvents(this.year, this.month));
@@ -184,38 +244,145 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
      * Load next month.
      */
     loadNext(): void {
-        if (this.month === 12) {
-            this.month = 1;
-            this.year++;
-        } else {
-            this.month++;
-        }
+        this.increaseMonth();
 
         this.loaded = false;
 
-        this.fetchData();
+        this.fetchEvents().catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+            this.decreaseMonth();
+        }).finally(() => {
+            this.loaded = true;
+        });
     }
 
     /**
      * Load previous month.
      */
     loadPrevious(): void {
+        this.decreaseMonth();
+
+        this.loaded = false;
+
+        this.fetchEvents().catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+            this.increaseMonth();
+        }).finally(() => {
+            this.loaded = true;
+        });
+    }
+
+    /**
+     * An event was clicked.
+     *
+     * @param {any} event Event.
+     */
+    eventClicked(event: any): void {
+        this.onEventClicked.emit(event.id);
+    }
+
+    /**
+     * Decrease the current month.
+     */
+    protected decreaseMonth(): void {
         if (this.month === 1) {
             this.month = 12;
             this.year--;
         } else {
             this.month--;
         }
+    }
 
-        this.loaded = false;
+    /**
+     * Increase the current month.
+     */
+    protected increaseMonth(): void {
+        if (this.month === 12) {
+            this.month = 1;
+            this.year++;
+        } else {
+            this.month++;
+        }
+    }
 
-        this.fetchData();
+    /**
+     * Merge online events with the offline events of that period.
+     */
+    protected mergeEvents(): void {
+        const monthOfflineEvents = this.offlineEvents[this.calendarHelper.getMonthId(this.year, this.month)];
+
+        if (!monthOfflineEvents && !this.deletedEvents.length) {
+            // No offline events, nothing to merge.
+            return;
+        }
+
+        this.weeks.forEach((week) => {
+            week.days.forEach((day) => {
+
+                if (this.deletedEvents.length) {
+                    // Mark as deleted the events that were deleted in offline.
+                    day.events.forEach((event) => {
+                        event.deleted = this.deletedEvents.indexOf(event.id) != -1;
+                    });
+                }
+
+                if (this.offlineEditedEventsIds.length) {
+                    // Remove the online events that were modified in offline.
+                    day.events = day.events.filter((event) => {
+                        return this.offlineEditedEventsIds.indexOf(event.id) == -1;
+                    });
+                }
+
+                if (monthOfflineEvents && monthOfflineEvents[day.mday]) {
+                    // Add the offline events (either new or edited).
+                    day.events = this.sortEvents(day.events.concat(monthOfflineEvents[day.mday]));
+                }
+            });
+        });
+    }
+
+    /**
+     * Sort events by timestart.
+     *
+     * @param {any[]} events List to sort.
+     */
+    protected sortEvents(events: any[]): any[] {
+        return events.sort((a, b) => {
+            if (a.timestart == b.timestart) {
+                return a.timeduration - b.timeduration;
+            }
+
+            return a.timestart - b.timestart;
+        });
+    }
+
+    /**
+     * Undelete a certain event.
+     *
+     * @param {number} eventId Event ID.
+     */
+    protected undeleteEvent(eventId: number): void {
+        if (!this.weeks) {
+            return;
+        }
+
+        this.weeks.forEach((week) => {
+            week.days.forEach((day) => {
+                const event = day.events.find((event) => {
+                    return event.id == eventId;
+                });
+
+                if (event) {
+                    event.deleted = false;
+                }
+            });
+        });
     }
 
     /**
      * Component destroyed.
      */
     ngOnDestroy(): void {
-        // @todo
+        this.undeleteEventObserver && this.undeleteEventObserver.off();
     }
 }

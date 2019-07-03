@@ -18,6 +18,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { AddonCalendarProvider } from './calendar';
 import { CoreConstants } from '@core/constants';
+import * as moment from 'moment';
 
 /**
  * Service that provides some features regarding lists of courses and categories.
@@ -86,6 +87,41 @@ export class AddonCalendarHelperProvider {
     }
 
     /**
+     * Classify events into their respective months and days. If an event duration covers more than one day,
+     * it will be included in all the days it lasts.
+     *
+     * @param {any[]} events Events to classify.
+     * @return {{[monthId: string]: {[day: number]: any[]}}} Object with the classified events.
+     */
+    classifyIntoMonths(events: any[]): {[monthId: string]: {[day: number]: any[]}} {
+
+        const result = {};
+
+        events.forEach((event) => {
+            const treatedDay = moment(new Date(event.timestart * 1000)),
+                endDay = moment(new Date((event.timestart + (event.timeduration || 0)) * 1000));
+
+            // Add the event to all the days it lasts.
+            while (!treatedDay.isAfter(endDay, 'day')) {
+                const monthId = this.getMonthId(treatedDay.year(), treatedDay.month() + 1),
+                    day = treatedDay.date();
+
+                if (!result[monthId]) {
+                    result[monthId] = {};
+                }
+                if (!result[monthId][day]) {
+                    result[monthId][day] = [];
+                }
+                result[monthId][day].push(event);
+
+                treatedDay.add(1, 'day'); // Treat next day.
+            }
+        });
+
+        return result;
+    }
+
+    /**
      * Convenience function to format some event data to be rendered.
      *
      * @param {any} e Event to format.
@@ -97,7 +133,7 @@ export class AddonCalendarHelperProvider {
             e.moduleIcon = e.icon;
         }
 
-        if (e.id < 0) {
+        if (typeof e.duration != 'undefined') {
             // It's an offline event, add some calculated data.
             e.format = 1;
             e.visible = 1;
@@ -138,6 +174,17 @@ export class AddonCalendarHelperProvider {
         }
 
         return options;
+    }
+
+    /**
+     * Get the month "id" (year + month).
+     *
+     * @param {number} year Year.
+     * @param {number} month Month.
+     * @return {string} The "id".
+     */
+    getMonthId(year: number, month: number): string {
+        return year + '#' + month;
     }
 
     /**

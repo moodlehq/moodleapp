@@ -13,6 +13,15 @@ ion-app.app-root addon-calendar-calendar {
 
     .addon-calendar-day-events {
         @include text-align('start');
+
+        ion-icon {
+            @include margin-horizontal(null, 2px);
+            font-size: 1em;
+        }
+    }
+
+    .addon-calendar-event {
+        cursor: pointer;
     }
 
     .calendar_event_type {
