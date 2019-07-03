@@ -57,7 +57,7 @@ export class CoreCommentsAddPage {
 
         this.appProvider.closeKeyboard();
         const loadingModal = this.domUtils.showModalLoading('core.sending', true);
-        // Freeze the add note button.
+        // Freeze the add comment button.
         this.processing = true;
         this.commentsProvider.addComment(this.content, this.contextLevel, this.instanceId, this.componentName, this.itemId,
                 this.area).then((commentsResponse) => {

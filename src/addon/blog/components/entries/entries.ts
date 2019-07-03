@@ -169,11 +169,13 @@ export class AddonBlogEntriesComponent implements OnInit {
      * @param {any}     refresher  Refresher instance.
      */
     refresh(refresher?: any): void {
-        this.entries.forEach((entry) => {
-            this.commentsProvider.invalidateCommentsData('user', entry.userid, this.component, entry.id, 'format_blog');
+        const promises = this.entries.map((entry) => {
+            return this.commentsProvider.invalidateCommentsData('user', entry.userid, this.component, entry.id, 'format_blog');
         });
 
-        this.blogProvider.invalidateEntries(this.filter).finally(() => {
+        promises.push(this.blogProvider.invalidateEntries(this.filter));
+
+        Promise.all(promises).finally(() => {
             this.fetchEntries(true).finally(() => {
                 if (refresher) {
                     refresher.complete();

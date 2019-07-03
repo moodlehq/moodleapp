@@ -48,7 +48,7 @@ export class CoreCommentsProvider {
             siteId?: string): Promise<boolean> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        // Convenience function to store a note to be synchronized later.
+        // Convenience function to store a comment to be synchronized later.
         const storeOffline = (): Promise<any> => {
             return this.commentsOffline.saveComment(content, contextLevel, instanceId, component, itemId, area, siteId).then(() => {
                 return Promise.resolve(false);
@@ -56,11 +56,11 @@ export class CoreCommentsProvider {
         };
 
         if (!this.appProvider.isOnline()) {
-            // App is offline, store the note.
+            // App is offline, store the comment.
             return storeOffline();
         }
 
-        // Send note to server.
+        // Send comment to server.
         return this.addCommentOnline(content, contextLevel, instanceId, component, itemId, area, siteId).then((comments) => {
             return comments;
         }).catch((error) => {
@@ -69,7 +69,7 @@ export class CoreCommentsProvider {
                 return Promise.reject(error);
             }
 
-            // Error sending note, store it to retry later.
+            // Error sending comment, store it to retry later.
             return storeOffline();
         });
     }
@@ -115,7 +115,7 @@ export class CoreCommentsProvider {
      * @param  {any[]}  comments Comments to save.
      * @param  {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}    Promise resolved when added, rejected otherwise. Promise resolved doesn't mean that comments
-     *                           have been added, the resolve param can contain errors for notes not sent.
+     *                           have been added, the resolve param can contain errors for comments not sent.
      */
     addCommentsOnline(comments: any[], siteId?: string): Promise<any> {
         if (!comments || !comments.length) {
@@ -152,6 +152,79 @@ export class CoreCommentsProvider {
     areCommentsDisabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return this.areCommentsDisabledInSite(site);
+        });
+    }
+
+    /**
+     * Delete a comment.
+     *
+     * @param  {any} comment         Comment object to delete.
+     * @param  {string} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise<void>}       Promise resolved when deleted, rejected otherwise. Promise resolved doesn't mean that comments
+     *                               have been deleted, the resolve param can contain errors for comments not deleted.
+     */
+    deleteComment(comment: any, siteId?: string): Promise<void> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        if (!comment.id) {
+            return this.commentsOffline.removeComment(comment.contextlevel, comment.instanceid, comment.component, comment.itemid,
+                    comment.area, siteId);
+        }
+
+        // Convenience function to store the action to be synchronized later.
+        const storeOffline = (): Promise<any> => {
+            return this.commentsOffline.deleteComment(comment.id, comment.contextlevel, comment.instanceid, comment.component,
+                    comment.itemid, comment.area, siteId).then(() => {
+                return false;
+            });
+        };
+
+        if (!this.appProvider.isOnline()) {
+            // App is offline, store the comment.
+            return storeOffline();
+        }
+
+        // Send comment to server.
+        return this.deleteCommentsOnline([comment.id], comment.contextlevel, comment.instanceid, comment.component, comment.itemid,
+                comment.area, siteId).then(() => {
+            return true;
+        }).catch((error) => {
+            if (this.utils.isWebServiceError(error)) {
+                // It's a WebService error, the user cannot send the comment so don't store it.
+                return Promise.reject(error);
+            }
+
+            // Error sending comment, store it to retry later.
+            return storeOffline();
+        });
+    }
+
+    /**
+     * Delete a comment. It will fail if offline or cannot connect.
+     *
+     * @param  {number[]} commentIds Comment IDs to delete.
+     * @param  {string} contextLevel Contextlevel system, course, user...
+     * @param  {number} instanceId   The Instance id of item associated with the context level.
+     * @param  {string} component    Component name.
+     * @param  {number} itemId       Associated id.
+     * @param  {string} [area='']    String comment area. Default empty.
+     * @param  {string} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise<void>}       Promise resolved when deleted, rejected otherwise. Promise resolved doesn't mean that comments
+     *                               have been deleted, the resolve param can contain errors for comments not deleted.
+     */
+    deleteCommentsOnline(commentIds: number[], contextLevel: string, instanceId: number, component: string, itemId: number,
+            area: string = '', siteId?: string): Promise<void> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const data = {
+                comments: commentIds
+            };
+
+            return site.write('core_comment_delete_comments', data).then((response) => {
+                // A comment was deleted, invalidate comments.
+                return this.invalidateCommentsData(contextLevel, instanceId, component, itemId, area, siteId).catch(() => {
+                    // Ignore errors.
+                });
+            });
         });
     }
 
@@ -239,7 +312,7 @@ export class CoreCommentsProvider {
     }
 
     /**
-     * Get comments count number to show ont he comments component.
+     * Get comments count number to show on the comments component.
      *
      * @param  {string} contextLevel Contextlevel system, course, user...
      * @param  {number} instanceId   The Instance id of item associated with the context level.
@@ -284,7 +357,6 @@ export class CoreCommentsProvider {
             return getCommentsPageCount(1).then((countMore) => {
                 // Page limit was reached on the previous call.
                 if (countMore > 0) {
-                    CoreCommentsProvider.pageSizeOK = true;
 
                     return (CoreCommentsProvider.pageSize - 1) + '+';
                 }
@@ -308,11 +380,14 @@ export class CoreCommentsProvider {
     invalidateCommentsData(contextLevel: string, instanceId: number, component: string, itemId: number,
             area: string = '', siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            // This is done with starting with to avoid conflicts with previous keys that were including page.
-            site.invalidateWsCacheForKeyStartingWith(this.getCommentsCacheKey(contextLevel, instanceId, component, itemId,
-                area) + ':');
 
-            return site.invalidateWsCacheForKey(this.getCommentsCacheKey(contextLevel, instanceId, component, itemId, area));
+            return this.utils.allPromises([
+                // This is done with starting with to avoid conflicts with previous keys that were including page.
+                site.invalidateWsCacheForKeyStartingWith(this.getCommentsCacheKey(contextLevel, instanceId, component, itemId,
+                    area) + ':'),
+
+                site.invalidateWsCacheForKey(this.getCommentsCacheKey(contextLevel, instanceId, component, itemId, area))
+            ]);
         });
     }
 

@@ -19,7 +19,6 @@ import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreAppProvider } from '@providers/app';
 import { CoreCommentsOfflineProvider } from './offline';
 import { CoreCommentsProvider } from './comments';
-import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
@@ -39,7 +38,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider {
             syncProvider: CoreSyncProvider, textUtils: CoreTextUtilsProvider, translate: TranslateService,
             private commentsOffline: CoreCommentsOfflineProvider, private utils: CoreUtilsProvider,
             private eventsProvider: CoreEventsProvider,  private commentsProvider: CoreCommentsProvider,
-            private coursesProvider: CoreCoursesProvider, timeUtils: CoreTimeUtilsProvider) {
+            timeUtils: CoreTimeUtilsProvider) {
 
         super('CoreCommentsSync', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate, timeUtils);
     }
@@ -64,10 +63,19 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider {
      */
     private syncAllCommentsFunc(siteId: string, force: boolean): Promise<any> {
         return this.commentsOffline.getAllComments(siteId).then((comments) => {
+
+            // Get Unique array.
+            comments.forEach((comment) => {
+                comment.syncId = this.getSyncId(comment.contextlevel, comment.instanceid, comment.component, comment.itemid,
+                    comment.area);
+            });
+
+            comments = this.utils.uniqueArray(comments, 'syncId');
+
             // Sync all courses.
             const promises = comments.map((comment) => {
-                const promise = force ? this.syncComment(comment.contextlevel, comment.instanceid, comment.component,
-                    comment.itemid, comment.area, siteId) : this.syncCommentIfNeeded(comment.contextlevel, comment.instanceid,
+                const promise = force ? this.syncComments(comment.contextlevel, comment.instanceid, comment.component,
+                    comment.itemid, comment.area, siteId) : this.syncCommentsIfNeeded(comment.contextlevel, comment.instanceid,
                     comment.component, comment.itemid, comment.area, siteId);
 
                 return promise.then((warnings) => {
@@ -90,7 +98,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider {
     }
 
     /**
-     * Sync course notes only if a certain time has passed since the last time.
+     * Sync course comments only if a certain time has passed since the last time.
      *
      * @param  {string} contextLevel Contextlevel system, course, user...
      * @param  {number} instanceId   The Instance id of item associated with the context level.
@@ -98,21 +106,21 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider {
      * @param  {number} itemId       Associated id.
      * @param  {string} [area='']    String comment area. Default empty.
      * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved when the notes are synced or if they don't need to be synced.
+     * @return {Promise<any>}    Promise resolved when the comments are synced or if they don't need to be synced.
      */
-    private syncCommentIfNeeded(contextLevel: string, instanceId: number, component: string, itemId: number, area: string = '',
+    private syncCommentsIfNeeded(contextLevel: string, instanceId: number, component: string, itemId: number, area: string = '',
             siteId?: string): Promise<void> {
         const syncId = this.getSyncId(contextLevel, instanceId, component, itemId, area);
 
         return this.isSyncNeeded(syncId, siteId).then((needed) => {
             if (needed) {
-                return this.syncComment(contextLevel, instanceId, component, itemId, area, siteId);
+                return this.syncComments(contextLevel, instanceId, component, itemId, area, siteId);
             }
         });
     }
 
     /**
-     * Synchronize notes of a course.
+     * Synchronize comments in a particular area.
      *
      * @param  {string} contextLevel Contextlevel system, course, user...
      * @param  {number} instanceId   The Instance id of item associated with the context level.
@@ -122,14 +130,14 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider {
      * @param  {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}    Promise resolved if sync is successful, rejected otherwise.
      */
-    syncComment(contextLevel: string, instanceId: number, component: string, itemId: number, area: string = '',
+    syncComments(contextLevel: string, instanceId: number, component: string, itemId: number, area: string = '',
             siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const syncId = this.getSyncId(contextLevel, instanceId, component, itemId, area);
 
         if (this.isSyncing(syncId, siteId)) {
-            // There's already a sync ongoing for notes, return the promise.
+            // There's already a sync ongoing for comments, return the promise.
             return this.getOngoingSync(syncId, siteId);
         }
 
@@ -138,9 +146,9 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider {
         const warnings = [];
 
         // Get offline comments to be sent.
-        const syncPromise = this.commentsOffline.getComment(contextLevel, instanceId, component, itemId, area, siteId)
-                .then((comment) => {
-            if (!comment) {
+        const syncPromise = this.commentsOffline.getComments(contextLevel, instanceId, component, itemId, area, siteId)
+                .then((comments) => {
+            if (!comments.length) {
                 // Nothing to sync.
                 return;
             } else if (!this.appProvider.isOnline()) {
@@ -148,19 +156,31 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider {
                 return Promise.reject(this.translate.instant('core.networkerrormsg'));
             }
 
-            const errors = [];
-            let commentsResponse = [];
-            let promise;
+            const errors = [],
+                promises = [],
+                deleteCommentIds = [];
 
-            if (comment.action == 'add') {
-                promise = this.commentsProvider.addCommentOnline(comment.content, contextLevel, instanceId, component, itemId, area,
-                    siteId);
+            comments.forEach((comment) => {
+                if (comment.commentid) {
+                    deleteCommentIds.push(comment.commentid);
+                } else {
+                    promises.push(this.commentsProvider.addCommentOnline(comment.content, contextLevel, instanceId, component,
+                        itemId, area, siteId).then((response) => {
+                            return this.commentsOffline.removeComment(contextLevel, instanceId, component, itemId, area, siteId);
+                    }));
+                }
+            });
+
+            if (deleteCommentIds.length > 0) {
+                promises.push(this.commentsProvider.deleteCommentsOnline(deleteCommentIds, contextLevel, instanceId, component,
+                    itemId, area, siteId).then((response) => {
+                        return this.commentsOffline.removeDeletedComments(contextLevel, instanceId, component, itemId, area,
+                            siteId);
+                    }));
             }
 
             // Send the comments.
-            return promise.then((response) => {
-                commentsResponse = response;
-
+            return Promise.all(promises).then(() => {
                 // Fetch the comments from server to be sure they're up to date.
                 return this.commentsProvider.invalidateCommentsData(contextLevel, instanceId, component, itemId, area, siteId)
                         .then(() => {
@@ -171,27 +191,15 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider {
             }).catch((error) => {
                 if (this.utils.isWebServiceError(error)) {
                     // It's a WebService error, this means the user cannot send comments.
-                    errors.push(error);
+                    errors.push(error.message);
                 } else {
                     // Not a WebService error, reject the synchronization to try again.
                     return Promise.reject(error);
                 }
             }).then(() => {
-                // Notes were sent, delete them from local DB.
-                const promises = commentsResponse.map((comment) => {
-                    return this.commentsOffline.removeComment(contextLevel, instanceId, component, itemId, area, siteId);
-                });
-
-                return Promise.all(promises);
-            }).then(() => {
                 if (errors && errors.length) {
                     errors.forEach((error) => {
-                        warnings.push(this.translate.instant('addon.notes.warningnotenotsent', {
-                            contextLevel: contextLevel,
-                            instanceId: instanceId,
-                            componentName: component,
-                            itemId: itemId,
-                            area: area,
+                        warnings.push(this.translate.instant('core.comments.warningcommentsnotsent', {
                             error: error
                         }));
                     });
