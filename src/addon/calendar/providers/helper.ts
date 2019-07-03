@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { AddonCalendarProvider } from './calendar';
 import { CoreConstants } from '@core/constants';
@@ -33,9 +34,33 @@ export class AddonCalendarHelperProvider {
         category: 'fa-cubes'
     };
 
-    constructor(logger: CoreLoggerProvider, private courseProvider: CoreCourseProvider,
+    constructor(logger: CoreLoggerProvider,
+            private courseProvider: CoreCourseProvider,
+            private sitesProvider: CoreSitesProvider,
             private calendarProvider: AddonCalendarProvider) {
         this.logger = logger.getInstance('AddonCalendarHelperProvider');
+    }
+
+    /**
+     * Calculate some day data based on a list of events for that day.
+     *
+     * @param {any} day Day.
+     * @param {any[]} events Events.
+     */
+    calculateDayData(day: any, events: any[]): void {
+        day.hasevents = events.length > 0;
+        day.haslastdayofevent = false;
+
+        const types = {};
+        events.forEach((event) => {
+            types[event.eventtype] = true;
+
+            if (event.islastday) {
+                day.haslastdayofevent = true;
+            }
+        });
+
+        day.calendareventtypes = Object.keys(types);
     }
 
     /**
@@ -154,5 +179,52 @@ export class AddonCalendarHelperProvider {
         }
 
         return false;
+    }
+
+    /**
+     * Check if an event should be displayed based on the filter.
+     *
+     * @param {any} event Event object.
+     * @param {number} courseId Course ID to filter.
+     * @param {number} categoryId Category ID the course belongs to.
+     * @param {any} categories Categories indexed by ID.
+     * @return {boolean} Whether it should be displayed.
+     */
+    shouldDisplayEvent(event: any, courseId: number, categoryId: number, categories: any): boolean {
+        if (event.eventtype == 'user' || event.eventtype == 'site') {
+            // User or site event, display it.
+            return true;
+        }
+
+        if (event.eventtype == 'category') {
+            if (!event.categoryid || !Object.keys(categories).length) {
+                // We can't tell if the course belongs to the category, display them all.
+                return true;
+            }
+
+            if (event.categoryid == categoryId) {
+                // The event is in the same category as the course, display it.
+                return true;
+            }
+
+            // Check parent categories.
+            let category = categories[categoryId];
+            while (category) {
+                if (!category.parent) {
+                    // Category doesn't have parent, stop.
+                    break;
+                }
+
+                if (event.categoryid == category.parent) {
+                    return true;
+                }
+                category = categories[category.parent];
+            }
+
+            return false;
+        }
+
+        // Show the event if it is from site home or if it matches the selected course.
+        return event.courseid === this.sitesProvider.getSiteHomeId() || event.courseid == courseId;
     }
 }

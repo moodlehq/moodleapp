@@ -13,25 +13,28 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
-import { CorePipesModule } from '@pipes/pipes.module';
-import { AddonCalendarComponentsModule } from '../../components/components.module';
-import { AddonCalendarIndexPage } from './index';
+import { AddonCalendarCalendarComponent } from '../components/calendar/calendar';
 
 @NgModule({
     declarations: [
-        AddonCalendarIndexPage,
+        AddonCalendarCalendarComponent
     ],
     imports: [
+        CommonModule,
+        IonicModule,
+        TranslateModule.forChild(),
         CoreComponentsModule,
-        CoreDirectivesModule,
-        CorePipesModule,
-        AddonCalendarComponentsModule,
-        IonicPageModule.forChild(AddonCalendarIndexPage),
-        TranslateModule.forChild()
+        CoreDirectivesModule
     ],
+    providers: [
+    ],
+    exports: [
+        AddonCalendarCalendarComponent
+    ]
 })
-export class AddonCalendarIndexPageModule {}
+export class AddonCalendarComponentsModule {}

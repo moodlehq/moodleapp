@@ -51,6 +51,37 @@ export class AddonCalendarProvider {
     static TYPE_USER = 'user';
     protected ROOT_CACHE_KEY = 'mmaCalendar:';
 
+    protected weekDays = [
+        {
+            shortname: 'addon.calendar.sun',
+            fullname: 'addon.calendar.sunday'
+        },
+        {
+            shortname: 'addon.calendar.mon',
+            fullname: 'addon.calendar.monday'
+        },
+        {
+            shortname: 'addon.calendar.tue',
+            fullname: 'addon.calendar.tuesday'
+        },
+        {
+            shortname: 'addon.calendar.wed',
+            fullname: 'addon.calendar.wednesday'
+        },
+        {
+            shortname: 'addon.calendar.thu',
+            fullname: 'addon.calendar.thursday'
+        },
+        {
+            shortname: 'addon.calendar.fri',
+            fullname: 'addon.calendar.friday'
+        },
+        {
+            shortname: 'addon.calendar.sat',
+            fullname: 'addon.calendar.saturday'
+        }
+    ];
+
     // Variables for database.
     static EVENTS_TABLE = 'addon_calendar_events_2';
     static REMINDERS_TABLE = 'addon_calendar_reminders';
@@ -873,6 +904,18 @@ export class AddonCalendarProvider {
      */
     protected getUpcomingEventsCacheKey(courseId?: number, categoryId?: number): string {
         return this.getUpcomingEventsPrefixCacheKey() + (courseId ? courseId : '') + ':' + (categoryId ? categoryId : '');
+    }
+
+    /**
+     * Get the week days, already ordered according to a specified starting day.
+     *
+     * @param {number} [startingDay=0] Starting day. 0=Sunday, 1=Monday, ...
+     * @return {any[]} Week days.
+     */
+    getWeekDays(startingDay?: number): any[] {
+        startingDay = startingDay || 0;
+
+        return this.weekDays.slice(startingDay).concat(this.weekDays.slice(0, startingDay));
     }
 
     /**

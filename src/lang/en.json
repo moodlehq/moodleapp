@@ -184,6 +184,7 @@
     "notingroup": "Sorry, but you need to be part of a group to see this page.",
     "notsent": "Not sent",
     "now": "now",
+    "nummore": "{{$a}} more",
     "numwords": "{{$a}} words",
     "offline": "Offline",
     "ok": "OK",

@@ -15,9 +15,8 @@
     <ion-refresher [enabled]="loaded" (ionRefresh)="doRefresh($event)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="loaded">
 
-    </core-loading>
+    <addon-calendar-calendar [courseId]="courseId" [categoryId]="categoryId"></addon-calendar-calendar>
 
     <!-- Create a calendar event. -->
     <ion-fab core-fab bottom end *ngIf="canCreate">

@@ -423,50 +423,10 @@ export class AddonCalendarListPage implements OnDestroy {
             return this.events;
         }
 
-        return this.events.filter(this.shouldDisplayEvent.bind(this));
-    }
-
-    /**
-     * Check if an event should be displayed based on the filter.
-     *
-     * @param {any} event Event object.
-     * @return {boolean} Whether it should be displayed.
-     */
-    protected shouldDisplayEvent(event: any): boolean {
-        if (event.eventtype == 'user' || event.eventtype == 'site') {
-            // User or site event, display it.
-            return true;
-        }
-
-        if (event.eventtype == 'category') {
-            if (!event.categoryid || !Object.keys(this.categories).length) {
-                // We can't tell if the course belongs to the category, display them all.
-                return true;
-            }
-            if (event.categoryid == this.filter.course.category) {
-                // The event is in the same category as the course, display it.
-                return true;
-            }
-
-            // Check parent categories.
-            let category = this.categories[this.filter.course.category];
-            while (category) {
-                if (!category.parent) {
-                    // Category doesn't have parent, stop.
-                    break;
-                }
-
-                if (event.categoryid == category.parent) {
-                    return true;
-                }
-                category = this.categories[category.parent];
-            }
-
-            return false;
-        }
-
-        // Show the event if it is from site home or if it matches the selected course.
-        return event.courseid === this.siteHomeId || event.courseid == this.filter.course.id;
+        return this.events.filter((event) => {
+            return this.calendarHelper.shouldDisplayEvent(event, this.filter.course.id, this.filter.course.category,
+                    this.categories);
+        });
     }
 
     /**
