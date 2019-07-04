@@ -2,6 +2,12 @@
     <ion-navbar core-back-button>
         <ion-title>{{ 'addon.calendar.calendarevents' | translate }}</ion-title>
         <ion-buttons end>
+            <button *ngIf="showCalendar" ion-button icon-only (click)="toggleDisplay()" [attr.aria-label]="'addon.calendar.upcomingevents' | translate">
+                <ion-icon name="list"></ion-icon>
+            </button>
+            <button *ngIf="!showCalendar" ion-button icon-only (click)="toggleDisplay()" [attr.aria-label]="'addon.calendar.monthlyview' | translate">
+                <ion-icon name="calendar"></ion-icon>
+            </button>
             <button *ngIf="courses && courses.length" ion-button icon-only (click)="openCourseFilter($event)" [attr.aria-label]="'core.courses.filter' | translate">
                 <ion-icon name="funnel"></ion-icon>
             </button>
@@ -22,7 +28,9 @@
         <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendar' | translate} }}
     </ion-card>
 
-    <addon-calendar-calendar [courseId]="courseId" [categoryId]="categoryId" (onEventClicked)="gotoEvent($event)"></addon-calendar-calendar>
+    <addon-calendar-calendar [hidden]="!showCalendar" [courseId]="courseId" [categoryId]="categoryId" (onEventClicked)="gotoEvent($event)"></addon-calendar-calendar>
+
+    <addon-calendar-upcoming-events *ngIf="loadUpcoming" [hidden]="showCalendar" [courseId]="courseId" [categoryId]="categoryId" (onEventClicked)="gotoEvent($event)"></addon-calendar-upcoming-events>
 
     <!-- Create a calendar event. -->
     <ion-fab core-fab bottom end *ngIf="canCreate">

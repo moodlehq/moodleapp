@@ -1,4 +1,5 @@
 {
+    "allday": "All day",
     "calendar": "Calendar",
     "calendarevent": "Calendar event",
     "calendarevents": "Calendar events",
@@ -29,6 +30,7 @@
     "invalidtimedurationuntil": "The date and time you selected for duration until is before the start time of the event. Please correct this before proceeding.",
     "mon": "Mon",
     "monday": "Monday",
+    "monthlyview": "Monthly view",
     "newevent": "New event",
     "noevents": "There are no events",
     "nopermissiontoupdatecalendar": "Sorry, but you do not have permission to update the calendar event",
@@ -45,6 +47,8 @@
     "sunday": "Sunday",
     "thu": "Thu",
     "thursday": "Thursday",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
     "tue": "Tue",
     "tuesday": "Tuesday",
     "typeclose": "Close event",
@@ -56,6 +60,8 @@
     "typeopen": "Open event",
     "typesite": "Site event",
     "typeuser": "User event",
+    "upcomingevents": "Upcoming events",
     "wed": "Wed",
-    "wednesday": "Wednesday"
+    "wednesday": "Wednesday",
+    "yesterday": "Yesterday"
 }

@@ -23,6 +23,7 @@ import { AddonCalendarProvider } from '../../providers/calendar';
 import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
 import { AddonCalendarHelperProvider } from '../../providers/helper';
 import { AddonCalendarCalendarComponent } from '../../components/calendar/calendar';
+import { AddonCalendarUpcomingEventsComponent } from '../../components/upcoming-events/upcoming-events';
 import { AddonCalendarSyncProvider } from '../../providers/calendar-sync';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCoursePickerMenuPopoverComponent } from '@components/course-picker-menu/course-picker-menu-popover';
@@ -39,6 +40,7 @@ import { Network } from '@ionic-native/network';
 })
 export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     @ViewChild(AddonCalendarCalendarComponent) calendarComponent: AddonCalendarCalendarComponent;
+    @ViewChild(AddonCalendarUpcomingEventsComponent) upcomingEventsComponent: AddonCalendarUpcomingEventsComponent;
 
     protected allCourses = {
         id: -1,
@@ -67,6 +69,8 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     hasOffline = false;
     isOnline = false;
     syncIcon: string;
+    showCalendar = true;
+    loadUpcoming = false;
 
     constructor(localNotificationsProvider: CoreLocalNotificationsProvider,
             navParams: NavParams,
@@ -274,7 +278,11 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
         }));
 
         // Refresh the sub-component.
-        promises.push(this.calendarComponent.refreshData());
+        if (this.showCalendar && this.calendarComponent) {
+            promises.push(this.calendarComponent.refreshData());
+        } else if (!this.showCalendar && this.upcomingEventsComponent) {
+            promises.push(this.upcomingEventsComponent.refreshData());
+        }
 
         return Promise.all(promises).finally(() => {
             return this.fetchData(sync, showErrors);
@@ -347,6 +355,17 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
      */
     openSettings(): void {
         this.navCtrl.push('AddonCalendarSettingsPage');
+    }
+
+    /**
+     * Toogle display: monthly view or upcoming events.
+     */
+    toggleDisplay(): void {
+        this.showCalendar = !this.showCalendar;
+
+        if (!this.showCalendar) {
+            this.loadUpcoming = true;
+        }
     }
 
     /**

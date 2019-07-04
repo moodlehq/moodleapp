@@ -18,23 +18,28 @@ import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
+import { CorePipesModule } from '@pipes/pipes.module';
 import { AddonCalendarCalendarComponent } from '../components/calendar/calendar';
+import { AddonCalendarUpcomingEventsComponent } from '../components/upcoming-events/upcoming-events';
 
 @NgModule({
     declarations: [
-        AddonCalendarCalendarComponent
+        AddonCalendarCalendarComponent,
+        AddonCalendarUpcomingEventsComponent
     ],
     imports: [
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
         CoreComponentsModule,
-        CoreDirectivesModule
+        CoreDirectivesModule,
+        CorePipesModule
     ],
     providers: [
     ],
     exports: [
-        AddonCalendarCalendarComponent
+        AddonCalendarCalendarComponent,
+        AddonCalendarUpcomingEventsComponent
     ]
 })
 export class AddonCalendarComponentsModule {}
