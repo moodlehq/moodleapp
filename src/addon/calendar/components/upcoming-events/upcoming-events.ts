@@ -34,7 +34,6 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     @Input() categoryId: number | string; // Category ID the course belongs to.
     @Output() onEventClicked = new EventEmitter<number>();
 
-    events = []; // Events (both online and offline).
     filteredEvents = [];
     loaded = false;
 
@@ -43,6 +42,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     protected categoriesRetrieved = false;
     protected categories = {};
     protected currentSiteId: string;
+    protected events = []; // Events (both online and offline).
     protected onlineEvents = [];
     protected offlineEvents = []; // Offline events.
     protected deletedEvents = []; // Events deleted in offline.

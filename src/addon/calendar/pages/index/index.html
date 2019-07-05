@@ -28,7 +28,7 @@
         <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendar' | translate} }}
     </ion-card>
 
-    <addon-calendar-calendar [hidden]="!showCalendar" [courseId]="courseId" [categoryId]="categoryId" (onEventClicked)="gotoEvent($event)"></addon-calendar-calendar>
+    <addon-calendar-calendar [hidden]="!showCalendar" [courseId]="courseId" [categoryId]="categoryId" (onEventClicked)="gotoEvent($event)" (onDayClicked)="gotoDay($event)"></addon-calendar-calendar>
 
     <addon-calendar-upcoming-events *ngIf="loadUpcoming" [hidden]="showCalendar" [courseId]="courseId" [categoryId]="categoryId" (onEventClicked)="gotoEvent($event)"></addon-calendar-upcoming-events>
 

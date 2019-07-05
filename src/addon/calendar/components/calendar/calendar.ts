@@ -37,6 +37,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     @Input() categoryId: number | string; // Category ID the course belongs to.
     @Input() canNavigate?: string | boolean; // Whether to include arrows to change the month. Defaults to true.
     @Output() onEventClicked = new EventEmitter<number>();
+    @Output() onDayClicked = new EventEmitter<{day: number, month: number, year: number}>();
 
     periodName: string;
     weekDays: any[];
@@ -286,6 +287,15 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
      */
     eventClicked(event: any): void {
         this.onEventClicked.emit(event.id);
+    }
+
+    /**
+     * A day was clicked.
+     *
+     * @param {number} day Day.
+     */
+    dayClicked(day: number): void {
+        this.onDayClicked.emit({day: day, month: this.month, year: this.year});
     }
 
     /**

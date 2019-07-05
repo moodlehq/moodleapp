@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, ViewChild, NgZone } from '@angular/core';
-import { IonicPage, NavParams, NavController, PopoverController } from 'ionic-angular';
+import { IonicPage, NavParams, NavController } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
@@ -25,9 +25,7 @@ import { AddonCalendarHelperProvider } from '../../providers/helper';
 import { AddonCalendarCalendarComponent } from '../../components/calendar/calendar';
 import { AddonCalendarUpcomingEventsComponent } from '../../components/upcoming-events/upcoming-events';
 import { AddonCalendarSyncProvider } from '../../providers/calendar-sync';
-import { CoreCoursesProvider } from '@core/courses/providers/courses';
-import { CoreCoursePickerMenuPopoverComponent } from '@components/course-picker-menu/course-picker-menu-popover';
-import { TranslateService } from '@ngx-translate/core';
+import { CoreCoursesHelperProvider } from '@core/courses/providers/helper';
 import { Network } from '@ionic-native/network';
 
 /**
@@ -42,11 +40,6 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     @ViewChild(AddonCalendarCalendarComponent) calendarComponent: AddonCalendarCalendarComponent;
     @ViewChild(AddonCalendarUpcomingEventsComponent) upcomingEventsComponent: AddonCalendarUpcomingEventsComponent;
 
-    protected allCourses = {
-        id: -1,
-        fullname: this.translate.instant('core.fulllistofcourses'),
-        category: -1
-    };
     protected eventId: number;
     protected currentSiteId: string;
 
@@ -83,10 +76,8 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             private calendarOffline: AddonCalendarOfflineProvider,
             private calendarHelper: AddonCalendarHelperProvider,
             private calendarSync: AddonCalendarSyncProvider,
-            private translate: TranslateService,
             private eventsProvider: CoreEventsProvider,
-            private coursesProvider: CoreCoursesProvider,
-            private popoverCtrl: PopoverController,
+            private coursesHelper: CoreCoursesHelperProvider,
             private appProvider: CoreAppProvider) {
 
         this.courseId = navParams.get('courseId');
@@ -206,21 +197,9 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             this.hasOffline = false;
 
             // Load courses for the popover.
-            promises.push(this.coursesProvider.getUserCourses(false).then((courses) => {
-                // Add "All courses".
-                courses.unshift(this.allCourses);
-                this.courses = courses;
-
-                if (this.courseId) {
-                    // Search the course to get the category.
-                    const course = this.courses.find((course) => {
-                        return course.id == this.courseId;
-                    });
-
-                    if (course) {
-                        this.categoryId = course.category;
-                    }
-                }
+            promises.push(this.coursesHelper.getCoursesForPopover(this.courseId).then((data) => {
+                this.courses = data.courses;
+                this.categoryId = data.categoryId;
             }));
 
             // Check if user can create events.
@@ -273,9 +252,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
         const promises = [];
 
-        promises.push(this.calendarProvider.invalidateAllowedEventTypes().then(() => {
-            return this.fetchData();
-        }));
+        promises.push(this.calendarProvider.invalidateAllowedEventTypes());
 
         // Refresh the sub-component.
         if (this.showCalendar && this.calendarComponent) {
@@ -306,29 +283,40 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     }
 
     /**
+     * View a certain day.
+     *
+     * @param {any} data Data with the year, month and day.
+     */
+    gotoDay(data: any): void {
+        const params: any = {
+            day: data.day,
+            month: data.month,
+            year: data.year
+        };
+
+        if (this.courseId) {
+            params.courseId = this.courseId;
+        }
+
+        this.navCtrl.push('AddonCalendarDayPage', params);
+    }
+
+    /**
      * Show the context menu.
      *
      * @param {MouseEvent} event Event.
      */
     openCourseFilter(event: MouseEvent): void {
-        const popover = this.popoverCtrl.create(CoreCoursePickerMenuPopoverComponent, {
-            courses: this.courses,
-            courseId: this.courseId
-        });
-
-        popover.onDidDismiss((course) => {
-            if (course) {
-                this.courseId = course.id > 0 ? course.id : undefined;
-                this.categoryId = course.id > 0 ? course.category : undefined;
+        this.coursesHelper.selectCourse(event, this.courses, this.courseId).then((result) => {
+            if (typeof result.courseId != 'undefined') {
+                this.courseId = result.courseId > 0 ? result.courseId : undefined;
+                this.categoryId = result.courseId > 0 ? result.categoryId : undefined;
 
                 // Course viewed has changed, check if the user can create events for this course calendar.
                 this.calendarHelper.canEditEvents(this.courseId).then((canEdit) => {
                     this.canCreate = canEdit;
                 });
             }
-        });
-        popover.present({
-            ev: event
         });
     }
 

@@ -13,9 +13,12 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { PopoverController } from 'ionic-angular';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCoursesProvider } from './courses';
 import { AddonCourseCompletionProvider } from '@addon/coursecompletion/providers/coursecompletion';
+import { TranslateService } from '@ngx-translate/core';
+import { CoreCoursePickerMenuPopoverComponent } from '@components/course-picker-menu/course-picker-menu-popover';
 
 /**
  * Helper to gather some common courses functions.
@@ -23,8 +26,46 @@ import { AddonCourseCompletionProvider } from '@addon/coursecompletion/providers
 @Injectable()
 export class CoreCoursesHelperProvider {
 
-    constructor(private coursesProvider: CoreCoursesProvider, private utils: CoreUtilsProvider,
-        private courseCompletionProvider: AddonCourseCompletionProvider) { }
+    constructor(private coursesProvider: CoreCoursesProvider,
+            private utils: CoreUtilsProvider,
+            private courseCompletionProvider: AddonCourseCompletionProvider,
+            private translate: TranslateService,
+            private popoverCtrl: PopoverController) { }
+
+    /**
+     * Get the courses to display the course picker popover. If a courseId is specified, it will also return its categoryId.
+     *
+     * @param {number} [courseId] Course ID to get the category.
+     * @return {Promise<{courses: any[], categoryId: number}>} Promise resolved with the list of courses and the category.
+     */
+    getCoursesForPopover(courseId?: number): Promise<{courses: any[], categoryId: number}> {
+        return this.coursesProvider.getUserCourses(false).then((courses) => {
+            // Add "All courses".
+            courses.unshift({
+                id: -1,
+                fullname: this.translate.instant('core.fulllistofcourses'),
+                category: -1
+            });
+
+            let categoryId;
+
+            if (courseId) {
+                // Search the course to get the category.
+                const course = courses.find((course) => {
+                    return course.id == courseId;
+                });
+
+                if (course) {
+                    categoryId = course.category;
+                }
+            }
+
+            return {
+                courses: courses,
+                categoryId: categoryId
+            };
+        });
+    }
 
     /**
      * Given a course object returned by core_enrol_get_users_courses and another one returned by core_course_get_courses_by_field,
@@ -171,6 +212,35 @@ export class CoreCoursesHelperProvider {
                         return course;
                     });
                 }));
+            });
+        });
+    }
+
+    /**
+     * Show a context menu to select a course, and return the courseId and categoryId of the selected course (-1 for all courses).
+     * Returns an empty object if popover closed without picking a course.
+     *
+     * @param {MouseEvent} event Click event.
+     * @param {any[]} courses List of courses, from CoreCoursesHelperProvider.getCoursesForPopover.
+     * @param {number} courseId The course to select at start.
+     * @return {Promise<{courseId?: number, categoryId?: number}>} Promise resolved with the course ID and category ID.
+     */
+    selectCourse(event: MouseEvent, courses: any[], courseId: number): Promise<{courseId?: number, categoryId?: number}> {
+        return new Promise((resolve, reject): any => {
+            const popover = this.popoverCtrl.create(CoreCoursePickerMenuPopoverComponent, {
+                courses: courses,
+                courseId: courseId
+            });
+
+            popover.onDidDismiss((course) => {
+                if (course) {
+                    resolve({courseId: course.id, categoryId: course.category});
+                } else {
+                    resolve({});
+                }
+            });
+            popover.present({
+                ev: event
             });
         });
     }

@@ -859,6 +859,79 @@ export class AddonCalendarProvider {
     }
 
     /**
+     * Get calendar events for a certain day.
+     *
+     * @param {number} year Year to get.
+     * @param {number} month Month to get.
+     * @param {number} day Day to get.
+     * @param {number} [courseId] Course to get.
+     * @param {number} [categoryId] Category to get.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with the response.
+     */
+    getDayEvents(year: number, month: number, day: number, courseId?: number, categoryId?: number, siteId?: string): Promise<any> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+
+            const data: any = {
+                year: year,
+                month: month,
+                day: day
+            };
+
+            if (courseId) {
+                data.courseid = courseId;
+            }
+            if (categoryId) {
+                data.categoryid = categoryId;
+            }
+
+            const preSets = {
+                cacheKey: this.getDayEventsCacheKey(year, month, day, courseId, categoryId),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
+            };
+
+            return site.read('core_calendar_get_calendar_day_view', data, preSets);
+        });
+    }
+
+    /**
+     * Get prefix cache key for day events WS calls.
+     *
+     * @return {string} Prefix Cache key.
+     */
+    protected getDayEventsPrefixCacheKey(): string {
+        return this.ROOT_CACHE_KEY + 'day:';
+    }
+
+    /**
+     * Get prefix cache key for a certain day for day events WS calls.
+     *
+     * @param {number} year Year to get.
+     * @param {number} month Month to get.
+     * @param {number} day Day to get.
+     * @return {string} Prefix Cache key.
+     */
+    protected getDayEventsDayPrefixCacheKey(year: number, month: number, day: number): string {
+        return this.getDayEventsPrefixCacheKey() + year + ':' + month + ':' + day + ':';
+    }
+
+    /**
+     * Get cache key for day events WS calls.
+     *
+     * @param {number} year Year to get.
+     * @param {number} month Month to get.
+     * @param {number} day Day to get.
+     * @param {number} [courseId] Course to get.
+     * @param {number} [categoryId] Category to get.
+     * @return {string} Cache key.
+     */
+    protected getDayEventsCacheKey(year: number, month: number, day: number, courseId?: number, categoryId?: number): string {
+        return this.getDayEventsDayPrefixCacheKey(year, month, day) + (courseId ? courseId : '') + ':' +
+                (categoryId ? categoryId : '');
+    }
+
+    /**
      * Get a calendar reminders from local Db.
      *
      * @param  {number} id       Event ID.
@@ -1117,6 +1190,32 @@ export class AddonCalendarProvider {
     invalidateAllowedEventTypes(courseId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKey(this.getAllowedEventTypesCacheKey(courseId));
+        });
+    }
+
+    /**
+     * Invalidates day events for all days.
+     *
+     * @param {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateAllDayEvents(siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKeyStartingWith(this.getDayEventsPrefixCacheKey());
+        });
+    }
+
+    /**
+     * Invalidates day events for a certain day.
+     *
+     * @param {number} year Year.
+     * @param {number} month Month.
+     * @param {number} day Day.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateDayEvents(year: number, month: number, day: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKeyStartingWith(this.getDayEventsDayPrefixCacheKey(year, month, day));
         });
     }
 

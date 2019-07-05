@@ -493,7 +493,6 @@ export class AddonCalendarEventPage implements OnDestroy {
                 eventId: this.eventId
             }, this.sitesProvider.getCurrentSiteId());
 
-            this.domUtils.showToast('addon.calendar.eventcalendareventdeleted', true, 3000, undefined, false);
             this.event.deleted = false;
 
         }).catch((error) => {

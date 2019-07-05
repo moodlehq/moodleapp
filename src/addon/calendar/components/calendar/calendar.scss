@@ -20,7 +20,7 @@ ion-app.app-root addon-calendar-calendar {
         }
     }
 
-    .addon-calendar-event {
+    .addon-calendar-event, .addon-calendar-day-number, .addon-calendar-day-more {
         cursor: pointer;
     }
 
