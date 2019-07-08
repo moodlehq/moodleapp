@@ -261,6 +261,38 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Helper function to act when the forgotten password is clicked.
+     *
+     * @param {NavController} navCtrl NavController to use to navigate.
+     * @param {string} siteUrl Site URL.
+     * @param {string} username Username.
+     * @param {any} [siteConfig] Site config.
+     */
+    forgottenPasswordClicked(navCtrl: NavController, siteUrl: string, username: string, siteConfig?: any): void {
+        if (siteConfig && siteConfig.forgottenpasswordurl) {
+            // URL set, open it.
+            this.utils.openInApp(siteConfig.forgottenpasswordurl);
+
+            return;
+        }
+
+        // Check if password reset can be done through the app.
+        const modal = this.domUtils.showModalLoading();
+
+        this.canRequestPasswordReset(siteUrl).then((canReset) => {
+            if (canReset) {
+                navCtrl.push('CoreLoginForgottenPasswordPage', {
+                    siteUrl: siteUrl, username: username
+                });
+            } else {
+                this.openForgottenPassword(siteUrl);
+            }
+        }).finally(() => {
+            modal.dismiss();
+        });
+    }
+
+    /**
      * Format profile fields, filtering the ones that shouldn't be shown on signup and classifying them in categories.
      *
      * @param {any[]} profileFields Profile fields to format.

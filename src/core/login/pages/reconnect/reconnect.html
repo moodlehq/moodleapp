@@ -49,6 +49,11 @@
             </form>
         </ion-list>
 
+        <!-- Forgotten password button. -->
+        <div padding-top>
+            <button ion-button block text-wrap color="light" (click)="forgottenPassword()">{{ 'core.login.forgotten' | translate }}</button>
+        </div>
+
         <!-- Identity providers. -->
         <ion-list *ngIf="identityProviders && identityProviders.length" padding-top>
             <ion-list-header text-wrap>{{ 'core.login.potentialidps' | translate }}</ion-list-header>
