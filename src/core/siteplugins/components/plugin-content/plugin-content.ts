@@ -176,4 +176,17 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
 
         this.fetchContent();
     }
+
+    /**
+     * Call a certain function on the component instance.
+     *
+     * @param {string} name Name of the function to call.
+     * @param {any[]} params List of params to send to the function.
+     * @return {any} Result of the call. Undefined if no component instance or the function doesn't exist.
+     */
+    callComponentFunction(name: string, params?: any[]): any {
+        if (this.compileComponent) {
+            return (<any> this.compileComponent).callComponentFunction(name, params);
+        }
+    }
 }
