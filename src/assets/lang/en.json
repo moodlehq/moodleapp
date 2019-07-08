@@ -553,6 +553,7 @@
     "addon.mod_forum.reply": "Reply",
     "addon.mod_forum.replyplaceholder": "Write your reply...",
     "addon.mod_forum.subject": "Subject",
+    "addon.mod_forum.tagarea_forum_posts": "Forum posts",
     "addon.mod_forum.thisforumhasduedate": "The due date for posting to this forum is {{$a}}.",
     "addon.mod_forum.thisforumisdue": "The due date for posting to this forum was {{$a}}.",
     "addon.mod_forum.unlockdiscussion": "Unlock this discussion",
