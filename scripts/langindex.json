@@ -1798,6 +1798,7 @@
   "core.tag.tagarea_course": "moodle",
   "core.tag.tagarea_course_modules": "moodle",
   "core.tag.tagarea_post": "moodle",
+  "core.tag.tagarea_user": "moodle",
   "core.tag.tags": "moodle",
   "core.teachers": "moodle",
   "core.thereisdatatosync": "local_moodlemobileapp",
