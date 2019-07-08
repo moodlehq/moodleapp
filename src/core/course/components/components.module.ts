@@ -22,6 +22,7 @@ import { CoreCourseFormatComponent } from './format/format';
 import { CoreCourseModuleComponent } from './module/module';
 import { CoreCourseModuleCompletionComponent } from './module-completion/module-completion';
 import { CoreCourseModuleDescriptionComponent } from './module-description/module-description';
+import { CoreCourseTagAreaComponent } from './tag-area/tag-area';
 import { CoreCourseUnsupportedModuleComponent } from './unsupported-module/unsupported-module';
 
 @NgModule({
@@ -30,6 +31,7 @@ import { CoreCourseUnsupportedModuleComponent } from './unsupported-module/unsup
         CoreCourseModuleComponent,
         CoreCourseModuleCompletionComponent,
         CoreCourseModuleDescriptionComponent,
+        CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent
     ],
     imports: [
@@ -46,10 +48,12 @@ import { CoreCourseUnsupportedModuleComponent } from './unsupported-module/unsup
         CoreCourseModuleComponent,
         CoreCourseModuleCompletionComponent,
         CoreCourseModuleDescriptionComponent,
+        CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent
     ],
     entryComponents: [
-        CoreCourseUnsupportedModuleComponent
+        CoreCourseUnsupportedModuleComponent,
+        CoreCourseTagAreaComponent
     ]
 })
 export class CoreCourseComponentsModule {}

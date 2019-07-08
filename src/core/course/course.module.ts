@@ -33,6 +33,8 @@ import { CoreCourseFormatWeeksModule } from './formats/weeks/weeks.module';
 import { CoreCourseSyncProvider } from './providers/sync';
 import { CoreCourseSyncCronHandler } from './providers/sync-cron-handler';
 import { CoreCourseLogCronHandler } from './providers/log-cron-handler';
+import { CoreTagAreaDelegate } from '@core/tag/providers/area-delegate';
+import { CoreCourseTagAreaHandler } from './providers/course-tag-area-handler';
 
 // List of providers (without handlers).
 export const CORE_COURSE_PROVIDERS: any[] = [
@@ -68,15 +70,18 @@ export const CORE_COURSE_PROVIDERS: any[] = [
         CoreCourseFormatDefaultHandler,
         CoreCourseModuleDefaultHandler,
         CoreCourseSyncCronHandler,
-        CoreCourseLogCronHandler
+        CoreCourseLogCronHandler,
+        CoreCourseTagAreaHandler
     ],
     exports: []
 })
 export class CoreCourseModule {
     constructor(cronDelegate: CoreCronDelegate, syncHandler: CoreCourseSyncCronHandler, logHandler: CoreCourseLogCronHandler,
-        platform: Platform, eventsProvider: CoreEventsProvider) {
+                platform: Platform, eventsProvider: CoreEventsProvider, tagAreaDelegate: CoreTagAreaDelegate,
+                courseTagAreaHandler: CoreCourseTagAreaHandler) {
         cronDelegate.register(syncHandler);
         cronDelegate.register(logHandler);
+        tagAreaDelegate.registerHandler(courseTagAreaHandler);
 
         platform.resume.subscribe(() => {
             // Log the app is open to keep user in online status.
