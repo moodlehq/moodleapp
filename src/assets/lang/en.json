@@ -1797,6 +1797,7 @@
     "core.tablet": "Tablet",
     "core.tag.tagarea_course": "Courses",
     "core.tag.tagarea_course_modules": "Activities and resources",
+    "core.tag.tagarea_post": "Blog posts",
     "core.tag.tags": "Tags",
     "core.teachers": "Teachers",
     "core.thereisdatatosync": "There are offline {{$a}} to be synchronised.",
