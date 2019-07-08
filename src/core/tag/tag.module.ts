@@ -14,10 +14,13 @@
 
 import { NgModule } from '@angular/core';
 import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
+import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreTagProvider } from './providers/tag';
 import { CoreTagHelperProvider } from './providers/helper';
 import { CoreTagAreaDelegate } from './providers/area-delegate';
 import { CoreTagMainMenuHandler } from './providers/mainmenu-handler';
+import { CoreTagIndexLinkHandler } from './providers/index-link-handler';
+import { CoreTagSearchLinkHandler } from './providers/search-link-handler';
 
 @NgModule({
     declarations: [
@@ -28,12 +31,18 @@ import { CoreTagMainMenuHandler } from './providers/mainmenu-handler';
         CoreTagProvider,
         CoreTagHelperProvider,
         CoreTagAreaDelegate,
-        CoreTagMainMenuHandler
+        CoreTagMainMenuHandler,
+        CoreTagIndexLinkHandler,
+        CoreTagSearchLinkHandler
     ]
 })
 export class CoreTagModule {
 
-    constructor(mainMenuDelegate: CoreMainMenuDelegate, mainMenuHandler: CoreTagMainMenuHandler) {
+    constructor(mainMenuDelegate: CoreMainMenuDelegate, mainMenuHandler: CoreTagMainMenuHandler,
+            contentLinksDelegate: CoreContentLinksDelegate, indexLinkHandler: CoreTagIndexLinkHandler,
+            searchLinkHandler: CoreTagSearchLinkHandler) {
         mainMenuDelegate.registerHandler(mainMenuHandler);
+        contentLinksDelegate.registerHandler(indexLinkHandler);
+        contentLinksDelegate.registerHandler(searchLinkHandler);
     }
 }
