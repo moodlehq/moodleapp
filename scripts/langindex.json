@@ -1796,6 +1796,7 @@
   "core.success": "moodle",
   "core.tablet": "local_moodlemobileapp",
   "core.tag.tagarea_course": "moodle",
+  "core.tag.tagarea_course_modules": "moodle",
   "core.tag.tags": "moodle",
   "core.teachers": "moodle",
   "core.thereisdatatosync": "local_moodlemobileapp",
