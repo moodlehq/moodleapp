@@ -25,6 +25,7 @@ import { AddonModForumHelperProvider } from '../../providers/helper';
 import { AddonModForumOfflineProvider } from '../../providers/offline';
 import { AddonModForumSyncProvider } from '../../providers/sync';
 import { CoreRatingInfo } from '@core/rating/providers/rating';
+import { CoreTagProvider } from '@core/tag/providers/tag';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -52,6 +53,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
 
     uniqueId: string;
     advanced = false; // Display all form fields.
+    tagsEnabled: boolean;
 
     protected syncId: string;
 
@@ -65,8 +67,10 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
             private forumHelper: AddonModForumHelperProvider,
             private forumOffline: AddonModForumOfflineProvider,
             private forumSync: AddonModForumSyncProvider,
+            private tagProvider: CoreTagProvider,
             @Optional() private content: Content) {
         this.onPostChange = new EventEmitter<void>();
+        this.tagsEnabled = this.tagProvider.areTagsAvailableInSite();
     }
 
     /**
