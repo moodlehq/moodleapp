@@ -18,6 +18,40 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 
 /**
+ * Structure of a tag cloud returned by WS.
+ */
+export interface CoreTagCloud {
+    tags: CoreTagCloudTag[];
+    tagscount: number;
+    totalcount: number;
+}
+
+/**
+ * Structure of a tag cloud tag returned by WS.
+ */
+export interface CoreTagCloudTag {
+    name: string;
+    viewurl: string;
+    flag: boolean;
+    isstandard: boolean;
+    count: number;
+    size: number;
+}
+
+/**
+ * Structure of a tag collection returned by WS.
+ */
+export interface CoreTagCollection {
+    id: number;
+    name: string;
+    isdefault: boolean;
+    component: string;
+    sortoder: number;
+    searchable: boolean;
+    customurl: string;
+}
+
+/**
  * Structure of a tag index returned by WS.
  */
 export interface CoreTagIndex {
@@ -57,6 +91,8 @@ export interface CoreTagItem {
 @Injectable()
 export class CoreTagProvider {
 
+    static SEARCH_LIMIT = 150;
+
     protected ROOT_CACHE_KEY = 'CoreTag:';
 
     constructor(private sitesProvider: CoreSitesProvider, private translate: TranslateService) {}
@@ -87,6 +123,71 @@ export class CoreTagProvider {
                 site.wsAvailable('core_tag_get_tag_cloud') &&
                 site.wsAvailable('core_tag_get_tag_collections') &&
                 !site.isFeatureDisabled('NoDelegate_CoreTag');
+    }
+
+    /**
+     * Fetch the tag cloud.
+     *
+     * @param {number} [collectionId=0] Tag collection ID.
+     * @param {boolean} [isStandard=false] Whether to return only standard tags.
+     * @param {string} [sort='name'] Sort order for display (id, name, rawname, count, flag, isstandard, tagcollid).
+     * @param {string} [search=''] Search string.
+     * @param {number} [fromContextId=0] Context ID where this tag cloud is displayed.
+     * @param {number} [contextId=0] Only retrieve tag instances in this context.
+     * @param {boolean} [recursive=true] Retrieve tag instances in the context and its children.
+     * @param {number} [limit] Maximum number of tags to retrieve. Defaults to SEARCH_LIMIT.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<CoreTagCloud>} Promise resolved with the tag cloud.
+     * @since 3.7
+     */
+    getTagCloud(collectionId: number = 0, isStandard: boolean = false, sort: string = 'name', search: string = '',
+            fromContextId: number = 0, contextId: number = 0, recursive: boolean = true, limit?: number, siteId?: string):
+            Promise<CoreTagCloud> {
+        limit = limit || CoreTagProvider.SEARCH_LIMIT;
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                tagcollid: collectionId,
+                isstandard: isStandard,
+                limit: limit,
+                sort: sort,
+                search: search,
+                fromctx: fromContextId,
+                ctx: contextId,
+                rec: recursive
+            };
+            const preSets: CoreSiteWSPreSets = {
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+                cacheKey: this.getTagCloudKey(collectionId, isStandard, sort, search, fromContextId, contextId, recursive),
+                getFromCache: search != '' // Try to get updated data when searching.
+            };
+
+            return site.read('core_tag_get_tag_cloud', params, preSets);
+        });
+    }
+
+    /**
+     * Fetch the tag collections.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<CoreTagCollection[]>} Promise resolved with the tag collections.
+     * @since 3.7
+     */
+    getTagCollections(siteId?: string): Promise<CoreTagCollection[]> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const preSets: CoreSiteWSPreSets = {
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                cacheKey: this.getTagCollectionsKey()
+            };
+
+            return site.read('core_tag_get_tag_collections', null, preSets).then((response) => {
+                if (!response || !response.collections) {
+                    return Promise.reject(null);
+                }
+
+                return response.collections;
+            });
+        });
     }
 
     /**
@@ -143,6 +244,40 @@ export class CoreTagProvider {
     }
 
     /**
+     * Invalidate tag cloud.
+     *
+     * @param {number} [collectionId=0] Tag collection ID.
+     * @param {boolean} [isStandard=false] Whether to return only standard tags.
+     * @param {string} [sort='name'] Sort order for display (id, name, rawname, count, flag, isstandard, tagcollid).
+     * @param {string} [search=''] Search string.
+     * @param {number} [fromContextId=0] Context ID where this tag cloud is displayed.
+     * @param {number} [contextId=0] Only retrieve tag instances in this context.
+     * @param {boolean} [recursive=true] Retrieve tag instances in the context and its children.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateTagCloud(collectionId: number = 0, isStandard: boolean = false, sort: string = 'name', search: string = '',
+            fromContextId: number = 0, contextId: number = 0, recursive: boolean = true, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const key = this.getTagCloudKey(collectionId, isStandard, sort, search, fromContextId, contextId, recursive);
+
+            return site.invalidateWsCacheForKey(key);
+        });
+    }
+
+    /**
+     * Invalidate tag collections.
+     *
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateTagCollections(siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const key = this.getTagCollectionsKey();
+
+            return site.invalidateWsCacheForKey(key);
+        });
+    }
+
+    /**
      * Invalidate tag index.
      *
      * @param {number} [id=0] Tag ID.
@@ -161,6 +296,33 @@ export class CoreTagProvider {
 
             return site.invalidateWsCacheForKey(key);
         });
+    }
+
+    /**
+     * Get cache key for tag cloud.
+     *
+     * @param {number} collectionId Tag collection ID.
+     * @param {boolean} isStandard Whether to return only standard tags.
+     * @param {string} sort Sort order for display (id, name, rawname, count, flag, isstandard, tagcollid).
+     * @param {string} search Search string.
+     * @param {number} fromContextId Context ID where this tag cloud is displayed.
+     * @param {number} contextId Only retrieve tag instances in this context.
+     * @param {boolean} recursive Retrieve tag instances in the context and it's children.
+     * @return {string} Cache key.
+     */
+    protected getTagCloudKey(collectionId: number, isStandard: boolean, sort: string, search: string, fromContextId: number,
+            contextId: number, recursive: boolean): string {
+        return this.ROOT_CACHE_KEY + 'cloud:' + collectionId + ':' + (isStandard ? 1 : 0) + ':' + sort + ':' + search + ':' +
+            fromContextId + ':' + contextId + ':' +  (recursive ? 1 : 0);
+    }
+
+    /**
+     * Get cache key for tag collections.
+     *
+     * @return {string} Cache key.
+     */
+    protected getTagCollectionsKey(): string {
+        return this.ROOT_CACHE_KEY + 'collections';
     }
 
     /**

@@ -13,27 +13,21 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
-import { CoreTagProvider } from './providers/tag';
-import { CoreTagHelperProvider } from './providers/helper';
-import { CoreTagAreaDelegate } from './providers/area-delegate';
-import { CoreTagMainMenuHandler } from './providers/mainmenu-handler';
+import { IonicPageModule } from 'ionic-angular';
+import { TranslateModule } from '@ngx-translate/core';
+import { CoreTagSearchPage } from './search';
+import { CoreComponentsModule } from '@components/components.module';
+import { CoreDirectivesModule } from '@directives/directives.module';
 
 @NgModule({
     declarations: [
+        CoreTagSearchPage
     ],
     imports: [
+        CoreComponentsModule,
+        CoreDirectivesModule,
+        IonicPageModule.forChild(CoreTagSearchPage),
+        TranslateModule.forChild()
     ],
-    providers: [
-        CoreTagProvider,
-        CoreTagHelperProvider,
-        CoreTagAreaDelegate,
-        CoreTagMainMenuHandler
-    ]
 })
-export class CoreTagModule {
-
-    constructor(mainMenuDelegate: CoreMainMenuDelegate, mainMenuHandler: CoreTagMainMenuHandler) {
-        mainMenuDelegate.registerHandler(mainMenuHandler);
-    }
-}
+export class CoreTagSerchPageModule {}
