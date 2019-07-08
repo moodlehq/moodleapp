@@ -460,6 +460,7 @@
     "addon.mod_data.searchbytagsnotsupported": "Sorry, searching by tags is not supported by the app.",
     "addon.mod_data.selectedrequired": "All selected required",
     "addon.mod_data.single": "View single",
+    "addon.mod_data.tagarea_data_records": "Data records",
     "addon.mod_data.timeadded": "Time added",
     "addon.mod_data.timemodified": "Time modified",
     "addon.mod_data.usedate": "Include in search.",
