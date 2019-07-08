@@ -73,7 +73,7 @@ export class AddonCalendarEventPage {
             });
 
         // Calculate format to use. ion-datetime doesn't support escaping characters ([]), so we remove them.
-        this.notificationFormat = this.timeUtils.convertPHPToMoment(this.translate.instant('core.strftimedatetimeshort'))
+        this.notificationFormat = this.timeUtils.convertPHPToMoment(this.translate.instant('core.strftimedatetime'))
             .replace(/[\[\]]/g, '');
         }
     }
