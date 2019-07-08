@@ -1793,6 +1793,7 @@
   "core.submit": "moodle",
   "core.success": "moodle",
   "core.tablet": "local_moodlemobileapp",
+  "core.tag.tags": "moodle",
   "core.teachers": "moodle",
   "core.thereisdatatosync": "local_moodlemobileapp",
   "core.thisdirection": "langconfig",
