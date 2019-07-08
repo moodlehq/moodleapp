@@ -20,6 +20,7 @@ import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
 import { CoreCommentsComponentsModule } from '@core/comments/components/components.module';
+import { CoreTagComponentsModule } from '@core/tag/components/components.module';
 import { AddonBlogEntriesComponent } from './entries/entries';
 
 @NgModule({
@@ -33,7 +34,8 @@ import { AddonBlogEntriesComponent } from './entries/entries';
         CoreComponentsModule,
         CoreDirectivesModule,
         CorePipesModule,
-        CoreCommentsComponentsModule
+        CoreCommentsComponentsModule,
+        CoreTagComponentsModule
     ],
     providers: [
     ],
