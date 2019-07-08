@@ -588,6 +588,7 @@
   "addon.mod_glossary.modulenameplural": "glossary",
   "addon.mod_glossary.noentriesfound": "local_moodlemobileapp",
   "addon.mod_glossary.searchquery": "local_moodlemobileapp",
+  "addon.mod_glossary.tagarea_glossary_entries": "glossary",
   "addon.mod_imscp.deploymenterror": "imscp",
   "addon.mod_imscp.modulenameplural": "imscp",
   "addon.mod_imscp.showmoduledescription": "local_moodlemobileapp",

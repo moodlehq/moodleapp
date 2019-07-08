@@ -17,6 +17,7 @@ import { CoreCronDelegate } from '@providers/cron';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
+import { CoreTagAreaDelegate } from '@core/tag/providers/area-delegate';
 import { AddonModGlossaryProvider } from './providers/glossary';
 import { AddonModGlossaryOfflineProvider } from './providers/offline';
 import { AddonModGlossaryHelperProvider } from './providers/helper';
@@ -28,6 +29,7 @@ import { AddonModGlossaryIndexLinkHandler } from './providers/index-link-handler
 import { AddonModGlossaryEntryLinkHandler } from './providers/entry-link-handler';
 import { AddonModGlossaryListLinkHandler } from './providers/list-link-handler';
 import { AddonModGlossaryEditLinkHandler } from './providers/edit-link-handler';
+import { AddonModGlossaryTagAreaHandler } from './providers/tag-area-handler';
 import { AddonModGlossaryComponentsModule } from './components/components.module';
 import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
@@ -56,7 +58,8 @@ export const ADDON_MOD_GLOSSARY_PROVIDERS: any[] = [
         AddonModGlossaryIndexLinkHandler,
         AddonModGlossaryEntryLinkHandler,
         AddonModGlossaryListLinkHandler,
-        AddonModGlossaryEditLinkHandler
+        AddonModGlossaryEditLinkHandler,
+        AddonModGlossaryTagAreaHandler
     ]
 })
 export class AddonModGlossaryModule {
@@ -65,7 +68,8 @@ export class AddonModGlossaryModule {
             cronDelegate: CoreCronDelegate, syncHandler: AddonModGlossarySyncCronHandler, linksDelegate: CoreContentLinksDelegate,
             indexHandler: AddonModGlossaryIndexLinkHandler, discussionHandler: AddonModGlossaryEntryLinkHandler,
             updateManager: CoreUpdateManagerProvider, listLinkHandler: AddonModGlossaryListLinkHandler,
-            editLinkHandler: AddonModGlossaryEditLinkHandler) {
+            editLinkHandler: AddonModGlossaryEditLinkHandler, tagAreaDelegate: CoreTagAreaDelegate,
+            tagAreaHandler: AddonModGlossaryTagAreaHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
@@ -74,6 +78,7 @@ export class AddonModGlossaryModule {
         linksDelegate.registerHandler(discussionHandler);
         linksDelegate.registerHandler(listLinkHandler);
         linksDelegate.registerHandler(editLinkHandler);
+        tagAreaDelegate.registerHandler(tagAreaHandler);
 
         // Allow migrating the tables from the old app to the new schema.
         updateManager.registerSiteTableMigration({
