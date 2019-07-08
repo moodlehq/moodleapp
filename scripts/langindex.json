@@ -843,6 +843,7 @@
   "addon.mod_wiki.pageexists": "wiki",
   "addon.mod_wiki.pagename": "wiki",
   "addon.mod_wiki.subwiki": "local_moodlemobileapp",
+  "addon.mod_wiki.tagarea_wiki_pages": "wiki",
   "addon.mod_wiki.titleshouldnotbeempty": "local_moodlemobileapp",
   "addon.mod_wiki.viewpage": "local_moodlemobileapp",
   "addon.mod_wiki.wikipage": "local_moodlemobileapp",

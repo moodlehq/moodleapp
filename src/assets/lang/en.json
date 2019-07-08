@@ -843,6 +843,7 @@
     "addon.mod_wiki.pageexists": "This page already exists.",
     "addon.mod_wiki.pagename": "Page name",
     "addon.mod_wiki.subwiki": "Sub-wiki",
+    "addon.mod_wiki.tagarea_wiki_pages": "Wiki pages",
     "addon.mod_wiki.titleshouldnotbeempty": "The title should not be empty",
     "addon.mod_wiki.viewpage": "View page",
     "addon.mod_wiki.wikipage": "Wiki page",
