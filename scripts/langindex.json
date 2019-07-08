@@ -372,6 +372,7 @@
   "addon.mod_assign_submission_onlinetext.wordlimitexceeded": "assignsubmission_onlinetext",
   "addon.mod_book.errorchapter": "book",
   "addon.mod_book.modulenameplural": "book",
+  "addon.mod_book.tagarea_book_chapters": "book",
   "addon.mod_book.toc": "book",
   "addon.mod_chat.beep": "chat",
   "addon.mod_chat.chatreport": "chat",
