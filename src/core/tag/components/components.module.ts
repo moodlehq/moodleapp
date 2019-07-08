@@ -16,11 +16,13 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { CoreTagFeedComponent } from './feed/feed';
 import { CoreTagListComponent } from './list/list';
 import { CoreDirectivesModule } from '@directives/directives.module';
 
 @NgModule({
     declarations: [
+        CoreTagFeedComponent,
         CoreTagListComponent
     ],
     imports: [
@@ -32,9 +34,11 @@ import { CoreDirectivesModule } from '@directives/directives.module';
     providers: [
     ],
     exports: [
+        CoreTagFeedComponent,
         CoreTagListComponent
     ],
     entryComponents: [
+        CoreTagFeedComponent
     ]
 })
 export class CoreTagComponentsModule {}

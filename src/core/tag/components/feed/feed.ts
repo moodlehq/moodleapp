@@ -12,21 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { CoreTagProvider } from './providers/tag';
-import { CoreTagHelperProvider } from './providers/helper';
-import { CoreTagAreaDelegate } from './providers/area-delegate';
+import { Component, Input } from '@angular/core';
 
-@NgModule({
-    declarations: [
-    ],
-    imports: [
-    ],
-    providers: [
-        CoreTagProvider,
-        CoreTagHelperProvider,
-        CoreTagAreaDelegate
-    ]
+/**
+ * Component to render a tag area that uses the "core_tag/tagfeed" web template.
+ */
+@Component({
+    selector: 'core-tag-feed',
+    templateUrl: 'core-tag-feed.html'
 })
-export class CoreTagModule {
+export class CoreTagFeedComponent {
+    @Input() items: any[]; // Area items to render.
 }
