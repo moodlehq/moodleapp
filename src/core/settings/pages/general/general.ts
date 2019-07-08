@@ -34,8 +34,7 @@ import { CoreConfigConstants } from '../../../../configconstants';
 })
 export class CoreSettingsGeneralPage {
 
-    languages = {};
-    languageCodes = [];
+    languages = [];
     selectedLanguage: string;
     rteSupported: boolean;
     richTextEditor: boolean;
@@ -46,8 +45,20 @@ export class CoreSettingsGeneralPage {
             private domUtils: CoreDomUtilsProvider,
             localNotificationsProvider: CoreLocalNotificationsProvider) {
 
-        this.languages = CoreConfigConstants.languages;
-        this.languageCodes = Object.keys(this.languages);
+        // Get the supported languages.
+        const languages = CoreConfigConstants.languages;
+        for (const code in languages) {
+            this.languages.push({
+                code: code,
+                name: languages[code]
+            });
+        }
+
+        // Sort them by name.
+        this.languages.sort((a, b) => {
+            return a.name.localeCompare(b.name);
+        });
+
         langProvider.getCurrentLanguage().then((currentLanguage) => {
             this.selectedLanguage = currentLanguage;
         });
