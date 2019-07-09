@@ -1383,6 +1383,7 @@
   "core.erroropenfilenoextension": "local_moodlemobileapp",
   "core.erroropenpopup": "local_moodlemobileapp",
   "core.errorrenamefile": "local_moodlemobileapp",
+  "core.errorsomedatanotdownloaded": "local_moodlemobileapp",
   "core.errorsync": "local_moodlemobileapp",
   "core.errorsyncblocked": "local_moodlemobileapp",
   "core.explanationdigitalminor": "moodle",
