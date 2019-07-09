@@ -49,7 +49,6 @@ export class AddonMessagesIndexLinkHandler extends CoreContentLinksHandlerBase {
                     pageName = 'AddonMessagesGroupConversationsPage';
                 }
 
-                // Always use redirect to make it the new history root (to avoid "loops" in history).
                 this.linkHelper.goInSite(navCtrl, pageName, undefined, siteId);
             }
         }];

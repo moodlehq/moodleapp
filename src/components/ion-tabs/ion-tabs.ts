@@ -20,11 +20,14 @@ import {
 import { CoreIonTabComponent } from './ion-tab';
 import { CoreUtilsProvider, PromiseDefer } from '@providers/utils/utils';
 import { CoreAppProvider } from '@providers/app';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { TranslateService } from '@ngx-translate/core';
 
 /**
- * Equivalent to ion-tabs. It has 2 improvements:
+ * Equivalent to ion-tabs. It has several improvements:
  *     - If a core-ion-tab is added or removed, it will be reflected in the tab bar in the right position.
  *     - It supports a loaded input to tell when are the tabs ready.
+ *     - When the user clicks the tab again to go to root, a confirm modal is shown.
  */
 @Component({
     selector: 'core-ion-tabs',
@@ -73,7 +76,8 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
 
     constructor(protected utils: CoreUtilsProvider, protected appProvider: CoreAppProvider, @Optional() parent: NavController,
             @Optional() viewCtrl: ViewController, _app: App, config: Config, elementRef: ElementRef, _plt: Platform,
-            renderer: Renderer, _linker: DeepLinker, keyboard?: Keyboard) {
+            renderer: Renderer, _linker: DeepLinker, protected domUtils: CoreDomUtilsProvider,
+            protected translate: TranslateService, keyboard?: Keyboard) {
         super(parent, viewCtrl, _app, config, elementRef, _plt, renderer, _linker, keyboard);
     }
 
@@ -272,13 +276,25 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
      *
      * @param {number|Tab} tabOrIndex Index, or the Tab instance, of the tab to select.
      * @param {NavOptions} Nav options.
-     * @param {boolean} [fromUrl=true] Whether to load from a URL.
+     * @param {boolean} [fromUrl] Whether to load from a URL.
+     * @param {boolean} [manualClick] Whether the user manually clicked the tab.
      * @return {Promise<any>} Promise resolved when selected.
      */
-    select(tabOrIndex: number | Tab, opts: NavOptions = {}, fromUrl: boolean = false): Promise<any> {
+    select(tabOrIndex: number | Tab, opts: NavOptions = {}, fromUrl?: boolean, manualClick?: boolean): Promise<any> {
 
         if (this.initialized) {
             // Tabs have been initialized, select the tab.
+            if (manualClick) {
+                // If we'll go to the root of the current tab, ask the user to confirm first.
+                const tab = typeof tabOrIndex == 'number' ? this.getByIndex(tabOrIndex) : tabOrIndex;
+
+                return this.confirmGoToRoot(tab).then(() => {
+                    return super.select(tabOrIndex, opts, fromUrl);
+                }, () => {
+                    // User cancelled.
+                });
+            }
+
             return super.select(tabOrIndex, opts, fromUrl);
         } else {
             // Tabs not initialized yet. Mark it as "selectedIndex" input so it's treated when the tabs are initialized.
@@ -305,11 +321,16 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
         if (this.initialized) {
             const tab = this.getByIndex(index);
             if (tab) {
-                return tab.goToRoot({animate: false, updateUrl: true, isNavRoot: true}).then(() => {
-                    // Tab not previously selected. Select it after going to root.
-                    if (!tab.isSelected) {
-                        return this.select(tab, {animate: false, updateUrl: true, isNavRoot: true});
-                    }
+                return this.confirmGoToRoot(tab).then(() => {
+                    // User confirmed, go to root.
+                    return tab.goToRoot({animate: tab.isSelected, updateUrl: true, isNavRoot: true}).then(() => {
+                        // Tab not previously selected. Select it after going to root.
+                        if (!tab.isSelected) {
+                            return this.select(tab, {animate: false, updateUrl: true, isNavRoot: true});
+                        }
+                    });
+                }, () => {
+                    // User cancelled.
                 });
             }
 
@@ -348,5 +369,24 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
     ngOnDestroy(): void {
         // Unregister the custom back button action for this page
         this.unregisterBackButtonAction && this.unregisterBackButtonAction();
+    }
+
+    /**
+     * Confirm if the user wants to go to the root of the current tab.
+     *
+     * @param {Tab} tab Tab to go to root.
+     * @return {Promise<any>} Promise resolved when confirmed.
+     */
+    confirmGoToRoot(tab: Tab): Promise<any> {
+        if (!tab || !tab.isSelected || (tab.getActive() && tab.getActive().isFirst())) {
+            // Tab not selected or is already at root, no need to confirm.
+            return Promise.resolve();
+        } else {
+            if (tab.tabTitle) {
+                return this.domUtils.showConfirm(this.translate.instant('core.confirmgotabroot', {name: tab.tabTitle}));
+            } else {
+                return this.domUtils.showConfirm(this.translate.instant('core.confirmgotabrootdefault'));
+            }
+        }
     }
 }

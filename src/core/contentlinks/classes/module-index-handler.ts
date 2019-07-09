@@ -60,7 +60,7 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
         return [{
             action: (siteId, navCtrl?): void => {
                 this.courseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId, undefined,
-                    this.useModNameToGetModule ? this.modName : undefined);
+                    this.useModNameToGetModule ? this.modName : undefined, undefined, navCtrl);
             }
         }];
     }

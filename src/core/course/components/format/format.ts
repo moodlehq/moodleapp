@@ -76,12 +76,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     loaded: boolean;
 
     protected sectionStatusObserver;
+    protected selectTabObserver;
     protected lastCourseFormat: string;
 
     constructor(private cfDelegate: CoreCourseFormatDelegate, translate: TranslateService, private injector: Injector,
             private courseHelper: CoreCourseHelperProvider, private domUtils: CoreDomUtilsProvider,
             eventsProvider: CoreEventsProvider, private sitesProvider: CoreSitesProvider, private content: Content,
-            prefetchDelegate: CoreCourseModulePrefetchDelegate, private modalCtrl: ModalController) {
+            prefetchDelegate: CoreCourseModulePrefetchDelegate, private modalCtrl: ModalController,
+            private courseProvider: CoreCourseProvider) {
 
         this.selectOptions.title = translate.instant('core.course.sections');
         this.completionChanged = new EventEmitter();
@@ -124,6 +126,28 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 });
             }
         }, this.sitesProvider.getCurrentSiteId());
+
+        // Listen for select course tab events to select the right section if needed.
+        this.selectTabObserver = eventsProvider.on(CoreEventsProvider.SELECT_COURSE_TAB, (data) => {
+
+            if (!data.name) {
+                let section;
+
+                if (typeof data.sectionId != 'undefined' && data.sectionId != null && this.sections) {
+                    section = this.sections.find((section) => {
+                        return section.id == data.sectionId;
+                    });
+                } else if (typeof data.sectionNumber != 'undefined' && data.sectionNumber != null && this.sections) {
+                    section = this.sections.find((section) => {
+                        return section.section == data.sectionNumber;
+                    });
+                }
+
+                if (section) {
+                    this.sectionChanged(section);
+                }
+            }
+        });
     }
 
     /**
@@ -312,6 +336,13 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         } else {
             this.domUtils.scrollToTop(this.content, 0);
         }
+
+        if (!previousValue || previousValue.id != newSection.id) {
+            // First load or section changed, add log in Moodle.
+            this.courseProvider.logView(this.course.id, newSection.section, undefined, this.course.fullname).catch(() => {
+                // Ignore errors.
+            });
+        }
     }
 
     /**
@@ -437,9 +468,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * Component destroyed.
      */
     ngOnDestroy(): void {
-        if (this.sectionStatusObserver) {
-            this.sectionStatusObserver.off();
-        }
+        this.sectionStatusObserver && this.sectionStatusObserver.off();
+        this.selectTabObserver && this.selectTabObserver.off();
     }
 
     /**

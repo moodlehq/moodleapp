@@ -30,6 +30,7 @@ import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../../../configconstants';
 import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
 import { CoreSite } from '@classes/site';
+import { CoreMainMenuProvider } from '@core/mainmenu/providers/mainmenu';
 
 /**
  * Service that provides some features regarding content links.
@@ -42,7 +43,8 @@ export class CoreContentLinksHelperProvider {
             private contentLinksDelegate: CoreContentLinksDelegate, private appProvider: CoreAppProvider,
             private domUtils: CoreDomUtilsProvider, private urlUtils: CoreUrlUtilsProvider, private translate: TranslateService,
             private initDelegate: CoreInitDelegate, eventsProvider: CoreEventsProvider, private textUtils: CoreTextUtilsProvider,
-            private sitePluginsProvider: CoreSitePluginsProvider, private zone: NgZone, private utils: CoreUtilsProvider) {
+            private sitePluginsProvider: CoreSitePluginsProvider, private zone: NgZone, private utils: CoreUtilsProvider,
+            private mainMenuProvider: CoreMainMenuProvider) {
         this.logger = logger.getInstance('CoreContentLinksHelperProvider');
     }
 
@@ -103,9 +105,10 @@ export class CoreContentLinksHelperProvider {
      * @param {string} pageName Name of the page to go.
      * @param {any} [pageParams] Params to send to the page.
      * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {boolean} [checkMenu] If true, check if the root page of a main menu tab. Only the page name will be checked.
      * @return {Promise<any>} Promise resolved when done.
      */
-    goInSite(navCtrl: NavController, pageName: string, pageParams: any, siteId?: string): Promise<any> {
+    goInSite(navCtrl: NavController, pageName: string, pageParams: any, siteId?: string, checkMenu?: boolean): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const deferred = this.utils.promiseDefer();
@@ -113,7 +116,23 @@ export class CoreContentLinksHelperProvider {
         // Execute the code in the Angular zone, so change detection doesn't stop working.
         this.zone.run(() => {
             if (navCtrl && siteId == this.sitesProvider.getCurrentSiteId()) {
-                navCtrl.push(pageName, pageParams).then(deferred.resolve, deferred.reject);
+                if (checkMenu) {
+                    // Check if the page is in the main menu.
+                    this.mainMenuProvider.isCurrentMainMenuHandler(pageName, pageParams).catch(() => {
+                        return false; // Shouldn't happen.
+                    }).then((isInMenu) => {
+                        if (isInMenu) {
+                            // Just select the tab.
+                            this.loginHelper.loadPageInMainMenu(pageName, pageParams);
+
+                            deferred.resolve();
+                        } else {
+                            navCtrl.push(pageName, pageParams).then(deferred.resolve, deferred.reject);
+                        }
+                    });
+                } else {
+                    navCtrl.push(pageName, pageParams).then(deferred.resolve, deferred.reject);
+                }
             } else {
                 this.loginHelper.redirect(pageName, pageParams, siteId).then(deferred.resolve, deferred.reject);
             }

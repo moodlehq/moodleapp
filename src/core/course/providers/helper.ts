@@ -36,6 +36,7 @@ import { CoreCourseModulePrefetchDelegate } from './module-prefetch-delegate';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { CoreConstants } from '@core/constants';
 import { CoreSite } from '@classes/site';
+import { CoreLoggerProvider } from '@providers/logger';
 import * as moment from 'moment';
 
 /**
@@ -115,16 +116,21 @@ export type CoreCourseCoursesProgress = {
 export class CoreCourseHelperProvider {
 
     protected courseDwnPromises: { [s: string]: { [id: number]: Promise<any> } } = {};
+    protected logger;
 
     constructor(private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
-        private moduleDelegate: CoreCourseModuleDelegate, private prefetchDelegate: CoreCourseModulePrefetchDelegate,
-        private filepoolProvider: CoreFilepoolProvider, private sitesProvider: CoreSitesProvider,
-        private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider,
-        private utils: CoreUtilsProvider, private translate: TranslateService, private loginHelper: CoreLoginHelperProvider,
-        private courseOptionsDelegate: CoreCourseOptionsDelegate, private siteHomeProvider: CoreSiteHomeProvider,
-        private eventsProvider: CoreEventsProvider, private fileHelper: CoreFileHelperProvider,
-        private appProvider: CoreAppProvider, private fileProvider: CoreFileProvider, private injector: Injector,
-        private coursesProvider: CoreCoursesProvider, private courseOffline: CoreCourseOfflineProvider) { }
+            private moduleDelegate: CoreCourseModuleDelegate, private prefetchDelegate: CoreCourseModulePrefetchDelegate,
+            private filepoolProvider: CoreFilepoolProvider, private sitesProvider: CoreSitesProvider,
+            private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider,
+            private utils: CoreUtilsProvider, private translate: TranslateService, private loginHelper: CoreLoginHelperProvider,
+            private courseOptionsDelegate: CoreCourseOptionsDelegate, private siteHomeProvider: CoreSiteHomeProvider,
+            private eventsProvider: CoreEventsProvider, private fileHelper: CoreFileHelperProvider,
+            private appProvider: CoreAppProvider, private fileProvider: CoreFileProvider, private injector: Injector,
+            private coursesProvider: CoreCoursesProvider, private courseOffline: CoreCourseOfflineProvider,
+            loggerProvider: CoreLoggerProvider) {
+
+        this.logger = loggerProvider.getInstance('CoreCourseHelperProvider');
+    }
 
     /**
      * This function treats every module on the sections provided to load the handler data, treat completion
@@ -1109,9 +1115,12 @@ export class CoreCourseHelperProvider {
      * @param {string} [modName] If set, the app will retrieve all modules of this type with a single WS call. This reduces the
      *                           number of WS calls, but it isn't recommended for modules that can return a lot of contents.
      * @param {any} [modParams] Params to pass to the module
+     * @param {NavController} [navCtrl] NavController for adding new pages to the current history. Optional for legacy support, but
+     *                                  generates a warning if omitted.
      * @return {Promise<void>} Promise resolved when done.
      */
-    navigateToModule(moduleId: number, siteId?: string, courseId?: number, sectionId?: number, modName?: string, modParams?: any)
+    navigateToModule(moduleId: number, siteId?: string, courseId?: number, sectionId?: number, modName?: string, modParams?: any,
+                     navCtrl?: NavController)
             : Promise<void> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
@@ -1156,6 +1165,16 @@ export class CoreCourseHelperProvider {
             };
 
             module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, sectionId);
+
+            if (navCtrl) {
+                // If the link handler for this module passed through navCtrl, we can use the module's handler to navigate cleanly.
+                // Otherwise, we will redirect below.
+                modal.dismiss();
+
+                return module.handlerData.action(new Event('click'), navCtrl, module, courseId);
+            }
+
+            this.logger.warn('navCtrl was not passed to navigateToModule by the link handler for ' + module.modname);
 
             if (courseId == site.getSiteHomeId()) {
                 // Check if site home is available.

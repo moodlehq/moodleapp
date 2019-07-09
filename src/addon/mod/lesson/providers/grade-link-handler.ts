@@ -70,7 +70,7 @@ export class AddonModLessonGradeLinkHandler extends CoreContentLinksModuleGradeH
                 this.linkHelper.goInSite(navCtrl, 'AddonModLessonUserRetakePage', pageParams, siteId);
             } else {
                 // User cannot view the report, go to lesson index.
-                this.courseHelper.navigateToModule(moduleId, siteId, courseId, module.section);
+                this.courseHelper.navigateToModule(moduleId, siteId, courseId, module.section, undefined, undefined, navCtrl);
             }
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);

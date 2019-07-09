@@ -16,7 +16,9 @@ import { Injectable } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreLangProvider } from '@providers/lang';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreConfigConstants } from '../../../configconstants';
+import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from './delegate';
 
 /**
  * Custom main menu item.
@@ -56,8 +58,32 @@ export class CoreMainMenuProvider {
     static ITEM_MIN_WIDTH = 72; // Min with of every item, based on 5 items on a 360 pixel wide screen.
     protected tablet = false;
 
-    constructor(private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider) {
+    constructor(private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider,
+            protected menuDelegate: CoreMainMenuDelegate, protected utils: CoreUtilsProvider) {
         this.tablet = window && window.innerWidth && window.innerWidth >= 576 && window.innerHeight >= 576;
+    }
+
+    /**
+     * Get the current main menu handlers.
+     *
+     * @return {Promise<CoreMainMenuHandlerToDisplay[]>} Promise resolved with the current main menu handlers.
+     */
+    getCurrentMainMenuHandlers(): Promise<CoreMainMenuHandlerToDisplay[]> {
+        const deferred = this.utils.promiseDefer();
+
+        const subscription = this.menuDelegate.getHandlers().subscribe((handlers) => {
+            subscription && subscription.unsubscribe();
+
+            // Remove the handlers that should only appear in the More menu.
+            handlers = handlers.filter((handler) => {
+                return !handler.onlyInMore;
+            });
+
+            // Return main handlers.
+            deferred.resolve(handlers.slice(0, this.getNumItems()));
+        });
+
+        return deferred.promise;
     }
 
     /**
@@ -209,6 +235,23 @@ export class CoreMainMenuProvider {
         }
 
         return tablet ? 'side' : 'bottom';
+    }
+
+    /**
+     * Check if a certain page is the root of a main menu handler currently displayed.
+     *
+     * @param {string} page Name of the page.
+     * @param {string} [pageParams] Page params.
+     * @return {Promise<boolean>} Promise resolved with boolean: whether it's the root of a main menu handler.
+     */
+    isCurrentMainMenuHandler(pageName: string, pageParams?: any): Promise<boolean> {
+        return this.getCurrentMainMenuHandlers().then((handlers) => {
+            const handler = handlers.find((handler, i) => {
+                return handler.page == pageName;
+            });
+
+            return !!handler;
+        });
     }
 
     /**

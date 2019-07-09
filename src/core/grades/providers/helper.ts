@@ -24,7 +24,6 @@ import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
-import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 
 /**
@@ -38,8 +37,7 @@ export class CoreGradesHelperProvider {
             private gradesProvider: CoreGradesProvider, private sitesProvider: CoreSitesProvider,
             private textUtils: CoreTextUtilsProvider, private courseProvider: CoreCourseProvider,
             private domUtils: CoreDomUtilsProvider, private urlUtils: CoreUrlUtilsProvider, private utils: CoreUtilsProvider,
-            private linkHelper: CoreContentLinksHelperProvider, private loginHelper: CoreLoginHelperProvider,
-            private courseHelper: CoreCourseHelperProvider) {
+            private linkHelper: CoreContentLinksHelperProvider, private courseHelper: CoreCourseHelperProvider) {
         this.logger = logger.getInstance('CoreGradesHelperProvider');
     }
 
@@ -457,14 +455,22 @@ export class CoreGradesHelperProvider {
                 });
             }
 
-            // View own grades. Open the course with the grades tab selected.
+            // View own grades. Check if we already are in the course index page.
+            if (this.courseProvider.currentViewIsCourse(navCtrl, courseId)) {
+                // Current view is this course, just select the grades tab.
+                this.courseProvider.selectCourseTab('CoreGrades');
+
+                return;
+            }
+
+            // Open the course with the grades tab selected.
             return this.courseHelper.getCourse(courseId, siteId).then((result) => {
                 const pageParams: any = {
                     course: result.course,
                     selectedTab: 'CoreGrades'
                 };
 
-                return this.loginHelper.redirect('CoreCourseSectionPage', pageParams, siteId).catch(() => {
+                return this.linkHelper.goInSite(navCtrl, 'CoreCourseSectionPage', pageParams, siteId).catch(() => {
                     // Ignore errors.
                 });
             });

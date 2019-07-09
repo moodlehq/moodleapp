@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
-import { CoreLoginHelperProvider } from '@core/login/providers/helper';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { AddonCompetencyProvider } from './competency';
 
 /**
@@ -26,7 +26,7 @@ export class AddonCompetencyPlansLinkHandler extends CoreContentLinksHandlerBase
     name = 'AddonCompetencyPlansLinkHandler';
     pattern = /\/admin\/tool\/lp\/plans\.php/;
 
-    constructor(private loginHelper: CoreLoginHelperProvider, private competencyProvider: AddonCompetencyProvider) {
+    constructor(private linkHelper: CoreContentLinksHelperProvider, private competencyProvider: AddonCompetencyProvider) {
         super();
     }
 
@@ -44,8 +44,8 @@ export class AddonCompetencyPlansLinkHandler extends CoreContentLinksHandlerBase
 
         return [{
             action: (siteId, navCtrl?): void => {
-                // Always use redirect to make it the new history root (to avoid "loops" in history).
-                this.loginHelper.redirect('AddonCompetencyPlanListPage', { userId: params.userid }, siteId);
+                this.linkHelper.goInSite(navCtrl, 'AddonCompetencyPlanListPage', { userId: params.userid }, siteId,
+                        typeof params.userid == 'undefined');
             }
         }];
     }
