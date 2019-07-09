@@ -1,4 +1,7 @@
 <core-navbar-buttons end>
+     <button *ngIf="canDeleteNotes" item-end ion-button icon-only clear (click)="toggleDelete($event)" [attr.aria-label]="'core.delete' | translate">
+        <ion-icon name="create" ios="md-create"></ion-icon>
+    </button>
     <core-context-menu>
         <core-context-menu-item [hidden]="!(notesLoaded && !hasOffline)" [priority]="100" [content]="'core.refresh' | translate" (action)="refreshNotes(false)" [iconAction]="refreshIcon" [closeOnClick]="true"></core-context-menu-item>
         <core-context-menu-item [hidden]="!(notesLoaded && hasOffline)" [priority]="100" [content]="'core.settings.synchronizenow' | translate" (action)="refreshNotes(true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
@@ -35,8 +38,20 @@
                 <ion-item text-wrap>
                     <ion-avatar core-user-avatar [user]="note" [courseId]="courseId" item-start *ngIf="!userId"></ion-avatar>
                     <h2 *ngIf="!userId">{{note.userfullname}}</h2>
-                    <p *ngIf="!note.offline" item-end>{{note.lastmodified | coreDateDayOrTime}}</p>
-                    <p *ngIf="note.offline" item-end><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</p>
+                    <p *ngIf="!note.deleted && !note.offline" item-end>
+                        <span text-wrap>{{note.lastmodified | coreDateDayOrTime}}</span>
+                    </p>
+                    <p *ngIf="note.offline" item-end>
+                        <ion-icon name="time"></ion-icon> <span text-wrap>{{ 'core.notsent' | translate }}</span></p>
+                    <p *ngIf="note.deleted" item-end>
+                        <ion-icon name="trash"></ion-icon> <span text-wrap>{{ 'core.deletedoffline' | translate }}</span>
+                    </p>
+                    <button *ngIf="note.deleted" item-end ion-button icon-only clear color="danger" (click)="undoDeleteNote($event, note)" [attr.aria-label]="'core.restore' | translate">
+                        <ion-icon name="undo"></ion-icon>
+                    </button>
+                    <button *ngIf="showDelete && !note.deleted && (type != 'personal' || note.usermodified == currentUserId)" item-end ion-button icon-only clear [@coreSlideInOut]="'fromRight'" color="danger" (click)="deleteNote($event, note)" [attr.aria-label]="'core.delete' | translate">
+                        <ion-icon name="trash"></ion-icon>
+                    </button>
                 </ion-item>
                 <ion-item text-wrap>
                     <core-format-text [clean]="true" [text]="note.content"></core-format-text>

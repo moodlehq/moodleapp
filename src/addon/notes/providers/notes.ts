@@ -134,6 +134,72 @@ export class AddonNotesProvider {
     }
 
     /**
+     * Delete a note.
+     *
+     * @param  {any} note            Note object to delete.
+     * @param  {number} courseId     Course ID where the note belongs.
+     * @param  {string} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise<void>}       Promise resolved when deleted, rejected otherwise. Promise resolved doesn't mean that notes
+     *                               have been deleted, the resolve param can contain errors for notes not deleted.
+     */
+    deleteNote(note: any, courseId: number, siteId?: string): Promise<void> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        if (note.offline) {
+            return this.notesOffline.deleteOfflineNote(note.userid, note.content, note.created, siteId);
+        }
+
+        // Convenience function to store the action to be synchronized later.
+        const storeOffline = (): Promise<any> => {
+            return this.notesOffline.deleteNote(note.id, courseId, siteId).then(() => {
+                return false;
+            });
+        };
+
+        if (!this.appProvider.isOnline()) {
+            // App is offline, store the note.
+            return storeOffline();
+        }
+
+        // Send note to server.
+        return this.deleteNotesOnline([note.id], courseId, siteId).then(() => {
+            return true;
+        }).catch((error) => {
+            if (this.utils.isWebServiceError(error)) {
+                // It's a WebService error, the user cannot send the note so don't store it.
+                return Promise.reject(error);
+            }
+
+            // Error sending note, store it to retry later.
+            return storeOffline();
+        });
+    }
+
+    /**
+     * Delete a note. It will fail if offline or cannot connect.
+     *
+     * @param  {number[]} noteIds    Note IDs to delete.
+     * @param  {number} courseId     Course ID where the note belongs.
+     * @param  {string} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise<void>}       Promise resolved when deleted, rejected otherwise. Promise resolved doesn't mean that notes
+     *                               have been deleted, the resolve param can contain errors for notes not deleted.
+     */
+    deleteNotesOnline(noteIds: number[], courseId: number, siteId?: string): Promise<void> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const data = {
+                notes: noteIds
+            };
+
+            return site.write('core_notes_delete_notes', data).then((response) => {
+                // A note was deleted, invalidate the course notes.
+                return this.invalidateNotes(courseId, undefined, siteId).catch(() => {
+                    // Ignore errors.
+                });
+            });
+        });
+    }
+
+    /**
      * Returns whether or not the notes plugin is enabled for a certain site.
      *
      * This method is called quite often and thus should only perform a quick
@@ -264,6 +330,24 @@ export class AddonNotesProvider {
                     return notes;
                 });
             });
+        });
+    }
+
+    /**
+     * Get offline deleted notes and set the state.
+     *
+     * @param  {any[]}   notes     Array of notes.
+     * @param  {number} courseId ID of the course the notes belong to.
+     * @param  {string}  [siteId]  Site ID. If not defined, current site.
+     * @return {Promise<any>}       [description]
+     */
+    setOfflineDeletedNotes(notes: any[], courseId: number, siteId?: string): Promise<any> {
+        return this.notesOffline.getCourseDeletedNotes(courseId, siteId).then((deletedNotes) => {
+            notes.forEach((note) => {
+                note.deleted = deletedNotes.some((n) => n.noteid == note.id);
+            });
+
+            return notes;
         });
     }
 
