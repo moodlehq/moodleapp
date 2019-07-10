@@ -354,6 +354,9 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                     return Promise.reject('Invalid forum discussion.');
                 }
 
+                this.defaultSubject = this.translate.instant('addon.mod_forum.re') + ' ' + this.discussion.subject;
+                this.replyData.subject = this.defaultSubject;
+
                 if (this.discussion.userfullname && this.discussion.parent == 0 && this.forum.type == 'single') {
                     // Hide author for first post and type single.
                     this.discussion.userfullname = null;

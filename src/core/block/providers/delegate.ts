@@ -118,6 +118,18 @@ export class CoreBlockDelegate extends CoreDelegate {
     }
 
     /**
+     * Check if blocks are disabled in a certain site for courses.
+     *
+     * @param {CoreSite} [site] Site. If not defined, use current site.
+     * @return {boolean} Whether it's disabled.
+     */
+    areBlocksDisabledInCourses(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.isFeatureDisabled('NoDelegate_CourseBlocks');
+    }
+
+    /**
      * Check if blocks are disabled in a certain site.
      *
      * @param  {string} [siteId] Site Id. If not defined, use current site.

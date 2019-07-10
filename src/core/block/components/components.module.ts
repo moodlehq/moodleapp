@@ -19,6 +19,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreBlockComponent } from './block/block';
 import { CoreBlockOnlyTitleComponent } from './only-title-block/only-title-block';
+import { CoreBlockPreRenderedComponent } from './pre-rendered-block/pre-rendered-block';
 import { CoreBlockCourseBlocksComponent } from './course-blocks/course-blocks';
 import { CoreComponentsModule } from '@components/components.module';
 
@@ -26,6 +27,7 @@ import { CoreComponentsModule } from '@components/components.module';
     declarations: [
         CoreBlockComponent,
         CoreBlockOnlyTitleComponent,
+        CoreBlockPreRenderedComponent,
         CoreBlockCourseBlocksComponent
     ],
     imports: [
@@ -40,10 +42,12 @@ import { CoreComponentsModule } from '@components/components.module';
     exports: [
         CoreBlockComponent,
         CoreBlockOnlyTitleComponent,
+        CoreBlockPreRenderedComponent,
         CoreBlockCourseBlocksComponent
     ],
     entryComponents: [
         CoreBlockOnlyTitleComponent,
+        CoreBlockPreRenderedComponent,
         CoreBlockCourseBlocksComponent
     ]
 })

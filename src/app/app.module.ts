@@ -91,19 +91,30 @@ import { AddonCourseCompletionModule } from '@addon/coursecompletion/coursecompl
 import { AddonUserProfileFieldModule } from '@addon/userprofilefield/userprofilefield.module';
 import { AddonFilesModule } from '@addon/files/files.module';
 import { AddonBlockActivityModulesModule } from '@addon/block/activitymodules/activitymodules.module';
+import { AddonBlockBadgesModule } from '@addon/block/badges/badges.module';
+import { AddonBlockBlogMenuModule } from '@addon/block/blogmenu/blogmenu.module';
+import { AddonBlockBlogTagsModule } from '@addon/block/blogtags/blogtags.module';
+import { AddonBlockBlogRecentModule } from '@addon/block/blogrecent/blogrecent.module';
 import { AddonBlockCalendarMonthModule } from '@addon/block/calendarmonth/calendarmonth.module';
 import { AddonBlockCalendarUpcomingModule } from '@addon/block/calendarupcoming/calendarupcoming.module';
 import { AddonBlockCommentsModule } from '@addon/block/comments/comments.module';
 import { AddonBlockCompletionStatusModule } from '@addon/block/completionstatus/completionstatus.module';
+import { AddonBlockGlossaryRandomModule } from '@addon/block/glossaryrandom/glossaryrandom.module';
+import { AddonBlockHtmlModule } from '@addon/block/html/html.module';
 import { AddonBlockMyOverviewModule } from '@addon/block/myoverview/myoverview.module';
+import { AddonBlockNewsItemsModule } from '@addon/block/newsitems/newsitems.module';
+import { AddonBlockOnlineUsersModule } from '@addon/block/onlineusers/onlineusers.module';
 import { AddonBlockLearningPlansModule } from '@addon/block/learningplans/learningplans.module';
 import { AddonBlockPrivateFilesModule } from '@addon/block/privatefiles/privatefiles.module';
 import { AddonBlockSiteMainMenuModule } from '@addon/block/sitemainmenu/sitemainmenu.module';
 import { AddonBlockTimelineModule } from '@addon/block/timeline/timeline.module';
 import { AddonBlockRecentlyAccessedCoursesModule } from '@addon/block/recentlyaccessedcourses/recentlyaccessedcourses.module';
 import { AddonBlockRecentlyAccessedItemsModule } from '@addon/block/recentlyaccesseditems/recentlyaccesseditems.module';
+import { AddonBlockRecentActivityModule } from '@addon/block/recentactivity/recentactivity.module';
+import { AddonBlockRssClientModule } from '@addon/block/rssclient/rssclient.module';
 import { AddonBlockStarredCoursesModule } from '@addon/block/starredcourses/starredcourses.module';
 import { AddonBlockSelfCompletionModule } from '@addon/block/selfcompletion/selfcompletion.module';
+import { AddonBlockTagsModule } from '@addon/block/tags/tags.module';
 import { AddonModAssignModule } from '@addon/mod/assign/assign.module';
 import { AddonModBookModule } from '@addon/mod/book/book.module';
 import { AddonModChatModule } from '@addon/mod/chat/chat.module';
@@ -220,19 +231,30 @@ export const CORE_PROVIDERS: any[] = [
         AddonUserProfileFieldModule,
         AddonFilesModule,
         AddonBlockActivityModulesModule,
+        AddonBlockBadgesModule,
+        AddonBlockBlogMenuModule,
+        AddonBlockBlogRecentModule,
+        AddonBlockBlogTagsModule,
         AddonBlockCalendarMonthModule,
         AddonBlockCalendarUpcomingModule,
         AddonBlockCommentsModule,
         AddonBlockCompletionStatusModule,
+        AddonBlockGlossaryRandomModule,
+        AddonBlockHtmlModule,
         AddonBlockLearningPlansModule,
         AddonBlockMyOverviewModule,
+        AddonBlockNewsItemsModule,
+        AddonBlockOnlineUsersModule,
         AddonBlockPrivateFilesModule,
         AddonBlockSiteMainMenuModule,
         AddonBlockTimelineModule,
         AddonBlockRecentlyAccessedCoursesModule,
         AddonBlockRecentlyAccessedItemsModule,
+        AddonBlockRecentActivityModule,
+        AddonBlockRssClientModule,
         AddonBlockStarredCoursesModule,
         AddonBlockSelfCompletionModule,
+        AddonBlockTagsModule,
         AddonModAssignModule,
         AddonModBookModule,
         AddonModChatModule,

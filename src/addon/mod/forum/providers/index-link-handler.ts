@@ -16,6 +16,9 @@ import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@core/contentlinks/classes/module-index-handler';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { AddonModForumProvider } from './forum';
+import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
+import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 
 /**
  * Handler to treat links to forum index.
@@ -24,8 +27,12 @@ import { AddonModForumProvider } from './forum';
 export class AddonModForumIndexLinkHandler extends CoreContentLinksModuleIndexHandler {
     name = 'AddonModForumIndexLinkHandler';
 
-    constructor(courseHelper: CoreCourseHelperProvider, protected forumProvider: AddonModForumProvider) {
+    constructor(courseHelper: CoreCourseHelperProvider, protected forumProvider: AddonModForumProvider,
+            private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider) {
         super(courseHelper, 'AddonModForum', 'forum');
+
+        // Match the view.php URL with an id param.
+        this.pattern = new RegExp('\/mod\/forum\/view\.php.*([\&\?](f|id)=\\d+)');
     }
 
     /**
@@ -40,5 +47,36 @@ export class AddonModForumIndexLinkHandler extends CoreContentLinksModuleIndexHa
      */
     isEnabled(siteId: string, url: string, params: any, courseId?: number): boolean | Promise<boolean> {
         return true;
+    }
+
+    /**
+     * Get the list of actions for a link (url).
+     *
+     * @param {string[]} siteIds List of sites the URL belongs to.
+     * @param {string} url The URL to treat.
+     * @param {any} params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
+     * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
+     * @return {CoreContentLinksAction[]|Promise<CoreContentLinksAction[]>} List of (or promise resolved with list of) actions.
+     */
+    getActions(siteIds: string[], url: string, params: any, courseId?: number):
+            CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
+
+        if (typeof params.f != 'undefined') {
+            return [{
+                action: (siteId, navCtrl?): void => {
+                    const modal = this.domUtils.showModalLoading(),
+                        forumId = parseInt(params.f, 10);
+
+                    this.courseProvider.getModuleBasicInfoByInstance(forumId, 'forum', siteId).then((module) => {
+                        this.courseHelper.navigateToModule(parseInt(module.id, 10), siteId, module.course);
+                    }).finally(() => {
+                        // Just in case. In fact we need to dismiss the modal before showing a toast or error message.
+                        modal.dismiss();
+                    });
+                }
+            }];
+        }
+
+        return super.getActions(siteIds, url, params, courseId);
     }
 }

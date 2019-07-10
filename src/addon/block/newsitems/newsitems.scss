@@ -1,0 +1,26 @@
+.addon-block-news-items core-block-pre-rendered {
+    .core-block-content {
+        .unlist {
+            list-style-type: none;
+            @include margin-horizontal(0);
+            -webkit-padding-start: 0;
+
+            li.post {
+                padding-bottom: 16px;
+            }
+            li.post:last-child {
+                padding-bottom: 0;
+            }
+        }
+    }
+
+    // Hide RSS link.
+    .core-block-footer {
+        a {
+            display: none;
+        }
+        a:first-child {
+            display: inline;
+        }
+    }
+}

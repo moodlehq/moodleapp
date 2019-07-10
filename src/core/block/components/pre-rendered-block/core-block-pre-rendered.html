@@ -1,0 +1,11 @@
+<ion-item-divider text-wrap *ngIf="title">
+    <h2><core-format-text [text]="title"></core-format-text></h2>
+</ion-item-divider>
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+    <ion-item *ngIf="block.contents.content" text-wrap class="core-block-content">
+        <core-format-text [text]="block.contents.content"></core-format-text>
+    </ion-item>
+    <ion-item *ngIf="block.contents.footer" text-wrap class="core-block-footer">
+        <core-format-text [text]="block.contents.footer"></core-format-text>
+    </ion-item>
+</core-loading>

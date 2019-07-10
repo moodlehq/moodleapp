@@ -1,0 +1,100 @@
+.addon-block-tags core-block-pre-rendered {
+    .core-block-content {
+        .tag_cloud {
+            text-align: center;
+            ul.inline-list {
+                list-style: none;
+                @include margin-horizontal(0);
+                -webkit-padding-start: 0;
+
+                li {
+                    padding: 0 .2em;
+                    display: inline;
+                }
+            }
+        }
+        .tag_cloud .s20 {
+            font-size: 2.7em;
+        }
+
+        .tag_cloud .s19 {
+            font-size: 2.6em;
+        }
+
+        .tag_cloud .s18 {
+            font-size: 2.5em;
+        }
+
+        .tag_cloud .s17 {
+            font-size: 2.4em;
+        }
+
+        .tag_cloud .s16 {
+            font-size: 2.3em;
+        }
+
+        .tag_cloud .s15 {
+            font-size: 2.2em;
+        }
+
+        .tag_cloud .s14 {
+            font-size: 2.1em;
+        }
+
+        .tag_cloud .s13 {
+            font-size: 2em;
+        }
+
+        .tag_cloud .s12 {
+            font-size: 1.9em;
+        }
+
+        .tag_cloud .s11 {
+            font-size: 1.8em;
+        }
+
+        .tag_cloud .s10 {
+            font-size: 1.7em;
+        }
+
+        .tag_cloud .s9 {
+            font-size: 1.6em;
+        }
+
+        .tag_cloud .s8 {
+            font-size: 1.5em;
+        }
+
+        .tag_cloud .s7 {
+            font-size: 1.4em;
+        }
+
+        .tag_cloud .s6 {
+            font-size: 1.3em;
+        }
+
+        .tag_cloud .s5 {
+            font-size: 1.2em;
+        }
+
+        .tag_cloud .s4 {
+            font-size: 1.1em;
+        }
+
+        .tag_cloud .s3 {
+            font-size: 1em;
+        }
+
+        .tag_cloud .s2 {
+            font-size: 0.9em;
+        }
+
+        .tag_cloud .s1 {
+            font-size: 0.8em;
+        }
+
+        .tag_cloud .s0 {
+            font-size: 0.7em;
+        }
+    }
+}
