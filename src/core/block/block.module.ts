@@ -15,6 +15,9 @@
 import { NgModule } from '@angular/core';
 import { CoreBlockDelegate } from './providers/delegate';
 import { CoreBlockDefaultHandler } from './providers/default-block-handler';
+import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
+import { CoreBlockCourseBlocksCourseOptionHandler } from './providers/course-option-handler';
+import { CoreBlockComponentsModule } from './components/components.module';
 
 // List of providers (without handlers).
 export const CORE_BLOCK_PROVIDERS: any[] = [
@@ -24,11 +27,18 @@ export const CORE_BLOCK_PROVIDERS: any[] = [
 @NgModule({
     declarations: [],
     imports: [
+        CoreBlockComponentsModule
     ],
     providers: [
         CoreBlockDelegate,
-        CoreBlockDefaultHandler
+        CoreBlockDefaultHandler,
+        CoreBlockCourseBlocksCourseOptionHandler
     ],
     exports: []
 })
-export class CoreBlockModule {}
+export class CoreBlockModule {
+    constructor(courseOptionHandler: CoreBlockCourseBlocksCourseOptionHandler,
+            courseOptionsDelegate: CoreCourseOptionsDelegate) {
+        courseOptionsDelegate.registerHandler(courseOptionHandler);
+    }
+}

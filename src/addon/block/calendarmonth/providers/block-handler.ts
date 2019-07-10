@@ -14,16 +14,16 @@
 
 import { Injectable, Injector } from '@angular/core';
 import { CoreBlockHandlerData } from '@core/block/providers/delegate';
-import { AddonBlockRecentlyAccessedCoursesComponent } from '../components/recentlyaccessedcourses/recentlyaccessedcourses';
+import { CoreBlockOnlyTitleComponent } from '@core/block/components/only-title-block/only-title-block';
 import { CoreBlockBaseHandler } from '@core/block/classes/base-block-handler';
 
 /**
  * Block handler.
  */
 @Injectable()
-export class AddonBlockRecentlyAccessedCoursesHandler extends CoreBlockBaseHandler {
-    name = 'AddonBlockRecentlyAccessedCourses';
-    blockName = 'recentlyaccessedcourses';
+export class AddonBlockCalendarMonthHandler extends CoreBlockBaseHandler {
+    name = 'AddonBlockCalendarMonth';
+    blockName = 'calendar_month';
 
     constructor() {
         super();
@@ -42,9 +42,11 @@ export class AddonBlockRecentlyAccessedCoursesHandler extends CoreBlockBaseHandl
             : CoreBlockHandlerData | Promise<CoreBlockHandlerData> {
 
         return {
-            title: 'addon.block_recentlyaccessedcourses.pluginname',
-            class: 'addon-block-recentlyaccessedcourses',
-            component: AddonBlockRecentlyAccessedCoursesComponent
+            title: 'addon.block_calendarmonth.pluginname',
+            class: 'addon-block-calendar-month',
+            component: CoreBlockOnlyTitleComponent,
+            link: 'AddonCalendarListPage',
+            linkParams: contextLevel == 'course' ? { courseId: instanceId } : null
         };
     }
 }

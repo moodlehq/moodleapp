@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injector, OnInit } from '@angular/core';
+import { Injector, OnInit, Input } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 
@@ -20,6 +20,13 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
  * Template class to easily create components for blocks.
  */
 export class CoreBlockBaseComponent implements OnInit {
+    @Input() title: string; // The block title.
+    @Input() block: any; // The block to render.
+    @Input() contextLevel: string; // The context where the block will be used.
+    @Input() instanceId: number; // The instance ID associated with the context level.
+    @Input() link: string; // Link to go when clicked.
+    @Input() linkParams: string; // Link params to go when clicked.
+
     loaded: boolean; // If the component has been loaded.
     protected fetchContentDefaultError: string; // Default error to show when loading contents.
 

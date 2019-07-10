@@ -53,6 +53,7 @@ export class AddonCalendarListPage implements OnDestroy {
     protected siteHomeId: number;
     protected obsDefaultTimeChange: any;
     protected eventId: number;
+    protected preSelectedCourseId: number;
 
     courses: any[];
     eventsLoaded = false;
@@ -81,6 +82,7 @@ export class AddonCalendarListPage implements OnDestroy {
         }
 
         this.eventId = navParams.get('eventId') || false;
+        this.preSelectedCourseId = navParams.get('courseId') || null;
     }
 
     /**
@@ -117,6 +119,12 @@ export class AddonCalendarListPage implements OnDestroy {
             // Add "All courses".
             courses.unshift(this.allCourses);
             this.courses = courses;
+
+            if (this.preSelectedCourseId) {
+                this.filter.course = courses.find((course) => {
+                    return course.id == this.preSelectedCourseId;
+                });
+            }
 
             return this.fetchEvents(refresh);
         });

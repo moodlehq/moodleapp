@@ -33,7 +33,6 @@ export class CoreBlockComponent implements OnInit, OnDestroy {
     @Input() instanceId: number; // The instance ID associated with the context level.
     @Input() extraData: any; // Any extra data to be passed to the block.
 
-    title: string; // The title of the block.
     componentClass: any; // The class of the component to render.
     data: any = {}; // Data to pass to the component.
     class: string; // CSS class to apply to the block.
@@ -80,15 +79,17 @@ export class CoreBlockComponent implements OnInit, OnDestroy {
                 return;
             }
 
-            this.title = data.title;
             this.class = data.class;
             this.componentClass = data.component;
 
             // Set up the data needed by the block component.
             this.data = Object.assign({
+                    title: data.title,
                     block: this.block,
                     contextLevel: this.contextLevel,
                     instanceId: this.instanceId,
+                    link: data.link || null,
+                    linkParams: data.linkParams || null,
                 }, this.extraData || {}, data.componentData || {});
         }).catch(() => {
             // Ignore errors.

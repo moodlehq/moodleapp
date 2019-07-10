@@ -14,16 +14,16 @@
 
 import { Injectable, Injector } from '@angular/core';
 import { CoreBlockHandlerData } from '@core/block/providers/delegate';
-import { AddonBlockRecentlyAccessedCoursesComponent } from '../components/recentlyaccessedcourses/recentlyaccessedcourses';
+import { CoreBlockOnlyTitleComponent } from '@core/block/components/only-title-block/only-title-block';
 import { CoreBlockBaseHandler } from '@core/block/classes/base-block-handler';
 
 /**
  * Block handler.
  */
 @Injectable()
-export class AddonBlockRecentlyAccessedCoursesHandler extends CoreBlockBaseHandler {
-    name = 'AddonBlockRecentlyAccessedCourses';
-    blockName = 'recentlyaccessedcourses';
+export class AddonBlockCommentsHandler extends CoreBlockBaseHandler {
+    name = 'AddonBlockComments';
+    blockName = 'comments';
 
     constructor() {
         super();
@@ -42,9 +42,12 @@ export class AddonBlockRecentlyAccessedCoursesHandler extends CoreBlockBaseHandl
             : CoreBlockHandlerData | Promise<CoreBlockHandlerData> {
 
         return {
-            title: 'addon.block_recentlyaccessedcourses.pluginname',
-            class: 'addon-block-recentlyaccessedcourses',
-            component: AddonBlockRecentlyAccessedCoursesComponent
+            title: 'addon.block_comments.pluginname',
+            class: 'addon-block-comments',
+            component: CoreBlockOnlyTitleComponent,
+            link: 'CoreCommentsViewerPage',
+            linkParams: { contextLevel: contextLevel, instanceId: instanceId,
+                component: 'block_comments', area: 'page_comments', itemId: 0 }
         };
     }
 }

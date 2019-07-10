@@ -73,6 +73,18 @@ export interface CoreBlockHandlerData {
      * @type {any}
      */
     componentData?: any;
+
+    /**
+     * Link to go when showing only title.
+     * @type {string}
+     */
+    link?: string;
+
+    /**
+     * Params of the link.
+     * @type {[type]}
+     */
+    linkParams?: any;
 }
 
 /**
@@ -127,7 +139,8 @@ export class CoreBlockDelegate extends CoreDelegate {
      * @return {Promise<CoreBlockHandlerData>} Promise resolved with the display data.
      */
     getBlockDisplayData(injector: Injector, block: any, contextLevel: string, instanceId: number): Promise<CoreBlockHandlerData> {
-        return Promise.resolve(this.executeFunctionOnEnabled(block.name, 'getDisplayData', [injector, block]));
+        return Promise.resolve(this.executeFunctionOnEnabled(block.name, 'getDisplayData',
+            [injector, block, contextLevel, instanceId]));
     }
 
     /**

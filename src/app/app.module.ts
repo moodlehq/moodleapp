@@ -91,12 +91,19 @@ import { AddonCourseCompletionModule } from '@addon/coursecompletion/coursecompl
 import { AddonUserProfileFieldModule } from '@addon/userprofilefield/userprofilefield.module';
 import { AddonFilesModule } from '@addon/files/files.module';
 import { AddonBlockActivityModulesModule } from '@addon/block/activitymodules/activitymodules.module';
+import { AddonBlockCalendarMonthModule } from '@addon/block/calendarmonth/calendarmonth.module';
+import { AddonBlockCalendarUpcomingModule } from '@addon/block/calendarupcoming/calendarupcoming.module';
+import { AddonBlockCommentsModule } from '@addon/block/comments/comments.module';
+import { AddonBlockCompletionStatusModule } from '@addon/block/completionstatus/completionstatus.module';
 import { AddonBlockMyOverviewModule } from '@addon/block/myoverview/myoverview.module';
+import { AddonBlockLearningPlansModule } from '@addon/block/learningplans/learningplans.module';
+import { AddonBlockPrivateFilesModule } from '@addon/block/privatefiles/privatefiles.module';
 import { AddonBlockSiteMainMenuModule } from '@addon/block/sitemainmenu/sitemainmenu.module';
 import { AddonBlockTimelineModule } from '@addon/block/timeline/timeline.module';
 import { AddonBlockRecentlyAccessedCoursesModule } from '@addon/block/recentlyaccessedcourses/recentlyaccessedcourses.module';
 import { AddonBlockRecentlyAccessedItemsModule } from '@addon/block/recentlyaccesseditems/recentlyaccesseditems.module';
 import { AddonBlockStarredCoursesModule } from '@addon/block/starredcourses/starredcourses.module';
+import { AddonBlockSelfCompletionModule } from '@addon/block/selfcompletion/selfcompletion.module';
 import { AddonModAssignModule } from '@addon/mod/assign/assign.module';
 import { AddonModBookModule } from '@addon/mod/book/book.module';
 import { AddonModChatModule } from '@addon/mod/chat/chat.module';
@@ -213,12 +220,19 @@ export const CORE_PROVIDERS: any[] = [
         AddonUserProfileFieldModule,
         AddonFilesModule,
         AddonBlockActivityModulesModule,
+        AddonBlockCalendarMonthModule,
+        AddonBlockCalendarUpcomingModule,
+        AddonBlockCommentsModule,
+        AddonBlockCompletionStatusModule,
+        AddonBlockLearningPlansModule,
         AddonBlockMyOverviewModule,
+        AddonBlockPrivateFilesModule,
         AddonBlockSiteMainMenuModule,
         AddonBlockTimelineModule,
         AddonBlockRecentlyAccessedCoursesModule,
         AddonBlockRecentlyAccessedItemsModule,
         AddonBlockStarredCoursesModule,
+        AddonBlockSelfCompletionModule,
         AddonModAssignModule,
         AddonModBookModule,
         AddonModChatModule,

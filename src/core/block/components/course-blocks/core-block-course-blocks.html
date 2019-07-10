@@ -1,0 +1,15 @@
+<ion-content>
+    <ion-refresher [enabled]="dataLoaded" (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="dataLoaded" class="core-loading-center">
+        <ion-list *ngIf="hasSupportedBlock">
+            <!-- Course blocks. -->
+            <ng-container *ngFor="let block of blocks">
+                <core-block [block]="block" contextLevel="course" [instanceId]="courseId"></core-block>
+            </ng-container>
+        </ion-list>
+
+        <core-empty-box *ngIf="!hasSupportedBlock" icon="qr-scanner" [message]="'core.course.nocontentavailable' | translate"></core-empty-box>
+    </core-loading>
+</ion-content>
