@@ -43,7 +43,7 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginCompo
         let val;
 
         // Calculate format to use. ion-datetime doesn't support escaping characters ([]), so we remove them.
-        this.format = this.timeUtils.convertPHPToMoment(this.translate.instant('core.strftimedatefullshort'))
+        this.format = this.timeUtils.convertPHPToMoment(this.translate.instant('core.strftimedate'))
                 .replace(/[\[\]]/g, '');
 
         if (this.mode == 'search') {

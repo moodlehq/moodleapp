@@ -49,7 +49,7 @@ export class AddonUserProfileFieldDatetimeComponent implements OnInit {
 
             // Calculate format to use. ion-datetime doesn't support escaping characters ([]), so we remove them.
             field.format = this.timeUtils.convertPHPToMoment(this.translate.instant('core.' +
-                    (hasTime ? 'strftimedatetimeshort' : 'strftimedatefullshort'))).replace(/[\[\]]/g, '');
+                    (hasTime ? 'strftimedatetime' : 'strftimedate'))).replace(/[\[\]]/g, '');
 
             // Check min value.
             if (field.param1) {
