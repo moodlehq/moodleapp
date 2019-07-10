@@ -14,7 +14,9 @@
 
 import { Injector } from '@angular/core';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
-import { CoreCourseOptionsHandler, CoreCourseOptionsHandlerData } from '@core/course/providers/options-delegate';
+import {
+    CoreCourseOptionsHandler, CoreCourseOptionsHandlerData, CoreCourseOptionsMenuHandlerData
+} from '@core/course/providers/options-delegate';
 import { CoreSitePluginsBaseHandler } from './base-handler';
 import { CoreSitePluginsCourseOptionComponent } from '../../components/course-option/course-option';
 
@@ -23,12 +25,14 @@ import { CoreSitePluginsCourseOptionComponent } from '../../components/course-op
  */
 export class CoreSitePluginsCourseOptionHandler extends CoreSitePluginsBaseHandler implements CoreCourseOptionsHandler {
     priority: number;
+    isMenuHandler: boolean;
 
     constructor(name: string, protected title: string, protected plugin: any, protected handlerSchema: any,
             protected initResult: any, protected sitePluginsProvider: CoreSitePluginsProvider) {
         super(name);
 
         this.priority = handlerSchema.priority;
+        this.isMenuHandler = !!handlerSchema.ismenuhandler;
     }
 
     /**
@@ -46,19 +50,46 @@ export class CoreSitePluginsCourseOptionHandler extends CoreSitePluginsBaseHandl
     }
 
     /**
-     * Returns the data needed to render the handler.
+     * Returns the data needed to render the handler (if it isn't a menu handler).
      *
      * @param {Injector} injector Injector.
-     * @param {number} courseId The course ID.
+     * @param {number} course The course.
      * @return {CoreCourseOptionsHandlerData|Promise<CoreCourseOptionsHandlerData>} Data or promise resolved with the data.
      */
-    getDisplayData(injector: Injector, courseId: number): CoreCourseOptionsHandlerData | Promise<CoreCourseOptionsHandlerData> {
+    getDisplayData(injector: Injector, course: any): CoreCourseOptionsHandlerData | Promise<CoreCourseOptionsHandlerData> {
         return {
             title: this.title,
             class: this.handlerSchema.displaydata.class,
             component: CoreSitePluginsCourseOptionComponent,
             componentData: {
                 handlerUniqueName: this.name
+            }
+        };
+    }
+
+    /**
+     * Returns the data needed to render the handler (if it's a menu handler).
+     *
+     * @param {Injector} injector Injector.
+     * @param {any} course The course.
+     * @return {CoreCourseOptionsMenuHandlerData|Promise<CoreCourseOptionsMenuHandlerData>} Data or promise resolved with data.
+     */
+    getMenuDisplayData(injector: Injector, course: any):
+            CoreCourseOptionsMenuHandlerData | Promise<CoreCourseOptionsMenuHandlerData> {
+
+        return {
+            title: this.title,
+            class: this.handlerSchema.displaydata.class,
+            icon: this.handlerSchema.displaydata.icon || '',
+            page: 'CoreSitePluginsPluginPage',
+            pageParams: {
+                title: this.title,
+                component: this.plugin.component,
+                method: this.handlerSchema.method,
+                args: {
+                    courseid: course.id
+                },
+                initResult: this.initResult
             }
         };
     }

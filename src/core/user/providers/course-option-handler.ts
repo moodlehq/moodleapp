@@ -79,10 +79,10 @@ export class CoreUserParticipantsCourseOptionHandler implements CoreCourseOption
      * Returns the data needed to render the handler.
      *
      * @param {Injector} injector Injector.
-     * @param {number} courseId The course ID.
+     * @param {number} course The course.
      * @return {CoreCourseOptionsHandlerData|Promise<CoreCourseOptionsHandlerData>} Data or promise resolved with the data.
      */
-    getDisplayData(injector: Injector, courseId: number): CoreCourseOptionsHandlerData | Promise<CoreCourseOptionsHandlerData> {
+    getDisplayData(injector: Injector, course: any): CoreCourseOptionsHandlerData | Promise<CoreCourseOptionsHandlerData> {
         return {
             title: 'core.user.participants',
             class: 'core-user-participants-handler',
