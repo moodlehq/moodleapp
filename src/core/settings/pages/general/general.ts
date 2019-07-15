@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, } from '@angular/core';
-import { IonicPage } from 'ionic-angular';
+import { Component, ViewChild } from '@angular/core';
+import { IonicPage, Segment } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigProvider } from '@providers/config';
@@ -37,6 +37,8 @@ export class CoreSettingsGeneralPage {
     languages = {};
     languageCodes = [];
     selectedLanguage: string;
+    fontSizes = [];
+    selectedFontSize: string;
     rteSupported: boolean;
     richTextEditor: boolean;
     debugDisplay: boolean;
@@ -52,6 +54,24 @@ export class CoreSettingsGeneralPage {
             this.selectedLanguage = currentLanguage;
         });
 
+        this.configProvider.get(CoreConstants.SETTINGS_FONT_SIZE, CoreConfigConstants.font_sizes[0]).then((fontSize) => {
+            this.selectedFontSize = fontSize;
+            this.fontSizes = CoreConfigConstants.font_sizes.map((size) => {
+                return {
+                    size: size,
+                    // Absolute pixel size based on 1.4rem body text when this size is selected.
+                    style: Math.round(size * 16 * 1.4 / 100),
+                    selected: size === this.selectedFontSize
+                };
+            });
+            // Workaround for segment control bug https://github.com/ionic-team/ionic/issues/6923, fixed in Ionic 4 only.
+            setTimeout(() => {
+                if (this.segment) {
+                    this.segment.ngAfterContentInit();
+                }
+            });
+        });
+
         this.rteSupported = this.domUtils.isRichTextEditorSupported();
         if (this.rteSupported) {
             this.configProvider.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true).then((richTextEditorEnabled) => {
@@ -64,6 +84,9 @@ export class CoreSettingsGeneralPage {
         });
     }
 
+    @ViewChild(Segment)
+    private segment: Segment;
+
     /**
      * Called when a new language is selected.
      */
@@ -71,6 +94,19 @@ export class CoreSettingsGeneralPage {
         this.langProvider.changeCurrentLanguage(this.selectedLanguage).finally(() => {
             this.eventsProvider.trigger(CoreEventsProvider.LANGUAGE_CHANGED);
         });
+    }
+
+    /**
+     * Called when a new font size is selected.
+     */
+    fontSizeChanged(): void {
+        this.fontSizes = this.fontSizes.map((fontSize) => {
+            fontSize.selected = fontSize.size === this.selectedFontSize;
+
+            return fontSize;
+        });
+        document.documentElement.style.fontSize = this.selectedFontSize + '%';
+        this.configProvider.set(CoreConstants.SETTINGS_FONT_SIZE, this.selectedFontSize);
     }
 
     /**

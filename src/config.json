@@ -68,6 +68,11 @@
             "password": "moodle"
         }
     },
+    "font_sizes": [
+        62.5,
+        75.89,
+        93.75
+    ],
     "customurlscheme": "moodlemobile",
     "siteurl": "",
     "sitename": "",
