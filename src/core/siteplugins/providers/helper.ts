@@ -142,6 +142,11 @@ export class CoreSitePluginsHelperProvider {
                 url = this.textUtils.concatenatePaths(site.getURL(), url);
             }
 
+            if (url && handlerSchema.styles.version) {
+                // Add the version to the URL to prevent getting a cached file.
+                url += (url.indexOf('?') != -1 ? '&' : '?') + 'version=' + handlerSchema.styles.version;
+            }
+
             const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
                 componentId = uniqueName + '#main';
 
