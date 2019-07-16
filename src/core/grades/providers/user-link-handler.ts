@@ -24,7 +24,7 @@ import { CoreGradesHelperProvider } from './helper';
 @Injectable()
 export class CoreGradesUserLinkHandler extends CoreContentLinksHandlerBase {
     name = 'CoreGradesUserLinkHandler';
-    pattern = /\/grade\/report\/user\/index.php/;
+    pattern = /\/grade\/report(\/user)?\/index.php/;
 
     constructor(private gradesProvider: CoreGradesProvider, private gradesHelper: CoreGradesHelperProvider) {
         super();
