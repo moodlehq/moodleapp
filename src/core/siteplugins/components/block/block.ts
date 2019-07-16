@@ -27,7 +27,7 @@ import { CoreBlockDelegate } from '@core/block/providers/delegate';
 })
 export class CoreSitePluginsBlockComponent extends CoreBlockBaseComponent implements OnChanges {
     @Input() block: any;
-    @Input() contextLevel: number;
+    @Input() contextLevel: string;
     @Input() instanceId: number;
 
     @ViewChild(CoreSitePluginsPluginContentComponent) content: CoreSitePluginsPluginContentComponent;
