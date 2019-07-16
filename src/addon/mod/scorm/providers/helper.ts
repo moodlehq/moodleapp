@@ -199,12 +199,15 @@ export class AddonModScormHelperProvider {
      * @param {number} attempt Attempt number.
      * @param {any[]} [toc] SCORM's TOC. If not provided, it will be calculated.
      * @param {string} [organization] Organization to use.
+     * @param {string} [mode] Mode.
      * @param {boolean} [offline] Whether the attempt is offline.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved with the first SCO.
      */
-    getFirstSco(scormId: number, attempt: number, toc?: any[], organization?: string, offline?: boolean, siteId?: string)
-            : Promise<any> {
+    getFirstSco(scormId: number, attempt: number, toc?: any[], organization?: string, mode?: string, offline?: boolean,
+            siteId?: string): Promise<any> {
+
+        mode = mode || AddonModScormProvider.MODENORMAL;
 
         let promise;
         if (toc && toc.length) {
@@ -215,15 +218,20 @@ export class AddonModScormHelperProvider {
         }
 
         return promise.then((scos) => {
+
             // Search the first valid SCO.
             for (let i = 0; i < scos.length; i++) {
                 const sco = scos[i];
 
-                // Return the first valid and incomplete SCO.
-                if (sco.isvisible && sco.prereq && sco.launch && this.scormProvider.isStatusIncomplete(sco.status)) {
+                if (sco.isvisible && sco.launch && sco.prereq &&
+                        (mode != AddonModScormProvider.MODENORMAL || this.scormProvider.isStatusIncomplete(sco.status))) {
+                    // In browse/review mode return the first visible sco. In normal mode, first incomplete sco.
                     return sco;
                 }
             }
+
+            // No "valid" SCO, load the first one. In web it loads the first child because the toc contains the organization SCO.
+            return scos[0];
         });
     }
 
