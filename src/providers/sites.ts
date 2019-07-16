@@ -363,7 +363,7 @@ export class CoreSitesProvider {
             return this.checkSiteWithProtocol(siteUrl, protocol).catch((error) => {
                 // Do not continue checking if a critical error happened.
                 if (error.critical) {
-                    return Promise.reject(error.error);
+                    return Promise.reject(error);
                 }
 
                 // Retry with the other protocol.
@@ -371,13 +371,17 @@ export class CoreSitesProvider {
 
                 return this.checkSiteWithProtocol(siteUrl, protocol).catch((secondError) => {
                     if (secondError.critical) {
-                        return Promise.reject(secondError.error);
+                        return Promise.reject(secondError);
                     }
 
                     // Site doesn't exist. Return the error message.
-                    return Promise.reject(this.textUtils.getErrorMessageFromError(error) ||
-                            this.textUtils.getErrorMessageFromError(secondError) ||
-                            this.translate.instant('core.cannotconnect'));
+                    if (this.textUtils.getErrorMessageFromError(error)) {
+                        return Promise.reject(error);
+                    } else if (this.textUtils.getErrorMessageFromError(secondError)) {
+                        return Promise.reject(secondError);
+                    } else {
+                        return this.translate.instant('core.cannotconnect');
+                    }
                 });
             });
         }
@@ -415,8 +419,11 @@ export class CoreSitesProvider {
                 }
 
                 // Return the error message.
-                return Promise.reject(this.textUtils.getErrorMessageFromError(error) ||
-                        this.textUtils.getErrorMessageFromError(secondError));
+                if (this.textUtils.getErrorMessageFromError(error)) {
+                    return Promise.reject(error);
+                } else {
+                    return Promise.reject(secondError);
+                }
             });
         }).then(() => {
             // Create a temporary site to check if local_mobile is installed.
@@ -456,7 +463,9 @@ export class CoreSitesProvider {
                         // Error, check if not supported.
                         if (error.available === 1) {
                             // Service supported but an error happened. Return error.
-                            return Promise.reject({ error: error.error });
+                            error.critical = true;
+
+                            return Promise.reject(error);
                         }
 
                         return data;

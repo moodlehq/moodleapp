@@ -599,6 +599,64 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Get the error message from an error, including debug data if needed.
+     *
+     * @param {any} error Message to show.
+     * @param {boolean} [needsTranslate] Whether the error needs to be translated.
+     * @return {string} Error message, null if no error should be displayed.
+     */
+    getErrorMessage(error: any, needsTranslate?: boolean): string {
+        let extraInfo = '';
+
+        if (typeof error == 'object') {
+            if (this.debugDisplay) {
+                // Get the debug info. Escape the HTML so it is displayed as it is in the view.
+                if (error.debuginfo) {
+                    extraInfo = '<br><br>' + this.textUtils.escapeHTML(error.debuginfo);
+                }
+                if (error.backtrace) {
+                    extraInfo += '<br><br>' + this.textUtils.replaceNewLines(this.textUtils.escapeHTML(error.backtrace), '<br>');
+                }
+
+                // tslint:disable-next-line
+                console.error(error);
+            }
+
+            // We received an object instead of a string. Search for common properties.
+            if (error.coreCanceled) {
+                // It's a canceled error, don't display an error.
+                return null;
+            }
+
+            error = this.textUtils.getErrorMessageFromError(error);
+            if (!error) {
+                // No common properties found, just stringify it.
+                error = JSON.stringify(error);
+                extraInfo = ''; // No need to add extra info because it's already in the error.
+            }
+
+            // Try to remove tokens from the contents.
+            const matches = error.match(/token"?[=|:]"?(\w*)/, '');
+            if (matches && matches[1]) {
+                error = error.replace(new RegExp(matches[1], 'g'), 'secret');
+            }
+        }
+
+        if (error == CoreConstants.DONT_SHOW_ERROR) {
+            // The error shouldn't be shown, stop.
+            return null;
+        }
+
+        let message = this.textUtils.decodeHTML(needsTranslate ? this.translate.instant(error) : error);
+
+        if (extraInfo) {
+            message += extraInfo;
+        }
+
+        return message;
+    }
+
+    /**
      * Retrieve component/directive instance.
      * Please use this function only if you cannot retrieve the instance using parent/child methods: ViewChild (or similar)
      * or Angular's injection.
@@ -1138,51 +1196,11 @@ export class CoreDomUtilsProvider {
      * @return {Promise<Alert>} Promise resolved with the alert modal.
      */
     showErrorModal(error: any, needsTranslate?: boolean, autocloseTime?: number): Promise<Alert> {
-        let extraInfo = '';
+        const message = this.getErrorMessage(error, needsTranslate);
 
-        if (typeof error == 'object') {
-            if (this.debugDisplay) {
-                // Get the debug info. Escape the HTML so it is displayed as it is in the view.
-                if (error.debuginfo) {
-                    extraInfo = '<br><br>' + this.textUtils.escapeHTML(error.debuginfo);
-                }
-                if (error.backtrace) {
-                    extraInfo += '<br><br>' + this.textUtils.replaceNewLines(this.textUtils.escapeHTML(error.backtrace), '<br>');
-                }
-
-                // tslint:disable-next-line
-                console.error(error);
-            }
-
-            // We received an object instead of a string. Search for common properties.
-            if (error.coreCanceled) {
-                // It's a canceled error, don't display an error.
-                return;
-            }
-
-            error = this.textUtils.getErrorMessageFromError(error);
-            if (!error) {
-                // No common properties found, just stringify it.
-                error = JSON.stringify(error);
-                extraInfo = ''; // No need to add extra info because it's already in the error.
-            }
-
-            // Try to remove tokens from the contents.
-            const matches = error.match(/token"?[=|:]"?(\w*)/, '');
-            if (matches && matches[1]) {
-                error = error.replace(new RegExp(matches[1], 'g'), 'secret');
-            }
-        }
-
-        if (error == CoreConstants.DONT_SHOW_ERROR) {
-            // The error shouldn't be shown, stop.
-            return;
-        }
-
-        let message = this.textUtils.decodeHTML(needsTranslate ? this.translate.instant(error) : error);
-
-        if (extraInfo) {
-            message += extraInfo;
+        if (message === null) {
+            // Message doesn't need to be displayed, stop.
+            return Promise.resolve(null);
         }
 
         return this.showAlert(this.getErrorTitle(message), message, undefined, autocloseTime);
