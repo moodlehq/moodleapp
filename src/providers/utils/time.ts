@@ -119,6 +119,29 @@ export class CoreTimeUtilsProvider {
     }
 
     /**
+     * Fix format to use in an ion-datetime.
+     *
+     * @param {string} format Format to use.
+     * @return {string} Fixed format.
+     */
+    fixFormatForDatetime(format: string): string {
+        if (!format) {
+            return '';
+        }
+
+        // The component ion-datetime doesn't support escaping characters ([]), so we remove them.
+        let fixed = format.replace(/[\[\]]/g, '');
+
+        if (fixed.indexOf('A') != -1) {
+            // Do not use am/pm format because there is a bug in ion-datetime.
+            fixed = fixed.replace(/ ?A/g, '');
+            fixed = fixed.replace(/h/g, 'H');
+        }
+
+        return fixed;
+    }
+
+    /**
      * Returns hours, minutes and seconds in a human readable format
      *
      * @param {number} seconds A number of seconds
