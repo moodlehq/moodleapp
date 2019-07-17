@@ -76,7 +76,7 @@
                 {{ 'addon.competency.noevidence' | translate }}
             </p>
             <ion-card *ngFor="let evidence of competency.evidence">
-                <a ion-item text-wrap *ngIf="evidence.actionuser" (click)="openUserProfile(evidence.actionuser.id)">
+                <a ion-item text-wrap *ngIf="evidence.actionuser" core-user-link [userId]="evidence.actionuser.id" [courseId]="courseId">
                     <ion-avatar core-user-avatar [user]="evidence.actionuser" item-start></ion-avatar>
                     <h2>{{ evidence.actionuser.fullname }}</h2>
                     <p>{{ evidence.timemodified * 1000 | coreFormatDate }}</p>
