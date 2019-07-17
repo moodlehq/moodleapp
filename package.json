@@ -215,6 +215,7 @@
       "category": "public.app-category.education",
       "icon": "resources/desktop/icon.icns",
       "target": "mas",
+      "bundleVersion": "3.7.0",
       "extendInfo": {
         "ElectronTeamID": "2NU57U5PAW"
       }
