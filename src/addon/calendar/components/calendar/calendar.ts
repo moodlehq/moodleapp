@@ -14,6 +14,7 @@
 
 import { Component, OnDestroy, OnInit, Input, OnChanges, SimpleChange, Output, EventEmitter } from '@angular/core';
 import { CoreEventsProvider } from '@providers/events';
+import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
@@ -56,9 +57,11 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
 
     // Observers.
     protected undeleteEventObserver: any;
+    protected obsDefaultTimeChange: any;
 
     constructor(eventsProvider: CoreEventsProvider,
             sitesProvider: CoreSitesProvider,
+            localNotificationsProvider: CoreLocalNotificationsProvider,
             private calendarProvider: AddonCalendarProvider,
             private calendarHelper: AddonCalendarHelperProvider,
             private calendarOffline: AddonCalendarOfflineProvider,
@@ -68,6 +71,17 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
             private coursesProvider: CoreCoursesProvider) {
 
         this.currentSiteId = sitesProvider.getCurrentSiteId();
+
+        if (localNotificationsProvider.isAvailable()) {
+            // Re-schedule events if default time changes.
+            this.obsDefaultTimeChange = eventsProvider.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
+                this.weeks.forEach((week) => {
+                    week.days.forEach((day) => {
+                        calendarProvider.scheduleEventsNotifications(day.events);
+                    });
+                });
+            }, this.currentSiteId);
+        }
 
         // Listen for events "undeleted" (offline).
         this.undeleteEventObserver = eventsProvider.on(AddonCalendarProvider.UNDELETED_EVENT_EVENT, (data) => {
@@ -334,6 +348,9 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
                 // Format online events.
                 day.events.forEach(this.calendarHelper.formatEventData.bind(this.calendarHelper));
 
+                // Schedule notifications for the events retrieved (only future events will be scheduled).
+                this.calendarProvider.scheduleEventsNotifications(day.events);
+
                 if (monthOfflineEvents || this.deletedEvents.length) {
                     // There is offline data, merge it.
 
@@ -403,5 +420,6 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
      */
     ngOnDestroy(): void {
         this.undeleteEventObserver && this.undeleteEventObserver.off();
+        this.obsDefaultTimeChange && this.obsDefaultTimeChange.off();
     }
 }

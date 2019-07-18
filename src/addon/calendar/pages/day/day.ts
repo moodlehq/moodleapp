@@ -61,6 +61,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     protected syncObserver: any;
     protected manualSyncObserver: any;
     protected onlineObserver: any;
+    protected obsDefaultTimeChange: any;
 
     periodName: string;
     filteredEvents = [];
@@ -97,6 +98,13 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         this.day = navParams.get('day') || now.getDate();
         this.courseId = navParams.get('courseId');
         this.currentSiteId = sitesProvider.getCurrentSiteId();
+
+        if (localNotificationsProvider.isAvailable()) {
+            // Re-schedule events if default time changes.
+            this.obsDefaultTimeChange = eventsProvider.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
+                calendarProvider.scheduleEventsNotifications(this.onlineEvents);
+            }, this.currentSiteId);
+        }
 
         // Listen for events added. When an event is added, reload the data.
         this.newEventObserver = eventsProvider.on(AddonCalendarProvider.NEW_EVENT_EVENT, (data) => {
@@ -281,6 +289,9 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
 
             this.onlineEvents = result.events;
             this.onlineEvents.forEach(this.calendarHelper.formatEventData.bind(this.calendarHelper));
+
+            // Schedule notifications for the events retrieved (only future events will be scheduled).
+            this.calendarProvider.scheduleEventsNotifications(this.onlineEvents);
 
             // Merge the online events with offline data.
             this.events = this.mergeEvents();
@@ -609,5 +620,6 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         this.syncObserver && this.syncObserver.off();
         this.manualSyncObserver && this.manualSyncObserver.off();
         this.onlineObserver && this.onlineObserver.unsubscribe();
+        this.obsDefaultTimeChange && this.obsDefaultTimeChange.off();
     }
 }
