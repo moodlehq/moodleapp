@@ -54,7 +54,7 @@ export class AddonCalendarHelperProvider {
 
         const types = {};
         events.forEach((event) => {
-            types[event.eventtype] = true;
+            types[event.formattedType || event.eventtype] = true;
 
             if (event.islastday) {
                 day.haslastdayofevent = true;
@@ -132,6 +132,8 @@ export class AddonCalendarHelperProvider {
             e.icon = this.courseProvider.getModuleIconSrc(e.modulename);
             e.moduleIcon = e.icon;
         }
+
+        e.formattedType = this.calendarProvider.getEventType(e);
 
         if (typeof e.duration != 'undefined') {
             // It's an offline event, add some calculated data.

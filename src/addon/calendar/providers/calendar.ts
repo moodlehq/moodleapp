@@ -18,7 +18,9 @@ import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreSite } from '@classes/site';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreAppProvider } from '@providers/app';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreGroupsProvider } from '@providers/groups';
 import { CoreConstants } from '@core/constants';
@@ -259,7 +261,9 @@ export class AddonCalendarProvider {
             private sitesProvider: CoreSitesProvider,
             private groupsProvider: CoreGroupsProvider,
             private coursesProvider: CoreCoursesProvider,
+            private textUtils: CoreTextUtilsProvider,
             private timeUtils: CoreTimeUtilsProvider,
+            private urlUtils: CoreUrlUtilsProvider,
             private localNotificationsProvider: CoreLocalNotificationsProvider,
             private configProvider: CoreConfigProvider,
             private utils: CoreUtilsProvider,
@@ -487,15 +491,19 @@ export class AddonCalendarProvider {
     }
 
     /**
-     * Format event time. Equivalent to calendar_format_event_time.
+     * Format event time. Similar to calendar_format_event_time.
      *
      * @param {any} event Event to format.
      * @param {string} format Calendar time format (from getCalendarTimeFormat).
      * @param {boolean} [useCommonWords=true] Whether to use common words like "Today", "Yesterday", etc.
+     * @param {number} [seenDay] Timestamp of day currently seen. If set, the function will not add links to this day.
      * @param {number} [showTime=0] Determine the show time GMT timestamp.
-     * @return {string} Formatted event time.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<string>} Promise resolved with the formatted event time.
      */
-    formatEventTime(event: any, format: string, useCommonWords: boolean = true, showTime: number = 0): string {
+    formatEventTime(event: any, format: string, useCommonWords: boolean = true, seenDay?: number, showTime: number = 0,
+            siteId?: string): Promise<string> {
+
         const start = event.timestart * 1000,
             end = (event.timestart + event.timeduration) * 1000;
         let time;
@@ -511,46 +519,50 @@ export class AddonCalendarProvider {
                             this.timeUtils.userDate(end, format);
                 }
 
-                if (!showTime) {
-                    return this.getDayRepresentation(start, useCommonWords) + ', ' + time;
-                } else {
-                    return time;
-                }
-
             } else {
                 // Event lasts more than one day.
-                const midnightStart = moment(start).startOf('day').unix() * 1000,
-                    midnightEnd = moment(end).startOf('day').unix() * 1000,
-                    timeStart = this.timeUtils.userDate(start, format),
-                    timeEnd = this.timeUtils.userDate(end, format);
-                let dayStart = this.getDayRepresentation(start, useCommonWords) + ', ',
-                    dayEnd = this.getDayRepresentation(end, useCommonWords) + ', ';
+                const timeStart = this.timeUtils.userDate(start, format),
+                    timeEnd = this.timeUtils.userDate(end, format),
+                    promises = [];
 
-                if (showTime == midnightStart) {
-                    dayStart = '';
+                // Don't use common words when the event lasts more than one day.
+                let dayStart = this.getDayRepresentation(start, false) + ', ',
+                    dayEnd = this.getDayRepresentation(end, false) + ', ';
+
+                // Add links to the days if needed.
+                if (dayStart && (!seenDay || !moment(seenDay).isSame(start, 'day'))) {
+                    promises.push(this.getViewUrl('day', event.timestart, undefined, siteId).then((url) => {
+                        dayStart = this.urlUtils.buildLink(url, dayStart);
+                    }));
+                }
+                if (dayEnd && (!seenDay || !moment(seenDay).isSame(end, 'day'))) {
+                    promises.push(this.getViewUrl('day', end / 1000, undefined, siteId).then((url) => {
+                        dayEnd = this.urlUtils.buildLink(url, dayEnd);
+                    }));
                 }
 
-                if (showTime == midnightEnd) {
-                    dayEnd = '';
-                }
-
-                // Set printable representation.
-                if (moment().isSame(start, 'day')) {
-                    // Event starts today, don't display the day.
-                    return timeStart + ' <strong>&raquo;</strong> ' + dayEnd + timeEnd;
-                } else {
-                    // The event starts in the future, print both days.
+                return Promise.all(promises).then(() => {
                     return dayStart + timeStart + ' <strong>&raquo;</strong> ' + dayEnd + timeEnd;
-                }
+                });
             }
-        } else { // There is no time duration.
-            const time = this.timeUtils.userDate(start, format);
+        } else {
+            // There is no time duration.
+            time = this.timeUtils.userDate(start, format);
+        }
 
-            if (!showTime) {
-                return this.getDayRepresentation(start, useCommonWords) + ', ' + time.trim();
+        if (!showTime) {
+            // Display day + time.
+            if (seenDay && moment(seenDay).isSame(start, 'day')) {
+                // This day is currently being displayed, don't add an link.
+                return Promise.resolve(this.getDayRepresentation(start, useCommonWords) + ', ' + time);
             } else {
-                return time;
+                // Add link to view the day.
+                return this.getViewUrl('day', event.timestart, undefined, siteId).then((url) => {
+                    return this.urlUtils.buildLink(url, this.getDayRepresentation(start, useCommonWords)) + ', ' + time;
+                });
             }
+        } else {
+            return Promise.resolve(time);
         }
     }
 
@@ -839,6 +851,21 @@ export class AddonCalendarProvider {
                 return this.scheduleEventNotification(event, reminderId, time, site.getId());
             });
         });
+    }
+
+    /**
+     * Return the normalised event type.
+     * Activity events are normalised to be course events.
+     *
+     * @param {any} event The event to get its type.
+     * @return {string} Event type.
+     */
+    getEventType(event: any): string {
+        if (event.modulename) {
+            return 'course';
+        }
+
+        return event.eventtype;
     }
 
     /**
@@ -1153,6 +1180,31 @@ export class AddonCalendarProvider {
      */
     protected getUpcomingEventsCacheKey(courseId?: number, categoryId?: number): string {
         return this.getUpcomingEventsPrefixCacheKey() + (courseId ? courseId : '') + ':' + (categoryId ? categoryId : '');
+    }
+
+    /**
+     * Get URL to view a calendar.
+     *
+     * @param {string} view The view to load: 'month', 'day', 'upcoming', etc.
+     * @param {number} [time] Time to load. If not defined, current time.
+     * @param {string} [courseId] Course to load. If not defined, all courses.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<string>} Promise resolved with the URL.x
+     */
+    getViewUrl(view: string, time?: number, courseId?: string, siteId?: string): Promise<string> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            let url = this.textUtils.concatenatePaths(site.getURL(), 'calendar/view.php?view=' + view);
+
+            if (time) {
+                url += '&time=' + time;
+            }
+
+            if (courseId) {
+                url += '&course=' + courseId;
+            }
+
+            return url;
+        });
     }
 
     /**

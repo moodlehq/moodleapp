@@ -311,6 +311,13 @@ export class AddonCalendarEventPage implements OnDestroy {
                 event.deleted = deleted;
             }));
 
+            // Re-calculate the formatted time so it uses the device date.
+            promises.push(this.calendarProvider.getCalendarTimeFormat().then((timeFormat) => {
+                this.calendarProvider.formatEventTime(event, timeFormat).then((time) => {
+                    event.formattedtime = time;
+                });
+            }));
+
             return Promise.all(promises);
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevent', true);

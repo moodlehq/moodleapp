@@ -53,7 +53,6 @@ export class AddonCalendarListPage implements OnDestroy {
     protected siteHomeId: number;
     protected obsDefaultTimeChange: any;
     protected eventId: number;
-    protected preSelectedCourseId: number;
     protected newEventObserver: any;
     protected discardedObserver: any;
     protected editEventObserver: any;
@@ -101,7 +100,7 @@ export class AddonCalendarListPage implements OnDestroy {
         }
 
         this.eventId = navParams.get('eventId') || false;
-        this.preSelectedCourseId = navParams.get('courseId') || null;
+        this.courseId = navParams.get('courseId');
 
         // Listen for events added. When an event is added, reload the data.
         this.newEventObserver = eventsProvider.on(AddonCalendarProvider.NEW_EVENT_EVENT, (data) => {
@@ -283,12 +282,6 @@ export class AddonCalendarListPage implements OnDestroy {
             promises.push(this.coursesHelper.getCoursesForPopover(this.courseId).then((result) => {
                 this.courses = result.courses;
                 this.categoryId = result.categoryId;
-
-                if (this.preSelectedCourseId) {
-                    this.filter.course = courses.find((course) => {
-                        return course.id == this.preSelectedCourseId;
-                    });
-                }
 
                 return this.fetchEvents(refresh);
             }));

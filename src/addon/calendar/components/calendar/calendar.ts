@@ -91,7 +91,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
         const now = new Date();
 
         this.year = this.initialYear ? Number(this.initialYear) : now.getFullYear();
-        this.month = this.initialYear ? Number(this.initialYear) : now.getMonth() + 1;
+        this.month = this.initialMonth ? Number(this.initialMonth) : now.getMonth() + 1;
         this.canNavigate = typeof this.canNavigate == 'undefined' ? true : this.utils.isTrueOrOne(this.canNavigate);
 
         this.fetchData();
@@ -328,31 +328,33 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     protected mergeEvents(): void {
         const monthOfflineEvents = this.offlineEvents[this.calendarHelper.getMonthId(this.year, this.month)];
 
-        if (!monthOfflineEvents && !this.deletedEvents.length) {
-            // No offline events, nothing to merge.
-            return;
-        }
-
         this.weeks.forEach((week) => {
             week.days.forEach((day) => {
 
-                if (this.deletedEvents.length) {
-                    // Mark as deleted the events that were deleted in offline.
-                    day.events.forEach((event) => {
-                        event.deleted = this.deletedEvents.indexOf(event.id) != -1;
-                    });
-                }
+                // Format online events.
+                day.events.forEach(this.calendarHelper.formatEventData.bind(this.calendarHelper));
 
-                if (this.offlineEditedEventsIds.length) {
-                    // Remove the online events that were modified in offline.
-                    day.events = day.events.filter((event) => {
-                        return this.offlineEditedEventsIds.indexOf(event.id) == -1;
-                    });
-                }
+                if (monthOfflineEvents || this.deletedEvents.length) {
+                    // There is offline data, merge it.
 
-                if (monthOfflineEvents && monthOfflineEvents[day.mday]) {
-                    // Add the offline events (either new or edited).
-                    day.events = this.sortEvents(day.events.concat(monthOfflineEvents[day.mday]));
+                    if (this.deletedEvents.length) {
+                        // Mark as deleted the events that were deleted in offline.
+                        day.events.forEach((event) => {
+                            event.deleted = this.deletedEvents.indexOf(event.id) != -1;
+                        });
+                    }
+
+                    if (this.offlineEditedEventsIds.length) {
+                        // Remove the online events that were modified in offline.
+                        day.events = day.events.filter((event) => {
+                            return this.offlineEditedEventsIds.indexOf(event.id) == -1;
+                        });
+                    }
+
+                    if (monthOfflineEvents && monthOfflineEvents[day.mday]) {
+                        // Add the offline events (either new or edited).
+                        day.events = this.sortEvents(day.events.concat(monthOfflineEvents[day.mday]));
+                    }
                 }
             });
         });

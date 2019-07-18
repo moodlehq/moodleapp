@@ -188,7 +188,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      * View loaded.
      */
     ngOnInit(): void {
-        this.currentMoment = moment().year(this.year).month(this.month - 1).day(this.day);
+        this.currentMoment = moment().year(this.year).month(this.month - 1).date(this.day);
 
         this.fetchData(true, false);
     }
@@ -273,6 +273,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     fetchEvents(): Promise<any> {
         // Don't pass courseId and categoryId, we'll filter them locally.
         return this.calendarProvider.getDayEvents(this.year, this.month, this.day).then((result) => {
+            const promises = [];
 
             // Calculate the period name. We don't use the one in result because it's in server's language.
             this.periodName = this.timeUtils.userDate(new Date(this.year, this.month - 1, this.day).getTime(),
@@ -288,9 +289,14 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             this.filterEvents();
 
             // Re-calculate the formatted time so it uses the device date.
+            const dayTime = this.currentMoment.unix() * 1000;
             this.events.forEach((event) => {
-                event.formattedtime = this.calendarProvider.formatEventTime(event, this.timeFormat);
+                promises.push(this.calendarProvider.formatEventTime(event, this.timeFormat, true, dayTime).then((time) => {
+                    event.formattedtime = time;
+                }));
             });
+
+            return Promise.all(promises);
         });
     }
 

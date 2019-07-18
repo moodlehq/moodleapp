@@ -146,6 +146,8 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     fetchEvents(): Promise<any> {
         // Don't pass courseId and categoryId, we'll filter them locally.
         return this.calendarProvider.getUpcomingEvents().then((result) => {
+            const promises = [];
+
             this.onlineEvents = result.events;
 
             this.onlineEvents.forEach(this.calendarHelper.formatEventData.bind(this.calendarHelper));
@@ -158,8 +160,12 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
 
             // Re-calculate the formatted time so it uses the device date.
             this.events.forEach((event) => {
-                event.formattedtime = this.calendarProvider.formatEventTime(event, this.timeFormat);
+                promises.push(this.calendarProvider.formatEventTime(event, this.timeFormat).then((time) => {
+                    event.formattedtime = time;
+                }));
             });
+
+            return Promise.all(promises);
         });
     }
 

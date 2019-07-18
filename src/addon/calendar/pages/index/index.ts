@@ -53,6 +53,8 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     protected manualSyncObserver: any;
     protected onlineObserver: any;
 
+    year: number;
+    month: number;
     courseId: number;
     categoryId: number;
     canCreate = false;
@@ -82,8 +84,12 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
         this.courseId = navParams.get('courseId');
         this.eventId = navParams.get('eventId') || false;
+        this.year = navParams.get('year');
+        this.month = navParams.get('month');
         this.notificationsEnabled = localNotificationsProvider.isAvailable();
         this.currentSiteId = sitesProvider.getCurrentSiteId();
+        this.loadUpcoming = !!navParams.get('upcoming');
+        this.showCalendar = !this.loadUpcoming;
 
         // Listen for events added. When an event is added, reload the data.
         this.newEventObserver = eventsProvider.on(AddonCalendarProvider.NEW_EVENT_EVENT, (data) => {

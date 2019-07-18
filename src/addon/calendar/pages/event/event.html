@@ -29,17 +29,10 @@
                 <ion-item text-wrap>
                     <core-icon *ngIf="event.icon && !event.moduleIcon" [name]="event.icon" item-start></core-icon>
                     <h2><core-format-text [text]="event.name"></core-format-text></h2>
+                    <p><core-format-text [text]="event.formattedtime"></core-format-text></p>
                     <ion-note item-end *ngIf="event.deleted">
                         <ion-icon name="trash"></ion-icon> {{ 'core.deletedoffline' | translate }}
                     </ion-note>
-                </ion-item>
-                <ion-item text-wrap>
-                    <h2>{{ 'addon.calendar.eventstarttime' | translate}}</h2>
-                    <p>{{ event.timestart * 1000 | coreFormatDate }}</p>
-                </ion-item>
-                <ion-item text-wrap *ngIf="event.timeduration > 0">
-                    <h2>{{ 'addon.calendar.eventendtime' | translate}}</h2>
-                    <p>{{ (event.timestart + event.timeduration) * 1000 | coreFormatDate }}</p>
                 </ion-item>
                 <a ion-item text-wrap *ngIf="courseName" [href]="courseUrl" core-link capture="true">
                     <h2>{{ 'core.course' | translate}}</h2>
