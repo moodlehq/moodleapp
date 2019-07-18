@@ -154,10 +154,14 @@ export class CoreLoginSitePage {
      * Show an error that aims people to solve the issue.
      *
      * @param {string} url The URL the user was trying to connect to.
-     * @param {string} error Error to display.
+     * @param {any} error Error to display.
      */
-    protected showLoginIssue(url: string, error: string): void {
-        const modal = this.modalCtrl.create('CoreLoginSiteErrorPage', { siteUrl: url, issue: error });
+    protected showLoginIssue(url: string, error: any): void {
+        const modal = this.modalCtrl.create('CoreLoginSiteErrorPage', {
+            siteUrl: url,
+            issue: this.domUtils.getErrorMessage(error)
+        });
+
         modal.present();
     }
 }
