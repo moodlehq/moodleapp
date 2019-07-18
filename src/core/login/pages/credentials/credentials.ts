@@ -19,7 +19,6 @@ import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreLoginHelperProvider } from '../../providers/helper';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CoreConfigConstants } from '../../../../configconstants';
@@ -53,7 +52,7 @@ export class CoreLoginCredentialsPage {
 
     constructor(private navCtrl: NavController, navParams: NavParams, fb: FormBuilder, private appProvider: CoreAppProvider,
             private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
-            private domUtils: CoreDomUtilsProvider, private translate: TranslateService, private utils: CoreUtilsProvider,
+            private domUtils: CoreDomUtilsProvider, private translate: TranslateService,
             private eventsProvider: CoreEventsProvider) {
 
         this.siteUrl = navParams.get('siteUrl');
@@ -230,26 +229,7 @@ export class CoreLoginCredentialsPage {
      * Forgotten password button clicked.
      */
     forgottenPassword(): void {
-        if (this.siteConfig && this.siteConfig.forgottenpasswordurl) {
-            // URL set, open it.
-            this.utils.openInApp(this.siteConfig.forgottenpasswordurl);
-
-            return;
-        }
-
-        // Check if password reset can be done through the app.
-        const modal = this.domUtils.showModalLoading();
-        this.loginHelper.canRequestPasswordReset(this.siteUrl).then((canReset) => {
-            if (canReset) {
-                this.navCtrl.push('CoreLoginForgottenPasswordPage', {
-                    siteUrl: this.siteUrl, username: this.credForm.value.username
-                });
-            } else {
-                this.loginHelper.openForgottenPassword(this.siteUrl);
-            }
-        }).finally(() => {
-            modal.dismiss();
-        });
+        this.loginHelper.forgottenPasswordClicked(this.navCtrl, this.siteUrl, this.credForm.value.username, this.siteConfig);
     }
 
     /**
