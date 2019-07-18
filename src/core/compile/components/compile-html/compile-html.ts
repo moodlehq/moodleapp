@@ -60,6 +60,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     protected element;
     protected differ: any; // To detect changes in the jsData input.
     protected creatingComponent = false;
+    protected pendingCalls = {};
 
     constructor(protected compileProvider: CoreCompileProvider, protected cdr: ChangeDetectorRef, element: ElementRef,
             @Optional() protected navCtrl: NavController, differs: KeyValueDiffers, protected domUtils: CoreDomUtilsProvider,
@@ -165,6 +166,22 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
                 if (compileInstance.javascript) {
                     compileInstance.compileProvider.executeJavascript(this, compileInstance.javascript);
                 }
+
+                // Call the pending functions.
+                for (const name in compileInstance.pendingCalls) {
+                    const pendingCall = compileInstance.pendingCalls[name];
+
+                    if (typeof this[name] == 'function') {
+                        // Call the function.
+                        Promise.resolve(this[name].apply(this, pendingCall.params)).then(pendingCall.defer.resolve)
+                                .catch(pendingCall.defer.reject);
+                    } else {
+                        // Function not defined, resolve the promise.
+                        pendingCall.defer.resolve();
+                    }
+                }
+
+                compileInstance.pendingCalls = {};
             }
 
             /**
@@ -198,6 +215,41 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
             for (const name in this.jsData) {
                 this.componentInstance[name] = this.jsData[name];
             }
+        }
+    }
+
+    /**
+     * Call a certain function on the component instance.
+     *
+     * @param {string} name Name of the function to call.
+     * @param {any[]} params List of params to send to the function.
+     * @param {boolean} [callWhenCreated=true] If this param is true and the component hasn't been created yet, call the function
+     *                                         once the component has been created.
+     * @return {any} Result of the call. Undefined if no component instance or the function doesn't exist.
+     */
+    callComponentFunction(name: string, params?: any[], callWhenCreated: boolean = true): any {
+        if (this.componentInstance) {
+            if (typeof this.componentInstance[name] == 'function') {
+                return this.componentInstance[name].apply(this.componentInstance, params);
+            }
+        } else if (callWhenCreated) {
+            // Call it when the component is created.
+
+            if (this.pendingCalls[name]) {
+                // Call already pending, just update the params (allow only 1 call per function until it's initialized).
+                this.pendingCalls[name].params = params;
+
+                return this.pendingCalls[name].defer.promise;
+            }
+
+            const defer = this.utils.promiseDefer();
+
+            this.pendingCalls[name] = {
+                params: params,
+                defer: defer
+            };
+
+            return defer.promise;
         }
     }
 }

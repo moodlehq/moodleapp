@@ -169,4 +169,15 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
         this.isDestroyed = true;
         this.statusObserver && this.statusObserver.off();
     }
+
+    /**
+     * Call a certain function on the component instance.
+     *
+     * @param {string} name Name of the function to call.
+     * @param {any[]} params List of params to send to the function.
+     * @return {any} Result of the call. Undefined if no component instance or the function doesn't exist.
+     */
+    callComponentFunction(name: string, params?: any[]): any {
+        return this.content.callComponentFunction(name, params);
+    }
 }
