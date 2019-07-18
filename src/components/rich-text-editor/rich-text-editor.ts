@@ -608,14 +608,15 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
             return;
         }
 
-        if (!(this.toolbarSlides as any)._init) {
-            // Slides is not initialized yet, try later.
+        const width = this.domUtils.getElementWidth(this.toolbar.nativeElement);
+
+        if (!(this.toolbarSlides as any)._init || !width) {
+            // Slides is not initialized or width is not available yet, try later.
             setTimeout(this.updateToolbarButtons.bind(this), 100);
 
             return;
         }
 
-        const width = this.domUtils.getElementWidth(this.toolbar.nativeElement);
         if (width > this.toolbarSlides.length() * this.toolbarButtonWidth) {
             this.numToolbarButtons = this.toolbarSlides.length();
             this.toolbarArrows = false;
