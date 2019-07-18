@@ -533,10 +533,8 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
      * @param {any} $event Event data
      * @param {string} command Command to execute.
      */
-    protected buttonAction($event: any, command: string): void {
-        $event.preventDefault();
-        $event.stopPropagation();
-        this.editorElement.focus();
+    buttonAction($event: any, command: string): void {
+        this.stopBubble($event);
 
         if (command) {
             if (command.includes('|')) {
@@ -553,8 +551,9 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     /**
      * Hide the toolbar.
      */
-    hideToolbar(): void {
-        this.editorElement.focus();
+    hideToolbar($event: any): void {
+        this.stopBubble($event);
+
         this.toolbarHidden = true;
     }
 
@@ -567,25 +566,37 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     }
 
     /**
+     * Stop event default and propagation.
+     *
+     * @param {Event} event Event.
+     */
+    stopBubble(event: Event): void {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    /**
      * Method that shows the next toolbar buttons.
      */
-    toolbarNext(): void {
+    toolbarNext($event: any): void {
+        this.stopBubble($event);
+
         if (!this.toolbarNextHidden) {
             const currentIndex = this.toolbarSlides.getActiveIndex() || 0;
             this.toolbarSlides.slideTo(currentIndex + this.numToolbarButtons);
         }
-        this.editorElement.focus();
     }
 
     /**
      * Method that shows the previous toolbar buttons.
      */
-    toolbarPrev(): void {
+    toolbarPrev($event: any): void {
+        this.stopBubble($event);
+
         if (!this.toolbarPrevHidden) {
             const currentIndex = this.toolbarSlides.getActiveIndex() || 0;
             this.toolbarSlides.slideTo(currentIndex - this.numToolbarButtons);
         }
-        this.editorElement.focus();
     }
 
     /**
@@ -597,14 +608,15 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
             return;
         }
 
-        if (!(this.toolbarSlides as any)._init) {
-            // Slides is not initialized yet, try later.
+        const width = this.domUtils.getElementWidth(this.toolbar.nativeElement);
+
+        if (!(this.toolbarSlides as any)._init || !width) {
+            // Slides is not initialized or width is not available yet, try later.
             setTimeout(this.updateToolbarButtons.bind(this), 100);
 
             return;
         }
 
-        const width = this.domUtils.getElementWidth(this.toolbar.nativeElement);
         if (width > this.toolbarSlides.length() * this.toolbarButtonWidth) {
             this.numToolbarButtons = this.toolbarSlides.length();
             this.toolbarArrows = false;
