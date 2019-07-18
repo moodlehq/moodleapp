@@ -57,7 +57,6 @@ export class AddonCalendarEventPage implements OnDestroy {
     notificationMax: string;
     notificationTimeText: string;
     event: any = {};
-    title: string;
     courseName: string;
     groupName: string;
     courseUrl = '';
@@ -236,8 +235,6 @@ export class AddonCalendarEventPage implements OnDestroy {
             this.courseUrl = '';
             this.moduleUrl = '';
 
-            // Guess event title.
-            let title = this.translate.instant('addon.calendar.type' + event.eventtype);
             if (event.moduleIcon) {
                 // It's a module event, translate the module name to the current language.
                 const name = this.courseProvider.translateModuleName(event.modulename);
@@ -245,26 +242,11 @@ export class AddonCalendarEventPage implements OnDestroy {
                     event.moduleName = name;
                 }
 
-                // Calculate the title of the page;
-                if (title == 'addon.calendar.type' + event.eventtype) {
-                    title = this.translate.instant('core.mod_' + event.modulename + '.' + event.eventtype);
-
-                    if (title == 'core.mod_' + event.modulename + '.' + event.eventtype) {
-                        title = name;
-                    }
-                }
-
                 // Get the module URL.
                 if (canGetById) {
                     this.moduleUrl = event.url;
                 }
-            } else {
-                if (title == 'addon.calendar.type' + event.eventtype) {
-                    title = event.name;
-                }
             }
-
-            this.title = title;
 
             // If the event belongs to a course, get the course name and the URL to view it.
             if (canGetById && event.course && event.course.id != this.siteHomeId) {
@@ -403,7 +385,12 @@ export class AddonCalendarEventPage implements OnDestroy {
     refreshEvent(sync?: boolean, showErrors?: boolean): Promise<any> {
         this.syncIcon = 'spinner';
 
-        return this.calendarProvider.invalidateEvent(this.eventId).catch(() => {
+        const promises = [];
+
+        promises.push(this.calendarProvider.invalidateEvent(this.eventId));
+        promises.push(this.calendarProvider.invalidateTimeFormat());
+
+        return Promise.all(promises).catch(() => {
             // Ignore errors.
         }).then(() => {
             return this.fetchEvent(sync, showErrors);

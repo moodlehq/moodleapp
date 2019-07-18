@@ -43,6 +43,7 @@
                             <span class="calendar_event_type calendar_event_{{event.formattedType}}"></span>
                             <ion-icon *ngIf="event.offline && !event.deleted" name="time"></ion-icon>
                             <ion-icon *ngIf="event.deleted" name="trash"></ion-icon>
+                            <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" alt="" role="presentation" class="core-module-icon">
                             {{ event.timestart * 1000 | coreFormatDate: timeFormat }}
                             {{event.name}}
                         </p>

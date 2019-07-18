@@ -48,4 +48,11 @@ ion-app.app-root addon-calendar-calendar {
             background-color: $calendar-event-site-color;
         }
     }
+
+    .core-module-icon {
+        @include margin-horizontal(1px, 1px);
+        width: 16px;
+        height: 16px;
+        display: inline;
+    }
 }
