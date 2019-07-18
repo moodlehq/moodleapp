@@ -52,10 +52,10 @@ export interface CoreCourseOptionsHandler extends CoreDelegateHandler {
      * Returns the data needed to render the handler.
      *
      * @param {Injector} injector Injector.
-     * @param {number} courseId The course ID.
+     * @param {number} course The course.
      * @return {CoreCourseOptionsHandlerData|Promise<CoreCourseOptionsHandlerData>} Data or promise resolved with the data.
      */
-    getDisplayData?(injector: Injector, courseId: number): CoreCourseOptionsHandlerData | Promise<CoreCourseOptionsHandlerData>;
+    getDisplayData?(injector: Injector, course: any): CoreCourseOptionsHandlerData | Promise<CoreCourseOptionsHandlerData>;
 
     /**
      * Should invalidate the data to determine if the handler is enabled for a certain course.
@@ -84,10 +84,10 @@ export interface CoreCourseOptionsMenuHandler extends CoreCourseOptionsHandler {
      * Returns the data needed to render the handler.
      *
      * @param {Injector} injector Injector.
-     * @param {number} courseId The course ID.
+     * @param {number} course The course.
      * @return {CoreCourseOptionsMenuHandlerData|Promise<CoreCourseOptionsMenuHandlerData>} Data or promise resolved with data.
      */
-    getMenuDisplayData(injector: Injector, courseId: number):
+    getMenuDisplayData(injector: Injector, course: any):
         CoreCourseOptionsMenuHandlerData | Promise<CoreCourseOptionsMenuHandlerData>;
 }
 
