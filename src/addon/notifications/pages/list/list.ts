@@ -41,8 +41,10 @@ export class AddonNotificationsListPage {
     canMarkAllNotificationsAsRead = false;
     loadingMarkAllNotificationsAsRead = false;
 
+    protected isCurrentView: boolean;
     protected cronObserver: CoreEventObserver;
     protected pushObserver: Subscription;
+    protected pendingRefresh = false;
 
     constructor(navParams: NavParams, private domUtils: CoreDomUtilsProvider, private eventsProvider: CoreEventsProvider,
             private sitesProvider: CoreSitesProvider, private textUtils: CoreTextUtilsProvider,
@@ -55,17 +57,24 @@ export class AddonNotificationsListPage {
      * View loaded.
      */
     ionViewDidLoad(): void {
-        this.fetchNotifications().finally(() => {
-            this.notificationsLoaded = true;
-        });
+        this.fetchNotifications();
 
-        this.cronObserver = this.eventsProvider.on(AddonNotificationsProvider.READ_CRON_EVENT, () => this.refreshNotifications(),
-                this.sitesProvider.getCurrentSiteId());
+        this.cronObserver = this.eventsProvider.on(AddonNotificationsProvider.READ_CRON_EVENT, () => {
+            if (this.isCurrentView) {
+                this.notificationsLoaded = false;
+                this.refreshNotifications();
+            }
+        }, this.sitesProvider.getCurrentSiteId());
 
         this.pushObserver = this.pushNotificationsDelegate.on('receive').subscribe((notification) => {
             // New notification received. If it's from current site, refresh the data.
-            if (this.utils.isTrueOrOne(notification.notif) && this.sitesProvider.isCurrentSite(notification.site)) {
+            if (this.isCurrentView && this.utils.isTrueOrOne(notification.notif) &&
+                    this.sitesProvider.isCurrentSite(notification.site)) {
+
+                this.notificationsLoaded = false;
                 this.refreshNotifications();
+            } else if (!this.isCurrentView) {
+                this.pendingRefresh = true;
             }
         });
     }
@@ -93,6 +102,8 @@ export class AddonNotificationsListPage {
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.notifications.errorgetnotifications', true);
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
+        }).finally(() => {
+            this.notificationsLoaded = true;
         });
     }
 
@@ -110,9 +121,7 @@ export class AddonNotificationsListPage {
             // All marked as read, refresh the list.
             this.notificationsLoaded = false;
 
-            return this.refreshNotifications().finally(() => {
-                this.notificationsLoaded = true;
-            });
+            return this.refreshNotifications();
         });
     }
 
@@ -196,6 +205,27 @@ export class AddonNotificationsListPage {
     protected formatText(notification: any): void {
         const text = notification.mobiletext.replace(/-{4,}/ig, '');
         notification.mobiletext = this.textUtils.replaceNewLines(text, '<br>');
+    }
+
+    /**
+     * User entered the page.
+     */
+    ionViewDidEnter(): void {
+        this.isCurrentView = true;
+
+        if (this.pendingRefresh) {
+            this.pendingRefresh = false;
+            this.notificationsLoaded = false;
+
+            this.refreshNotifications();
+        }
+    }
+
+    /**
+     * User left the page.
+     */
+    ionViewDidLeave(): void {
+        this.isCurrentView = false;
     }
 
     /**
