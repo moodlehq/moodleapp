@@ -270,24 +270,31 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
                 sco.image = this.scormProvider.getScoStatusIcon(sco, this.scorm.incomplete);
             });
 
-            // Determine current SCO if we received an ID..
-            if (this.initialScoId > 0) {
-                // SCO set by parameter, get it from TOC.
-                this.currentSco = this.scormHelper.getScoFromToc(this.toc, this.initialScoId);
-            }
-
             if (!this.currentSco) {
-                // No SCO defined. Get the first valid one.
-                return this.scormHelper.getFirstSco(this.scorm.id, this.attempt, this.toc, this.organizationId, this.offline)
-                        .then((sco) => {
+                if (this.newAttempt) {
+                    // Creating a new attempt, use the first SCO defined by the SCORM.
+                    this.initialScoId = this.scorm.launch;
+                }
 
-                    if (sco) {
-                        this.currentSco = sco;
-                    } else {
-                        // We couldn't find a SCO to load: they're all inactive or without launch URL.
-                        this.errorMessage = 'addon.mod_scorm.errornovalidsco';
-                    }
-                });
+                // Determine current SCO if we received an ID.
+                if (this.initialScoId > 0) {
+                    // SCO set by parameter, get it from TOC.
+                    this.currentSco = this.scormHelper.getScoFromToc(this.toc, this.initialScoId);
+                }
+
+                if (!this.currentSco) {
+                    // No SCO defined. Get the first valid one.
+                    return this.scormHelper.getFirstSco(this.scorm.id, this.attempt, this.toc, this.organizationId, this.mode,
+                            this.offline).then((sco) => {
+
+                        if (sco) {
+                            this.currentSco = sco;
+                        } else {
+                            // We couldn't find a SCO to load: they're all inactive or without launch URL.
+                            this.errorMessage = 'addon.mod_scorm.errornovalidsco';
+                        }
+                    });
+                }
             }
         }).finally(() => {
             this.loadingToc = false;
