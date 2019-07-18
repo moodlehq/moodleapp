@@ -17,7 +17,7 @@ ion-app.app-root page-core-login-init {
         text-align: center;
         vertical-align: middle;
 
-        background-image: url('/assets/img/splash.png');
+        background-image: url("#{$assets-path}/img/splash.png");
         background-repeat: no-repeat;
         background-size: 100%;
         background-size: $core-splash-bgsize;
