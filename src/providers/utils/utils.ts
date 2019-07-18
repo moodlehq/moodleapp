@@ -21,6 +21,7 @@ import { WebIntent } from '@ionic-native/web-intent';
 import { CoreAppProvider } from '../app';
 import { CoreDomUtilsProvider } from './dom';
 import { CoreMimetypeUtilsProvider } from './mimetype';
+import { CoreTextUtilsProvider } from './text';
 import { CoreEventsProvider } from '../events';
 import { CoreLoggerProvider } from '../logger';
 import { TranslateService } from '@ngx-translate/core';
@@ -66,8 +67,34 @@ export class CoreUtilsProvider {
             private domUtils: CoreDomUtilsProvider, logger: CoreLoggerProvider, private translate: TranslateService,
             private platform: Platform, private langProvider: CoreLangProvider, private eventsProvider: CoreEventsProvider,
             private fileOpener: FileOpener, private mimetypeUtils: CoreMimetypeUtilsProvider, private webIntent: WebIntent,
-            private wsProvider: CoreWSProvider, private zone: NgZone) {
+            private wsProvider: CoreWSProvider, private zone: NgZone, private textUtils: CoreTextUtilsProvider) {
         this.logger = logger.getInstance('CoreUtilsProvider');
+    }
+
+    /**
+     * Given an error, add an extra warning to the error message and return the new error message.
+     *
+     * @param {any} error Error object or message.
+     * @param {any} [defaultError] Message to show if the error is not a string.
+     * @return {string} New error message.
+     */
+    addDataNotDownloadedError(error: any, defaultError?: string): string {
+        let errorMessage = error;
+
+        if (error && typeof error != 'string') {
+            errorMessage = this.textUtils.getErrorMessageFromError(error);
+        }
+
+        if (typeof errorMessage != 'string') {
+            errorMessage = defaultError || '';
+        }
+
+        if (!this.isWebServiceError(error)) {
+            // Local error. Add an extra warning.
+             errorMessage += '<br><br>' + this.translate.instant('core.errorsomedatanotdownloaded');
+        }
+
+        return errorMessage;
     }
 
     /**
