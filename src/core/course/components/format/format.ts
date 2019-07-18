@@ -479,6 +479,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         this.dynamicComponents.forEach((component) => {
             component.callComponentFunction('ionViewDidEnter');
         });
+        if (this.downloadEnabled) {
+            // The download status of a section might have been changed from within a module page.
+            if (this.selectedSection && this.selectedSection.id !== CoreCourseProvider.ALL_SECTIONS_ID) {
+                this.courseHelper.calculateSectionStatus(this.selectedSection, this.course.id);
+            } else {
+                this.courseHelper.calculateSectionsStatus(this.sections, this.course.id);
+            }
+        }
     }
 
     /**
