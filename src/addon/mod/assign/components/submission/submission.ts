@@ -621,17 +621,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Open a user profile.
-     *
-     * @param {number} userId User to open.
-     */
-    openUserProfile(userId: number): void {
-        // Open a user profile. If this component is inside a split view, use the master nav to open it.
-        const navCtrl = this.splitviewCtrl ? this.splitviewCtrl.getMasterNav() : this.navCtrl;
-        navCtrl.push('CoreUserProfilePage', { userId: userId, courseId: this.courseId });
-    }
-
-    /**
      * Set the submission status name and class.
      *
      * @param {any} status Submission status.

@@ -1,7 +1,7 @@
 <core-loading [hideUntil]="loaded">
 
     <!-- User and status of the submission. -->
-    <a ion-item text-wrap *ngIf="!blindMarking && user" (click)="openUserProfile(submitId)" [title]="user.fullname">
+    <a ion-item text-wrap *ngIf="!blindMarking && user" core-user-link [userId]="submitId" [courseId]="courseId" [title]="user.fullname">
         <ion-avatar core-user-avatar [user]="user" item-start></ion-avatar>
         <h2>{{ user.fullname }}</h2>
         <ng-container *ngTemplateOutlet="submissionStatus"></ng-container>
@@ -110,7 +110,7 @@
                 <ion-item text-wrap *ngIf="membersToSubmit && membersToSubmit.length > 0">
                     <h2>{{ 'addon.mod_assign.userswhoneedtosubmit' | translate: {$a: ''} }}</h2>
                     <div *ngFor="let user of membersToSubmit">
-                        <a ion-item text-wrap *ngIf="user.fullname" (click)="openUserProfile(user.id)" [title]="user.fullname">
+                        <a ion-item text-wrap *ngIf="user.fullname" core-user-link [userId]="user.id" [courseId]="courseId" [title]="user.fullname">
                             <ion-avatar core-user-avatar [user]="user" item-start></ion-avatar>
                             <h2>{{ user.fullname }}</h2>
                         </a>
@@ -208,7 +208,7 @@
                 </ng-container>
 
                 <!-- Data about the grader (teacher who graded). -->
-                <a ion-item text-wrap *ngIf="grader" (click)="openUserProfile(grader.id)" [title]="grader.fullname" detail-push>
+                <a ion-item text-wrap *ngIf="grader" core-user-link [userId]="grader.id" [courseId]="courseId" [title]="grader.fullname" detail-push>
                     <ion-avatar core-user-avatar [user]="grader" item-start></ion-avatar>
                     <h2>{{ 'addon.mod_assign.gradedby' | translate }}</h2>
                     <h2>{{ grader.fullname }}</h2>
