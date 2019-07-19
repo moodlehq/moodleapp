@@ -21,7 +21,7 @@ import { CoreDbProvider } from '@providers/db';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreFileProvider } from '@providers/file';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreWSProvider, CoreWSPreSets, CoreWSFileUploadOptions } from '@providers/ws';
+import { CoreWSProvider, CoreWSPreSets, CoreWSFileUploadOptions, CoreWSAjaxPreSets } from '@providers/ws';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
@@ -1432,7 +1432,22 @@ export class CoreSite {
      * @return {Promise<any>} Promise resolved with public config. Rejected with an object if error, see CoreWSProvider.callAjax.
      */
     getPublicConfig(): Promise<any> {
-        return this.wsProvider.callAjax('tool_mobile_get_public_config', {}, { siteUrl: this.siteUrl }).then((config) => {
+        const preSets: CoreWSAjaxPreSets = {
+            siteUrl: this.siteUrl
+        };
+
+        return this.wsProvider.callAjax('tool_mobile_get_public_config', {}, preSets).catch((error) => {
+
+            if ((!this.getInfo() || this.isVersionGreaterEqualThan('3.8')) && error && error.errorcode == 'codingerror') {
+                // This error probably means that there is a redirect in the site. Try to use a GET request.
+                preSets.noLogin = true;
+                preSets.useGet = true;
+
+                return this.wsProvider.callAjax('tool_mobile_get_public_config', {}, preSets);
+            }
+
+            return Promise.reject(error);
+        }).then((config) => {
             // Use the wwwroot returned by the server.
             if (config.httpswwwroot) {
                 this.siteUrl = config.httpswwwroot;
