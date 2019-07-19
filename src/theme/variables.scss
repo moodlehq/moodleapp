@@ -35,7 +35,6 @@ $core-color:      $orange;
 // --------------------------------------------------
 @import "bmma";
 
-
 $blue-light:      mix($blue, white, 20%) !default; // Background.
 $blue-dark:       darken($blue, 10%) !default;
 
@@ -76,19 +75,31 @@ $content-padding: 10px;
 // colors so you can add, rename and remove colors as needed.
 // The "primary" color is the only required color in the map.
 
+$primary: $core-color !default;
+$secondary: $turquoise !default;
+$danger: $red !default;
+$light: $gray-lighter !default;
+$color-gray: $gray-dark !default;
+$dark: $black !default;
+$warning: $yellow !default;
+$success: $green !default;
+$info: $blue !default;
+$inverted-base: $white !default;
+$inverted-contrast: $primary !default;
+
 $colors: (
-  primary:    $core-color,
-  secondary:  $turquoise,
-  danger:     $red,
-  light:      $gray-lighter,
-  gray:       $gray-dark,
-  dark:       $black,
-  warning:    $yellow,
-  success:    $green,
-  info:       $blue,
+  primary:    $primary,
+  secondary:  $secondary,
+  danger:     $danger,
+  light:      $light,
+  gray:       $color-gray,
+  dark:       $dark,
+  warning:    $warning,
+  success:    $success,
+  info:       $info,
   inverted: (
-    base: $white,
-    contrast: $core-color
+    base: $inverted-base,
+    contrast: $inverted-contrast
   )
 );
 
