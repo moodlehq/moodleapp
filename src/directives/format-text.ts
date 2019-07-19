@@ -352,7 +352,8 @@ export class CoreFormatTextDirective implements OnChanges {
                 this.utils.isTrueOrOne(this.singleLine), undefined, this.highlight);
         }).then((formatted) => {
             const div = document.createElement('div'),
-                canTreatVimeo = site && site.isVersionGreaterEqualThan(['3.3.4', '3.4']);
+                canTreatVimeo = site && site.isVersionGreaterEqualThan(['3.3.4', '3.4']),
+                navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
             let images,
                 anchors,
                 audios,
@@ -405,12 +406,12 @@ export class CoreFormatTextDirective implements OnChanges {
             });
 
             videos.forEach((video) => {
-                this.treatVideoFilters(video);
+                this.treatVideoFilters(video, navCtrl);
                 this.treatMedia(video);
             });
 
             iframes.forEach((iframe) => {
-                this.treatIframe(iframe, site, canTreatVimeo);
+                this.treatIframe(iframe, site, canTreatVimeo, navCtrl);
             });
 
             // Handle buttons with inner links.
@@ -439,7 +440,7 @@ export class CoreFormatTextDirective implements OnChanges {
 
             // Handle all kind of frames.
             frames.forEach((frame: any) => {
-                this.iframeUtils.treatFrame(frame);
+                this.iframeUtils.treatFrame(frame, false, navCtrl);
             });
 
             this.domUtils.handleBootstrapTooltips(div);
@@ -508,8 +509,9 @@ export class CoreFormatTextDirective implements OnChanges {
      * Treat video filters. Currently only treating youtube video using video JS.
      *
      * @param {HTMLElement} el Video element.
+     * @param {NavController} navCtrl NavController to use.
      */
-    protected treatVideoFilters(video: HTMLElement): void {
+    protected treatVideoFilters(video: HTMLElement, navCtrl: NavController): void {
         // Treat Video JS Youtube video links and translate them to iframes.
         if (!video.classList.contains('video-js')) {
             return;
@@ -534,7 +536,7 @@ export class CoreFormatTextDirective implements OnChanges {
         // Replace video tag by the iframe.
         video.parentNode.replaceChild(iframe, video);
 
-        this.iframeUtils.treatFrame(iframe);
+        this.iframeUtils.treatFrame(iframe, false, navCtrl);
     }
 
     /**
@@ -571,8 +573,9 @@ export class CoreFormatTextDirective implements OnChanges {
      * @param {HTMLIFrameElement} iframe Iframe to treat.
      * @param {CoreSite} site Site instance.
      * @param {boolean} canTreatVimeo Whether Vimeo videos can be treated in the site.
+     * @param {NavController} navCtrl NavController to use.
      */
-    protected treatIframe(iframe: HTMLIFrameElement, site: CoreSite, canTreatVimeo: boolean): void {
+    protected treatIframe(iframe: HTMLIFrameElement, site: CoreSite, canTreatVimeo: boolean, navCtrl: NavController): void {
         const src = iframe.src,
             currentSite = this.sitesProvider.getCurrentSite();
 
@@ -583,7 +586,7 @@ export class CoreFormatTextDirective implements OnChanges {
             currentSite.getAutoLoginUrl(src, false).then((finalUrl) => {
                 iframe.src = finalUrl;
 
-                this.iframeUtils.treatFrame(iframe);
+                this.iframeUtils.treatFrame(iframe, false, navCtrl);
             });
 
             return;
@@ -644,7 +647,7 @@ export class CoreFormatTextDirective implements OnChanges {
             }
         }
 
-        this.iframeUtils.treatFrame(iframe);
+        this.iframeUtils.treatFrame(iframe, false, navCtrl);
     }
 
     /**
