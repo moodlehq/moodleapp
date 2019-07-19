@@ -24,8 +24,8 @@
                     <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
                 </a>
             </ion-col>
-            <ion-col text-center>
-                <p>{{ periodName }}</p>
+            <ion-col text-center class="addon-calendar-period">
+                <h3>{{ periodName }}</h3>
             </ion-col>
             <ion-col text-end *ngIf="currentMoment">
                 <a ion-button icon-only clear (click)="loadNext()" [title]="'addon.calendar.daynext' | translate">
