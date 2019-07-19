@@ -37,6 +37,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     @Input() courseId: number | string;
     @Input() categoryId: number | string; // Category ID the course belongs to.
     @Input() canNavigate?: string | boolean; // Whether to include arrows to change the month. Defaults to true.
+    @Input() displayNavButtons?: string | boolean; // Whether to display nav buttons created by this component. Defaults to true.
     @Output() onEventClicked = new EventEmitter<number>();
     @Output() onDayClicked = new EventEmitter<{day: number, month: number, year: number}>();
 
@@ -45,6 +46,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     weeks: any[];
     loaded = false;
     timeFormat: string;
+    isCurrentMonth: boolean;
 
     protected year: number;
     protected month: number;
@@ -106,7 +108,8 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
 
         this.year = this.initialYear ? Number(this.initialYear) : now.getFullYear();
         this.month = this.initialMonth ? Number(this.initialMonth) : now.getMonth() + 1;
-        this.canNavigate = typeof this.canNavigate == 'undefined' ? true : this.utils.isTrueOrOne(this.canNavigate);
+
+        this.calculateIsCurrentMonth();
 
         this.fetchData();
     }
@@ -115,6 +118,9 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
      * Detect changes on input properties.
      */
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
+        this.canNavigate = typeof this.canNavigate == 'undefined' ? true : this.utils.isTrueOrOne(this.canNavigate);
+        this.displayNavButtons = typeof this.displayNavButtons == 'undefined' ? true :
+                this.utils.isTrueOrOne(this.displayNavButtons);
 
         if ((changes.courseId || changes.categoryId) && this.weeks) {
             this.filterEvents();
@@ -274,6 +280,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
             this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
             this.decreaseMonth();
         }).finally(() => {
+            this.calculateIsCurrentMonth();
             this.loaded = true;
         });
     }
@@ -290,6 +297,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
             this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
             this.increaseMonth();
         }).finally(() => {
+            this.calculateIsCurrentMonth();
             this.loaded = true;
         });
     }
@@ -310,6 +318,39 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
      */
     dayClicked(day: number): void {
         this.onDayClicked.emit({day: day, month: this.month, year: this.year});
+    }
+
+    /**
+     * Check if user is viewing the current month.
+     */
+    calculateIsCurrentMonth(): void {
+        const now = new Date();
+
+        this.isCurrentMonth = this.year == now.getFullYear() && this.month == now.getMonth() + 1;
+    }
+
+    /**
+     * Go to current month.
+     */
+    goToCurrentMonth(): void {
+        const now = new Date(),
+            initialMonth = this.month,
+            initialYear = this.year;
+
+        this.month = now.getMonth() + 1;
+        this.year = now.getFullYear();
+
+        this.loaded = false;
+
+        this.fetchEvents().then(() => {
+            this.isCurrentMonth = true;
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+            this.year = initialYear;
+            this.month = initialMonth;
+        }).finally(() => {
+            this.loaded = true;
+        });
     }
 
     /**

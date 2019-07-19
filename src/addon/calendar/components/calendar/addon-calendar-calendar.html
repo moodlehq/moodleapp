@@ -1,3 +1,11 @@
+
+<!-- Add buttons to the nav bar. -->
+<core-navbar-buttons end>
+    <button [hidden]="!canNavigate || isCurrentMonth || !displayNavButtons" ion-button icon-only clear (click)="goToCurrentMonth()">
+        <core-icon  name="fa-calendar-times-o"></core-icon>
+    </button>
+</core-navbar-buttons>
+
 <core-loading [hideUntil]="loaded" class="core-loading-center">
     <!-- Period name and arrows to navigate. -->
     <ion-grid padding-top>

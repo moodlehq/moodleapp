@@ -73,6 +73,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     hasOffline = false;
     isOnline = false;
     syncIcon: string;
+    isCurrentDay: boolean;
 
     constructor(localNotificationsProvider: CoreLocalNotificationsProvider,
             navParams: NavParams,
@@ -196,7 +197,8 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      * View loaded.
      */
     ngOnInit(): void {
-        this.currentMoment = moment().year(this.year).month(this.month - 1).date(this.day);
+        this.calculateCurrentMoment();
+        this.calculateIsCurrentDay();
 
         this.fetchData(true, false);
     }
@@ -534,6 +536,52 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     }
 
     /**
+     * Calculate current moment.
+     */
+    calculateCurrentMoment(): void {
+        this.currentMoment = moment().year(this.year).month(this.month - 1).date(this.day);
+    }
+
+    /**
+     * Check if user is viewing the current day.
+     */
+    calculateIsCurrentDay(): void {
+        const now = new Date();
+
+        this.isCurrentDay = this.year == now.getFullYear() && this.month == now.getMonth() + 1 && this.day == now.getDate();
+    }
+
+    /**
+     * Go to current day.
+     */
+    goToCurrentDay(): void {
+        const now = new Date(),
+            initialDay = this.day,
+            initialMonth = this.month,
+            initialYear = this.year;
+
+        this.day = now.getDate();
+        this.month = now.getMonth() + 1;
+        this.year = now.getFullYear();
+        this.calculateCurrentMoment();
+
+        this.loaded = false;
+
+        this.fetchEvents().then(() => {
+            this.isCurrentDay = true;
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+
+            this.year = initialYear;
+            this.month = initialMonth;
+            this.day = initialDay;
+            this.calculateCurrentMoment();
+        }).finally(() => {
+            this.loaded = true;
+        });
+    }
+
+    /**
      * Load next month.
      */
     loadNext(): void {
@@ -545,6 +593,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
             this.decreaseDay();
         }).finally(() => {
+            this.calculateIsCurrentDay();
             this.loaded = true;
         });
     }
@@ -561,6 +610,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
             this.increaseDay();
         }).finally(() => {
+            this.calculateIsCurrentDay();
             this.loaded = true;
         });
     }
