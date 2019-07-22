@@ -61,6 +61,12 @@ export interface CoreSiteWSPreSets {
     emergencyCache?: boolean;
 
     /**
+     * If true, the app won't call the WS. If the data isn't cached, the call will fail.
+     * @type {boolean}
+     */
+    forceOffline?: boolean;
+
+    /**
      * Extra key to add to the cache when storing this call, to identify the entry.
      * @type {string}
      */
@@ -668,7 +674,12 @@ export class CoreSite {
         }
 
         const promise = this.getFromCache(method, data, preSets, false, originalData).catch(() => {
-            // Do not pass those options to the core WS factory.
+            if (preSets.forceOffline) {
+                // Don't call the WS, just fail.
+                return Promise.reject(this.wsProvider.createFakeWSError('core.cannotconnect', true));
+            }
+
+            // Call the WS.
             return this.callOrEnqueueRequest(method, data, preSets, wsPreSets).then((response) => {
                 if (preSets.saveToCache) {
                     this.saveToCache(method, data, response, preSets);
@@ -1043,7 +1054,7 @@ export class CoreSite {
             const now = Date.now();
             let expirationTime;
 
-            preSets.omitExpires = preSets.omitExpires || !this.appProvider.isOnline();
+            preSets.omitExpires = preSets.omitExpires || preSets.forceOffline || !this.appProvider.isOnline();
 
             if (!preSets.omitExpires) {
                 let expirationDelay = this.UPDATE_FREQUENCIES[preSets.updateFrequency] ||
