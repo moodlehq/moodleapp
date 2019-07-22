@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, ViewChildren, QueryList, Input } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCourseProvider } from '@core/course/providers/course';
@@ -31,6 +31,7 @@ import { CoreSite } from '@classes/site';
 })
 export class CoreSiteHomeIndexComponent implements OnInit {
     @ViewChildren(CoreBlockComponent) blocksComponents: QueryList<CoreBlockComponent>;
+    @Input() downloadEnabled: boolean;
 
     dataLoaded = false;
     section: any;
@@ -40,7 +41,6 @@ export class CoreSiteHomeIndexComponent implements OnInit {
     siteHomeId: number;
     currentSite: CoreSite;
     blocks = [];
-    downloadEnabled: boolean;
 
     constructor(private domUtils: CoreDomUtilsProvider, sitesProvider: CoreSitesProvider,
             private courseProvider: CoreCourseProvider, private courseHelper: CoreCourseHelperProvider,
@@ -53,7 +53,6 @@ export class CoreSiteHomeIndexComponent implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.downloadEnabled = !this.currentSite.isOfflineDisabled();
         this.loadContent().finally(() => {
             this.dataLoaded = true;
         });

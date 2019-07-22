@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input, OnDestroy, ViewChild, Injector } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, ViewChild, Injector, OnChanges, SimpleChange } from '@angular/core';
 import { Searchbar } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -32,7 +32,7 @@ import { CoreBlockBaseComponent } from '@core/block/classes/base-block-component
     selector: 'addon-block-myoverview',
     templateUrl: 'addon-block-myoverview.html'
 })
-export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy {
+export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implements OnInit, OnChanges, OnDestroy {
     @ViewChild('searchbar') searchbar: Searchbar;
     @Input() downloadEnabled: boolean;
 
@@ -67,7 +67,6 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
     protected prefetchIconsInitialized = false;
     protected isDestroyed;
-    protected downloadButtonObserver;
     protected coursesObserver;
     protected updateSiteObserver;
     protected courseIds = [];
@@ -87,18 +86,6 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      */
     ngOnInit(): void {
         // Refresh the enabled flags if enabled.
-        this.downloadButtonObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED,
-                (data) => {
-            const wasEnabled = this.downloadEnabled;
-
-            this.downloadEnabled = data.enabled;
-
-            if (!wasEnabled && this.downloadEnabled && this.loaded) {
-                // Download all courses is enabled now, initialize it.
-                this.initPrefetchCoursesIcons();
-            }
-        });
-
         this.downloadCourseEnabled = !this.coursesProvider.isDownloadCourseDisabledInSite();
         this.downloadCoursesEnabled = !this.coursesProvider.isDownloadCoursesDisabledInSite();
 
@@ -126,6 +113,16 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         Promise.all(promises).finally(() => {
             super.ngOnInit();
         });
+    }
+
+    /**
+     * Detect changes on input properties.
+     */
+    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
+        if (changes.downloadEnabled && !changes.downloadEnabled.previousValue && this.downloadEnabled && this.loaded) {
+            // Download all courses is enabled now, initialize it.
+            this.initPrefetchCoursesIcons();
+        }
     }
 
     /**
@@ -350,6 +347,5 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         this.isDestroyed = true;
         this.coursesObserver && this.coursesObserver.off();
         this.updateSiteObserver && this.updateSiteObserver.off();
-        this.downloadButtonObserver && this.downloadButtonObserver.off();
     }
 }

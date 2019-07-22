@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Injector, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Injector, Input, OnChanges, SimpleChange } from '@angular/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitesProvider } from '@providers/sites';
@@ -30,7 +30,7 @@ import { CoreBlockBaseComponent } from '@core/block/classes/base-block-component
     selector: 'addon-block-starredcourses',
     templateUrl: 'addon-block-starredcourses.html'
 })
-export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy {
+export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent implements OnInit, OnChanges, OnDestroy {
     @Input() downloadEnabled: boolean;
 
     courses = [];
@@ -41,7 +41,6 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
 
     protected prefetchIconsInitialized = false;
     protected isDestroyed;
-    protected downloadButtonObserver;
     protected coursesObserver;
     protected courseIds = [];
     protected fetchContentDefaultError = 'Error getting starred courses data.';
@@ -59,24 +58,22 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
      * Component being initialized.
      */
     ngOnInit(): void {
-        // Refresh the enabled flags if enabled.
-        this.downloadButtonObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED,
-                (data) => {
-            const wasEnabled = this.downloadEnabled;
-
-            this.downloadEnabled = data.enabled;
-
-            if (!wasEnabled && this.downloadEnabled && this.loaded) {
-                // Download all courses is enabled now, initialize it.
-                this.initPrefetchCoursesIcons();
-            }
-        });
 
         this.coursesObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, () => {
             this.refreshContent();
         }, this.sitesProvider.getCurrentSiteId());
 
         super.ngOnInit();
+    }
+
+    /**
+     * Detect changes on input properties.
+     */
+    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
+        if (changes.downloadEnabled && !changes.downloadEnabled.previousValue && this.downloadEnabled && this.loaded) {
+            // Download all courses is enabled now, initialize it.
+            this.initPrefetchCoursesIcons();
+        }
     }
 
     /**
@@ -155,6 +152,5 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     ngOnDestroy(): void {
         this.isDestroyed = true;
         this.coursesObserver && this.coursesObserver.off();
-        this.downloadButtonObserver && this.downloadButtonObserver.off();
     }
 }
