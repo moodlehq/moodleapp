@@ -287,7 +287,7 @@ export class AddonModDataEditPage {
 
         let replace,
             render,
-            template = this.data.addtemplate || this.dataHelper.getDefaultTemplate('add', this.fieldsArray);
+            template = this.dataHelper.getTemplate(this.data, 'addtemplate', this.fieldsArray);
 
         // Replace the fields found on template.
         this.fieldsArray.forEach((field) => {

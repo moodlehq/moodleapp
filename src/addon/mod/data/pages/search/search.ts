@@ -89,7 +89,7 @@ export class AddonModDataSearchPage {
             search: this.search.advanced
         };
 
-        let template = this.data.asearchtemplate || this.dataHelper.getDefaultTemplate('asearch', this.fieldsArray),
+        let template = this.dataHelper.getTemplate(this.data, 'asearchtemplate', this.fieldsArray),
             replace, render;
 
         // Replace the fields found on template.

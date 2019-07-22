@@ -299,14 +299,14 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             if (!this.isEmpty) {
                 this.entries = entries.offlineEntries.concat(entries.entries);
 
-                let entriesHTML = this.data.listtemplateheader || '';
+                let entriesHTML = this.dataHelper.getTemplate(this.data, 'listtemplateheader', this.fieldsArray);
 
                 // Get first entry from the whole list.
                 if (!this.search.searching || !this.firstEntry) {
                     this.firstEntry = this.entries[0].id;
                 }
 
-                const template = this.data.listtemplate || this.dataHelper.getDefaultTemplate('list', this.fieldsArray);
+                const template = this.dataHelper.getTemplate(this.data, 'listtemplate', this.fieldsArray);
 
                 const entriesById = {};
                 this.entries.forEach((entry, index) => {
@@ -318,7 +318,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
                     entriesHTML += this.dataHelper.displayShowFields(template, this.fieldsArray, entry, offset, 'list',  actions);
                 });
-                entriesHTML += this.data.listtemplatefooter || '';
+                entriesHTML += this.dataHelper.getTemplate(this.data, 'listtemplatefooter', this.fieldsArray);
 
                 this.entriesRendered = entriesHTML;
 
