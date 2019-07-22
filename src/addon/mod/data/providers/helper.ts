@@ -598,6 +598,9 @@ export class AddonModDataHelperProvider {
     getTemplate(data: any, type: string, fields: any[]): string {
         let template = data[type] || this.getDefaultTemplate(type, fields);
 
+        // Try to fix syntax errors so the template can be parsed by Angular.
+        template = this.domUtils.fixHtml(template);
+
         // Add core-link directive to links.
         template = template.replace(/<a ([^>]*href="[^>]*)>/i, (match, attributes) => {
             return '<a core-link capture="true" ' + attributes + '>';
