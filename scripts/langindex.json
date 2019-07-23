@@ -1778,6 +1778,8 @@
   "core.settings.disabled": "lesson",
   "core.settings.displayformat": "local_moodlemobileapp",
   "core.settings.enabledownloadsection": "local_moodlemobileapp",
+  "core.settings.enablefirebaseanalytics": "local_moodlemobileapp",
+  "core.settings.enablefirebaseanalyticsdescription": "local_moodlemobileapp",
   "core.settings.enablerichtexteditor": "local_moodlemobileapp",
   "core.settings.enablerichtexteditordescription": "local_moodlemobileapp",
   "core.settings.enablesyncwifi": "local_moodlemobileapp",
