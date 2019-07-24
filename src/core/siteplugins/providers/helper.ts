@@ -78,6 +78,8 @@ import { CoreSitePluginsBlockHandler } from '@core/siteplugins/classes/handlers/
  */
 @Injectable()
 export class CoreSitePluginsHelperProvider {
+    protected HANDLER_DISABLED = 'core_site_plugins_helper_handler_disabled';
+
     protected logger;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
@@ -226,7 +228,9 @@ export class CoreSitePluginsHelperProvider {
             }
 
             // Create a "fake" instance to hold all the libraries.
-            const instance = {};
+            const instance = {
+                HANDLER_DISABLED: this.HANDLER_DISABLED
+            };
             this.compileProvider.injectLibraries(instance);
 
             // Add some data of the WS call result.
@@ -237,6 +241,11 @@ export class CoreSitePluginsHelperProvider {
 
             // Now execute the javascript using this instance.
             result.jsResult = this.compileProvider.executeJavascript(instance, result.javascript);
+
+            if (result.jsResult == this.HANDLER_DISABLED) {
+                // The "disabled" field was added in 3.8, this is a workaround for previous versions.
+                result.disabled = true;
+            }
 
             return result;
         });
@@ -441,6 +450,13 @@ export class CoreSitePluginsHelperProvider {
         }));
 
         return Promise.all(promises).then(() => {
+            if (result && result.disabled) {
+                // This handler is disabled for the current user, stop.
+                this.logger.warn('Handler disabled by init function', plugin, handlerSchema);
+
+                return;
+            }
+
             if (cssCode) {
                 // Load the styles.
                 this.loadStyles(plugin, handlerName, handlerSchema.styles.url, cssCode, handlerSchema.styles.version, siteId);
