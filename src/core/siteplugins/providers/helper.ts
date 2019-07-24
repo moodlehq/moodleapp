@@ -30,6 +30,7 @@ import { CoreSitePluginsProvider } from './siteplugins';
 import { CoreCompileProvider } from '@core/compile/providers/compile';
 import { CoreQuestionProvider } from '@core/question/providers/question';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
 
 // Delegates
 import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
@@ -79,13 +80,14 @@ import { CoreSitePluginsBlockHandler } from '@core/siteplugins/classes/handlers/
 @Injectable()
 export class CoreSitePluginsHelperProvider {
     protected logger;
+    protected courseRestrictHandlers = {};
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
             private mainMenuDelegate: CoreMainMenuDelegate, private moduleDelegate: CoreCourseModuleDelegate,
             private userDelegate: CoreUserDelegate, private langProvider: CoreLangProvider, private http: Http,
             private sitePluginsProvider: CoreSitePluginsProvider, private prefetchDelegate: CoreCourseModulePrefetchDelegate,
             private compileProvider: CoreCompileProvider, private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider,
-            private courseOptionsDelegate: CoreCourseOptionsDelegate, eventsProvider: CoreEventsProvider,
+            private courseOptionsDelegate: CoreCourseOptionsDelegate, private eventsProvider: CoreEventsProvider,
             private courseFormatDelegate: CoreCourseFormatDelegate, private profileFieldDelegate: CoreUserProfileFieldDelegate,
             private textUtils: CoreTextUtilsProvider, private filepoolProvider: CoreFilepoolProvider,
             private settingsDelegate: CoreSettingsDelegate, private questionDelegate: CoreQuestionDelegate,
@@ -120,6 +122,13 @@ export class CoreSitePluginsHelperProvider {
             if (this.sitePluginsProvider.hasSitePluginsLoaded) {
                 // Temporary fix. Reload the page to unload all plugins.
                 window.location.reload();
+            }
+        });
+
+        // Re-load plugins restricted for courses when the list of user courses changes.
+        eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_CHANGED, (data) => {
+            if (data && data.siteId && data.siteId == this.sitesProvider.getCurrentSiteId() && data.added && data.added.length) {
+                this.reloadCourseRestrictHandlers();
             }
         });
     }
@@ -375,6 +384,7 @@ export class CoreSitePluginsHelperProvider {
      */
     loadSitePlugins(plugins: any[]): Promise<any> {
         const promises = [];
+        this.courseRestrictHandlers = {};
 
         plugins.forEach((plugin) => {
             const pluginPromise = this.loadSitePlugin(plugin);
@@ -683,10 +693,21 @@ export class CoreSitePluginsHelperProvider {
 
         // Create and register the handler.
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
-            prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title);
+            prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title),
+            handler = new CoreSitePluginsCourseOptionHandler(uniqueName, prefixedTitle, plugin,
+                    handlerSchema, initResult, this.sitePluginsProvider, this.utils);
 
-        this.courseOptionsDelegate.registerHandler(new CoreSitePluginsCourseOptionHandler(uniqueName, prefixedTitle, plugin,
-                handlerSchema, initResult, this.sitePluginsProvider));
+        this.courseOptionsDelegate.registerHandler(handler);
+
+        if (initResult && initResult.restrict && initResult.restrict.courses) {
+            // This handler is restricted to certan courses, store it in the list.
+            this.courseRestrictHandlers[uniqueName] = {
+                plugin: plugin,
+                handlerName: handlerName,
+                handlerSchema: handlerSchema,
+                handler: handler
+            };
+        }
 
         return uniqueName;
     }
@@ -889,10 +910,21 @@ export class CoreSitePluginsHelperProvider {
 
         // Create and register the handler.
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
-            prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title);
+            prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title),
+            handler = new CoreSitePluginsUserProfileHandler(uniqueName, prefixedTitle, plugin, handlerSchema,
+                    initResult, this.sitePluginsProvider, this.utils);
 
-        this.userDelegate.registerHandler(new CoreSitePluginsUserProfileHandler(uniqueName, prefixedTitle, plugin, handlerSchema,
-                initResult, this.sitePluginsProvider));
+        this.userDelegate.registerHandler(handler);
+
+        if (initResult && initResult.restrict && initResult.restrict.courses) {
+            // This handler is restricted to certan courses, store it in the list.
+            this.courseRestrictHandlers[uniqueName] = {
+                plugin: plugin,
+                handlerName: handlerName,
+                handlerSchema: handlerSchema,
+                handler: handler
+            };
+        }
 
         return uniqueName;
     }
@@ -933,6 +965,42 @@ export class CoreSitePluginsHelperProvider {
             const strategyName = (handlerSchema.moodlecomponent || plugin.component).replace('workshopform_', '');
 
             return new CoreSitePluginsWorkshopAssessmentStrategyHandler(uniqueName, strategyName);
+        });
+    }
+
+    /**
+     * Reload the handlers that are restricted to certain courses.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected reloadCourseRestrictHandlers(): Promise<any> {
+        if (!Object.keys(this.courseRestrictHandlers).length) {
+            // No course restrict handlers, nothing to do.
+            return Promise.resolve();
+        }
+
+        const promises = [];
+
+        for (const name in this.courseRestrictHandlers) {
+            const data = this.courseRestrictHandlers[name];
+
+            if (!data.handler || !data.handler.setInitResult) {
+                // No handler or it doesn't implement a required function, ignore it.
+                continue;
+            }
+
+            // Mark the handler as being updated.
+            data.handler.updatingInit && data.handler.updatingInit();
+
+            promises.push(this.executeHandlerInit(data.plugin, data.handlerSchema).then((initResult) => {
+                data.handler.setInitResult(initResult);
+            }).catch((error) => {
+                this.logger.error('Error reloading course restrict handler', error, data.plugin);
+            }));
+        }
+
+        return Promise.all(promises).then(() => {
+            this.eventsProvider.trigger(CoreEventsProvider.SITE_PLUGINS_COURSE_RESTRICT_UPDATED, {});
         });
     }
 }

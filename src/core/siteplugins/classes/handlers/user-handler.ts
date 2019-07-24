@@ -16,6 +16,7 @@ import { NavController } from 'ionic-angular';
 import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '@core/user/providers/user-delegate';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { CoreSitePluginsBaseHandler } from './base-handler';
+import { CoreUtilsProvider, PromiseDefer } from '@providers/utils/utils';
 
 /**
  * Handler to display a site plugin in the user profile.
@@ -37,8 +38,11 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
      */
     type: string;
 
+    protected updatingDefer: PromiseDefer;
+
     constructor(name: string, protected title: string, protected plugin: any, protected handlerSchema: any,
-            protected initResult: any, protected sitePluginsProvider: CoreSitePluginsProvider) {
+            protected initResult: any, protected sitePluginsProvider: CoreSitePluginsProvider,
+            protected utils: CoreUtilsProvider) {
         super(name);
 
         this.priority = handlerSchema.priority;
@@ -96,5 +100,24 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
                 });
             }
         };
+    }
+
+    /**
+     * Set init result.
+     *
+     * @param {any} result Result to set.
+     */
+    setInitResult(result: any): void {
+        this.initResult = result;
+
+        this.updatingDefer.resolve();
+        delete this.updatingDefer;
+    }
+
+    /**
+     * Mark init being updated.
+     */
+    updatingInit(): void {
+        this.updatingDefer = this.utils.promiseDefer();
     }
 }

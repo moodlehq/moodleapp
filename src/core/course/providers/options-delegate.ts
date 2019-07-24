@@ -552,16 +552,12 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
 
     /**
      * Update handlers for each course.
-     *
-     * @param {string} [siteId] Site ID.
      */
-    updateData(siteId?: string): void {
-        if (this.sitesProvider.getCurrentSiteId() === siteId) {
-            // Update handlers for all courses.
-            for (const courseId in this.coursesHandlers) {
-                const handler = this.coursesHandlers[courseId];
-                this.updateHandlersForCourse(parseInt(courseId, 10), handler.access, handler.navOptions, handler.admOptions);
-            }
+    updateData(): void {
+        // Update handlers for all courses.
+        for (const courseId in this.coursesHandlers) {
+            const handler = this.coursesHandlers[courseId];
+            this.updateHandlersForCourse(parseInt(courseId, 10), handler.access, handler.navOptions, handler.admOptions);
         }
     }
 
