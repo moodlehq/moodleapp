@@ -149,7 +149,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         this.prefetchHandler.getDownloadSize(this.module, this.courseId, true).then((size) => {
             return this.courseHelper.prefetchModule(this.prefetchHandler, this.module, size, this.courseId, refresh);
         }).then(() => {
-            this.courseHelper.calculateSectionStatus(this.section, this.courseId);
+            this.courseHelper.calculateSectionStatus(this.section, this.courseId, false, false);
         }).catch((error) => {
             // Error, hide spinner.
             this.spinner = false;

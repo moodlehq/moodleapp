@@ -187,16 +187,19 @@ export class CoreCourseHelperProvider {
      * @param {any} section Section to calculate its status. It can't be "All sections".
      * @param {number} courseId Course ID the section belongs to.
      * @param {boolean} [refresh] True if it shouldn't use module status cache (slower).
+     * @param {boolean} [checkUpdates=true] Whether to use the WS to check updates. Defaults to true.
      * @return {Promise<any>} Promise resolved when the status is calculated.
      */
-    calculateSectionStatus(section: any, courseId: number, refresh?: boolean): Promise<any> {
+    calculateSectionStatus(section: any, courseId: number, refresh?: boolean, checkUpdates: boolean = true): Promise<any> {
 
         if (section.id == CoreCourseProvider.ALL_SECTIONS_ID) {
             return Promise.reject(null);
         }
 
         // Get the status of this section.
-        return this.prefetchDelegate.getModulesStatus(section.modules, courseId, section.id, refresh, true).then((result) => {
+        return this.prefetchDelegate.getModulesStatus(section.modules, courseId, section.id, refresh, true, checkUpdates)
+                .then((result) => {
+
             // Check if it's being downloaded.
             const downloadId = this.getSectionDownloadId(section);
             if (this.prefetchDelegate.isBeingDownloaded(downloadId)) {
@@ -228,9 +231,10 @@ export class CoreCourseHelperProvider {
      * @param {any[]} sections Sections to calculate their status.
      * @param {number} courseId Course ID the sections belong to.
      * @param {boolean} [refresh] True if it shouldn't use module status cache (slower).
+     * @param {boolean} [checkUpdates=true] Whether to use the WS to check updates. Defaults to true.
      * @return {Promise<void>} Promise resolved when the states are calculated.
      */
-    calculateSectionsStatus(sections: any[], courseId: number, refresh?: boolean): Promise<void> {
+    calculateSectionsStatus(sections: any[], courseId: number, refresh?: boolean, checkUpdates: boolean = true): Promise<void> {
         const promises = [];
         let allSectionsSection,
             allSectionsStatus;
@@ -242,7 +246,7 @@ export class CoreCourseHelperProvider {
                 section.isCalculating = true;
             } else {
                 section.isCalculating = true;
-                promises.push(this.calculateSectionStatus(section, courseId, refresh).then((result) => {
+                promises.push(this.calculateSectionStatus(section, courseId, refresh, checkUpdates).then((result) => {
                     // Calculate "All sections" status.
                     allSectionsStatus = this.filepoolProvider.determinePackagesStatus(allSectionsStatus, result.status);
                 }).finally(() => {
@@ -1331,7 +1335,7 @@ export class CoreCourseHelperProvider {
             // Download only this section.
             return this.prefetchSingleSectionIfNeeded(section, courseId).finally(() => {
                 // Calculate the status of the section that finished.
-                return this.calculateSectionStatus(section, courseId);
+                return this.calculateSectionStatus(section, courseId, false, false);
             });
         } else {
             // Download all the sections except "All sections".
@@ -1343,7 +1347,7 @@ export class CoreCourseHelperProvider {
                 if (section.id != CoreCourseProvider.ALL_SECTIONS_ID) {
                     promises.push(this.prefetchSingleSectionIfNeeded(section, courseId).finally(() => {
                         // Calculate the status of the section that finished.
-                        return this.calculateSectionStatus(section, courseId).then((result) => {
+                        return this.calculateSectionStatus(section, courseId, false, false).then((result) => {
                             // Calculate "All sections" status.
                             allSectionsStatus = this.filepoolProvider.determinePackagesStatus(allSectionsStatus, result.status);
                         });

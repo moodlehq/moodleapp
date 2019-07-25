@@ -442,15 +442,7 @@ export class CoreCourseSectionPage implements OnDestroy {
      */
     prefetchCourse(): void {
         this.courseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course, this.sections,
-                this.courseHandlers, this.courseMenuHandlers)
-                .then(() => {
-            if (this.downloadEnabled) {
-                // Recalculate the status.
-                this.courseHelper.calculateSectionsStatus(this.sections, this.course.id).catch(() => {
-                    // Ignore errors (shouldn't happen).
-                });
-            }
-        }).catch((error) => {
+                this.courseHandlers, this.courseMenuHandlers).catch((error) => {
             if (!this.isDestroyed) {
                 this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
             }
