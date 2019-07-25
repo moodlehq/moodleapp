@@ -19,6 +19,7 @@ import {
 } from '@core/course/providers/options-delegate';
 import { CoreSitePluginsBaseHandler } from './base-handler';
 import { CoreSitePluginsCourseOptionComponent } from '../../components/course-option/course-option';
+import { CoreUtilsProvider, PromiseDefer } from '@providers/utils/utils';
 
 /**
  * Handler to display a site plugin in course options.
@@ -27,8 +28,11 @@ export class CoreSitePluginsCourseOptionHandler extends CoreSitePluginsBaseHandl
     priority: number;
     isMenuHandler: boolean;
 
+    protected updatingDefer: PromiseDefer;
+
     constructor(name: string, protected title: string, protected plugin: any, protected handlerSchema: any,
-            protected initResult: any, protected sitePluginsProvider: CoreSitePluginsProvider) {
+            protected initResult: any, protected sitePluginsProvider: CoreSitePluginsProvider,
+            protected utils: CoreUtilsProvider) {
         super(name);
 
         this.priority = handlerSchema.priority;
@@ -45,8 +49,13 @@ export class CoreSitePluginsCourseOptionHandler extends CoreSitePluginsBaseHandl
      * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
      */
     isEnabledForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any): boolean | Promise<boolean> {
-        return this.sitePluginsProvider.isHandlerEnabledForCourse(
-                courseId, this.handlerSchema.restricttoenrolledcourses, this.initResult.restrict);
+        // Wait for "init" result to be updated.
+        const promise = this.updatingDefer ? this.updatingDefer.promise : Promise.resolve();
+
+        return promise.then(() => {
+            return this.sitePluginsProvider.isHandlerEnabledForCourse(
+                    courseId, this.handlerSchema.restricttoenrolledcourses, this.initResult.restrict);
+        });
     }
 
     /**
@@ -107,5 +116,24 @@ export class CoreSitePluginsCourseOptionHandler extends CoreSitePluginsBaseHandl
             component = this.plugin.component;
 
         return this.sitePluginsProvider.prefetchFunctions(component, args, this.handlerSchema, course.id, undefined, true);
+    }
+
+    /**
+     * Set init result.
+     *
+     * @param {any} result Result to set.
+     */
+    setInitResult(result: any): void {
+        this.initResult = result;
+
+        this.updatingDefer.resolve();
+        delete this.updatingDefer;
+    }
+
+    /**
+     * Mark init being updated.
+     */
+    updatingInit(): void {
+        this.updatingDefer = this.utils.promiseDefer();
     }
 }
