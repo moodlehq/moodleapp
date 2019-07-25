@@ -163,7 +163,7 @@ export class AddonModDataEntryPage implements OnDestroy {
         }).then(() => {
             const actions = this.dataHelper.getActions(this.data, this.access, this.entry);
 
-            const template = this.data.singletemplate || this.dataHelper.getDefaultTemplate('single', this.fieldsArray);
+            const template = this.dataHelper.getTemplate(this.data, 'singletemplate', this.fieldsArray);
             this.entryHtml = this.dataHelper.displayShowFields(template, this.fieldsArray, this.entry, this.offset, 'show',
                     actions);
             this.showComments = actions.comments;

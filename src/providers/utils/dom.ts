@@ -324,6 +324,33 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Fix syntax errors in HTML.
+     *
+     * @param {string} html HTML text.
+     * @return {string} Fixed HTML text.
+     */
+    fixHtml(html: string): string {
+        this.template.innerHTML = html;
+
+        const attrNameRegExp = /[^\x00-\x20\x7F-\x9F"'>\/=]+/;
+
+        const fixElement = (element: Element): void => {
+            // Remove attributes with an invalid name.
+            Array.from(element.attributes).forEach((attr) => {
+                if (!attrNameRegExp.test(attr.name)) {
+                    element.removeAttributeNode(attr);
+                }
+            });
+
+            Array.from(element.children).forEach(fixElement);
+        };
+
+        Array.from(this.template.content.children).forEach(fixElement);
+
+        return this.template.innerHTML;
+    }
+
+    /**
      * Focus an element and open keyboard.
      *
      * @param {HTMLElement} el HTML element to focus.
