@@ -27,7 +27,7 @@
     "clean": "npx ionic-app-scripts clean",
     "build": "npx ionic-app-scripts build",
     "lint": "npx ionic-app-scripts lint",
-    "ionic:build": "npx --max-old-space-size=16384 ionic-app-scripts build",
+    "ionic:build": "npx --max-old-space-size=16384 ./node_modules/@ionic/app-scripts/bin/ionic-app-scripts.js build",
     "ionic:serve:before": "npx gulp",
     "ionic:serve": "npx gulp watch & npx ionic-app-scripts serve -b --devapp --address=0.0.0.0",
     "ionic:build:before": "npx gulp",
