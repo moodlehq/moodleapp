@@ -128,7 +128,7 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
             return this.groupsProvider.getActivityGroupInfo(this.assign.cmid, false).then((groupInfo) => {
                 this.groupInfo = groupInfo;
 
-                return this.setGroup(this.groupId || (groupInfo.groups && groupInfo.groups[0] && groupInfo.groups[0].id) || 0);
+                return this.setGroup(this.groupsProvider.validateGroupId(this.groupId, groupInfo));
             });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'Error getting assigment data.');

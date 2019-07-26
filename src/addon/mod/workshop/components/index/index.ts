@@ -201,19 +201,9 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
             this.access = accessData;
 
             if (accessData.canviewallsubmissions) {
-                return this.groupsProvider.getActivityGroupInfo(this.workshop.coursemodule,
-                        accessData.canviewallsubmissions).then((groupInfo) => {
+                return this.groupsProvider.getActivityGroupInfo(this.workshop.coursemodule).then((groupInfo) => {
                     this.groupInfo = groupInfo;
-
-                    // Check selected group is accessible.
-                    if (groupInfo && groupInfo.groups && groupInfo.groups.length > 0) {
-                        const found = groupInfo.groups.some((group) => {
-                            return group.id == this.group;
-                        });
-                        if (!found) {
-                            this.group = groupInfo.groups[0].id;
-                        }
-                    }
+                    this.group = this.groupsProvider.validateGroupId(this.group, groupInfo);
                 });
             }
         }).then(() => {

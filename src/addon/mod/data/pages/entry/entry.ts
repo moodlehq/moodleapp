@@ -149,16 +149,9 @@ export class AddonModDataEntryPage implements OnDestroy {
         }).then((accessData) => {
             this.access = accessData;
 
-            return this.groupsProvider.getActivityGroupInfo(this.data.coursemodule, accessData.canmanageentries)
-                    .then((groupInfo) => {
+            return this.groupsProvider.getActivityGroupInfo(this.data.coursemodule).then((groupInfo) => {
                 this.groupInfo = groupInfo;
-
-                // Check selected group is accessible.
-                if (groupInfo && groupInfo.groups && groupInfo.groups.length > 0) {
-                    if (!groupInfo.groups.some((group) => this.selectedGroup == group.id)) {
-                        this.selectedGroup = groupInfo.groups[0].id;
-                    }
-                }
+                this.selectedGroup = this.groupsProvider.validateGroupId(this.selectedGroup, groupInfo);
             });
         }).then(() => {
             const actions = this.dataHelper.getActions(this.data, this.access, this.entry);

@@ -165,11 +165,11 @@ export class AddonModAssignHelperProvider {
             }
 
             // If no participants returned and all groups specified, get participants by groups.
-            return this.groupsProvider.getActivityAllowedGroupsIfEnabled(assign.cmid, undefined, siteId).then((userGroups) => {
+            return this.groupsProvider.getActivityGroupInfo(assign.cmid, false, undefined, siteId).then((info) => {
                 const promises = [],
                     participants = {};
 
-                userGroups.forEach((userGroup) => {
+                info.groups.forEach((userGroup) => {
                     promises.push(this.assignProvider.listParticipants(assign.id, userGroup.id, ignoreCache, siteId)
                             .then((parts) => {
                         // Do not get repeated users.

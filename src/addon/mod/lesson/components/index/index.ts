@@ -223,7 +223,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         return this.groupsProvider.getActivityGroupInfo(this.module.id).then((groupInfo) => {
             this.groupInfo = groupInfo;
 
-            return this.setGroup(this.group || 0);
+            return this.setGroup(this.groupsProvider.validateGroupId(this.group, groupInfo));
         }).finally(() => {
             this.reportLoaded = true;
         });
