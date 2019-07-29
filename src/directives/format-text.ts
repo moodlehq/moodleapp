@@ -168,6 +168,11 @@ export class CoreFormatTextDirective implements OnChanges {
         const elWidth = this.getElementWidth(this.element) || window.innerWidth;
 
         imgs.forEach((img: HTMLImageElement) => {
+            // Skip image if it's inside a link.
+            if (img.closest('a')) {
+                return;
+            }
+
             let imgWidth = parseInt(img.getAttribute('width'));
             if (!imgWidth) {
                 // No width attribute, use real size.
