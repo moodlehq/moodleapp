@@ -2,9 +2,11 @@
     <h2>{{ 'addon.block_sitemainmenu.pluginname' | translate }}</h2>
 </ion-item-divider>
 <core-loading [hideUntil]="loaded" class="core-loading-center">
-    <ion-item text-wrap *ngIf="block.summary">
-        <core-format-text [text]="block.summary"></core-format-text>
-    </ion-item>
+    <ng-container *ngIf="mainMenuBlock">
+        <ion-item text-wrap *ngIf="mainMenuBlock.summary">
+            <core-format-text [text]="mainMenuBlock.summary"></core-format-text>
+        </ion-item>
 
-    <core-course-module *ngFor="let module of block.modules" [module]="module" [courseId]="siteHomeId" [downloadEnabled]="true" [section]="block"></core-course-module>
+        <core-course-module *ngFor="let module of mainMenuBlock.modules" [module]="module" [courseId]="siteHomeId" [downloadEnabled]="downloadEnabled" [section]="mainMenuBlock"></core-course-module>
+    </ng-container>
 </core-loading>

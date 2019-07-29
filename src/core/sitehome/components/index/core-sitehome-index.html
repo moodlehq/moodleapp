@@ -24,7 +24,7 @@
 
         <!-- Site home blocks. -->
         <ng-container *ngFor="let block of blocks">
-            <core-block [block]="block" contextLevel="course" [instanceId]="siteHomeId"></core-block>
+            <core-block [block]="block" contextLevel="course" [instanceId]="siteHomeId" [extraData]="{'downloadEnabled': downloadEnabled}"></core-block>
         </ng-container>
     </ion-list>
 
