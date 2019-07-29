@@ -1,0 +1,22 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'core.comments.addcomment' | translate }}</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <form name="itemEdit" (ngSubmit)="addComment($event)">
+        <ion-item>
+            <ion-textarea placeholder="{{ 'core.comments.addcomment' | translate }}" rows="5" [(ngModel)]="content" name="content" required="required"></ion-textarea>
+        </ion-item>
+        <div padding>
+            <button ion-button block type="submit" [disabled]="processing || content.length < 1">
+                {{ 'core.comments.savecomment' | translate }}
+            </button>
+        </div>
+    </form>
+</ion-content>

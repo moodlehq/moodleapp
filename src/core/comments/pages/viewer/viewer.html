@@ -1,24 +1,71 @@
 <ion-header>
     <ion-navbar core-back-button>
         <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+        <ion-buttons end>
+            <button *ngIf="canDeleteComments" item-end ion-button icon-only clear (click)="toggleDelete($event)" [attr.aria-label]="'core.delete' | translate">
+                <ion-icon name="create" ios="md-create"></ion-icon>
+            </button>
+            <core-context-menu>
+                <core-context-menu-item [hidden]="!(commentsLoaded && !hasOffline)" [priority]="100" [content]="'core.refresh' | translate" (action)="refreshComments(false)" [iconAction]="refreshIcon" [closeOnClick]="true"></core-context-menu-item>
+                <core-context-menu-item [hidden]="!(commentsLoaded && hasOffline)" [priority]="100" [content]="'core.settings.synchronizenow' | translate" (action)="refreshComments(true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
+            </core-context-menu>
+        </ion-buttons>
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <ion-refresher [enabled]="commentsLoaded" (ionRefresh)="refreshComments($event)">
+    <ion-refresher [enabled]="commentsLoaded" (ionRefresh)="refreshComments(false, $event)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="commentsLoaded">
-        <core-empty-box *ngIf="!comments || !comments.length" icon="chatbubbles" [message]="'core.nocomments' | translate"></core-empty-box>
+        <core-empty-box *ngIf="!comments || !comments.length" icon="chatbubbles" [message]="'core.comments.nocomments' | translate"></core-empty-box>
+
+        <div class="core-warning-card" icon-start *ngIf="hasOffline">
+            <ion-icon name="warning"></ion-icon>
+            {{ 'core.thereisdatatosync' | translate:{$a: 'core.comments.comments' | translate | lowercase } }}
+        </div>
+
+        <ion-card *ngIf="offlineComment" (click)="addComment($event)">
+            <ion-item text-wrap>
+                <ion-avatar core-user-avatar [user]="offlineComment" item-start></ion-avatar>
+                <h2>{{ offlineComment.fullname }}</h2>
+                <p>
+                    <ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}
+                </p>
+                <button *ngIf="showDelete" item-end ion-button icon-only clear [@coreSlideInOut]="'fromRight'" color="danger" (click)="deleteComment($event, offlineComment)" [attr.aria-label]="'core.delete' | translate">
+                    <ion-icon name="trash"></ion-icon>
+                </button>
+            </ion-item>
+            <ion-item text-wrap>
+                <core-format-text clean="true" [text]="offlineComment.content"></core-format-text>
+            </ion-item>
+        </ion-card>
 
         <ion-card *ngFor="let comment of comments">
             <ion-item text-wrap>
                 <ion-avatar core-user-avatar [user]="comment" item-start></ion-avatar>
                 <h2>{{ comment.fullname }}</h2>
-                <p>{{ comment.time }}</p>
+                <p *ngIf="!comment.deleted">{{ comment.timecreated * 1000 | coreFormatDate: 'strftimerecentfull' }}</p>
+                <p *ngIf="comment.deleted">
+                    <ion-icon name="trash"></ion-icon> <span text-wrap>{{ 'core.deletedoffline' | translate }}</span>
+                </p>
+                <button *ngIf="showDelete && !comment.deleted && comment.delete" item-end ion-button icon-only clear [@coreSlideInOut]="'fromRight'" color="danger" (click)="deleteComment($event, comment)" [attr.aria-label]="'core.delete' | translate">
+                    <ion-icon name="trash"></ion-icon>
+                </button>
+                <button *ngIf="showDelete && comment.deleted" item-end ion-button icon-only clear color="danger" (click)="undoDeleteComment($event, comment)" [attr.aria-label]="'core.restore' | translate">
+                    <ion-icon name="undo"></ion-icon>
+                </button>
             </ion-item>
             <ion-item text-wrap>
                 <core-format-text clean="true" [text]="comment.content"></core-format-text>
             </ion-item>
         </ion-card>
+
+        <core-infinite-loading [enabled]="canLoadMore" (action)="loadMore($event)" [error]="loadMoreError"></core-infinite-loading>
     </core-loading>
+
+    <ion-fab core-fab bottom end *ngIf="canAddComments">
+        <button ion-fab (click)="addComment($event)" [attr.aria-label]="'core.comments.addcomment' | translate">
+            <ion-icon name="add"></ion-icon>
+        </button>
+    </ion-fab>
 </ion-content>

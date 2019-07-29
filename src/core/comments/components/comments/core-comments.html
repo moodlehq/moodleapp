@@ -1,8 +1,8 @@
 <core-loading *ngIf="!disabled" [hideUntil]="commentsLoaded || !displaySpinner">
-    <div (click)="openComments()" *ngIf="commentsCount >= 0">
-        {{ 'core.commentscount' | translate : {'$a': commentsCount} }}
+    <div (click)="openComments()" *ngIf="!countError" [class.core-comments-clickable]="!disabled">
+        {{ 'core.comments.commentscount' | translate : {'$a': commentsCount} }}
     </div>
-    <div *ngIf="commentsCount < 0">
-        {{ 'core.commentsnotworking' | translate }}
+    <div *ngIf="countError">
+        {{ 'core.comments.commentsnotworking' | translate }}
     </div>
 </core-loading>
