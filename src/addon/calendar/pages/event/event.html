@@ -26,6 +26,10 @@
                     <h2>{{ 'core.course' | translate}}</h2>
                     <p><core-format-text [text]="courseName"></core-format-text></p>
                 </a>
+                <a ion-item text-wrap *ngIf="groupName">
+                    <h2>{{ 'core.group' | translate}}</h2>
+                    <p>{{ groupName }}</p>
+                </a>
                 <a ion-item text-wrap *ngIf="categoryPath">
                     <h2>{{ 'core.category' | translate}}</h2>
                     <p><core-format-text [text]="categoryPath"></core-format-text></p>

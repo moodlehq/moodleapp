@@ -14,9 +14,13 @@
 
 import { NgModule } from '@angular/core';
 import { AddonCalendarProvider } from './providers/calendar';
+import { AddonCalendarOfflineProvider } from './providers/calendar-offline';
 import { AddonCalendarHelperProvider } from './providers/helper';
+import { AddonCalendarSyncProvider } from './providers/calendar-sync';
 import { AddonCalendarMainMenuHandler } from './providers/mainmenu-handler';
+import { AddonCalendarSyncCronHandler } from './providers/sync-cron-handler';
 import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
+import { CoreCronDelegate } from '@providers/cron';
 import { CoreInitDelegate } from '@providers/init';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
@@ -25,7 +29,9 @@ import { CoreUpdateManagerProvider } from '@providers/update-manager';
 // List of providers (without handlers).
 export const ADDON_CALENDAR_PROVIDERS: any[] = [
     AddonCalendarProvider,
-    AddonCalendarHelperProvider
+    AddonCalendarOfflineProvider,
+    AddonCalendarHelperProvider,
+    AddonCalendarSyncProvider
 ];
 
 @NgModule({
@@ -35,15 +41,21 @@ export const ADDON_CALENDAR_PROVIDERS: any[] = [
     ],
     providers: [
         AddonCalendarProvider,
+        AddonCalendarOfflineProvider,
         AddonCalendarHelperProvider,
-        AddonCalendarMainMenuHandler
+        AddonCalendarSyncProvider,
+        AddonCalendarMainMenuHandler,
+        AddonCalendarSyncCronHandler
     ]
 })
 export class AddonCalendarModule {
     constructor(mainMenuDelegate: CoreMainMenuDelegate, calendarHandler: AddonCalendarMainMenuHandler,
             initDelegate: CoreInitDelegate, calendarProvider: AddonCalendarProvider, loginHelper: CoreLoginHelperProvider,
-            localNotificationsProvider: CoreLocalNotificationsProvider, updateManager: CoreUpdateManagerProvider) {
+            localNotificationsProvider: CoreLocalNotificationsProvider, updateManager: CoreUpdateManagerProvider,
+            cronDelegate: CoreCronDelegate, syncHandler: AddonCalendarSyncCronHandler) {
+
         mainMenuDelegate.registerHandler(calendarHandler);
+        cronDelegate.register(syncHandler);
 
         initDelegate.ready().then(() => {
             calendarProvider.scheduleAllSitesEventsNotifications();

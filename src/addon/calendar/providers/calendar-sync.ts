@@ -1,0 +1,230 @@
+// (C) Copyright 2015 Martin Dougiamas
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { CoreSyncBaseProvider } from '@classes/base-sync';
+import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreAppProvider } from '@providers/app';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreSyncProvider } from '@providers/sync';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { AddonCalendarProvider } from './calendar';
+import { AddonCalendarOfflineProvider } from './calendar-offline';
+
+/**
+ * Service to sync calendar.
+ */
+@Injectable()
+export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
+
+    static AUTO_SYNCED = 'addon_calendar_autom_synced';
+    static MANUAL_SYNCED = 'addon_calendar_manual_synced';
+    static SYNC_ID = 'calendar';
+
+    protected componentTranslate: string;
+
+    constructor(translate: TranslateService,
+            appProvider: CoreAppProvider,
+            courseProvider: CoreCourseProvider,
+            private eventsProvider: CoreEventsProvider,
+            loggerProvider: CoreLoggerProvider,
+            sitesProvider: CoreSitesProvider,
+            syncProvider: CoreSyncProvider,
+            textUtils: CoreTextUtilsProvider,
+            timeUtils: CoreTimeUtilsProvider,
+            private utils: CoreUtilsProvider,
+            private calendarProvider: AddonCalendarProvider,
+            private calendarOffline: AddonCalendarOfflineProvider) {
+
+        super('AddonCalendarSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
+                timeUtils);
+
+        this.componentTranslate = this.translate.instant('addon.calendar.calendarevent');
+    }
+
+    /**
+     * Try to synchronize all events in a certain site or in all sites.
+     *
+     * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
+     * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
+     */
+    syncAllEvents(siteId?: string, force?: boolean): Promise<any> {
+        return this.syncOnSites('all calendars', this.syncAllEventsFunc.bind(this), [force], siteId);
+    }
+
+    /**
+     * Sync all events on a site.
+     *
+     * @param {string} siteId Site ID to sync.
+     * @param {boolean} [force] Wether to force sync not depending on last execution.
+     * @return {Promise<any>}          Promise resolved if sync is successful, rejected if sync fails.
+     */
+    protected syncAllEventsFunc(siteId: string, force?: boolean): Promise<any> {
+        const promise = force ? this.syncEvents(siteId) : this.syncEventsIfNeeded(siteId);
+
+        return promise.then((result) => {
+            if (result && result.updated) {
+                // Sync successful, send event.
+                this.eventsProvider.trigger(AddonCalendarSyncProvider.AUTO_SYNCED, {
+                    warnings: result.warnings,
+                    events: result.events
+                }, siteId);
+            }
+        });
+    }
+
+    /**
+     * Sync a site events only if a certain time has passed since the last time.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when the events are synced or if it doesn't need to be synced.
+     */
+    syncEventsIfNeeded(siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        return this.isSyncNeeded(AddonCalendarSyncProvider.SYNC_ID, siteId).then((needed) => {
+            if (needed) {
+                return this.syncEvents(siteId);
+            }
+        });
+    }
+
+    /**
+     * Synchronize all offline events of a certain site.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}  Promise resolved if sync is successful, rejected otherwise.
+     */
+    syncEvents(siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        if (this.isSyncing(AddonCalendarSyncProvider.SYNC_ID, siteId)) {
+            // There's already a sync ongoing for this site, return the promise.
+            return this.getOngoingSync(AddonCalendarSyncProvider.SYNC_ID, siteId);
+        }
+
+        this.logger.debug('Try to sync calendar events for site ' + siteId);
+
+        const result = {
+            warnings: [],
+            events: [],
+            updated: false
+        };
+        let offlineEvents;
+
+        // Get offline events.
+        const syncPromise = this.calendarOffline.getAllEvents(siteId).catch(() => {
+            // No offline data found, return empty list.
+            return [];
+        }).then((events) => {
+            offlineEvents = events;
+
+            if (!events.length) {
+                // Nothing to sync.
+                return;
+            } else if (!this.appProvider.isOnline()) {
+                // Cannot sync in offline.
+                return Promise.reject(null);
+            }
+
+            const promises = [];
+
+            events.forEach((event) => {
+                promises.push(this.syncOfflineEvent(event, result, siteId));
+            });
+
+            return this.utils.allPromises(promises);
+        }).then(() => {
+            if (result.updated) {
+                // Data has been sent to server. Now invalidate the WS calls.
+                const promises = [
+                    this.calendarProvider.invalidateEventsList(siteId),
+                ];
+
+                offlineEvents.forEach((event) => {
+                    if (event.id > 0) {
+                        // An event was edited, invalidate its data too.
+                        promises.push(this.calendarProvider.invalidateEvent(event.id, siteId));
+                    }
+                });
+
+                return Promise.all(promises).catch(() => {
+                    // Ignore errors.
+                });
+            }
+        }).then(() => {
+            // Sync finished, set sync time.
+            return this.setSyncTime(AddonCalendarSyncProvider.SYNC_ID, siteId).catch(() => {
+                // Ignore errors.
+            });
+        }).then(() => {
+            // All done, return the result.
+            return result;
+        });
+
+        return this.addOngoingSync(AddonCalendarSyncProvider.SYNC_ID, syncPromise, siteId);
+    }
+
+    /**
+     * Synchronize an offline event.
+     *
+     * @param {any} event The event to sync.
+     * @param {any} result Object where to store the result of the sync.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved if sync is successful, rejected otherwise.
+     */
+    protected syncOfflineEvent(event: any, result: any, siteId?: string): Promise<any> {
+
+        // Verify that event isn't blocked.
+        if (this.syncProvider.isBlocked(AddonCalendarProvider.COMPONENT, event.id, siteId)) {
+            this.logger.debug('Cannot sync event ' + event.name + ' because it is blocked.');
+
+            return Promise.reject(this.translate.instant('core.errorsyncblocked', {$a: this.componentTranslate}));
+        }
+
+        // Try to send the data.
+        const data = this.utils.clone(event); // Clone the object because it will be modified in the submit function.
+
+        return this.calendarProvider.submitEventOnline(event.id > 0 ? event.id : undefined, data, siteId).then((newEvent) => {
+            result.updated = true;
+            result.events.push(newEvent);
+
+            // Event sent, delete the offline data.
+            return this.calendarOffline.deleteEvent(event.id, siteId);
+        }).catch((error) => {
+            if (this.utils.isWebServiceError(error)) {
+                // The WebService has thrown an error, this means that the event cannot be created. Delete it.
+                result.updated = true;
+
+                return this.calendarOffline.deleteEvent(event.id, siteId).then(() => {
+                    // Event deleted, add a warning.
+                    result.warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
+                        component: this.componentTranslate,
+                        name: event.name,
+                        error: this.textUtils.getErrorMessageFromError(error)
+                    }));
+                });
+            }
+
+            // Local error, reject.
+            return Promise.reject(error);
+        });
+    }
+}

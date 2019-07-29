@@ -17,13 +17,16 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreSite } from '@classes/site';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CoreAppProvider } from '@providers/app';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreGroupsProvider } from '@providers/groups';
 import { CoreConstants } from '@core/constants';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreConfigProvider } from '@providers/config';
 import { ILocalNotification } from '@ionic-native/local-notifications';
 import { SQLiteDB } from '@classes/sqlitedb';
+import { AddonCalendarOfflineProvider } from './calendar-offline';
 
 /**
  * Service to handle calendar events.
@@ -35,6 +38,13 @@ export class AddonCalendarProvider {
     static DEFAULT_NOTIFICATION_TIME_CHANGED = 'AddonCalendarDefaultNotificationTimeChangedEvent';
     static DEFAULT_NOTIFICATION_TIME_SETTING = 'mmaCalendarDefaultNotifTime';
     static DEFAULT_NOTIFICATION_TIME = 60;
+    static NEW_EVENT_EVENT = 'addon_calendar_new_event';
+    static NEW_EVENT_DISCARDED_EVENT = 'addon_calendar_new_event_discarded';
+    static TYPE_CATEGORY = 'category';
+    static TYPE_COURSE = 'course';
+    static TYPE_GROUP = 'group';
+    static TYPE_SITE = 'site';
+    static TYPE_USER = 'user';
     protected ROOT_CACHE_KEY = 'mmaCalendar:';
 
     // Variables for database.
@@ -206,9 +216,36 @@ export class AddonCalendarProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private groupsProvider: CoreGroupsProvider,
             private coursesProvider: CoreCoursesProvider, private timeUtils: CoreTimeUtilsProvider,
-            private localNotificationsProvider: CoreLocalNotificationsProvider, private configProvider: CoreConfigProvider) {
+            private localNotificationsProvider: CoreLocalNotificationsProvider, private configProvider: CoreConfigProvider,
+            private utils: CoreUtilsProvider, private calendarOffline: AddonCalendarOfflineProvider,
+            private appProvider: CoreAppProvider) {
         this.logger = logger.getInstance('AddonCalendarProvider');
         this.sitesProvider.registerSiteSchema(this.siteSchema);
+    }
+
+    /**
+     * Check if a certain site allows creating and editing events.
+     *
+     * @param {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<boolean>} Promise resolved with true if can create/edit.
+     */
+    canEditEvents(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.canEditEventsInSite(site);
+        });
+    }
+
+    /**
+     * Check if a certain site allows creating and editing events.
+     *
+     * @param {CoreSite} [site] Site. If not defined, use current site.
+     * @return {boolean} Whether events can be created and edited.
+     */
+    canEditEventsInSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        // The WS to create/edit events requires a fix that was integrated in 3.7.1.
+        return site.isVersionGreaterEqualThan('3.7.1');
     }
 
     /**
@@ -256,6 +293,39 @@ export class AddonCalendarProvider {
     }
 
     /**
+     * Get access information for a calendar (either course calendar or site calendar).
+     *
+     * @param {number} [courseId] Course ID. If not defined, site calendar.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with object with access information.
+     * @since 3.7
+     */
+    getAccessInformation(courseId?: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params: any = {},
+                preSets = {
+                    cacheKey: this.getAccessInformationCacheKey(courseId)
+                };
+
+            if (courseId) {
+                params.courseid = courseId;
+            }
+
+            return site.read('core_calendar_get_calendar_access_information', params, preSets);
+        });
+    }
+
+    /**
+     * Get cache key for calendar access information WS calls.
+     *
+     * @param {number} [courseId] Course ID.
+     * @return {string} Cache key.
+     */
+    protected getAccessInformationCacheKey(courseId?: number): string {
+        return this.ROOT_CACHE_KEY + 'accessInformation:' + (courseId || 0);
+    }
+
+    /**
      * Get all calendar events from local Db.
      *
      * @param {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
@@ -265,6 +335,50 @@ export class AddonCalendarProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.getDb().getAllRecords(AddonCalendarProvider.EVENTS_TABLE);
         });
+    }
+
+    /**
+     * Get the type of events a user can create (either course calendar or site calendar).
+     *
+     * @param {number} [courseId] Course ID. If not defined, site calendar.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with an object indicating the types.
+     * @since 3.7
+     */
+    getAllowedEventTypes(courseId?: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params: any = {},
+                preSets = {
+                    cacheKey: this.getAllowedEventTypesCacheKey(courseId)
+                };
+
+            if (courseId) {
+                params.courseid = courseId;
+            }
+
+            return site.read('core_calendar_get_allowed_event_types', params, preSets).then((response) => {
+                // Convert the array to an object.
+                const result = {};
+
+                if (response.allowedeventtypes) {
+                    response.allowedeventtypes.map((type) => {
+                        result[type] = true;
+                    });
+                }
+
+                return result;
+            });
+        });
+    }
+
+    /**
+     * Get cache key for calendar allowed event types WS calls.
+     *
+     * @param {number} [courseId] Course ID.
+     * @return {string} Cache key.
+     */
+    protected getAllowedEventTypesCacheKey(courseId?: number): string {
+        return this.ROOT_CACHE_KEY + 'allowedEventTypes:' + (courseId || 0);
     }
 
     /**
@@ -502,6 +616,32 @@ export class AddonCalendarProvider {
      */
     protected getEventsListCacheKey(daysToStart: number, daysInterval: number): string {
         return this.getEventsListPrefixCacheKey() + daysToStart + ':' + daysInterval;
+    }
+
+    /**
+     * Invalidates access information.
+     *
+     * @param {number} [courseId] Course ID. If not defined, site calendar.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}  Promise resolved when the data is invalidated.
+     */
+    invalidateAccessInformation(courseId?: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getAccessInformationCacheKey(courseId));
+        });
+    }
+
+    /**
+     * Invalidates allowed event types.
+     *
+     * @param {number} [courseId] Course ID. If not defined, site calendar.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}  Promise resolved when the data is invalidated.
+     */
+    invalidateAllowedEventTypes(courseId?: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getAllowedEventTypesCacheKey(courseId));
+        });
     }
 
     /**
@@ -778,6 +918,81 @@ export class AddonCalendarProvider {
                 // If event does not exist on the DB, schedule the reminder.
                 return this.storeEventInLocalDb(event, siteId);
             }));
+        });
+    }
+
+    /**
+     * Submit a calendar event.
+     *
+     * @param {number} eventId ID of the event. If undefined/null, create a new event.
+     * @param {any} formData Form data.
+     * @param {number} [timeCreated] The time the event was created. Only if modifying a new offline event.
+     * @param {boolean} [forceOffline] True to always save it in offline.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<{sent: boolean, event: any}>} Promise resolved with the event and a boolean indicating if data was
+     *                                                sent to server or stored in offline.
+     */
+    submitEvent(eventId: number, formData: any, timeCreated?: number, forceOffline?: boolean, siteId?: string):
+            Promise<{sent: boolean, event: any}> {
+
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        // Function to store the event to be synchronized later.
+        const storeOffline = (): Promise<{sent: boolean, event: any}> => {
+            return this.calendarOffline.saveEvent(eventId, formData, timeCreated, siteId).then((event) => {
+                return {sent: false, event: event};
+            });
+        };
+
+        if (forceOffline || !this.appProvider.isOnline()) {
+            // App is offline, store the event.
+            return storeOffline();
+        }
+
+        // If the event is already stored, discard it first.
+        return this.calendarOffline.deleteEvent(eventId, siteId).then(() => {
+            return this.submitEventOnline(eventId, formData, siteId).then((event) => {
+                return {sent: true, event: event};
+            }).catch((error) => {
+                if (error && !this.utils.isWebServiceError(error)) {
+                    // Couldn't connect to server, store in offline.
+                    return storeOffline();
+                } else {
+                    // The WebService has thrown an error, reject.
+                    return Promise.reject(error);
+                }
+            });
+        });
+    }
+
+    /**
+     * Submit an event, either to create it or to edit it. It will fail if offline or cannot connect.
+     *
+     * @param {number} eventId ID of the event. If undefined/null, create a new event.
+     * @param {any} formData Form data.
+     * @param {string} [siteId] Site ID. If not provided, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    submitEventOnline(eventId: number, formData: any, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            // Add data that is "hidden" in web.
+            formData.id = eventId || 0;
+            formData.userid = site.getUserId();
+            formData.visible = 1;
+            formData.instance = 0;
+            formData['_qf__core_calendar_local_event_forms_create'] = 1;
+
+            const params = {
+                formdata: this.utils.objectToGetParams(formData)
+            };
+
+            return site.write('core_calendar_submit_create_update_form', params).then((result) => {
+                if (result.validationerror) {
+                    return Promise.reject(this.utils.createFakeWSError(''));
+                }
+
+                return result.event;
+            });
         });
     }
 }
