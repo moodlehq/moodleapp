@@ -385,9 +385,18 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
+     * First tab selected.
+     */
+    indexSelected(): void {
+        this.selectedTab = 0;
+    }
+
+    /**
      * Reports tab selected.
      */
     reportsSelected(): void {
+        this.selectedTab = 1;
+
         if (!this.groupInfo) {
             this.fetchReportData().catch((error) => {
                 this.domUtils.showErrorModalDefault(error, 'Error getting report.');
