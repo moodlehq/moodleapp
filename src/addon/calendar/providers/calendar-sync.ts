@@ -37,8 +37,6 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
     static MANUAL_SYNCED = 'addon_calendar_manual_synced';
     static SYNC_ID = 'calendar';
 
-    protected componentTranslate: string;
-
     constructor(translate: TranslateService,
             appProvider: CoreAppProvider,
             courseProvider: CoreCourseProvider,
@@ -54,8 +52,6 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
 
         super('AddonCalendarSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
                 timeUtils);
-
-        this.componentTranslate = this.translate.instant('addon.calendar.calendarevent');
     }
 
     /**
@@ -66,7 +62,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
      * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllEvents(siteId?: string, force?: boolean): Promise<any> {
-        return this.syncOnSites('all calendars', this.syncAllEventsFunc.bind(this), [force], siteId);
+        return this.syncOnSites('all calendar events', this.syncAllEventsFunc.bind(this), [force], siteId);
     }
 
     /**
@@ -77,6 +73,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
      * @return {Promise<any>}          Promise resolved if sync is successful, rejected if sync fails.
      */
     protected syncAllEventsFunc(siteId: string, force?: boolean): Promise<any> {
+
         const promise = force ? this.syncEvents(siteId) : this.syncEventsIfNeeded(siteId);
 
         return promise.then((result) => {
@@ -196,7 +193,8 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
         if (this.syncProvider.isBlocked(AddonCalendarProvider.COMPONENT, event.id, siteId)) {
             this.logger.debug('Cannot sync event ' + event.name + ' because it is blocked.');
 
-            return Promise.reject(this.translate.instant('core.errorsyncblocked', {$a: this.componentTranslate}));
+            return Promise.reject(this.translate.instant('core.errorsyncblocked',
+                    {$a: this.translate.instant('addon.calendar.calendarevent')}));
         }
 
         // Try to send the data.
@@ -216,7 +214,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
                 return this.calendarOffline.deleteEvent(event.id, siteId).then(() => {
                     // Event deleted, add a warning.
                     result.warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
-                        component: this.componentTranslate,
+                        component: this.translate.instant('addon.calendar.calendarevent'),
                         name: event.name,
                         error: this.textUtils.getErrorMessageFromError(error)
                     }));

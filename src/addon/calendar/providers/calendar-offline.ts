@@ -95,6 +95,14 @@ export class AddonCalendarOfflineProvider {
                         type: 'TEXT',
                     },
                     {
+                        name: 'repeatid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'repeateditall',
+                        type: 'INTEGER',
+                    },
+                    {
                         name: 'userid',
                         type: 'INTEGER',
                     },
@@ -202,6 +210,8 @@ export class AddonCalendarOfflineProvider {
                 timedurationminutes: data.timedurationminutes,
                 repeat: data.repeat ? 1 : 0,
                 repeats: data.repeats,
+                repeatid: data.repeatid,
+                repeateditall: data.repeateditall ? 1 : 0,
                 timecreated: timeCreated,
                 userid: site.getUserId()
             };

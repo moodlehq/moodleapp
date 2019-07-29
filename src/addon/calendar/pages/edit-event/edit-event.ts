@@ -21,6 +21,7 @@ import { CoreGroupsProvider } from '@providers/groups';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
@@ -57,6 +58,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     courseGroupSet = false;
     advanced = false;
     errors: any;
+    event: any; // The event object (when editing an event).
 
     // Form variables.
     eventForm: FormGroup;
@@ -71,11 +73,14 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     protected types: any; // Object with the supported types.
     protected showAll: boolean;
     protected isDestroyed = false;
+    protected error = false;
+    protected gotEventData = false;
 
     constructor(navParams: NavParams,
             private navCtrl: NavController,
             private translate: TranslateService,
             private domUtils: CoreDomUtilsProvider,
+            private textUtils: CoreTextUtilsProvider,
             private timeUtils: CoreTimeUtilsProvider,
             private eventsProvider: CoreEventsProvider,
             private groupsProvider: CoreGroupsProvider,
@@ -125,6 +130,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
         this.eventForm.addControl('timedurationminutes', this.fb.control(''));
         this.eventForm.addControl('repeat', this.fb.control(false));
         this.eventForm.addControl('repeats', this.fb.control('1'));
+        this.eventForm.addControl('repeateditall', this.fb.control(1));
     }
 
     /**
@@ -146,6 +152,8 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     protected fetchData(refresh?: boolean): Promise<any> {
         let accessInfo;
 
+        this.error = false;
+
         // Get access info.
         return this.calendarProvider.getAccessInformation(this.courseId).then((info) => {
             accessInfo = info;
@@ -161,8 +169,8 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
                 return Promise.reject(this.translate.instant('addon.calendar.nopermissiontoupdatecalendar'));
             }
 
-            if (this.eventId && !refresh) {
-                // If editing an event, get offline data. Wait for sync first.
+            if (this.eventId && !this.gotEventData) {
+                // Editing an event, get the event data. Wait for sync first.
 
                 promises.push(this.calendarSync.waitForSync(AddonCalendarSyncProvider.SYNC_ID).then(() => {
                     // Do not block if the scope is already destroyed.
@@ -170,29 +178,39 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
                         this.syncProvider.blockOperation(AddonCalendarProvider.COMPONENT, this.eventId);
                     }
 
-                    // Get the event data if there's any.
-                    return this.calendarOffline.getEvent(this.eventId).then((event) => {
+                    const promises = [];
+
+                    // Get the event offline data if there's any.
+                    promises.push(this.calendarOffline.getEvent(this.eventId).then((event) => {
                         this.hasOffline = true;
 
-                        // Load the data in the form.
-                        this.eventForm.controls.name.setValue(event.name);
-                        this.eventForm.controls.timestart.setValue(this.timeUtils.toDatetimeFormat(event.timestart * 1000));
-                        this.eventForm.controls.eventtype.setValue(event.eventtype);
-                        this.eventForm.controls.categoryid.setValue(event.categoryid || '');
-                        this.eventForm.controls.courseid.setValue(event.courseid || '');
-                        this.eventForm.controls.groupcourseid.setValue(event.groupcourseid || '');
-                        this.eventForm.controls.groupid.setValue(event.groupid || '');
-                        this.eventForm.controls.description.setValue(event.description);
-                        this.eventForm.controls.location.setValue(event.location);
-                        this.eventForm.controls.duration.setValue(event.duration);
-                        this.eventForm.controls.timedurationuntil.setValue(
-                                this.timeUtils.toDatetimeFormat((event.timedurationuntil * 1000) || Date.now()));
-                        this.eventForm.controls.timedurationminutes.setValue(event.timedurationminutes || '');
-                        this.eventForm.controls.repeat.setValue(!!event.repeat);
-                        this.eventForm.controls.repeats.setValue(event.repeats || '1');
+                        return event;
                     }).catch(() => {
                         // No offline data.
                         this.hasOffline = false;
+                    }));
+
+                    if (this.eventId > 0) {
+                        // It's an online event. get its data from server.
+                        promises.push(this.calendarProvider.getEventById(this.eventId).then((event) => {
+                            this.event = event;
+                            if (event && event.repeatid) {
+                                event.othereventscount = event.eventcount ? event.eventcount - 1 : '';
+                            }
+
+                            return event;
+                        }));
+                    }
+
+                    return Promise.all(promises).then((result) => {
+                        this.gotEventData = true;
+
+                        const event = result[0] || result[1]; // Use offline data first.
+
+                        if (event) {
+                            // Load the data in the form.
+                            return this.loadEventData(event, !!result[0]);
+                        }
                     });
                 }));
             }
@@ -220,12 +238,24 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
                         });
                     }
 
-                    // Sort courses by name.
-                    this.courses = courses.sort((a, b) => {
-                        const compareA = a.fullname.toLowerCase(),
-                            compareB = b.fullname.toLowerCase();
+                    // Format the name of the courses.
+                    const subPromises = [];
+                    courses.forEach((course) => {
+                        subPromises.push(this.textUtils.formatText(course.fullname).then((text) => {
+                            course.fullname = text;
+                        }).catch(() => {
+                            // Ignore errors.
+                        }));
+                    });
 
-                        return compareA.localeCompare(compareB);
+                    return Promise.all(subPromises).then(() => {
+                        // Sort courses by name.
+                        this.courses = courses.sort((a, b) => {
+                            const compareA = a.fullname.toLowerCase(),
+                                compareB = b.fullname.toLowerCase();
+
+                            return compareA.localeCompare(compareB);
+                        });
                     });
                 }));
             }
@@ -245,9 +275,68 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
 
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'Error getting data.');
-            this.originalData = null; // Avoid asking for confirmation.
-            this.navCtrl.pop();
+            this.error = true;
+
+            if (!this.svComponent || !this.svComponent.isOn()) {
+                this.originalData = null; // Avoid asking for confirmation.
+                this.navCtrl.pop();
+            }
         });
+    }
+
+    /**
+     * Load an event data into the form.
+     *
+     * @param {any} event Event data.
+     * @param {boolean} isOffline Whether the data is from offline or not.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected loadEventData(event: any, isOffline: boolean): Promise<any> {
+        const courseId = event.course ? event.course.id : event.courseid;
+
+        this.eventForm.controls.name.setValue(event.name);
+        this.eventForm.controls.timestart.setValue(this.timeUtils.toDatetimeFormat(event.timestart * 1000));
+        this.eventForm.controls.eventtype.setValue(event.eventtype);
+        this.eventForm.controls.categoryid.setValue(event.categoryid || '');
+        this.eventForm.controls.courseid.setValue(courseId || '');
+        this.eventForm.controls.groupcourseid.setValue(event.groupcourseid || courseId || '');
+        this.eventForm.controls.groupid.setValue(event.groupid || '');
+        this.eventForm.controls.description.setValue(event.description);
+        this.eventForm.controls.location.setValue(event.location);
+
+        if (isOffline) {
+            // It's an offline event, use the data as it is.
+            this.eventForm.controls.duration.setValue(event.duration);
+            this.eventForm.controls.timedurationuntil.setValue(
+                    this.timeUtils.toDatetimeFormat((event.timedurationuntil * 1000) || Date.now()));
+            this.eventForm.controls.timedurationminutes.setValue(event.timedurationminutes || '');
+            this.eventForm.controls.repeat.setValue(!!event.repeat);
+            this.eventForm.controls.repeats.setValue(event.repeats || '1');
+            this.eventForm.controls.repeateditall.setValue(event.repeateditall || 1);
+        } else {
+            // Online event, we'll have to calculate the data.
+
+            if (event.timeduration > 0) {
+                this.eventForm.controls.duration.setValue(1);
+                this.eventForm.controls.timedurationuntil.setValue(this.timeUtils.toDatetimeFormat(
+                        (event.timestart + event.timeduration) * 1000));
+            } else {
+                // No duration.
+                this.eventForm.controls.duration.setValue(0);
+                this.eventForm.controls.timedurationuntil.setValue(this.timeUtils.toDatetimeFormat());
+            }
+
+            this.eventForm.controls.timedurationminutes.setValue('');
+            this.eventForm.controls.repeat.setValue(!!event.repeatid);
+            this.eventForm.controls.repeats.setValue(event.eventcount || '1');
+            this.eventForm.controls.repeateditall.setValue(1);
+        }
+
+        if (event.eventtype == 'group' && courseId) {
+            return this.loadGroups(courseId);
+        }
+
+        return Promise.resolve();
     }
 
     /**
@@ -292,17 +381,30 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
         }
 
         const modal = this.domUtils.showModalLoading();
-        this.loadingGroups = true;
 
-        this.groupsProvider.getUserGroupsInCourse(courseId).then((groups) => {
-            this.groups = groups;
-            this.courseGroupSet = true;
+        this.loadGroups(courseId).then(() => {
             this.groupControl.setValue('');
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'Error getting data.');
         }).finally(() => {
-            this.loadingGroups = false;
             modal.dismiss();
+        });
+    }
+
+    /**
+     * Load groups of a certain course.
+     *
+     * @param {number} courseId Course ID.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected loadGroups(courseId: number): Promise<any> {
+        this.loadingGroups = true;
+
+        return this.groupsProvider.getUserGroupsInCourse(courseId).then((groups) => {
+            this.groups = groups;
+            this.courseGroupSet = true;
+        }).finally(() => {
+            this.loadingGroups = false;
         });
     }
 
@@ -378,8 +480,13 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
             data.repeats = formData.repeats;
         }
 
+        if (this.event && this.event.repeatid) {
+            data.repeatid = this.event.repeatid;
+            data.repeateditall = formData.repeateditall;
+        }
+
         // Send the data.
-        const modal = this.domUtils.showModalLoading('core.sending');
+        const modal = this.domUtils.showModalLoading('core.sending', true);
 
         this.calendarProvider.submitEvent(this.eventId, data).then((result) => {
             this.returnToList(result.event);
@@ -399,13 +506,21 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
         // Unblock the sync because the view will be destroyed and the sync process could be triggered before ngOnDestroy.
         this.unblockSync();
 
-        if (event) {
+        if (this.eventId > 0) {
+            // Editing an event.
             const data: any = {
                 event: event
             };
-            this.eventsProvider.trigger(AddonCalendarProvider.NEW_EVENT_EVENT, data, this.currentSite.getId());
+            this.eventsProvider.trigger(AddonCalendarProvider.EDIT_EVENT_EVENT, data, this.currentSite.getId());
         } else {
-            this.eventsProvider.trigger(AddonCalendarProvider.NEW_EVENT_DISCARDED_EVENT, {}, this.currentSite.getId());
+            if (event) {
+                const data: any = {
+                    event: event
+                };
+                this.eventsProvider.trigger(AddonCalendarProvider.NEW_EVENT_EVENT, data, this.currentSite.getId());
+            } else {
+                this.eventsProvider.trigger(AddonCalendarProvider.NEW_EVENT_DISCARDED_EVENT, {}, this.currentSite.getId());
+            }
         }
 
         if (this.svComponent && this.svComponent.isOn()) {

@@ -7,7 +7,7 @@
             </button>
             <core-context-menu>
                 <core-context-menu-item [hidden]="!notificationsEnabled" [priority]="600" [content]="'core.settings.settings' | translate" (action)="openSettings()" [iconAction]="'cog'"></core-context-menu-item>
-                <core-context-menu-item *ngIf="eventsLoaded && hasOffline && isOnline"  [priority]="400" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
+                <core-context-menu-item [hidden]="!eventsLoaded || !hasOffline || !isOnline"  [priority]="400" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
             </core-context-menu>
         </ion-buttons>
     </ion-navbar>
@@ -26,20 +26,6 @@
             <core-empty-box *ngIf="!filteredEvents || !filteredEvents.length" icon="calendar" [message]="'addon.calendar.noevents' | translate">
             </core-empty-box>
 
-            <ion-list *ngIf="offlineEvents && offlineEvents.length" no-margin>
-                <ng-container *ngFor="let event of offlineEvents">
-                    <ion-item-divider> {{ 'core.notsent' | translate }}</ion-item-divider>
-                    <a ion-item text-wrap [title]="event.name" (click)="gotoEvent(event.id)" [class.core-split-item-selected]="event.id == eventId">
-                        <core-icon *ngIf="event.icon" [name]="event.icon" item-start></core-icon>
-                        <h2><core-format-text [text]="event.name"></core-format-text></h2>
-                        <p>
-                            {{ event.timestart * 1000 | coreFormatDate: "strftimedatetimeshort" }}
-                            <span *ngIf="event.timeduration"> - {{ (event.timestart + event.timeduration) * 1000 | coreFormatDate: "strftimedatetimeshort" }}</span>
-                        </p>
-                    </a>
-                </ng-container>
-            </ion-list>
-
             <ion-list *ngIf="filteredEvents && filteredEvents.length" no-margin>
                 <ng-container *ngFor="let event of filteredEvents">
                     <ion-item-divider *ngIf="event.showDate">
@@ -54,6 +40,10 @@
                             <span *ngIf="event.timeduration && event.endsSameDay"> - {{ (event.timestart + event.timeduration) * 1000 | coreFormatDate: "strftimetime" }}</span>
                             <span *ngIf="event.timeduration && !event.endsSameDay"> - {{ (event.timestart + event.timeduration) * 1000 | coreFormatDate: "strftimedatetimeshort" }}</span>
                         </p>
+                        <ion-note *ngIf="event.offline" item-end>
+                            <ion-icon name="time"></ion-icon>
+                            {{ 'core.notsent' | translate }}
+                        </ion-note>
                     </a>
                 </ng-container>
             </ion-list>

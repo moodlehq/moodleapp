@@ -12,12 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild } from '@angular/core';
-import { IonicPage, Content, NavParams } from 'ionic-angular';
+import { Component, ViewChild, Optional, OnDestroy, NgZone } from '@angular/core';
+import { IonicPage, Content, NavParams, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { AddonCalendarProvider } from '../../providers/calendar';
 import { AddonCalendarHelperProvider } from '../../providers/helper';
+import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
+import { AddonCalendarSyncProvider } from '../../providers/calendar-sync';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CoreAppProvider } from '@providers/app';
+import { CoreEventsProvider } from '@providers/events';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreSitesProvider } from '@providers/sites';
@@ -25,6 +29,8 @@ import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreGroupsProvider } from '@providers/groups';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { Network } from '@ionic-native/network';
 
 /**
  * Page that displays a single calendar event.
@@ -34,11 +40,17 @@ import { CoreGroupsProvider } from '@providers/groups';
     selector: 'page-addon-calendar-event',
     templateUrl: 'event.html',
 })
-export class AddonCalendarEventPage {
+export class AddonCalendarEventPage implements OnDestroy {
     @ViewChild(Content) content: Content;
 
     protected eventId;
     protected siteHomeId: number;
+    protected editEventObserver: any;
+    protected syncObserver: any;
+    protected manualSyncObserver: any;
+    protected onlineObserver: any;
+    protected currentSiteId: string;
+
     eventLoaded: boolean;
     notificationFormat: string;
     notificationMin: string;
@@ -55,17 +67,31 @@ export class AddonCalendarEventPage {
     currentTime: number;
     defaultTime: number;
     reminders: any[];
+    canEdit = false;
+    hasOffline = false;
+    isOnline = false;
+    syncIcon: string; // Sync icon.
+    isSplitViewOn = false;
 
     constructor(private translate: TranslateService, private calendarProvider: AddonCalendarProvider, navParams: NavParams,
             private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider,
             private calendarHelper: AddonCalendarHelperProvider, private sitesProvider: CoreSitesProvider,
             localNotificationsProvider: CoreLocalNotificationsProvider, private courseProvider: CoreCourseProvider,
             private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider,
-            private groupsProvider: CoreGroupsProvider) {
+            private groupsProvider: CoreGroupsProvider, @Optional() private svComponent: CoreSplitViewComponent,
+            private navCtrl: NavController, private eventsProvider: CoreEventsProvider, network: Network, zone: NgZone,
+            private calendarSync: AddonCalendarSyncProvider, private appProvider: CoreAppProvider,
+            private calendarOffline: AddonCalendarOfflineProvider) {
 
         this.eventId = navParams.get('id');
         this.notificationsEnabled = localNotificationsProvider.isAvailable();
         this.siteHomeId = sitesProvider.getCurrentSite().getSiteHomeId();
+        this.currentSiteId = sitesProvider.getCurrentSiteId();
+        this.isSplitViewOn = this.svComponent && this.svComponent.isOn();
+
+        // Check if site supports editing. No need to check allowed types, event.canedit already does it.
+        this.canEdit = this.calendarProvider.canEditEventsInSite();
+
         if (this.notificationsEnabled) {
             this.calendarProvider.getEventReminders(this.eventId).then((reminders) => {
                 this.reminders = reminders;
@@ -79,34 +105,105 @@ export class AddonCalendarEventPage {
             this.notificationFormat = this.timeUtils.fixFormatForDatetime(this.timeUtils.convertPHPToMoment(
                     this.translate.instant('core.strftimedatetime')));
         }
+
+        // Listen for event edited. If current event is edited, reload the data.
+        this.editEventObserver = eventsProvider.on(AddonCalendarProvider.EDIT_EVENT_EVENT, (data) => {
+            if (data && data.event && data.event.id == this.eventId) {
+                this.eventLoaded = false;
+                this.refreshEvent(true, false);
+            }
+        }, this.currentSiteId);
+
+        // Refresh data if this calendar event is synchronized automatically.
+        this.syncObserver = eventsProvider.on(AddonCalendarSyncProvider.AUTO_SYNCED, this.checkSyncResult.bind(this, false),
+                this.currentSiteId);
+
+        // Refresh data if calendar events are synchronized manually but not by this page.
+        this.manualSyncObserver = eventsProvider.on(AddonCalendarSyncProvider.MANUAL_SYNCED, this.checkSyncResult.bind(this, true),
+                this.currentSiteId);
+
+        // Refresh online status when changes.
+        this.onlineObserver = network.onchange().subscribe((online) => {
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            zone.run(() => {
+                this.isOnline = online;
+            });
+        });
     }
 
     /**
      * View loaded.
      */
     ionViewDidLoad(): void {
-        this.fetchEvent().finally(() => {
-            this.eventLoaded = true;
-        });
+        this.syncIcon = 'spinner';
+
+        this.fetchEvent();
     }
 
     /**
      * Fetches the event and updates the view.
      *
+     * @param {boolean} [sync] Whether it should try to synchronize offline events.
+     * @param {boolean} [showErrors] Whether to show sync errors to the user.
      * @return {Promise<any>} Promise resolved when done.
      */
-    fetchEvent(): Promise<any> {
+    fetchEvent(sync?: boolean, showErrors?: boolean): Promise<any> {
         const currentSite = this.sitesProvider.getCurrentSite(),
             canGetById = this.calendarProvider.isGetEventByIdAvailable();
         let promise;
 
-        if (canGetById) {
-            promise = this.calendarProvider.getEventById(this.eventId);
+        this.isOnline = this.appProvider.isOnline();
+
+        if (sync) {
+            // Try to synchronize offline events.
+            promise = this.calendarSync.syncEvents().then((result) => {
+                if (result.warnings && result.warnings.length) {
+                    this.domUtils.showErrorModal(result.warnings[0]);
+                }
+
+                if (result.updated) {
+                    // Trigger a manual sync event.
+                    result.source = 'event';
+
+                    this.eventsProvider.trigger(AddonCalendarSyncProvider.MANUAL_SYNCED, result, this.currentSiteId);
+                }
+            }).catch((error) => {
+                if (showErrors) {
+                    this.domUtils.showErrorModalDefault(error, 'core.errorsync', true);
+                }
+            });
         } else {
-            promise = this.calendarProvider.getEvent(this.eventId);
+            promise = Promise.resolve();
         }
 
-        return promise.then((event) => {
+        return promise.then(() => {
+            const promises = [];
+
+            // Get the event data.
+            if (canGetById) {
+                promises.push(this.calendarProvider.getEventById(this.eventId));
+            } else {
+                promises.push(this.calendarProvider.getEvent(this.eventId));
+            }
+
+            // Get offline data.
+            promises.push(this.calendarOffline.getEvent(this.eventId).catch(() => {
+                // No offline data.
+            }));
+
+            return Promise.all(promises).then((results) => {
+                if (results[1]) {
+                    // There is offline data, apply it.
+                    this.hasOffline = true;
+                    Object.assign(results[0], results[1]);
+                } else {
+                    this.hasOffline = false;
+                }
+
+                return results[0];
+            });
+
+        }).then((event) => {
             const promises = [];
 
             this.calendarHelper.formatEventData(event);
@@ -196,6 +293,9 @@ export class AddonCalendarEventPage {
             return Promise.all(promises);
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevent', true);
+        }).finally(() => {
+            this.eventLoaded = true;
+            this.syncIcon = 'sync';
         });
     }
 
@@ -247,15 +347,76 @@ export class AddonCalendarEventPage {
     }
 
     /**
+     * Refresh the data.
+     *
+     * @param {any} [refresher] Refresher.
+     * @param {Function} [done] Function to call when done.
+     * @param {boolean} [showErrors] Whether to show sync errors to the user.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    doRefresh(refresher?: any, done?: () => void, showErrors?: boolean): Promise<any> {
+        if (this.eventLoaded) {
+            return this.refreshEvent(true, showErrors).finally(() => {
+                refresher && refresher.complete();
+                done && done();
+            });
+        }
+
+        return Promise.resolve();
+    }
+
+    /**
      * Refresh the event.
      *
-     * @param {any} refresher Refresher.
+     * @param {boolean} [sync] Whether it should try to synchronize offline events.
+     * @param {boolean} [showErrors] Whether to show sync errors to the user.
+     * @return {Promise<any>} Promise resolved when done.
      */
-    refreshEvent(refresher: any): void {
-        this.calendarProvider.invalidateEvent(this.eventId).finally(() => {
-            this.fetchEvent().finally(() => {
-                refresher.complete();
-            });
+    refreshEvent(sync?: boolean, showErrors?: boolean): Promise<any> {
+        this.syncIcon = 'spinner';
+
+        return this.calendarProvider.invalidateEvent(this.eventId).catch(() => {
+            // Ignore errors.
+        }).then(() => {
+            return this.fetchEvent(sync, showErrors);
         });
+    }
+
+    /**
+     * Open the page to edit the event.
+     */
+    openEdit(): void {
+        // Decide which navCtrl to use. If this page is inside a split view, use the split view's master nav.
+        const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
+        navCtrl.push('AddonCalendarEditEventPage', {eventId: this.eventId});
+    }
+
+    /**
+     * Check the result of an automatic sync or a manual sync not done by this page.
+     *
+     * @param {boolean} isManual Whether it's a manual sync.
+     * @param {any} data Sync result.
+     */
+    protected checkSyncResult(isManual: boolean, data: any): void {
+        if (data && data.events && (!isManual || data.source != 'event')) {
+            const event = data.events.find((ev) => {
+                return ev.id == this.eventId;
+            });
+
+            if (event) {
+                this.eventLoaded = false;
+                this.refreshEvent();
+            }
+        }
+    }
+
+    /**
+     * Page destroyed.
+     */
+    ngOnDestroy(): void {
+        this.editEventObserver && this.editEventObserver.off();
+        this.syncObserver && this.syncObserver.off();
+        this.manualSyncObserver && this.manualSyncObserver.off();
+        this.onlineObserver && this.onlineObserver.unsubscribe();
     }
 }
