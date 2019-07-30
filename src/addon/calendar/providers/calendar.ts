@@ -91,11 +91,12 @@ export class AddonCalendarProvider {
     ];
 
     // Variables for database.
-    static EVENTS_TABLE = 'addon_calendar_events_2';
+    static EVENTS_TABLE = 'addon_calendar_events_3';
     static REMINDERS_TABLE = 'addon_calendar_reminders';
     protected siteSchema: CoreSiteSchema = {
         name: 'AddonCalendarProvider',
-        version: 2,
+        version: 3,
+        canBeCleared: [ AddonCalendarProvider.EVENTS_TABLE ],
         tables: [
             {
                 name: AddonCalendarProvider.EVENTS_TABLE,
@@ -177,6 +178,82 @@ export class AddonCalendarProvider {
                     {
                         name: 'subscriptionid',
                         type: 'INTEGER'
+                    },
+                    {
+                        name: 'location',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'eventcount',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'timesort',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'category',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'course',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'subscription',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'canedit',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'candelete',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'deleteurl',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'editurl',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'viewurl',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'formattedtime',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'isactionevent',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'url',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'islastday',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'popupname',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'mindaytimestamp',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'maxdaytimestamp',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'draggable',
+                        type: 'INTEGER'
                     }
                 ]
             },
@@ -203,56 +280,34 @@ export class AddonCalendarProvider {
             }
         ],
         migrate(db: SQLiteDB, oldVersion: number, siteId: string): Promise<any> | void {
-            if (oldVersion < 2) {
+            if (oldVersion < 3) {
                 const newTable = AddonCalendarProvider.EVENTS_TABLE;
-                const oldTable = 'addon_calendar_events';
+                let oldTable = 'addon_calendar_events_2';
 
-                return db.tableExists(oldTable).then(() => {
+                return db.tableExists(oldTable).catch(() => {
+                    // The v2 table doesn't exist, try with v1.
+                    oldTable = 'addon_calendar_events';
+
+                    return db.tableExists(oldTable);
+                }).then(() => {
+                    // Move the records from the old table.
+                    // Move the records from the old table.
                     return db.getAllRecords(oldTable).then((events) => {
-                        const now = Math.round(Date.now() / 1000);
+                        const promises = [];
 
-                        return Promise.all(events.map((event) => {
-                            if (event.notificationtime == 0) {
-                                // No reminders.
-                                return Promise.resolve();
-                            }
-
-                            let time;
-
-                            if (event.notificationtime == -1) {
-                                time = -1;
-                            } else {
-                                time = event.timestart - event.notificationtime * 60;
-
-                                if (time < now) {
-                                    // Old reminder, just not add this.
-                                    return Promise.resolve();
-                                }
-                            }
-
-                            const reminder = {
-                                eventid: event.id,
-                                time: time
-                            };
-
-                            // Cancel old notification.
-                            this.localNotificationsProvider.cancel(event.id, AddonCalendarProvider.COMPONENT, siteId);
-
-                            return db.insertRecord(AddonCalendarProvider.REMINDERS_TABLE, reminder);
-                        })).then(() => {
-                            // Move the records from the old table.
-                            return db.insertRecordsFrom(newTable, oldTable, undefined, 'id, name, description, format, eventtype,\
-                                courseid, timestart, timeduration, categoryid, groupid, userid, instance, modulename, timemodified,\
-                                repeatid, visible, uuid, sequence, subscriptionid');
-                        }).then(() => {
-                            return db.dropTable(oldTable);
+                        events.forEach((event) => {
+                            promises.push(db.insertRecord(newTable, event));
                         });
+
+                        return Promise.all(promises);
                     });
+                }).then(() => {
+                    return db.dropTable(oldTable);
                 }).catch(() => {
                     // Old table does not exist, ignore.
                 });
             }
-        }
+        },
     };
 
     protected logger;
@@ -369,6 +424,11 @@ export class AddonCalendarProvider {
      */
     cleanExpiredEvents(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
+            if (this.canViewMonthInSite(site)) {
+                // Site supports monthly view, don't clean expired events because user can see past events.
+                return;
+            }
+
             return site.getDb().getRecordsSelect(AddonCalendarProvider.EVENTS_TABLE, 'timestart + timeduration < ?',
                     [this.timeUtils.timestamp()]).then((events) => {
                 return Promise.all(events.map((event) => {
@@ -805,6 +865,10 @@ export class AddonCalendarProvider {
 
             return site.read('core_calendar_get_calendar_event_by_id', data, preSets).then((response) => {
                 return response.event;
+            }).catch((error) => {
+                return this.getEventFromLocalDb(id).catch(() => {
+                    return Promise.reject(error);
+                });
             });
         });
     }
@@ -828,7 +892,20 @@ export class AddonCalendarProvider {
      */
     getEventFromLocalDb(id: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecord(AddonCalendarProvider.EVENTS_TABLE, { id: id });
+            return site.getDb().getRecord(AddonCalendarProvider.EVENTS_TABLE, { id: id }).then((event) => {
+                if (this.isGetEventByIdAvailableInSite(site)) {
+                    // Calculate data to match the new WS.
+                    event.descriptionformat = event.format;
+                    event.iscourseevent = event.eventtype == AddonCalendarProvider.TYPE_COURSE;
+                    event.iscategoryevent = event.eventtype == AddonCalendarProvider.TYPE_CATEGORY;
+                    event.normalisedeventtype = this.getEventType(event);
+                    event.category = this.textUtils.parseJSON(event.category, null);
+                    event.course = this.textUtils.parseJSON(event.course, null);
+                    event.subscription = this.textUtils.parseJSON(event.subscription, null);
+                }
+
+                return event;
+            });
         });
     }
 
@@ -918,7 +995,11 @@ export class AddonCalendarProvider {
                 updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
-            return site.read('core_calendar_get_calendar_day_view', data, preSets);
+            return site.read('core_calendar_get_calendar_day_view', data, preSets).then((response) => {
+                this.storeEventsInLocalDB(response.events, siteId);
+
+                return response.events;
+            });
         });
     }
 
@@ -1034,7 +1115,10 @@ export class AddonCalendarProvider {
                 };
 
                 return site.read('core_calendar_get_calendar_events', data, preSets).then((response) => {
-                    this.storeEventsInLocalDB(response.events, siteId);
+                    if (!this.canViewMonthInSite(site)) {
+                        // Store events only in 3.1-3.3. In 3.4+ we'll use the new WS that return more info.
+                        this.storeEventsInLocalDB(response.events, siteId);
+                    }
 
                     return response.events;
                 });
@@ -1094,7 +1178,15 @@ export class AddonCalendarProvider {
                 updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
-            return site.read('core_calendar_get_calendar_monthly_view', data, preSets);
+            return site.read('core_calendar_get_calendar_monthly_view', data, preSets).then((response) => {
+                response.weeks.forEach((week) => {
+                    week.days.forEach((day) => {
+                        this.storeEventsInLocalDB(day.events, siteId);
+                    });
+                });
+
+                return response;
+            });
         });
     }
 
@@ -1158,7 +1250,11 @@ export class AddonCalendarProvider {
                 updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
-            return site.read('core_calendar_get_calendar_upcoming_view', data, preSets);
+            return site.read('core_calendar_get_calendar_upcoming_view', data, preSets).then((response) => {
+                this.storeEventsInLocalDB(response.events, siteId);
+
+                return response;
+            });
         });
     }
 
@@ -1402,11 +1498,29 @@ export class AddonCalendarProvider {
     /**
      * Check if the get event by ID WS is available.
      *
+     * @param {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<boolean>} Promise resolved with true if available.
+     * @since 3.4
+     */
+    isGetEventByIdAvailable(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.isGetEventByIdAvailableInSite(site);
+        }).catch(() => {
+            return false;
+        });
+    }
+
+    /**
+     * Check if the get event by ID WS is available in a certain site.
+     *
+     * @param {CoreSite} [site] Site. If not defined, use current site.
      * @return {boolean} Whether it's available.
      * @since 3.4
      */
-    isGetEventByIdAvailable(): boolean {
-        return this.sitesProvider.wsAvailableInCurrentSite('core_calendar_get_calendar_event_by_id');
+    isGetEventByIdAvailableInSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.wsAvailable('core_calendar_get_calendar_event_by_id');
     }
 
     /**
@@ -1574,11 +1688,12 @@ export class AddonCalendarProvider {
                     }
                 });
             }).then(() => {
+                // Don't store data that can be calculated like formattedtime, iscategoryevent, etc.
                 const eventRecord = {
                     id: event.id,
                     name: event.name,
                     description: event.description,
-                    format: event.format,
+                    format: event.descriptionformat || event.format,
                     eventtype: event.eventtype,
                     courseid: event.courseid,
                     timestart: event.timestart,
@@ -1593,7 +1708,25 @@ export class AddonCalendarProvider {
                     visible: event.visible,
                     uuid: event.uuid,
                     sequence: event.sequence,
-                    subscriptionid: event.subscriptionid
+                    subscriptionid: event.subscriptionid,
+                    location: event.location,
+                    eventcount: event.eventcount,
+                    timesort: event.timesort,
+                    category: event.category ? JSON.stringify(event.category) : undefined,
+                    course: event.course ? JSON.stringify(event.course) : undefined,
+                    subscription: event.subscription ? JSON.stringify(event.subscription) : undefined,
+                    canedit: event.canedit ? 1 : 0,
+                    candelete: event.candelete ? 1 : 0,
+                    deleteurl: event.deleteurl,
+                    editurl: event.editurl,
+                    viewurl: event.viewurl,
+                    isactionevent: event.isactionevent ? 1 : 0,
+                    url: event.url,
+                    islastday: event.islastday ? 1 : 0,
+                    popupname: event.popupname,
+                    mindaytimestamp: event.mindaytimestamp,
+                    maxdaytimestamp: event.maxdaytimestamp,
+                    draggable: event.draggable,
                 };
 
                 return site.getDb().insertRecord(AddonCalendarProvider.EVENTS_TABLE, eventRecord);

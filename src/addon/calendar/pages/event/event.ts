@@ -150,7 +150,7 @@ export class AddonCalendarEventPage implements OnDestroy {
      */
     fetchEvent(sync?: boolean, showErrors?: boolean): Promise<any> {
         const currentSite = this.sitesProvider.getCurrentSite(),
-            canGetById = this.calendarProvider.isGetEventByIdAvailable();
+            canGetById = this.calendarProvider.isGetEventByIdAvailableInSite();
         let promise,
             deleted = false;
 
@@ -278,7 +278,7 @@ export class AddonCalendarEventPage implements OnDestroy {
                 }));
             }
 
-            if (canGetById && event.iscategoryevent) {
+            if (canGetById && event.iscategoryevent && event.category) {
                 this.categoryPath = event.category.nestedname;
             }
 
