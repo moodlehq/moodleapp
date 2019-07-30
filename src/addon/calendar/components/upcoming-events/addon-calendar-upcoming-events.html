@@ -1,0 +1,24 @@
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+    <core-empty-box *ngIf="!filteredEvents || !filteredEvents.length" icon="calendar" [message]="'addon.calendar.noevents' | translate">
+    </core-empty-box>
+
+    <ion-list *ngIf="filteredEvents && filteredEvents.length" no-margin>
+        <ng-container *ngFor="let event of filteredEvents">
+            <a ion-item text-wrap [title]="event.name" (click)="eventClicked(event)" [class.core-split-item-selected]="event.id == eventId">
+                <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" item-start class="core-module-icon">
+                <core-icon *ngIf="event.icon && !event.moduleIcon" [name]="event.icon" item-start></core-icon>
+                <h2><core-format-text [text]="event.name"></core-format-text></h2>
+                <p><core-format-text [text]="event.formattedtime"></core-format-text></p>
+                <ion-note *ngIf="event.offline && !event.deleted" item-end>
+                    <ion-icon name="time"></ion-icon>
+                    <span text-wrap>{{ 'core.notsent' | translate }}</span>
+                </ion-note>
+                <ion-note *ngIf="event.deleted" item-end>
+                    <ion-icon name="trash"></ion-icon>
+                    <span text-wrap>{{ 'core.deletedoffline' | translate }}</span>
+                </ion-note>
+            </a>
+        </ng-container>
+    </ion-list>
+
+</core-loading>

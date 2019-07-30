@@ -281,6 +281,18 @@ export class AddonCalendarOfflineProvider {
     }
 
     /**
+     * Check whether there's offline data for a site.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<boolean>} Promise resolved with boolean: true if has offline data, false otherwise.
+     */
+    hasOfflineData(siteId?: string): Promise<boolean> {
+        return this.getAllEventsIds(siteId).then((ids) => {
+            return ids.length > 0;
+        });
+    }
+
+    /**
      * Check if an event is deleted.
      *
      * @param {number} eventId Event ID.

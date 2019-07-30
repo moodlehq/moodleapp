@@ -1152,3 +1152,8 @@ ion-app.platform-desktop {
     min-height: $button-ios-small-height;
   }
 }
+
+// Make funnel icon have iOS look.
+.ion-md-funnel::before {
+  content: "\f182";
+}

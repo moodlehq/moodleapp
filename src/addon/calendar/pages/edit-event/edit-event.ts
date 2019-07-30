@@ -99,6 +99,8 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
         this.courseId = navParams.get('courseId');
         this.title = this.eventId ? 'addon.calendar.editevent' : 'addon.calendar.newevent';
 
+        const timestamp = navParams.get('timestamp');
+
         this.currentSite = sitesProvider.getCurrentSite();
         this.errors = {
             required: this.translate.instant('core.required')
@@ -114,7 +116,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
         this.groupControl = this.fb.control('');
         this.descriptionControl = this.fb.control('');
 
-        const currentDate = this.timeUtils.toDatetimeFormat();
+        const currentDate = this.timeUtils.toDatetimeFormat(timestamp);
 
         this.eventForm.addControl('name', this.fb.control('', Validators.required));
         this.eventForm.addControl('timestart', this.fb.control(currentDate, Validators.required));

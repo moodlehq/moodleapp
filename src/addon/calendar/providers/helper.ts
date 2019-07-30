@@ -14,9 +14,11 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { AddonCalendarProvider } from './calendar';
 import { CoreConstants } from '@core/constants';
+import * as moment from 'moment';
 
 /**
  * Service that provides some features regarding lists of courses and categories.
@@ -33,9 +35,33 @@ export class AddonCalendarHelperProvider {
         category: 'fa-cubes'
     };
 
-    constructor(logger: CoreLoggerProvider, private courseProvider: CoreCourseProvider,
+    constructor(logger: CoreLoggerProvider,
+            private courseProvider: CoreCourseProvider,
+            private sitesProvider: CoreSitesProvider,
             private calendarProvider: AddonCalendarProvider) {
         this.logger = logger.getInstance('AddonCalendarHelperProvider');
+    }
+
+    /**
+     * Calculate some day data based on a list of events for that day.
+     *
+     * @param {any} day Day.
+     * @param {any[]} events Events.
+     */
+    calculateDayData(day: any, events: any[]): void {
+        day.hasevents = events.length > 0;
+        day.haslastdayofevent = false;
+
+        const types = {};
+        events.forEach((event) => {
+            types[event.formattedType || event.eventtype] = true;
+
+            if (event.islastday) {
+                day.haslastdayofevent = true;
+            }
+        });
+
+        day.calendareventtypes = Object.keys(types);
     }
 
     /**
@@ -61,6 +87,41 @@ export class AddonCalendarHelperProvider {
     }
 
     /**
+     * Classify events into their respective months and days. If an event duration covers more than one day,
+     * it will be included in all the days it lasts.
+     *
+     * @param {any[]} events Events to classify.
+     * @return {{[monthId: string]: {[day: number]: any[]}}} Object with the classified events.
+     */
+    classifyIntoMonths(events: any[]): {[monthId: string]: {[day: number]: any[]}} {
+
+        const result = {};
+
+        events.forEach((event) => {
+            const treatedDay = moment(new Date(event.timestart * 1000)),
+                endDay = moment(new Date((event.timestart + (event.timeduration || 0)) * 1000));
+
+            // Add the event to all the days it lasts.
+            while (!treatedDay.isAfter(endDay, 'day')) {
+                const monthId = this.getMonthId(treatedDay.year(), treatedDay.month() + 1),
+                    day = treatedDay.date();
+
+                if (!result[monthId]) {
+                    result[monthId] = {};
+                }
+                if (!result[monthId][day]) {
+                    result[monthId][day] = [];
+                }
+                result[monthId][day].push(event);
+
+                treatedDay.add(1, 'day'); // Treat next day.
+            }
+        });
+
+        return result;
+    }
+
+    /**
      * Convenience function to format some event data to be rendered.
      *
      * @param {any} e Event to format.
@@ -72,7 +133,9 @@ export class AddonCalendarHelperProvider {
             e.moduleIcon = e.icon;
         }
 
-        if (e.id < 0) {
+        e.formattedType = this.calendarProvider.getEventType(e);
+
+        if (typeof e.duration != 'undefined') {
             // It's an offline event, add some calculated data.
             e.format = 1;
             e.visible = 1;
@@ -116,6 +179,17 @@ export class AddonCalendarHelperProvider {
     }
 
     /**
+     * Get the month "id" (year + month).
+     *
+     * @param {number} year Year.
+     * @param {number} month Month.
+     * @return {string} The "id".
+     */
+    getMonthId(year: number, month: number): string {
+        return year + '#' + month;
+    }
+
+    /**
      * Check if the data of an event has changed.
      *
      * @param {any} data Current data.
@@ -154,5 +228,52 @@ export class AddonCalendarHelperProvider {
         }
 
         return false;
+    }
+
+    /**
+     * Check if an event should be displayed based on the filter.
+     *
+     * @param {any} event Event object.
+     * @param {number} courseId Course ID to filter.
+     * @param {number} categoryId Category ID the course belongs to.
+     * @param {any} categories Categories indexed by ID.
+     * @return {boolean} Whether it should be displayed.
+     */
+    shouldDisplayEvent(event: any, courseId: number, categoryId: number, categories: any): boolean {
+        if (event.eventtype == 'user' || event.eventtype == 'site') {
+            // User or site event, display it.
+            return true;
+        }
+
+        if (event.eventtype == 'category') {
+            if (!event.categoryid || !Object.keys(categories).length) {
+                // We can't tell if the course belongs to the category, display them all.
+                return true;
+            }
+
+            if (event.categoryid == categoryId) {
+                // The event is in the same category as the course, display it.
+                return true;
+            }
+
+            // Check parent categories.
+            let category = categories[categoryId];
+            while (category) {
+                if (!category.parent) {
+                    // Category doesn't have parent, stop.
+                    break;
+                }
+
+                if (event.categoryid == category.parent) {
+                    return true;
+                }
+                category = categories[category.parent];
+            }
+
+            return false;
+        }
+
+        // Show the event if it is from site home or if it matches the selected course.
+        return event.courseid === this.sitesProvider.getSiteHomeId() || event.courseid == courseId;
     }
 }

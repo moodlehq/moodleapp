@@ -18,7 +18,9 @@ import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreSite } from '@classes/site';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreAppProvider } from '@providers/app';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreGroupsProvider } from '@providers/groups';
 import { CoreConstants } from '@core/constants';
@@ -27,7 +29,9 @@ import { CoreConfigProvider } from '@providers/config';
 import { ILocalNotification } from '@ionic-native/local-notifications';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { AddonCalendarOfflineProvider } from './calendar-offline';
+import { CoreUserProvider } from '@core/user/providers/user';
 import { TranslateService } from '@ngx-translate/core';
+import * as moment from 'moment';
 
 /**
  * Service to handle calendar events.
@@ -49,7 +53,42 @@ export class AddonCalendarProvider {
     static TYPE_GROUP = 'group';
     static TYPE_SITE = 'site';
     static TYPE_USER = 'user';
+
+    static CALENDAR_TF_24 = '%H:%M'; // Calendar time in 24 hours format.
+    static CALENDAR_TF_12 = '%I:%M %p'; // Calendar time in 12 hours format.
+
     protected ROOT_CACHE_KEY = 'mmaCalendar:';
+
+    protected weekDays = [
+        {
+            shortname: 'addon.calendar.sun',
+            fullname: 'addon.calendar.sunday'
+        },
+        {
+            shortname: 'addon.calendar.mon',
+            fullname: 'addon.calendar.monday'
+        },
+        {
+            shortname: 'addon.calendar.tue',
+            fullname: 'addon.calendar.tuesday'
+        },
+        {
+            shortname: 'addon.calendar.wed',
+            fullname: 'addon.calendar.wednesday'
+        },
+        {
+            shortname: 'addon.calendar.thu',
+            fullname: 'addon.calendar.thursday'
+        },
+        {
+            shortname: 'addon.calendar.fri',
+            fullname: 'addon.calendar.friday'
+        },
+        {
+            shortname: 'addon.calendar.sat',
+            fullname: 'addon.calendar.saturday'
+        }
+    ];
 
     // Variables for database.
     static EVENTS_TABLE = 'addon_calendar_events_2';
@@ -218,11 +257,21 @@ export class AddonCalendarProvider {
 
     protected logger;
 
-    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private groupsProvider: CoreGroupsProvider,
-            private coursesProvider: CoreCoursesProvider, private timeUtils: CoreTimeUtilsProvider,
-            private localNotificationsProvider: CoreLocalNotificationsProvider, private configProvider: CoreConfigProvider,
-            private utils: CoreUtilsProvider, private calendarOffline: AddonCalendarOfflineProvider,
-            private appProvider: CoreAppProvider, private translate: TranslateService) {
+    constructor(logger: CoreLoggerProvider,
+            private sitesProvider: CoreSitesProvider,
+            private groupsProvider: CoreGroupsProvider,
+            private coursesProvider: CoreCoursesProvider,
+            private textUtils: CoreTextUtilsProvider,
+            private timeUtils: CoreTimeUtilsProvider,
+            private urlUtils: CoreUrlUtilsProvider,
+            private localNotificationsProvider: CoreLocalNotificationsProvider,
+            private configProvider: CoreConfigProvider,
+            private utils: CoreUtilsProvider,
+            private calendarOffline: AddonCalendarOfflineProvider,
+            private appProvider: CoreAppProvider,
+            private translate: TranslateService,
+            private userProvider: CoreUserProvider) {
+
         this.logger = logger.getInstance('AddonCalendarProvider');
         this.sitesProvider.registerSiteSchema(this.siteSchema);
     }
@@ -237,6 +286,8 @@ export class AddonCalendarProvider {
     canDeleteEvents(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return this.canDeleteEventsInSite(site);
+        }).catch(() => {
+            return false;
         });
     }
 
@@ -263,6 +314,8 @@ export class AddonCalendarProvider {
     canEditEvents(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return this.canEditEventsInSite(site);
+        }).catch(() => {
+            return false;
         });
     }
 
@@ -278,6 +331,34 @@ export class AddonCalendarProvider {
 
         // The WS to create/edit events requires a fix that was integrated in 3.7.1.
         return site.isVersionGreaterEqualThan('3.7.1');
+    }
+
+    /**
+     * Check if a certain site allows viewing events in monthly view.
+     *
+     * @param {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<boolean>} Promise resolved with true if monthly view is supported.
+     * @since 3.4
+     */
+    canViewMonth(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.canViewMonthInSite(site);
+        }).catch(() => {
+            return false;
+        });
+    }
+
+    /**
+     * Check if a certain site allows viewing events in monthly view.
+     *
+     * @param {CoreSite} [site] Site. If not defined, use current site.
+     * @return {boolean} Whether monthly view is supported.
+     * @since 3.4
+     */
+    canViewMonthInSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.wsAvailable('core_calendar_get_calendar_monthly_view');
     }
 
     /**
@@ -394,6 +475,98 @@ export class AddonCalendarProvider {
     }
 
     /**
+     * Check if event ends the same day or not.
+     *
+     * @param {any} event Event info.
+     * @return {boolean} If the .
+     */
+    endsSameDay(event: any): boolean {
+        if (!event.timeduration) {
+            // No duration.
+            return true;
+        }
+
+        // Check if day has changed.
+        return moment(event.timestart * 1000).isSame((event.timestart + event.timeduration) * 1000, 'day');
+    }
+
+    /**
+     * Format event time. Similar to calendar_format_event_time.
+     *
+     * @param {any} event Event to format.
+     * @param {string} format Calendar time format (from getCalendarTimeFormat).
+     * @param {boolean} [useCommonWords=true] Whether to use common words like "Today", "Yesterday", etc.
+     * @param {number} [seenDay] Timestamp of day currently seen. If set, the function will not add links to this day.
+     * @param {number} [showTime=0] Determine the show time GMT timestamp.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<string>} Promise resolved with the formatted event time.
+     */
+    formatEventTime(event: any, format: string, useCommonWords: boolean = true, seenDay?: number, showTime: number = 0,
+            siteId?: string): Promise<string> {
+
+        const start = event.timestart * 1000,
+            end = (event.timestart + event.timeduration) * 1000;
+        let time;
+
+        if (event.timeduration) {
+
+            if (moment(start).isSame(end, 'day')) {
+                // Event starts and ends the same day.
+                if (event.timeduration == CoreConstants.SECONDS_DAY) {
+                    time = this.translate.instant('addon.calendar.allday');
+                } else {
+                    time = this.timeUtils.userDate(start, format) + ' <strong>&raquo;</strong> ' +
+                            this.timeUtils.userDate(end, format);
+                }
+
+            } else {
+                // Event lasts more than one day.
+                const timeStart = this.timeUtils.userDate(start, format),
+                    timeEnd = this.timeUtils.userDate(end, format),
+                    promises = [];
+
+                // Don't use common words when the event lasts more than one day.
+                let dayStart = this.getDayRepresentation(start, false) + ', ',
+                    dayEnd = this.getDayRepresentation(end, false) + ', ';
+
+                // Add links to the days if needed.
+                if (dayStart && (!seenDay || !moment(seenDay).isSame(start, 'day'))) {
+                    promises.push(this.getViewUrl('day', event.timestart, undefined, siteId).then((url) => {
+                        dayStart = this.urlUtils.buildLink(url, dayStart);
+                    }));
+                }
+                if (dayEnd && (!seenDay || !moment(seenDay).isSame(end, 'day'))) {
+                    promises.push(this.getViewUrl('day', end / 1000, undefined, siteId).then((url) => {
+                        dayEnd = this.urlUtils.buildLink(url, dayEnd);
+                    }));
+                }
+
+                return Promise.all(promises).then(() => {
+                    return dayStart + timeStart + ' <strong>&raquo;</strong> ' + dayEnd + timeEnd;
+                });
+            }
+        } else {
+            // There is no time duration.
+            time = this.timeUtils.userDate(start, format);
+        }
+
+        if (!showTime) {
+            // Display day + time.
+            if (seenDay && moment(seenDay).isSame(start, 'day')) {
+                // This day is currently being displayed, don't add an link.
+                return Promise.resolve(this.getDayRepresentation(start, useCommonWords) + ', ' + time);
+            } else {
+                // Add link to view the day.
+                return this.getViewUrl('day', event.timestart, undefined, siteId).then((url) => {
+                    return this.urlUtils.buildLink(url, this.getDayRepresentation(start, useCommonWords)) + ', ' + time;
+                });
+            }
+        } else {
+            return Promise.resolve(time);
+        }
+    }
+
+    /**
      * Get access information for a calendar (either course calendar or site calendar).
      *
      * @param {number} [courseId] Course ID. If not defined, site calendar.
@@ -480,6 +653,84 @@ export class AddonCalendarProvider {
      */
     protected getAllowedEventTypesCacheKey(courseId?: number): string {
         return this.ROOT_CACHE_KEY + 'allowedEventTypes:' + (courseId || 0);
+    }
+
+    /**
+     * Get the "look ahead" for a certain user.
+     *
+     * @param  {string} [siteId] ID of the site. If not defined, use current site.
+     * @return {Promise<number>} Promise resolved with the look ahead (number of days).
+     */
+    getCalendarLookAhead(siteId?: string): Promise<number> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.userProvider.getUserPreference('calendar_lookahead').catch((error) => {
+                // Ignore errors.
+            }).then((value): any => {
+                if (typeof value != 'undefined') {
+                    return value;
+                }
+
+                return site.getStoredConfig('calendar_lookahead');
+            });
+        });
+    }
+
+    /**
+     * Get the time format to use in calendar.
+     *
+     * @param  {string} [siteId] ID of the site. If not defined, use current site.
+     * @return {Promise<string>} Promise resolved with the format.
+     */
+    getCalendarTimeFormat(siteId?: string): Promise<string> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.userProvider.getUserPreference('calendar_timeformat').catch((error) => {
+                // Ignore errors.
+            }).then((format) => {
+
+                if (!format || format === '0') {
+                    format = site.getStoredConfig('calendar_site_timeformat');
+                }
+
+                if (format === AddonCalendarProvider.CALENDAR_TF_12) {
+                    format = this.translate.instant('core.strftimetime12');
+                } else if (format === AddonCalendarProvider.CALENDAR_TF_24) {
+                    format = this.translate.instant('core.strftimetime24');
+                }
+
+                return format && format !== '0' ? format : this.translate.instant('core.strftimetime');
+            });
+        });
+    }
+
+    /**
+     * Return the representation day. Equivalent to Moodle's calendar_day_representation.
+     *
+     * @param {number} time Timestamp to get the day from.
+     * @param {boolean} [useCommonWords=true] Whether to use common words like "Today", "Yesterday", etc.
+     * @return {string} The formatted date/time.
+     */
+    getDayRepresentation(time: number, useCommonWords: boolean = true): string {
+
+        if (!useCommonWords) {
+            // We don't want words, just a date.
+            return this.timeUtils.userDate(time, 'core.strftimedayshort');
+        }
+
+        const date = moment(time),
+            today = moment();
+
+        if (date.isSame(today, 'day')) {
+            return this.translate.instant('addon.calendar.today');
+
+        } else if (date.isSame(today.clone().subtract(1, 'days'), 'day')) {
+            return this.translate.instant('addon.calendar.yesterday');
+
+        } else if (date.isSame(today.clone().add(1, 'days'), 'day')) {
+            return this.translate.instant('addon.calendar.tomorrow');
+
+        } else {
+            return this.timeUtils.userDate(time, 'core.strftimedayshort');
+        }
     }
 
     /**
@@ -603,6 +854,21 @@ export class AddonCalendarProvider {
     }
 
     /**
+     * Return the normalised event type.
+     * Activity events are normalised to be course events.
+     *
+     * @param {any} event The event to get its type.
+     * @return {string} Event type.
+     */
+    getEventType(event: any): string {
+        if (event.modulename) {
+            return 'course';
+        }
+
+        return event.eventtype;
+    }
+
+    /**
      * Remove an event reminder and cancel the notification.
      *
      * @param  {number} id       Reminder ID.
@@ -617,6 +883,79 @@ export class AddonCalendarProvider {
 
             return site.getDb().deleteRecords(AddonCalendarProvider.REMINDERS_TABLE, {id: id});
         });
+    }
+
+    /**
+     * Get calendar events for a certain day.
+     *
+     * @param {number} year Year to get.
+     * @param {number} month Month to get.
+     * @param {number} day Day to get.
+     * @param {number} [courseId] Course to get.
+     * @param {number} [categoryId] Category to get.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with the response.
+     */
+    getDayEvents(year: number, month: number, day: number, courseId?: number, categoryId?: number, siteId?: string): Promise<any> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+
+            const data: any = {
+                year: year,
+                month: month,
+                day: day
+            };
+
+            if (courseId) {
+                data.courseid = courseId;
+            }
+            if (categoryId) {
+                data.categoryid = categoryId;
+            }
+
+            const preSets = {
+                cacheKey: this.getDayEventsCacheKey(year, month, day, courseId, categoryId),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
+            };
+
+            return site.read('core_calendar_get_calendar_day_view', data, preSets);
+        });
+    }
+
+    /**
+     * Get prefix cache key for day events WS calls.
+     *
+     * @return {string} Prefix Cache key.
+     */
+    protected getDayEventsPrefixCacheKey(): string {
+        return this.ROOT_CACHE_KEY + 'day:';
+    }
+
+    /**
+     * Get prefix cache key for a certain day for day events WS calls.
+     *
+     * @param {number} year Year to get.
+     * @param {number} month Month to get.
+     * @param {number} day Day to get.
+     * @return {string} Prefix Cache key.
+     */
+    protected getDayEventsDayPrefixCacheKey(year: number, month: number, day: number): string {
+        return this.getDayEventsPrefixCacheKey() + year + ':' + month + ':' + day + ':';
+    }
+
+    /**
+     * Get cache key for day events WS calls.
+     *
+     * @param {number} year Year to get.
+     * @param {number} month Month to get.
+     * @param {number} day Day to get.
+     * @param {number} [courseId] Course to get.
+     * @param {number} [categoryId] Category to get.
+     * @return {string} Cache key.
+     */
+    protected getDayEventsCacheKey(year: number, month: number, day: number, courseId?: number, categoryId?: number): string {
+        return this.getDayEventsDayPrefixCacheKey(year, month, day) + (courseId ? courseId : '') + ':' +
+                (categoryId ? categoryId : '');
     }
 
     /**
@@ -724,6 +1063,163 @@ export class AddonCalendarProvider {
     }
 
     /**
+     * Get monthly calendar events.
+     *
+     * @param {number} year Year to get.
+     * @param {number} month Month to get.
+     * @param {number} [courseId] Course to get.
+     * @param {number} [categoryId] Category to get.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with the response.
+     */
+    getMonthlyEvents(year: number, month: number, courseId?: number, categoryId?: number, siteId?: string): Promise<any> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+
+            const data: any = {
+                year: year,
+                month: month,
+                mini: 1 // Set mini to 1 to prevent returning the course selector HTML.
+            };
+
+            if (courseId) {
+                data.courseid = courseId;
+            }
+            if (categoryId) {
+                data.categoryid = categoryId;
+            }
+
+            const preSets = {
+                cacheKey: this.getMonthlyEventsCacheKey(year, month, courseId, categoryId),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
+            };
+
+            return site.read('core_calendar_get_calendar_monthly_view', data, preSets);
+        });
+    }
+
+    /**
+     * Get prefix cache key for monthly events WS calls.
+     *
+     * @return {string} Prefix Cache key.
+     */
+    protected getMonthlyEventsPrefixCacheKey(): string {
+        return this.ROOT_CACHE_KEY + 'monthly:';
+    }
+
+    /**
+     * Get prefix cache key for a certain month for monthly events WS calls.
+     *
+     * @param {number} year Year to get.
+     * @param {number} month Month to get.
+     * @return {string} Prefix Cache key.
+     */
+    protected getMonthlyEventsMonthPrefixCacheKey(year: number, month: number): string {
+        return this.getMonthlyEventsPrefixCacheKey() + year + ':' + month + ':';
+    }
+
+    /**
+     * Get cache key for monthly events WS calls.
+     *
+     * @param {number} year Year to get.
+     * @param {number} month Month to get.
+     * @param {number} [courseId] Course to get.
+     * @param {number} [categoryId] Category to get.
+     * @return {string} Cache key.
+     */
+    protected getMonthlyEventsCacheKey(year: number, month: number, courseId?: number, categoryId?: number): string {
+        return this.getMonthlyEventsMonthPrefixCacheKey(year, month) + (courseId ? courseId : '') + ':' +
+                (categoryId ? categoryId : '');
+    }
+
+    /**
+     * Get upcoming calendar events.
+     *
+     * @param {number} [courseId] Course to get.
+     * @param {number} [categoryId] Category to get.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with the response.
+     */
+    getUpcomingEvents(courseId?: number, categoryId?: number, siteId?: string): Promise<any> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+
+            const data: any = {};
+
+            if (courseId) {
+                data.courseid = courseId;
+            }
+            if (categoryId) {
+                data.categoryid = categoryId;
+            }
+
+            const preSets = {
+                cacheKey: this.getUpcomingEventsCacheKey(courseId, categoryId),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
+            };
+
+            return site.read('core_calendar_get_calendar_upcoming_view', data, preSets);
+        });
+    }
+
+    /**
+     * Get prefix cache key for upcoming events WS calls.
+     *
+     * @return {string} Prefix Cache key.
+     */
+    protected getUpcomingEventsPrefixCacheKey(): string {
+        return this.ROOT_CACHE_KEY + 'upcoming:';
+    }
+
+    /**
+     * Get cache key for upcoming events WS calls.
+     *
+     * @param {number} [courseId] Course to get.
+     * @param {number} [categoryId] Category to get.
+     * @return {string} Cache key.
+     */
+    protected getUpcomingEventsCacheKey(courseId?: number, categoryId?: number): string {
+        return this.getUpcomingEventsPrefixCacheKey() + (courseId ? courseId : '') + ':' + (categoryId ? categoryId : '');
+    }
+
+    /**
+     * Get URL to view a calendar.
+     *
+     * @param {string} view The view to load: 'month', 'day', 'upcoming', etc.
+     * @param {number} [time] Time to load. If not defined, current time.
+     * @param {string} [courseId] Course to load. If not defined, all courses.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<string>} Promise resolved with the URL.x
+     */
+    getViewUrl(view: string, time?: number, courseId?: string, siteId?: string): Promise<string> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            let url = this.textUtils.concatenatePaths(site.getURL(), 'calendar/view.php?view=' + view);
+
+            if (time) {
+                url += '&time=' + time;
+            }
+
+            if (courseId) {
+                url += '&course=' + courseId;
+            }
+
+            return url;
+        });
+    }
+
+    /**
+     * Get the week days, already ordered according to a specified starting day.
+     *
+     * @param {number} [startingDay=0] Starting day. 0=Sunday, 1=Monday, ...
+     * @return {any[]} Week days.
+     */
+    getWeekDays(startingDay?: number): any[] {
+        startingDay = startingDay || 0;
+
+        return this.weekDays.slice(startingDay).concat(this.weekDays.slice(0, startingDay));
+    }
+
+    /**
      * Invalidates access information.
      *
      * @param {number} [courseId] Course ID. If not defined, site calendar.
@@ -746,6 +1242,32 @@ export class AddonCalendarProvider {
     invalidateAllowedEventTypes(courseId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKey(this.getAllowedEventTypesCacheKey(courseId));
+        });
+    }
+
+    /**
+     * Invalidates day events for all days.
+     *
+     * @param {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateAllDayEvents(siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKeyStartingWith(this.getDayEventsPrefixCacheKey());
+        });
+    }
+
+    /**
+     * Invalidates day events for a certain day.
+     *
+     * @param {number} year Year.
+     * @param {number} month Month.
+     * @param {number} day Day.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateDayEvents(year: number, month: number, day: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKeyStartingWith(this.getDayEventsDayPrefixCacheKey(year, month, day));
         });
     }
 
@@ -780,6 +1302,77 @@ export class AddonCalendarProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKey(this.getEventCacheKey(eventId));
         });
+    }
+
+    /**
+     * Invalidates monthly events for all months.
+     *
+     * @param {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateAllMonthlyEvents(siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKeyStartingWith(this.getMonthlyEventsPrefixCacheKey());
+        });
+    }
+
+    /**
+     * Invalidates monthly events for a certain months.
+     *
+     * @param {number} year Year.
+     * @param {number} month Month.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateMonthlyEvents(year: number, month: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKeyStartingWith(this.getMonthlyEventsMonthPrefixCacheKey(year, month));
+        });
+    }
+
+    /**
+     * Invalidates upcoming events for all courses and categories.
+     *
+     * @param {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateAllUpcomingEvents(siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKeyStartingWith(this.getUpcomingEventsPrefixCacheKey());
+        });
+    }
+
+    /**
+     * Invalidates upcoming events for a certain course or category.
+     *
+     * @param {number} [courseId] Course ID.
+     * @param {number} [categoryId] Category ID.
+     * @param {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateUpcomingEvents(courseId?: number, categoryId?: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKeyStartingWith(this.getUpcomingEventsCacheKey(courseId, categoryId));
+        });
+    }
+
+    /**
+     * Invalidates look ahead setting.
+     *
+     * @param {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateLookAhead(siteId?: string): Promise<any> {
+        return this.userProvider.invalidateUserPreference('calendar_lookahead', siteId);
+    }
+
+    /**
+     * Invalidates time format setting.
+     *
+     * @param {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateTimeFormat(siteId?: string): Promise<any> {
+        return this.userProvider.invalidateUserPreference('calendar_timeformat', siteId);
     }
 
     /**

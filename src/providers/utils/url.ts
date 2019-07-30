@@ -45,6 +45,17 @@ export class CoreUrlUtilsProvider {
     }
 
     /**
+     * Given a URL and a text, return an HTML link.
+     *
+     * @param {string} url URL.
+     * @param {string} text Text of the link.
+     * @return {string} Link.
+     */
+    buildLink(url: string, text: string): string {
+        return '<a href="' + url + '">' + text + '</a>';
+    }
+
+    /**
      * Extracts the parameters from a URL and stores them in an object.
      *
      * @param {string} url URL to treat.
