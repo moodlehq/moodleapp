@@ -1544,6 +1544,8 @@
   "core.login.confirmdeletesite": "local_moodlemobileapp",
   "core.login.connect": "local_moodlemobileapp",
   "core.login.connecttomoodle": "local_moodlemobileapp",
+  "core.login.connecttomoodleapp": "local_moodlemobileapp",
+  "core.login.connecttoworkplaceapp": "local_moodlemobileapp",
   "core.login.contactyouradministrator": "local_moodlemobileapp",
   "core.login.contactyouradministratorissue": "local_moodlemobileapp",
   "core.login.createaccount": "moodle",
