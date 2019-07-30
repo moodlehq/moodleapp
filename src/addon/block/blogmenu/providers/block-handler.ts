@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 
 import { CoreBlockHandlerData } from '@core/block/providers/delegate';
 import { CoreBlockPreRenderedComponent } from '@core/block/components/pre-rendered-block/pre-rendered-block';
@@ -27,7 +26,7 @@ export class AddonBlockBlogMenuHandler extends CoreBlockBaseHandler {
     name = 'AddonBlockBlogMenu';
     blockName = 'blog_menu';
 
-    constructor(private translate: TranslateService) {
+    constructor() {
         super();
     }
 
@@ -44,7 +43,7 @@ export class AddonBlockBlogMenuHandler extends CoreBlockBaseHandler {
             : CoreBlockHandlerData | Promise<CoreBlockHandlerData> {
 
         return {
-            title: this.translate.instant('addon.block_blogmenu.pluginname'),
+            title: 'addon.block_blogmenu.pluginname',
             class: 'addon-block-blog-menu',
             component: CoreBlockPreRenderedComponent
         };

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { CoreBlockHandlerData } from '@core/block/providers/delegate';
 import { CoreBlockPreRenderedComponent } from '@core/block/components/pre-rendered-block/pre-rendered-block';
 import { CoreBlockBaseHandler } from '@core/block/classes/base-block-handler';
@@ -26,7 +25,7 @@ export class AddonBlockGlossaryRandomHandler extends CoreBlockBaseHandler {
     name = 'AddonBlockGlossaryRandom';
     blockName = 'glossary_random';
 
-    constructor(private translate: TranslateService) {
+    constructor() {
         super();
     }
 
@@ -42,7 +41,7 @@ export class AddonBlockGlossaryRandomHandler extends CoreBlockBaseHandler {
     getDisplayData(injector: Injector, block: any, contextLevel: string, instanceId: number)
             : CoreBlockHandlerData | Promise<CoreBlockHandlerData> {
         return {
-            title: block.contents.title || this.translate.instant('addon.block_glossaryrandom.pluginname'),
+            title: block.contents.title || 'addon.block_glossaryrandom.pluginname',
             class: 'addon-block-glossary-random',
             component: CoreBlockPreRenderedComponent
         };

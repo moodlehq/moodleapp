@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 
 import { CoreBlockHandlerData } from '@core/block/providers/delegate';
 import { CoreBlockPreRenderedComponent } from '@core/block/components/pre-rendered-block/pre-rendered-block';
@@ -27,7 +26,7 @@ export class AddonBlockBadgesHandler extends CoreBlockBaseHandler {
     name = 'AddonBlockBadges';
     blockName = 'badges';
 
-    constructor(private translate: TranslateService) {
+    constructor() {
         super();
     }
 
@@ -44,7 +43,7 @@ export class AddonBlockBadgesHandler extends CoreBlockBaseHandler {
             : CoreBlockHandlerData | Promise<CoreBlockHandlerData> {
 
         return {
-            title: this.translate.instant('addon.block_badges.pluginname'),
+            title: 'addon.block_badges.pluginname',
             class: 'addon-block-badges',
             component: CoreBlockPreRenderedComponent
         };
