@@ -40,9 +40,13 @@
                             <span *ngIf="event.timeduration && event.endsSameDay"> - {{ (event.timestart + event.timeduration) * 1000 | coreFormatDate: "strftimetime" }}</span>
                             <span *ngIf="event.timeduration && !event.endsSameDay"> - {{ (event.timestart + event.timeduration) * 1000 | coreFormatDate: "strftimedatetimeshort" }}</span>
                         </p>
-                        <ion-note *ngIf="event.offline" item-end>
+                        <ion-note *ngIf="event.offline && !event.deleted" item-end>
                             <ion-icon name="time"></ion-icon>
-                            {{ 'core.notsent' | translate }}
+                            <span text-wrap>{{ 'core.notsent' | translate }}</span>
+                        </ion-note>
+                        <ion-note *ngIf="event.deleted" item-end>
+                            <ion-icon name="trash"></ion-icon>
+                            <span text-wrap>{{ 'core.deletedoffline' | translate }}</span>
                         </ion-note>
                     </a>
                 </ng-container>

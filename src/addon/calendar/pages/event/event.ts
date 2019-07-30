@@ -68,6 +68,7 @@ export class AddonCalendarEventPage implements OnDestroy {
     defaultTime: number;
     reminders: any[];
     canEdit = false;
+    canDelete = false;
     hasOffline = false;
     isOnline = false;
     syncIcon: string; // Sync icon.
@@ -89,8 +90,9 @@ export class AddonCalendarEventPage implements OnDestroy {
         this.currentSiteId = sitesProvider.getCurrentSiteId();
         this.isSplitViewOn = this.svComponent && this.svComponent.isOn();
 
-        // Check if site supports editing. No need to check allowed types, event.canedit already does it.
+        // Check if site supports editing and deleting. No need to check allowed types, event.canedit already does it.
         this.canEdit = this.calendarProvider.canEditEventsInSite();
+        this.canDelete = this.calendarProvider.canDeleteEventsInSite();
 
         if (this.notificationsEnabled) {
             this.calendarProvider.getEventReminders(this.eventId).then((reminders) => {
@@ -123,10 +125,10 @@ export class AddonCalendarEventPage implements OnDestroy {
                 this.currentSiteId);
 
         // Refresh online status when changes.
-        this.onlineObserver = network.onchange().subscribe((online) => {
+        this.onlineObserver = network.onchange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             zone.run(() => {
-                this.isOnline = online;
+                this.isOnline = this.appProvider.isOnline();
             });
         });
     }
@@ -150,7 +152,8 @@ export class AddonCalendarEventPage implements OnDestroy {
     fetchEvent(sync?: boolean, showErrors?: boolean): Promise<any> {
         const currentSite = this.sitesProvider.getCurrentSite(),
             canGetById = this.calendarProvider.isGetEventByIdAvailable();
-        let promise;
+        let promise,
+            deleted = false;
 
         this.isOnline = this.appProvider.isOnline();
 
@@ -159,6 +162,11 @@ export class AddonCalendarEventPage implements OnDestroy {
             promise = this.calendarSync.syncEvents().then((result) => {
                 if (result.warnings && result.warnings.length) {
                     this.domUtils.showErrorModal(result.warnings[0]);
+                }
+
+                if (result.deleted && result.deleted.indexOf(this.eventId) != -1) {
+                    // This event was deleted during the sync.
+                    deleted = true;
                 }
 
                 if (result.updated) {
@@ -177,6 +185,10 @@ export class AddonCalendarEventPage implements OnDestroy {
         }
 
         return promise.then(() => {
+            if (deleted) {
+                return;
+            }
+
             const promises = [];
 
             // Get the event data.
@@ -204,6 +216,10 @@ export class AddonCalendarEventPage implements OnDestroy {
             });
 
         }).then((event) => {
+            if (deleted) {
+                return;
+            }
+
             const promises = [];
 
             this.calendarHelper.formatEventData(event);
@@ -251,7 +267,7 @@ export class AddonCalendarEventPage implements OnDestroy {
             this.title = title;
 
             // If the event belongs to a course, get the course name and the URL to view it.
-            if (canGetById && event.course) {
+            if (canGetById && event.course && event.course.id != this.siteHomeId) {
                 this.courseName = event.course.fullname;
                 this.courseUrl = event.course.viewurl;
             } else if (event.courseid && event.courseid != this.siteHomeId) {
@@ -289,6 +305,11 @@ export class AddonCalendarEventPage implements OnDestroy {
                 event.location = this.textUtils.decodeHTML(event.location);
                 event.encodedLocation = this.textUtils.buildAddressURL(event.location);
             }
+
+            // Check if event was deleted in offine.
+            promises.push(this.calendarOffline.isEventDeleted(this.eventId).then((deleted) => {
+                event.deleted = deleted;
+            }));
 
             return Promise.all(promises);
         }).catch((error) => {
@@ -392,13 +413,115 @@ export class AddonCalendarEventPage implements OnDestroy {
     }
 
     /**
+     * Delete the event.
+     */
+    deleteEvent(): void {
+        const title = this.translate.instant('addon.calendar.deleteevent'),
+            options: any = {};
+        let message: string;
+
+        if (this.event.eventcount > 1) {
+            // It's a repeated event.
+            message = this.translate.instant('addon.calendar.confirmeventseriesdelete',
+                            {$a: {name: this.event.name, count: this.event.eventcount}});
+
+            options.inputs = [
+                {
+                    type: 'radio',
+                    name: 'deleteall',
+                    checked: true,
+                    value: false,
+                    label: this.translate.instant('addon.calendar.deleteoneevent')
+                },
+                {
+                    type: 'radio',
+                    name: 'deleteall',
+                    checked: false,
+                    value: true,
+                    label: this.translate.instant('addon.calendar.deleteallevents')
+                }
+            ];
+        } else {
+            // Not repeated, display a simple confirm.
+            message = this.translate.instant('addon.calendar.confirmeventdelete', {$a: this.event.name});
+        }
+
+        this.domUtils.showConfirm(message, title, undefined, undefined, options).then((deleteAll) => {
+
+            const modal = this.domUtils.showModalLoading('core.sending', true);
+
+            this.calendarProvider.deleteEvent(this.event.id, this.event.name, deleteAll).then((sent) => {
+
+                // Trigger an event.
+                this.eventsProvider.trigger(AddonCalendarProvider.DELETED_EVENT_EVENT, {
+                    eventId: this.eventId,
+                    sent: sent
+                }, this.sitesProvider.getCurrentSiteId());
+
+                if (sent) {
+                    this.domUtils.showToast('addon.calendar.eventcalendareventdeleted', true, 3000, undefined, false);
+
+                    // Event deleted, close the view.
+                    if (!this.svComponent || !this.svComponent.isOn()) {
+                        this.navCtrl.pop();
+                    }
+                } else {
+                    // Event deleted in offline, just mark it as deleted.
+                    this.event.deleted = true;
+                }
+
+            }).catch((error) => {
+                this.domUtils.showErrorModalDefault(error, 'Error deleting event.');
+            }).finally(() => {
+                modal.dismiss();
+            });
+        }, () => {
+            // User canceled.
+        });
+    }
+
+    /**
+     * Undo delete the event.
+     */
+    undoDelete(): void {
+        const modal = this.domUtils.showModalLoading('core.sending', true);
+
+        this.calendarOffline.unmarkDeleted(this.event.id).then(() => {
+
+            // Trigger an event.
+            this.eventsProvider.trigger(AddonCalendarProvider.UNDELETED_EVENT_EVENT, {
+                eventId: this.eventId
+            }, this.sitesProvider.getCurrentSiteId());
+
+            this.domUtils.showToast('addon.calendar.eventcalendareventdeleted', true, 3000, undefined, false);
+            this.event.deleted = false;
+
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'Error undeleting event.');
+        }).finally(() => {
+            modal.dismiss();
+        });
+    }
+
+    /**
      * Check the result of an automatic sync or a manual sync not done by this page.
      *
      * @param {boolean} isManual Whether it's a manual sync.
      * @param {any} data Sync result.
      */
     protected checkSyncResult(isManual: boolean, data: any): void {
-        if (data && data.events && (!isManual || data.source != 'event')) {
+        if (!data) {
+            return;
+        }
+
+        if (data.deleted && data.deleted.indexOf(this.eventId) != -1) {
+            this.domUtils.showToast('addon.calendar.eventcalendareventdeleted', true, 3000, undefined, false);
+
+            // Event was deleted, close the view.
+            if (!this.svComponent || !this.svComponent.isOn()) {
+                this.navCtrl.pop();
+            }
+        } else if (data.events && (!isManual || data.source != 'event')) {
             const event = data.events.find((ev) => {
                 return ev.id == this.eventId;
             });

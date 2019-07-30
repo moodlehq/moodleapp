@@ -1389,9 +1389,12 @@ export class CoreDomUtilsProvider {
      * @param {boolean} [needsTranslate] Whether the 'text' needs to be translated.
      * @param {number} [duration=2000] Duration in ms of the dimissable toast.
      * @param {string} [cssClass=""] Class to add to the toast.
+     * @param {boolean} [dismissOnPageChange=true] Dismiss the Toast on page change.
      * @return {Toast} Toast instance.
      */
-    showToast(text: string, needsTranslate?: boolean, duration: number = 2000, cssClass: string = ''): Toast {
+    showToast(text: string, needsTranslate?: boolean, duration: number = 2000, cssClass: string = '',
+            dismissOnPageChange: boolean = true): Toast {
+
         if (needsTranslate) {
             text = this.translate.instant(text);
         }
@@ -1401,7 +1404,7 @@ export class CoreDomUtilsProvider {
             duration: duration,
             position: 'bottom',
             cssClass: cssClass,
-            dismissOnPageChange: true
+            dismissOnPageChange: dismissOnPageChange
         });
 
         loader.present();

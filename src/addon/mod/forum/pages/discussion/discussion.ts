@@ -115,7 +115,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         this.postId = navParams.get('postId');
 
         this.isOnline = this.appProvider.isOnline();
-        this.onlineObserver = network.onchange().subscribe((online) => {
+        this.onlineObserver = network.onchange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             zone.run(() => {
                 this.isOnline = this.appProvider.isOnline();

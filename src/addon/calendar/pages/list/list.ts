@@ -63,16 +63,19 @@ export class AddonCalendarListPage implements OnDestroy {
     protected newEventObserver: any;
     protected discardedObserver: any;
     protected editEventObserver: any;
+    protected deleteEventObserver: any;
+    protected undeleteEventObserver: any;
     protected syncObserver: any;
     protected manualSyncObserver: any;
     protected onlineObserver: any;
     protected currentSiteId: string;
+    protected onlineEvents = [];
+    protected offlineEvents = [];
+    protected deletedEvents = [];
 
     courses: any[];
     eventsLoaded = false;
     events = []; // Events (both online and offline).
-    onlineEvents = [];
-    offlineEvents = [];
     notificationsEnabled = false;
     filteredEvents = [];
     canLoadMore = false;
@@ -149,6 +152,11 @@ export class AddonCalendarListPage implements OnDestroy {
         this.syncObserver = eventsProvider.on(AddonCalendarSyncProvider.AUTO_SYNCED, (data) => {
             this.eventsLoaded = false;
             this.refreshEvents();
+
+            if (this.splitviewCtrl.isOn() && this.eventId && data && data.deleted && data.deleted.indexOf(this.eventId) != -1) {
+                // Current selected event was deleted. Clear details.
+                this.splitviewCtrl.emptyDetails();
+            }
         }, this.currentSiteId);
 
         // Refresh data if calendar events are synchronized manually but not by this page.
@@ -157,13 +165,51 @@ export class AddonCalendarListPage implements OnDestroy {
                 this.eventsLoaded = false;
                 this.refreshEvents();
             }
+
+            if (this.splitviewCtrl.isOn() && this.eventId && data && data.deleted && data.deleted.indexOf(this.eventId) != -1) {
+                // Current selected event was deleted. Clear details.
+                this.splitviewCtrl.emptyDetails();
+            }
+        }, this.currentSiteId);
+
+        // Update the list when an event is deleted.
+        this.deleteEventObserver = eventsProvider.on(AddonCalendarProvider.DELETED_EVENT_EVENT, (data) => {
+            if (data && !data.sent) {
+                // Event was deleted in offline. Just mark it as deleted, no need to refresh.
+                this.markAsDeleted(data.eventId, true);
+                this.hasOffline = true;
+            } else {
+                // Event deleted, clear the details if needed and refresh the view.
+                if (this.splitviewCtrl.isOn()) {
+                    this.splitviewCtrl.emptyDetails();
+                }
+
+                this.eventsLoaded = false;
+                this.refreshEvents();
+            }
+        }, this.currentSiteId);
+
+        // Listen for events "undeleted" (offline).
+        this.undeleteEventObserver = eventsProvider.on(AddonCalendarProvider.UNDELETED_EVENT_EVENT, (data) => {
+            if (data && data.eventId) {
+                // Mark it as undeleted, no need to refresh.
+                this.markAsDeleted(data.eventId, false);
+
+                // Remove it from the list of deleted events if it's there.
+                const index = this.deletedEvents.indexOf(data.eventId);
+                if (index != -1) {
+                    this.deletedEvents.splice(index, 1);
+                }
+
+                this.hasOffline = !!this.offlineEvents.length || !!this.deletedEvents.length;
+            }
         }, this.currentSiteId);
 
         // Refresh online status when changes.
-        this.onlineObserver = network.onchange().subscribe((online) => {
+        this.onlineObserver = network.onchange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             zone.run(() => {
-                this.isOnline = online;
+                this.isOnline = this.appProvider.isOnline();
             });
         });
     }
@@ -234,6 +280,8 @@ export class AddonCalendarListPage implements OnDestroy {
             const promises = [];
             const courseId = this.filter.course.id != this.allCourses.id ? this.filter.course.id : undefined;
 
+            this.hasOffline = false;
+
             promises.push(this.calendarHelper.canEditEvents(courseId).then((canEdit) => {
                 this.canCreate = canEdit;
             }));
@@ -254,8 +302,8 @@ export class AddonCalendarListPage implements OnDestroy {
             }));
 
             // Get offline events.
-            promises.push(this.calendarOffline.getAllEvents().then((events) => {
-                this.hasOffline = !!events.length;
+            promises.push(this.calendarOffline.getAllEditedEvents().then((events) => {
+                this.hasOffline = this.hasOffline || !!events.length;
 
                 // Format data and sort by timestart.
                 events.forEach((event) => {
@@ -263,6 +311,12 @@ export class AddonCalendarListPage implements OnDestroy {
                     this.calendarHelper.formatEventData(event);
                 });
                 this.offlineEvents = this.sortEvents(events);
+            }));
+
+            // Get events deleted in offline.
+            promises.push(this.calendarOffline.getAllDeletedEventsIds().then((ids) => {
+                this.hasOffline = this.hasOffline || !!ids.length;
+                this.deletedEvents = ids;
             }));
 
             return Promise.all(promises);
@@ -457,22 +511,32 @@ export class AddonCalendarListPage implements OnDestroy {
      * @return {any[]} Merged events.
      */
     protected mergeEvents(onlineEvents: any[]): any[] {
-        if (!this.offlineEvents || !this.offlineEvents.length) {
+        if (!this.offlineEvents.length && !this.deletedEvents.length) {
             // No offline events, nothing to merge.
             return onlineEvents;
         }
 
         const start = this.initialTime + (CoreConstants.SECONDS_DAY * this.daysLoaded),
             end = start + (CoreConstants.SECONDS_DAY * AddonCalendarProvider.DAYS_INTERVAL) - 1;
+        let result = onlineEvents;
 
-        // First of all, remove the online events that were modified in offline.
-        let result = onlineEvents.filter((event) => {
-            const offlineEvent = this.offlineEvents.find((ev) => {
-                return ev.id == event.id;
+        if (this.deletedEvents.length) {
+            // Mark as deleted the events that were deleted in offline.
+            result.forEach((event) => {
+                event.deleted = this.deletedEvents.indexOf(event.id) != -1;
             });
+        }
 
-            return !offlineEvent;
-        });
+        if (this.offlineEvents.length) {
+            // Remove the online events that were modified in offline.
+            result = result.filter((event) => {
+                const offlineEvent = this.offlineEvents.find((ev) => {
+                    return ev.id == event.id;
+                });
+
+                return !offlineEvent;
+            });
+        }
 
         // Now get the offline events that belong to this period.
         const periodOfflineEvents = this.offlineEvents.filter((event) => {
@@ -659,6 +723,22 @@ export class AddonCalendarListPage implements OnDestroy {
     }
 
     /**
+     * Find an event and mark it as deleted.
+     *
+     * @param {number} eventId Event ID.
+     * @param {boolean} deleted Whether to mark it as deleted or not.
+     */
+    protected markAsDeleted(eventId: number, deleted: boolean): void {
+        const event = this.onlineEvents.find((event) => {
+            return event.id == eventId;
+        });
+
+        if (event) {
+            event.deleted = deleted;
+        }
+    }
+
+    /**
      * Page destroyed.
      */
     ngOnDestroy(): void {
@@ -666,6 +746,8 @@ export class AddonCalendarListPage implements OnDestroy {
         this.newEventObserver && this.newEventObserver.off();
         this.discardedObserver && this.discardedObserver.off();
         this.editEventObserver && this.editEventObserver.off();
+        this.deleteEventObserver && this.deleteEventObserver.off();
+        this.undeleteEventObserver && this.undeleteEventObserver.off();
         this.syncObserver && this.syncObserver.off();
         this.manualSyncObserver && this.manualSyncObserver.off();
         this.onlineObserver && this.onlineObserver.unsubscribe();

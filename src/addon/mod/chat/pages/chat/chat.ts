@@ -65,7 +65,7 @@ export class AddonModChatChatPage {
         this.logger = logger.getInstance('AddonModChoiceChoicePage');
         this.currentUserBeep = 'beep ' + sitesProvider.getCurrentSiteUserId();
         this.isOnline = this.appProvider.isOnline();
-        this.onlineObserver = network.onchange().subscribe((online) => {
+        this.onlineObserver = network.onchange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             zone.run(() => {
                 this.isOnline = this.appProvider.isOnline();

@@ -81,7 +81,8 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
                 // Sync successful, send event.
                 this.eventsProvider.trigger(AddonCalendarSyncProvider.AUTO_SYNCED, {
                     warnings: result.warnings,
-                    events: result.events
+                    events: result.events,
+                    deleted: result.deleted
                 }, siteId);
             }
         });
@@ -122,18 +123,19 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
         const result = {
             warnings: [],
             events: [],
+            deleted: [],
             updated: false
         };
-        let offlineEvents;
+        let offlineEventIds: number[];
 
         // Get offline events.
-        const syncPromise = this.calendarOffline.getAllEvents(siteId).catch(() => {
+        const syncPromise = this.calendarOffline.getAllEventsIds(siteId).catch(() => {
             // No offline data found, return empty list.
             return [];
-        }).then((events) => {
-            offlineEvents = events;
+        }).then((eventIds) => {
+            offlineEventIds = eventIds;
 
-            if (!events.length) {
+            if (!eventIds.length) {
                 // Nothing to sync.
                 return;
             } else if (!this.appProvider.isOnline()) {
@@ -143,8 +145,8 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
 
             const promises = [];
 
-            events.forEach((event) => {
-                promises.push(this.syncOfflineEvent(event, result, siteId));
+            offlineEventIds.forEach((eventId) => {
+                promises.push(this.syncOfflineEvent(eventId, result, siteId));
             });
 
             return this.utils.allPromises(promises);
@@ -155,10 +157,10 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
                     this.calendarProvider.invalidateEventsList(siteId),
                 ];
 
-                offlineEvents.forEach((event) => {
-                    if (event.id > 0) {
+                offlineEventIds.forEach((eventId) => {
+                    if (eventId > 0) {
                         // An event was edited, invalidate its data too.
-                        promises.push(this.calendarProvider.invalidateEvent(event.id, siteId));
+                        promises.push(this.calendarProvider.invalidateEvent(eventId, siteId));
                     }
                 });
 
@@ -182,47 +184,95 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
     /**
      * Synchronize an offline event.
      *
-     * @param {any} event The event to sync.
+     * @param {number} eventId The event ID to sync.
      * @param {any} result Object where to store the result of the sync.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved if sync is successful, rejected otherwise.
      */
-    protected syncOfflineEvent(event: any, result: any, siteId?: string): Promise<any> {
+    protected syncOfflineEvent(eventId: number, result: any, siteId?: string): Promise<any> {
 
         // Verify that event isn't blocked.
-        if (this.syncProvider.isBlocked(AddonCalendarProvider.COMPONENT, event.id, siteId)) {
-            this.logger.debug('Cannot sync event ' + event.name + ' because it is blocked.');
+        if (this.syncProvider.isBlocked(AddonCalendarProvider.COMPONENT, eventId, siteId)) {
+            this.logger.debug('Cannot sync event ' + eventId + ' because it is blocked.');
 
             return Promise.reject(this.translate.instant('core.errorsyncblocked',
                     {$a: this.translate.instant('addon.calendar.calendarevent')}));
         }
 
-        // Try to send the data.
-        const data = this.utils.clone(event); // Clone the object because it will be modified in the submit function.
-
-        return this.calendarProvider.submitEventOnline(event.id > 0 ? event.id : undefined, data, siteId).then((newEvent) => {
-            result.updated = true;
-            result.events.push(newEvent);
-
-            // Event sent, delete the offline data.
-            return this.calendarOffline.deleteEvent(event.id, siteId);
-        }).catch((error) => {
-            if (this.utils.isWebServiceError(error)) {
-                // The WebService has thrown an error, this means that the event cannot be created. Delete it.
+        // First of all, check if the event has been deleted.
+        return this.calendarOffline.getDeletedEvent(eventId, siteId).then((data) => {
+            // Delete the event.
+            return this.calendarProvider.deleteEventOnline(data.id, data.repeat, siteId).then(() => {
                 result.updated = true;
+                result.deleted.push(eventId);
 
-                return this.calendarOffline.deleteEvent(event.id, siteId).then(() => {
-                    // Event deleted, add a warning.
-                    result.warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
-                        component: this.translate.instant('addon.calendar.calendarevent'),
-                        name: event.name,
-                        error: this.textUtils.getErrorMessageFromError(error)
+                // Event sent, delete the offline data.
+                const promises = [];
+
+                promises.push(this.calendarOffline.unmarkDeleted(eventId, siteId));
+                promises.push(this.calendarOffline.deleteEvent(eventId, siteId).catch(() => {
+                    // Ignore errors, maybe there was no edit data.
+                }));
+
+                return Promise.all(promises);
+            }).catch((error) => {
+
+                if (this.utils.isWebServiceError(error)) {
+                    // The WebService has thrown an error, this means that the event cannot be created. Delete it.
+                    result.updated = true;
+
+                    const promises = [];
+
+                    promises.push(this.calendarOffline.unmarkDeleted(eventId, siteId));
+                    promises.push(this.calendarOffline.deleteEvent(eventId, siteId).catch(() => {
+                        // Ignore errors, maybe there was no edit data.
                     }));
-                });
-            }
 
-            // Local error, reject.
-            return Promise.reject(error);
+                    return Promise.all(promises).then(() => {
+                        // Event deleted, add a warning.
+                        result.warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
+                            component: this.translate.instant('addon.calendar.calendarevent'),
+                            name: data.name,
+                            error: this.textUtils.getErrorMessageFromError(error)
+                        }));
+                    });
+                }
+
+                // Local error, reject.
+                return Promise.reject(error);
+            });
+        }, () => {
+
+            // Not deleted. Now get the event data.
+            return this.calendarOffline.getEvent(eventId, siteId).then((event) => {
+                // Try to send the data.
+                const data = this.utils.clone(event); // Clone the object because it will be modified in the submit function.
+
+                return this.calendarProvider.submitEventOnline(eventId > 0 ? eventId : undefined, data, siteId).then((newEvent) => {
+                    result.updated = true;
+                    result.events.push(newEvent);
+
+                    // Event sent, delete the offline data.
+                    return this.calendarOffline.deleteEvent(event.id, siteId);
+                }).catch((error) => {
+                    if (this.utils.isWebServiceError(error)) {
+                        // The WebService has thrown an error, this means that the event cannot be created. Delete it.
+                        result.updated = true;
+
+                        return this.calendarOffline.deleteEvent(event.id, siteId).then(() => {
+                            // Event deleted, add a warning.
+                            result.warnings.push(this.translate.instant('core.warningofflinedatadeleted', {
+                                component: this.translate.instant('addon.calendar.calendarevent'),
+                                name: event.name,
+                                error: this.textUtils.getErrorMessageFromError(error)
+                            }));
+                        });
+                    }
+
+                    // Local error, reject.
+                    return Promise.reject(error);
+                });
+            });
         });
     }
 }
