@@ -456,11 +456,6 @@ ion-app.app-root {
     }
   }
 
-  .col > .button-block {
-    contain: content;
-  }
-
-
   // File uploader.
   // -------------------------
   .core-fileuploader-file-handler {
@@ -1069,21 +1064,14 @@ details summary {
     line-height: 28px;
 }
 
-// Fix iframes in fullscreen mode.
-//
-// Ionic sets "contain: strict" to some elements. This enables paint containment,
-// which changes behaviour of fixed positioned elements and seems to break iframes
-// in fullscreen mode. See https://www.w3.org/TR/css-contain-1/#containment-paint
-ion-app,
-ion-nav,
-ion-tab,
-ion-tabs,
-.app-root,
-.ion-page,
-ion-modal,
-.modal-wrapper,
-.split-pane {
-  contain: size layout style;
+// Ionic sets the "contain" CSS property to some elements. This enables CSS
+// containment, which changes how elements are positioned and sized, breaking
+// fixed positioned elements, iframes in full screen mode, subtitle menus in
+// videos and potentially more things. CSS containment is not supported in iOS
+// and Android 4.4, so it can introduce inconsistencies across devices.
+// See https://www.w3.org/TR/css-contain-1
+* {
+  contain: none !important;
 }
 
 // Highlight text.
@@ -1107,9 +1095,6 @@ ion-app.platform-desktop {
 // Fix text wrapping in block buttons.
 .button-block[text-wrap] {
   height: auto;
-
-  // Changed from "strict" because the size depends on child elements.
-  contain: content;
 
   // Add vertical padding, we cannot rely on a fixed height + centering like in normal buttons.
   .item-md & {

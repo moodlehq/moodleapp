@@ -89,9 +89,6 @@ core-ion-tabs, core-ion-tab {
     width: 100%;
     height: 100%;
     overflow: hidden;
-
-    // Do not use "contain: strict" so fullscreen iframes work.
-    contain: size layout style;
 }
 
 core-ion-tab {
