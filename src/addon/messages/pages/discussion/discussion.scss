@@ -49,7 +49,6 @@ ion-app.app-root page-addon-messages-discussion {
         @include core-transition(width);
         // This is needed to display bubble tails.
         overflow: visible;
-        contain: none;
 
         core-format-text > p:only-child {
             display: inline;
