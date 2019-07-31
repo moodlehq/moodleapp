@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, AfterViewInit, ElementRef, OnChanges, SimpleChange } from '@angular/core';
+import { Directive, Input, AfterViewInit, ElementRef, OnChanges, SimpleChange, Output, EventEmitter } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -43,6 +43,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
     @Input() href?: string;
     @Input('target-src') targetSrc?: string;
     @Input() poster?: string;
+    @Output() onLoad = new EventEmitter(); // Emitted when content is loaded. Only for images.
 
     protected element: HTMLElement;
     protected logger;
@@ -225,7 +226,17 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
                     // The browser does not catch changes in SRC, we need to add a new source.
                     this.addSource(finalUrl);
                 } else {
+                    if (tagName === 'IMG') {
+                        const listener = (): void => {
+                            this.element.removeEventListener('load', listener);
+                            this.element.removeEventListener('error', listener);
+                            this.onLoad.emit();
+                        };
+                        this.element.addEventListener('load', listener);
+                        this.element.addEventListener('error', listener);
+                    }
                     this.element.setAttribute(targetAttr, finalUrl);
+                    this.element.setAttribute('data-original-' + targetAttr, url);
                 }
 
                 // Set events to download big files (not downloaded automatically).

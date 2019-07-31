@@ -90,8 +90,9 @@ export class CoreFormatTextDirective implements OnChanges {
      * Apply CoreExternalContentDirective to a certain element.
      *
      * @param {HTMLElement} element Element to add the attributes to.
+     * @return {CoreExternalContentDirective} External content instance.
      */
-    protected addExternalContent(element: HTMLElement): void {
+    protected addExternalContent(element: HTMLElement): CoreExternalContentDirective {
         // Angular 2 doesn't let adding directives dynamically. Create the CoreExternalContentDirective manually.
         const extContent = new CoreExternalContentDirective(<any> element, this.loggerProvider, this.filepoolProvider,
             this.platform, this.sitesProvider, this.domUtils, this.urlUtils, this.appProvider, this.utils);
@@ -105,6 +106,8 @@ export class CoreFormatTextDirective implements OnChanges {
         extContent.poster = element.getAttribute('poster');
 
         extContent.ngAfterViewInit();
+
+        return extContent;
     }
 
     /**
@@ -117,15 +120,13 @@ export class CoreFormatTextDirective implements OnChanges {
     }
 
     /**
-     * Wrap an image with a container to adapt its width and, if needed, add an anchor to view it in full size.
+     * Wrap an image with a container to adapt its width.
      *
-     * @param {number} elWidth Width of the directive's element.
      * @param {HTMLElement} img Image to adapt.
      */
-    protected adaptImage(elWidth: number, img: HTMLElement): void {
-        const imgWidth = this.getElementWidth(img),
-            // Element to wrap the image.
-            container = document.createElement('span'),
+    protected adaptImage(img: HTMLElement): void {
+        // Element to wrap the image.
+        const container = document.createElement('span'),
             originalWidth = img.attributes.getNamedItem('width');
 
         const forcedWidth = parseInt(originalWidth && originalWidth.value);
@@ -152,36 +153,53 @@ export class CoreFormatTextDirective implements OnChanges {
         }
 
         this.domUtils.wrapElement(img, container);
-
-        if (imgWidth > elWidth) {
-            // The image has been adapted, add an anchor to view it in full size.
-            this.addMagnifyingGlass(container, img);
-        }
     }
 
     /**
-     * Add a magnifying glass icon to view an image at full size.
-     *
-     * @param {HTMLElement} container The container of the image.
-     * @param {HTMLElement} img The image.
+     * Add magnifying glass icons to view adapted images at full size.
      */
-    addMagnifyingGlass(container: HTMLElement, img: HTMLElement): void {
-        const imgSrc = this.textUtils.escapeHTML(img.getAttribute('src')),
+    addMagnifyingGlasses(): void {
+        const imgs = Array.from(this.element.querySelectorAll('.core-adapted-img-container > img'));
+        if (!imgs.length) {
+            return;
+        }
+
+        // If cannot calculate element's width, use viewport width to avoid false adapt image icons appearing.
+        const elWidth = this.getElementWidth(this.element) || window.innerWidth;
+
+        imgs.forEach((img: HTMLImageElement) => {
+            // Skip image if it's inside a link.
+            if (img.closest('a')) {
+                return;
+            }
+
+            let imgWidth = parseInt(img.getAttribute('width'));
+            if (!imgWidth) {
+                // No width attribute, use real size.
+                imgWidth = img.naturalWidth;
+            }
+
+            if (imgWidth <= elWidth) {
+                return;
+            }
+
+            const imgSrc = this.textUtils.escapeHTML(img.getAttribute('data-original-src') || img.getAttribute('src')),
             label = this.textUtils.escapeHTML(this.translate.instant('core.openfullimage')),
             anchor = document.createElement('a');
 
-        anchor.classList.add('core-image-viewer-icon');
-        anchor.setAttribute('aria-label', label);
-        // Add an ion-icon item to apply the right styles, but the ion-icon component won't be executed.
-        anchor.innerHTML = '<ion-icon name="search" class="icon icon-md ion-md-search"></ion-icon>';
+            anchor.classList.add('core-image-viewer-icon');
+            anchor.setAttribute('aria-label', label);
+            // Add an ion-icon item to apply the right styles, but the ion-icon component won't be executed.
+            anchor.innerHTML = '<ion-icon name="search" class="icon icon-md ion-md-search"></ion-icon>';
 
-        anchor.addEventListener('click', (e: Event) => {
-            e.preventDefault();
-            e.stopPropagation();
-            this.domUtils.viewImage(imgSrc, img.getAttribute('alt'), this.component, this.componentId);
+            anchor.addEventListener('click', (e: Event) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.domUtils.viewImage(imgSrc, img.getAttribute('alt'), this.component, this.componentId);
+            });
+
+            img.parentNode.appendChild(anchor);
         });
-
-        container.appendChild(anchor);
     }
 
     /**
@@ -307,12 +325,8 @@ export class CoreFormatTextDirective implements OnChanges {
                 // Calculate the height now.
                 this.calculateHeight();
 
-                // Wait for images to load and calculate the height again if needed.
-                this.domUtils.waitForImages(this.element).then((hasImgToLoad) => {
-                    if (hasImgToLoad) {
-                        this.calculateHeight();
-                    }
-                });
+                // Add magnifying glasses to images.
+                this.addMagnifyingGlasses();
 
                 if (!this.loadingChangedListener) {
                     // Recalculate the height if a parent core-loading displays the content.
@@ -387,16 +401,14 @@ export class CoreFormatTextDirective implements OnChanges {
                 this.addExternalContent(anchor);
             });
 
+            const externalImages: CoreExternalContentDirective[] = [];
             if (images && images.length > 0) {
-                // If cannot calculate element's width, use a medium number to avoid false adapt image icons appearing.
-                const elWidth = this.getElementWidth(this.element) || 100;
-
                 // Walk through the content to find images, and add our directive.
                 images.forEach((img: HTMLElement) => {
                     this.addMediaAdaptClass(img);
-                    this.addExternalContent(img);
+                    externalImages.push(this.addExternalContent(img));
                     if (this.utils.isTrueOrOne(this.adaptImg) && !img.classList.contains('icon')) {
-                        this.adaptImage(elWidth, img);
+                        this.adaptImage(img);
                     }
                 });
             }
@@ -445,7 +457,24 @@ export class CoreFormatTextDirective implements OnChanges {
 
             this.domUtils.handleBootstrapTooltips(div);
 
-            return div;
+            // Wait for images to load.
+            let promise: Promise<any> = null;
+            if (externalImages.length) {
+                promise = Promise.all(externalImages.map((externalImage) => {
+                    return new Promise((resolve): void => {
+                        const subscription = externalImage.onLoad.subscribe(() => {
+                            subscription.unsubscribe();
+                            resolve();
+                        });
+                    });
+                }));
+            } else {
+                promise = Promise.resolve();
+            }
+
+            return promise.then(() => {
+                return div;
+            });
         });
     }
 
