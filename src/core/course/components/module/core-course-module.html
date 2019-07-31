@@ -1,4 +1,4 @@
-<a *ngIf="module && module.visibleoncoursepage !== 0" ion-item text-wrap id="core-course-module-{{module.id}}" class="core-course-module-handler {{module.handlerData.class}}" (click)="moduleClicked($event)" [ngClass]="{'item-media': module.handlerData.icon, 'core-not-clickable': !module.handlerData.action || !module.uservisible === false, 'item-dimmed': module.visible === 0 || module.uservisible === false}" [title]="module.handlerData.a11yTitle" detail-none>
+<ion-item *ngIf="module && module.visibleoncoursepage !== 0" text-wrap id="core-course-module-{{module.id}}" class="core-course-module-handler {{module.handlerData.class}}" (click)="moduleClicked($event)" [ngClass]="{'item-media': module.handlerData.icon, 'core-not-clickable': !module.handlerData.action || !module.uservisible === false, 'item-dimmed': module.visible === 0 || module.uservisible === false}" [title]="module.handlerData.a11yTitle" detail-none>
 
     <img item-start *ngIf="module.handlerData.icon" [src]="module.handlerData.icon" [alt]="module.modnametranslated" class="core-module-icon">
     <div class="core-module-title">
@@ -32,4 +32,4 @@
         <ion-badge item-end *ngIf="module.completiondata && module.completiondata.offline" color="warning" text-wrap>{{ 'core.course.manualcompletionnotsynced' | translate }}</ion-badge>
     </div>
     <core-format-text class="core-module-description" *ngIf="module.description" maxHeight="80" [text]="module.description"></core-format-text>
-</a>
+</ion-item>

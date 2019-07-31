@@ -2,7 +2,7 @@ ion-app.app-root core-course-module {
     background: white;
     display: block;
 
-    a.core-course-module-handler {
+    .item.core-course-module-handler {
         align-items: flex-start;
         min-height: 52px;
 
@@ -80,7 +80,7 @@ ion-app.app-root.md core-course-module {
         }
     }
 
-    a.core-course-module-handler .core-module-icon {
+    .item.core-course-module-handler .core-module-icon {
         margin-top: $label-md-margin-top;
         margin-bottom: $label-md-margin-bottom;
         width: 24px;
@@ -110,7 +110,7 @@ ion-app.app-root.ios core-course-module {
         }
     }
 
-    a.core-course-module-handler .core-module-icon {
+    .item.core-course-module-handler .core-module-icon {
         margin-top: $label-ios-margin-top;
         margin-bottom: $label-ios-margin-bottom;
         width: 24px;
@@ -137,7 +137,7 @@ ion-app.app-root.wp core-course-module {
         }
     }
 
-    a.core-course-module-handler .core-module-icon {
+    .item.core-course-module-handler .core-module-icon {
         margin-top: $item-wp-padding-top;
         margin-bottom: $item-wp-padding-bottom;
         width: 24px;
@@ -154,6 +154,6 @@ ion-app.app-root.wp core-course-module {
     }
 }
 
-ion-app.app-root a.core-course-module-handler.item [item-start] + .item-inner {
+ion-app.app-root .core-course-module-handler.item [item-start] + .item-inner {
     @include margin-horizontal(4px, null);
 }
