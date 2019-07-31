@@ -226,16 +226,9 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             canSearch = true;
             canAdd = accessData.canaddentry;
 
-            return this.groupsProvider.getActivityGroupInfo(this.data.coursemodule, accessData.canmanageentries)
-                    .then((groupInfo) => {
+            return this.groupsProvider.getActivityGroupInfo(this.data.coursemodule).then((groupInfo) => {
                 this.groupInfo = groupInfo;
-
-                // Check selected group is accessible.
-                if (groupInfo && groupInfo.groups && groupInfo.groups.length > 0) {
-                    if (!groupInfo.groups.some((group) => this.selectedGroup == group.id)) {
-                        this.selectedGroup = groupInfo.groups[0].id;
-                    }
-                }
+                this.selectedGroup = this.groupsProvider.validateGroupId(this.selectedGroup, groupInfo);
             });
         }).then(() => {
             return this.dataProvider.getFields(this.data.id).then((fields) => {

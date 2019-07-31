@@ -136,14 +136,14 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
             const promises = [];
 
             if (mode === CoreGroupsProvider.SEPARATEGROUPS || mode === CoreGroupsProvider.VISIBLEGROUPS) {
-                promises.push(this.groupsProvider.getActivityAllowedGroups(this.cmId).then((forumGroups) => {
+                promises.push(this.groupsProvider.getActivityAllowedGroups(this.cmId).then((result) => {
                     let promise;
                     if (mode === CoreGroupsProvider.VISIBLEGROUPS) {
                         // We need to check which of the returned groups the user can post to.
-                        promise = this.validateVisibleGroups(forumGroups);
+                        promise = this.validateVisibleGroups(result.groups);
                     } else {
                         // WS already filters groups, no need to do it ourselves. Add "All participants" if needed.
-                        promise = this.addAllParticipantsOption(forumGroups, true);
+                        promise = this.addAllParticipantsOption(result.groups, true);
                     }
 
                     return promise.then((forumGroups) => {

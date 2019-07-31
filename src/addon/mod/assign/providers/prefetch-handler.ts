@@ -293,9 +293,9 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
         return this.assignProvider.getSubmissions(assign.id, true, siteId).then((data) => {
             const promises = [];
 
-            if (data.canviewsubmissions) {
-                // Teacher, prefetch all submissions.
-                promises.push(this.groupsProvider.getActivityGroupInfo(assign.cmid, false, undefined, siteId).then((groupInfo) => {
+            promises.push(this.groupsProvider.getActivityGroupInfo(assign.cmid, false, undefined, siteId).then((groupInfo) => {
+                if (data.canviewsubmissions) {
+                    // Teacher, prefetch all submissions.
                     const groupProms = [];
                     if (!groupInfo.groups || groupInfo.groups.length == 0) {
                         groupInfo.groups = [{id: 0}];
@@ -354,8 +354,8 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                     });
 
                     return Promise.all(groupProms);
-                }));
-            }
+                }
+            }));
 
             // Prefetch own submission, we need to do this for teachers too so the response with error is cached.
             promises.push(
@@ -369,9 +369,6 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                     }
                 })
             );
-
-            promises.push(this.groupsProvider.activityHasGroups(assign.cmid, siteId, true));
-            promises.push(this.groupsProvider.getActivityAllowedGroups(assign.cmid, undefined, siteId, true));
 
             return Promise.all(promises);
         });

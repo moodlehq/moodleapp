@@ -265,44 +265,34 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                 this.componentId = this.module.id;
 
                 // Get real groupmode, in case it's forced by the course.
-                return this.groupsProvider.getActivityGroupMode(this.wiki.coursemodule).then((groupMode) => {
+                return this.groupsProvider.getActivityGroupInfo(this.wiki.coursemodule).then((groupInfo) => {
+                    return this.fetchSubwikis(this.wiki.id).then(() => {
+                        // Get the subwiki list data from the cache.
+                        const subwikiList = this.wikiProvider.getSubwikiList(this.wiki.id);
 
-                    if (groupMode === CoreGroupsProvider.SEPARATEGROUPS || groupMode === CoreGroupsProvider.VISIBLEGROUPS) {
-                        // Get the groups available for the user.
-                        promise = this.groupsProvider.getActivityAllowedGroups(this.wiki.coursemodule);
-                    } else {
-                        promise = Promise.resolve([]);
-                    }
-
-                    return promise.then((userGroups) => {
-                        return this.fetchSubwikis(this.wiki.id).then(() => {
-                            // Get the subwiki list data from the cache.
-                            const subwikiList = this.wikiProvider.getSubwikiList(this.wiki.id);
-
-                            if (!subwikiList) {
-                                // Not found in cache, create a new one.
-                                return this.createSubwikiList(userGroups);
-                            }
-
-                            this.subwikiData.count = subwikiList.count;
-                            this.setSelectedWiki(this.subwikiId, this.userId, this.groupId);
-
-                            // If nothing was selected using nav params, use the selected from cache.
-                            if (!this.isAnySubwikiSelected()) {
-                                this.setSelectedWiki(subwikiList.subwikiSelected, subwikiList.userSelected,
-                                        subwikiList.groupSelected);
-                            }
-
-                            this.subwikiData.subwikis = subwikiList.subwikis;
-                        });
-                    }).then(() => {
-
-                        if (!this.isAnySubwikiSelected() || this.subwikiData.count <= 0) {
-                            return Promise.reject(this.translate.instant('addon.mod_wiki.errornowikiavailable'));
+                        if (!subwikiList) {
+                            // Not found in cache, create a new one.
+                            return this.createSubwikiList(groupInfo.groups);
                         }
-                    }).then(() => {
-                        return this.fetchWikiPage();
+
+                        this.subwikiData.count = subwikiList.count;
+                        this.setSelectedWiki(this.subwikiId, this.userId, this.groupId);
+
+                        // If nothing was selected using nav params, use the selected from cache.
+                        if (!this.isAnySubwikiSelected()) {
+                            this.setSelectedWiki(subwikiList.subwikiSelected, subwikiList.userSelected,
+                                    subwikiList.groupSelected);
+                        }
+
+                        this.subwikiData.subwikis = subwikiList.subwikis;
                     });
+                }).then(() => {
+
+                    if (!this.isAnySubwikiSelected() || this.subwikiData.count <= 0) {
+                        return Promise.reject(this.translate.instant('addon.mod_wiki.errornowikiavailable'));
+                    }
+                }).then(() => {
+                    return this.fetchWikiPage();
                 });
             });
         }).then(() => {

@@ -228,8 +228,8 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
                 if (data.groupid == AddonModForumProvider.ALL_GROUPS) {
                     // Fetch all group ids.
                     groupsPromise = this.forumProvider.getForumById(data.courseid, data.forumid, siteId).then((forum) => {
-                        return this.groupsProvider.getActivityAllowedGroups(forum.cmid).then((groups) => {
-                            return groups.map((group) => group.id);
+                        return this.groupsProvider.getActivityAllowedGroups(forum.cmid).then((result) => {
+                            return result.groups.map((group) => group.id);
                         });
                     });
                 } else {
