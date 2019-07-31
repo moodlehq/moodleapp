@@ -38,6 +38,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     now: number; // Current time.
     syncTime: string; // Last synchronization time.
     hasOffline: boolean; // Whether the quiz has offline data.
+    hasSupportedQuestions: boolean; // Whether the quiz has at least 1 supported question.
     accessRules: string[]; // List of access rules of the quiz.
     unsupportedRules: string[]; // List of unsupported access rules of the quiz.
     unsupportedQuestions: string[]; // List of unsupported question types of the quiz.
@@ -214,6 +215,9 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
                 // Get question types in the quiz.
                 return this.quizProvider.getQuizRequiredQtypes(this.quizData.id).then((types) => {
                     this.unsupportedQuestions = this.quizProvider.getUnsupportedQuestions(types);
+                    this.hasSupportedQuestions = !!types.find((type) => {
+                        return type != 'random' && this.unsupportedQuestions.indexOf(type) == -1;
+                    });
 
                     return this.getAttempts();
                 });
@@ -301,7 +305,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
                 this.buttonText = '';
             } else if (this.quizAccessInfo.canattempt && this.preventMessages.length) {
                 this.buttonText = '';
-            } else if (this.unsupportedQuestions.length || this.unsupportedRules.length || !this.behaviourSupported) {
+            } else if (!this.hasSupportedQuestions || this.unsupportedRules.length || !this.behaviourSupported) {
                 this.buttonText = '';
             }
         }
