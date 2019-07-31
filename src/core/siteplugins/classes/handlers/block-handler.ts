@@ -15,14 +15,17 @@
 import { Injector } from '@angular/core';
 import { CoreSitePluginsBaseHandler } from './base-handler';
 import { CoreBlockHandler, CoreBlockHandlerData } from '@core/block/providers/delegate';
+import { CoreBlockPreRenderedComponent } from '@core/block/components/pre-rendered-block/pre-rendered-block';
 import { CoreSitePluginsBlockComponent } from '@core/siteplugins/components/block/block';
+import { CoreSitePluginsOnlyTitleBlockComponent } from '@core/siteplugins/components/only-title-block/only-title-block';
 
 /**
  * Handler to support a block using a site plugin.
  */
 export class CoreSitePluginsBlockHandler extends CoreSitePluginsBaseHandler implements CoreBlockHandler {
 
-    constructor(name: string, public blockName: string, protected handlerSchema: any, protected initResult: any) {
+    constructor(name: string, public title: string, public blockName: string, protected handlerSchema: any,
+            protected initResult: any) {
         super(name);
     }
 
@@ -38,23 +41,27 @@ export class CoreSitePluginsBlockHandler extends CoreSitePluginsBaseHandler impl
      */
     getDisplayData(injector: Injector, block: any, contextLevel: string, instanceId: number):
             CoreBlockHandlerData | Promise<CoreBlockHandlerData> {
-        let title,
-            className;
-        if (this.handlerSchema.displaydata && this.handlerSchema.displaydata.title) {
-            title = this.handlerSchema.displaydata.title;
-        } else {
-            title = 'plugins.block_' + block.name + '.pluginname';
-        }
+        let className,
+            component;
+
         if (this.handlerSchema.displaydata && this.handlerSchema.displaydata.class) {
             className = this.handlerSchema.displaydata.class;
         } else {
             className = 'block_' + block.name;
         }
 
+        if (this.handlerSchema.displaydata && this.handlerSchema.displaydata.type == 'title') {
+            component = CoreSitePluginsOnlyTitleBlockComponent;
+        } else if (this.handlerSchema.displaydata && this.handlerSchema.displaydata.type == 'prerendered') {
+            component = CoreBlockPreRenderedComponent;
+        } else {
+            component = CoreSitePluginsBlockComponent;
+        }
+
         return {
-            title: title,
+            title: this.title,
             class: className,
-            component: CoreSitePluginsBlockComponent
+            component: component
         };
     }
 }

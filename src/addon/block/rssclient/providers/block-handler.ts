@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 
 import { CoreBlockHandlerData } from '@core/block/providers/delegate';
 import { CoreBlockPreRenderedComponent } from '@core/block/components/pre-rendered-block/pre-rendered-block';
@@ -27,7 +26,7 @@ export class AddonBlockRssClientHandler extends CoreBlockBaseHandler {
     name = 'AddonBlockRssClient';
     blockName = 'rss_client';
 
-    constructor(private translate: TranslateService) {
+    constructor() {
         super();
     }
 
@@ -44,7 +43,7 @@ export class AddonBlockRssClientHandler extends CoreBlockBaseHandler {
             : CoreBlockHandlerData | Promise<CoreBlockHandlerData> {
 
         return {
-            title: block.contents.title || this.translate.instant('addon.block_rssclient.pluginname'),
+            title: block.contents.title || 'addon.block_rssclient.pluginname',
             class: 'addon-block-rss-client',
             component: CoreBlockPreRenderedComponent
         };

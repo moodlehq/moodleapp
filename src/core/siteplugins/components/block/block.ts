@@ -53,7 +53,10 @@ export class CoreSitePluginsBlockComponent extends CoreBlockBaseComponent implem
             if (handler) {
                 this.component = handler.plugin.component;
                 this.method = handler.handlerSchema.method;
-                this.args = { };
+                this.args = {
+                    contextlevel: this.contextLevel,
+                    instanceid: this.instanceId,
+                };
                 this.initResult = handler.initResult;
             }
         }

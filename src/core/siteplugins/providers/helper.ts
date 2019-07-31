@@ -661,10 +661,11 @@ export class CoreSitePluginsHelperProvider {
             string | Promise<string> {
 
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
-            blockName = (handlerSchema.moodlecomponent || plugin.component).replace('block_', '');
+            blockName = (handlerSchema.moodlecomponent || plugin.component).replace('block_', ''),
+            prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title || 'pluginname');
 
         this.blockDelegate.registerHandler(
-            new CoreSitePluginsBlockHandler(uniqueName, blockName, handlerSchema, initResult));
+            new CoreSitePluginsBlockHandler(uniqueName, prefixedTitle, blockName, handlerSchema, initResult));
 
         return uniqueName;
     }
@@ -709,7 +710,7 @@ export class CoreSitePluginsHelperProvider {
 
         // Create and register the handler.
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
-            prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title),
+            prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title || 'pluginname'),
             handler = new CoreSitePluginsCourseOptionHandler(uniqueName, prefixedTitle, plugin,
                     handlerSchema, initResult, this.sitePluginsProvider, this.utils);
 
@@ -749,7 +750,7 @@ export class CoreSitePluginsHelperProvider {
 
         // Create and register the handler.
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
-            prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title);
+            prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title || 'pluginname');
 
         this.mainMenuDelegate.registerHandler(
                 new CoreSitePluginsMainMenuHandler(uniqueName, prefixedTitle, plugin, handlerSchema, initResult));
@@ -778,7 +779,7 @@ export class CoreSitePluginsHelperProvider {
 
         // Create and register the handler.
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
-            prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title),
+            prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title || 'pluginname'),
             processorName = (handlerSchema.moodlecomponent || plugin.component).replace('message_', '');
 
         this.messageOutputDelegate.registerHandler(new CoreSitePluginsMessageOutputHandler(uniqueName, processorName,
@@ -897,7 +898,7 @@ export class CoreSitePluginsHelperProvider {
 
         // Create and register the handler.
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
-            prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title);
+            prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title || 'pluginname');
 
         this.settingsDelegate.registerHandler(
                 new CoreSitePluginsSettingsHandler(uniqueName, prefixedTitle, plugin, handlerSchema, initResult));
@@ -926,7 +927,7 @@ export class CoreSitePluginsHelperProvider {
 
         // Create and register the handler.
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
-            prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title),
+            prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title || 'pluginname'),
             handler = new CoreSitePluginsUserProfileHandler(uniqueName, prefixedTitle, plugin, handlerSchema,
                     initResult, this.sitePluginsProvider, this.utils);
 
