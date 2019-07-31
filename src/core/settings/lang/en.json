@@ -28,6 +28,8 @@
     "errorsyncsite": "Error synchronising site data. Please check your Internet connection and try again.",
     "estimatedfreespace": "Estimated free space",
     "filesystemroot": "File system root",
+    "fontsize": "Text size",
+    "fontsizecharacter": "A",
     "general": "General",
     "language": "Language",
     "license": "Licence",
