@@ -17,7 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreSite } from '@classes/site';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
@@ -32,12 +32,39 @@ export class AddonModGlossaryProvider {
     static COMPONENT = 'mmaModGlossary';
     static LIMIT_ENTRIES = 25;
     static LIMIT_CATEGORIES = 10;
-    static SHOW_ALL_CATERGORIES = 0;
+    static SHOW_ALL_CATEGORIES = 0;
     static SHOW_NOT_CATEGORISED = -1;
 
     static ADD_ENTRY_EVENT = 'addon_mod_glossary_add_entry';
 
     protected ROOT_CACHE_KEY = 'mmaModGlossary:';
+
+    // Variables for database.
+    static ENTRIES_TABLE = 'addon_mod_glossary_entry_glossaryid';
+    protected siteSchema: CoreSiteSchema = {
+        name: 'AddonModGlossaryProvider',
+        version: 1,
+        tables: [
+            {
+                name: AddonModGlossaryProvider.ENTRIES_TABLE,
+                columns: [
+                    {
+                        name: 'entryid',
+                        type: 'INTEGER',
+                        primaryKey: true
+                    },
+                    {
+                        name: 'glossaryid',
+                        type: 'INTEGER',
+                    },
+                    {
+                        name: 'pagefrom',
+                        type: 'INTEGER',
+                    }
+                ]
+            }
+        ]
+    };
 
     constructor(private appProvider: CoreAppProvider,
             private sitesProvider: CoreSitesProvider,
@@ -46,7 +73,10 @@ export class AddonModGlossaryProvider {
             private textUtils: CoreTextUtilsProvider,
             private utils: CoreUtilsProvider,
             private glossaryOffline: AddonModGlossaryOfflineProvider,
-            private logHelper: CoreCourseLogHelperProvider) {}
+            private logHelper: CoreCourseLogHelperProvider) {
+
+        this.sitesProvider.registerSiteSchema(this.siteSchema);
+    }
 
     /**
      * Get the course glossary cache key.
@@ -118,12 +148,13 @@ export class AddonModGlossaryProvider {
      * @param  {string}  sort       The direction of the order: ASC or DESC
      * @param  {number}  from       Start returning records from here.
      * @param  {number}  limit      Number of records to return.
-     * @param  {boolean} forceCache True to always get the value from cache, false otherwise. Default false.
+     * @param  {boolean} omitExpires True to always get the value from cache. If data isn't cached, it will call the WS.
+     * @param  {boolean} forceOffline True to always get the value from cache. If data isn't cached, it won't call the WS.
      * @param  {string}  [siteId]   Site ID. If not defined, current site.
      * @return {Promise<any[]>}     Resolved with the entries.
      */
     getEntriesByAuthor(glossaryId: number, letter: string, field: string, sort: string, from: number, limit: number,
-            forceCache: boolean, siteId?: string): Promise<any[]> {
+            omitExpires: boolean, forceOffline: boolean, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 id: glossaryId,
@@ -135,7 +166,8 @@ export class AddonModGlossaryProvider {
             };
             const preSets = {
                 cacheKey: this.getEntriesByAuthorCacheKey(glossaryId, letter, field, sort),
-                omitExpires: forceCache,
+                omitExpires: omitExpires,
+                forceOffline: forceOffline,
                 updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
@@ -165,16 +197,18 @@ export class AddonModGlossaryProvider {
      * Get entries by category.
      *
      * @param  {number} glossaryId  Glossary Id.
-     * @param  {string} categoryId  The category ID. Use constant SHOW_ALL_CATERGORIES for all categories, or
+     * @param  {string} categoryId  The category ID. Use constant SHOW_ALL_CATEGORIES for all categories, or
      *                              constant SHOW_NOT_CATEGORISED for uncategorised entries.
      * @param  {number} from        Start returning records from here.
      * @param  {number} limit       Number of records to return.
-     * @param  {boolean} forceCache True to always get the value from cache, false otherwise. Default false.
+     * @param  {boolean} omitExpires True to always get the value from cache. If data isn't cached, it will call the WS.
+     * @param  {boolean} forceOffline True to always get the value from cache. If data isn't cached, it won't call the WS.
      * @param  {string} [siteId]    Site ID. If not defined, current site.
      * @return {Promise<any[]>}     Resolved with the entries.
      */
-    getEntriesByCategory(glossaryId: number, categoryId: number, from: number, limit: number, forceCache: boolean,
-            siteId?: string): Promise<any[]> {
+    getEntriesByCategory(glossaryId: number, categoryId: number, from: number, limit: number, omitExpires: boolean,
+            forceOffline: boolean, siteId?: string): Promise<any[]> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 id: glossaryId,
@@ -184,7 +218,8 @@ export class AddonModGlossaryProvider {
             };
             const preSets = {
                 cacheKey: this.getEntriesByCategoryCacheKey(glossaryId, categoryId),
-                omitExpires: forceCache,
+                omitExpires: omitExpires,
+                forceOffline: forceOffline,
                 updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
@@ -196,7 +231,7 @@ export class AddonModGlossaryProvider {
      * Invalidate cache of entries by category.
      *
      * @param  {number} glossaryId Glossary Id.
-     * @param  {string} categoryId The category ID. Use constant SHOW_ALL_CATERGORIES for all categories, or
+     * @param  {string} categoryId The category ID. Use constant SHOW_ALL_CATEGORIES for all categories, or
      *                             constant SHOW_NOT_CATEGORISED for uncategorised entries.
      * @param  {string} [siteId]   Site ID. If not defined, current site.
      * @return {Promise<any>}      Resolved when data is invalidated.
@@ -213,7 +248,7 @@ export class AddonModGlossaryProvider {
      * Get the entries by category cache key.
      *
      * @param  {number} glossaryId Glossary Id.
-     * @param  {string} categoryId The category ID. Use constant SHOW_ALL_CATERGORIES for all categories, or
+     * @param  {string} categoryId The category ID. Use constant SHOW_ALL_CATEGORIES for all categories, or
      *                             constant SHOW_NOT_CATEGORISED for uncategorised entries.
      * @return {string}            Cache key.
      */
@@ -241,12 +276,14 @@ export class AddonModGlossaryProvider {
      * @param  {string}  sort       The direction of the order.
      * @param  {number}  from       Start returning records from here.
      * @param  {number}  limit      Number of records to return.
-     * @param  {boolean} forceCache True to always get the value from cache, false otherwise. Default false.
+     * @param  {boolean} omitExpires True to always get the value from cache. If data isn't cached, it will call the WS.
+     * @param  {boolean} forceOffline True to always get the value from cache. If data isn't cached, it won't call the WS.
      * @param  {string}  [siteId]   Site ID. If not defined, current site.
      * @return {Promise<any[]>}     Resolved with the entries.
      */
-    getEntriesByDate(glossaryId: number, order: string, sort: string, from: number, limit: number, forceCache: boolean,
-            siteId?: string): Promise<any[]> {
+    getEntriesByDate(glossaryId: number, order: string, sort: string, from: number, limit: number, omitExpires: boolean,
+            forceOffline: boolean, siteId?: string): Promise<any[]> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 id: glossaryId,
@@ -257,7 +294,8 @@ export class AddonModGlossaryProvider {
             };
             const preSets = {
                 cacheKey: this.getEntriesByDateCacheKey(glossaryId, order, sort),
-                omitExpires: forceCache,
+                omitExpires: omitExpires,
+                forceOffline: forceOffline,
                 updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
@@ -300,12 +338,14 @@ export class AddonModGlossaryProvider {
      * @param  {string}  letter     A letter, or a special keyword.
      * @param  {number}  from       Start returning records from here.
      * @param  {number}  limit      Number of records to return.
-     * @param  {boolean} forceCache True to always get the value from cache, false otherwise. Default false.
+     * @param  {boolean} omitExpires True to always get the value from cache. If data isn't cached, it will call the WS.
+     * @param  {boolean} forceOffline True to always get the value from cache. If data isn't cached, it won't call the WS.
      * @param  {string}  [siteId]   Site ID. If not defined, current site.
-     * @return {Promise<any[]>}     Resolved with the entries.
+     * @return {Promise<any>}     Resolved with the entries.
      */
-    getEntriesByLetter(glossaryId: number, letter: string, from: number, limit: number, forceCache: boolean, siteId?: string):
-            Promise<any[]> {
+    getEntriesByLetter(glossaryId: number, letter: string, from: number, limit: number, omitExpires: boolean, forceOffline: boolean,
+            siteId?: string): Promise<any> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 id: glossaryId,
@@ -315,11 +355,22 @@ export class AddonModGlossaryProvider {
             };
             const preSets = {
                 cacheKey: this.getEntriesByLetterCacheKey(glossaryId, letter),
-                omitExpires: forceCache,
+                omitExpires: omitExpires,
+                forceOffline: forceOffline,
                 updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
-            return site.read('mod_glossary_get_entries_by_letter', params, preSets);
+            return site.read('mod_glossary_get_entries_by_letter', params, preSets).then((result) => {
+
+                if (limit == AddonModGlossaryProvider.LIMIT_ENTRIES) {
+                    // Store entries in background, don't block the user for this.
+                    this.storeEntries(glossaryId, result.entries, from, site.getId()).catch(() => {
+                        // Ignore errors.
+                    });
+                }
+
+                return result;
+            });
         });
     }
 
@@ -364,12 +415,13 @@ export class AddonModGlossaryProvider {
      * @param  {string}  sort       The direction of the order.
      * @param  {number}  from       Start returning records from here.
      * @param  {number}  limit      Number of records to return.
-     * @param  {boolean} forceCache True to always get the value from cache, false otherwise. Default false.
+     * @param  {boolean} omitExpires True to always get the value from cache. If data isn't cached, it will call the WS.
+     * @param  {boolean} forceOffline True to always get the value from cache. If data isn't cached, it won't call the WS.
      * @param  {string}  [siteId]   Site ID. If not defined, current site.
      * @return {Promise<any[]>}     Resolved with the entries.
      */
     getEntriesBySearch(glossaryId: number, query: string, fullSearch: boolean, order: string, sort: string, from: number,
-            limit: number, forceCache: boolean, siteId?: string): Promise<any[]> {
+            limit: number, omitExpires: boolean, forceOffline: boolean, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 id: glossaryId,
@@ -382,7 +434,8 @@ export class AddonModGlossaryProvider {
             };
             const preSets = {
                 cacheKey: this.getEntriesBySearchCacheKey(glossaryId, query, fullSearch, order, sort),
-                omitExpires: forceCache,
+                omitExpires: omitExpires,
+                forceOffline: forceOffline,
                 updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
@@ -497,7 +550,7 @@ export class AddonModGlossaryProvider {
      * @param  {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}    Promise resolved with the entry.
      */
-    getEntry(entryId: number, siteId?: string): Promise<{entry: any, ratinginfo: CoreRatingInfo}> {
+    getEntry(entryId: number, siteId?: string): Promise<{entry: any, ratinginfo: CoreRatingInfo, from?: number}> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 id: entryId
@@ -513,6 +566,74 @@ export class AddonModGlossaryProvider {
                 } else {
                     return Promise.reject(null);
                 }
+            }).catch((error) => {
+                // Entry not found. Search it in the list of entries.
+                let glossaryId;
+
+                const searchEntry = (from: number, loadNext: boolean): Promise<any> => {
+                    // Get the entries from this "page" and check if the entry we're looking for is in it.
+                    return this.getEntriesByLetter(glossaryId, 'ALL', from, AddonModGlossaryProvider.LIMIT_ENTRIES, false, true,
+                            siteId).then((result) => {
+
+                        for (let i = 0; i < result.entries.length; i++) {
+                            const entry = result.entries[i];
+                            if (entry.id == entryId) {
+                                // Entry found, return it.
+                                return {
+                                    entry: entry,
+                                    from: from
+                                };
+                            }
+                        }
+
+                        const nextFrom = from + result.entries.length;
+                        if (nextFrom < result.count && loadNext) {
+                            // Get the next "page".
+                            return searchEntry(nextFrom, true);
+                        }
+
+                        // No more pages and the entry wasn't found. Reject.
+                        return Promise.reject(null);
+                    });
+                };
+
+                return this.getStoredDataForEntry(entryId, site.getId()).then((data) => {
+                    glossaryId = data.glossaryId;
+
+                    if (typeof data.from != 'undefined') {
+                        return searchEntry(data.from, false).catch(() => {
+                            // Entry not found in that page. Search all pages.
+                            return searchEntry(0, true);
+                        });
+                    }
+
+                    // Page not specified, search all pages.
+                    return searchEntry(0, true);
+                }).catch(() => {
+                    return Promise.reject(error);
+                });
+            });
+        });
+    }
+
+    /**
+     * Get a glossary ID and the "from" of a given entry.
+     *
+     * @param {number} entryId Entry ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<number>} Promise resolved with the glossary ID and the "from".
+     */
+    getStoredDataForEntry(entryId: number, siteId?: string): Promise<{glossaryId: number, from: number}> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const conditions = {
+                entryid: entryId
+            };
+
+            return site.getDb().getRecord(AddonModGlossaryProvider.ENTRIES_TABLE, conditions).then((record) => {
+                return {
+                    glossaryId: record.glossaryid,
+                    from: record.pagefrom
+                };
             });
         });
     }
@@ -524,19 +645,21 @@ export class AddonModGlossaryProvider {
      * @param  {any[]}    fetchArguments     Arguments to call the fetching.
      * @param  {number}   [limitFrom=0]      Number of entries already fetched, so fetch will be done from this number.
      * @param  {number}   [limitNum]         Number of records to return. Defaults to LIMIT_ENTRIES.
-     * @param  {boolean}  [forceCache=false] True to always get the value from cache, false otherwise. Default false.
+     * @param  {boolean}  [omitExpires=false] True to always get the value from cache. If data isn't cached, it will call the WS.
+     * @param  {boolean}  [forceOffline=false] True to always get the value from cache. If data isn't cached, it won't call the WS.
      * @param  {string}   [siteId]           Site ID. If not defined, current site.
      * @return {Promise<any>}                Promise resolved with the response.
      */
     fetchEntries(fetchFunction: Function, fetchArguments: any[], limitFrom: number = 0, limitNum?: number,
-            forceCache: boolean = false, siteId?: string): Promise<any> {
+            omitExpires: boolean = false, forceOffline: boolean = false, siteId?: string): Promise<any> {
         limitNum = limitNum || AddonModGlossaryProvider.LIMIT_ENTRIES;
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const args = fetchArguments.slice();
         args.push(limitFrom);
         args.push(limitNum);
-        args.push(forceCache);
+        args.push(omitExpires);
+        args.push(forceOffline);
         args.push(siteId);
 
         return fetchFunction.apply(this, args);
@@ -547,18 +670,21 @@ export class AddonModGlossaryProvider {
      *
      * @param  {Function} fetchFunction      Function to fetch.
      * @param  {any[]}    fetchArguments     Arguments to call the fetching.
-     * @param  {boolean}  [forceCache=false] True to always get the value from cache, false otherwise. Default false.
+     * @param  {boolean}  [omitExpires=false] True to always get the value from cache. If data isn't cached, it will call the WS.
+     * @param  {boolean}  [forceOffline=false] True to always get the value from cache. If data isn't cached, it won't call the WS.
      * @param  {string}   [siteId]           Site ID. If not defined, current site.
      * @return {Promise<any[]>}              Promise resolved with all entrries.
      */
-    fetchAllEntries(fetchFunction: Function, fetchArguments: any[], forceCache: boolean = false, siteId?: string): Promise<any[]> {
+    fetchAllEntries(fetchFunction: Function, fetchArguments: any[], omitExpires: boolean = false, forceOffline: boolean = false,
+            siteId?: string): Promise<any[]> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const entries = [];
         const limitNum = AddonModGlossaryProvider.LIMIT_ENTRIES;
 
         const fetchMoreEntries = (): Promise<any[]> => {
-            return this.fetchEntries(fetchFunction, fetchArguments, entries.length, limitNum, forceCache, siteId).then((result) => {
+            return this.fetchEntries(fetchFunction, fetchArguments, entries.length, limitNum, omitExpires, forceOffline, siteId)
+                    .then((result) => {
                 Array.prototype.push.apply(entries, result.entries);
 
                 return entries.length < result.count ? fetchMoreEntries() : entries;
@@ -633,7 +759,8 @@ export class AddonModGlossaryProvider {
         const promises = [];
 
         if (!onlyEntriesList) {
-            promises.push(this.fetchAllEntries(this.getEntriesByLetter, [glossary.id, 'ALL'], true, siteId).then((entries) => {
+            promises.push(this.fetchAllEntries(this.getEntriesByLetter, [glossary.id, 'ALL'], true, false, siteId)
+                    .then((entries) => {
                 return this.invalidateEntries(entries, siteId);
             }));
         }
@@ -644,7 +771,7 @@ export class AddonModGlossaryProvider {
                     promises.push(this.invalidateEntriesByLetter(glossary.id, 'ALL', siteId));
                     break;
                 case 'cat':
-                    promises.push(this.invalidateEntriesByCategory(glossary.id, AddonModGlossaryProvider.SHOW_ALL_CATERGORIES,
+                    promises.push(this.invalidateEntriesByCategory(glossary.id, AddonModGlossaryProvider.SHOW_ALL_CATEGORIES,
                             siteId));
                     break;
                 case 'date':
@@ -850,7 +977,7 @@ export class AddonModGlossaryProvider {
 
             // If we get here, there's no offline entry with this name, check online.
             // Get entries from the cache.
-            return this.fetchAllEntries(this.getEntriesByLetter, [glossaryId, 'ALL'], true, siteId).then((entries) => {
+            return this.fetchAllEntries(this.getEntriesByLetter, [glossaryId, 'ALL'], true, false, siteId).then((entries) => {
                 // Check if there's any entry with the same concept.
                 return entries.some((entry) => entry.concept == concept);
             });
@@ -905,5 +1032,45 @@ export class AddonModGlossaryProvider {
 
         return this.logHelper.logSingle('mod_glossary_view_entry', params, AddonModGlossaryProvider.COMPONENT, glossaryId, name,
                 'glossary', {entryid: entryId}, siteId);
+    }
+
+    /**
+     * Store several entries so we can determine their glossaryId in offline.
+     *
+     * @param {number} glossaryId Glossary ID the entries belongs to.
+     * @param {any[]} entries Entries.
+     * @param {number} from The "page" the entries belong to.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected storeEntries(glossaryId: number, entries: any[], from: number, siteId?: string): Promise<any> {
+        const promises = [];
+
+        entries.forEach((entry) => {
+            promises.push(this.storeEntryId(glossaryId, entry.id, from, siteId));
+        });
+
+        return Promise.all(promises);
+    }
+
+    /**
+     * Store an entry so we can determine its glossaryId in offline.
+     *
+     * @param {number} glossaryId Glossary ID the entry belongs to.
+     * @param {number} entryId Entry ID.
+     * @param {number} from The "page" the entry belongs to.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected storeEntryId(glossaryId: number, entryId: number, from: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const entry = {
+                entryid: entryId,
+                glossaryid: glossaryId,
+                pagefrom: from
+            };
+
+            return site.getDb().insertRecord(AddonModGlossaryProvider.ENTRIES_TABLE, entry);
+        });
     }
 }

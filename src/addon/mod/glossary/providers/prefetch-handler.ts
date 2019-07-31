@@ -139,17 +139,17 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
                         break;
                     case 'cat': // Not implemented.
                         promises.push(this.glossaryProvider.fetchAllEntries(this.glossaryProvider.getEntriesByCategory,
-                            [glossary.id, AddonModGlossaryProvider.SHOW_ALL_CATERGORIES], false, siteId));
+                            [glossary.id, AddonModGlossaryProvider.SHOW_ALL_CATEGORIES], false, false, siteId));
                         break;
                     case 'date':
                         promises.push(this.glossaryProvider.fetchAllEntries(this.glossaryProvider.getEntriesByDate,
-                            [glossary.id, 'CREATION', 'DESC'], false, siteId));
+                            [glossary.id, 'CREATION', 'DESC'], false, false, siteId));
                         promises.push(this.glossaryProvider.fetchAllEntries(this.glossaryProvider.getEntriesByDate,
-                            [glossary.id, 'UPDATE', 'DESC'], false, siteId));
+                            [glossary.id, 'UPDATE', 'DESC'], false, false, siteId));
                         break;
                     case 'author':
                         promises.push(this.glossaryProvider.fetchAllEntries(this.glossaryProvider.getEntriesByAuthor,
-                            [glossary.id, 'ALL', 'LASTNAME', 'ASC'], false, siteId));
+                            [glossary.id, 'ALL', 'LASTNAME', 'ASC'], false, false, siteId));
                         break;
                     default:
                 }
@@ -157,13 +157,12 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
 
             // Fetch all entries to get information from.
             promises.push(this.glossaryProvider.fetchAllEntries(this.glossaryProvider.getEntriesByLetter,
-                    [glossary.id, 'ALL'], false, siteId).then((entries) => {
+                    [glossary.id, 'ALL'], false, false, siteId).then((entries) => {
                 const promises = [];
                 const avatars = {}; // List of user avatars, preventing duplicates.
 
                 entries.forEach((entry) => {
-                    // Fetch individual entries.
-                    promises.push(this.glossaryProvider.getEntry(entry.id, siteId));
+                    // Don't fetch individual entries, it's too many WS calls.
 
                     if (entry.userpictureurl) {
                         avatars[entry.userpictureurl] = true;
@@ -179,6 +178,10 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
 
                 return Promise.all(promises);
             }));
+
+            // Prefetch data for link handlers.
+            promises.push(this.courseProvider.getModuleBasicInfo(module.id, siteId));
+            promises.push(this.courseProvider.getModuleBasicInfoByInstance(glossary.id, 'glossary', siteId));
 
             return Promise.all(promises);
         });
