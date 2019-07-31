@@ -45,7 +45,7 @@
 
 <ng-template #basicInfo>
     <ion-list *ngIf="access.canviewanalysis && !access.isempty">
-        <ion-item text-wrap *ngIf="access.canedititems && (groupInfo.separateGroups || groupInfo.visibleGroups)">
+        <ion-item text-wrap *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
             <ion-label id="addon-feedback-groupslabel" *ngIf="groupInfo.separateGroups">{{ 'core.groupsseparate' | translate }}</ion-label>
             <ion-label id="addon-feedback-groupslabel" *ngIf="groupInfo.visibleGroups">{{ 'core.groupsvisible' | translate }}</ion-label>
             <ion-select [(ngModel)]="group" (ionChange)="setGroup(group)" aria-labelledby="addon-feedback-groupslabel" interface="action-sheet">
