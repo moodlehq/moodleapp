@@ -184,6 +184,8 @@ export const CORE_PROVIDERS: any[] = [
     CoreCustomURLSchemesProvider
 ];
 
+export const WP_PROVIDER: any = null;
+
 @NgModule({
     declarations: [
         MoodleMobileApp
