@@ -34,4 +34,11 @@
         </ion-label>
         <ion-toggle [(ngModel)]="debugDisplay" (ngModelChange)="debugDisplayChanged()"></ion-toggle>
     </ion-item>
+    <ion-item text-wrap *ngIf="analyticsSupported">
+        <ion-label>
+            <h2>{{ 'core.settings.enablefirebaseanalytics' | translate }}</h2>
+            <p>{{ 'core.settings.enablefirebaseanalyticsdescription' | translate }}</p>
+        </ion-label>
+        <ion-toggle [(ngModel)]="analyticsEnabled" (ngModelChange)="analyticsEnabledChanged()"></ion-toggle>
+    </ion-item>
 </ion-content>

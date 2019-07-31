@@ -22,6 +22,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreLangProvider } from '@providers/lang';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
+import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 import { CoreConfigConstants } from '../../../../configconstants';
 
 /**
@@ -41,10 +42,12 @@ export class CoreSettingsGeneralPage {
     rteSupported: boolean;
     richTextEditor: boolean;
     debugDisplay: boolean;
+    analyticsSupported: boolean;
+    analyticsEnabled: boolean;
 
     constructor(appProvider: CoreAppProvider, private configProvider: CoreConfigProvider, fileProvider: CoreFileProvider,
             private eventsProvider: CoreEventsProvider, private langProvider: CoreLangProvider,
-            private domUtils: CoreDomUtilsProvider,
+            private domUtils: CoreDomUtilsProvider, private pushNotificationsProvider: CorePushNotificationsProvider,
             localNotificationsProvider: CoreLocalNotificationsProvider) {
 
         // Get the supported languages.
@@ -93,6 +96,13 @@ export class CoreSettingsGeneralPage {
         this.configProvider.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false).then((debugDisplay) => {
             this.debugDisplay = !!debugDisplay;
         });
+
+        this.analyticsSupported = CoreConfigConstants.enableanalytics;
+        if (this.analyticsSupported) {
+            this.configProvider.get(CoreConstants.SETTINGS_ANALYTICS_ENABLED, true).then((enabled) => {
+                this.analyticsEnabled = !!enabled;
+            });
+        }
     }
 
     @ViewChild(Segment)
@@ -133,5 +143,14 @@ export class CoreSettingsGeneralPage {
     debugDisplayChanged(): void {
         this.configProvider.set(CoreConstants.SETTINGS_DEBUG_DISPLAY, this.debugDisplay ? 1 : 0);
         this.domUtils.setDebugDisplay(this.debugDisplay);
+    }
+
+    /**
+     * Called when the analytics setting is enabled or disabled.
+     */
+    analyticsEnabledChanged(): void {
+        this.pushNotificationsProvider.enableAnalytics(this.analyticsEnabled).then(() => {
+            this.configProvider.set(CoreConstants.SETTINGS_ANALYTICS_ENABLED, this.analyticsEnabled ? 1 : 0);
+        });
     }
 }
