@@ -1,0 +1,74 @@
+$core-side-blocks-max-width: 320px;
+$core-side-blocks-min-width: 30%;
+
+.core-course-block-with-blocks > .scroll-content {
+    overflow-y: visible;
+}
+
+ion-app.app-root core-block-course-blocks {
+
+    &.core-no-blocks {
+        .core-course-blocks-content > ion-content {
+            height: auto;
+            contain: content;
+
+            > .scroll-content {
+                overflow-y: visible;
+                position: relative;
+                contain: content;
+            }
+        }
+    }
+
+    &.core-has-blocks {
+        @include media-breakpoint-up(md) {
+            @include position(0, 0, 0, 0);
+
+            position: absolute;
+
+            display: flex;
+
+            flex-direction: row;
+            flex-wrap: nowrap;
+
+            contain: strict;
+
+            .core-course-blocks-content {
+                min-width: calc(100% - #{($core-side-blocks-max-width)});
+                max-width: calc(100% - #{($core-side-blocks-min-width)});
+                z-index: 0;
+                flex: 1;
+                box-shadow: none !important;
+            }
+
+            ion-content.core-course-blocks-side {
+                transform: none !important;
+                position: sticky;
+                @include position(0, 0, 0, auto);
+                z-index: 30;
+                max-width: $core-side-blocks-max-width;
+                min-width: $core-side-blocks-min-width;
+                @include border-start(1px, solid, $list-md-border-color);
+            }
+        }
+
+        @include media-breakpoint-down(sm) {
+            // Disable scroll on individual columns.
+            .core-course-blocks-content > ion-content,
+            ion-content.core-course-blocks-side {
+                height: auto;
+                contain: content;
+
+                &.core-hide-blocks {
+                    display: none;
+                }
+
+                > .scroll-content {
+                    overflow-y: visible;
+                    position: relative;
+                    contain: content;
+                }
+            }
+        }
+    }
+}

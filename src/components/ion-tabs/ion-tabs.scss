@@ -23,6 +23,12 @@ ion-app.app-root core-ion-tabs {
         background-color: $ion-tabs-badge-color;
     }
 
+    &[tabsplacement="bottom"] {
+        .ion-page > ion-content > .scroll-content {
+            margin-bottom: $navbar-md-height !important;
+        }
+    }
+
     &[tabsplacement="side"] {
         .tabbar {
             @include float(start);
@@ -52,6 +58,10 @@ ion-app.app-root core-ion-tabs {
                 @include position(0, 0, 0, $core-sidetab-size);
                 position: relative;
             }
+        }
+
+        .scroll-content, .fixed-content {
+            margin-bottom: 0 !important;
         }
     }
 }
