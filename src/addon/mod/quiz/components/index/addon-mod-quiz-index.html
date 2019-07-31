@@ -90,7 +90,7 @@
             <ion-item text-wrap class="core-danger-item" *ngIf="quiz.hasquestions === 0">
                 <p>{{ 'addon.mod_quiz.noquestions' | translate }}</p>
             </ion-item>
-            <ion-item text-wrap class="core-danger-item" *ngIf="unsupportedQuestions && unsupportedQuestions.length">
+            <ion-item text-wrap class="core-danger-item" *ngIf="!hasSupportedQuestions && unsupportedQuestions && unsupportedQuestions.length">
                 <p>{{ 'addon.mod_quiz.errorquestionsnotsupported' | translate }}</p>
                 <p *ngFor="let type of unsupportedQuestions">{{ type }}</p>
             </ion-item>
@@ -109,6 +109,13 @@
                 {{ 'core.hasdatatosync' | translate: {$a: moduleName} }}
             </div>
 
+            <!-- Other warnings. -->
+            <ion-item text-wrap class="core-warning-item" *ngIf="hasSupportedQuestions && unsupportedQuestions && unsupportedQuestions.length">
+                <p>{{ 'addon.mod_quiz.canattemptbutnotsubmit' | translate }}</p>
+                <p>{{ 'addon.mod_quiz.warningquestionsnotsupported' | translate }}</p>
+                <p *ngFor="let type of unsupportedQuestions">{{ type }}</p>
+            </ion-item>
+
             <!-- Button to start/continue. -->
             <ion-item *ngIf="buttonText && !showStatusSpinner">
                 <button ion-button block (click)="attemptQuiz()">
@@ -117,7 +124,7 @@
             </ion-item>
 
             <!-- Button to open in browser if it cannot be attempted in the app. -->
-            <ion-item *ngIf="!buttonText && ((unsupportedQuestions && unsupportedQuestions.length) || (unsupportedRules && unsupportedRules.length) || behaviourSupported === false)">
+            <ion-item *ngIf="!buttonText && ((!hasSupportedQuestions && unsupportedQuestions && unsupportedQuestions.length) || (unsupportedRules && unsupportedRules.length) || behaviourSupported === false)">
                 <a ion-button block [href]="externalUrl" core-link icon-end>
                     {{ 'core.openinbrowser' | translate }}
                     <ion-icon name="open"></ion-icon>

@@ -649,10 +649,18 @@ export class AddonModQuizProvider {
         const messages = [];
 
         questions.forEach((question) => {
-            let message = this.questionDelegate.getPreventSubmitMessage(question);
-            if (message) {
-                message = this.translate.instant(message);
-                messages.push(this.translate.instant('core.question.questionmessage', {$a: question.slot, $b: message}));
+            if (question.type != 'random' && !this.questionDelegate.isQuestionSupported(question.type)) {
+                // The question isn't supported.
+                messages.push(this.translate.instant('core.question.questionmessage', {
+                    $a: question.slot,
+                    $b: this.translate.instant('core.question.errorquestionnotsupported', {$a: question.type})
+                }));
+            } else {
+                let message = this.questionDelegate.getPreventSubmitMessage(question);
+                if (message) {
+                    message = this.translate.instant(message);
+                    messages.push(this.translate.instant('core.question.questionmessage', {$a: question.slot, $b: message}));
+                }
             }
         });
 
