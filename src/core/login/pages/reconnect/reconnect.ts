@@ -103,7 +103,9 @@ export class CoreLoginReconnectPage {
      * Cancel reconnect.
      */
     cancel(): void {
-        this.sitesProvider.logout().finally(() => {
+        this.sitesProvider.logout().catch(() => {
+            // Ignore errors (shouldn't happen).
+        }).finally(() => {
             this.navCtrl.setRoot('CoreLoginSitesPage');
         });
     }
@@ -149,13 +151,22 @@ export class CoreLoginReconnectPage {
                     // Go to the site initial page.
                     return this.loginHelper.goToSiteInitialPage(this.navCtrl, this.pageName, this.pageParams);
                 }).catch((error) => {
+                    if (error.loggedout) {
+                        this.loginHelper.treatUserTokenError(siteUrl, error, username, password);
+                    } else {
+                        this.domUtils.showErrorModalDefault(error, 'core.login.errorupdatesite', true);
+                    }
+
                     // Error, go back to login page.
-                    this.domUtils.showErrorModalDefault(error, 'core.login.errorupdatesite', true);
                     this.cancel();
                 });
             });
         }).catch((error) => {
             this.loginHelper.treatUserTokenError(siteUrl, error, username, password);
+
+            if (error.loggedout) {
+                this.cancel();
+            }
         }).finally(() => {
             modal.dismiss();
         });

@@ -95,10 +95,16 @@ export class CoreLoginSitePage {
                 return this.sitesProvider.newSite(data.siteUrl, data.token, data.privateToken).then(() => {
                     return this.loginHelper.goToSiteInitialPage();
                 }, (error) => {
-                    this.domUtils.showErrorModal(error);
+                    this.loginHelper.treatUserTokenError(siteData.url, error, siteData.username, siteData.password);
+                    if (error.loggedout) {
+                        this.navCtrl.setRoot('CoreLoginSitesPage');
+                    }
                 });
             }, (error) => {
                 this.loginHelper.treatUserTokenError(siteData.url, error, siteData.username, siteData.password);
+                if (error.loggedout) {
+                    this.navCtrl.setRoot('CoreLoginSitesPage');
+                }
             }).finally(() => {
                 modal.dismiss();
             });

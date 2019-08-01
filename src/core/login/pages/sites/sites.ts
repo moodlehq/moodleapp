@@ -46,6 +46,10 @@ export class CoreLoginSitesPage {
      */
     ionViewDidLoad(): void {
         this.sitesProvider.getSortedSites().then((sites) => {
+            if (sites.length == 0) {
+                this.loginHelper.goToAddSite(true);
+            }
+
             // Remove protocol from the url to show more url text.
             this.sites = sites.map((site) => {
                 site.siteUrl = site.siteUrl.replace(/^https?:\/\//, '');
