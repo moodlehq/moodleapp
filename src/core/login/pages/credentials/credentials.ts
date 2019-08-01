@@ -220,6 +220,9 @@ export class CoreLoginCredentialsPage {
             });
         }).catch((error) => {
             this.loginHelper.treatUserTokenError(siteUrl, error, username, password);
+            if (error.loggedout) {
+                this.navCtrl.setRoot('CoreLoginSitesPage');
+            }
         }).finally(() => {
             modal.dismiss();
         });

@@ -715,7 +715,8 @@ export class CoreSitesProvider {
         return promise.then(() => {
            return Promise.reject({
                 error: this.translate.instant(errorKey, errorKeyParams) + errorExtra,
-                errorcode: errorCode
+                errorcode: errorCode,
+                loggedout: true
             });
         });
     }
