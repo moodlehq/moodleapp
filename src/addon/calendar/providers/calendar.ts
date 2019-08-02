@@ -998,7 +998,7 @@ export class AddonCalendarProvider {
             return site.read('core_calendar_get_calendar_day_view', data, preSets).then((response) => {
                 this.storeEventsInLocalDB(response.events, siteId);
 
-                return response.events;
+                return response;
             });
         });
     }
