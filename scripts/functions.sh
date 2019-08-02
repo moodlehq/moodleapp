@@ -21,16 +21,19 @@ function print_success {
 
 function print_error {
     tput setaf 1; echo "  ERROR:  $1"
+    tput setaf 0
 }
 
 function print_ok {
     tput setaf 2; echo "     OK:  $1"
     echo
+    tput setaf 0
 }
 
 function print_message {
     tput setaf 3; echo "--------  $1"
     echo
+    tput setaf 0
 }
 
 function print_title {
@@ -38,4 +41,5 @@ function print_title {
     echo
     tput setaf 5; echo "$stepnumber $1"
     tput setaf 5; echo '=================='
+    tput setaf 0
 }

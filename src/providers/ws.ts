@@ -116,6 +116,91 @@ export interface CoreWSFileUploadOptions extends FileUploadOptions {
     itemId?: number;
 }
 
+
+/**
+ * Structure of warnings returned by WS.
+ */
+export type CoreWSExternalWarning = {
+    /**
+     * Item.
+     * @type {string}
+     */
+    item?: string;
+
+    /**
+     * Item id.
+     * @type {number}
+     */
+    itemid?: number;
+
+    /**
+     * The warning code can be used by the client app to implement specific behaviour.
+     * @type {string}
+     */
+    warningcode: string;
+
+    /**
+     * Untranslated english message to explain the warning.
+     * @type {string}
+     */
+    message: string;
+
+};
+
+/**
+ * Structure of files returned by WS.
+ */
+export type CoreWSExternalFile = {
+    /**
+     * File name.
+     * @type {string}
+     */
+    filename?: string;
+
+    /**
+     * File path.
+     * @type {string}
+     */
+    filepath?: string;
+
+    /**
+     * File size.
+     * @type {number}
+     */
+    filesize?: number;
+
+    /**
+     * Downloadable file url.
+     * @type {string}
+     */
+    fileurl?: string;
+
+    /**
+     * Time modified.
+     * @type {number}
+     */
+    timemodified?: number;
+
+    /**
+     * File mime type.
+     * @type {string}
+     */
+    mimetype?: string;
+
+    /**
+     * Whether is an external file.
+     * @type {number}
+     */
+    isexternalfile?: number;
+
+    /**
+     * The repository type for external files.
+     * @type {string}
+     */
+    repositorytype?: string;
+
+};
+
 /**
  * This service allows performing WS calls and download/upload files.
  */
