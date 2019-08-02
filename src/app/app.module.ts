@@ -81,6 +81,7 @@ import { CoreQuestionModule } from '@core/question/question.module';
 import { CoreCommentsModule } from '@core/comments/comments.module';
 import { CoreBlockModule } from '@core/block/block.module';
 import { CoreRatingModule } from '@core/rating/rating.module';
+import { CoreTagModule } from '@core/tag/tag.module';
 
 // Addon modules.
 import { AddonBadgesModule } from '@addon/badges/badges.module';
@@ -225,6 +226,7 @@ export const WP_PROVIDER: any = null;
         CoreBlockModule,
         CoreRatingModule,
         CorePushNotificationsModule,
+        CoreTagModule,
         AddonBadgesModule,
         AddonBlogModule,
         AddonCalendarModule,

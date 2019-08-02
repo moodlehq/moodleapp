@@ -23,6 +23,7 @@ import { AddonModWikiOfflineProvider } from '../../providers/wiki-offline';
 import { AddonModWikiSyncProvider } from '../../providers/wiki-sync';
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { AddonModWikiSubwikiPickerComponent } from '../../components/subwiki-picker/subwiki-picker';
+import { CoreTagProvider } from '@core/tag/providers/tag';
 
 /**
  * Component that displays a wiki entry page.
@@ -64,6 +65,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         subwikis: [],
         count: 0
     };
+    tagsEnabled: boolean;
 
     protected syncEventName = AddonModWikiSyncProvider.AUTO_SYNCED;
     protected currentSubwiki: any; // Current selected subwiki.
@@ -81,10 +83,12 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     constructor(injector: Injector, protected wikiProvider: AddonModWikiProvider, @Optional() protected content: Content,
             protected wikiOffline: AddonModWikiOfflineProvider, protected wikiSync: AddonModWikiSyncProvider,
             protected navCtrl: NavController, protected utils: CoreUtilsProvider, protected groupsProvider: CoreGroupsProvider,
-            protected userProvider: CoreUserProvider, private popoverCtrl: PopoverController) {
+            protected userProvider: CoreUserProvider, private popoverCtrl: PopoverController,
+            private tagProvider: CoreTagProvider) {
         super(injector, content);
 
         this.pageStr = this.translate.instant('addon.mod_wiki.wikipage');
+        this.tagsEnabled = this.tagProvider.areTagsAvailableInSite();
     }
 
     /**

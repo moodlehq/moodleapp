@@ -1,5 +1,6 @@
 {
     "errorchapter": "Error reading chapter of book.",
     "modulenameplural": "Books",
+    "tagarea_book_chapters": "Book chapters",
     "toc": "Table of contents"
 }

@@ -19,6 +19,7 @@ import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
 import { CoreRatingComponentsModule } from '@core/rating/components/components.module';
+import { CoreTagComponentsModule } from '@core/tag/components/components.module';
 import { AddonModGlossaryEntryPage } from './entry';
 
 @NgModule({
@@ -31,7 +32,8 @@ import { AddonModGlossaryEntryPage } from './entry';
         CorePipesModule,
         IonicPageModule.forChild(AddonModGlossaryEntryPage),
         TranslateModule.forChild(),
-        CoreRatingComponentsModule
+        CoreRatingComponentsModule,
+        CoreTagComponentsModule
     ],
 })
 export class AddonModForumDiscussionPageModule {}

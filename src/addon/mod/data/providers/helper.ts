@@ -367,6 +367,7 @@ export class AddonModDataHelperProvider {
             userpicture: true,
             timeadded: true,
             timemodified: true,
+            tags: true,
 
             edit: record.canmanageentry && !record.deleted, // This already checks capabilities and readonly period.
             delete: record.canmanageentry,
@@ -377,7 +378,6 @@ export class AddonModDataHelperProvider {
             comments: database.comments,
 
             // Unsupported actions.
-            tags: false,
             delcheck: false,
             export: false
         };

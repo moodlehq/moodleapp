@@ -394,7 +394,7 @@ export class CoreFormatTextDirective implements OnChanges {
             anchors.forEach((anchor) => {
                 // Angular 2 doesn't let adding directives dynamically. Create the CoreLinkDirective manually.
                 const linkDir = new CoreLinkDirective(anchor, this.domUtils, this.utils, this.sitesProvider, this.urlUtils,
-                    this.contentLinksHelper, this.navCtrl, this.content, this.svComponent);
+                    this.contentLinksHelper, this.navCtrl, this.content, this.svComponent, this.textUtils);
                 linkDir.capture = true;
                 linkDir.ngOnInit();
 

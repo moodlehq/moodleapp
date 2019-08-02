@@ -33,6 +33,8 @@ import { AddonModDataSyncCronHandler } from './providers/sync-cron-handler';
 import { AddonModDataOfflineProvider } from './providers/offline';
 import { AddonModDataFieldsDelegate } from './providers/fields-delegate';
 import { AddonModDataDefaultFieldHandler } from './providers/default-field-handler';
+import { CoreTagAreaDelegate } from '@core/tag/providers/area-delegate';
+import { AddonModDataTagAreaHandler } from './providers/tag-area-handler';
 import { AddonModDataFieldModule } from './fields/field.module';
 import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
@@ -67,7 +69,8 @@ export const ADDON_MOD_DATA_PROVIDERS: any[] = [
         AddonModDataEditLinkHandler,
         AddonModDataListLinkHandler,
         AddonModDataSyncCronHandler,
-        AddonModDataDefaultFieldHandler
+        AddonModDataDefaultFieldHandler,
+        AddonModDataTagAreaHandler
     ]
 })
 export class AddonModDataModule {
@@ -77,7 +80,8 @@ export class AddonModDataModule {
             cronDelegate: CoreCronDelegate, syncHandler: AddonModDataSyncCronHandler, updateManager: CoreUpdateManagerProvider,
             approveLinkHandler: AddonModDataApproveLinkHandler, deleteLinkHandler: AddonModDataDeleteLinkHandler,
             showLinkHandler: AddonModDataShowLinkHandler, editLinkHandler: AddonModDataEditLinkHandler,
-            listLinkHandler: AddonModDataListLinkHandler) {
+            listLinkHandler: AddonModDataListLinkHandler, tagAreaDelegate: CoreTagAreaDelegate,
+            tagAreaHandler: AddonModDataTagAreaHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
@@ -88,6 +92,7 @@ export class AddonModDataModule {
         contentLinksDelegate.registerHandler(editLinkHandler);
         contentLinksDelegate.registerHandler(listLinkHandler);
         cronDelegate.register(syncHandler);
+        tagAreaDelegate.registerHandler(tagAreaHandler);
 
         // Allow migrating the tables from the old app to the new schema.
         updateManager.registerSiteTableMigration({

@@ -28,6 +28,7 @@ import { AddonModDataHelperProvider } from '../../providers/helper';
 import { AddonModDataOfflineProvider } from '../../providers/offline';
 import { AddonModDataFieldsDelegate } from '../../providers/fields-delegate';
 import { AddonModDataComponentsModule } from '../../components/components.module';
+import { CoreTagProvider } from '@core/tag/providers/tag';
 
 /**
  * Page that displays the view edit page.
@@ -68,7 +69,8 @@ export class AddonModDataEditPage {
             protected courseProvider: CoreCourseProvider, protected dataProvider: AddonModDataProvider,
             protected dataOffline: AddonModDataOfflineProvider, protected dataHelper: AddonModDataHelperProvider,
             sitesProvider: CoreSitesProvider, protected navCtrl: NavController, protected translate: TranslateService,
-            protected eventsProvider: CoreEventsProvider, protected fileUploaderProvider: CoreFileUploaderProvider) {
+            protected eventsProvider: CoreEventsProvider, protected fileUploaderProvider: CoreFileUploaderProvider,
+            private tagProvider: CoreTagProvider) {
         this.module = params.get('module') || {};
         this.entryId = params.get('entryId') || null;
         this.courseId = params.get('courseId');
@@ -301,6 +303,11 @@ export class AddonModDataEditPage {
 
             template = template.replace(replace, 'field_' + field.id);
         });
+
+        // Editing tags is not supported.
+        replace = new RegExp('##tags##', 'gi');
+        const message = '<p class="item-dimmed">{{ \'addon.mod_data.edittagsnotsupported\' | translate }}</p>';
+        template = template.replace(replace, this.tagProvider.areTagsAvailableInSite() ? message : '');
 
         return template;
     }

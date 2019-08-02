@@ -1,0 +1,24 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'core.tag.tag' | translate }}: {{ tagName }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<core-split-view>
+    <ion-content>
+        <ion-refresher [enabled]="loaded" (ionRefresh)="refreshData($event)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+        <core-loading [hideUntil]="loaded">
+            <ion-list>
+                <ion-item text-wrap *ngIf="hasUnsupportedAreas" class="core-warning-item">
+                    <ion-icon item-start name="warning" color="warning"></ion-icon>
+                    {{ 'core.tag.warningareasnotsupported' | translate }}
+                </ion-item>
+                <a ion-item text-wrap *ngFor="let area of areas" [title]="area.nameKey | translate" (click)="openArea(area)" [class.core-split-item-selected]="area.id == selectedAreaId">
+                    <h2>{{ area.nameKey | translate }}</h2>
+                    <ion-badge item-end *ngIf="area.badge">{{ area.badge }}</ion-badge>
+                </a>
+            </ion-list>
+        </core-loading>
+    </ion-content>
+</core-split-view>

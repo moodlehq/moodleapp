@@ -18,6 +18,7 @@ import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreUserParticipantsComponent } from './participants/participants';
 import { CoreUserProfileFieldComponent } from './user-profile-field/user-profile-field';
+import { CoreUserTagAreaComponent } from './tag-area/tag-area';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
@@ -25,7 +26,8 @@ import { CorePipesModule } from '@pipes/pipes.module';
 @NgModule({
     declarations: [
         CoreUserParticipantsComponent,
-        CoreUserProfileFieldComponent
+        CoreUserProfileFieldComponent,
+        CoreUserTagAreaComponent
     ],
     imports: [
         CommonModule,
@@ -39,10 +41,12 @@ import { CorePipesModule } from '@pipes/pipes.module';
     ],
     exports: [
         CoreUserParticipantsComponent,
-        CoreUserProfileFieldComponent
+        CoreUserProfileFieldComponent,
+        CoreUserTagAreaComponent
     ],
     entryComponents: [
-        CoreUserParticipantsComponent
+        CoreUserParticipantsComponent,
+        CoreUserTagAreaComponent
     ]
 })
 export class CoreUserComponentsModule {}

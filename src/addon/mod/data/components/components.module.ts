@@ -25,6 +25,7 @@ import { AddonModDataFieldPluginComponent } from './field-plugin/field-plugin';
 import { AddonModDataActionComponent } from './action/action';
 import { CoreCompileHtmlComponentModule } from '@core/compile/components/compile-html/compile-html.module';
 import { CoreCommentsComponentsModule } from '@core/comments/components/components.module';
+import { CoreTagComponentsModule } from '@core/tag/components/components.module';
 
 @NgModule({
     declarations: [
@@ -41,7 +42,8 @@ import { CoreCommentsComponentsModule } from '@core/comments/components/componen
         CorePipesModule,
         CoreCourseComponentsModule,
         CoreCompileHtmlComponentModule,
-        CoreCommentsComponentsModule
+        CoreCommentsComponentsModule,
+        CoreTagComponentsModule
     ],
     providers: [
     ],

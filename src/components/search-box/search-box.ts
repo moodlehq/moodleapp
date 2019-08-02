@@ -39,6 +39,7 @@ export class CoreSearchBoxComponent implements OnInit {
     @Input() lengthCheck = 3; // Check value length before submit. If 0, any string will be submitted.
     @Input() showClear = true; // Show/hide clear button.
     @Input() disabled = false; // Disables the input text.
+    @Input() initialSearch: string; // Initial search text.
     @Output() onSubmit: EventEmitter<string>; // Send data when submitting the search form.
     @Output() onClear: EventEmitter<void>; // Send event when clearing the search form.
 
@@ -55,6 +56,7 @@ export class CoreSearchBoxComponent implements OnInit {
         this.placeholder = this.placeholder || this.translate.instant('core.search');
         this.spellcheck = this.utils.isTrueOrOne(this.spellcheck);
         this.showClear = this.utils.isTrueOrOne(this.showClear);
+        this.searchText = this.initialSearch || '';
     }
 
     /**

@@ -16,6 +16,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreRatingInfo } from '@core/rating/providers/rating';
+import { CoreTagProvider } from '@core/tag/providers/tag';
 import { AddonModGlossaryProvider } from '../../providers/glossary';
 
 /**
@@ -35,15 +36,18 @@ export class AddonModGlossaryEntryPage {
     showAuthor = false;
     showDate = false;
     ratingInfo: CoreRatingInfo;
+    tagsEnabled: boolean;
 
     protected courseId: number;
     protected entryId: number;
 
     constructor(navParams: NavParams,
             private domUtils: CoreDomUtilsProvider,
-            private glossaryProvider: AddonModGlossaryProvider) {
+            private glossaryProvider: AddonModGlossaryProvider,
+            private tagProvider: CoreTagProvider) {
         this.courseId = navParams.get('courseId');
         this.entryId = navParams.get('entryId');
+        this.tagsEnabled = this.tagProvider.areTagsAvailableInSite();
     }
 
     /**

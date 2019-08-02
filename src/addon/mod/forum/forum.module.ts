@@ -18,6 +18,7 @@ import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers/delegate';
+import { CoreTagAreaDelegate } from '@core/tag/providers/area-delegate';
 import { AddonModForumProvider } from './providers/forum';
 import { AddonModForumOfflineProvider } from './providers/offline';
 import { AddonModForumHelperProvider } from './providers/helper';
@@ -30,6 +31,7 @@ import { AddonModForumDiscussionLinkHandler } from './providers/discussion-link-
 import { AddonModForumListLinkHandler } from './providers/list-link-handler';
 import { AddonModForumPostLinkHandler } from './providers/post-link-handler';
 import { AddonModForumPushClickHandler } from './providers/push-click-handler';
+import { AddonModForumTagAreaHandler } from './providers/tag-area-handler';
 import { AddonModForumComponentsModule } from './components/components.module';
 import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
@@ -59,7 +61,8 @@ export const ADDON_MOD_FORUM_PROVIDERS: any[] = [
         AddonModForumListLinkHandler,
         AddonModForumPostLinkHandler,
         AddonModForumDiscussionLinkHandler,
-        AddonModForumPushClickHandler
+        AddonModForumPushClickHandler,
+        AddonModForumTagAreaHandler
     ]
 })
 export class AddonModForumModule {
@@ -69,7 +72,8 @@ export class AddonModForumModule {
             indexHandler: AddonModForumIndexLinkHandler, discussionHandler: AddonModForumDiscussionLinkHandler,
             updateManager: CoreUpdateManagerProvider, listLinkHandler: AddonModForumListLinkHandler,
             pushNotificationsDelegate: CorePushNotificationsDelegate, pushClickHandler: AddonModForumPushClickHandler,
-            postLinkHandler: AddonModForumPostLinkHandler) {
+            postLinkHandler: AddonModForumPostLinkHandler, tagAreaDelegate: CoreTagAreaDelegate,
+            tagAreaHandler: AddonModForumTagAreaHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
@@ -79,6 +83,7 @@ export class AddonModForumModule {
         linksDelegate.registerHandler(listLinkHandler);
         linksDelegate.registerHandler(postLinkHandler);
         pushNotificationsDelegate.registerClickHandler(pushClickHandler);
+        tagAreaDelegate.registerHandler(tagAreaHandler);
 
         // Allow migrating the tables from the old app to the new schema.
         updateManager.registerSiteTablesMigration([

@@ -50,6 +50,11 @@
                         <core-format-text *ngIf="pageContent" [component]="component" [componentId]="componentId" [text]="pageContent"></core-format-text>
                         <core-empty-box *ngIf="!pageContent" icon="document" [message]="'addon.mod_wiki.nocontent' | translate" [inline]="true"></core-empty-box>
                     </article>
+
+                    <div margin-top *ngIf="tagsEnabled && currentPageObj && currentPageObj.tags && currentPageObj.tags.length > 0">
+                        <b>{{ 'core.tag.tags' | translate }}:</b>
+                        <core-tag-list [tags]="currentPageObj.tags"></core-tag-list>
+                    </div>
                 </div>
             </ng-template>
         </core-tab>
