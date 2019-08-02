@@ -488,9 +488,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         if (this.downloadEnabled) {
             // The download status of a section might have been changed from within a module page.
             if (this.selectedSection && this.selectedSection.id !== CoreCourseProvider.ALL_SECTIONS_ID) {
-                this.courseHelper.calculateSectionStatus(this.selectedSection, this.course.id);
+                this.courseHelper.calculateSectionStatus(this.selectedSection, this.course.id, false, false);
             } else {
-                this.courseHelper.calculateSectionsStatus(this.sections, this.course.id);
+                this.courseHelper.calculateSectionsStatus(this.sections, this.course.id, false, false);
             }
         }
     }
@@ -537,5 +537,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
         // Emit a new event for other components.
         this.completionChanged.emit(completionData);
+    }
+
+    /**
+     * Recalculate the download status of each section, in response to a module being downloaded.
+     *
+     * @param {any} eventData
+     */
+    onModuleStatusChange(eventData: any): void {
+        this.courseHelper.calculateSectionsStatus(this.sections, this.course.id, false, false);
     }
 }
