@@ -329,6 +329,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.canLoadMore = false;
             this.showSectionId = 0;
             this.showMoreActivities();
+            this.courseHelper.calculateSectionsStatus(this.sections, this.course.id, false, false);
         }
 
         if (this.moduleId && typeof previousValue == 'undefined') {
