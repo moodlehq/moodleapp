@@ -602,7 +602,7 @@ export class AddonModDataHelperProvider {
         template = this.domUtils.fixHtml(template);
 
         // Add core-link directive to links.
-        template = template.replace(/<a ([^>]*href="[^>]*)>/i, (match, attributes) => {
+        template = template.replace(/<a ([^>]*href="[^>]*)>/ig, (match, attributes) => {
             return '<a core-link capture="true" ' + attributes + '>';
         });
 
