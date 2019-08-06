@@ -445,25 +445,28 @@ export class AddonCalendarEventPage implements OnDestroy {
             const modal = this.domUtils.showModalLoading('core.sending', true);
 
             this.calendarProvider.deleteEvent(this.event.id, this.event.name, deleteAll).then((sent) => {
+                this.calendarHelper.invalidateRepeatedEventsOnCalendar(this.event, deleteAll ? this.event.eventcount : 1)
+                        .catch(() => {
+                    // Ignore errors.
+                }).then(() => {
+                    // Trigger an event.
+                    this.eventsProvider.trigger(AddonCalendarProvider.DELETED_EVENT_EVENT, {
+                        eventId: this.eventId,
+                        sent: sent
+                    }, this.sitesProvider.getCurrentSiteId());
 
-                // Trigger an event.
-                this.eventsProvider.trigger(AddonCalendarProvider.DELETED_EVENT_EVENT, {
-                    eventId: this.eventId,
-                    sent: sent
-                }, this.sitesProvider.getCurrentSiteId());
+                    if (sent) {
+                        this.domUtils.showToast('addon.calendar.eventcalendareventdeleted', true, 3000, undefined, false);
 
-                if (sent) {
-                    this.domUtils.showToast('addon.calendar.eventcalendareventdeleted', true, 3000, undefined, false);
-
-                    // Event deleted, close the view.
-                    if (!this.svComponent || !this.svComponent.isOn()) {
-                        this.navCtrl.pop();
+                        // Event deleted, close the view.
+                        if (!this.svComponent || !this.svComponent.isOn()) {
+                            this.navCtrl.pop();
+                        }
+                    } else {
+                        // Event deleted in offline, just mark it as deleted.
+                        this.event.deleted = true;
                     }
-                } else {
-                    // Event deleted in offline, just mark it as deleted.
-                    this.event.deleted = true;
-                }
-
+                });
             }).catch((error) => {
                 this.domUtils.showErrorModalDefault(error, 'Error deleting event.');
             }).finally(() => {

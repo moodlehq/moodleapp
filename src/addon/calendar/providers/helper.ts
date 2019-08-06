@@ -276,4 +276,67 @@ export class AddonCalendarHelperProvider {
         // Show the event if it is from site home or if it matches the selected course.
         return event.courseid === this.sitesProvider.getSiteHomeId() || event.courseid == courseId;
     }
+
+    /**
+     * Invalidate all calls from calendar WS calls.
+     *
+     * @param  {any}          event     Event that has been touched.
+     * @param  {number}      repeated   Number of times the event is repeated.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}           REsolved when done.
+     */
+    invalidateRepeatedEventsOnCalendar(event: any, repeated: number, siteId?: string): Promise<any> {
+        let invalidatePromise;
+        const timestarts = [];
+
+        if (repeated > 1) {
+            if (event.repeatid) {
+                // Being edited or deleted.
+                invalidatePromise = this.calendarProvider.getLocalEventsByRepeatIdFromLocalDb(event.repeatid, siteId)
+                        .then((events) => {
+                    return events.map((event) => {
+                        timestarts.push(event.timestart);
+
+                        return this.calendarProvider.invalidateEvent(event.id);
+                    });
+
+                });
+            } else {
+                // Being added.
+                let time = event.timestart;
+                while (repeated > 0) {
+                    timestarts.push(time);
+                    time += CoreConstants.SECONDS_DAY * 7;
+                    repeated--;
+                }
+
+                invalidatePromise = Promise.resolve();
+            }
+        } else {
+            // Not repeated.
+            timestarts.push(event.timestart);
+            invalidatePromise = this.calendarProvider.invalidateEvent(event.id);
+        }
+
+        return invalidatePromise.then(() => {
+            let lastMonth, lastYear;
+
+            return Promise.all([
+                this.calendarProvider.invalidateAllUpcomingEvents(),
+                timestarts.map((time) => {
+                    const day = moment(new Date(time * 1000));
+
+                    if (lastMonth && (lastMonth == day.month() + 1 && lastYear == day.year())) {
+                        return Promise.resolve();
+                    }
+
+                    // Invalidate once.
+                    lastMonth = day.month() + 1;
+                    lastYear = day.year();
+
+                    return this.calendarProvider.invalidateMonthlyEvents(lastYear, lastMonth, siteId);
+                })
+            ]);
+        });
+    }
 }
