@@ -315,6 +315,11 @@ ion-app.app-root {
     }
   }
 
+  // All external files should be banned from copying it.
+  ion-avatar, img, audio, video, iframe, [core-external-content], [role="presentation"], [data-original-src], [src] {
+    user-select: none !important;
+  }
+
   .core-media-adapt-width {
     max-width: 100%;
   }
