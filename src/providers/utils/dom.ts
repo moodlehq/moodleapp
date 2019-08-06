@@ -795,16 +795,18 @@ export class CoreDomUtilsProvider {
      *
      * @param {HTMLElement} oldParent The old parent.
      * @param {HTMLElement} newParent The new parent.
+     * @param {boolean} [prepend] If true, adds the children to the beginning of the new parent.
      * @return {Node[]} List of moved children.
      */
-    moveChildren(oldParent: HTMLElement, newParent: HTMLElement): Node[] {
+    moveChildren(oldParent: HTMLElement, newParent: HTMLElement, prepend?: boolean): Node[] {
         const movedChildren: Node[] = [];
+        const referenceNode = prepend ? newParent.firstChild : null;
 
         while (oldParent.childNodes.length > 0) {
             const child = oldParent.childNodes[0];
             movedChildren.push(child);
 
-            newParent.appendChild(child);
+            newParent.insertBefore(child, referenceNode);
         }
 
         return movedChildren;

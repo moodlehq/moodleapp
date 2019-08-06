@@ -1,6 +1,6 @@
 
 <!-- Add buttons to the nav bar. -->
-<core-navbar-buttons end>
+<core-navbar-buttons end prepend>
     <button [hidden]="!canNavigate || isCurrentMonth || !displayNavButtons" ion-button icon-only clear (click)="goToCurrentMonth()">
         <core-icon  name="fa-calendar-times-o"></core-icon>
     </button>

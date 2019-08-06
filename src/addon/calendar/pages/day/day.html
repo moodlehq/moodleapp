@@ -2,11 +2,11 @@
     <ion-navbar core-back-button>
         <ion-title>{{ 'addon.calendar.calendarevents' | translate }}</ion-title>
         <ion-buttons end>
-            <button *ngIf="courses && courses.length" ion-button icon-only (click)="openCourseFilter($event)" [attr.aria-label]="'core.courses.filter' | translate">
-                <ion-icon name="funnel"></ion-icon>
-            </button>
             <button *ngIf="!isCurrentDay" ion-button icon-only clear (click)="goToCurrentDay()">
                 <core-icon name="fa-calendar-times-o"></core-icon>
+            </button>
+            <button *ngIf="courses && courses.length" ion-button icon-only (click)="openCourseFilter($event)" [attr.aria-label]="'core.courses.filter' | translate">
+                <ion-icon name="funnel"></ion-icon>
             </button>
             <core-context-menu>
                 <core-context-menu-item [hidden]="!loaded || !hasOffline || !isOnline"  [priority]="400" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
