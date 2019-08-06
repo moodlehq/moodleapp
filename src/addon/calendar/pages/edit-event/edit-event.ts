@@ -491,7 +491,13 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
         const modal = this.domUtils.showModalLoading('core.sending', true);
 
         this.calendarProvider.submitEvent(this.eventId, data).then((result) => {
-            this.returnToList(result.event);
+            const numberOfRepetitions = formData.repeat ? formData.repeats :
+                (data.repeateditall && this.event.othereventscount ? this.event.othereventscount + 1 : 1);
+            this.calendarHelper.invalidateRepeatedEventsOnCalendar(result.event, numberOfRepetitions).catch(() => {
+                // Ignore errors.
+            }).then(() => {
+                this.returnToList(result.event);
+            });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'Error sending data.');
         }).finally(() => {

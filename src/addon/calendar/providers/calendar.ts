@@ -1147,6 +1147,19 @@ export class AddonCalendarProvider {
     }
 
     /**
+     * Get calendar events from local Db that have the same repeatid.
+     *
+     * @param {number} [repeatId] Repeat Id of the event.
+     * @param {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
+     * @return {Promise<any[]>} Promise resolved with all the events.
+     */
+    getLocalEventsByRepeatIdFromLocalDb(repeatId: number, siteId?: string): Promise<any[]> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.getDb().getRecords(AddonCalendarProvider.EVENTS_TABLE, {repeatid: repeatId});
+        });
+    }
+
+    /**
      * Get monthly calendar events.
      *
      * @param {number} year Year to get.
