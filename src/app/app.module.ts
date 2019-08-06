@@ -15,7 +15,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule, COMPILER_OPTIONS } from '@angular/core';
-import { IonicApp, IonicModule, Platform, Content, ScrollEvent, Config } from 'ionic-angular';
+import { IonicApp, IonicModule, Platform, Content, ScrollEvent, Config, Refresher } from 'ionic-angular';
 import { assert } from 'ionic-angular/util/util';
 import { HttpModule } from '@angular/http';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -373,6 +373,9 @@ export class AppModule {
 
         // Decorate ion-content.
         this.decorateIonContent();
+
+        // Patch ion-refresher.
+        this.patchIonRefresher();
     }
 
     /**
@@ -581,5 +584,25 @@ export class AppModule {
             this._footerEle = this._scLsn = this._scroll = null;
             this._orientationObs && this._orientationObs.off();
         };
+    }
+
+    /**
+     * Patch ion-refresher to fix video menus and possibly other fixed positioned elements.
+     */
+    patchIonRefresher(): void {
+        /**
+         * Original code: https://github.com/ionic-team/ionic/blob/v3.9.3/src/components/refresher/refresher.ts#L468
+         * Changed: translateZ(0px) is not added to the CSS transform.
+         */
+        Refresher.prototype._setCss = function(y: number, duration: string, overflowVisible: boolean, delay: string): void {
+            this._appliedStyles = (y > 0);
+
+            const content = this._content;
+            const Css = this._plt.Css;
+            content.setScrollElementStyle(Css.transform, ((y > 0) ? 'translateY(' + y + 'px)' : ''));
+            content.setScrollElementStyle(Css.transitionDuration, duration);
+            content.setScrollElementStyle(Css.transitionDelay, delay);
+            content.setScrollElementStyle('overflow', (overflowVisible ? 'hidden' : ''));
+          };
     }
 }
