@@ -1,3 +1,6 @@
+$core-side-blocks-max-small-width: 300px;
+$core-side-blocks-min-small-width: 25%;
+
 $core-side-blocks-max-width: 320px;
 $core-side-blocks-min-width: 30%;
 
@@ -30,8 +33,8 @@ ion-app.app-root core-block-course-blocks {
             flex-wrap: nowrap;
 
             .core-course-blocks-content {
-                min-width: calc(100% - #{($core-side-blocks-max-width)});
-                max-width: calc(100% - #{($core-side-blocks-min-width)});
+                min-width: calc(100% - #{($core-side-blocks-max-small-width)});
+                max-width: calc(100% - #{($core-side-blocks-min-small-width)});
                 z-index: 0;
                 flex: 1;
                 box-shadow: none !important;
@@ -42,9 +45,21 @@ ion-app.app-root core-block-course-blocks {
                 position: sticky;
                 @include position(0, 0, 0, auto);
                 z-index: 30;
+                max-width: $core-side-blocks-max-small-width;
+                min-width: $core-side-blocks-min-small-width;
+                @include border-start(1px, solid, $list-md-border-color);
+            }
+        }
+
+        @include media-breakpoint-up(lg) {
+            .core-course-blocks-content {
+                min-width: calc(100% - #{($core-side-blocks-max-width)});
+                max-width: calc(100% - #{($core-side-blocks-min-width)});
+            }
+
+            ion-content.core-course-blocks-side {
                 max-width: $core-side-blocks-max-width;
                 min-width: $core-side-blocks-min-width;
-                @include border-start(1px, solid, $list-md-border-color);
             }
         }
 
