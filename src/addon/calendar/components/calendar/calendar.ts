@@ -305,10 +305,12 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     /**
      * An event was clicked.
      *
-     * @param {any} event Event.
+     * @param {any} calendarEvent Calendar event..
+     * @param {MouseEvent} event Mouse event.
      */
-    eventClicked(event: any): void {
-        this.onEventClicked.emit(event.id);
+    eventClicked(calendarEvent: any, event: MouseEvent): void {
+        this.onEventClicked.emit(calendarEvent.id);
+        event.stopPropagation();
     }
 
     /**
