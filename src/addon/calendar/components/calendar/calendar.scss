@@ -10,6 +10,10 @@ $calendar-border-color: $gray !default;
 
 ion-app.app-root addon-calendar-calendar {
 
+    .addon-calendar-navigation {
+        @include padding(5px, 10px, null, 10px);
+    }
+
     .addon-calendar-months {
         background-color: white;
         padding: 0;
@@ -19,7 +23,7 @@ ion-app.app-root addon-calendar-calendar {
         border-bottom: 1px solid $calendar-border-color;
         @include border-end(1px, solid, $calendar-border-color);
         overflow: hidden;
-        min-height: 70px;
+        min-height: 60px;
 
         &:first-child {
             @include padding(null, null, null, 10px);
@@ -64,7 +68,7 @@ ion-app.app-root addon-calendar-calendar {
         }
 
         .addon-calendar-dot-types {
-            @include margin(0.6em, null, 0.6em, null);
+            margin: 0;
         }
     }
 
@@ -125,6 +129,7 @@ ion-app.app-root addon-calendar-calendar {
         @include margin-horizontal(1px, 1px);
         width: 16px;
         height: 16px;
-        display: inline;
+        display: inline-block;
+        vertical-align: middle;
     }
 }
