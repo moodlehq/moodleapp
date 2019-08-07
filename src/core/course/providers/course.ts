@@ -114,10 +114,11 @@ export class CoreCourseProvider {
      * Check if the get course blocks WS is available in current site.
      *
      * @return {boolean} Whether it's available.
-     * @since 3.3
+     * @since 3.7
      */
     canGetCourseBlocks(): boolean {
-        return this.sitesProvider.wsAvailableInCurrentSite('core_block_get_course_blocks');
+        return this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.7') &&
+            this.sitesProvider.wsAvailableInCurrentSite('core_block_get_course_blocks');
     }
 
     /**
@@ -267,7 +268,7 @@ export class CoreCourseProvider {
      * @param {number} courseId Course ID.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any[]>} Promise resolved with the list of blocks.
-     * @since 3.3
+     * @since 3.7
      */
     getCourseBlocks(courseId: number, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
