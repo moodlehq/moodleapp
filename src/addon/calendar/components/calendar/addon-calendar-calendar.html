@@ -8,8 +8,8 @@
 
 <core-loading [hideUntil]="loaded" class="core-loading-center">
     <!-- Period name and arrows to navigate. -->
-    <ion-grid padding-top>
-        <ion-row>
+    <ion-grid no-padding class="addon-calendar-navigation">
+        <ion-row align-items-center>
             <ion-col text-start *ngIf="canNavigate">
                 <a ion-button icon-only clear (click)="loadPrevious()" [title]="'core.previous' | translate">
                     <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
@@ -31,7 +31,7 @@
         <!-- List of days. -->
         <ion-row>
             <ion-col text-center *ngFor="let day of weekDays" class="addon-calendar-weekday">
-                <p>{{ day.shortname | translate }}</p>
+                {{ day.shortname | translate }}
             </ion-col>
         </ion-row>
 
