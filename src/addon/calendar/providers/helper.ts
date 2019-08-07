@@ -274,7 +274,7 @@ export class AddonCalendarHelperProvider {
         }
 
         // Show the event if it is from site home or if it matches the selected course.
-        return event.courseid === this.sitesProvider.getSiteHomeId() || event.courseid == courseId;
+        return event.course && (event.course.id == this.sitesProvider.getCurrentSiteHomeId() || event.course.id == courseId);
     }
 
     /**
