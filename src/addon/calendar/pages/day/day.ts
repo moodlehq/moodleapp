@@ -321,7 +321,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     protected mergeEvents(): any[] {
         this.hasOffline = false;
 
-        if (!this.offlineEditedEventsIds.length && !this.deletedEvents.length) {
+        if (!Object.keys(this.offlineEvents).length && !this.deletedEvents.length) {
             // No offline events, nothing to merge.
             return this.onlineEvents;
         }
