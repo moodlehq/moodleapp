@@ -18,6 +18,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { AddonCalendarProvider } from './calendar';
 import { CoreConstants } from '@core/constants';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import * as moment from 'moment';
 
 /**
@@ -38,7 +39,8 @@ export class AddonCalendarHelperProvider {
     constructor(logger: CoreLoggerProvider,
             private courseProvider: CoreCourseProvider,
             private sitesProvider: CoreSitesProvider,
-            private calendarProvider: AddonCalendarProvider) {
+            private calendarProvider: AddonCalendarProvider,
+            private utils: CoreUtilsProvider) {
         this.logger = logger.getInstance('AddonCalendarHelperProvider');
     }
 
@@ -286,57 +288,67 @@ export class AddonCalendarHelperProvider {
      * @return {Promise<any>}           REsolved when done.
      */
     invalidateRepeatedEventsOnCalendar(event: any, repeated: number, siteId?: string): Promise<any> {
-        let invalidatePromise;
-        const timestarts = [];
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            let invalidatePromise;
+            const timestarts = [];
 
-        if (repeated > 1) {
-            if (event.repeatid) {
-                // Being edited or deleted.
-                invalidatePromise = this.calendarProvider.getLocalEventsByRepeatIdFromLocalDb(event.repeatid, siteId)
-                        .then((events) => {
-                    return events.map((event) => {
-                        timestarts.push(event.timestart);
+            if (repeated > 1) {
+                if (event.repeatid) {
+                    // Being edited or deleted.
+                    invalidatePromise = this.calendarProvider.getLocalEventsByRepeatIdFromLocalDb(event.repeatid, site.id)
+                            .then((events) => {
+                        return this.utils.allPromises(events.map((event) => {
+                            timestarts.push(event.timestart);
 
-                        return this.calendarProvider.invalidateEvent(event.id);
+                            return this.calendarProvider.invalidateEvent(event.id);
+                        }));
                     });
-
-                });
-            } else {
-                // Being added.
-                let time = event.timestart;
-                while (repeated > 0) {
-                    timestarts.push(time);
-                    time += CoreConstants.SECONDS_DAY * 7;
-                    repeated--;
-                }
-
-                invalidatePromise = Promise.resolve();
-            }
-        } else {
-            // Not repeated.
-            timestarts.push(event.timestart);
-            invalidatePromise = this.calendarProvider.invalidateEvent(event.id);
-        }
-
-        return invalidatePromise.then(() => {
-            let lastMonth, lastYear;
-
-            return Promise.all([
-                this.calendarProvider.invalidateAllUpcomingEvents(),
-                timestarts.map((time) => {
-                    const day = moment(new Date(time * 1000));
-
-                    if (lastMonth && (lastMonth == day.month() + 1 && lastYear == day.year())) {
-                        return Promise.resolve();
+                } else {
+                    // Being added.
+                    let time = event.timestart;
+                    while (repeated > 0) {
+                        timestarts.push(time);
+                        time += CoreConstants.SECONDS_DAY * 7;
+                        repeated--;
                     }
 
-                    // Invalidate once.
-                    lastMonth = day.month() + 1;
-                    lastYear = day.year();
+                    invalidatePromise = Promise.resolve();
+                }
+            } else {
+                // Not repeated.
+                timestarts.push(event.timestart);
+                invalidatePromise = this.calendarProvider.invalidateEvent(event.id);
+            }
 
-                    return this.calendarProvider.invalidateMonthlyEvents(lastYear, lastMonth, siteId);
-                })
-            ]);
+            return invalidatePromise.finally(() => {
+                let lastMonth, lastYear;
+
+                return this.utils.allPromises([
+                    this.calendarProvider.invalidateAllUpcomingEvents(),
+
+                    // Invalidate months.
+                    this.utils.allPromises(timestarts.map((time) => {
+                        const day = moment(new Date(time * 1000));
+
+                        if (lastMonth && (lastMonth == day.month() + 1 && lastYear == day.year())) {
+                            return Promise.resolve();
+                        }
+
+                        // Invalidate once.
+                        lastMonth = day.month() + 1;
+                        lastYear = day.year();
+
+                        return this.calendarProvider.invalidateMonthlyEvents(lastYear, lastMonth, site.id);
+                    })),
+
+                    // Invalidate days.
+                    this.utils.allPromises(timestarts.map((time) => {
+                        const day = moment(new Date(time * 1000));
+
+                        return this.calendarProvider.invalidateDayEvents(day.year(), day.month() + 1, day.date(), site.id);
+                    })),
+                ]);
+            });
         });
     }
 }
