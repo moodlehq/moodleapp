@@ -48,7 +48,7 @@
     "copiedtoclipboard": "Text copied to clipboard",
     "course": "Course",
     "coursedetails": "Course details",
-    "coursenogroups": "This course doesn't have any group.",
+    "coursenogroups": "You are not a member of any group of this course.",
     "currentdevice": "Current device",
     "datastoredoffline": "Data stored in the device because it couldn't be sent. It will be sent automatically later.",
     "date": "Date",
