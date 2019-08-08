@@ -68,7 +68,7 @@ export class CoreSettingsGeneralPage {
             this.selectedLanguage = currentLanguage;
         });
 
-        this.configProvider.get(CoreConstants.SETTINGS_FONT_SIZE, CoreConfigConstants.font_sizes[0]).then((fontSize) => {
+        this.configProvider.get(CoreConstants.SETTINGS_FONT_SIZE, CoreConfigConstants.font_sizes[0].toString()).then((fontSize) => {
             this.selectedFontSize = fontSize;
             this.fontSizes = CoreConfigConstants.font_sizes.map((size) => {
                 return {

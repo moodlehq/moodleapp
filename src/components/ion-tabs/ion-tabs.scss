@@ -3,6 +3,7 @@ $core-sidetab-size: 60px !default;
 ion-app.app-root core-ion-tabs {
     .tabbar {
         z-index: 101; // For some reason, the regular z-index isn't enough with our tabs, use a higher one.
+        height: 56px;
 
         .core-ion-tabs-loading {
             height: 100%;
