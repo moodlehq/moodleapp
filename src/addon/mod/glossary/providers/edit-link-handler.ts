@@ -18,6 +18,7 @@ import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { AddonModGlossaryProvider } from './glossary';
 
 /**
  * Content links handler for glossary new entry.
@@ -31,7 +32,7 @@ export class AddonModGlossaryEditLinkHandler extends CoreContentLinksHandlerBase
     pattern = /\/mod\/glossary\/edit\.php.*([\?\&](cmid)=\d+)/;
 
     constructor(private linkHelper: CoreContentLinksHelperProvider, private courseProvider: CoreCourseProvider,
-            private domUtils: CoreDomUtilsProvider) {
+            private domUtils: CoreDomUtilsProvider, private glossaryProvider: AddonModGlossaryProvider) {
         super();
     }
 
@@ -53,14 +54,16 @@ export class AddonModGlossaryEditLinkHandler extends CoreContentLinksHandlerBase
                     cmId = parseInt(params.cmid, 10);
 
                 this.courseProvider.getModuleBasicInfo(cmId, siteId).then((module) => {
-                    const pageParams = {
-                        courseId: module.course,
-                        module: module,
-                        glossary: module.module,
-                        entry: null // It does not support entry editing.
-                    };
+                    return this.glossaryProvider.getGlossary(module.course, module.id).then((glossary) => {
+                        const pageParams = {
+                            courseId: module.course,
+                            module: module,
+                            glossary: glossary,
+                            entry: null // It does not support entry editing.
+                        };
 
-                    return this.linkHelper.goInSite(navCtrl, 'AddonModGlossaryEditPage', pageParams, siteId);
+                        this.linkHelper.goInSite(navCtrl, 'AddonModGlossaryEditPage', pageParams, siteId);
+                    });
                 }).finally(() => {
                     // Just in case. In fact we need to dismiss the modal before showing a toast or error message.
                     modal.dismiss();
