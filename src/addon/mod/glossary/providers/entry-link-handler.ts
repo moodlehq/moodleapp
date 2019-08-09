@@ -27,7 +27,7 @@ import { AddonModGlossaryProvider } from './glossary';
 export class AddonModGlossaryEntryLinkHandler extends CoreContentLinksHandlerBase {
     name = 'AddonModGlossaryEntryLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModGlossary';
-    pattern = /\/mod\/glossary\/showentry\.php.*([\&\?]eid=\d+)/;
+    pattern = /\/mod\/glossary\/(showentry|view)\.php.*([\&\?](eid|g|mode|hook)=\d+)/;
 
     constructor(
             private domUtils: CoreDomUtilsProvider,
@@ -51,7 +51,13 @@ export class AddonModGlossaryEntryLinkHandler extends CoreContentLinksHandlerBas
         return [{
             action: (siteId, navCtrl?): void => {
                 const modal = this.domUtils.showModalLoading();
-                const entryId = parseInt(params.eid, 10);
+                let entryId;
+                if (params.mode == 'entry') {
+                    entryId = parseInt(params.hook, 10);
+                } else {
+                    entryId = parseInt(params.eid, 10);
+                }
+
                 let promise;
 
                 if (courseId) {

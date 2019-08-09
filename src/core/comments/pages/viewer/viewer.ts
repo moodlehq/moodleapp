@@ -156,7 +156,7 @@ export class CoreCommentsViewerPage implements OnDestroy {
                 this.canAddComments = this.addDeleteCommentsAvailable && response.canpost;
 
                 const comments = response.comments.sort((a, b) => b.timecreated - a.timecreated);
-                this.canLoadMore = comments.length >= CoreCommentsProvider.pageSize;
+                this.canLoadMore = comments.length > 0 && comments.length >= CoreCommentsProvider.pageSize;
 
                 return Promise.all(comments.map((comment) => {
                     // Get the user profile image.

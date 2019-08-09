@@ -103,7 +103,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     }
 
     /**
-     * Init editor
+     * Init editor.
      */
     ngAfterContentInit(): void {
         this.domUtils.isRichTextEditorEnabled().then((enabled) => {

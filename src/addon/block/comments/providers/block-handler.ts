@@ -47,7 +47,7 @@ export class AddonBlockCommentsHandler extends CoreBlockBaseHandler {
             component: CoreBlockOnlyTitleComponent,
             link: 'CoreCommentsViewerPage',
             linkParams: { contextLevel: contextLevel, instanceId: instanceId,
-                component: 'block_comments', area: 'page_comments', itemId: 0 }
+                componentName: 'block_comments', area: 'page_comments', itemId: 0 }
         };
     }
 }

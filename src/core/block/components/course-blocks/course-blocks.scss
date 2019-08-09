@@ -1,8 +1,5 @@
-$core-side-blocks-max-small-width: 300px;
-$core-side-blocks-min-small-width: 25%;
-
-$core-side-blocks-max-width: 320px;
-$core-side-blocks-min-width: 30%;
+$core-side-blocks-max-width: 30%;
+$core-side-blocks-min-width: 280px;
 
 .core-course-block-with-blocks > .scroll-content {
     overflow-y: visible;
@@ -10,15 +7,8 @@ $core-side-blocks-min-width: 30%;
 
 ion-app.app-root core-block-course-blocks {
 
-    &.core-no-blocks {
-        .core-course-blocks-content > ion-content {
-            height: auto;
-
-            > .scroll-content {
-                overflow-y: visible;
-                position: relative;
-            }
-        }
+    &.core-no-blocks .core-course-blocks-content {
+        height: auto;
     }
 
     &.core-has-blocks {
@@ -33,49 +23,51 @@ ion-app.app-root core-block-course-blocks {
             flex-wrap: nowrap;
 
             .core-course-blocks-content {
-                min-width: calc(100% - #{($core-side-blocks-max-small-width)});
-                max-width: calc(100% - #{($core-side-blocks-min-small-width)});
-                z-index: 0;
-                flex: 1;
                 box-shadow: none !important;
+                flex-grow: 1;
+                max-width: 100%;
             }
 
-            ion-content.core-course-blocks-side {
-                transform: none !important;
-                position: sticky;
-                @include position(0, 0, 0, auto);
-                z-index: 30;
-                max-width: $core-side-blocks-max-small-width;
-                min-width: $core-side-blocks-min-small-width;
-                @include border-start(1px, solid, $list-md-border-color);
-            }
-        }
-
-        @include media-breakpoint-up(lg) {
-            .core-course-blocks-content {
-                min-width: calc(100% - #{($core-side-blocks-max-width)});
-                max-width: calc(100% - #{($core-side-blocks-min-width)});
-            }
-
-            ion-content.core-course-blocks-side {
+            div.core-course-blocks-side {
+                position: relative;
+                @include position(auto, 0, auto, auto);
                 max-width: $core-side-blocks-max-width;
                 min-width: $core-side-blocks-min-width;
+                @include border-start(1px, solid, $list-md-border-color);
+
+                .core-course-blocks-side-scroll {
+                    position: absolute;
+                    top: 0;
+                    max-width: 100%;
+                    min-width: 100%;
+
+                    &.core-course-blocks-fixed-bottom {
+                        position: fixed;
+                        bottom: 0;
+                        top: auto;
+                        transform: none !important;
+                    }
+
+                    core-block {
+                        max-width: $core-side-blocks-max-width;
+                        min-width: $core-side-blocks-min-width;
+                    }
+                }
             }
         }
 
         @include media-breakpoint-down(sm) {
             // Disable scroll on individual columns.
-            .core-course-blocks-content > ion-content,
-            ion-content.core-course-blocks-side {
+            div.core-course-blocks-side {
+                transform: none !important;
                 height: auto;
 
                 &.core-hide-blocks {
                     display: none;
                 }
 
-                > .scroll-content {
-                    overflow-y: visible;
-                    position: relative;
+                .core-course-blocks-side-scroll {
+                    transform: none !important;
                 }
             }
         }
