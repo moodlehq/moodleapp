@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title>{{ 'addon.calendar.calendarevents' | translate }}</ion-title>
+        <ion-title>{{ (showCalendar ? 'addon.calendar.calendarevents' : 'addon.calendar.upcomingevents') | translate }}</ion-title>
         <ion-buttons end>
             <button *ngIf="showCalendar" ion-button icon-only (click)="toggleDisplay()" [attr.aria-label]="'addon.calendar.upcomingevents' | translate">
                 <ion-icon name="list"></ion-icon>

@@ -43,6 +43,7 @@ export class AddonCalendarProvider {
     static DEFAULT_NOTIFICATION_TIME_CHANGED = 'AddonCalendarDefaultNotificationTimeChangedEvent';
     static DEFAULT_NOTIFICATION_TIME_SETTING = 'mmaCalendarDefaultNotifTime';
     static DEFAULT_NOTIFICATION_TIME = 60;
+    static STARTING_WEEK_DAY = 'addon_calendar_starting_week_day';
     static NEW_EVENT_EVENT = 'addon_calendar_new_event';
     static NEW_EVENT_DISCARDED_EVENT = 'addon_calendar_new_event_discarded';
     static EDIT_EVENT_EVENT = 'addon_calendar_edit_event';
@@ -726,7 +727,7 @@ export class AddonCalendarProvider {
             return this.userProvider.getUserPreference('calendar_lookahead').catch((error) => {
                 // Ignore errors.
             }).then((value): any => {
-                if (typeof value != 'undefined') {
+                if (value != null) {
                     return value;
                 }
 
@@ -1197,6 +1198,11 @@ export class AddonCalendarProvider {
                         this.storeEventsInLocalDB(day.events, siteId);
                     });
                 });
+
+                // Store starting week day preference, we need it in offline to show months that are not in cache.
+                if (this.appProvider.isOnline()) {
+                    this.configProvider.set(AddonCalendarProvider.STARTING_WEEK_DAY, response.daynames[0].dayno);
+                }
 
                 return response;
             });

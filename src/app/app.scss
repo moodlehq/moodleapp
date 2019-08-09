@@ -1079,6 +1079,11 @@ details summary {
   contain: none !important;
 }
 
+// Lower z-index for ion-item-divider so it is displayed below video menus.
+ion-item-divider {
+  z-index: 2; // Ionic default is 100.
+}
+
 // Highlight text.
 .matchtext {
   background-color: $core-text-hightlight-background-color;

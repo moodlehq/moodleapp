@@ -18,6 +18,8 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { AddonCalendarProvider } from './calendar';
 import { CoreConstants } from '@core/constants';
+import { CoreConfigProvider } from '@providers/config';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import * as moment from 'moment';
 
 /**
@@ -38,7 +40,9 @@ export class AddonCalendarHelperProvider {
     constructor(logger: CoreLoggerProvider,
             private courseProvider: CoreCourseProvider,
             private sitesProvider: CoreSitesProvider,
-            private calendarProvider: AddonCalendarProvider) {
+            private calendarProvider: AddonCalendarProvider,
+            private configProvider: CoreConfigProvider,
+            private utils: CoreUtilsProvider) {
         this.logger = logger.getInstance('AddonCalendarHelperProvider');
     }
 
@@ -190,6 +194,66 @@ export class AddonCalendarHelperProvider {
     }
 
     /**
+     * Get weeks of a month in offline (with no events).
+     *
+     * The result has the same structure than getMonthlyEvents, but it only contains fields that are actually used by the app.
+     *
+     * @param {number} year Year to get.
+     * @param {number} month Month to get.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with the response.
+     */
+    getOfflineMonthWeeks(year: number, month: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            // Get starting week day user preference, fallback to site configuration.
+            const startWeekDay = site.getStoredConfig('calendar_startwday');
+
+            return this.configProvider.get(AddonCalendarProvider.STARTING_WEEK_DAY, startWeekDay);
+        }).then((startWeekDay) => {
+            const today = moment();
+            const isCurrentMonth = today.year() == year && today.month() == month - 1;
+            const weeks = [];
+
+            let date = moment({year, month: month - 1, date: 1});
+            for (let mday = 1; mday <= date.daysInMonth(); mday++) {
+                date = moment({year, month: month - 1, date: mday});
+
+                // Add new week and calculate prepadding.
+                if (!weeks.length || date.day() == startWeekDay) {
+                    const prepaddingLength = (date.day() - startWeekDay + 7) % 7;
+                    const prepadding = [];
+                    for (let i = 0; i < prepaddingLength; i++) {
+                        prepadding.push(i);
+                    }
+                    weeks.push({ prepadding, postpadding: [], days: []});
+                }
+
+                // Calculate postpadding of last week.
+                if (mday == date.daysInMonth()) {
+                    const postpaddingLength = (startWeekDay - date.day() + 6) % 7;
+                    const postpadding = [];
+                    for (let i = 0; i < postpaddingLength; i++) {
+                        postpadding.push(i);
+                    }
+                    weeks[weeks.length - 1].postpadding = postpadding;
+                }
+
+                // Add day to current week.
+                weeks[weeks.length - 1].days.push({
+                    events: [],
+                    hasevents: false,
+                    mday: date.date(),
+                    isweekend: date.day() == 0 || date.day() == 6,
+                    istoday: isCurrentMonth && today.date() == date.date(),
+                    calendareventtypes: [],
+                });
+            }
+
+            return {weeks, daynames: [{dayno: startWeekDay}]};
+        });
+    }
+
+    /**
      * Check if the data of an event has changed.
      *
      * @param {any} data Current data.
@@ -286,57 +350,67 @@ export class AddonCalendarHelperProvider {
      * @return {Promise<any>}           REsolved when done.
      */
     invalidateRepeatedEventsOnCalendar(event: any, repeated: number, siteId?: string): Promise<any> {
-        let invalidatePromise;
-        const timestarts = [];
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            let invalidatePromise;
+            const timestarts = [];
 
-        if (repeated > 1) {
-            if (event.repeatid) {
-                // Being edited or deleted.
-                invalidatePromise = this.calendarProvider.getLocalEventsByRepeatIdFromLocalDb(event.repeatid, siteId)
-                        .then((events) => {
-                    return events.map((event) => {
-                        timestarts.push(event.timestart);
+            if (repeated > 1) {
+                if (event.repeatid) {
+                    // Being edited or deleted.
+                    invalidatePromise = this.calendarProvider.getLocalEventsByRepeatIdFromLocalDb(event.repeatid, site.id)
+                            .then((events) => {
+                        return this.utils.allPromises(events.map((event) => {
+                            timestarts.push(event.timestart);
 
-                        return this.calendarProvider.invalidateEvent(event.id);
+                            return this.calendarProvider.invalidateEvent(event.id);
+                        }));
                     });
-
-                });
-            } else {
-                // Being added.
-                let time = event.timestart;
-                while (repeated > 0) {
-                    timestarts.push(time);
-                    time += CoreConstants.SECONDS_DAY * 7;
-                    repeated--;
-                }
-
-                invalidatePromise = Promise.resolve();
-            }
-        } else {
-            // Not repeated.
-            timestarts.push(event.timestart);
-            invalidatePromise = this.calendarProvider.invalidateEvent(event.id);
-        }
-
-        return invalidatePromise.then(() => {
-            let lastMonth, lastYear;
-
-            return Promise.all([
-                this.calendarProvider.invalidateAllUpcomingEvents(),
-                timestarts.map((time) => {
-                    const day = moment(new Date(time * 1000));
-
-                    if (lastMonth && (lastMonth == day.month() + 1 && lastYear == day.year())) {
-                        return Promise.resolve();
+                } else {
+                    // Being added.
+                    let time = event.timestart;
+                    while (repeated > 0) {
+                        timestarts.push(time);
+                        time += CoreConstants.SECONDS_DAY * 7;
+                        repeated--;
                     }
 
-                    // Invalidate once.
-                    lastMonth = day.month() + 1;
-                    lastYear = day.year();
+                    invalidatePromise = Promise.resolve();
+                }
+            } else {
+                // Not repeated.
+                timestarts.push(event.timestart);
+                invalidatePromise = this.calendarProvider.invalidateEvent(event.id);
+            }
 
-                    return this.calendarProvider.invalidateMonthlyEvents(lastYear, lastMonth, siteId);
-                })
-            ]);
+            return invalidatePromise.finally(() => {
+                let lastMonth, lastYear;
+
+                return this.utils.allPromises([
+                    this.calendarProvider.invalidateAllUpcomingEvents(),
+
+                    // Invalidate months.
+                    this.utils.allPromises(timestarts.map((time) => {
+                        const day = moment(new Date(time * 1000));
+
+                        if (lastMonth && (lastMonth == day.month() + 1 && lastYear == day.year())) {
+                            return Promise.resolve();
+                        }
+
+                        // Invalidate once.
+                        lastMonth = day.month() + 1;
+                        lastYear = day.year();
+
+                        return this.calendarProvider.invalidateMonthlyEvents(lastYear, lastMonth, site.id);
+                    })),
+
+                    // Invalidate days.
+                    this.utils.allPromises(timestarts.map((time) => {
+                        const day = moment(new Date(time * 1000));
+
+                        return this.calendarProvider.invalidateDayEvents(day.year(), day.month() + 1, day.date(), site.id);
+                    })),
+                ]);
+            });
         });
     }
 }

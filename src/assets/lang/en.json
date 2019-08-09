@@ -1391,7 +1391,7 @@
     "core.course.warningmanualcompletionmodified": "The manual completion of an activity was modified on the site.",
     "core.course.warningofflinemanualcompletiondeleted": "Some offline manual completion of course '{{name}}' has been deleted. {{error}}",
     "core.coursedetails": "Course details",
-    "core.coursenogroups": "This course doesn't have any group.",
+    "core.coursenogroups": "You are not a member of any group of this course.",
     "core.courses.addtofavourites": "Star this course",
     "core.courses.allowguests": "This course allows guest users to enter",
     "core.courses.availablecourses": "Available courses",
