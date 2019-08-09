@@ -282,7 +282,14 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      */
     fetchEvents(): Promise<any> {
         // Don't pass courseId and categoryId, we'll filter them locally.
-        return this.calendarProvider.getDayEvents(this.year, this.month, this.day).then((result) => {
+        return this.calendarProvider.getDayEvents(this.year, this.month, this.day).catch((error) => {
+            if (!this.appProvider.isOnline()) {
+                // Allow navigating to non-cached days in offline (behave as if using emergency cache).
+                return Promise.resolve({ events: [] });
+            } else {
+                return Promise.reject(error);
+            }
+        }).then((result) => {
             const promises = [];
 
             // Calculate the period name. We don't use the one in result because it's in server's language.

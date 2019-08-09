@@ -23,6 +23,7 @@ import { AddonCalendarProvider } from '../../providers/calendar';
 import { AddonCalendarHelperProvider } from '../../providers/helper';
 import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CoreAppProvider } from '@providers/app';
 
 /**
  * Component that displays a calendar.
@@ -70,7 +71,8 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
             private domUtils: CoreDomUtilsProvider,
             private timeUtils: CoreTimeUtilsProvider,
             private utils: CoreUtilsProvider,
-            private coursesProvider: CoreCoursesProvider) {
+            private coursesProvider: CoreCoursesProvider,
+            private appProvider: CoreAppProvider) {
 
         this.currentSiteId = sitesProvider.getCurrentSiteId();
 
@@ -184,8 +186,14 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
      */
     fetchEvents(): Promise<any> {
         // Don't pass courseId and categoryId, we'll filter them locally.
-        return this.calendarProvider.getMonthlyEvents(this.year, this.month).then((result) => {
-
+        return this.calendarProvider.getMonthlyEvents(this.year, this.month).catch((error) => {
+            if (!this.appProvider.isOnline()) {
+                // Allow navigating to non-cached months in offline (behave as if using emergency cache).
+                return this.calendarHelper.getOfflineMonthWeeks(this.year, this.month);
+            } else {
+                return Promise.reject(error);
+            }
+        }).then((result) => {
             // Calculate the period name. We don't use the one in result because it's in server's language.
             this.periodName = this.timeUtils.userDate(new Date(this.year, this.month - 1).getTime(), 'core.strftimemonthyear');
 

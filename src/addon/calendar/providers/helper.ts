@@ -18,6 +18,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { AddonCalendarProvider } from './calendar';
 import { CoreConstants } from '@core/constants';
+import { CoreConfigProvider } from '@providers/config';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import * as moment from 'moment';
 
@@ -40,6 +41,7 @@ export class AddonCalendarHelperProvider {
             private courseProvider: CoreCourseProvider,
             private sitesProvider: CoreSitesProvider,
             private calendarProvider: AddonCalendarProvider,
+            private configProvider: CoreConfigProvider,
             private utils: CoreUtilsProvider) {
         this.logger = logger.getInstance('AddonCalendarHelperProvider');
     }
@@ -189,6 +191,66 @@ export class AddonCalendarHelperProvider {
      */
     getMonthId(year: number, month: number): string {
         return year + '#' + month;
+    }
+
+    /**
+     * Get weeks of a month in offline (with no events).
+     *
+     * The result has the same structure than getMonthlyEvents, but it only contains fields that are actually used by the app.
+     *
+     * @param {number} year Year to get.
+     * @param {number} month Month to get.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with the response.
+     */
+    getOfflineMonthWeeks(year: number, month: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            // Get starting week day user preference, fallback to site configuration.
+            const startWeekDay = site.getStoredConfig('calendar_startwday');
+
+            return this.configProvider.get(AddonCalendarProvider.STARTING_WEEK_DAY, startWeekDay);
+        }).then((startWeekDay) => {
+            const today = moment();
+            const isCurrentMonth = today.year() == year && today.month() == month - 1;
+            const weeks = [];
+
+            let date = moment({year, month: month - 1, date: 1});
+            for (let mday = 1; mday <= date.daysInMonth(); mday++) {
+                date = moment({year, month: month - 1, date: mday});
+
+                // Add new week and calculate prepadding.
+                if (!weeks.length || date.day() == startWeekDay) {
+                    const prepaddingLength = (date.day() - startWeekDay + 7) % 7;
+                    const prepadding = [];
+                    for (let i = 0; i < prepaddingLength; i++) {
+                        prepadding.push(i);
+                    }
+                    weeks.push({ prepadding, postpadding: [], days: []});
+                }
+
+                // Calculate postpadding of last week.
+                if (mday == date.daysInMonth()) {
+                    const postpaddingLength = (startWeekDay - date.day() + 6) % 7;
+                    const postpadding = [];
+                    for (let i = 0; i < postpaddingLength; i++) {
+                        postpadding.push(i);
+                    }
+                    weeks[weeks.length - 1].postpadding = postpadding;
+                }
+
+                // Add day to current week.
+                weeks[weeks.length - 1].days.push({
+                    events: [],
+                    hasevents: false,
+                    mday: date.date(),
+                    isweekend: date.day() == 0 || date.day() == 6,
+                    istoday: isCurrentMonth && today.date() == date.date(),
+                    calendareventtypes: [],
+                });
+            }
+
+            return {weeks, daynames: [{dayno: startWeekDay}]};
+        });
     }
 
     /**
