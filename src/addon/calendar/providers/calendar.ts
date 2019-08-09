@@ -727,7 +727,7 @@ export class AddonCalendarProvider {
             return this.userProvider.getUserPreference('calendar_lookahead').catch((error) => {
                 // Ignore errors.
             }).then((value): any => {
-                if (typeof value != 'undefined') {
+                if (value != null) {
                     return value;
                 }
 

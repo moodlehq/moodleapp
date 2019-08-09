@@ -264,7 +264,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
             return this.onlineEvents;
         }
 
-        const start = Date.now(),
+        const start = Date.now() / 1000,
             end = start + (CoreConstants.SECONDS_DAY * this.lookAhead);
         let result = this.onlineEvents;
 
