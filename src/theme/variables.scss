@@ -229,6 +229,29 @@ $popover-wp-width: $popover-width;
 $item-wp-divider-background: $item-divider-background;
 $item-wp-divider-color: $item-divider-color;
 
+// Font sizes
+// ---------------------------------------------------
+// Some font sizes are defined in absolute pixels by ionic,
+// override these with relative sizes so they are resizable.
+$alert-ios-message-font-size: 1.4rem;
+$alert-ios-title-font-size: 2.2rem;
+$alert-ios-sub-title-font-size: 1.6rem;
+$alert-md-message-font-size: 1.4rem;
+$alert-md-title-font-size: 2.2rem;
+$alert-md-sub-title-font-size: 1.6rem;
+$alert-button-font-size: 1.4rem;
+$tabs-ios-tab-font-size: 1.4rem;
+$chip-ios-font-size: 1.3rem;
+$chip-md-font-size: 1.3rem;
+
+// Icon sizes
+// ---------------------------------------------------
+// Some font icons have relative sizes set by ionic,
+// define absolute sizes so they aren't scaled with text.
+$tabs-md-tab-icon-size: 24px;
+$tabs-md-tab-min-height: 56px;
+$tabs-ios-tab-min-height: 56px;
+
 // App Theme
 // --------------------------------------------------
 // Ionic apps can have different themes applied, which can
