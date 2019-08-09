@@ -9,6 +9,10 @@ ion-app.app-root core-rich-text-editor .core-rte-editor {
     margin-bottom: 1rem;
   }
 
+  .no-overflow {
+    overflow: auto;
+  }
+
   // Fix lists styles in core-format-text.
   ul {
     padding-left: 1rem;

@@ -703,6 +703,45 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Wait an element to exists using the findFunction.
+     *
+     * @param {Function} findFunction The function used to find the element.
+     * @return {Promise<HTMLElement>} Resolved if found, rejected if too many tries.
+     */
+    waitElementToExist(findFunction: Function): Promise<HTMLElement> {
+        const promiseInterval = {
+            promise: null,
+            resolve: null,
+            reject: null
+        };
+
+        let tries = 100;
+
+        promiseInterval.promise = new Promise((resolve, reject): void => {
+            promiseInterval.resolve = resolve;
+            promiseInterval.reject = reject;
+        });
+
+        const clear = setInterval(() => {
+            const element: HTMLElement = findFunction();
+
+            if (element) {
+                clearInterval(clear);
+                promiseInterval.resolve(element);
+            } else {
+                tries--;
+
+                if (tries <= 0) {
+                    clearInterval(clear);
+                    promiseInterval.reject();
+                }
+            }
+        }, 100);
+
+        return promiseInterval.promise;
+    }
+
+    /**
      * Handle bootstrap tooltips in a certain element.
      *
      * @param {HTMLElement} element Element to check.
