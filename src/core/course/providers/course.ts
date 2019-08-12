@@ -981,7 +981,12 @@ export class CoreCourseProvider {
                     }
                 }).catch(() => {
                     // The site plugin failed to load. The user needs to restart the app to try loading it again.
-                    this.domUtils.showErrorModal('core.courses.errorloadplugins', true);
+                    const message = this.translate.instant('core.courses.errorloadplugins');
+                    const reload = this.translate.instant('core.courses.reload');
+                    const ignore = this.translate.instant('core.courses.ignore');
+                    this.domUtils.showConfirm(message, '', reload, ignore).then(() => {
+                        window.location.reload();
+                    });
                 });
             } else {
                 // No custom format plugin. We don't need to wait for anything.
