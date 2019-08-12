@@ -248,6 +248,11 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
                 // Try to send the data.
                 const data = this.utils.clone(event); // Clone the object because it will be modified in the submit function.
 
+                data.description = {
+                    text: data.description,
+                    format: 1
+                };
+
                 return this.calendarProvider.submitEventOnline(eventId > 0 ? eventId : undefined, data, siteId).then((newEvent) => {
                     result.updated = true;
                     result.events.push(newEvent);
