@@ -160,7 +160,6 @@ export class CoreFormatTextDirective implements OnChanges {
      */
     addMagnifyingGlasses(): void {
         const imgs = Array.from(this.element.querySelectorAll('.core-adapted-img-container > img'));
-        console.error(this.element, imgs);
         if (!imgs.length) {
             return;
         }
@@ -199,7 +198,6 @@ export class CoreFormatTextDirective implements OnChanges {
                 this.domUtils.viewImage(imgSrc, img.getAttribute('alt'), this.component, this.componentId);
             });
 
-            console.error(img.parentNode, anchor);
             img.parentNode.appendChild(anchor);
         });
     }

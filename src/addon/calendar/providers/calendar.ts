@@ -1176,9 +1176,14 @@ export class AddonCalendarProvider {
 
             const data: any = {
                 year: year,
-                month: month,
-                mini: 1 // Set mini to 1 to prevent returning the course selector HTML.
+                month: month
             };
+
+            // This parameter requires Moodle 3.5.
+            if ( site.isVersionGreaterEqualThan('3.5')) {
+                // Set mini to 1 to prevent returning the course selector HTML.
+                data.mini = 1;
+            }
 
             if (courseId) {
                 data.courseid = courseId;

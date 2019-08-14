@@ -423,7 +423,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     submit(): void {
         // Validate data.
         const formData = this.eventForm.value,
-            timeStartDate = this.timeUtils.datetimeToDate(formData.timestart),
+            timeStartDate = new Date(formData.timestart),
             timeUntilDate = this.timeUtils.datetimeToDate(formData.timedurationuntil),
             timeDurationMinutes = parseInt(formData.timedurationminutes || '', 10);
         let error;
