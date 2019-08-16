@@ -14,6 +14,7 @@
 // limitations under the License.
 import { Injectable, Injector } from '@angular/core';
 import { CoreUserProfileFieldHandler, CoreUserProfileFieldHandlerData } from '@core/user/providers/user-profile-field-delegate';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { AddonUserProfileFieldDatetimeComponent } from '../component/datetime';
 
 /**
@@ -24,7 +25,7 @@ export class AddonUserProfileFieldDatetimeHandler implements CoreUserProfileFiel
     name = 'AddonUserProfileFieldDatetime';
     type = 'datetime';
 
-    constructor() {
+    constructor(protected timeUtils: CoreTimeUtilsProvider) {
         // Nothing to do.
     }
 
@@ -50,12 +51,10 @@ export class AddonUserProfileFieldDatetimeHandler implements CoreUserProfileFiel
         const name = 'profile_field_' + field.shortname;
 
         if (formValues[name]) {
-            const milliseconds = new Date(formValues[name]).getTime();
-
             return {
                 type: 'datetime',
                 name: 'profile_field_' + field.shortname,
-                value: Math.round(milliseconds / 1000)
+                value: this.timeUtils.convertToTimestamp(formValues[name])
             };
         }
     }
