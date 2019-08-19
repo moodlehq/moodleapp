@@ -26,6 +26,7 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { AddonCalendarProvider } from './calendar';
 import { AddonCalendarOfflineProvider } from './calendar-offline';
+import { AddonCalendarHelperProvider } from './helper';
 
 /**
  * Service to sync calendar.
@@ -48,7 +49,8 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
             timeUtils: CoreTimeUtilsProvider,
             private utils: CoreUtilsProvider,
             private calendarProvider: AddonCalendarProvider,
-            private calendarOffline: AddonCalendarOfflineProvider) {
+            private calendarOffline: AddonCalendarOfflineProvider,
+            private calendarHelper: AddonCalendarHelperProvider) {
 
         super('AddonCalendarSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
                 timeUtils);
@@ -124,6 +126,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
             warnings: [],
             events: [],
             deleted: [],
+            toinvalidate: [],
             updated: false
         };
         let offlineEventIds: number[];
@@ -152,17 +155,12 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
             return this.utils.allPromises(promises);
         }).then(() => {
             if (result.updated) {
+
                 // Data has been sent to server. Now invalidate the WS calls.
                 const promises = [
                     this.calendarProvider.invalidateEventsList(siteId),
+                    this.calendarHelper.invalidateRepeatedEventsOnCalendar(result.toinvalidate, siteId)
                 ];
-
-                offlineEventIds.forEach((eventId) => {
-                    if (eventId > 0) {
-                        // An event was edited, invalidate its data too.
-                        promises.push(this.calendarProvider.invalidateEvent(eventId, siteId));
-                    }
-                });
 
                 return Promise.all(promises).catch(() => {
                     // Ignore errors.
@@ -214,6 +212,16 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
                     // Ignore errors, maybe there was no edit data.
                 }));
 
+                // We need the event data to invalidate it. Get it from local DB.
+                promises.push(this.calendarProvider.getEventFromLocalDb(eventId, siteId).then((event) => {
+                    result.toinvalidate.push({
+                        event: event,
+                        repeated: data.repeat ? event.eventcount : 1
+                    });
+                }).catch(() => {
+                    // Ignore errors.
+                }));
+
                 return Promise.all(promises);
             }).catch((error) => {
 
@@ -256,6 +264,15 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
                 return this.calendarProvider.submitEventOnline(eventId > 0 ? eventId : undefined, data, siteId).then((newEvent) => {
                     result.updated = true;
                     result.events.push(newEvent);
+
+                    // Add data to invalidate.
+                    const numberOfRepetitions = data.repeat ? data.repeats :
+                        (data.repeateditall && newEvent.repeatid ? newEvent.eventcount : 1);
+
+                    result.toinvalidate.push({
+                        event: newEvent,
+                        repeated: numberOfRepetitions
+                    });
 
                     // Event sent, delete the offline data.
                     return this.calendarOffline.deleteEvent(event.id, siteId);

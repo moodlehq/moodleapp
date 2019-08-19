@@ -95,7 +95,7 @@ export class AddonCalendarOfflineProvider {
                     },
                     {
                         name: 'repeats',
-                        type: 'TEXT',
+                        type: 'INTEGER',
                     },
                     {
                         name: 'repeatid',

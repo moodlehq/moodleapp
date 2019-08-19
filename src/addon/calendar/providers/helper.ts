@@ -344,73 +344,100 @@ export class AddonCalendarHelperProvider {
     /**
      * Invalidate all calls from calendar WS calls.
      *
-     * @param  {any}          event     Event that has been touched.
-     * @param  {number}      repeated   Number of times the event is repeated.
+     * @param {{event: any, repeated: number}[]} events Events that have been touched and number of times each event is repeated.
      * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}           REsolved when done.
+     * @return {Promise<any>} Resolved when done.
      */
-    invalidateRepeatedEventsOnCalendar(event: any, repeated: number, siteId?: string): Promise<any> {
+    invalidateRepeatedEventsOnCalendar(events: {event: any, repeated: number}[], siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            let invalidatePromise;
             const timestarts = [];
 
-            if (repeated > 1) {
-                if (event.repeatid) {
-                    // Being edited or deleted.
-                    invalidatePromise = this.calendarProvider.getLocalEventsByRepeatIdFromLocalDb(event.repeatid, site.id)
-                            .then((events) => {
-                        return this.utils.allPromises(events.map((event) => {
-                            timestarts.push(event.timestart);
+            // Invalidate the events and get the timestarts so we can invalidate months & days.
+            return this.utils.allPromises(events.map((eventData) => {
 
-                            return this.calendarProvider.invalidateEvent(event.id);
-                        }));
-                    });
-                } else {
-                    // Being added.
-                    let time = event.timestart;
-                    while (repeated > 0) {
-                        timestarts.push(time);
-                        time += CoreConstants.SECONDS_DAY * 7;
-                        repeated--;
+                if (eventData.repeated > 1) {
+                    if (eventData.event.repeatid) {
+                        // Being edited or deleted.
+                        // We need to calculate the days to invalidate because the event date could have changed.
+                        // We don't know if the repeated events are before or after this one, invalidate them all.
+                        timestarts.push(eventData.event.timestart);
+
+                        for (let i = 1; i < eventData.repeated; i++) {
+                            timestarts.push(eventData.event.timestart + CoreConstants.SECONDS_DAY * 7 * i);
+                            timestarts.push(eventData.event.timestart - CoreConstants.SECONDS_DAY * 7 * i);
+                        }
+
+                        // Get the repeated events to invalidate them.
+                        return this.calendarProvider.getLocalEventsByRepeatIdFromLocalDb(eventData.event.repeatid, site.id)
+                                .then((events) => {
+
+                            return this.utils.allPromises(events.map((event) => {
+                                return this.calendarProvider.invalidateEvent(event.id);
+                            }));
+                        });
+                    } else {
+                        // Being added.
+                        let time = eventData.event.timestart;
+                        while (eventData.repeated > 0) {
+                            timestarts.push(time);
+                            time += CoreConstants.SECONDS_DAY * 7;
+                            eventData.repeated--;
+                        }
+
+                        return Promise.resolve();
                     }
+                } else {
+                    // Not repeated.
+                    timestarts.push(eventData.event.timestart);
 
-                    invalidatePromise = Promise.resolve();
+                    return this.calendarProvider.invalidateEvent(eventData.event.id);
                 }
-            } else {
-                // Not repeated.
-                timestarts.push(event.timestart);
-                invalidatePromise = this.calendarProvider.invalidateEvent(event.id);
-            }
 
-            return invalidatePromise.finally(() => {
-                let lastMonth, lastYear;
+            })).finally(() => {
+                const invalidatedMonths = {},
+                    invalidatedDays = {};
 
                 return this.utils.allPromises([
                     this.calendarProvider.invalidateAllUpcomingEvents(),
 
-                    // Invalidate months.
+                    // Invalidate months and days.
                     this.utils.allPromises(timestarts.map((time) => {
-                        const day = moment(new Date(time * 1000));
+                        const promises = [],
+                            day = moment(new Date(time * 1000)),
+                            monthId = this.getMonthId(day.year(), day.month() + 1),
+                            dayId = monthId + '#' + day.date();
 
-                        if (lastMonth && (lastMonth == day.month() + 1 && lastYear == day.year())) {
-                            return Promise.resolve();
+                        if (!invalidatedMonths[monthId]) {
+                            // Month not invalidated already, do it now.
+                            invalidatedMonths[monthId] = monthId;
+
+                            promises.push(this.calendarProvider.invalidateMonthlyEvents(day.year(), day.month() + 1, site.id));
                         }
 
-                        // Invalidate once.
-                        lastMonth = day.month() + 1;
-                        lastYear = day.year();
+                        if (!invalidatedDays[dayId]) {
+                            // Day not invalidated already, do it now.
+                            invalidatedDays[dayId] = dayId;
 
-                        return this.calendarProvider.invalidateMonthlyEvents(lastYear, lastMonth, site.id);
-                    })),
+                            promises.push(this.calendarProvider.invalidateDayEvents(day.year(), day.month() + 1, day.date(),
+                                    site.id));
+                        }
 
-                    // Invalidate days.
-                    this.utils.allPromises(timestarts.map((time) => {
-                        const day = moment(new Date(time * 1000));
-
-                        return this.calendarProvider.invalidateDayEvents(day.year(), day.month() + 1, day.date(), site.id);
-                    })),
+                        return this.utils.allPromises(promises);
+                    }))
                 ]);
             });
         });
+    }
+
+    /**
+     * Invalidate all calls from calendar WS calls.
+     *
+     * @param {any} event Event that has been touched.
+     * @param {number} repeated Number of times the event is repeated.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Resolved when done.
+     */
+    invalidateRepeatedEventsOnCalendarForEvent(event: any, repeated: number, siteId?: string): Promise<any> {
+        return this.invalidateRepeatedEventsOnCalendar([{event: event, repeated: repeated}], siteId);
     }
 }

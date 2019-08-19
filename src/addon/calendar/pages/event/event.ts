@@ -445,10 +445,19 @@ export class AddonCalendarEventPage implements OnDestroy {
             const modal = this.domUtils.showModalLoading('core.sending', true);
 
             this.calendarProvider.deleteEvent(this.event.id, this.event.name, deleteAll).then((sent) => {
-                this.calendarHelper.invalidateRepeatedEventsOnCalendar(this.event, deleteAll ? this.event.eventcount : 1)
-                        .catch(() => {
-                    // Ignore errors.
-                }).then(() => {
+                let promise;
+
+                if (sent) {
+                    // Event deleted, invalidate right days & months.
+                    promise = this.calendarHelper.invalidateRepeatedEventsOnCalendarForEvent(this.event,
+                            deleteAll ? this.event.eventcount : 1).catch(() => {
+                        // Ignore errors.
+                    });
+                } else {
+                    promise = Promise.resolve();
+                }
+
+                return promise.then(() => {
                     // Trigger an event.
                     this.eventsProvider.trigger(AddonCalendarProvider.DELETED_EVENT_EVENT, {
                         eventId: this.eventId,
