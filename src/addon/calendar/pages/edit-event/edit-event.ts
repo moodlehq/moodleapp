@@ -423,8 +423,8 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     submit(): void {
         // Validate data.
         const formData = this.eventForm.value,
-            timeStartDate = new Date(formData.timestart),
-            timeUntilDate = this.timeUtils.datetimeToDate(formData.timedurationuntil),
+            timeStartDate = this.timeUtils.convertToTimestamp(formData.timestart),
+            timeUntilDate = this.timeUtils.convertToTimestamp(formData.timedurationuntil),
             timeDurationMinutes = parseInt(formData.timedurationminutes || '', 10);
         let error;
 
@@ -436,7 +436,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
             error = 'core.selectagroup';
         } else if (formData.eventtype == AddonCalendarProvider.TYPE_CATEGORY && !formData.categoryid) {
             error = 'core.selectacategory';
-        } else if (formData.duration == 1 && timeStartDate.getTime() > timeUntilDate.getTime()) {
+        } else if (formData.duration == 1 && timeStartDate > timeUntilDate) {
             error = 'addon.calendar.invalidtimedurationuntil';
         } else if (formData.duration == 2 && (isNaN(timeDurationMinutes) || timeDurationMinutes < 1)) {
             error = 'addon.calendar.invalidtimedurationminutes';
@@ -453,7 +453,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
         const data: any = {
             name: formData.name,
             eventtype: formData.eventtype,
-            timestart: Math.floor(timeStartDate.getTime() / 1000),
+            timestart: timeStartDate,
             description: {
                 text: formData.description,
                 format: 1
@@ -473,7 +473,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
         }
 
         if (formData.duration == 1) {
-            data.timedurationuntil = Math.floor(timeUntilDate.getTime() / 1000);
+            data.timedurationuntil = timeUntilDate;
         } else if (formData.duration == 2) {
             data.timedurationminutes = formData.timedurationminutes;
         }
