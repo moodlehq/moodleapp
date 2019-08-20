@@ -479,7 +479,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
         }
 
         if (formData.repeat) {
-            data.repeats = formData.repeats;
+            data.repeats = Number(formData.repeats);
         }
 
         if (this.event && this.event.repeatid) {
@@ -489,15 +489,22 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
 
         // Send the data.
         const modal = this.domUtils.showModalLoading('core.sending', true);
+        let event;
 
         this.calendarProvider.submitEvent(this.eventId, data).then((result) => {
-            const numberOfRepetitions = formData.repeat ? formData.repeats :
-                (data.repeateditall && this.event.othereventscount ? this.event.othereventscount + 1 : 1);
-            this.calendarHelper.invalidateRepeatedEventsOnCalendar(result.event, numberOfRepetitions).catch(() => {
-                // Ignore errors.
-            }).then(() => {
-                this.returnToList(result.event);
-            });
+            event = result.event;
+
+            if (result.sent) {
+                // Event created or edited, invalidate right days & months.
+                const numberOfRepetitions = formData.repeat ? formData.repeats :
+                    (data.repeateditall && this.event.othereventscount ? this.event.othereventscount + 1 : 1);
+
+                this.calendarHelper.invalidateRepeatedEventsOnCalendarForEvent(result.event, numberOfRepetitions).catch(() => {
+                    // Ignore errors.
+                });
+            }
+        }).then(() => {
+            this.returnToList(event);
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'Error sending data.');
         }).finally(() => {
