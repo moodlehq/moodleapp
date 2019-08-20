@@ -599,6 +599,25 @@ ion-app.app-root {
   .action-sheet-group {
       overflow: auto;
   }
+
+  .action-sheet-wrapper {
+    .action-sheet-button.action-sheet-cancel {
+      color: $core-action-sheet-cancel-color;
+    }
+    .action-sheet-selected {
+      color: $core-color;
+    }
+  }
+
+  @media (min-height: 500px) {
+    .action-sheet-wrapper {
+      bottom: 0;
+      top: initial;
+      max-height: 50%;
+      height: 100%;
+    }
+  }
+
   .alert-message {
       overflow-y: auto;
   }

@@ -164,6 +164,9 @@ $core-login-loading-color: false !default;
 $core-login-item-inner-background-color: $white !default;
 $core-login-item-background-color: $white !default;
 
+$core-action-sheet-color: $core-color !default;
+$core-action-sheet-cancel-color: $danger !default;
+
 // App iOS Variables
 // --------------------------------------------------
 // iOS only Sass variables can go here
@@ -182,6 +185,9 @@ $checkbox-ios-disabled-opacity: $input-select-opacity !default;
 $toggle-ios-disabled-opacity: $input-select-opacity !default;
 $note-ios-color: $note-color;
 $popover-ios-width: $popover-width;
+$action-sheet-ios-title-color: $core-action-sheet-color;
+$action-sheet-ios-button-text-color: $black !default;
+$action-sheet-ios-button-destructive-text-color: $danger;
 $item-ios-divider-background: $item-divider-background;
 $item-ios-divider-color: $item-divider-color;
 
@@ -204,7 +210,8 @@ $checkbox-md-disabled-opacity: $input-select-opacity !default;
 $toggle-md-disabled-opacity: $input-select-opacity !default;
 $note-md-color: $note-color;
 $popover-md-width: $popover-width;
-$action-sheet-md-title-color: $core-color;
+$action-sheet-md-title-color: $core-action-sheet-color;
+$action-sheet-md-button-text-color: $black !default;
 $item-md-divider-background: $item-divider-background;
 $item-md-divider-color: $item-divider-color;
 
@@ -226,6 +233,8 @@ $checkbox-wp-disabled-opacity: $input-select-opacity !default;
 $toggle-wp-disabled-opacity: $input-select-opacity !default;
 $note-wp-color: $note-color;
 $popover-wp-width: $popover-width;
+$action-sheet-wp-title-color: $core-action-sheet-color;
+$action-sheet-wp-button-text-color: $black !default;
 $item-wp-divider-background: $item-divider-background;
 $item-wp-divider-color: $item-divider-color;
 

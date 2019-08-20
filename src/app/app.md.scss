@@ -70,19 +70,6 @@ ion-app.app-root.md {
       padding-top: 0;
       margin-top: $action-sheet-md-title-padding-top;
     }
-    .action-sheet-cancel {
-      color: $red;
-    }
-
-    .action-sheet-wrapper {
-      bottom: 0;
-      top: initial;
-      max-height: 50%;
-      height: 100%;
-    }
-    .action-sheet-selected {
-      color: $core-color;
-    }
   }
 }
 
