@@ -470,6 +470,20 @@ export class CoreSitesProvider {
                             // Service supported but an error happened. Return error.
                             error.critical = true;
 
+                            if (error.errorcode == 'codingerror') {
+                                // This could be caused by a redirect. Check if it's the case.
+                                return this.utils.checkRedirect(siteUrl).then((redirect) => {
+                                    if (redirect) {
+                                        error.error = this.translate.instant('core.login.sitehasredirect');
+                                    } else {
+                                        // We can't be sure if there is a redirect or not. Display cannot connect error.
+                                        error.error = this.translate.instant('core.cannotconnect');
+                                    }
+
+                                    return Promise.reject(error);
+                                });
+                            }
+
                             return Promise.reject(error);
                         }
 
