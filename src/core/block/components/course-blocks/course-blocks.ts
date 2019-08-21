@@ -67,6 +67,10 @@ export class CoreBlockCourseBlocksComponent implements OnInit, OnDestroy {
      * Setup scrolling.
      */
     protected initScroll(): void {
+        if (this.blocks.length <= 0) {
+            return;
+        }
+
         const scroll: HTMLElement = this.content && this.content.getScrollElement();
 
         this.domUtils.waitElementToExist(() => scroll && scroll.querySelector('.core-course-blocks-side')).then((sideElement) => {
@@ -89,6 +93,8 @@ export class CoreBlockCourseBlocksComponent implements OnInit, OnDestroy {
                 this.sideScroll.classList.remove('core-course-blocks-fixed-bottom');
                 this.scrollWorking = false;
             }
+        }).catch(() => {
+            // Ignore errors.
         });
     }
 

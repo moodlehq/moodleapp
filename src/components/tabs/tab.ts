@@ -128,6 +128,8 @@ export class CoreTabComponent implements OnInit, OnDestroy {
             });
 
             this.tabs.showHideTabs(scroll);
+        }).catch(() => {
+            // Ignore errors.
         });
     }
 
