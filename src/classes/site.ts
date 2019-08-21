@@ -751,13 +751,13 @@ export class CoreSite {
                     this.saveToCache(method, data, error, preSets);
 
                     return Promise.reject(error);
-                } else if (typeof preSets.emergencyCache !== 'undefined' && !preSets.emergencyCache) {
-                    this.logger.debug(`WS call '${method}' failed. Emergency cache is forbidden, rejecting.`);
-
-                    return Promise.reject(error);
                 } else if (preSets.cacheErrors && preSets.cacheErrors.indexOf(error.errorcode) != -1) {
                     // Save the error instead of deleting the cache entry so the same content is displayed in offline.
                     this.saveToCache(method, data, error, preSets);
+
+                    return Promise.reject(error);
+                } else if (typeof preSets.emergencyCache !== 'undefined' && !preSets.emergencyCache) {
+                    this.logger.debug(`WS call '${method}' failed. Emergency cache is forbidden, rejecting.`);
 
                     return Promise.reject(error);
                 }
