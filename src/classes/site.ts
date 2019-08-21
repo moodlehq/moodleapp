@@ -1454,7 +1454,15 @@ export class CoreSite {
                 preSets.noLogin = true;
                 preSets.useGet = true;
 
-                return this.wsProvider.callAjax('tool_mobile_get_public_config', {}, preSets);
+                return this.wsProvider.callAjax('tool_mobile_get_public_config', {}, preSets).catch((error2) => {
+                    if (this.getInfo() && this.isVersionGreaterEqualThan('3.8')) {
+                        // GET is supported, return the second error.
+                        return Promise.reject(error2);
+                    } else {
+                        // GET not supported or we don't know if it's supported. Return first error.
+                        return Promise.reject(error);
+                    }
+                });
             }
 
             return Promise.reject(error);
