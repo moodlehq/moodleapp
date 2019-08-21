@@ -640,6 +640,7 @@
   "addon.mod_imscp.deploymenterror": "imscp",
   "addon.mod_imscp.modulenameplural": "imscp",
   "addon.mod_imscp.showmoduledescription": "local_moodlemobileapp",
+  "addon.mod_imscp.toc": "imscp",
   "addon.mod_lesson.answer": "lesson",
   "addon.mod_lesson.attempt": "lesson",
   "addon.mod_lesson.attemptheader": "lesson",

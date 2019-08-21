@@ -13,20 +13,23 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { NavParams, ViewController } from 'ionic-angular';
+import { IonicPage, NavParams, ViewController } from 'ionic-angular';
 
 /**
- * Component to display the TOC of a IMSCP.
+ * Modal to display the TOC of a imscp.
  */
+@IonicPage({ segment: 'addon-mod-imscp-toc-modal' })
 @Component({
-    selector: 'addon-mod-imscp-toc-popover',
-    templateUrl: 'addon-mod-imscp-toc-popover.html'
+    selector: 'page-addon-mod-imscp-toc',
+    templateUrl: 'toc.html'
 })
-export class AddonModImscpTocPopoverComponent {
+export class AddonModImscpTocPage {
     items = [];
+    selected: string;
 
     constructor(navParams: NavParams, private viewCtrl: ViewController) {
         this.items = navParams.get('items') || [];
+        this.selected = navParams.get('selected');
     }
 
     /**
@@ -46,5 +49,12 @@ export class AddonModImscpTocPopoverComponent {
      */
     getNumberForPadding(n: number): number[] {
         return new Array(n);
+    }
+
+    /**
+     * Close modal.
+     */
+    closeModal(): void {
+        this.viewCtrl.dismiss();
     }
 }

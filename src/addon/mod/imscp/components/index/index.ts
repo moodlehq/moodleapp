@@ -13,13 +13,12 @@
 // limitations under the License.
 
 import { Component, Injector } from '@angular/core';
-import { PopoverController } from 'ionic-angular';
+import { ModalController } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
 import { AddonModImscpProvider } from '../../providers/imscp';
 import { AddonModImscpPrefetchHandler } from '../../providers/prefetch-handler';
-import { AddonModImscpTocPopoverComponent } from '../../components/toc-popover/toc-popover';
 
 /**
  * Component that displays a IMSCP.
@@ -40,7 +39,7 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
     nextItem = '';
 
     constructor(injector: Injector, private imscpProvider: AddonModImscpProvider, private courseProvider: CoreCourseProvider,
-            private appProvider: CoreAppProvider, private popoverCtrl: PopoverController,
+            private appProvider: CoreAppProvider, private modalCtrl: ModalController,
             private imscpPrefetch: AddonModImscpPrefetchHandler) {
         super(injector);
     }
@@ -148,17 +147,23 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
      * @param {MouseEvent} event Event.
      */
     showToc(event: MouseEvent): void {
-        const popover = this.popoverCtrl.create(AddonModImscpTocPopoverComponent, { items: this.items });
+        // Create the toc modal.
+        const modal =  this.modalCtrl.create('AddonModImscpTocPage', {
+            items: this.items,
+            selected: this.currentItem
+        }, { cssClass: 'core-modal-lateral',
+            showBackdrop: true,
+            enableBackdropDismiss: true,
+            enterAnimation: 'core-modal-lateral-transition',
+            leaveAnimation: 'core-modal-lateral-transition' });
 
-        popover.onDidDismiss((itemId) => {
-            if (!itemId) {
-                // Not valid, probably a category.
-                return;
+        modal.onDidDismiss((itemId) => {
+            if (itemId) {
+                this.loadItem(itemId);
             }
-            this.loadItem(itemId);
         });
 
-        popover.present({
+        modal.present({
             ev: event
         });
     }
