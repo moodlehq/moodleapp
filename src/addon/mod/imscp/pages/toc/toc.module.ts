@@ -13,33 +13,19 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from 'ionic-angular';
+import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
-import { CoreCourseComponentsModule } from '@core/course/components/components.module';
-import { AddonModImscpIndexComponent } from './index/index';
+import { AddonModImscpTocPage } from './toc';
 
 @NgModule({
     declarations: [
-        AddonModImscpIndexComponent,
+        AddonModImscpTocPage,
     ],
     imports: [
-        CommonModule,
-        IonicModule,
-        TranslateModule.forChild(),
-        CoreComponentsModule,
         CoreDirectivesModule,
-        CoreCourseComponentsModule
+        IonicPageModule.forChild(AddonModImscpTocPage),
+        TranslateModule.forChild()
     ],
-    providers: [
-    ],
-    exports: [
-        AddonModImscpIndexComponent
-    ],
-    entryComponents: [
-        AddonModImscpIndexComponent
-    ]
 })
-export class AddonModImscpComponentsModule {}
+export class AddonModImscpTocPageModule {}

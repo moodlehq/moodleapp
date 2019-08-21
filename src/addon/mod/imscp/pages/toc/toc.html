@@ -1,0 +1,19 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'addon.mod_imscp.toc' | translate }}</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <nav>
+        <ion-list>
+            <a ion-item *ngFor="let item of items" (click)="loadItem(item.href)" [class.core-bold]="!item.href" [class.core-nav-item-selected]="selected == item.href">
+                <span padding-left *ngFor="let i of getNumberForPadding(item.level)"></span>{{item.title}}
+            </a>
+        </ion-list>
+    </nav>
+</ion-content>
