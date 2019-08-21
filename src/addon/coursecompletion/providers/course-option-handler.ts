@@ -97,6 +97,12 @@ export class AddonCourseCompletionCourseOptionHandler implements CoreCourseOptio
         return this.courseCompletionProvider.getCompletion(course.id, undefined, {
             getFromCache: false,
             emergencyCache: false
+        }).catch((error) => {
+            if (error && error.errorcode == 'notenroled') {
+                // Not enrolled error, probably a teacher. Ignore error.
+            } else {
+                return Promise.reject(error);
+            }
         });
     }
 }
