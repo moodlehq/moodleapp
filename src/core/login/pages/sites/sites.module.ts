@@ -27,5 +27,8 @@ import { CoreDirectivesModule } from '@directives/directives.module';
         IonicPageModule.forChild(CoreLoginSitesPage),
         TranslateModule.forChild()
     ],
+    entryComponents: [
+        CoreLoginSitesPage
+    ]
 })
 export class CoreLoginSitesPageModule {}

@@ -14,6 +14,7 @@
 
 import { NgModule } from '@angular/core';
 import { CoreLoginHelperProvider } from './providers/helper';
+import { CoreLoginSitesPageModule } from './pages/sites/sites.module';
 
 // List of providers.
 export const CORE_LOGIN_PROVIDERS = [
@@ -24,6 +25,7 @@ export const CORE_LOGIN_PROVIDERS = [
     declarations: [
     ],
     imports: [
+        CoreLoginSitesPageModule
     ],
     providers: CORE_LOGIN_PROVIDERS
 })
