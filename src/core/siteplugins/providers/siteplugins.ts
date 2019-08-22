@@ -445,12 +445,23 @@ export class CoreSitePluginsProvider {
             // Include only the properties specified in the array.
             for (const i in useOtherData) {
                 const name = useOtherData[i];
-                args[name] = otherData[name];
+
+                if (typeof otherData[name] == 'object' && otherData[name] !== null) {
+                    // Stringify objects.
+                    args[name] = JSON.stringify(otherData[name]);
+                } else {
+                    args[name] = otherData[name];
+                }
             }
         } else {
             // Add all the data to args.
             for (const name in otherData) {
-                args[name] = otherData[name];
+                if (typeof otherData[name] == 'object' && otherData[name] !== null) {
+                    // Stringify objects.
+                    args[name] = JSON.stringify(otherData[name]);
+                } else {
+                    args[name] = otherData[name];
+                }
             }
         }
 
