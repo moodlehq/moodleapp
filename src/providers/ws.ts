@@ -253,9 +253,9 @@ export class CoreWSProvider {
         if (preSets.noLogin && preSets.useGet) {
             // Send params using GET.
             siteUrl += '&args=' + encodeURIComponent(ajaxData);
-            promise = this.http.get(siteUrl).timeout(CoreConstants.WS_TIMEOUT).toPromise();
+            promise = this.http.get(siteUrl).timeout(this.getRequestTimeout()).toPromise();
         } else {
-            promise = this.http.post(siteUrl, ajaxData).timeout(CoreConstants.WS_TIMEOUT).toPromise();
+            promise = this.http.post(siteUrl, ajaxData).timeout(this.getRequestTimeout()).toPromise();
         }
 
         return promise.then((data: any) => {
@@ -517,6 +517,15 @@ export class CoreWSProvider {
     }
 
     /**
+     * Get a request timeout based on the network connection.
+     *
+     * @return {number} Timeout in ms.
+     */
+    getRequestTimeout(): number {
+        return this.appProvider.isNetworkAccessLimited() ? CoreConstants.WS_TIMEOUT : CoreConstants.WS_TIMEOUT_WIFI;
+    }
+
+    /**
      * Get the unique queue item id of the cache for a HTTP request.
      *
      * @param {string} method Method of the HTTP request.
@@ -542,7 +551,7 @@ export class CoreWSProvider {
         let promise = this.getPromiseHttp('head', url);
 
         if (!promise) {
-            promise = this.commonHttp.head(url).timeout(CoreConstants.WS_TIMEOUT).toPromise();
+            promise = this.commonHttp.head(url).timeout(this.getRequestTimeout()).toPromise();
             promise = this.setPromiseHttp(promise, 'head', url);
         }
 
@@ -573,7 +582,7 @@ export class CoreWSProvider {
         const requestUrl = siteUrl + '&wsfunction=' + method;
 
         // Perform the post request.
-        const promise = this.http.post(requestUrl, ajaxData, options).timeout(CoreConstants.WS_TIMEOUT).toPromise();
+        const promise = this.http.post(requestUrl, ajaxData, options).timeout(this.getRequestTimeout()).toPromise();
 
         return promise.then((data: any) => {
             // Some moodle web services return null.
@@ -693,7 +702,7 @@ export class CoreWSProvider {
         // HTTP not finished, but we should delete the promise after timeout.
         timeout = setTimeout(() => {
             delete this.ongoingCalls[queueItemId];
-        }, CoreConstants.WS_TIMEOUT);
+        }, this.getRequestTimeout());
 
         // HTTP finished, delete from ongoing.
         return promise.finally(() => {

@@ -39,7 +39,8 @@ export class CoreConstants {
     static SETTINGS_ANALYTICS_ENABLED = 'CoreSettingsAnalyticsEnabled';
 
     // WS constants.
-    static WS_TIMEOUT = 30000;
+    static WS_TIMEOUT = 30000; // Timeout when not in WiFi.
+    static WS_TIMEOUT_WIFI = 30000; // Timeout when in WiFi.
     static WS_PREFIX = 'local_mobile_';
 
     // Login constants.
