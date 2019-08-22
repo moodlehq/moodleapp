@@ -48,6 +48,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     loaded = false;
     timeFormat: string;
     isCurrentMonth: boolean;
+    isPastMonth: boolean;
 
     protected year: number;
     protected month: number;
@@ -57,6 +58,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     protected offlineEvents: {[monthId: string]: {[day: number]: any[]}} = {}; // Offline events classified in month & day.
     protected offlineEditedEventsIds = []; // IDs of events edited in offline.
     protected deletedEvents = []; // Events deleted in offline.
+    protected currentTime: number;
 
     // Observers.
     protected undeleteEventObserver: any;
@@ -200,6 +202,28 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
             this.weekDays = this.calendarProvider.getWeekDays(result.daynames[0].dayno);
             this.weeks = result.weeks;
 
+            this.calculateIsCurrentMonth();
+
+            if (this.isCurrentMonth) {
+                let isPast = true;
+                this.weeks.forEach((week) => {
+                    week.days.some((day) => {
+                        day.ispast = isPast && !day.istoday;
+                        isPast = day.ispast;
+
+                        if (day.istoday) {
+                            day.events.forEach((event) => {
+                                event.ispast = this.isEventPast(event);
+                            });
+
+                            return true;
+                        }
+
+                        return day.istoday;
+                    });
+                });
+            }
+
             // Merge the online events with offline data.
             this.mergeEvents();
 
@@ -288,7 +312,6 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
             this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
             this.decreaseMonth();
         }).finally(() => {
-            this.calculateIsCurrentMonth();
             this.loaded = true;
         });
     }
@@ -305,7 +328,6 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
             this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
             this.increaseMonth();
         }).finally(() => {
-            this.calculateIsCurrentMonth();
             this.loaded = true;
         });
     }
@@ -336,7 +358,10 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     calculateIsCurrentMonth(): void {
         const now = new Date();
 
+        this.currentTime = this.timeUtils.timestamp();
+
         this.isCurrentMonth = this.year == now.getFullYear() && this.month == now.getMonth() + 1;
+        this.isPastMonth = this.year < now.getFullYear() || (this.year == now.getFullYear() && this.month < now.getMonth() + 1);
     }
 
     /**
@@ -464,6 +489,15 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
                 }
             });
         });
+    }
+
+    /**
+     * Returns if the event is in the past or not.
+     * @param  {any}     event Event object.
+     * @return {boolean}       True if it's in the past.
+     */
+    isEventPast(event: any): boolean {
+        return (event.timestart + event.timeduration) < this.currentTime;
     }
 
     /**

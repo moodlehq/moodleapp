@@ -91,6 +91,7 @@
   "addon.calendar.calendarreminders": "local_moodlemobileapp",
   "addon.calendar.confirmeventdelete": "calendar",
   "addon.calendar.confirmeventseriesdelete": "calendar",
+  "addon.calendar.currentmonth": "local_moodlemobileapp",
   "addon.calendar.daynext": "calendar",
   "addon.calendar.dayprev": "calendar",
   "addon.calendar.defaultnotificationtime": "local_moodlemobileapp",

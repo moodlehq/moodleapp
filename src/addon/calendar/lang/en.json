@@ -6,6 +6,7 @@
     "calendarreminders": "Calendar reminders",
     "confirmeventdelete": "Are you sure you want to delete the \"{{$a}}\" event?",
     "confirmeventseriesdelete": "The \"{{$a.name}}\" event is part of a series. Do you want to delete just this event, or all {{$a.count}} events in the series?",
+    "currentmonth": "Current Month",
     "daynext": "Next day",
     "dayprev": "Previous day",
     "defaultnotificationtime": "Default notification time",
