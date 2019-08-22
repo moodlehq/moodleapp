@@ -22,6 +22,7 @@ import { CoreSitesFactoryProvider } from './sites-factory';
 import { CoreTextUtilsProvider } from './utils/text';
 import { CoreUrlUtilsProvider } from './utils/url';
 import { CoreUtilsProvider } from './utils/utils';
+import { CoreWSProvider } from './ws';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../configconstants';
 import { CoreSite } from '@classes/site';
@@ -326,7 +327,7 @@ export class CoreSitesProvider {
     constructor(logger: CoreLoggerProvider, private http: HttpClient, private sitesFactory: CoreSitesFactoryProvider,
             private appProvider: CoreAppProvider, private translate: TranslateService, private urlUtils: CoreUrlUtilsProvider,
             private eventsProvider: CoreEventsProvider,  private textUtils: CoreTextUtilsProvider,
-            private utils: CoreUtilsProvider, private injector: Injector) {
+            private utils: CoreUtilsProvider, private injector: Injector, private wsProvider: CoreWSProvider) {
         this.logger = logger.getInstance('CoreSitesProvider');
 
         this.appDB = appProvider.getDB();
@@ -515,7 +516,8 @@ export class CoreSitesProvider {
      * @return {Promise} A promise to be resolved if the site exists.
      */
     siteExists(siteUrl: string): Promise<void> {
-        return this.http.post(siteUrl + '/login/token.php', {}).timeout(CoreConstants.WS_TIMEOUT).toPromise().catch(() => {
+        return this.http.post(siteUrl + '/login/token.php', {}).timeout(this.wsProvider.getRequestTimeout()).toPromise()
+                .catch(() => {
             // Default error messages are kinda bad, return our own message.
             return Promise.reject({error: this.translate.instant('core.cannotconnect')});
         }).then((data: any) => {
@@ -555,7 +557,7 @@ export class CoreSitesProvider {
                 service: service
             },
             loginUrl = siteUrl + '/login/token.php',
-            promise = this.http.post(loginUrl, params).timeout(CoreConstants.WS_TIMEOUT).toPromise();
+            promise = this.http.post(loginUrl, params).timeout(this.wsProvider.getRequestTimeout()).toPromise();
 
         return promise.then((data: any): any => {
             if (typeof data == 'undefined') {

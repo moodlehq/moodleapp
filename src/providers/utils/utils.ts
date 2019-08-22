@@ -27,7 +27,6 @@ import { CoreLoggerProvider } from '../logger';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
 import { CoreWSProvider, CoreWSError } from '../ws';
-import { CoreConstants } from '@core/constants';
 
 /**
  * Deferred promise. It's similar to the result of $q.defer() in AngularJS.
@@ -232,7 +231,8 @@ export class CoreUtilsProvider {
                 initOptions.signal = controller.signal;
             }
 
-            return this.timeoutPromise(window.fetch(url, initOptions), CoreConstants.WS_TIMEOUT).then((response: Response) => {
+            return this.timeoutPromise(window.fetch(url, initOptions), this.wsProvider.getRequestTimeout())
+                    .then((response: Response) => {
                 return response.redirected;
             }).catch((error) => {
                 if (error.timeout && controller) {

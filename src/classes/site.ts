@@ -1334,7 +1334,7 @@ export class CoreSite {
             return Promise.resolve({ code: 0 });
         }
 
-        const promise = this.http.post(checkUrl, { service: service }).timeout(CoreConstants.WS_TIMEOUT).toPromise();
+        const promise = this.http.post(checkUrl, { service: service }).timeout(this.wsProvider.getRequestTimeout()).toPromise();
 
         return promise.then((data: any) => {
             if (typeof data != 'undefined' && data.errorcode === 'requirecorrectaccess') {
