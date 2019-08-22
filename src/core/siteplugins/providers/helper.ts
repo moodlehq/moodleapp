@@ -114,6 +114,8 @@ export class CoreSitePluginsHelperProvider {
                         eventsProvider.trigger(CoreEventsProvider.SITE_PLUGINS_LOADED, {}, data.siteId);
                     });
                 }
+            }).catch((e) => {
+                // Ignore errors here.
             }).finally(() => {
                 this.sitePluginsProvider.setPluginsFetched();
             });

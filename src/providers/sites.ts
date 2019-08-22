@@ -1385,6 +1385,8 @@ export class CoreSitesProvider {
                         this.eventsProvider.trigger(CoreEventsProvider.SITE_UPDATED, info, siteId);
                     });
                 });
+            }).catch((error) => {
+                // Ignore that we cannot fetch site info. Probably the auth token is invalid.
             });
         });
     }

@@ -96,7 +96,9 @@ export class CoreCourseModule {
         eventsProvider.on(CoreEventsProvider.LOGIN, () => {
             // Log the app is open to keep user in online status.
             setTimeout(() => {
-                cronDelegate.forceCronHandlerExecution(logHandler.name);
+                cronDelegate.forceCronHandlerExecution(logHandler.name).catch((e) => {
+                    // Ignore errors here, since probably login is not complete: it happens on token invalid.
+                });
             }, 1000);
         });
     }
