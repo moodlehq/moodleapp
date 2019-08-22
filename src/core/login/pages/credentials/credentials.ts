@@ -82,6 +82,13 @@ export class CoreLoginCredentialsPage {
     }
 
     /**
+     * View enter.
+     */
+    ionViewDidEnter(): void {
+        this.viewLeft = false;
+    }
+
+    /**
      * View left.
      */
     ionViewDidLeave(): void {

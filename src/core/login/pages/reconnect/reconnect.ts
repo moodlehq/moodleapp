@@ -101,13 +101,16 @@ export class CoreLoginReconnectPage {
 
     /**
      * Cancel reconnect.
+     *
+     * @param {Event} [e] Event.
      */
-    cancel(): void {
-        this.sitesProvider.logout().catch(() => {
-            // Ignore errors (shouldn't happen).
-        }).finally(() => {
-            this.navCtrl.setRoot('CoreLoginSitesPage');
-        });
+    cancel(e?: Event): void {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        this.sitesProvider.logout();
     }
 
     /**

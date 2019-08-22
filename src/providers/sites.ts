@@ -27,7 +27,6 @@ import { CoreConfigConstants } from '../configconstants';
 import { CoreSite } from '@classes/site';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { Md5 } from 'ts-md5/dist/md5';
-import { Location } from '@angular/common';
 import { WP_PROVIDER } from '@app/app.module';
 
 /**
@@ -326,7 +325,7 @@ export class CoreSitesProvider {
 
     constructor(logger: CoreLoggerProvider, private http: HttpClient, private sitesFactory: CoreSitesFactoryProvider,
             private appProvider: CoreAppProvider, private translate: TranslateService, private urlUtils: CoreUrlUtilsProvider,
-            private eventsProvider: CoreEventsProvider,  private textUtils: CoreTextUtilsProvider, private location: Location,
+            private eventsProvider: CoreEventsProvider,  private textUtils: CoreTextUtilsProvider,
             private utils: CoreUtilsProvider, private injector: Injector) {
         this.logger = logger.getInstance('CoreSitesProvider');
 
@@ -1235,27 +1234,23 @@ export class CoreSitesProvider {
      * @return {Promise<any>} Promise resolved when the user is logged out.
      */
     logout(): Promise<any> {
-        if (!this.currentSite) {
-            // Already logged out.
-            return Promise.resolve();
+        let siteId;
+        const promises = [];
+
+        if (this.currentSite) {
+            const siteConfig = this.currentSite.getStoredConfig();
+            siteId = this.currentSite.getId();
+
+            this.currentSite = undefined;
+
+            if (siteConfig && siteConfig.tool_mobile_forcelogout == '1') {
+                promises.push(this.setSiteLoggedOut(siteId, true));
+            }
+
+            promises.push(this.appDB.deleteRecords(this.CURRENT_SITE_TABLE, { id: 1 }));
         }
-
-        const siteId = this.currentSite.getId(),
-            siteConfig = this.currentSite.getStoredConfig(),
-            promises = [];
-
-        this.currentSite = undefined;
-
-        if (siteConfig && siteConfig.tool_mobile_forcelogout == '1') {
-            promises.push(this.setSiteLoggedOut(siteId, true));
-        }
-
-        promises.push(this.appDB.deleteRecords(this.CURRENT_SITE_TABLE, { id: 1 }));
 
         return Promise.all(promises).finally(() => {
-            // Due to DeepLinker, we need to remove the path from the URL, otherwise some pages are re-created when they shouldn't.
-            this.location.replaceState('');
-
             this.eventsProvider.trigger(CoreEventsProvider.LOGOUT, {}, siteId);
         });
     }
