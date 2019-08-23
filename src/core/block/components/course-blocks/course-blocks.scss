@@ -29,6 +29,17 @@ ion-app.app-root core-block-course-blocks {
                 min-width: $core-side-blocks-min-width;
                 @include border-start(1px, solid, $list-md-border-color);
             }
+
+            .core-course-blocks-content,
+            div.core-course-blocks-side {
+                position: relative;
+                height: 100%;
+
+                .core-loading-center,
+                core-loading.core-loading-loaded {
+                    position: initial;
+                }
+            }
         }
 
         @include media-breakpoint-down(sm) {
