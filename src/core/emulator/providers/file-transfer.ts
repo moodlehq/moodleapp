@@ -380,7 +380,7 @@ export class FileTransferObjectMock extends FileTransferObject {
                 for (const name in params) {
                     fd.append(name, params[name]);
                 }
-                fd.append('file', file);
+                fd.append('file', file, fileName);
 
                 xhr.send(fd);
             }).catch(reject);
