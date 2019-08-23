@@ -186,7 +186,7 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
                     this.notesLoaded = false;
                 }
 
-                this.refreshNotes(true);
+                this.refreshNotes(false);
             } else if (data && data.type && data.type != this.type) {
                 this.type = data.type;
                 this.typeChanged();
@@ -209,7 +209,7 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
             this.notesProvider.deleteNote(note, this.courseId).then(() => {
                 this.showDelete = false;
 
-                this.refreshNotes(true);
+                this.refreshNotes(false);
 
                 this.domUtils.showToast('addon.notes.eventnotedeleted', true, 3000);
             }).catch((error) => {

@@ -45,6 +45,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
     @Input() poster?: string;
     @Output() onLoad = new EventEmitter(); // Emitted when content is loaded. Only for images.
 
+    loaded = false;
     protected element: HTMLElement;
     protected logger;
     protected initialized = false;
@@ -192,6 +193,10 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
                 this.addSource(url);
             }
 
+            if (tagName === 'IMG') {
+                this.waitForLoad();
+            }
+
             return Promise.reject(null);
         }
 
@@ -227,13 +232,8 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
                     this.addSource(finalUrl);
                 } else {
                     if (tagName === 'IMG') {
-                        const listener = (): void => {
-                            this.element.removeEventListener('load', listener);
-                            this.element.removeEventListener('error', listener);
-                            this.onLoad.emit();
-                        };
-                        this.element.addEventListener('load', listener);
-                        this.element.addEventListener('error', listener);
+                        this.loaded = false;
+                        this.waitForLoad();
                     }
                     this.element.setAttribute(targetAttr, finalUrl);
                     this.element.setAttribute('data-original-' + targetAttr, url);
@@ -298,5 +298,20 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
         return this.utils.allPromises(promises).then(() => {
             this.element.setAttribute('style', inlineStyles);
         });
+    }
+
+    /**
+     * Wait for the image to be loaded or error, and emit an event when it happens.
+     */
+    protected waitForLoad(): void {
+        const listener = (): void => {
+            this.element.removeEventListener('load', listener);
+            this.element.removeEventListener('error', listener);
+            this.onLoad.emit();
+            this.loaded = true;
+        };
+
+        this.element.addEventListener('load', listener);
+        this.element.addEventListener('error', listener);
     }
 }
