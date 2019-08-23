@@ -1,6 +1,6 @@
 <ion-row *ngIf="actions && actions.length > 0" justify-content-around>
     <ion-col *ngFor="let action of actions">
-        <button ion-button icon-left clear small block (click)="action.action()">
+        <button ion-button icon-left clear small block (click)="action.action(undefined, navCtrl)">
             <ion-icon name="{{action.icon}}"></ion-icon>
             {{ action.message | translate }}
         </button>

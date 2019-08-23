@@ -31,7 +31,8 @@ export class AddonNotificationsActionsComponent implements OnInit {
 
     actions: CoreContentLinksAction[] = [];
 
-    constructor(private contentLinksDelegate: CoreContentLinksDelegate, private sitesProvider: CoreSitesProvider) {}
+    constructor(private contentLinksDelegate: CoreContentLinksDelegate, private sitesProvider: CoreSitesProvider,
+            public navCtrl: NavController) {}
 
     /**
      * Component being initialized.
