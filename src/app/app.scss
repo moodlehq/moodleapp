@@ -674,8 +674,8 @@ ion-app.app-root {
     border-radius: 50%;
   }
 
-  .toolbar-ios {
-    height: 52px;
+  .header .toolbar-ios {
+    height: $toolbar-ios-height;
   }
 
   // Footer with auto height.

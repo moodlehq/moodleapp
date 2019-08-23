@@ -5,9 +5,6 @@ $item-message-note-font-size: 75% !default;
 $item-message-mine-bg: $gray-light !default;
 
 ion-app.app-root page-addon-messages-discussion {
-    .toolbar-title {
-        padding: 0;
-    }
 
     ion-content {
         background-color: $gray-lighter !important;
@@ -192,6 +189,8 @@ ion-app.app-root page-addon-messages-discussion {
     }
 
     .toolbar-title {
+        padding: 0;
+
         img {
             @include margin-horizontal(null, 6px);
         }
@@ -207,6 +206,10 @@ ion-app.app-root page-addon-messages-discussion {
 
         ion-icon {
             @include margin-horizontal(6px, null);
+        }
+
+        &.toolbar-title-ios {
+            justify-content: center;
         }
     }
 }
