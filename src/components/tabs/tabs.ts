@@ -234,7 +234,15 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
      */
     calculateTabBarHeight(): void {
         this.tabBarHeight = this.topTabsElement.offsetHeight;
-        this.originalTabsContainer.style.paddingBottom = this.tabBarHeight + 'px';
+
+        if (this.tabsShown) {
+            // Smooth translation.
+            this.topTabsElement.style.transform = 'translateY(-' + this.lastScroll + 'px)';
+            this.originalTabsContainer.style.transform = 'translateY(-' + this.lastScroll + 'px)';
+            this.originalTabsContainer.style.paddingBottom = this.tabBarHeight - this.lastScroll + 'px';
+        } else {
+            this.tabBarElement.classList.add('tabs-hidden');
+        }
     }
 
     /**
