@@ -342,11 +342,17 @@ export class CorePushNotificationsProvider {
         const win = <any> window; // This feature is only present in our fork of the plugin.
 
         if (CoreConfigConstants.enableanalytics && win.PushNotification && win.PushNotification.logEvent) {
-            return new Promise((resolve, reject): void => {
-                win.PushNotification.logEvent(resolve, (error) => {
-                    this.logger.error('Error logging firebase event', name, error);
-                    resolve();
-                }, name, data, !!filter);
+
+            // Check if the analytics is enabled by the user.
+            return this.configProvider.get(CoreConstants.SETTINGS_ANALYTICS_ENABLED, true).then((enabled) => {
+                if (enabled) {
+                    return new Promise((resolve, reject): void => {
+                        win.PushNotification.logEvent(resolve, (error) => {
+                            this.logger.error('Error logging firebase event', name, error);
+                            resolve();
+                        }, name, data, !!filter);
+                    });
+                }
             });
         }
 

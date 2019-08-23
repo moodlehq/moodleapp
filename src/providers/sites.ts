@@ -492,6 +492,9 @@ export class CoreSitesProvider {
                 }
 
                 return data;
+            }, (error) => {
+                // Local mobile check returned an error. This only happens if the plugin is installed and it returns an error.
+                return rejectWithCriticalError(error);
             }).then((data) => {
                 siteUrl = temporarySite.getURL();
 
