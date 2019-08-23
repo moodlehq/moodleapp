@@ -50,6 +50,8 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
     protected logger;
     protected initialized = false;
 
+    invalid = false;
+
     constructor(element: ElementRef, logger: CoreLoggerProvider, private filepoolProvider: CoreFilepoolProvider,
             private platform: Platform, private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
             private urlUtils: CoreUrlUtilsProvider, private appProvider: CoreAppProvider, private utils: CoreUtilsProvider) {
@@ -142,6 +144,15 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
             }
 
         } else {
+            this.invalid = true;
+
+            return;
+        }
+
+        // Avoid handling data url's.
+        if (url.indexOf('data:') === 0) {
+            this.invalid = true;
+
             return;
         }
 

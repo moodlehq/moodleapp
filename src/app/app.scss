@@ -609,15 +609,6 @@ ion-app.app-root {
     }
   }
 
-  @media (min-height: 500px) {
-    .action-sheet-wrapper {
-      bottom: 0;
-      top: initial;
-      max-height: 50%;
-      height: 100%;
-    }
-  }
-
   .alert-message {
       overflow-y: auto;
   }

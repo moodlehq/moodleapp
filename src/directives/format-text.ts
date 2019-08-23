@@ -409,7 +409,12 @@ export class CoreFormatTextDirective implements OnChanges {
                 // Walk through the content to find images, and add our directive.
                 images.forEach((img: HTMLElement) => {
                     this.addMediaAdaptClass(img);
-                    externalImages.push(this.addExternalContent(img));
+
+                    const externalImage = this.addExternalContent(img);
+                    if (!externalImage.invalid) {
+                        externalImages.push(externalImage);
+                    }
+
                     if (this.utils.isTrueOrOne(this.adaptImg) && !img.classList.contains('icon')) {
                         this.adaptImage(img);
                     }
@@ -480,7 +485,9 @@ export class CoreFormatTextDirective implements OnChanges {
                 promise = Promise.resolve();
             }
 
-            return promise.then(() => {
+            return promise.catch(() => {
+                // Ignore errors. So content gets always shown.
+            }).then(() => {
                 return div;
             });
         });
