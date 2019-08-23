@@ -32,17 +32,34 @@ ion-app.app-root addon-calendar-calendar {
             @include border-end(0, null, null);
             @include padding(null, 8px, null, null);
         }
-        .addon-calendar-day-number {
-            height: 24px;
-            line-height: 24px;
-            width: max-content;
-            min-width: 24px;
-            text-align: center;
-            font-weight: 500;
-            display: inline-block;
-            margin: 3px;
+
+        &.addon-calendar-event-past-day > .addon-calendar-dot-types,
+        &.addon-calendar-event-past-day > .addon-calendar-day-events {
+            opacity: 0.5;
         }
-        &.today .addon-calendar-day-number {
+
+        .addon-calendar-day-number {
+            margin: 0;
+
+            span {
+                line-height: 24px;
+                font-weight: 500;
+                display: inline-block;
+                margin: 3px;
+                width: max-content;
+                width: 24px;
+                height: 24px;
+                text-align: center;
+            }
+        }
+
+        @include media-breakpoint-up(md) {
+            .addon-calendar-day-number {
+                text-align: left;
+            }
+        }
+
+        &.today .addon-calendar-day-number span {
             background-color: $calendar-today-bgcolor;
             color: $calendar-today-color;
 
@@ -57,6 +74,10 @@ ion-app.app-root addon-calendar-calendar {
             margin-bottom: 0.6em;
             overflow: hidden;
             white-space: nowrap;
+
+            &.addon-calendar-event-past {
+                opacity: 0.5;
+            }
 
             .addon-calendar-event-name {
                 font-weight: 500;
@@ -81,7 +102,6 @@ ion-app.app-root addon-calendar-calendar {
     }
 
     .addon-calendar-weekday {
-        color: $gray-dark;
         border-bottom: 1px solid $list-md-border-color;
     }
 
@@ -130,6 +150,6 @@ ion-app.app-root addon-calendar-calendar {
         width: 16px;
         height: 16px;
         display: inline-block;
-        vertical-align: middle;
+        vertical-align: bottom;
     }
 }

@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChildren, Input, OnInit, QueryList, ElementRef, OnDestroy } from '@angular/core';
+import { Component, ViewChildren, Input, OnInit, QueryList, ElementRef } from '@angular/core';
 import { Content } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreAppProvider } from '@providers/app';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreBlockComponent } from '../block/block';
 import { CoreBlockHelperProvider } from '../../providers/helper';
@@ -27,7 +26,7 @@ import { CoreBlockHelperProvider } from '../../providers/helper';
     selector: 'core-block-course-blocks',
     templateUrl: 'core-block-course-blocks.html',
 })
-export class CoreBlockCourseBlocksComponent implements OnInit, OnDestroy {
+export class CoreBlockCourseBlocksComponent implements OnInit {
 
     @Input() courseId: number;
     @Input() hideBlocks = false;
@@ -39,16 +38,10 @@ export class CoreBlockCourseBlocksComponent implements OnInit, OnDestroy {
     blocks = [];
 
     protected element: HTMLElement;
-    protected lastScroll;
-    protected translationY = 0;
-    protected blocksScrollHeight = 0;
-    protected sideScroll: HTMLElement;
-    protected vpHeight = 0; // Viewport height.
-    protected scrollWorking = false;
 
     constructor(private domUtils: CoreDomUtilsProvider, private courseProvider: CoreCourseProvider,
             protected blockHelper: CoreBlockHelperProvider, element: ElementRef,
-            protected content: Content, protected appProvider: CoreAppProvider) {
+            protected content: Content) {
         this.element = element.nativeElement;
     }
 
@@ -58,81 +51,7 @@ export class CoreBlockCourseBlocksComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.loadContent().finally(() => {
             this.dataLoaded = true;
-
-            window.addEventListener('resize', this.initScroll.bind(this));
         });
-    }
-
-    /**
-     * Setup scrolling.
-     */
-    protected initScroll(): void {
-        if (this.blocks.length <= 0) {
-            return;
-        }
-
-        const scroll: HTMLElement = this.content && this.content.getScrollElement();
-
-        this.domUtils.waitElementToExist(() => scroll && scroll.querySelector('.core-course-blocks-side')).then((sideElement) => {
-            const contentHeight = parseInt(this.content.getNativeElement().querySelector('.scroll-content').scrollHeight, 10);
-
-            this.sideScroll = scroll.querySelector('.core-course-blocks-side-scroll');
-            this.blocksScrollHeight = this.sideScroll.scrollHeight;
-            this.vpHeight = sideElement.clientHeight;
-
-            // Check if needed and event was not init before.
-            if (this.appProvider.isWide() && this.vpHeight && contentHeight > this.vpHeight &&
-                    this.blocksScrollHeight > this.vpHeight) {
-                if (typeof this.lastScroll == 'undefined') {
-                    this.lastScroll = 0;
-                    scroll.addEventListener('scroll', this.scrollFunction.bind(this));
-                }
-                this.scrollWorking = true;
-            } else {
-                this.sideScroll.style.transform = 'translate(0, 0)';
-                this.sideScroll.classList.remove('core-course-blocks-fixed-bottom');
-                this.scrollWorking = false;
-            }
-        }).catch(() => {
-            // Ignore errors.
-        });
-    }
-
-    /**
-     * Scroll function that moves the sidebar if needed.
-     *
-     * @param {Event} e Event to get the target from.
-     */
-    protected scrollFunction(e: Event): void {
-        if (!this.scrollWorking) {
-            return;
-        }
-
-        const target: any = e.target,
-            top = parseInt(target.scrollTop, 10),
-            goingUp = top < this.lastScroll;
-        if (goingUp) {
-            this.sideScroll.classList.remove('core-course-blocks-fixed-bottom');
-            if (top <= this.translationY ) {
-                // Fixed to top.
-                this.translationY = top;
-                this.sideScroll.style.transform = 'translate(0, ' + this.translationY + 'px)';
-            }
-        } else if (top - this.translationY >= (this.blocksScrollHeight - this.vpHeight)) {
-            // Fixed to bottom.
-            this.sideScroll.classList.add('core-course-blocks-fixed-bottom');
-            this.translationY = top - (this.blocksScrollHeight - this.vpHeight);
-            this.sideScroll.style.transform = 'translate(0, ' + this.translationY + 'px)';
-        }
-
-        this.lastScroll = top;
-    }
-
-    /**
-     * Component destroyed.
-     */
-    ngOnDestroy(): void {
-        window.removeEventListener('resize', this.initScroll);
     }
 
     /**
@@ -175,8 +94,6 @@ export class CoreBlockCourseBlocksComponent implements OnInit, OnDestroy {
                 this.element.classList.remove('core-no-blocks');
 
                 this.content.getElementRef().nativeElement.classList.add('core-course-block-with-blocks');
-
-                this.initScroll();
             } else {
                 this.element.classList.remove('core-has-blocks');
                 this.element.classList.add('core-no-blocks');

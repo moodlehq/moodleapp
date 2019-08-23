@@ -90,6 +90,7 @@
     "addon.calendar.calendarreminders": "Calendar reminders",
     "addon.calendar.confirmeventdelete": "Are you sure you want to delete the \"{{$a}}\" event?",
     "addon.calendar.confirmeventseriesdelete": "The \"{{$a.name}}\" event is part of a series. Do you want to delete just this event, or all {{$a.count}} events in the series?",
+    "addon.calendar.currentmonth": "Current Month",
     "addon.calendar.daynext": "Next day",
     "addon.calendar.dayprev": "Previous day",
     "addon.calendar.defaultnotificationtime": "Default notification time",

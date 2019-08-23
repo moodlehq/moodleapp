@@ -51,6 +51,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     protected deletedEvents = []; // Events deleted in offline.
     protected timeFormat: string;
     protected currentMoment: moment.Moment;
+    protected currentTime: number;
 
     // Observers.
     protected newEventObserver: any;
@@ -74,6 +75,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     isOnline = false;
     syncIcon: string;
     isCurrentDay: boolean;
+    isPastDay: boolean;
 
     constructor(localNotificationsProvider: CoreLocalNotificationsProvider,
             navParams: NavParams,
@@ -308,9 +310,12 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             // Filter events by course.
             this.filterEvents();
 
+            this.calculateIsCurrentDay();
+
             // Re-calculate the formatted time so it uses the device date.
             const dayTime = this.currentMoment.unix() * 1000;
             this.events.forEach((event) => {
+                event.ispast = this.isPastDay || (this.isCurrentDay && this.isEventPast(event));
                 promises.push(this.calendarProvider.formatEventTime(event, this.timeFormat, true, dayTime).then((time) => {
                     event.formattedtime = time;
                 }));
@@ -555,7 +560,11 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     calculateIsCurrentDay(): void {
         const now = new Date();
 
+        this.currentTime = this.timeUtils.timestamp();
+
         this.isCurrentDay = this.year == now.getFullYear() && this.month == now.getMonth() + 1 && this.day == now.getDate();
+        this.isPastDay = this.year < now.getFullYear() || (this.year == now.getFullYear() && this.month < now.getMonth()) ||
+            (this.year == now.getFullYear() && this.month == now.getMonth() + 1 && this.day < now.getDate());
     }
 
     /**
@@ -600,7 +609,6 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
             this.decreaseDay();
         }).finally(() => {
-            this.calculateIsCurrentDay();
             this.loaded = true;
         });
     }
@@ -617,7 +625,6 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
             this.increaseDay();
         }).finally(() => {
-            this.calculateIsCurrentDay();
             this.loaded = true;
         });
     }
@@ -663,6 +670,15 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         }
 
         return false;
+    }
+
+    /**
+     * Returns if the event is in the past or not.
+     * @param  {any}     event Event object.
+     * @return {boolean}       True if it's in the past.
+     */
+    isEventPast(event: any): boolean {
+        return (event.timestart + event.timeduration) < this.currentTime;
     }
 
     /**

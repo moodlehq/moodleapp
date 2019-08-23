@@ -13,10 +13,6 @@ ion-app.app-root core-block-course-blocks {
 
     &.core-has-blocks {
         @include media-breakpoint-up(md) {
-            @include position(0, 0, 0, 0);
-
-            position: absolute;
-
             display: flex;
 
             flex-direction: row;
@@ -29,45 +25,19 @@ ion-app.app-root core-block-course-blocks {
             }
 
             div.core-course-blocks-side {
-                position: relative;
-                @include position(auto, 0, auto, auto);
                 max-width: $core-side-blocks-max-width;
                 min-width: $core-side-blocks-min-width;
                 @include border-start(1px, solid, $list-md-border-color);
-
-                .core-course-blocks-side-scroll {
-                    position: absolute;
-                    top: 0;
-                    max-width: 100%;
-                    min-width: 100%;
-
-                    &.core-course-blocks-fixed-bottom {
-                        position: fixed;
-                        bottom: 0;
-                        top: auto;
-                        transform: none !important;
-                    }
-
-                    core-block {
-                        max-width: $core-side-blocks-max-width;
-                        min-width: $core-side-blocks-min-width;
-                    }
-                }
             }
         }
 
         @include media-breakpoint-down(sm) {
             // Disable scroll on individual columns.
             div.core-course-blocks-side {
-                transform: none !important;
                 height: auto;
 
                 &.core-hide-blocks {
                     display: none;
-                }
-
-                .core-course-blocks-side-scroll {
-                    transform: none !important;
                 }
             }
         }
