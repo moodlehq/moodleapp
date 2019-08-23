@@ -1,4 +1,12 @@
 .addon-block-online-users core-block-pre-rendered .core-block-content {
+    max-height: 200px;
+    overflow-y: auto;
+    .item-inner,
+    .input-wrapper {
+        overflow-y: visible;
+        align-self: start;
+    }
+
     .list {
         @include margin-horizontal(0);
         -webkit-padding-start: 0;
