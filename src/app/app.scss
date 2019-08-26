@@ -388,11 +388,11 @@ ion-app.app-root {
 
   ion-select {
     position: relative; // Ionic fix. Button can occupy all page if not.
-    color: $core-select-placeholder-color;
+    color: $core-select-color;
     align-self: start;
 
     .select-icon .select-icon-inner {
-      color: $core-select-placeholder-color;
+      color: $core-select-color;
     }
 
     &.select-disabled .select-icon .select-icon-inner {
@@ -411,10 +411,18 @@ ion-app.app-root {
     }
   }
 
+  .item-label-stacked ion-select[multiple="true"] {
+    width: 100%;
+  }
+
+  ion-select .select-placeholder {
+    color: $core-select-placeholder-color;
+  }
+
   ion-select.core-button-select,
   .core-button-select {
     background-color: white;
-    color: $core-select-placeholder-color;
+    color: $core-select-color;
     white-space: normal;
     align-self: start;
     max-width: none;
@@ -446,7 +454,7 @@ ion-app.app-root {
     }
 
     .select-icon .select-icon-inner {
-      color: $core-select-placeholder-color;
+      color: $core-select-color;
     }
 
     ion-icon:last-child {

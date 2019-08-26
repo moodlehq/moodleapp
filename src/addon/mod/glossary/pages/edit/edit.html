@@ -19,7 +19,7 @@
             </ion-item>
             <ion-item *ngIf="categories.length > 0">
                 <ion-label stacked id="addon-mod-glossary-categories-label">{{ 'addon.mod_glossary.categories' | translate }}</ion-label>
-                <ion-select [(ngModel)]="options.categories" multiple="true" aria-labelledby="addon-mod-glossary-categories-label" interface="action-sheet">
+                <ion-select [(ngModel)]="options.categories" multiple="true" aria-labelledby="addon-mod-glossary-categories-label" interface="action-sheet" [placeholder]="'addon.mod_glossary.categories' | translate">
                     <ion-option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</ion-option>
                 </ion-select>
             </ion-item>
