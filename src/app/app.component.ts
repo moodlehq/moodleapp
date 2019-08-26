@@ -65,6 +65,19 @@ export class MoodleMobileApp implements OnInit {
                     app.setElementClass('platform-windows', true);
                 }
             }
+
+            // Register back button action to allow closing modals before anything else.
+            this.appProvider.registerBackButtonAction(() => {
+                // Following function is hidden in Ionic Code, however there's no solution for that.
+                const portal = app._getActivePortal();
+                if (portal) {
+                    portal.pop();
+
+                    return true;
+                }
+
+                return false;
+            }, 2000);
         });
 
     }
