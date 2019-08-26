@@ -488,7 +488,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         const currentTab = this.getSelected(),
             newTab = this.tabs[index];
 
-        if (!newTab.enabled || !newTab.show) {
+        if (!newTab || !newTab.enabled || !newTab.show) {
             // The tab isn't enabled or shown, stop.
             return;
         }
