@@ -79,7 +79,7 @@ export class CoreUrlUtilsProvider {
         }
 
         urlAndHash[0].replace(regex, (match: string, key: string, value: string): string => {
-            params[key] = typeof value != 'undefined' ? value : '';
+            params[key] = typeof value != 'undefined' ? this.textUtils.decodeURIComponent(value) : '';
 
             if (subParams) {
                 params[key] = params[key].replace(subParamsPlaceholder, subParams);

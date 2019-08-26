@@ -50,7 +50,7 @@ export class AddonModWikiEditLinkHandler extends CoreContentLinksHandlerBase {
 
                 let section = '';
                 if (typeof params.section != 'undefined') {
-                    section = this.textUtils.decodeURIComponent(params.section.replace(/\+/g, ' '));
+                    section = params.section.replace(/\+/g, ' ');
                 }
 
                 const pageParams = {
