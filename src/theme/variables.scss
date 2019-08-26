@@ -131,7 +131,16 @@ $refresher-icon-color: $core-color !default;
 
 $core-online-color: #5cb85c;
 
-$core-select-placeholder-color: $core-color !default;
+$core-placeholder-color: $gray-dark !default;
+$core-select-placeholder-color: $core-placeholder-color !default;
+$alert-input-placeholder-color: $core-placeholder-color !default;
+$core-datetime-ios-placeholder-color: $core-placeholder-color !default;
+$searchbar-ios-input-placeholder-color: $core-placeholder-color !default;
+$searchbar-md-input-placeholder-color: $core-placeholder-color !default;
+$searchbar-wp-input-placeholder-color: $core-placeholder-color !default;
+$text-input-placeholder-color: $core-placeholder-color !default;
+
+$core-select-color: $core-color !default;
 $item-avatar-size: 54px !default;
 $input-select-opacity: .5 !default;
 $note-color: $gray-dark !default;
@@ -179,7 +188,8 @@ $tabs-ios-tab-color-inactive: $tabs-tab-color-inactive;
 $button-ios-outline-background-color: $core-button-outline-background-color;
 $toolbar-ios-height: 44px + 8; // Avoid toolbar with different heights.
 $checkbox-ios-icon-border-radius: 0px !default;
-$select-ios-placeholder-color: $core-select-placeholder-color;
+$select-ios-placeholder-color: $core-select-color !default;
+$datetime-ios-placeholder-color: $core-datetime-ios-placeholder-color;
 $radio-ios-disabled-opacity: $input-select-opacity !default;
 $checkbox-ios-disabled-opacity: $input-select-opacity !default;
 $toggle-ios-disabled-opacity: $input-select-opacity !default;
@@ -203,7 +213,8 @@ $spinner-md-crescent-color: $core-spinner-color;
 $tabs-md-tab-color-inactive: $tabs-tab-color-inactive;
 $button-md-outline-background-color: $core-button-outline-background-color;
 $font-family-md-base: "Roboto", "Noto Sans", "Helvetica Neue", sans-serif !default;
-$select-md-placeholder-color: $core-select-placeholder-color;
+$select-md-placeholder-color: $core-select-color !default;
+$datetime-md-placeholder-color: $core-datetime-ios-placeholder-color !default;
 $label-md-text-color: $text-color !default;
 $radio-md-disabled-opacity: $input-select-opacity !default;
 $checkbox-md-disabled-opacity: $input-select-opacity !default;
@@ -226,7 +237,8 @@ $loading-wp-spinner-color: $core-loading-spinner-color;
 $spinner-wp-circles-color: $core-spinner-color;
 $tabs-wp-tab-color-inactive: $tabs-tab-color-inactive;
 $button-wp-outline-background-color: $core-button-outline-background-color;
-$select-wp-placeholder-color: $core-select-placeholder-color;
+$select-wp-placeholder-color: $core-select-color !default;
+$datetime-wp-placeholder-color: $core-datetime-ios-placeholder-color !default;
 $label-wp-text-color: $text-color !default;
 $radio-wp-disabled-opacity: $input-select-opacity !default;
 $checkbox-wp-disabled-opacity: $input-select-opacity !default;
