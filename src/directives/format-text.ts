@@ -468,7 +468,7 @@ export class CoreFormatTextDirective implements OnChanges {
             // Wait for images to load.
             let promise: Promise<any> = null;
             if (externalImages.length) {
-                promise = Promise.all(externalImages.map((externalImage) => {
+                promise = Promise.all(externalImages.map((externalImage): any => {
                     if (externalImage.loaded) {
                         // Image has already been loaded, no need to wait.
                         return Promise.resolve();

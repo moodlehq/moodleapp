@@ -150,7 +150,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
         }
 
         // Avoid handling data url's.
-        if (url.indexOf('data:') === 0) {
+        if (url && url.indexOf('data:') === 0) {
             this.invalid = true;
 
             return;
