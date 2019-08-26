@@ -179,6 +179,9 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
                 return Promise.all(promises);
             }));
 
+            // Get all categories.
+            promises.push(this.glossaryProvider.getAllCategories(glossary.id));
+
             // Prefetch data for link handlers.
             promises.push(this.courseProvider.getModuleBasicInfo(module.id, siteId));
             promises.push(this.courseProvider.getModuleBasicInfoByInstance(glossary.id, 'glossary', siteId));
