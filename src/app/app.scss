@@ -1012,6 +1012,11 @@ ion-app.app-root {
   ion-alert .alert-checkbox-button .alert-checkbox-label {
     white-space: normal;
   }
+
+  ion-backdrop {
+    transition: opacity 100ms ease-in-out;
+    opacity: .1;
+  }
 }
 
 @each $color-name, $color-base, $color-contrast in get-colors($colors) {

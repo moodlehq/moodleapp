@@ -1170,7 +1170,7 @@ export class CoreCourseHelperProvider {
 
             module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, sectionId);
 
-            if (navCtrl) {
+            if (navCtrl && module.handlerData && module.handlerData.action) {
                 // If the link handler for this module passed through navCtrl, we can use the module's handler to navigate cleanly.
                 // Otherwise, we will redirect below.
                 modal.dismiss();
