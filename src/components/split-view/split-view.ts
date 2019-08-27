@@ -60,6 +60,7 @@ export class CoreSplitViewComponent implements OnInit, OnDestroy {
     protected ignoreSplitChanged = false;
     protected audioCaptureSubscription: Subscription;
     protected languageChangedSubscription: Subscription;
+    protected pushOngoing: boolean;
 
     // Empty placeholder for the 'detail' page.
     detailPage: any = null;
@@ -185,20 +186,29 @@ export class CoreSplitViewComponent implements OnInit, OnDestroy {
      * @param {boolean} [retrying] Whether it's retrying.
      */
     push(page: any, params?: any, retrying?: boolean): void {
-        if (typeof this.isEnabled == 'undefined' && !retrying) {
-            // Hasn't calculated if it's enabled yet. Wait a bit and try again.
-            setTimeout(() => {
-                this.push(page, params, true);
-            }, 200);
-        } else {
-            if (this.isEnabled) {
-                this.detailNav.setRoot(page, params);
+        // Check there's no ongoing push.
+        if (!this.pushOngoing) {
+            if (typeof this.isEnabled == 'undefined' && !retrying) {
+                // Hasn't calculated if it's enabled yet. Wait a bit and try again.
+                setTimeout(() => {
+                    this.push(page, params, true);
+                }, 200);
             } else {
-                this.loadDetailPage = {
-                    component: page,
-                    data: params
-                };
-                this.masterNav.push(page, params);
+                this.pushOngoing = true;
+                let promise;
+
+                if (this.isEnabled) {
+                    promise = this.detailNav.setRoot(page, params);
+                } else {
+                    this.loadDetailPage = {
+                        component: page,
+                        data: params
+                    };
+                    promise = this.masterNav.push(page, params);
+                }
+                promise.finally(() =>  {
+                    this.pushOngoing = false;
+                });
             }
         }
     }
