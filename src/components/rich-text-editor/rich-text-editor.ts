@@ -585,6 +585,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
             const currentIndex = this.toolbarSlides.getActiveIndex() || 0;
             this.toolbarSlides.slideTo(currentIndex + this.numToolbarButtons);
         }
+        this.updateToolbarArrows();
     }
 
     /**
@@ -597,6 +598,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
             const currentIndex = this.toolbarSlides.getActiveIndex() || 0;
             this.toolbarSlides.slideTo(currentIndex - this.numToolbarButtons);
         }
+        this.updateToolbarArrows();
     }
 
     /**
