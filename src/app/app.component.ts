@@ -38,10 +38,10 @@ export class MoodleMobileApp implements OnInit {
     protected lastUrls = {};
     protected lastInAppUrl: string;
 
-    constructor(private platform: Platform, logger: CoreLoggerProvider, keyboard: Keyboard,
+    constructor(private platform: Platform, logger: CoreLoggerProvider, keyboard: Keyboard, private app: IonicApp,
             private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider, private zone: NgZone,
             private appProvider: CoreAppProvider, private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider,
-            private screenOrientation: ScreenOrientation, app: IonicApp, private urlSchemesProvider: CoreCustomURLSchemesProvider,
+            private screenOrientation: ScreenOrientation, private urlSchemesProvider: CoreCustomURLSchemesProvider,
             private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider) {
         this.logger = logger.getInstance('AppComponent');
 
@@ -68,15 +68,7 @@ export class MoodleMobileApp implements OnInit {
 
             // Register back button action to allow closing modals before anything else.
             this.appProvider.registerBackButtonAction(() => {
-                // Following function is hidden in Ionic Code, however there's no solution for that.
-                const portal = app._getActivePortal();
-                if (portal) {
-                    portal.pop();
-
-                    return true;
-                }
-
-                return false;
+                return this.closeModal();
             }, 2000);
         });
 
@@ -301,5 +293,22 @@ export class MoodleMobileApp implements OnInit {
         remove.forEach((tempClass) => {
             document.body.classList.remove(tempClass);
         });
+    }
+
+    /**
+     * Close one modal if any.
+     *
+     * @return {boolean} True if one modal was present.
+     */
+    closeModal(): boolean {
+        // Following function is hidden in Ionic Code, however there's no solution for that.
+        const portal = this.app._getActivePortal();
+        if (portal) {
+            portal.pop();
+
+            return true;
+        }
+
+        return false;
     }
 }
