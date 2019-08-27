@@ -468,7 +468,8 @@ export class CoreFormatTextDirective implements OnChanges {
             // Wait for images to load.
             let promise: Promise<any> = null;
             if (externalImages.length) {
-                promise = Promise.all(externalImages.map((externalImage): any => {
+                // Automatically reject the promise after 5 seconds to prevent blocking the user forever.
+                promise = this.utils.timeoutPromise(this.utils.allPromises(externalImages.map((externalImage): any => {
                     if (externalImage.loaded) {
                         // Image has already been loaded, no need to wait.
                         return Promise.resolve();
@@ -480,7 +481,7 @@ export class CoreFormatTextDirective implements OnChanges {
                             resolve();
                         });
                     });
-                }));
+                })), 5000);
             } else {
                 promise = Promise.resolve();
             }

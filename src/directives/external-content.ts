@@ -152,12 +152,22 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
         // Avoid handling data url's.
         if (url && url.indexOf('data:') === 0) {
             this.invalid = true;
+            this.onLoad.emit();
+            this.loaded = true;
 
             return;
         }
 
         this.handleExternalContent(targetAttr, url, siteId).catch(() => {
-            // Ignore errors.
+            // Error handling content. Make sure the loaded event is triggered for images.
+            if (tagName === 'IMG') {
+                if (url) {
+                    this.waitForLoad();
+                } else {
+                    this.onLoad.emit();
+                    this.loaded = true;
+                }
+            }
         });
     }
 
@@ -202,10 +212,6 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
             if (tagName === 'SOURCE') {
                 // Restoring original src.
                 this.addSource(url);
-            }
-
-            if (tagName === 'IMG') {
-                this.waitForLoad();
             }
 
             return Promise.reject(null);
