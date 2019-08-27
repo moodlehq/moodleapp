@@ -337,7 +337,7 @@ export class AddonModDataHelperProvider {
                             approved: !data.approval || data.manageapproved,
                             canmanageentry: true,
                             fullname: site.getInfo().fullname,
-                            contents: [],
+                            contents: {},
                         }
                     });
                 }

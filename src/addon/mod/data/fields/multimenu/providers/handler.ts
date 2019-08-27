@@ -126,7 +126,7 @@ export class AddonModDataFieldMultimenuHandler implements AddonModDataFieldHandl
      * @return {any}                     Data overriden
      */
     overrideData(originalContent: any, offlineContent: any, offlineFiles?: any): any {
-        originalContent.content = (offlineContent[''] && offlineContent[''].join('###')) || '';
+        originalContent.content = (offlineContent[''] && offlineContent[''].join('##')) || '';
 
         return originalContent;
     }
