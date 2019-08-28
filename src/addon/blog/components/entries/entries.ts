@@ -223,7 +223,7 @@ export class AddonBlogEntriesComponent implements OnInit {
             this.filter['userid'] = this.currentUserId;
             promises.push(this.blogProvider.invalidateEntries(this.filter));
 
-            if (!this.showMyEntriesToggle) {
+            if (!this.onlyMyEntries) {
                 delete this.filter['userid'];
             }
 
