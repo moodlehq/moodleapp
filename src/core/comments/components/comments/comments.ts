@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChange } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChange, Optional } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreCommentsProvider } from '../../providers/comments';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
  * Component that displays the count of comments.
@@ -44,7 +45,9 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
     protected refreshCommentsObserver;
 
     constructor(private navCtrl: NavController, private commentsProvider: CoreCommentsProvider,
-            sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider) {
+            sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider,
+            @Optional() private svComponent: CoreSplitViewComponent) {
+
         this.onLoading = new EventEmitter<boolean>();
 
         this.disabled = this.commentsProvider.areCommentsDisabledInSite();
@@ -135,10 +138,17 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
     /**
      * Opens the comments page.
      */
-    openComments(): void {
+    openComments(e?: Event): void {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
         if (!this.disabled && !this.countError) {
             // Open a new state with the interpolated contents.
-            this.navCtrl.push('CoreCommentsViewerPage', {
+            const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
+
+            navCtrl.push('CoreCommentsViewerPage', {
                 contextLevel: this.contextLevel,
                 instanceId: this.instanceId,
                 componentName: this.component,

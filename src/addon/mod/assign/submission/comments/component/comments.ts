@@ -48,7 +48,7 @@ export class AddonModAssignSubmissionCommentsComponent extends AddonModAssignSub
     /**
      * Show the comments.
      */
-    showComments(): void {
-        this.commentsComponent && this.commentsComponent.openComments();
+    showComments(e?: Event): void {
+        this.commentsComponent && this.commentsComponent.openComments(e);
     }
 }
