@@ -41,6 +41,7 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
     disabled = false;
 
     protected updateSiteObserver;
+    protected refreshCommentsObserver;
 
     constructor(private navCtrl: NavController, private commentsProvider: CoreCommentsProvider,
             sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider) {
@@ -56,6 +57,19 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
 
             if (wasDisabled && !this.disabled) {
                 this.fetchData();
+            }
+        }, sitesProvider.getCurrentSiteId());
+
+        // Refresh comments if event received.
+        this.refreshCommentsObserver = eventsProvider.on(CoreCommentsProvider.REFRESH_COMMENTS_EVENT, (data) => {
+            // Verify these comments need to be updated.
+            if (this.undefinedOrEqual(data, 'contextLevel') && this.undefinedOrEqual(data, 'instanceId') &&
+                    this.undefinedOrEqual(data, 'component') && this.undefinedOrEqual(data, 'itemId') &&
+                    this.undefinedOrEqual(data, 'area')) {
+
+                this.doRefresh().catch(() => {
+                    // Ignore errors.
+                });
             }
         }, sitesProvider.getCurrentSiteId());
     }
@@ -77,7 +91,10 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
         }
     }
 
-    protected fetchData(): void {
+    /**
+     * Fetch comments data.
+     */
+    fetchData(): void {
         if (this.disabled) {
             return;
         }
@@ -92,6 +109,27 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
             this.commentsLoaded = true;
             this.onLoading.emit(false);
         });
+    }
+
+    /**
+     * Refresh comments.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    doRefresh(): Promise<any> {
+        return this.invalidateComments().then(() => {
+            return this.fetchData();
+        });
+    }
+
+    /**
+     * Invalidate comments data.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    invalidateComments(): Promise<any> {
+        return this.commentsProvider.invalidateCommentsData(this.contextLevel, this.instanceId, this.component, this.itemId,
+                this.area);
     }
 
     /**
@@ -116,5 +154,17 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
      */
     ngOnDestroy(): void {
         this.updateSiteObserver && this.updateSiteObserver.off();
+        this.refreshCommentsObserver && this.refreshCommentsObserver.off();
+    }
+
+    /**
+     * Check if a certain value in data is undefined or equal to this instance value.
+     *
+     * @param {any} data Data object.
+     * @param {string} name Name of the property to check.
+     * @return {boolean} Whether it's undefined or equal.
+     */
+    protected undefinedOrEqual(data: any, name: string): boolean {
+        return typeof data[name] == 'undefined' || data[name] == this[name];
     }
 }
