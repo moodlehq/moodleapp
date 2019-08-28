@@ -85,7 +85,6 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             private prefetchHandler: AddonModDataPrefetchHandler,
             private timeUtils: CoreTimeUtilsProvider,
             private groupsProvider: CoreGroupsProvider,
-            private commentsProvider: CoreCommentsProvider,
             private modalCtrl: ModalController,
             private utils: CoreUtilsProvider,
             protected navCtrl: NavController) {
@@ -152,8 +151,12 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             promises.push(this.dataProvider.invalidateDatabaseAccessInformationData(this.data.id));
             promises.push(this.groupsProvider.invalidateActivityGroupInfo(this.data.coursemodule));
             promises.push(this.dataProvider.invalidateEntriesData(this.data.id));
+
             if (this.hasComments) {
-                promises.push(this.commentsProvider.invalidateCommentsByInstance('module', this.data.coursemodule));
+                this.eventsProvider.trigger(CoreCommentsProvider.REFRESH_COMMENTS_EVENT, {
+                    contextLevel: 'module',
+                    instanceId: this.data.coursemodule
+                }, this.sitesProvider.getCurrentSiteId());
             }
         }
 
@@ -192,6 +195,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
         return this.dataProvider.getDatabase(this.courseId, this.module.id).then((data) => {
             this.data = data;
+            this.hasComments = data.comments;
 
             this.description = data.intro || data.description;
             this.dataRetrieved.emit(data);
@@ -258,7 +262,6 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      * @return {Promise<any>} Resolved then done.
      */
     protected fetchEntriesData(): Promise<any> {
-        this.hasComments = false;
 
         return this.dataProvider.getDatabaseAccessInformation(this.data.id, this.selectedGroup).then((accessData) => {
             // Update values for current group.

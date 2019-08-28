@@ -158,11 +158,12 @@ export class AddonModDataHelperProvider {
      * @param {any} entry Entry.
      * @param {number} offset Entry offset.
      * @param {string} mode Mode list or show.
-     * @param {AddonModDataOfflineAction[]} actions Actions that can be performed to the record.
+     * @param {{[name: string]: boolean}} actions Actions that can be performed to the record.
      * @return {string} Generated HTML.
      */
     displayShowFields(template: string, fields: any[], entry: any, offset: number, mode: string,
-            actions: AddonModDataOfflineAction[]): string {
+            actions: {[name: string]: boolean}): string {
+
         if (!template) {
             return '';
         }
@@ -357,9 +358,9 @@ export class AddonModDataHelperProvider {
      * @param {any}  database     Database activity.
      * @param {any}  accessInfo   Access info to the activity.
      * @param {any}  record       Entry or record where the actions will be performed.
-     * @return {any}              Keyed with the action names and boolean to evalute if it can or cannot be done.
+     * @return {{[name: string]: boolean}} Keyed with the action names and boolean to evalute if it can or cannot be done.
      */
-    getActions(database: any, accessInfo: any, record: any): any {
+    getActions(database: any, accessInfo: any, record: any): {[name: string]: boolean} {
         return {
             more: true,
             moreurl: true,

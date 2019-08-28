@@ -25,6 +25,8 @@ import { CoreCommentsOfflineProvider } from './offline';
 @Injectable()
 export class CoreCommentsProvider {
 
+    static REFRESH_COMMENTS_EVENT = 'core_comments_refresh_comments';
+
     protected ROOT_CACHE_KEY = 'mmComments:';
     static pageSize = null;
     static pageSizeOK = false; // If true, the pageSize is definitive. If not, it's a temporal value to reduce WS calls.

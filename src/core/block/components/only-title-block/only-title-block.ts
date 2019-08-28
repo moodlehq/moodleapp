@@ -13,8 +13,9 @@
 // limitations under the License.
 
 import { Injector, OnInit, Component } from '@angular/core';
+import { NavController } from 'ionic-angular';
 import { CoreBlockBaseComponent } from '../../classes/base-block-component';
-import { CoreLoginHelperProvider } from '@core/login/providers/helper';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 
 /**
  * Component to render blocks with only a title and link.
@@ -25,11 +26,8 @@ import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 })
 export class CoreBlockOnlyTitleComponent  extends CoreBlockBaseComponent implements OnInit {
 
-    protected loginHelper: CoreLoginHelperProvider;
-
-    constructor(injector: Injector) {
+    constructor(injector: Injector, protected navCtrl: NavController, protected linkHelper: CoreContentLinksHelperProvider) {
         super(injector, 'CoreBlockOnlyTitleComponent');
-        this.loginHelper = injector.get(CoreLoginHelperProvider);
     }
 
     /**
@@ -45,6 +43,6 @@ export class CoreBlockOnlyTitleComponent  extends CoreBlockBaseComponent impleme
      * Go to the block page.
      */
     gotoBlock(): void {
-        this.loginHelper.redirect(this.link, this.linkParams);
+        this.linkHelper.goInSite(this.navCtrl, this.link, this.linkParams, undefined, true);
     }
 }
