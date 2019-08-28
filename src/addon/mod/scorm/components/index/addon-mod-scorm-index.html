@@ -31,38 +31,38 @@
             <ion-list>
                 <ng-container *ngIf="scorm.displayattemptstatus">
                     <ion-item text-wrap *ngIf="scorm.maxattempt >= 0">
-                        <p class="item-heading">{{ 'addon.mod_scorm.noattemptsallowed' | translate }}</p>
-                        <p *ngIf="scorm.maxattempt == 0">{{ 'core.unlimited' | translate }}</p>
-                        <p *ngIf="scorm.maxattempt > 0">{{ scorm.maxattempt }}</p>
+                        <h3>{{ 'addon.mod_scorm.noattemptsallowed' | translate }}</h3>
+                        <p item-content *ngIf="scorm.maxattempt == 0">{{ 'core.unlimited' | translate }}</p>
+                        <p item-content *ngIf="scorm.maxattempt > 0">{{ scorm.maxattempt }}</p>
                     </ion-item>
                     <ion-item text-wrap *ngIf="scorm.numAttempts >= 0">
-                        <p class="item-heading">{{ 'addon.mod_scorm.noattemptsmade' | translate }}</p>
-                        <p>{{ scorm.numAttempts }}</p>
+                        <h3>{{ 'addon.mod_scorm.noattemptsmade' | translate }}</h3>
+                        <p item-content>{{ scorm.numAttempts }}</p>
                     </ion-item>
                     <ion-item text-wrap *ngFor="let attempt of scorm.onlineAttempts">
-                        <p class="item-heading">{{ 'addon.mod_scorm.gradeforattempt' | translate }} {{attempt.number}}</p>
-                        <p *ngIf="attempt.grade != -1">{{ attempt.grade }}</p>
-                        <p *ngIf="attempt.grade == -1">{{ 'addon.mod_scorm.cannotcalculategrade' | translate }}</p>
+                        <h3>{{ 'addon.mod_scorm.gradeforattempt' | translate }} {{attempt.number}}</h3>
+                        <p item-content *ngIf="attempt.grade != -1">{{ attempt.grade }}</p>
+                        <p item-content *ngIf="attempt.grade == -1">{{ 'addon.mod_scorm.cannotcalculategrade' | translate }}</p>
                     </ion-item>
                 </ng-container>
                 <ion-item text-wrap *ngFor="let attempt of scorm.offlineAttempts">
-                    <p class="item-heading">{{ 'addon.mod_scorm.gradeforattempt' | translate }} {{attempt.number}}</p>
-                    <p *ngIf="attempt.grade != -1">{{ attempt.grade }}</p>
-                    <p *ngIf="attempt.grade == -1">{{ 'addon.mod_scorm.cannotcalculategrade' | translate }}</p>
-                    <p *ngIf="scorm.maxattempt == 0 || attempt.number <= scorm.maxattempt">{{ 'addon.mod_scorm.offlineattemptnote' | translate }}</p>
-                    <p *ngIf="scorm.maxattempt != 0 && attempt.number > scorm.maxattempt">{{ 'addon.mod_scorm.offlineattemptovermax' | translate }}</p>
+                    <h3>{{ 'addon.mod_scorm.gradeforattempt' | translate }} {{attempt.number}}</h3>
+                    <p item-content *ngIf="attempt.grade != -1">{{ attempt.grade }}</p>
+                    <p item-content *ngIf="attempt.grade == -1">{{ 'addon.mod_scorm.cannotcalculategrade' | translate }}</p>
+                    <p item-content *ngIf="scorm.maxattempt == 0 || attempt.number <= scorm.maxattempt">{{ 'addon.mod_scorm.offlineattemptnote' | translate }}</p>
+                    <p item-content *ngIf="scorm.maxattempt != 0 && attempt.number > scorm.maxattempt">{{ 'addon.mod_scorm.offlineattemptovermax' | translate }}</p>
                 </ion-item>
                 <ion-item text-wrap *ngIf="scorm.displayattemptstatus && scorm.gradeMethodReadable">
-                    <p class="item-heading">{{ 'addon.mod_scorm.grademethod' | translate }}</p>
-                    <p>{{ scorm.gradeMethodReadable }}</p>
+                    <h3>{{ 'addon.mod_scorm.grademethod' | translate }}</h3>
+                    <p item-content>{{ scorm.gradeMethodReadable }}</p>
                 </ion-item>
                 <ion-item text-wrap *ngIf="scorm.displayattemptstatus && scorm.grade">
-                    <p class="item-heading">{{ 'addon.mod_scorm.gradereported' | translate }}</p>
-                    <p *ngIf="scorm.grade != -1">{{ scorm.grade }}</p>
-                    <p *ngIf="scorm.grade == -1">{{ 'addon.mod_scorm.cannotcalculategrade' | translate }}</p>
+                    <h3>{{ 'addon.mod_scorm.gradereported' | translate }}</h3>
+                    <p item-content *ngIf="scorm.grade != -1">{{ scorm.grade }}</p>
+                    <p item-content *ngIf="scorm.grade == -1">{{ 'addon.mod_scorm.cannotcalculategrade' | translate }}</p>
                 </ion-item>
                 <ion-item text-wrap *ngIf="syncTime">
-                    <p class="item-heading">{{ 'core.lastsync' | translate }}</p>
+                    <h3>{{ 'core.lastsync' | translate }}</h3>
                     <p>{{ syncTime }}</p>
                 </ion-item>
             </ion-list>
@@ -130,7 +130,7 @@
                 <!-- Open mode (Preview or Normal) -->
                 <div *ngIf="!scorm.hidebrowse && !skip" radio-group [(ngModel)]="scormOptions.mode" name="mode">
                     <ion-item>
-                        <p class="item-heading">{{ 'addon.mod_scorm.mode' | translate }}</p>
+                        <h2>{{ 'addon.mod_scorm.mode' | translate }}</h2>
                     </ion-item>
                     <ion-item>
                         <ion-label>{{ 'addon.mod_scorm.browse' | translate }}</ion-label>
