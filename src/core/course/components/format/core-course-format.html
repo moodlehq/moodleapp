@@ -54,18 +54,18 @@
 
                 <core-infinite-loading [enabled]="canLoadMore" (action)="showMoreActivities($event)"></core-infinite-loading>
             </div>
-        </core-loading>
-        <ion-buttons padding end class="core-course-section-nav-buttons" *ngIf="displaySectionSelector && sections && sections.length">
-            <button *ngIf="previousSection" ion-button color="light" icon-only (click)="sectionChanged(previousSection)" title="{{ 'core.previous' | translate }}">
-                <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
-                <core-format-text class="accesshide" [text]="previousSection.formattedName || previousSection.name"></core-format-text>
-            </button>
-            <button *ngIf="nextSection" ion-button icon-only (click)="sectionChanged(nextSection)" title="{{ 'core.next' | translate }}">
-                <core-format-text class="accesshide" [text]="nextSection.formattedName || nextSection.name"></core-format-text>
-                <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
-            </button>
-        </ion-buttons>
 
+            <ion-buttons padding end class="core-course-section-nav-buttons" *ngIf="displaySectionSelector && sections && sections.length">
+                <button *ngIf="previousSection" ion-button color="light" icon-only (click)="sectionChanged(previousSection)" title="{{ 'core.previous' | translate }}">
+                    <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
+                    <core-format-text class="accesshide" [text]="previousSection.formattedName || previousSection.name"></core-format-text>
+                </button>
+                <button *ngIf="nextSection" ion-button icon-only (click)="sectionChanged(nextSection)" title="{{ 'core.next' | translate }}">
+                    <core-format-text class="accesshide" [text]="nextSection.formattedName || nextSection.name"></core-format-text>
+                    <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
+                </button>
+            </ion-buttons>
+        </core-loading>
     </core-dynamic-component>
 </core-block-course-blocks>
 

@@ -21,12 +21,14 @@ ion-app.app-root {
 
     .scroll-content > core-loading,
     ion-content > .scroll-content > core-loading,
+    core-tab core-loading,
     .core-loading-center {
         position: static !important;
     }
 
     .scroll-content > core-loading,
     ion-content > .scroll-content > core-loading,
+    core-tab core-loading,
     .core-loading-center,
     core-loading.core-loading-loaded {
         position: relative;

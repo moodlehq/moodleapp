@@ -1,4 +1,4 @@
-<core-loading [hideUntil]="loaded">
+<core-loading [hideUntil]="loaded" class="core-loading-center">
 
     <!-- User and status of the submission. -->
     <a ion-item text-wrap *ngIf="!blindMarking && user" core-user-link [userId]="submitId" [courseId]="courseId" [title]="user.fullname">
