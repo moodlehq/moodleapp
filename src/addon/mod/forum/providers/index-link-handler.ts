@@ -68,7 +68,8 @@ export class AddonModForumIndexLinkHandler extends CoreContentLinksModuleIndexHa
                         forumId = parseInt(params.f, 10);
 
                     this.courseProvider.getModuleBasicInfoByInstance(forumId, 'forum', siteId).then((module) => {
-                        this.courseHelper.navigateToModule(parseInt(module.id, 10), siteId, module.course);
+                        this.courseHelper.navigateToModule(parseInt(module.id, 10), siteId, module.course, undefined,
+                                undefined, undefined, navCtrl);
                     }).finally(() => {
                         // Just in case. In fact we need to dismiss the modal before showing a toast or error message.
                         modal.dismiss();
