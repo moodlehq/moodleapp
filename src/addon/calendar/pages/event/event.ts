@@ -449,8 +449,8 @@ export class AddonCalendarEventPage implements OnDestroy {
 
                 if (sent) {
                     // Event deleted, invalidate right days & months.
-                    promise = this.calendarHelper.invalidateRepeatedEventsOnCalendarForEvent(this.event,
-                            deleteAll ? this.event.eventcount : 1).catch(() => {
+                    promise = this.calendarHelper.refreshAfterChangeEvent(this.event, deleteAll ? this.event.eventcount : 1)
+                            .catch(() => {
                         // Ignore errors.
                     });
                 } else {

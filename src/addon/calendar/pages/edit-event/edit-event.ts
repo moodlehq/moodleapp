@@ -499,7 +499,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
                 const numberOfRepetitions = formData.repeat ? formData.repeats :
                     (data.repeateditall && this.event.othereventscount ? this.event.othereventscount + 1 : 1);
 
-                this.calendarHelper.invalidateRepeatedEventsOnCalendarForEvent(result.event, numberOfRepetitions).catch(() => {
+                return this.calendarHelper.refreshAfterChangeEvent(result.event, numberOfRepetitions).catch(() => {
                     // Ignore errors.
                 });
             }

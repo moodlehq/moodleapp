@@ -95,42 +95,42 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
         this.newEventObserver = eventsProvider.on(AddonCalendarProvider.NEW_EVENT_EVENT, (data) => {
             if (data && data.event) {
                 this.loaded = false;
-                this.refreshData(true, false);
+                this.refreshData(true, false, true);
             }
         }, this.currentSiteId);
 
         // Listen for new event discarded event. When it does, reload the data.
         this.discardedObserver = eventsProvider.on(AddonCalendarProvider.NEW_EVENT_DISCARDED_EVENT, () => {
             this.loaded = false;
-            this.refreshData(true, false);
+            this.refreshData(true, false, true);
         }, this.currentSiteId);
 
         // Listen for events edited. When an event is edited, reload the data.
         this.editEventObserver = eventsProvider.on(AddonCalendarProvider.EDIT_EVENT_EVENT, (data) => {
             if (data && data.event) {
                 this.loaded = false;
-                this.refreshData(true, false);
+                this.refreshData(true, false, true);
             }
         }, this.currentSiteId);
 
         // Refresh data if calendar events are synchronized automatically.
         this.syncObserver = eventsProvider.on(AddonCalendarSyncProvider.AUTO_SYNCED, (data) => {
             this.loaded = false;
-            this.refreshData();
+            this.refreshData(false, false, true);
         }, this.currentSiteId);
 
         // Refresh data if calendar events are synchronized manually but not by this page.
         this.manualSyncObserver = eventsProvider.on(AddonCalendarSyncProvider.MANUAL_SYNCED, (data) => {
             if (data && data.source != 'index') {
                 this.loaded = false;
-                this.refreshData();
+                this.refreshData(false, false, true);
             }
         }, this.currentSiteId);
 
         // Update the events when an event is deleted.
         this.deleteEventObserver = eventsProvider.on(AddonCalendarProvider.DELETED_EVENT_EVENT, (data) => {
             this.loaded = false;
-            this.refreshData();
+            this.refreshData(false, false, true);
         }, this.currentSiteId);
 
         // Update the "hasOffline" property if an event deleted in offline is restored.
@@ -251,9 +251,10 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
      *
      * @param {boolean} [sync] Whether it should try to synchronize offline events.
      * @param {boolean} [showErrors] Whether to show sync errors to the user.
+     * @param {boolean} [afterChange] Whether the refresh is done after an event has changed or has been synced.
      * @return {Promise<any>} Promise resolved when done.
      */
-    refreshData(sync?: boolean, showErrors?: boolean): Promise<any> {
+    refreshData(sync?: boolean, showErrors?: boolean, afterChange?: boolean): Promise<any> {
         this.syncIcon = 'spinner';
 
         const promises = [];
@@ -262,9 +263,9 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
         // Refresh the sub-component.
         if (this.showCalendar && this.calendarComponent) {
-            promises.push(this.calendarComponent.refreshData());
+            promises.push(this.calendarComponent.refreshData(afterChange));
         } else if (!this.showCalendar && this.upcomingEventsComponent) {
-            promises.push(this.upcomingEventsComponent.refreshData());
+            promises.push(this.upcomingEventsComponent.refreshData(afterChange));
         }
 
         return Promise.all(promises).finally(() => {

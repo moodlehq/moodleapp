@@ -159,7 +159,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
                 // Data has been sent to server. Now invalidate the WS calls.
                 const promises = [
                     this.calendarProvider.invalidateEventsList(siteId),
-                    this.calendarHelper.invalidateRepeatedEventsOnCalendar(result.toinvalidate, siteId)
+                    this.calendarHelper.refreshAfterChangeEvents(result.toinvalidate, siteId)
                 ];
 
                 return Promise.all(promises).catch(() => {

@@ -113,35 +113,35 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         this.newEventObserver = eventsProvider.on(AddonCalendarProvider.NEW_EVENT_EVENT, (data) => {
             if (data && data.event) {
                 this.loaded = false;
-                this.refreshData(true, false);
+                this.refreshData(true, false, true);
             }
         }, this.currentSiteId);
 
         // Listen for new event discarded event. When it does, reload the data.
         this.discardedObserver = eventsProvider.on(AddonCalendarProvider.NEW_EVENT_DISCARDED_EVENT, () => {
             this.loaded = false;
-            this.refreshData(true, false);
+            this.refreshData(true, false, true);
         }, this.currentSiteId);
 
         // Listen for events edited. When an event is edited, reload the data.
         this.editEventObserver = eventsProvider.on(AddonCalendarProvider.EDIT_EVENT_EVENT, (data) => {
             if (data && data.event) {
                 this.loaded = false;
-                this.refreshData(true, false);
+                this.refreshData(true, false, true);
             }
         }, this.currentSiteId);
 
         // Refresh data if calendar events are synchronized automatically.
         this.syncObserver = eventsProvider.on(AddonCalendarSyncProvider.AUTO_SYNCED, (data) => {
             this.loaded = false;
-            this.refreshData();
+            this.refreshData(false, false, true);
         }, this.currentSiteId);
 
         // Refresh data if calendar events are synchronized manually but not by this page.
         this.manualSyncObserver = eventsProvider.on(AddonCalendarSyncProvider.MANUAL_SYNCED, (data) => {
             if (data && (data.source != 'day' || data.year != this.year || data.month != this.month || data.day != this.day)) {
                 this.loaded = false;
-                this.refreshData();
+                this.refreshData(false, false, true);
             }
         }, this.currentSiteId);
 
@@ -153,7 +153,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
                 this.deletedEvents.push(data.eventId);
             } else {
                 this.loaded = false;
-                this.refreshData();
+                this.refreshData(false, false, true);
             }
         }, this.currentSiteId);
 
@@ -425,15 +425,19 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      *
      * @param {boolean} [sync] Whether it should try to synchronize offline events.
      * @param {boolean} [showErrors] Whether to show sync errors to the user.
+     * @param {boolean} [afterChange] Whether the refresh is done after an event has changed or has been synced.
      * @return {Promise<any>} Promise resolved when done.
      */
-    refreshData(sync?: boolean, showErrors?: boolean): Promise<any> {
+    refreshData(sync?: boolean, showErrors?: boolean, afterChange?: boolean): Promise<any> {
         this.syncIcon = 'spinner';
 
         const promises = [];
 
+        // Don't invalidate day events after a change, it has already been handled.
+        if (!afterChange) {
+            promises.push(this.calendarProvider.invalidateDayEvents(this.year, this.month, this.day));
+        }
         promises.push(this.calendarProvider.invalidateAllowedEventTypes());
-        promises.push(this.calendarProvider.invalidateDayEvents(this.year, this.month, this.day));
         promises.push(this.coursesProvider.invalidateCategories(0, true));
         promises.push(this.calendarProvider.invalidateTimeFormat());
 
