@@ -4,7 +4,7 @@
 
     <ion-list *ngIf="filteredEvents && filteredEvents.length" no-margin>
         <ng-container *ngFor="let event of filteredEvents">
-            <a ion-item text-wrap [title]="event.name" (click)="eventClicked(event)" [class.core-split-item-selected]="event.id == eventId">
+            <a ion-item text-wrap [title]="event.name" (click)="eventClicked(event)" [class.core-split-item-selected]="event.id == eventId" class="addon-calendar-event" [ngClass]="['addon-calendar-eventtype-'+event.eventtype]">
                 <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" item-start class="core-module-icon">
                 <core-icon *ngIf="event.icon && !event.moduleIcon" [name]="event.icon" item-start></core-icon>
                 <h2><core-format-text [text]="event.name"></core-format-text></h2>
