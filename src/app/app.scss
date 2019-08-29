@@ -718,15 +718,21 @@ ion-app.app-root {
     .core-#{$color-name}-item.item-input {
       border-bottom: 0 !important;
 
-      &.item-md .item-inner {
+      &.item-md .item-inner,
+      &.item-md.item-input.ng-valid.item-input-has-value:not(.input-has-focus):not(.item-input-has-focus) .item-inner,
+      &.item-md.item-input.ng-valid.input-has-value:not(.input-has-focus):not(.item-input-has-focus) .item-inner {
         @include md-input-highlight($color-base);
       }
 
-      &.item-ios .item-inner {
+      &.item-ios .item-inner,
+      &.item-ios.item-input.ng-valid.item-input-has-value:not(.input-has-focus):not(.item-input-has-focus) .item-inner,
+      &.item-ios.item-input.ng-valid.input-has-value:not(.input-has-focus):not(.item-input-has-focus) .item-inner {
         @include ios-input-highlight($color-base);
       }
 
-      &.item-wp .item-inner {
+      &.item-wp .text-input,
+      &.item-wp.item-input.ng-valid.item-input-has-value:not(.input-has-focus):not(.item-input-has-focus) .text-input,
+      &.item-wp.item-input.ng-valid.input-has-value:not(.input-has-focus):not(.item-input-has-focus) .text-input {
         border-color: $color-base;
       }
     }
