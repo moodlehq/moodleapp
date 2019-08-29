@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, Injector, Input, ViewChild } from '@angular/core';
-import { Content, NavController, PopoverController, ViewController } from 'ionic-angular';
+import { Component, Optional, Injector, Input } from '@angular/core';
+import { Content, NavController, PopoverController, ViewController, ModalController } from 'ionic-angular';
 import { CoreGroupsProvider } from '@providers/groups';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
@@ -21,7 +21,6 @@ import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModWikiProvider, AddonModWikiSubwikiListData } from '../../providers/wiki';
 import { AddonModWikiOfflineProvider } from '../../providers/wiki-offline';
 import { AddonModWikiSyncProvider } from '../../providers/wiki-sync';
-import { CoreTabsComponent } from '@components/tabs/tabs';
 import { AddonModWikiSubwikiPickerComponent } from '../../components/subwiki-picker/subwiki-picker';
 import { CoreTagProvider } from '@core/tag/providers/tag';
 
@@ -33,7 +32,6 @@ import { CoreTagProvider } from '@core/tag/providers/tag';
     templateUrl: 'addon-mod-wiki-index.html',
 })
 export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComponent {
-    @ViewChild(CoreTabsComponent) tabs: CoreTabsComponent;
 
     @Input() action: string;
     @Input() pageId: number;
@@ -55,9 +53,6 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     loadedSubwikis: any[] = []; // The loaded subwikis.
     pageIsOffline: boolean; // Whether the loaded page is an offline page.
     pageContent: string; // Page content to display.
-    showHomeButton: boolean; // Whether to display the home button.
-    selectedTab = 0; // Tab to select at start.
-    map: any[] = []; // Map of pages, categorized by letter.
     subwikiData: AddonModWikiSubwikiListData = { // Data for the subwiki selector.
         subwikiSelected: 0,
         userSelected: 0,
@@ -66,25 +61,23 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         count: 0
     };
     tagsEnabled: boolean;
+    currentPageObj: any; // Object of the current loaded page.
 
     protected syncEventName = AddonModWikiSyncProvider.AUTO_SYNCED;
     protected currentSubwiki: any; // Current selected subwiki.
     protected currentPage: number; // Current loaded page ID.
-    protected currentPageObj: any; // Object of the current loaded page.
     protected subwikiPages: any[]; // List of subwiki pages.
     protected newPageObserver: any; // Observer to check for new pages.
     protected ignoreManualSyncEvent: boolean; // Whether manual sync event should be ignored.
     protected manualSyncObserver: any; // An observer to watch for manual sync events.
     protected currentUserId: number; // Current user ID.
     protected hasEdited = false; // Whether the user has opened the edit page.
-    protected mapInitialized = false; // Whether the map was initialized.
-    protected initHomeButton = true; // Whether the init home button must be initialized.
 
     constructor(injector: Injector, protected wikiProvider: AddonModWikiProvider, @Optional() protected content: Content,
             protected wikiOffline: AddonModWikiOfflineProvider, protected wikiSync: AddonModWikiSyncProvider,
             protected navCtrl: NavController, protected utils: CoreUtilsProvider, protected groupsProvider: CoreGroupsProvider,
             protected userProvider: CoreUserProvider, private popoverCtrl: PopoverController,
-            private tagProvider: CoreTagProvider) {
+            private tagProvider: CoreTagProvider, protected modalCtrl: ModalController) {
         super(injector, content);
 
         this.pageStr = this.translate.instant('addon.mod_wiki.wikipage');
@@ -100,7 +93,6 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         this.currentUserId = this.sitesProvider.getCurrentSiteUserId();
         this.isMainPage = !this.pageId && !this.pageTitle;
         this.currentPage = this.pageId;
-        this.selectedTab = this.action == 'map' ? 1 : 0;
 
         this.loadContent(false, true).then(() => {
             if (!this.wiki) {
@@ -117,6 +109,10 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                 this.wikiProvider.logPageView(this.pageId, this.wiki.id, this.wiki.name).catch(() => {
                     // Ignore errors.
                 });
+            }
+        }).finally(() => {
+            if (this.action == 'map') {
+                this.openMap();
             }
         });
 
@@ -180,40 +176,6 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     }
 
     /**
-     * Construct the map of pages.
-     *
-     * @param subwikiPages List of pages.
-     */
-    constructMap(subwikiPages: any[]): void {
-        let letter,
-            initialLetter;
-
-        this.map = [];
-        this.mapInitialized = true;
-        subwikiPages.sort((a, b) => {
-            const compareA = a.title.toLowerCase().trim(),
-                compareB = b.title.toLowerCase().trim();
-
-            return compareA.localeCompare(compareB);
-        });
-
-        subwikiPages.forEach((page) => {
-            const letterCandidate = page.title.charAt(0).toLocaleUpperCase();
-
-            // Should we create a new grouping?
-            if (letterCandidate !== initialLetter) {
-                initialLetter = letterCandidate;
-                letter = {label: letterCandidate, pages: []};
-
-                this.map.push(letter);
-            }
-
-            // Add the subwiki to the currently active grouping.
-            letter.pages.push(page);
-        });
-    }
-
-    /**
      * Get the wiki data.
      *
      * @param refresh If it's refreshing content.
@@ -246,11 +208,6 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             if (this.pageWarning) {
                 // Page discarded, stop getting data.
                 return Promise.reject(null);
-            }
-
-            if (this.isCurrentView || this.initHomeButton) {
-                this.initHomeButton = false;
-                this.showHomeButton = !!this.getWikiHomeView();
             }
 
             // Get module instance if it's empty.
@@ -397,7 +354,6 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             }
 
             this.subwikiPages = this.wikiProvider.sortPagesByTitle(subwikiPages.concat(offlinePages));
-            this.constructMap(this.subwikiPages);
 
             // Reject if no currentPage selected from the subwikis given (if no subwikis available, do not reject).
             if (!this.currentPage && !this.pageTitle && this.subwikiPages.length > 0) {
@@ -489,17 +445,6 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                 // Wiki has changed, return the next view.
                 return views[i + 1];
             }
-        }
-    }
-
-    /**
-     * Go back to the initial page of the wiki.
-     */
-    goToWikiHome(): void {
-        const homeView = this.getWikiHomeView();
-
-        if (homeView) {
-            this.navCtrl.popTo(homeView);
         }
     }
 
@@ -613,9 +558,39 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
             return;
         }
+    }
 
-        // No changes done.
-        this.tabs.selectTab(0);
+    /**
+     * Show the map.
+     *
+     * @param {MouseEvent} event Event.
+     */
+    openMap(event: MouseEvent): void {
+        const modal = this.modalCtrl.create('AddonModWikiMapPage', {
+            pages: this.subwikiPages,
+            selected: this.currentPageObj && this.currentPageObj.id,
+            homeView: this.getWikiHomeView()
+        }, { cssClass: 'core-modal-lateral',
+            showBackdrop: true,
+            enableBackdropDismiss: true,
+            enterAnimation: 'core-modal-lateral-transition',
+            leaveAnimation: 'core-modal-lateral-transition' });
+
+        // If the modal sends back a SCO, load it.
+        modal.onDidDismiss((page) => {
+            if (page) {
+                if (page.type == 'home') {
+                    // Go back to the initial page of the wiki.
+                    this.navCtrl.popTo(page.goto);
+                } else {
+                    this.goToPage(page.goto);
+                }
+            }
+        });
+
+        modal.present({
+            ev: event
+        });
     }
 
     /**
@@ -638,8 +613,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                     wikiId: this.wiki.id,
                     subwikiId: subwikiId,
                     userId: userId,
-                    groupId: groupId,
-                    action: this.tabs.selected == 0 ? 'page' : 'map'
+                    groupId: groupId
                 });
             }
         }
@@ -731,8 +705,6 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     ionViewDidEnter(): void {
         super.ionViewDidEnter();
 
-        this.tabs && this.tabs.ionViewDidEnter();
-
         if (this.hasEdited) {
             this.hasEdited = false;
             this.showLoadingAndRefresh(true, false);
@@ -744,8 +716,6 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      */
     ionViewDidLeave(): void {
         super.ionViewDidLeave();
-
-        this.tabs && this.tabs.ionViewDidLeave();
 
         if (this.navCtrl.getActive().component.name == 'AddonModWikiEditPage') {
             this.hasEdited = true;

@@ -1,0 +1,29 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'addon.mod_wiki.map' | translate }}</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <nav>
+        <ion-list>
+            <!-- Go to "home". -->
+            <a ion-item text-wrap *ngIf="homeView" (click)="goToWikiHome()">
+                <ion-icon name="home" item-start></ion-icon> {{ 'addon.mod_wiki.gowikihome' | translate }}
+            </a>
+            <ng-container *ngFor="let letter of map">
+                <ion-item-divider *ngIf="letter.label">
+                    {{ letter.label }}
+                </ion-item-divider>
+                <a ion-item text-wrap *ngFor="let page of letter.pages" (click)="goToPage(page)" [class.core-nav-item-selected]="selected == page.id">
+                    <ion-icon name="home" item-start *ngIf="page.firstpage"></ion-icon> {{ page.title }}
+                    <ion-note *ngIf="!page.id" item-end color="danger">{{ 'core.offline' | translate }}</ion-note>
+                </a>
+            </ng-container>
+        </ion-list>
+    </nav>
+</ion-content>
