@@ -205,9 +205,12 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
             this.calculateIsCurrentMonth();
 
             if (this.isCurrentMonth) {
+                const currentDay = new Date().getDate();
                 let isPast = true;
+
                 this.weeks.forEach((week) => {
                     week.days.some((day) => {
+                        day.istoday = day.mday == currentDay;
                         day.ispast = isPast && !day.istoday;
                         isPast = day.ispast;
 
