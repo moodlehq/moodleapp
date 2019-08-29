@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
-import { CoreSite } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreAppProvider } from '@providers/app';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -971,10 +971,12 @@ export class AddonCalendarProvider {
      * @param {number} day Day to get.
      * @param {number} [courseId] Course to get.
      * @param {number} [categoryId] Category to get.
+     * @param  {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved with the response.
      */
-    getDayEvents(year: number, month: number, day: number, courseId?: number, categoryId?: number, siteId?: string): Promise<any> {
+    getDayEvents(year: number, month: number, day: number, courseId?: number, categoryId?: number, ignoreCache?: boolean,
+            siteId?: string): Promise<any> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
 
@@ -991,10 +993,15 @@ export class AddonCalendarProvider {
                 data.categoryid = categoryId;
             }
 
-            const preSets = {
+            const preSets: CoreSiteWSPreSets = {
                 cacheKey: this.getDayEventsCacheKey(year, month, day, courseId, categoryId),
                 updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
+
+            if (ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
+            }
 
             return site.read('core_calendar_get_calendar_day_view', data, preSets).then((response) => {
                 this.storeEventsInLocalDB(response.events, siteId);
@@ -1159,7 +1166,6 @@ export class AddonCalendarProvider {
             return site.getDb().getRecords(AddonCalendarProvider.EVENTS_TABLE, {repeatid: repeatId});
         });
     }
-
     /**
      * Get monthly calendar events.
      *
@@ -1167,10 +1173,12 @@ export class AddonCalendarProvider {
      * @param {number} month Month to get.
      * @param {number} [courseId] Course to get.
      * @param {number} [categoryId] Category to get.
+     * @param  {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved with the response.
      */
-    getMonthlyEvents(year: number, month: number, courseId?: number, categoryId?: number, siteId?: string): Promise<any> {
+    getMonthlyEvents(year: number, month: number, courseId?: number, categoryId?: number, ignoreCache?: boolean, siteId?: string)
+            : Promise<any> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
 
@@ -1180,7 +1188,7 @@ export class AddonCalendarProvider {
             };
 
             // This parameter requires Moodle 3.5.
-            if ( site.isVersionGreaterEqualThan('3.5')) {
+            if (site.isVersionGreaterEqualThan('3.5')) {
                 // Set mini to 1 to prevent returning the course selector HTML.
                 data.mini = 1;
             }
@@ -1192,10 +1200,15 @@ export class AddonCalendarProvider {
                 data.categoryid = categoryId;
             }
 
-            const preSets = {
+            const preSets: CoreSiteWSPreSets = {
                 cacheKey: this.getMonthlyEventsCacheKey(year, month, courseId, categoryId),
                 updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
+
+            if (ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
+            }
 
             return site.read('core_calendar_get_calendar_monthly_view', data, preSets).then((response) => {
                 response.weeks.forEach((week) => {
@@ -1253,10 +1266,11 @@ export class AddonCalendarProvider {
      *
      * @param {number} [courseId] Course to get.
      * @param {number} [categoryId] Category to get.
+     * @param  {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved with the response.
      */
-    getUpcomingEvents(courseId?: number, categoryId?: number, siteId?: string): Promise<any> {
+    getUpcomingEvents(courseId?: number, categoryId?: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
 
@@ -1269,10 +1283,15 @@ export class AddonCalendarProvider {
                 data.categoryid = categoryId;
             }
 
-            const preSets = {
+            const preSets: CoreSiteWSPreSets = {
                 cacheKey: this.getUpcomingEventsCacheKey(courseId, categoryId),
                 updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
+
+            if (ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
+            }
 
             return site.read('core_calendar_get_calendar_upcoming_view', data, preSets).then((response) => {
                 this.storeEventsInLocalDB(response.events, siteId);

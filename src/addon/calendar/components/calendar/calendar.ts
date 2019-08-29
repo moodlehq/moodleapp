@@ -285,14 +285,16 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     /**
      * Refresh events.
      *
-     * @param {boolean} [sync] Whether it should try to synchronize offline events.
-     * @param {boolean} [showErrors] Whether to show sync errors to the user.
+     * @param {boolean} [afterChange] Whether the refresh is done after an event has changed or has been synced.
      * @return {Promise<any>} Promise resolved when done.
      */
-    refreshData(sync?: boolean, showErrors?: boolean): Promise<any> {
+    refreshData(afterChange?: boolean): Promise<any> {
         const promises = [];
 
-        promises.push(this.calendarProvider.invalidateMonthlyEvents(this.year, this.month));
+        // Don't invalidate monthly events after a change, it has already been handled.
+        if (!afterChange) {
+            promises.push(this.calendarProvider.invalidateMonthlyEvents(this.year, this.month));
+        }
         promises.push(this.coursesProvider.invalidateCategories(0, true));
         promises.push(this.calendarProvider.invalidateTimeFormat());
 
