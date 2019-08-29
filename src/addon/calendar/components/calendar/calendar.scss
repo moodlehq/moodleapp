@@ -8,6 +8,45 @@ $calendar-today-bgcolor: $core-color !default;
 $calendar-today-color: $white !default;
 $calendar-border-color: $gray !default;
 
+ion-app.app-root page-addon-calendar-list,
+ion-app.app-root page-addon-calendar-day,
+ion-app.app-root addon-calendar-upcoming-events {
+
+    .item.addon-calendar-event .icon {
+        color: white;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        line-height: 36px;
+
+        &.fa {
+            font-size: 20px;
+            &::before {
+                width: 1.9em;
+            }
+        }
+    }
+    .item.addon-calendar-event .core-module-icon {
+        margin: 9px 8px 9px 8px;
+    }
+
+    .item.addon-calendar-eventtype-category .icon {
+        background-color: $calendar-event-category-color;
+    }
+    .item.addon-calendar-eventtype-course .icon {
+        background-color: $calendar-event-course-color;
+    }
+    .item.addon-calendar-eventtype-group .icon {
+        background-color: $calendar-event-group-color;
+    }
+    .item.addon-calendar-eventtype-user .icon {
+        background-color: $calendar-event-user-color;
+    }
+    .item.addon-calendar-eventtype-site .icon {
+        background-color: $calendar-event-site-color;
+    }
+}
+
 ion-app.app-root addon-calendar-calendar {
 
     .addon-calendar-navigation {
