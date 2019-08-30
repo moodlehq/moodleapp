@@ -80,11 +80,9 @@ export class AddonModBookProvider {
 
                 // Search the book.
                 if (response && response.books) {
-                    for (const i in response.books) {
-                        const book = response.books[i];
-                        if (book[key] == value) {
-                            return book;
-                        }
+                    const book = response.books.find((book) => book[key] == value);
+                    if (book) {
+                        return book;
                     }
                 }
 
@@ -278,21 +276,41 @@ export class AddonModBookProvider {
      * @return The toc as a list.
      */
     getTocList(contents: any[]): AddonModBookTocChapter[] {
+        // Convenience function to get chapter info.
+        const getChapterInfo = (chapter: any, chapterNumber: number, previousNumber: string = ''): AddonModBookTocChapter => {
+            chapter.hidden = !!parseInt(chapter.hidden, 10);
+
+            const fullChapterNumber = previousNumber + (chapter.hidden ? 'x.' : chapterNumber + '.');
+
+            return {
+                id: chapter.href.replace('/index.html', ''),
+                title: chapter.title,
+                level: chapter.level,
+                number: fullChapterNumber,
+                hidden: chapter.hidden
+            };
+        };
+
         const chapters = [],
             toc = this.getToc(contents);
 
+        let chapterNumber = 1;
         toc.forEach((chapter) => {
+            const tocChapter = getChapterInfo(chapter, chapterNumber);
+
             // Add the chapter to the list.
-            let chapterId = chapter.href.replace('/index.html', '');
-            chapters.push({id: chapterId, title: chapter.title, level: chapter.level});
+            chapters.push(tocChapter);
 
             if (chapter.subitems) {
+                let subChapterNumber = 1;
                 // Add all the subchapters to the list.
                 chapter.subitems.forEach((subChapter) => {
-                    chapterId = subChapter.href.replace('/index.html', '');
-                    chapters.push({id: chapterId, title: subChapter.title, level: subChapter.level});
+                    chapters.push(getChapterInfo(subChapter, subChapterNumber, tocChapter.number));
+                    subChapterNumber++;
                 });
             }
+
+            chapterNumber++;
         });
 
         return chapters;
@@ -376,7 +394,7 @@ export class AddonModBookProvider {
 /**
  * A book chapter inside the toc list.
  */
-export type AddonModBookTocChapter = {
+export interface AddonModBookTocChapter {
     /**
      * ID to identify the chapter.
      */
@@ -391,7 +409,17 @@ export type AddonModBookTocChapter = {
      * The chapter's level.
      */
     level: number;
-};
+
+    /**
+     * The chapter is hidden.
+     */
+    hidden: boolean;
+
+    /**
+     * The chapter's number'.
+     */
+    number: string;
+}
 
 /**
  * Map of book contents. For each chapter it has its index URL and the list of paths of the files the chapter has. Each path
