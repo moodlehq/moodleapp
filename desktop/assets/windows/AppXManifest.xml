@@ -6,7 +6,7 @@
   <Identity Name="3312ADB7.MoodleDesktop"
     ProcessorArchitecture="x64"
     Publisher="CN=33CDCDF6-1EB5-4827-9897-ED25C91A32F6"
-    Version="3.7.0.0" />
+    Version="3.7.1.0" />
   <Properties>
     <DisplayName>Moodle Desktop</DisplayName>
     <PublisherDisplayName>Moodle Pty Ltd.</PublisherDisplayName>

@@ -21,12 +21,12 @@ import { WebIntent } from '@ionic-native/web-intent';
 import { CoreAppProvider } from '../app';
 import { CoreDomUtilsProvider } from './dom';
 import { CoreMimetypeUtilsProvider } from './mimetype';
+import { CoreTextUtilsProvider } from './text';
 import { CoreEventsProvider } from '../events';
 import { CoreLoggerProvider } from '../logger';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
 import { CoreWSProvider, CoreWSError } from '../ws';
-import { CoreConstants } from '@core/constants';
 
 /**
  * Deferred promise. It's similar to the result of $q.defer() in AngularJS.
@@ -58,6 +58,7 @@ export interface PromiseDefer {
  */
 @Injectable()
 export class CoreUtilsProvider {
+    protected DONT_CLONE = ['[object FileEntry]', '[object DirectoryEntry]', '[object DOMFileSystem]'];
     protected logger;
     protected iabInstance: InAppBrowserObject;
     protected uniqueIds: {[name: string]: number} = {};
@@ -66,8 +67,34 @@ export class CoreUtilsProvider {
             private domUtils: CoreDomUtilsProvider, logger: CoreLoggerProvider, private translate: TranslateService,
             private platform: Platform, private langProvider: CoreLangProvider, private eventsProvider: CoreEventsProvider,
             private fileOpener: FileOpener, private mimetypeUtils: CoreMimetypeUtilsProvider, private webIntent: WebIntent,
-            private wsProvider: CoreWSProvider, private zone: NgZone) {
+            private wsProvider: CoreWSProvider, private zone: NgZone, private textUtils: CoreTextUtilsProvider) {
         this.logger = logger.getInstance('CoreUtilsProvider');
+    }
+
+    /**
+     * Given an error, add an extra warning to the error message and return the new error message.
+     *
+     * @param {any} error Error object or message.
+     * @param {any} [defaultError] Message to show if the error is not a string.
+     * @return {string} New error message.
+     */
+    addDataNotDownloadedError(error: any, defaultError?: string): string {
+        let errorMessage = error;
+
+        if (error && typeof error != 'string') {
+            errorMessage = this.textUtils.getErrorMessageFromError(error);
+        }
+
+        if (typeof errorMessage != 'string') {
+            errorMessage = defaultError || '';
+        }
+
+        if (!this.isWebServiceError(error)) {
+            // Local error. Add an extra warning.
+             errorMessage += '<br><br>' + this.translate.instant('core.errorsomedatanotdownloaded');
+        }
+
+        return errorMessage;
     }
 
     /**
@@ -205,7 +232,8 @@ export class CoreUtilsProvider {
                 initOptions.signal = controller.signal;
             }
 
-            return this.timeoutPromise(window.fetch(url, initOptions), CoreConstants.WS_TIMEOUT).then((response: Response) => {
+            return this.timeoutPromise(window.fetch(url, initOptions), this.wsProvider.getRequestTimeout())
+                    .then((response: Response) => {
                 return response.redirected;
             }).catch((error) => {
                 if (error.timeout && controller) {
@@ -240,22 +268,36 @@ export class CoreUtilsProvider {
      * Clone a variable. It should be an object, array or primitive type.
      *
      * @param {any} source The variable to clone.
+     * @param {number} [level=0] Depth we are right now inside a cloned object. It's used to prevent reaching max call stack size.
      * @return {any} Cloned variable.
      */
-    clone(source: any): any {
+    clone(source: any, level: number = 0): any {
+        if (level >= 20) {
+            // Max 20 levels.
+            this.logger.error('Max depth reached when cloning object.', source);
+
+            return source;
+        }
+
         if (Array.isArray(source)) {
             // Clone the array and all the entries.
             const newArray = [];
             for (let i = 0; i < source.length; i++) {
-                newArray[i] = this.clone(source[i]);
+                newArray[i] = this.clone(source[i], level + 1);
             }
 
             return newArray;
         } else if (typeof source == 'object' && source !== null) {
+            // Check if the object shouldn't be copied.
+            if (source && source.toString && this.DONT_CLONE.indexOf(source.toString()) != -1) {
+                // Object shouldn't be copied, return it as it is.
+                return source;
+            }
+
             // Clone the object and all the subproperties.
             const newObject = {};
             for (const name in source) {
-                newObject[name] = this.clone(source[name]);
+                newObject[name] = this.clone(source[name], level + 1);
             }
 
             return newObject;
@@ -376,13 +418,15 @@ export class CoreUtilsProvider {
     }
 
     /**
-     * Flatten an object, moving subobjects' properties to the first level using dot notation. E.g.:
-     * {a: {b: 1, c: 2}, d: 3} -> {'a.b': 1, 'a.c': 2, d: 3}
+     * Flatten an object, moving subobjects' properties to the first level.
+     * It supports 2 notations: dot notation and square brackets.
+     * E.g.: {a: {b: 1, c: 2}, d: 3} -> {'a.b': 1, 'a.c': 2, d: 3}
      *
      * @param {object} obj Object to flatten.
-     * @return {object} Flatten object.
+     * @param {boolean} [useDotNotation] Whether to use dot notation '.' or square brackets '['.
+     * @return {object} Flattened object.
      */
-    flattenObject(obj: object): object {
+    flattenObject(obj: object, useDotNotation?: boolean): object {
         const toReturn = {};
 
         for (const name in obj) {
@@ -398,7 +442,8 @@ export class CoreUtilsProvider {
                         continue;
                     }
 
-                    toReturn[name + '.' + subName] = flatObject[subName];
+                    const newName = useDotNotation ? name + '.' + subName : name + '[' + subName + ']';
+                    toReturn[newName] = flatObject[subName];
                 }
             } else {
                 toReturn[name] = value;
@@ -1049,6 +1094,37 @@ export class CoreUtilsProvider {
         });
 
         return mapped;
+    }
+
+    /**
+     * Convert an object to a format of GET param. E.g.: {a: 1, b: 2} -> a=1&b=2
+     *
+     * @param {any} object Object to convert.
+     * @param {boolean} [removeEmpty=true] Whether to remove params whose value is null/undefined.
+     * @return {string} GET params.
+     */
+    objectToGetParams(object: any, removeEmpty: boolean = true): string {
+        // First of all, flatten the object so all properties are in the first level.
+        const flattened = this.flattenObject(object);
+        let result = '',
+            joinChar = '';
+
+        for (const name in flattened) {
+            let value = flattened[name];
+
+            if (removeEmpty && (value === null || typeof value == 'undefined')) {
+                continue;
+            }
+
+            if (typeof value == 'boolean') {
+                value = value ? 1 : 0;
+            }
+
+            result += joinChar + name + '=' + value;
+            joinChar = '&';
+        }
+
+        return result;
     }
 
     /**

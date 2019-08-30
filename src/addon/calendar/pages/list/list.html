@@ -3,20 +3,27 @@
         <ion-title>{{ 'addon.calendar.calendarevents' | translate }}</ion-title>
         <ion-buttons end>
             <button *ngIf="courses && courses.length" ion-button icon-only (click)="openCourseFilter($event)" [attr.aria-label]="'core.courses.filter' | translate">
-                <ion-icon name="funnel"></ion-icon>
+                <ion-icon name="funnel" *ngIf="courseId"></ion-icon>
+                <ion-icon name="ios-funnel-outline" *ngIf="!courseId"></ion-icon>
             </button>
             <core-context-menu>
                 <core-context-menu-item [hidden]="!notificationsEnabled" [priority]="600" [content]="'core.settings.settings' | translate" (action)="openSettings()" [iconAction]="'cog'"></core-context-menu-item>
+                <core-context-menu-item [hidden]="!eventsLoaded || !hasOffline || !isOnline"  [priority]="400" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
             </core-context-menu>
         </ion-buttons>
     </ion-navbar>
 </ion-header>
 <core-split-view>
     <ion-content>
-        <ion-refresher [enabled]="eventsLoaded" (ionRefresh)="refreshEvents($event)">
+        <ion-refresher [enabled]="eventsLoaded" (ionRefresh)="doRefresh($event)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
         <core-loading [hideUntil]="eventsLoaded">
+            <!-- There is data to be synchronized -->
+            <ion-card class="core-warning-card" icon-start *ngIf="hasOffline">
+                <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendar' | translate} }}
+            </ion-card>
+
             <core-empty-box *ngIf="!filteredEvents || !filteredEvents.length" icon="calendar" [message]="'addon.calendar.noevents' | translate">
             </core-empty-box>
 
@@ -25,7 +32,7 @@
                     <ion-item-divider *ngIf="event.showDate">
                         {{ event.timestart * 1000 | coreFormatDate: "strftimedayshort" }}
                     </ion-item-divider>
-                    <a ion-item text-wrap [title]="event.name" (click)="gotoEvent(event.id)" [class.core-split-item-selected]="event.id == eventId">
+                    <a ion-item text-wrap [title]="event.name" (click)="gotoEvent(event.id)" [class.core-split-item-selected]="event.id == eventId" class="addon-calendar-event" [ngClass]="['addon-calendar-eventtype-'+event.eventtype]">
                         <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" item-start class="core-module-icon">
                         <core-icon *ngIf="event.icon && !event.moduleIcon" [name]="event.icon" item-start></core-icon>
                         <h2><core-format-text [text]="event.name"></core-format-text></h2>
@@ -34,11 +41,26 @@
                             <span *ngIf="event.timeduration && event.endsSameDay"> - {{ (event.timestart + event.timeduration) * 1000 | coreFormatDate: "strftimetime" }}</span>
                             <span *ngIf="event.timeduration && !event.endsSameDay"> - {{ (event.timestart + event.timeduration) * 1000 | coreFormatDate: "strftimedatetimeshort" }}</span>
                         </p>
+                        <ion-note *ngIf="event.offline && !event.deleted" item-end>
+                            <ion-icon name="time"></ion-icon>
+                            <span text-wrap>{{ 'core.notsent' | translate }}</span>
+                        </ion-note>
+                        <ion-note *ngIf="event.deleted" item-end>
+                            <ion-icon name="trash"></ion-icon>
+                            <span text-wrap>{{ 'core.deletedoffline' | translate }}</span>
+                        </ion-note>
                     </a>
                 </ng-container>
             </ion-list>
 
             <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreEvents($event)" [error]="loadMoreError"></core-infinite-loading>
         </core-loading>
+
+        <!-- Create a calendar event. -->
+        <ion-fab core-fab bottom end *ngIf="canCreate">
+            <button ion-fab (click)="openEdit()" [attr.aria-label]="'addon.calendar.newevent' | translate">
+                <ion-icon name="add"></ion-icon>
+            </button>
+        </ion-fab>
     </ion-content>
 </core-split-view>

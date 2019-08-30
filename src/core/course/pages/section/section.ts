@@ -20,6 +20,8 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreTabsComponent } from '@components/tabs/tabs';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCourseProvider } from '../../providers/course';
 import { CoreCourseHelperProvider } from '../../providers/helper';
 import { CoreCourseFormatDelegate } from '../../providers/format-delegate';
@@ -28,8 +30,6 @@ import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay,
     CoreCourseOptionsMenuHandlerToDisplay } from '../../providers/options-delegate';
 import { CoreCourseSyncProvider } from '../../providers/sync';
 import { CoreCourseFormatComponent } from '../../components/format/format';
-import { CoreCoursesProvider } from '@core/courses/providers/courses';
-import { CoreTabsComponent } from '@components/tabs/tabs';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -67,6 +67,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     protected modParams: any;
     protected completionObserver;
     protected courseStatusObserver;
+    protected selectTabObserver;
     protected syncObserver;
     protected firstTabName: string;
     protected isDestroyed = false;
@@ -120,6 +121,26 @@ export class CoreCourseSectionPage implements OnDestroy {
                 }
             }, sitesProvider.getCurrentSiteId());
         }
+
+        this.selectTabObserver = eventsProvider.on(CoreEventsProvider.SELECT_COURSE_TAB, (data) => {
+
+            if (!data.name) {
+                // If needed, set sectionId and sectionNumber. They'll only be used if the content tabs hasn't been loaded yet.
+                this.sectionId = data.sectionId || this.sectionId;
+                this.sectionNumber = data.sectionNumber || this.sectionNumber;
+
+                // Select course contents.
+                this.tabsComponent && this.tabsComponent.selectTab(0);
+            } else if (this.courseHandlers) {
+                const index = this.courseHandlers.findIndex((handler) => {
+                    return handler.name == data.name;
+                });
+
+                if (index >= 0) {
+                    this.tabsComponent && this.tabsComponent.selectTab(index + 1);
+                }
+            }
+        });
     }
 
     /**
@@ -212,11 +233,6 @@ export class CoreCourseSectionPage implements OnDestroy {
                 }
             }).then((sections) => {
                 let promise;
-
-                // Add log in Moodle.
-                this.courseProvider.logView(this.course.id, this.sectionNumber, undefined, this.course.fullname).catch(() => {
-                    // Ignore errors.
-                });
 
                  // Get the completion status.
                 if (this.course.enablecompletion === false) {
@@ -426,15 +442,7 @@ export class CoreCourseSectionPage implements OnDestroy {
      */
     prefetchCourse(): void {
         this.courseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course, this.sections,
-                this.courseHandlers, this.courseMenuHandlers)
-                .then(() => {
-            if (this.downloadEnabled) {
-                // Recalculate the status.
-                this.courseHelper.calculateSectionsStatus(this.sections, this.course.id).catch(() => {
-                    // Ignore errors (shouldn't happen).
-                });
-            }
-        }).catch((error) => {
+                this.courseHandlers, this.courseMenuHandlers).catch((error) => {
             if (!this.isDestroyed) {
                 this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
             }
@@ -483,9 +491,8 @@ export class CoreCourseSectionPage implements OnDestroy {
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;
-        if (this.completionObserver) {
-            this.completionObserver.off();
-        }
+        this.completionObserver && this.completionObserver.off();
+        this.selectTabObserver && this.selectTabObserver.off();
     }
 
     /**

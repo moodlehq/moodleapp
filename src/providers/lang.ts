@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
 import { Globalization } from '@ionic-native/globalization';
-import { Platform } from 'ionic-angular';
+import { Platform, Config } from 'ionic-angular';
 import { CoreConfigProvider } from './config';
 import { CoreConfigConstants } from '../configconstants';
 
@@ -33,7 +33,7 @@ export class CoreLangProvider {
     protected sitePluginsStrings = {}; // Strings defined by site plugins.
 
     constructor(private translate: TranslateService, private configProvider: CoreConfigProvider, platform: Platform,
-            private globalization: Globalization) {
+            private globalization: Globalization, private config: Config) {
         // Set fallback language and language to use until the app determines the right language to use.
         translate.setDefaultLang(this.fallbackLanguage);
         translate.use(this.defaultLanguage);
@@ -84,6 +84,17 @@ export class CoreLangProvider {
             // Load the string.
             this.loadString(this.sitePluginsStrings, lang, prefixedKey, value);
         }
+    }
+
+    /**
+     * Capitalize a string (make the first letter uppercase).
+     * We cannot use a function from text utils because it would cause a circular dependency.
+     *
+     * @param {string} value String to capitalize.
+     * @return {string} Capitalized string.
+     */
+    protected capitalize(value: string): string {
+        return value.charAt(0).toUpperCase() + value.slice(1);
     }
 
     /**
@@ -142,6 +153,13 @@ export class CoreLangProvider {
 
         // Use british english when parent english is loaded.
         moment.locale(language == 'en' ? 'en-gb' : language);
+
+        // Set data for ion-datetime.
+        this.config.set('monthNames', moment.months().map(this.capitalize.bind(this)));
+        this.config.set('monthShortNames', moment.monthsShort().map(this.capitalize.bind(this)));
+        this.config.set('dayNames', moment.weekdays().map(this.capitalize.bind(this)));
+        this.config.set('dayShortNames', moment.weekdaysShort().map(this.capitalize.bind(this)));
+
         this.currentLanguage = language;
 
         return Promise.all(promises).finally(() => {

@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
-import { CoreLoginHelperProvider } from '@core/login/providers/helper';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { AddonBlogProvider } from './blog';
 
 /**
@@ -27,7 +27,7 @@ export class AddonBlogIndexLinkHandler extends CoreContentLinksHandlerBase {
     featureName = 'CoreUserDelegate_AddonBlog:blogs';
     pattern = /\/blog\/index\.php/;
 
-    constructor(private blogProvider: AddonBlogProvider, private loginHelper: CoreLoginHelperProvider) {
+    constructor(private blogProvider: AddonBlogProvider, private linkHelper: CoreContentLinksHelperProvider) {
         super();
     }
 
@@ -53,8 +53,7 @@ export class AddonBlogIndexLinkHandler extends CoreContentLinksHandlerBase {
 
         return [{
             action: (siteId, navCtrl?): void => {
-                // Always use redirect to make it the new history root (to avoid "loops" in history).
-                this.loginHelper.redirect('AddonBlogEntriesPage', pageParams, siteId);
+                this.linkHelper.goInSite(navCtrl, 'AddonBlogEntriesPage', pageParams, siteId, !Object.keys(pageParams).length);
             }
         }];
     }

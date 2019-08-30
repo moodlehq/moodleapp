@@ -25,6 +25,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { MoodleMobileApp } from '../../../../../app/app.component';
 import { AddonModLessonProvider } from '../../providers/lesson';
 import { AddonModLessonOfflineProvider } from '../../providers/lesson-offline';
 import { AddonModLessonSyncProvider } from '../../providers/lesson-sync';
@@ -85,7 +86,8 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy {
             protected lessonHelper: AddonModLessonHelperProvider, protected lessonSync: AddonModLessonSyncProvider,
             protected lessonOfflineProvider: AddonModLessonOfflineProvider, protected cdr: ChangeDetectorRef,
             modalCtrl: ModalController, protected navCtrl: NavController, protected appProvider: CoreAppProvider,
-            protected utils: CoreUtilsProvider, protected urlUtils: CoreUrlUtilsProvider, protected fb: FormBuilder) {
+            protected utils: CoreUtilsProvider, protected urlUtils: CoreUrlUtilsProvider, protected fb: FormBuilder,
+            protected mmApp: MoodleMobileApp) {
 
         this.lessonId = navParams.get('lessonId');
         this.courseId = navParams.get('courseId');
@@ -143,6 +145,13 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy {
         }
 
         return Promise.resolve();
+    }
+
+    /**
+     * Runs when the page is about to leave and no longer be the active page.
+     */
+    ionViewWillLeave(): void {
+        this.mmApp.closeModal();
     }
 
     /**

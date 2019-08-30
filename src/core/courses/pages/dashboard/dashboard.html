@@ -26,7 +26,7 @@
                     <ion-refresher [enabled]="!!siteHomeComponent && siteHomeComponent.dataLoaded" (ionRefresh)="siteHomeComponent.doRefresh($event)">
                         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
                     </ion-refresher>
-                    <core-sitehome-index></core-sitehome-index>
+                    <core-sitehome-index [downloadEnabled]="downloadEnabled"></core-sitehome-index>
                 </ion-content>
             </ng-template>
         </core-tab>

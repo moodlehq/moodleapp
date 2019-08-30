@@ -269,7 +269,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
                 this.viewMode = 'cat';
                 this.fetchFunction = this.glossaryProvider.getEntriesByCategory;
                 this.fetchInvalidate = this.glossaryProvider.invalidateEntriesByCategory;
-                this.fetchArguments = [this.glossary.id, AddonModGlossaryProvider.SHOW_ALL_CATERGORIES];
+                this.fetchArguments = [this.glossary.id, AddonModGlossaryProvider.SHOW_ALL_CATEGORIES];
                 this.getDivider = (entry: any): string => entry.categoryname;
                 this.showDivider = (entry?: any, previous?: any): boolean  => {
                     return !previous || this.getDivider(entry) != this.getDivider(previous);

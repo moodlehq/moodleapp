@@ -49,7 +49,6 @@ export class AddonMessagesDiscussionLinkHandler extends CoreContentLinksHandlerB
                 const stateParams = {
                     userId: parseInt(params.id || params.user2, 10)
                 };
-                // Always use redirect to make it the new history root (to avoid "loops" in history).
                 this.linkHelper.goInSite(navCtrl, 'AddonMessagesDiscussionPage', stateParams, siteId);
             }
         }];

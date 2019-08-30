@@ -24,6 +24,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreSite } from '@classes/site';
+import { CoreTagItem } from '@core/tag/providers/tag';
 
 /**
  * A book chapter inside the toc list.
@@ -52,7 +53,13 @@ export interface AddonModBookTocChapter {
  * Map of book contents. For each chapter it has its index URL and the list of paths of the files the chapter has. Each path
  * is identified by the relative path in the book, and the value is the URL of the file.
  */
-export type AddonModBookContentsMap = {[chapter: string]: {indexUrl?: string, paths: {[path: string]: string}}};
+export type AddonModBookContentsMap = {
+    [chapter: string]: {
+        indexUrl?: string,
+        paths: {[path: string]: string},
+        tags?: CoreTagItem[]
+    }
+};
 
 /**
  * Service that provides some features for books.
@@ -203,8 +210,9 @@ export class AddonModBookProvider {
                     map[chapter] = map[chapter] || { paths: {} };
 
                     if (content.filename == 'index.html' && filepathIsChapter) {
-                        // Index of the chapter, set indexUrl of the chapter.
+                        // Index of the chapter, set indexUrl and tags of the chapter.
                         map[chapter].indexUrl = content.fileurl;
+                        map[chapter].tags = content.tags;
                     } else {
                         if (filepathIsChapter) {
                             // It's a file in the root folder OR the WS isn't returning the filepath as it should (MDL-53671).

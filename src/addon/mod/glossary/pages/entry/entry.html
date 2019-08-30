@@ -28,6 +28,10 @@
                     <core-file *ngFor="let file of entry.attachments" [file]="file" [component]="component" [componentId]="componentId"></core-file>
                 </div>
             </ng-container>
+            <ion-item text-wrap *ngIf="tagsEnabled && entry && entry.tags && entry.tags.length > 0">
+                <div item-start>{{ 'core.tag.tags' | translate }}:</div>
+                <core-tag-list [tags]="entry.tags"></core-tag-list>
+            </ion-item>
             <ion-item text-wrap *ngIf="entry.approved != 1">
                 <p><em>{{ 'addon.mod_glossary.entrypendingapproval' | translate }}</em></p>
             </ion-item>

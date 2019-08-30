@@ -76,6 +76,18 @@ export interface CoreWSAjaxPreSets {
      * @type {boolean}
      */
     responseExpected?: boolean;
+
+    /**
+     * Whether to use the no-login endpoint instead of the normal one. Use it for requests that don't require authentication.
+     * @type {boolean}
+     */
+    noLogin?: boolean;
+
+    /**
+     * Whether to send the parameters via GET. Only if noLogin is true.
+     * @type {boolean}
+     */
+    useGet?: boolean;
 }
 
 /**
@@ -215,8 +227,7 @@ export class CoreWSProvider {
      *                                 - available: 0 if unknown, 1 if available, -1 if not available.
      */
     callAjax(method: string, data: any, preSets: CoreWSAjaxPreSets): Promise<any> {
-        let siteUrl,
-            ajaxData;
+        let promise;
 
         if (typeof preSets.siteUrl == 'undefined') {
             return rejectWithError(this.createFakeWSError('core.unexpectederror', true));
@@ -228,17 +239,24 @@ export class CoreWSProvider {
             preSets.responseExpected = true;
         }
 
-        ajaxData = [{
-            index: 0,
-            methodname: method,
-            args: this.convertValuesToString(data)
-        }];
+        const script = preSets.noLogin ? 'service-nologin.php' : 'service.php',
+            ajaxData = JSON.stringify([{
+                index: 0,
+                methodname: method,
+                args: this.convertValuesToString(data)
+            }]);
 
         // The info= parameter has no function. It is just to help with debugging.
         // We call it info to match the parameter name use by Moodle's AMD ajax module.
-        siteUrl = preSets.siteUrl + '/lib/ajax/service.php?info=' + method;
+        let siteUrl = preSets.siteUrl + '/lib/ajax/' + script + '?info=' + method;
 
-        const promise = this.http.post(siteUrl, JSON.stringify(ajaxData)).timeout(CoreConstants.WS_TIMEOUT).toPromise();
+        if (preSets.noLogin && preSets.useGet) {
+            // Send params using GET.
+            siteUrl += '&args=' + encodeURIComponent(ajaxData);
+            promise = this.http.get(siteUrl).timeout(this.getRequestTimeout()).toPromise();
+        } else {
+            promise = this.http.post(siteUrl, ajaxData).timeout(this.getRequestTimeout()).toPromise();
+        }
 
         return promise.then((data: any) => {
             // Some moodle web services return null.
@@ -499,6 +517,15 @@ export class CoreWSProvider {
     }
 
     /**
+     * Get a request timeout based on the network connection.
+     *
+     * @return {number} Timeout in ms.
+     */
+    getRequestTimeout(): number {
+        return this.appProvider.isNetworkAccessLimited() ? CoreConstants.WS_TIMEOUT : CoreConstants.WS_TIMEOUT_WIFI;
+    }
+
+    /**
      * Get the unique queue item id of the cache for a HTTP request.
      *
      * @param {string} method Method of the HTTP request.
@@ -524,7 +551,7 @@ export class CoreWSProvider {
         let promise = this.getPromiseHttp('head', url);
 
         if (!promise) {
-            promise = this.commonHttp.head(url).timeout(CoreConstants.WS_TIMEOUT).toPromise();
+            promise = this.commonHttp.head(url).timeout(this.getRequestTimeout()).toPromise();
             promise = this.setPromiseHttp(promise, 'head', url);
         }
 
@@ -555,7 +582,7 @@ export class CoreWSProvider {
         const requestUrl = siteUrl + '&wsfunction=' + method;
 
         // Perform the post request.
-        const promise = this.http.post(requestUrl, ajaxData, options).timeout(CoreConstants.WS_TIMEOUT).toPromise();
+        const promise = this.http.post(requestUrl, ajaxData, options).timeout(this.getRequestTimeout()).toPromise();
 
         return promise.then((data: any) => {
             // Some moodle web services return null.
@@ -675,7 +702,7 @@ export class CoreWSProvider {
         // HTTP not finished, but we should delete the promise after timeout.
         timeout = setTimeout(() => {
             delete this.ongoingCalls[queueItemId];
-        }, CoreConstants.WS_TIMEOUT);
+        }, this.getRequestTimeout());
 
         // HTTP finished, delete from ongoing.
         return promise.finally(() => {

@@ -28,6 +28,7 @@ import { AddonModDataHelperProvider } from '../../providers/helper';
 import { AddonModDataOfflineProvider } from '../../providers/offline';
 import { AddonModDataFieldsDelegate } from '../../providers/fields-delegate';
 import { AddonModDataComponentsModule } from '../../components/components.module';
+import { CoreTagProvider } from '@core/tag/providers/tag';
 
 /**
  * Page that displays the view edit page.
@@ -68,7 +69,8 @@ export class AddonModDataEditPage {
             protected courseProvider: CoreCourseProvider, protected dataProvider: AddonModDataProvider,
             protected dataOffline: AddonModDataOfflineProvider, protected dataHelper: AddonModDataHelperProvider,
             sitesProvider: CoreSitesProvider, protected navCtrl: NavController, protected translate: TranslateService,
-            protected eventsProvider: CoreEventsProvider, protected fileUploaderProvider: CoreFileUploaderProvider) {
+            protected eventsProvider: CoreEventsProvider, protected fileUploaderProvider: CoreFileUploaderProvider,
+            private tagProvider: CoreTagProvider) {
         this.module = params.get('module') || {};
         this.entryId = params.get('entryId') || null;
         this.courseId = params.get('courseId');
@@ -131,16 +133,9 @@ export class AddonModDataEditPage {
             return this.dataProvider.getDatabaseAccessInformation(data.id);
         }).then((accessData) => {
             if (this.entryId) {
-                return this.groupsProvider.getActivityGroupInfo(this.data.coursemodule, accessData.canmanageentries)
-                        .then((groupInfo) => {
+                return this.groupsProvider.getActivityGroupInfo(this.data.coursemodule).then((groupInfo) => {
                     this.groupInfo = groupInfo;
-
-                    // Check selected group is accessible.
-                    if (groupInfo && groupInfo.groups && groupInfo.groups.length > 0) {
-                        if (!groupInfo.groups.some((group) => this.selectedGroup == group.id)) {
-                            this.selectedGroup = groupInfo.groups[0].id;
-                        }
-                    }
+                    this.selectedGroup = this.groupsProvider.validateGroupId(this.selectedGroup, groupInfo);
                 });
             }
         }).then(() => {
@@ -287,7 +282,7 @@ export class AddonModDataEditPage {
 
         let replace,
             render,
-            template = this.data.addtemplate || this.dataHelper.getDefaultTemplate('add', this.fieldsArray);
+            template = this.dataHelper.getTemplate(this.data, 'addtemplate', this.fieldsArray);
 
         // Replace the fields found on template.
         this.fieldsArray.forEach((field) => {
@@ -308,6 +303,11 @@ export class AddonModDataEditPage {
 
             template = template.replace(replace, 'field_' + field.id);
         });
+
+        // Editing tags is not supported.
+        replace = new RegExp('##tags##', 'gi');
+        const message = '<p class="item-dimmed">{{ \'addon.mod_data.edittagsnotsupported\' | translate }}</p>';
+        template = template.replace(replace, this.tagProvider.areTagsAvailableInSite() ? message : '');
 
         return template;
     }

@@ -1,0 +1,37 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'core.tag.searchtags' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="loaded" (ionRefresh)="refreshData($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <ion-grid>
+        <ion-row>
+            <ion-col col-12 [attr.col-sm-6]="collections && collections.length > 1 ? '' : null">
+                <core-search-box (onSubmit)="searchTags($event)" (onClear)="searchTags('')" [initialSearch]="query" [disabled]="searching" autocorrect="off" [spellcheck]="false" [autoFocus]="true" [lengthCheck]="0"></core-search-box>
+            </ion-col>
+            <ion-col col-12 col-sm-6 *ngIf="collections && collections.length > 1">
+                <ion-select text-start [(ngModel)]="collectionId" (ngModelChange)="searchTags(query)" [disabled]="searching" interface="popover" class="core-button-select">
+                    <ion-option [value]="0">{{ 'core.tag.inalltagcoll' | translate }}</ion-option>
+                    <ion-option *ngFor="let collection of collections" [value]="collection.id">{{ collection.name }}</ion-option>
+                </ion-select>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+    <core-loading [hideUntil]="loaded && !searching">
+        <core-empty-box *ngIf="!cloud || !cloud.tags || !cloud.tags.length" icon="pricetags" [message]="'core.tag.notagsfound' | translate: {$a: query}"></core-empty-box>
+
+        <ng-container *ngIf="cloud && cloud.tags && cloud.tags.length > 0">
+            <div text-center class="core-tag-cloud">
+                <ion-badge *ngFor="let tag of cloud.tags" (click)="openTag(tag)" text-wrap>
+                   <span [class]="'size' + tag.size" >{{ tag.name }}</span>
+                </ion-badge>
+            </div>
+            <p *ngIf="cloud.tags.length < cloud.totalcount" text-center>
+                {{ 'core.tag.showingfirsttags' | translate: {$a: cloud.tags.length} }}
+            </p>
+        </ng-container>
+    </core-loading>
+</ion-content>

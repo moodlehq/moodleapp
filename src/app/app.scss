@@ -315,6 +315,11 @@ ion-app.app-root {
     }
   }
 
+  // All external files should be banned from copying it.
+  ion-avatar, img, audio, video, iframe, [core-external-content], [role="presentation"], [data-original-src], [src] {
+    user-select: none !important;
+  }
+
   .core-media-adapt-width {
     max-width: 100%;
   }
@@ -383,11 +388,11 @@ ion-app.app-root {
 
   ion-select {
     position: relative; // Ionic fix. Button can occupy all page if not.
-    color: $core-select-placeholder-color;
+    color: $core-select-color;
     align-self: start;
 
     .select-icon .select-icon-inner {
-      color: $core-select-placeholder-color;
+      color: $core-select-color;
     }
 
     &.select-disabled .select-icon .select-icon-inner {
@@ -406,10 +411,18 @@ ion-app.app-root {
     }
   }
 
+  .item-label-stacked ion-select[multiple="true"] {
+    width: 100%;
+  }
+
+  ion-select .select-placeholder {
+    color: $core-select-placeholder-color;
+  }
+
   ion-select.core-button-select,
   .core-button-select {
     background-color: white;
-    color: $core-select-placeholder-color;
+    color: $core-select-color;
     white-space: normal;
     align-self: start;
     max-width: none;
@@ -441,7 +454,7 @@ ion-app.app-root {
     }
 
     .select-icon .select-icon-inner {
-      color: $core-select-placeholder-color;
+      color: $core-select-color;
     }
 
     ion-icon:last-child {
@@ -455,11 +468,6 @@ ion-app.app-root {
       white-space: nowrap;
     }
   }
-
-  .col > .button-block {
-    contain: content;
-  }
-
 
   // File uploader.
   // -------------------------
@@ -599,6 +607,16 @@ ion-app.app-root {
   .action-sheet-group {
       overflow: auto;
   }
+
+  .action-sheet-wrapper {
+    .action-sheet-button.action-sheet-cancel {
+      color: $core-action-sheet-cancel-color;
+    }
+    .action-sheet-selected {
+      color: $core-color;
+    }
+  }
+
   .alert-message {
       overflow-y: auto;
   }
@@ -649,11 +667,14 @@ ion-app.app-root {
   .toolbar img.core-bar-button-image,
   .toolbar .core-bar-button-image img {
     padding: 0;
-    width: 100%;
-    height: 100%;
-    max-width: $core-toolbar-button-image-width - 1;
-    max-height: $core-toolbar-button-image-width - 1;
+    width: $core-toolbar-button-image-width;
+    height: $core-toolbar-button-image-width;
+    max-width: $core-toolbar-button-image-width;
     border-radius: 50%;
+  }
+
+  .header .toolbar-ios {
+    height: $toolbar-ios-height;
   }
 
   // Footer with auto height.
@@ -697,15 +718,21 @@ ion-app.app-root {
     .core-#{$color-name}-item.item-input {
       border-bottom: 0 !important;
 
-      &.item-md .item-inner {
+      &.item-md .item-inner,
+      &.item-md.item-input.ng-valid.item-input-has-value:not(.input-has-focus):not(.item-input-has-focus) .item-inner,
+      &.item-md.item-input.ng-valid.input-has-value:not(.input-has-focus):not(.item-input-has-focus) .item-inner {
         @include md-input-highlight($color-base);
       }
 
-      &.item-ios .item-inner {
+      &.item-ios .item-inner,
+      &.item-ios.item-input.ng-valid.item-input-has-value:not(.input-has-focus):not(.item-input-has-focus) .item-inner,
+      &.item-ios.item-input.ng-valid.input-has-value:not(.input-has-focus):not(.item-input-has-focus) .item-inner {
         @include ios-input-highlight($color-base);
       }
 
-      &.item-wp .item-inner {
+      &.item-wp .text-input,
+      &.item-wp.item-input.ng-valid.item-input-has-value:not(.input-has-focus):not(.item-input-has-focus) .text-input,
+      &.item-wp.item-input.ng-valid.input-has-value:not(.input-has-focus):not(.item-input-has-focus) .text-input {
         border-color: $color-base;
       }
     }
@@ -999,6 +1026,11 @@ ion-app.app-root {
   ion-alert .alert-checkbox-button .alert-checkbox-label {
     white-space: normal;
   }
+
+  ion-backdrop {
+    transition: opacity 100ms ease-in-out;
+    opacity: .1;
+  }
 }
 
 @each $color-name, $color-base, $color-contrast in get-colors($colors) {
@@ -1069,21 +1101,19 @@ details summary {
     line-height: 28px;
 }
 
-// Fix iframes in fullscreen mode.
-//
-// Ionic sets "contain: strict" to some elements. This enables paint containment,
-// which changes behaviour of fixed positioned elements and seems to break iframes
-// in fullscreen mode. See https://www.w3.org/TR/css-contain-1/#containment-paint
-ion-app,
-ion-nav,
-ion-tab,
-ion-tabs,
-.app-root,
-.ion-page,
-ion-modal,
-.modal-wrapper,
-.split-pane {
-  contain: size layout style;
+// Ionic sets the "contain" CSS property to some elements. This enables CSS
+// containment, which changes how elements are positioned and sized, breaking
+// fixed positioned elements, iframes in full screen mode, subtitle menus in
+// videos and potentially more things. CSS containment is not supported in iOS
+// and Android 4.4, so it can introduce inconsistencies across devices.
+// See https://www.w3.org/TR/css-contain-1
+* {
+  contain: none !important;
+}
+
+// Lower z-index for ion-item-divider so it is displayed below video menus.
+ion-item-divider {
+  z-index: 2; // Ionic default is 100.
 }
 
 // Highlight text.
@@ -1107,9 +1137,6 @@ ion-app.platform-desktop {
 // Fix text wrapping in block buttons.
 .button-block[text-wrap] {
   height: auto;
-
-  // Changed from "strict" because the size depends on child elements.
-  contain: content;
 
   // Add vertical padding, we cannot rely on a fixed height + centering like in normal buttons.
   .item-md & {
@@ -1150,5 +1177,17 @@ ion-app.platform-desktop {
   }
   &.button-small-ios {
     min-height: $button-ios-small-height;
+  }
+}
+
+// Make funnel icon have iOS look.
+.ion-md-funnel::before {
+  content: "\f182";
+}
+
+// Fix icon size in lists, to prevent them scaling with text.
+.item, .item-inner {
+  > ion-icon {
+    font-size: 28px;
   }
 }

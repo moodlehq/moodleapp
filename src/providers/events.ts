@@ -48,6 +48,7 @@ export class CoreEventsProvider {
     static COURSE_STATUS_CHANGED = 'course_status_changed';
     static SECTION_STATUS_CHANGED = 'section_status_changed';
     static SITE_PLUGINS_LOADED = 'site_plugins_loaded';
+    static SITE_PLUGINS_COURSE_RESTRICT_UPDATED = 'site_plugins_course_restrict_updated';
     static LOGIN_SITE_CHECKED = 'login_site_checked';
     static LOGIN_SITE_UNCHECKED = 'login_site_unchecked';
     static IAB_LOAD_START = 'inappbrowser_load_start';
@@ -60,6 +61,7 @@ export class CoreEventsProvider {
     static LOAD_PAGE_MAIN_MENU = 'load_page_main_menu';
     static SEND_ON_ENTER_CHANGED = 'send_on_enter_changed';
     static MAIN_MENU_OPEN = 'main_menu_open';
+    static SELECT_COURSE_TAB = 'select_course_tab';
 
     protected logger;
     protected observables: { [s: string]: Subject<any> } = {};

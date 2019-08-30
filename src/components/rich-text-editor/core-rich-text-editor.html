@@ -1,33 +1,81 @@
-<div [hidden]="!rteEnabled">
-    <div #editor contenteditable="true" class="core-rte-editor" tappable [attr.data-placeholder-text]="placeholder" role="textbox">
-    </div>
-
-    <!-- https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand -->
-    <div #decorate class="core-rte-toolbar">
-        <div class="core-rte-buttons">
-            <button [core-suppress-events] (onClick)="buttonAction($event, 'bold')"><core-icon name="fa-bold"></core-icon></button>
-            <button [core-suppress-events] (onClick)="buttonAction($event, 'italic')"><core-icon name="fa-italic"></core-icon></button>
-            <button [core-suppress-events] (onClick)="buttonAction($event, 'underline')"><core-icon name="fa-underline"></core-icon></button>
-            <button [core-suppress-events] (onClick)="buttonAction($event, 'strikeThrough')"><core-icon name="fa-strikethrough"></core-icon></button>
-            <button [core-suppress-events] (onClick)="buttonAction($event, 'formatBlock|<p>')"><core-icon name="fa-paragraph"></core-icon></button>
-            <button [core-suppress-events] (onClick)="buttonAction($event, 'formatBlock|<h1>')"><core-icon name="fa-header"></core-icon>1</button>
-            <button [core-suppress-events] (onClick)="buttonAction($event, 'formatBlock|<h2>')"><core-icon name="fa-header"></core-icon>2</button>
-            <button [core-suppress-events] (onClick)="buttonAction($event, 'formatBlock|<h3>')"><core-icon name="fa-header"></core-icon>3</button>
-            <button [core-suppress-events] (onClick)="buttonAction($event, 'insertUnorderedList')"><core-icon name="fa-list-ul"></core-icon></button>
-            <button [core-suppress-events] (onClick)="buttonAction($event, 'insertOrderedList')"><core-icon name="fa-list-ol"></core-icon></button>
-            <button [core-suppress-events] (onClick)="buttonAction($event, 'removeFormat')"><core-icon name="fa-eraser"></core-icon></button>
-            <button [core-suppress-events] (onClick)="toggleEditor($event)"><core-icon name="fa-code"></core-icon> {{ 'core.viewcode' | translate }}</button>
-        </div>
-    </div>
+<div [hidden]="!rteEnabled" #editor contenteditable="true" class="core-rte-editor" tappable (focus)="showToolbar()" (longPress)="showToolbar()" (blur)="hideToolbar($event)" [attr.data-placeholder-text]="placeholder" role="textbox">
 </div>
 
-<div [hidden]="rteEnabled">
-    <ion-textarea #textarea class="core-textarea" [placeholder]="placeholder" [attr.name]="name" ngControl="control" (ionChange)="onChange($event)" role="textbox"></ion-textarea>
-    <div class="core-rte-toolbar" [hidden]="!editorSupported">
-        <div #decorate class="core-rte-buttons">
-            <button tappable [core-suppress-events] (onClick)="toggleEditor($event)"><core-icon name="fa-pencil-square-o"></core-icon> {{ 'core.vieweditor' | translate }}</button>
-        </div>
-    </div>
+<ion-textarea [hidden]="rteEnabled" #textarea class="core-textarea" [placeholder]="placeholder" [attr.name]="name" ngControl="control" (ionChange)="onChange($event)" (focus)="showToolbar()" (longPress)="showToolbar()" (blur)="hideToolbar($event)" role="textbox"></ion-textarea>
+
+<div #toolbar class="core-rte-toolbar" [class.toolbar-hidden]="toolbarHidden">
+    <button *ngIf="toolbarArrows" class="toolbar-arrow" [class.toolbar-arrow-hidden]="toolbarPrevHidden" (click)="toolbarPrev($event)" (mousedown)="stopBubble($event)">
+        <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
+    </button>
+    <ion-slides [slidesPerView]="numToolbarButtons" (ionSlideDidChange)="updateToolbarArrows()">
+        <!-- https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand -->
+        <ion-slide>
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.b" (click)="buttonAction($event, 'bold')" (mousedown)="stopBubble($event)">
+                <core-icon name="fa-bold"></core-icon>
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.i" (click)="buttonAction($event, 'italic')" (mousedown)="stopBubble($event)">
+                <core-icon name="fa-italic"></core-icon>
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.u" (click)="buttonAction($event, 'underline')" (mousedown)="stopBubble($event)">
+                <core-icon name="fa-underline"></core-icon>
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.strike" (click)="buttonAction($event, 'strikeThrough')" (mousedown)="stopBubble($event)">
+                <core-icon name="fa-strikethrough"></core-icon>
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.p" (click)="buttonAction($event, 'formatBlock|<p>')" (mousedown)="stopBubble($event)">
+                <core-icon name="fa-paragraph"></core-icon>
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.h1" (click)="buttonAction($event, 'formatBlock|<h1>')" (mousedown)="stopBubble($event)">
+                <core-icon name="fa-header"></core-icon>1
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.h2" (click)="buttonAction($event, 'formatBlock|<h2>')" (mousedown)="stopBubble($event)">
+                <core-icon name="fa-header"></core-icon>2
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.h3" (click)="buttonAction($event, 'formatBlock|<h3>')" (mousedown)="stopBubble($event)">
+                <core-icon name="fa-header"></core-icon>3
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.ul" (click)="buttonAction($event, 'insertUnorderedList')" (mousedown)="stopBubble($event)">
+                <core-icon name="fa-list-ul"></core-icon>
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.ol" (click)="buttonAction($event, 'insertOrderedList')" (mousedown)="stopBubble($event)">
+                <core-icon name="fa-list-ol"></core-icon>
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [disabled]="!rteEnabled" (click)="buttonAction($event, 'removeFormat')" (mousedown)="stopBubble($event)">
+                <core-icon name="fa-eraser"></core-icon>
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [attr.aria-pressed]="rteEnabled ? 'false' : 'true'" (click)="toggleEditor($event)" (mousedown)="stopBubble($event)">
+                <core-icon name="fa-code"></core-icon>
+            </button>
+        </ion-slide>
+        <ion-slide *ngIf="isPhone">
+            <button (click)="hideToolbar($event)" (mousedown)="stopBubble($event)">
+                <core-icon name="fa-close"></core-icon>
+            </button>
+        </ion-slide>
+    </ion-slides>
+    <button *ngIf="toolbarArrows" class="toolbar-arrow" [class.toolbar-arrow-hidden]="toolbarNextHidden" (click)="toolbarNext($event)" (mousedown)="stopBubble($event)">
+        <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
+    </button>
 </div>
-
-

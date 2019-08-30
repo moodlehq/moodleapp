@@ -151,15 +151,4 @@ export class AddonCompetencyCompetencyPage {
         const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
         navCtrl.push('AddonCompetencyCompetencySummaryPage', {competencyId});
     }
-
-    /**
-     * Opens the profile of a user.
-     *
-     * @param {number} userId
-     */
-    openUserProfile(userId: number): void {
-        // Decide which navCtrl to use. If this page is inside a split view, use the split view's master nav.
-        const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
-        navCtrl.push('CoreUserProfilePage', {userId, courseId: this.courseId});
-    }
 }

@@ -7,8 +7,18 @@
     <ion-item text-wrap>
         <ion-label><h2>{{ 'core.settings.language' | translate }}</h2></ion-label>
         <ion-select [(ngModel)]="selectedLanguage" (ngModelChange)="languageChanged()" interface="action-sheet">
-            <ion-option *ngFor="let code of languageCodes" [value]="code">{{ languages[code] }}</ion-option>
+            <ion-option *ngFor="let entry of languages" [value]="entry.code">{{ entry.name }}</ion-option>
         </ion-select>
+    </ion-item>
+    <ion-item text-wrap class="core-settings-general-font-size">
+        <ion-label><h2>{{ 'core.settings.fontsize' | translate }}</h2></ion-label>
+        <ion-segment [(ngModel)]="selectedFontSize" (ngModelChange)="fontSizeChanged()" color="primary" item-content>
+            <ion-segment-button *ngFor="let fontSize of fontSizes" value="{{ fontSize.size }}" [ngStyle]="{'font-size.px': fontSize.style}">
+                {{ 'core.settings.fontsizecharacter' | translate }}<!--
+                Empty element styled with the largest font size, so all buttons share a common baseline.
+                --><span [ngStyle]="{'font-size.px': fontSizes[fontSizes.length - 1].style}"></span>
+            </ion-segment-button>
+        </ion-segment>
     </ion-item>
     <ion-item text-wrap *ngIf="rteSupported">
         <ion-label>
@@ -23,5 +33,12 @@
             <p>{{ 'core.settings.debugdisplaydescription' | translate }}</p>
         </ion-label>
         <ion-toggle [(ngModel)]="debugDisplay" (ngModelChange)="debugDisplayChanged()"></ion-toggle>
+    </ion-item>
+    <ion-item text-wrap *ngIf="analyticsSupported">
+        <ion-label>
+            <h2>{{ 'core.settings.enablefirebaseanalytics' | translate }}</h2>
+            <p>{{ 'core.settings.enablefirebaseanalyticsdescription' | translate }}</p>
+        </ion-label>
+        <ion-toggle [(ngModel)]="analyticsEnabled" (ngModelChange)="analyticsEnabledChanged()"></ion-toggle>
     </ion-item>
 </ion-content>

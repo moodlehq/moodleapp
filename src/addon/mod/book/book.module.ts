@@ -22,6 +22,8 @@ import { AddonModBookPrefetchHandler } from './providers/prefetch-handler';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
+import { CoreTagAreaDelegate } from '@core/tag/providers/area-delegate';
+import { AddonModBookTagAreaHandler } from './providers/tag-area-handler';
 
 // List of providers (without handlers).
 export const ADDON_MOD_BOOK_PROVIDERS: any[] = [
@@ -39,18 +41,21 @@ export const ADDON_MOD_BOOK_PROVIDERS: any[] = [
         AddonModBookModuleHandler,
         AddonModBookLinkHandler,
         AddonModBookListLinkHandler,
-        AddonModBookPrefetchHandler
+        AddonModBookPrefetchHandler,
+        AddonModBookTagAreaHandler
     ]
 })
 export class AddonModBookModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModBookModuleHandler,
             contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModBookLinkHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModBookPrefetchHandler,
-            listLinkHandler: AddonModBookListLinkHandler) {
+            listLinkHandler: AddonModBookListLinkHandler, tagAreaDelegate: CoreTagAreaDelegate,
+            tagAreaHandler: AddonModBookTagAreaHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         contentLinksDelegate.registerHandler(linkHandler);
         contentLinksDelegate.registerHandler(listLinkHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
+        tagAreaDelegate.registerHandler(tagAreaHandler);
     }
 }

@@ -27,6 +27,7 @@ import { AddonModDataSyncProvider } from '../../providers/sync';
 import { AddonModDataFieldsDelegate } from '../../providers/fields-delegate';
 import { AddonModDataComponentsModule } from '../../components/components.module';
 import { CoreCommentsProvider } from '@core/comments/providers/comments';
+import { CoreCommentsCommentsComponent } from '@core/comments/components/comments/comments';
 
 /**
  * Page that displays the view entry page.
@@ -38,6 +39,7 @@ import { CoreCommentsProvider } from '@core/comments/providers/comments';
 })
 export class AddonModDataEntryPage implements OnDestroy {
     @ViewChild(Content) content: Content;
+    @ViewChild(CoreCommentsCommentsComponent) comments: CoreCommentsCommentsComponent;
 
     protected module: any;
     protected entryId: number;
@@ -149,21 +151,14 @@ export class AddonModDataEntryPage implements OnDestroy {
         }).then((accessData) => {
             this.access = accessData;
 
-            return this.groupsProvider.getActivityGroupInfo(this.data.coursemodule, accessData.canmanageentries)
-                    .then((groupInfo) => {
+            return this.groupsProvider.getActivityGroupInfo(this.data.coursemodule).then((groupInfo) => {
                 this.groupInfo = groupInfo;
-
-                // Check selected group is accessible.
-                if (groupInfo && groupInfo.groups && groupInfo.groups.length > 0) {
-                    if (!groupInfo.groups.some((group) => this.selectedGroup == group.id)) {
-                        this.selectedGroup = groupInfo.groups[0].id;
-                    }
-                }
+                this.selectedGroup = this.groupsProvider.validateGroupId(this.selectedGroup, groupInfo);
             });
         }).then(() => {
             const actions = this.dataHelper.getActions(this.data, this.access, this.entry);
 
-            const template = this.data.singletemplate || this.dataHelper.getDefaultTemplate('single', this.fieldsArray);
+            const template = this.dataHelper.getTemplate(this.data, 'singletemplate', this.fieldsArray);
             this.entryHtml = this.dataHelper.displayShowFields(template, this.fieldsArray, this.entry, this.offset, 'show',
                     actions);
             this.showComments = actions.comments;
@@ -221,6 +216,13 @@ export class AddonModDataEntryPage implements OnDestroy {
             promises.push(this.dataProvider.invalidateEntryData(this.data.id, this.entryId));
             promises.push(this.groupsProvider.invalidateActivityGroupInfo(this.data.coursemodule));
             promises.push(this.dataProvider.invalidateEntriesData(this.data.id));
+
+            if (this.data.comments && this.entry && this.entry.id > 0 && this.commentsEnabled && this.comments) {
+                // Refresh comments. Don't add it to promises because we don't want the comments fetch to block the entry fetch.
+                this.comments.doRefresh().catch(() => {
+                    // Ignore errors.
+                });
+            }
         }
 
         return Promise.all(promises).finally(() => {

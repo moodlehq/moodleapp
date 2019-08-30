@@ -30,7 +30,7 @@
                                 </ng-container>
                                 <ng-container *ngSwitchCase="'numeric'">
                                     <ion-input [required]="item.required" name="{{item.typ}}_{{item.id}}" type="number" [(ngModel)]="item.value"></ion-input>
-                                    <p *ngIf="item.hasError" color="error">{{ 'addon.mod_feedback.numberoutofrange' | translate }} [{{item.rangefrom}}<span *ngIf="item.rangefrom && item.rangeto">, </span>{{item.rangeto}}]</p>
+                                    <p *ngIf="item.hasError" ion-text color="danger">{{ 'addon.mod_feedback.numberoutofrange' | translate }} [{{item.rangefrom}}<span *ngIf="item.rangefrom && item.rangeto">, </span>{{item.rangeto}}]</p>
                                 </ng-container>
                                 <ng-container *ngSwitchCase="'textarea'">
                                     <ion-textarea [required]="item.required" name="{{item.typ}}_{{item.id}}" [attr.aria-multiline]="true" [(ngModel)]="item.value"></ion-textarea>

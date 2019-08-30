@@ -17,6 +17,7 @@ import { CoreCronDelegate } from '@providers/cron';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
+import { CoreTagAreaDelegate } from '@core/tag/providers/area-delegate';
 import { AddonModWikiComponentsModule } from './components/components.module';
 import { AddonModWikiProvider } from './providers/wiki';
 import { AddonModWikiOfflineProvider } from './providers/wiki-offline';
@@ -29,6 +30,7 @@ import { AddonModWikiPageOrMapLinkHandler } from './providers/page-or-map-link-h
 import { AddonModWikiCreateLinkHandler } from './providers/create-link-handler';
 import { AddonModWikiEditLinkHandler } from './providers/edit-link-handler';
 import { AddonModWikiListLinkHandler } from './providers/list-link-handler';
+import { AddonModWikiTagAreaHandler } from './providers/tag-area-handler';
 import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 // List of providers (without handlers).
@@ -55,7 +57,8 @@ export const ADDON_MOD_WIKI_PROVIDERS: any[] = [
         AddonModWikiPageOrMapLinkHandler,
         AddonModWikiCreateLinkHandler,
         AddonModWikiEditLinkHandler,
-        AddonModWikiListLinkHandler
+        AddonModWikiListLinkHandler,
+        AddonModWikiTagAreaHandler
     ]
 })
 export class AddonModWikiModule {
@@ -64,7 +67,8 @@ export class AddonModWikiModule {
             cronDelegate: CoreCronDelegate, syncHandler: AddonModWikiSyncCronHandler, linksDelegate: CoreContentLinksDelegate,
             indexHandler: AddonModWikiIndexLinkHandler, pageOrMapHandler: AddonModWikiPageOrMapLinkHandler,
             createHandler: AddonModWikiCreateLinkHandler, editHandler: AddonModWikiEditLinkHandler,
-            updateManager: CoreUpdateManagerProvider, listLinkHandler: AddonModWikiListLinkHandler) {
+            updateManager: CoreUpdateManagerProvider, listLinkHandler: AddonModWikiListLinkHandler,
+            tagAreaDelegate: CoreTagAreaDelegate, tagAreaHandler: AddonModWikiTagAreaHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
@@ -74,6 +78,7 @@ export class AddonModWikiModule {
         linksDelegate.registerHandler(createHandler);
         linksDelegate.registerHandler(editHandler);
         linksDelegate.registerHandler(listLinkHandler);
+        tagAreaDelegate.registerHandler(tagAreaHandler);
 
         // Allow migrating the tables from the old app to the new schema.
         updateManager.registerSiteTableMigration({

@@ -78,6 +78,7 @@ export class AddonModFeedbackNonRespondentsPage {
 
         return this.groupsProvider.getActivityGroupInfo(this.moduleId).then((groupInfo) => {
             this.groupInfo = groupInfo;
+            this.selectedGroup = this.groupsProvider.validateGroupId(this.selectedGroup, groupInfo);
 
             return this.loadGroupUsers(this.selectedGroup);
         }).catch((message) => {

@@ -16,23 +16,39 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreBlockComponent } from './block/block';
+import { CoreBlockOnlyTitleComponent } from './only-title-block/only-title-block';
+import { CoreBlockPreRenderedComponent } from './pre-rendered-block/pre-rendered-block';
+import { CoreBlockCourseBlocksComponent } from './course-blocks/course-blocks';
 import { CoreComponentsModule } from '@components/components.module';
 
 @NgModule({
     declarations: [
-        CoreBlockComponent
+        CoreBlockComponent,
+        CoreBlockOnlyTitleComponent,
+        CoreBlockPreRenderedComponent,
+        CoreBlockCourseBlocksComponent
     ],
     imports: [
         CommonModule,
         IonicModule,
+        CoreDirectivesModule,
         TranslateModule.forChild(),
         CoreComponentsModule
     ],
     providers: [
     ],
     exports: [
-        CoreBlockComponent
+        CoreBlockComponent,
+        CoreBlockOnlyTitleComponent,
+        CoreBlockPreRenderedComponent,
+        CoreBlockCourseBlocksComponent
+    ],
+    entryComponents: [
+        CoreBlockOnlyTitleComponent,
+        CoreBlockPreRenderedComponent,
+        CoreBlockCourseBlocksComponent
     ]
 })
 export class CoreBlockComponentsModule {}

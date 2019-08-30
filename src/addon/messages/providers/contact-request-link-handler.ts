@@ -43,7 +43,6 @@ export class AddonMessagesContactRequestLinkHandler extends CoreContentLinksHand
             CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: (siteId, navCtrl?): void => {
-                // Always use redirect to make it the new history root (to avoid "loops" in history).
                 this.linkHelper.goInSite(navCtrl, 'AddonMessagesContactsPage', {}, siteId);
             }
         }];

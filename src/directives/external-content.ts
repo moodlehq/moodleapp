@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, AfterViewInit, ElementRef, OnChanges, SimpleChange } from '@angular/core';
+import { Directive, Input, AfterViewInit, ElementRef, OnChanges, SimpleChange, Output, EventEmitter } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -43,10 +43,14 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
     @Input() href?: string;
     @Input('target-src') targetSrc?: string;
     @Input() poster?: string;
+    @Output() onLoad = new EventEmitter(); // Emitted when content is loaded. Only for images.
 
+    loaded = false;
     protected element: HTMLElement;
     protected logger;
     protected initialized = false;
+
+    invalid = false;
 
     constructor(element: ElementRef, logger: CoreLoggerProvider, private filepoolProvider: CoreFilepoolProvider,
             private platform: Platform, private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
@@ -140,11 +144,30 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
             }
 
         } else {
+            this.invalid = true;
+
+            return;
+        }
+
+        // Avoid handling data url's.
+        if (url && url.indexOf('data:') === 0) {
+            this.invalid = true;
+            this.onLoad.emit();
+            this.loaded = true;
+
             return;
         }
 
         this.handleExternalContent(targetAttr, url, siteId).catch(() => {
-            // Ignore errors.
+            // Error handling content. Make sure the loaded event is triggered for images.
+            if (tagName === 'IMG') {
+                if (url) {
+                    this.waitForLoad();
+                } else {
+                    this.onLoad.emit();
+                    this.loaded = true;
+                }
+            }
         });
     }
 
@@ -225,7 +248,12 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
                     // The browser does not catch changes in SRC, we need to add a new source.
                     this.addSource(finalUrl);
                 } else {
+                    if (tagName === 'IMG') {
+                        this.loaded = false;
+                        this.waitForLoad();
+                    }
                     this.element.setAttribute(targetAttr, finalUrl);
+                    this.element.setAttribute('data-original-' + targetAttr, url);
                 }
 
                 // Set events to download big files (not downloaded automatically).
@@ -287,5 +315,20 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
         return this.utils.allPromises(promises).then(() => {
             this.element.setAttribute('style', inlineStyles);
         });
+    }
+
+    /**
+     * Wait for the image to be loaded or error, and emit an event when it happens.
+     */
+    protected waitForLoad(): void {
+        const listener = (): void => {
+            this.element.removeEventListener('load', listener);
+            this.element.removeEventListener('error', listener);
+            this.onLoad.emit();
+            this.loaded = true;
+        };
+
+        this.element.addEventListener('load', listener);
+        this.element.addEventListener('error', listener);
     }
 }

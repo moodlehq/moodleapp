@@ -39,7 +39,7 @@
                 <ion-grid>
                     <ion-row>
                         <ion-col>
-                            <a ion-button block color="light" (click)="cancel()">{{ 'core.login.cancel' | translate }}</a>
+                            <a ion-button block color="light" (click)="cancel($event)">{{ 'core.login.cancel' | translate }}</a>
                         </ion-col>
                         <ion-col>
                             <button ion-button block [disabled]="!credForm.valid">{{ 'core.login.loginbutton' | translate }}</button>
@@ -48,6 +48,11 @@
                 </ion-grid>
             </form>
         </ion-list>
+
+        <!-- Forgotten password button. -->
+        <div padding-top>
+            <button ion-button block text-wrap color="light" (click)="forgottenPassword()">{{ 'core.login.forgotten' | translate }}</button>
+        </div>
 
         <!-- Identity providers. -->
         <ion-list *ngIf="identityProviders && identityProviders.length" padding-top>

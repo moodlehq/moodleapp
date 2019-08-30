@@ -32,3 +32,5 @@
 </a>
 
 <a *ngIf="action == 'user' && entry" core-user-link [courseId]="database.courseid" [userId]="entry.userid" [title]="entry.fullname">{{entry.fullname}}</a>
+
+<core-tag-list *ngIf="tagsEnabled && action == 'tags' && entry" [tags]="entry.tags"></core-tag-list>

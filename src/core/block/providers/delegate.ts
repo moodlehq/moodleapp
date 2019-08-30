@@ -73,6 +73,18 @@ export interface CoreBlockHandlerData {
      * @type {any}
      */
     componentData?: any;
+
+    /**
+     * Link to go when showing only title.
+     * @type {string}
+     */
+    link?: string;
+
+    /**
+     * Params of the link.
+     * @type {[type]}
+     */
+    linkParams?: any;
 }
 
 /**
@@ -106,6 +118,18 @@ export class CoreBlockDelegate extends CoreDelegate {
     }
 
     /**
+     * Check if blocks are disabled in a certain site for courses.
+     *
+     * @param {CoreSite} [site] Site. If not defined, use current site.
+     * @return {boolean} Whether it's disabled.
+     */
+    areBlocksDisabledInCourses(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.isFeatureDisabled('NoDelegate_CourseBlocks');
+    }
+
+    /**
      * Check if blocks are disabled in a certain site.
      *
      * @param  {string} [siteId] Site Id. If not defined, use current site.
@@ -127,7 +151,8 @@ export class CoreBlockDelegate extends CoreDelegate {
      * @return {Promise<CoreBlockHandlerData>} Promise resolved with the display data.
      */
     getBlockDisplayData(injector: Injector, block: any, contextLevel: string, instanceId: number): Promise<CoreBlockHandlerData> {
-        return Promise.resolve(this.executeFunctionOnEnabled(block.name, 'getDisplayData', [injector, block]));
+        return Promise.resolve(this.executeFunctionOnEnabled(block.name, 'getDisplayData',
+            [injector, block, contextLevel, instanceId]));
     }
 
     /**

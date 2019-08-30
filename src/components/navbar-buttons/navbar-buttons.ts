@@ -25,6 +25,8 @@ import { CoreContextMenuComponent } from '../context-menu/context-menu';
  * If this component indicates a position (start/end), the buttons will only be added if the header has some buttons in that
  * position. If no start/end is specified, then the buttons will be added to the first <ion-buttons> found in the header.
  *
+ * If this component has a "prepend" attribute, the buttons will be added before other existing buttons in the header.
+ *
  * You can use the [hidden] input to hide all the inner buttons if a certain condition is met.
  *
  * IMPORTANT: Do not use *ngIf in the buttons inside this component, it can cause problems. Please use [hidden] instead.
@@ -92,7 +94,8 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
                 if (buttonsContainer) {
                     this.mergeContextMenus(buttonsContainer);
 
-                    this.movedChildren = this.domUtils.moveChildren(this.element, buttonsContainer);
+                    const prepend = this.element.hasAttribute('prepend');
+                    this.movedChildren = this.domUtils.moveChildren(this.element, buttonsContainer, prepend);
                     this.showHideAllElements();
 
                 } else {

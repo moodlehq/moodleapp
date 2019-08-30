@@ -234,7 +234,15 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
      */
     calculateTabBarHeight(): void {
         this.tabBarHeight = this.topTabsElement.offsetHeight;
-        this.originalTabsContainer.style.paddingBottom = this.tabBarHeight + 'px';
+
+        if (this.tabsShown) {
+            // Smooth translation.
+            this.topTabsElement.style.transform = 'translateY(-' + this.lastScroll + 'px)';
+            this.originalTabsContainer.style.transform = 'translateY(-' + this.lastScroll + 'px)';
+            this.originalTabsContainer.style.paddingBottom = this.tabBarHeight - this.lastScroll + 'px';
+        } else {
+            this.tabBarElement.classList.add('tabs-hidden');
+        }
     }
 
     /**
@@ -417,6 +425,13 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
         const scroll = parseInt(scrollElement.scrollTop, 10);
         if (scroll == this.lastScroll) {
+            if (scroll == 0) {
+                // Ensure tabbar is shown.
+                this.topTabsElement.style.transform = '';
+                this.originalTabsContainer.style.transform = '';
+                this.originalTabsContainer.style.paddingBottom = this.tabBarHeight + 'px';
+            }
+
             // Ensure scroll has been modified to avoid flicks.
             return;
         }
@@ -438,7 +453,8 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             this.originalTabsContainer.style.transform = 'translateY(-' + scroll + 'px)';
             this.originalTabsContainer.style.paddingBottom = this.tabBarHeight - scroll + 'px';
         }
-        this.lastScroll = scroll;
+        // Use lastScroll after moving the tabs to avoid flickering.
+        this.lastScroll = parseInt(scrollElement.scrollTop, 10);
     }
 
     /**
@@ -472,7 +488,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         const currentTab = this.getSelected(),
             newTab = this.tabs[index];
 
-        if (!newTab.enabled || !newTab.show) {
+        if (!newTab || !newTab.enabled || !newTab.show) {
             // The tab isn't enabled or shown, stop.
             return;
         }

@@ -112,7 +112,6 @@ export class CoreGradesUserHandler implements CoreUserProfileHandler {
                     courseId: courseId,
                     userId: user.id
                 };
-                // Always use redirect to make it the new history root (to avoid "loops" in history).
                 this.linkHelper.goInSite(navCtrl, 'CoreGradesCoursePage', pageParams);
             }
         };

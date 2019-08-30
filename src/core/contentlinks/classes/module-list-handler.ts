@@ -63,7 +63,6 @@ export class CoreContentLinksModuleListHandler extends CoreContentLinksHandlerBa
                         title: this.title || this.translate.instant('addon.mod_' + this.modName + '.modulenameplural')
                     };
 
-                // Always use redirect to make it the new history root (to avoid "loops" in history).
                 this.linkHelper.goInSite(navCtrl, 'CoreCourseListModTypePage', stateParams, siteId);
             }
         }];

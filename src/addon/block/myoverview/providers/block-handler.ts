@@ -50,7 +50,7 @@ export class AddonBlockMyOverviewHandler extends CoreBlockBaseHandler {
      * @param {number} instanceId The instance ID associated with the context level.
      * @return {CoreBlockHandlerData|Promise<CoreBlockHandlerData>} Data or promise resolved with the data.
      */
-    getDisplayData?(injector: Injector, block: any, contextLevel: string, instanceId: number)
+    getDisplayData(injector: Injector, block: any, contextLevel: string, instanceId: number)
             : CoreBlockHandlerData | Promise<CoreBlockHandlerData> {
 
         return {

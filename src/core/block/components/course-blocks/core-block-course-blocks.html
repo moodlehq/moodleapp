@@ -1,0 +1,14 @@
+<div class="core-course-blocks-content">
+    <ng-content></ng-content>
+</div>
+
+<div *ngIf="blocks && blocks.length > 0" [class.core-hide-blocks]="hideBlocks" class="core-course-blocks-side">
+    <core-loading [hideUntil]="dataLoaded" class="core-loading-center">
+        <ion-list>
+            <!-- Course blocks. -->
+            <ng-container *ngFor="let block of blocks">
+                <core-block [block]="block" contextLevel="course" [instanceId]="courseId" [extraData]="{'downloadEnabled': downloadEnabled}"></core-block>
+            </ng-container>
+        </ion-list>
+    </core-loading>
+</div>

@@ -23,6 +23,12 @@ ion-app.app-root core-ion-tabs {
         background-color: $ion-tabs-badge-color;
     }
 
+    &[tabsplacement="bottom"] {
+        .ion-page > ion-content > .scroll-content {
+            margin-bottom: $navbar-md-height;
+        }
+    }
+
     &[tabsplacement="side"] {
         .tabbar {
             @include float(start);
@@ -53,6 +59,10 @@ ion-app.app-root core-ion-tabs {
                 position: relative;
             }
         }
+
+        .scroll-content, .fixed-content {
+            margin-bottom: 0 !important;
+        }
     }
 }
 
@@ -79,9 +89,6 @@ core-ion-tabs, core-ion-tab {
     width: 100%;
     height: 100%;
     overflow: hidden;
-
-    // Do not use "contain: strict" so fullscreen iframes work.
-    contain: size layout style;
 }
 
 core-ion-tab {

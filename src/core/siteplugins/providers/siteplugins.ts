@@ -421,15 +421,15 @@ export class CoreSitePluginsProvider {
     /**
      * Load other data into args as determined by useOtherData list.
      * If useOtherData is undefined, it won't add any data.
-     * If useOtherData is defined but empty (null, false or empty string) it will copy all the data from otherData to args.
      * If useOtherData is an array, it will only copy the properties whose names are in the array.
+     * If useOtherData is any other value, it will copy all the data from otherData to args.
      *
      * @param {any} args The current args.
      * @param {any} otherData All the other data.
-     * @param {any[]} useOtherData Names of the attributes to include.
+     * @param {any} useOtherData Names of the attributes to include.
      * @return {any} New args.
      */
-    loadOtherDataInArgs(args: any, otherData: any, useOtherData: any[]): any {
+    loadOtherDataInArgs(args: any, otherData: any, useOtherData: any): any {
         if (!args) {
             args = {};
         } else {
@@ -441,15 +441,27 @@ export class CoreSitePluginsProvider {
         if (typeof useOtherData == 'undefined') {
             // No need to add other data, return args as they are.
             return args;
-        } else if (!useOtherData) {
-            // Use other data is defined but empty. Add all the data to args.
-            for (const name in otherData) {
-                args[name] = otherData[name];
-            }
-        } else {
+        } else if (Array.isArray(useOtherData)) {
+            // Include only the properties specified in the array.
             for (const i in useOtherData) {
                 const name = useOtherData[i];
-                args[name] = otherData[name];
+
+                if (typeof otherData[name] == 'object' && otherData[name] !== null) {
+                    // Stringify objects.
+                    args[name] = JSON.stringify(otherData[name]);
+                } else {
+                    args[name] = otherData[name];
+                }
+            }
+        } else {
+            // Add all the data to args.
+            for (const name in otherData) {
+                if (typeof otherData[name] == 'object' && otherData[name] !== null) {
+                    // Stringify objects.
+                    args[name] = JSON.stringify(otherData[name]);
+                } else {
+                    args[name] = otherData[name];
+                }
             }
         }
 

@@ -76,7 +76,6 @@ export class AddonMessagesSendMessageUserHandler implements CoreUserProfileHandl
                     showKeyboard: true,
                     userId: user.id
                 };
-                // Always use redirect to make it the new history root (to avoid "loops" in history).
                 this.linkHelper.goInSite(navCtrl, 'AddonMessagesDiscussionPage', pageParams);
             }
         };

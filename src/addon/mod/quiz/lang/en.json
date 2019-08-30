@@ -5,6 +5,7 @@
     "attemptnumber": "Attempt",
     "attemptquiznow": "Attempt quiz now",
     "attemptstate": "State",
+    "canattemptbutnotsubmit": "You can attempt this quiz in the app, but you will need to submit the attempt in browser for the following reasons:",
     "cannotsubmitquizdueto": "This quiz attempt cannot be submitted for the following reasons:",
     "clearchoice": "Clear my choice",
     "comment": "Comment",
@@ -23,7 +24,7 @@
     "errorgetquestions": "Error getting questions.",
     "errorgetquiz": "Error getting quiz data.",
     "errorparsequestions": "An error occurred while reading the questions. Please attempt this quiz in a web browser.",
-    "errorquestionsnotsupported": "This quiz can't be attempted in the app because it contains questions not supported by the app:",
+    "errorquestionsnotsupported": "This quiz can't be attempted in the app because it only contains questions not supported by the app:",
     "errorrulesnotsupported": "This quiz can't be attempted in the app because it has access rules not supported by the app:",
     "errorsaveattempt": "An error occurred while saving the attempt data.",
     "feedback": "Feedback",
@@ -77,5 +78,6 @@
     "warningattemptfinished": "Offline attempt discarded as it was finished on the site or not found.",
     "warningdatadiscarded": "Some offline answers were discarded because the questions were modified online.",
     "warningdatadiscardedfromfinished": "Attempt unfinished because some offline answers were discarded. Please review your answers then resubmit the attempt.",
+    "warningquestionsnotsupported": "This quiz contains questions not supported by the app:",
     "yourfinalgradeis": "Your final grade for this quiz is {{$a}}."
 }

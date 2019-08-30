@@ -1,0 +1,38 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ (showCalendar ? 'addon.calendar.calendarevents' : 'addon.calendar.upcomingevents') | translate }}</ion-title>
+        <ion-buttons end>
+            <button *ngIf="courses && courses.length" ion-button icon-only (click)="openCourseFilter($event)" [attr.aria-label]="'core.courses.filter' | translate">
+                <ion-icon name="funnel" *ngIf="courseId"></ion-icon>
+                <ion-icon name="ios-funnel-outline" *ngIf="!courseId"></ion-icon>
+            </button>
+            <core-context-menu>
+                <core-context-menu-item *ngIf="showCalendar" [priority]="800" [content]="'addon.calendar.upcomingevents' | translate" [iconAction]="'list'" (action)="toggleDisplay()"></core-context-menu-item>
+                <core-context-menu-item *ngIf="!showCalendar" [priority]="800" [content]="'addon.calendar.monthlyview' | translate" [iconAction]="'fa-calendar-o'" (action)="toggleDisplay()"></core-context-menu-item>
+                <core-context-menu-item [hidden]="!notificationsEnabled" [priority]="600" [content]="'core.settings.settings' | translate" (action)="openSettings()" [iconAction]="'cog'"></core-context-menu-item>
+                <core-context-menu-item [hidden]="!loaded || !hasOffline || !isOnline"  [priority]="400" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
+            </core-context-menu>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="loaded" (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <!-- There is data to be synchronized -->
+    <ion-card class="core-warning-card" icon-start *ngIf="hasOffline">
+        <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendar' | translate} }}
+    </ion-card>
+
+    <addon-calendar-calendar [hidden]="!showCalendar" [initialYear]="year" [initialMonth]="month" [courseId]="courseId" [categoryId]="categoryId" [displayNavButtons]="showCalendar" (onEventClicked)="gotoEvent($event)" (onDayClicked)="gotoDay($event)"></addon-calendar-calendar>
+
+    <addon-calendar-upcoming-events *ngIf="loadUpcoming" [hidden]="showCalendar" [courseId]="courseId" [categoryId]="categoryId" (onEventClicked)="gotoEvent($event)"></addon-calendar-upcoming-events>
+
+    <!-- Create a calendar event. -->
+    <ion-fab core-fab bottom end *ngIf="canCreate">
+        <button ion-fab (click)="openEdit()" [attr.aria-label]="'addon.calendar.newevent' | translate">
+            <ion-icon name="add"></ion-icon>
+        </button>
+    </ion-fab>
+</ion-content>

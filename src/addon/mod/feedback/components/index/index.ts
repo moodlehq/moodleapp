@@ -195,14 +195,14 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
             }
 
             return this.fetchFeedbackOverviewData(this.access);
-        }).then(() => {
-            // All data obtained, now fill the context menu.
+        }).finally(() => {
+            // Now fill the context menu.
             this.fillContextMenu(refresh);
 
             // Check if there are responses stored in offline.
-            return this.feedbackOffline.hasFeedbackOfflineData(this.feedback.id);
-        }).then((hasOffline) => {
-            this.hasOffline = hasOffline;
+            return this.feedbackOffline.hasFeedbackOfflineData(this.feedback.id).then((hasOffline) => {
+                this.hasOffline = hasOffline;
+            });
         });
     }
 
@@ -269,7 +269,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
         return this.groupsProvider.getActivityGroupInfo(cmId).then((groupInfo) => {
             this.groupInfo = groupInfo;
 
-            return this.setGroup(this.group);
+            return this.setGroup(this.groupsProvider.validateGroupId(this.group, groupInfo));
         });
     }
 

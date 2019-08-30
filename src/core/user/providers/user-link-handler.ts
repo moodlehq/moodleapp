@@ -47,7 +47,6 @@ export class CoreUserProfileLinkHandler extends CoreContentLinksHandlerBase {
                     courseId: params.course,
                     userId: parseInt(params.id, 10)
                 };
-                // Always use redirect to make it the new history root (to avoid "loops" in history).
                 this.linkHelper.goInSite(navCtrl, 'CoreUserProfilePage', pageParams, siteId);
             }
         }];

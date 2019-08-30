@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSite } from '@classes/site';
@@ -24,13 +25,16 @@ import { CoreSite } from '@classes/site';
 export class CoreCoursesProvider {
     static SEARCH_PER_PAGE = 20;
     static ENROL_INVALID_KEY = 'CoreCoursesEnrolInvalidKey';
-    static EVENT_MY_COURSES_UPDATED = 'courses_my_courses_updated';
+    static EVENT_MY_COURSES_CHANGED = 'courses_my_courses_changed'; // User course list changed while app is running.
+    static EVENT_MY_COURSES_UPDATED = 'courses_my_courses_updated'; // A course was hidden/favourite, or user enroled in a course.
     static EVENT_MY_COURSES_REFRESHED = 'courses_my_courses_refreshed';
     static EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED = 'dashboard_download_enabled_changed';
+
     protected ROOT_CACHE_KEY = 'mmCourses:';
     protected logger;
+    protected userCoursesIds: {[id: number]: boolean}; // Use an object to make it faster to search.
 
-    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider) {
+    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private eventsProvider: CoreEventsProvider) {
         this.logger = logger.getInstance('CoreCoursesProvider');
     }
 
@@ -743,7 +747,53 @@ export class CoreCoursesProvider {
                 data.returnusercount = 0;
             }
 
-            return site.read('core_enrol_get_users_courses', data, preSets);
+            return site.read('core_enrol_get_users_courses', data, preSets).then((courses) => {
+                if (this.userCoursesIds) {
+                    // Check if the list of courses has changed.
+                    const added = [],
+                        removed = [],
+                        previousIds = Object.keys(this.userCoursesIds),
+                        currentIds = {}; // Use an object to make it faster to search.
+
+                    courses.forEach((course) => {
+                        currentIds[course.id] = true;
+
+                        if (!this.userCoursesIds[course.id]) {
+                            // Course added.
+                            added.push(course.id);
+                        }
+                    });
+
+                    if (courses.length - added.length != previousIds.length) {
+                        // A course was removed, check which one.
+                        previousIds.forEach((id) => {
+                            if (!currentIds[id]) {
+                                // Course removed.
+                                removed.push(Number(id));
+                            }
+                        });
+                    }
+
+                    if (added.length || removed.length) {
+                        // At least 1 course was added or removed, trigger the event.
+                        this.eventsProvider.trigger(CoreCoursesProvider.EVENT_MY_COURSES_CHANGED, {
+                            added: added,
+                            removed: removed
+                        }, site.getId());
+                    }
+
+                    this.userCoursesIds = currentIds;
+                } else {
+                    this.userCoursesIds = {};
+
+                    // Store the list of courses.
+                    courses.forEach((course) => {
+                        this.userCoursesIds[course.id] = true;
+                    });
+                }
+
+                return courses;
+            });
         });
     }
 

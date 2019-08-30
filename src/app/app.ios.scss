@@ -99,16 +99,22 @@ ion-app.app-root.ios {
     background-color: $checkbox-ios-background-color-off;
   }
 
-  // File Uploader
-  // In iOS the input is 1 level higher, so the styles are different.
-  .action-sheet-ios input.core-fileuploader-file-handler-input {
-    position: absolute;
-    @include position(null, 0, null, 0);
-    min-width: 100%;
-    min-height: $action-sheet-ios-button-min-height;
-    opacity: 0;
-    outline: none;
-    z-index: 100;
-    cursor: pointer;
+
+  .action-sheet-ios {
+    .action-sheet-title {
+      font-size: 2rem;
+    }
+    // File Uploader
+    // In iOS the input is 1 level higher, so the styles are different.
+    input.core-fileuploader-file-handler-input {
+      position: absolute;
+      @include position(null, 0, null, 0);
+      min-width: 100%;
+      min-height: $action-sheet-ios-button-min-height;
+      opacity: 0;
+      outline: none;
+      z-index: 100;
+      cursor: pointer;
+    }
   }
 }

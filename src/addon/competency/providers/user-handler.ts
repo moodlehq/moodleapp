@@ -111,7 +111,7 @@ export class AddonCompetencyUserHandler implements CoreUserProfileHandler {
                 action: (event, navCtrl, user, courseId): void => {
                     event.preventDefault();
                     event.stopPropagation();
-                    // Always use redirect to make it the new history root (to avoid "loops" in history).
+
                     this.linkHelper.goInSite(navCtrl, 'AddonCompetencyCourseCompetenciesPage', {courseId, userId: user.id});
                 }
             };
@@ -123,7 +123,7 @@ export class AddonCompetencyUserHandler implements CoreUserProfileHandler {
                 action: (event, navCtrl, user, courseId): void => {
                     event.preventDefault();
                     event.stopPropagation();
-                    // Always use redirect to make it the new history root (to avoid "loops" in history).
+
                     this.linkHelper.goInSite(navCtrl, 'AddonCompetencyPlanListPage', {userId: user.id});
                 }
             };

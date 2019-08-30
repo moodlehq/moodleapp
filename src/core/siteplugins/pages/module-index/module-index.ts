@@ -48,4 +48,48 @@ export class CoreSitePluginsModuleIndexPage {
             refresher.complete();
         });
     }
+
+    /**
+     * The page is about to enter and become the active page.
+     */
+    ionViewWillEnter(): void {
+        this.content.callComponentFunction('ionViewWillEnter');
+    }
+
+    /**
+     * The page has fully entered and is now the active page. This event will fire, whether it was the first load or a cached page.
+     */
+    ionViewDidEnter(): void {
+        this.content.callComponentFunction('ionViewDidEnter');
+    }
+
+    /**
+     * The page is about to leave and no longer be the active page.
+     */
+    ionViewWillLeave(): void {
+        this.content.callComponentFunction('ionViewWillLeave');
+    }
+
+    /**
+     * The page has finished leaving and is no longer the active page.
+     */
+    ionViewDidLeave(): void {
+        this.content.callComponentFunction('ionViewDidLeave');
+    }
+
+    /**
+     * The page is about to be destroyed and have its elements removed.
+     */
+    ionViewWillUnload(): void {
+        this.content.callComponentFunction('ionViewWillUnload');
+    }
+
+    /**
+     * Check if we can leave the page or not.
+     *
+     * @return {boolean|Promise<void>} Resolved if we can leave it, rejected if not.
+     */
+    ionViewCanLeave(): boolean | Promise<void> {
+        return this.content.callComponentFunction('ionViewCanLeave');
+    }
 }

@@ -63,7 +63,7 @@ export class AddonBlogUserHandler implements CoreUserProfileHandler {
             action: (event, navCtrl, user, courseId): void => {
                 event.preventDefault();
                 event.stopPropagation();
-                // Always use redirect to make it the new history root (to avoid "loops" in history).
+
                 this.linkHelper.goInSite(navCtrl, 'AddonBlogEntriesPage', { userId: user.id, courseId: courseId });
             }
         };

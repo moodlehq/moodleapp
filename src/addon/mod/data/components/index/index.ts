@@ -85,7 +85,6 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             private prefetchHandler: AddonModDataPrefetchHandler,
             private timeUtils: CoreTimeUtilsProvider,
             private groupsProvider: CoreGroupsProvider,
-            private commentsProvider: CoreCommentsProvider,
             private modalCtrl: ModalController,
             private utils: CoreUtilsProvider,
             protected navCtrl: NavController) {
@@ -152,8 +151,12 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             promises.push(this.dataProvider.invalidateDatabaseAccessInformationData(this.data.id));
             promises.push(this.groupsProvider.invalidateActivityGroupInfo(this.data.coursemodule));
             promises.push(this.dataProvider.invalidateEntriesData(this.data.id));
+
             if (this.hasComments) {
-                promises.push(this.commentsProvider.invalidateCommentsByInstance('module', this.data.coursemodule));
+                this.eventsProvider.trigger(CoreCommentsProvider.REFRESH_COMMENTS_EVENT, {
+                    contextLevel: 'module',
+                    instanceId: this.data.coursemodule
+                }, this.sitesProvider.getCurrentSiteId());
             }
         }
 
@@ -192,6 +195,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
         return this.dataProvider.getDatabase(this.courseId, this.module.id).then((data) => {
             this.data = data;
+            this.hasComments = data.comments;
 
             this.description = data.intro || data.description;
             this.dataRetrieved.emit(data);
@@ -226,16 +230,9 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             canSearch = true;
             canAdd = accessData.canaddentry;
 
-            return this.groupsProvider.getActivityGroupInfo(this.data.coursemodule, accessData.canmanageentries)
-                    .then((groupInfo) => {
+            return this.groupsProvider.getActivityGroupInfo(this.data.coursemodule).then((groupInfo) => {
                 this.groupInfo = groupInfo;
-
-                // Check selected group is accessible.
-                if (groupInfo && groupInfo.groups && groupInfo.groups.length > 0) {
-                    if (!groupInfo.groups.some((group) => this.selectedGroup == group.id)) {
-                        this.selectedGroup = groupInfo.groups[0].id;
-                    }
-                }
+                this.selectedGroup = this.groupsProvider.validateGroupId(this.selectedGroup, groupInfo);
             });
         }).then(() => {
             return this.dataProvider.getFields(this.data.id).then((fields) => {
@@ -265,7 +262,6 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      * @return {Promise<any>} Resolved then done.
      */
     protected fetchEntriesData(): Promise<any> {
-        this.hasComments = false;
 
         return this.dataProvider.getDatabaseAccessInformation(this.data.id, this.selectedGroup).then((accessData) => {
             // Update values for current group.
@@ -299,14 +295,14 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             if (!this.isEmpty) {
                 this.entries = entries.offlineEntries.concat(entries.entries);
 
-                let entriesHTML = this.data.listtemplateheader || '';
+                let entriesHTML = this.dataHelper.getTemplate(this.data, 'listtemplateheader', this.fieldsArray);
 
                 // Get first entry from the whole list.
                 if (!this.search.searching || !this.firstEntry) {
                     this.firstEntry = this.entries[0].id;
                 }
 
-                const template = this.data.listtemplate || this.dataHelper.getDefaultTemplate('list', this.fieldsArray);
+                const template = this.dataHelper.getTemplate(this.data, 'listtemplate', this.fieldsArray);
 
                 const entriesById = {};
                 this.entries.forEach((entry, index) => {
@@ -318,7 +314,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
                     entriesHTML += this.dataHelper.displayShowFields(template, this.fieldsArray, entry, offset, 'list',  actions);
                 });
-                entriesHTML += this.data.listtemplatefooter || '';
+                entriesHTML += this.dataHelper.getTemplate(this.data, 'listtemplatefooter', this.fieldsArray);
 
                 this.entriesRendered = entriesHTML;
 

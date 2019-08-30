@@ -114,10 +114,11 @@ export class CoreCourseProvider {
      * Check if the get course blocks WS is available in current site.
      *
      * @return {boolean} Whether it's available.
-     * @since 3.3
+     * @since 3.7
      */
     canGetCourseBlocks(): boolean {
-        return this.sitesProvider.wsAvailableInCurrentSite('core_block_get_course_blocks');
+        return this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.7') &&
+            this.sitesProvider.wsAvailableInCurrentSite('core_block_get_course_blocks');
     }
 
     /**
@@ -162,6 +163,23 @@ export class CoreCourseProvider {
                 this.triggerCourseStatusChanged(CoreCourseProvider.ALL_COURSES_CLEARED, CoreConstants.NOT_DOWNLOADED, site.id);
             });
         });
+    }
+
+    /**
+     * Check if the current view in a NavController is a certain course initial page.
+     *
+     * @param {NavController} navCtrl NavController.
+     * @param {number} courseId Course ID.
+     * @return {boolean} Whether the current view is a certain course.
+     */
+    currentViewIsCourse(navCtrl: NavController, courseId: number): boolean {
+        if (navCtrl) {
+            const view = navCtrl.getActive();
+
+            return view && view.id == 'CoreCourseSectionPage' && view.data && view.data.course && view.data.course.id == courseId;
+        }
+
+        return false;
     }
 
     /**
@@ -250,12 +268,13 @@ export class CoreCourseProvider {
      * @param {number} courseId Course ID.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any[]>} Promise resolved with the list of blocks.
-     * @since 3.3
+     * @since 3.7
      */
     getCourseBlocks(courseId: number, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
-                    courseid: courseId
+                    courseid: courseId,
+                    returncontents: 1
                 },
                 preSets: CoreSiteWSPreSets = {
                     cacheKey: this.getCourseBlocksCacheKey(courseId),
@@ -962,7 +981,12 @@ export class CoreCourseProvider {
                     }
                 }).catch(() => {
                     // The site plugin failed to load. The user needs to restart the app to try loading it again.
-                    this.domUtils.showErrorModal('core.courses.errorloadplugins', true);
+                    const message = this.translate.instant('core.courses.errorloadplugins');
+                    const reload = this.translate.instant('core.courses.reload');
+                    const ignore = this.translate.instant('core.courses.ignore');
+                    this.domUtils.showConfirm(message, '', reload, ignore).then(() => {
+                        window.location.reload();
+                    });
                 });
             } else {
                 // No custom format plugin. We don't need to wait for anything.
@@ -971,6 +995,19 @@ export class CoreCourseProvider {
         }).finally(() => {
             loading.dismiss();
         });
+    }
+
+    /**
+     * Select a certain tab in the course. Please use currentViewIsCourse() first to verify user is viewing the course.
+     *
+     * @param {string} [name] Name of the tab. If not provided, course contents.
+     * @param {any} [params] Other params.
+     */
+    selectCourseTab(name?: string, params?: any): void {
+        params = params || {};
+        params.name = name || '';
+
+        this.eventsProvider.trigger(CoreEventsProvider.SELECT_COURSE_TAB, params);
     }
 
     /**

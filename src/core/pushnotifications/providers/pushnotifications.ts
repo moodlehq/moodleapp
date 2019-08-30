@@ -241,6 +241,27 @@ export class CorePushNotificationsProvider {
     }
 
     /**
+     * Enable or disable Firebase analytics.
+     *
+     * @param {boolean} enable Whether to enable or disable.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    enableAnalytics(enable: boolean): Promise<any> {
+        const win = <any> window; // This feature is only present in our fork of the plugin.
+
+        if (CoreConfigConstants.enableanalytics && win.PushNotification && win.PushNotification.enableAnalytics) {
+            return new Promise((resolve, reject): void => {
+                win.PushNotification.enableAnalytics(resolve, (error) => {
+                    this.logger.error('Error enabling or disabling Firebase analytics', enable, error);
+                    resolve();
+                }, !!enable);
+            });
+        }
+
+        return Promise.resolve();
+    }
+
+    /**
      * Returns options for push notifications based on device.
      *
      * @return {Promise<PushOptions>} Promise with the push options resolved when done.
@@ -321,11 +342,17 @@ export class CorePushNotificationsProvider {
         const win = <any> window; // This feature is only present in our fork of the plugin.
 
         if (CoreConfigConstants.enableanalytics && win.PushNotification && win.PushNotification.logEvent) {
-            return new Promise((resolve, reject): void => {
-                win.PushNotification.logEvent(resolve, (error) => {
-                    this.logger.error('Error logging firebase event', name, error);
-                    resolve();
-                }, name, data, !!filter);
+
+            // Check if the analytics is enabled by the user.
+            return this.configProvider.get(CoreConstants.SETTINGS_ANALYTICS_ENABLED, true).then((enabled) => {
+                if (enabled) {
+                    return new Promise((resolve, reject): void => {
+                        win.PushNotification.logEvent(resolve, (error) => {
+                            this.logger.error('Error logging firebase event', name, error);
+                            resolve();
+                        }, name, data, !!filter);
+                    });
+                }
             });
         }
 

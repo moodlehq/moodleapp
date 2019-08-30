@@ -23,6 +23,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreQuestionHelperProvider } from '@core/question/providers/helper';
 import { CoreQuestionComponent } from '@core/question/components/question/question';
+import { MoodleMobileApp } from '../../../../../app/app.component';
 import { AddonModQuizProvider } from '../../providers/quiz';
 import { AddonModQuizSyncProvider } from '../../providers/quiz-sync';
 import { AddonModQuizHelperProvider } from '../../providers/helper';
@@ -80,7 +81,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             protected timeUtils: CoreTimeUtilsProvider, protected quizProvider: AddonModQuizProvider,
             protected quizHelper: AddonModQuizHelperProvider, protected quizSync: AddonModQuizSyncProvider,
             protected questionHelper: CoreQuestionHelperProvider, protected cdr: ChangeDetectorRef,
-            modalCtrl: ModalController, protected navCtrl: NavController) {
+            modalCtrl: ModalController, protected navCtrl: NavController,  protected mmApp: MoodleMobileApp) {
 
         this.quizId = navParams.get('quizId');
         this.courseId = navParams.get('courseId');
@@ -155,6 +156,13 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
         }
 
         return Promise.resolve();
+    }
+
+    /**
+     * Runs when the page is about to leave and no longer be the active page.
+     */
+    ionViewWillLeave(): void {
+        this.mmApp.closeModal();
     }
 
     /**

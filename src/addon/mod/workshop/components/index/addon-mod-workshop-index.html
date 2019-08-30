@@ -144,7 +144,7 @@
             <ion-item text-wrap *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
                 <ion-label id="addon-workshop-groupslabel" *ngIf="groupInfo.separateGroups">{{ 'core.groupsseparate' | translate }}</ion-label>
                 <ion-label id="addon-workshop-groupslabel" *ngIf="groupInfo.visibleGroups">{{ 'core.groupsvisible' | translate }}</ion-label>
-                <ion-select [(ngModel)]="selectedGroup" (ionChange)="setGroup(selectedGroup)" aria-labelledby="addon-workshop-groupslabel" interface="action-sheet">
+                <ion-select [(ngModel)]="group" (ionChange)="setGroup(group)" aria-labelledby="addon-workshop-groupslabel" interface="action-sheet">
                     <ion-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">{{groupOpt.name}}</ion-option>
                 </ion-select>
             </ion-item>

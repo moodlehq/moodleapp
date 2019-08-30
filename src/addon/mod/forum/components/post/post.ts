@@ -14,10 +14,9 @@
 
 import { Component, Input, Output, Optional, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { NavController, Content } from 'ionic-angular';
+import { Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
-import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -26,6 +25,7 @@ import { AddonModForumHelperProvider } from '../../providers/helper';
 import { AddonModForumOfflineProvider } from '../../providers/offline';
 import { AddonModForumSyncProvider } from '../../providers/sync';
 import { CoreRatingInfo } from '@core/rating/providers/rating';
+import { CoreTagProvider } from '@core/tag/providers/tag';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -53,11 +53,11 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
 
     uniqueId: string;
     advanced = false; // Display all form fields.
+    tagsEnabled: boolean;
 
     protected syncId: string;
 
     constructor(
-            private navCtrl: NavController,
             private uploaderProvider: CoreFileUploaderProvider,
             private syncProvider: CoreSyncProvider,
             private domUtils: CoreDomUtilsProvider,
@@ -67,9 +67,10 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
             private forumHelper: AddonModForumHelperProvider,
             private forumOffline: AddonModForumOfflineProvider,
             private forumSync: AddonModForumSyncProvider,
-            @Optional() private svComponent: CoreSplitViewComponent,
+            private tagProvider: CoreTagProvider,
             @Optional() private content: Content) {
         this.onPostChange = new EventEmitter<void>();
+        this.tagsEnabled = this.tagProvider.areTagsAvailableInSite();
     }
 
     /**
@@ -77,17 +78,6 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.uniqueId = this.post.id ? 'reply' + this.post.id : 'edit' + this.post.parent;
-    }
-
-    /**
-     * Opens the profile of a user.
-     *
-     * @param {number} userId
-     */
-    openUserProfile(userId: number): void {
-        // Decide which navCtrl to use. If this page is inside a split view, use the split view's master nav.
-        const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
-        navCtrl.push('CoreUserProfilePage', {userId, courseId: this.courseId});
     }
 
     /**

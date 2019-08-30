@@ -1,0 +1,4 @@
+<a ion-item text-wrap *ngFor="let item of items" core-user-link [userId]="item.id">
+    <ion-avatar core-user-avatar [user]="item" item-start></ion-avatar>
+    <h2>{{ item.fullname }}</h2>
+</a>

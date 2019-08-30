@@ -31,17 +31,17 @@
                 <ion-icon name="information-circle"></ion-icon> {{ availabilityMessage }}
             </ion-card>
 
-            <core-empty-box *ngIf="forum && discussions.length == 0 && offlineDiscussions.length == 0" icon="chatbubbles" [message]="'addon.mod_forum.forumnodiscussionsyet' | translate">
-            </core-empty-box>
-
-            <div text-wrap *ngIf="sortingAvailable && selectedSortOrder" ion-row padding-horizontal padding-top margin-bottom>
-                <button *ngIf="sortingAvailable" ion-button padding-horizontal icon-end ion-col (click)="showSortOrderSelector($event)" color="light" class="core-button-select button-no-uppercase" [attr.aria-label]="('core.sort' | translate)" aria-haspopup="true" [attr.aria-expanded]="sortOrderSelectorExpanded" aria-controls="addon-mod-forum-sort-order-selector" id="addon-mod-forum-sort-order-button">
-                    <span class="core-section-selector-text">{{ selectedSortOrder.label | translate }}</span>
-                    <ion-icon name="arrow-dropdown" ios="md-arrow-dropdown"></ion-icon>
-                </button>
-            </div>
-
             <ng-container *ngIf="forum">
+                <core-empty-box *ngIf="discussions.length == 0 && offlineDiscussions.length == 0" icon="chatbubbles" [message]="'addon.mod_forum.forumnodiscussionsyet' | translate">
+                </core-empty-box>
+
+                <div text-wrap *ngIf="sortingAvailable && selectedSortOrder" ion-row padding-horizontal padding-top margin-bottom>
+                    <button *ngIf="sortingAvailable" ion-button padding-horizontal icon-end ion-col (click)="showSortOrderSelector($event)" color="light" class="core-button-select button-no-uppercase" [attr.aria-label]="('core.sort' | translate)" aria-haspopup="true" [attr.aria-expanded]="sortOrderSelectorExpanded" aria-controls="addon-mod-forum-sort-order-selector" id="addon-mod-forum-sort-order-button">
+                        <span class="core-section-selector-text">{{ selectedSortOrder.label | translate }}</span>
+                        <ion-icon name="arrow-dropdown" ios="md-arrow-dropdown"></ion-icon>
+                    </button>
+                </div>
+
                 <ion-card *ngFor="let discussion of offlineDiscussions" (click)="openNewDiscussion(discussion.timecreated)" [class.addon-forum-discussion-selected]="discussion.timecreated == -selectedDiscussion">
                     <ion-item text-wrap>
                         <ion-avatar core-user-avatar [user]="discussion" item-start [courseId]="courseId"></ion-avatar>
@@ -95,9 +95,9 @@
                         </ion-col>
                     </ion-row>
                 </ion-card>
-            </ng-container>
 
-            <core-infinite-loading [enabled]="canLoadMore" (action)="fetchMoreDiscussions($event)" [error]="loadMoreError"></core-infinite-loading>
+                <core-infinite-loading [enabled]="canLoadMore" (action)="fetchMoreDiscussions($event)" [error]="loadMoreError"></core-infinite-loading>
+            </ng-container>
         </core-loading>
 
         <ion-fab core-fab bottom end *ngIf="forum && canAddDiscussion">

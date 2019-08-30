@@ -2197,8 +2197,26 @@ export class CoreFilepoolProvider {
             filename = this.urlUtils.getLastFileWithoutParams(fileUrl);
         }
 
+        // If there are hashes in the URL, extract them.
+        const index = filename.indexOf('#');
+        let hashes;
+
+        if (index != -1) {
+            hashes = filename.split('#');
+
+            // Remove the URL from the array.
+            hashes.shift();
+
+            filename = filename.substr(0, index);
+        }
+
         // Remove the extension from the filename.
         filename = this.mimeUtils.removeExtension(filename);
+
+        if (hashes) {
+            // Add hashes to the name.
+            filename += '_' + hashes.join('_');
+        }
 
         return this.textUtils.removeSpecialCharactersForFiles(filename);
     }

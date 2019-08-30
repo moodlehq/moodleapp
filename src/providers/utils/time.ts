@@ -119,6 +119,29 @@ export class CoreTimeUtilsProvider {
     }
 
     /**
+     * Fix format to use in an ion-datetime.
+     *
+     * @param {string} format Format to use.
+     * @return {string} Fixed format.
+     */
+    fixFormatForDatetime(format: string): string {
+        if (!format) {
+            return '';
+        }
+
+        // The component ion-datetime doesn't support escaping characters ([]), so we remove them.
+        let fixed = format.replace(/[\[\]]/g, '');
+
+        if (fixed.indexOf('A') != -1) {
+            // Do not use am/pm format because there is a bug in ion-datetime.
+            fixed = fixed.replace(/ ?A/g, '');
+            fixed = fixed.replace(/h/g, 'H');
+        }
+
+        return fixed;
+    }
+
+    /**
      * Returns hours, minutes and seconds in a human readable format
      *
      * @param {number} seconds A number of seconds
@@ -277,13 +300,29 @@ export class CoreTimeUtilsProvider {
     }
 
     /**
+     * Convert a timestamp to the format to set to a datetime input.
+     *
+     * @param {number} [timestamp] Timestamp to convert (in ms). If not provided, current time.
+     * @return {string} Formatted time.
+     */
+    toDatetimeFormat(timestamp?: number): string {
+        timestamp = timestamp || Date.now();
+
+        return this.userDate(timestamp, 'YYYY-MM-DDTHH:mm:ss.SSS', false) + 'Z';
+    }
+
+    /**
      * Convert a text into user timezone timestamp.
      *
      * @param {number} date To convert to timestamp.
      * @return {number} Converted timestamp.
      */
     convertToTimestamp(date: string): number {
-        return moment(date).unix() - (moment().utcOffset() * 60);
+        if (typeof date == 'string' && date.slice(-1) == 'Z') {
+            return moment(date).unix() - (moment().utcOffset() * 60);
+        }
+
+        return moment(date).unix();
     }
 
     /**

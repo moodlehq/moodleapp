@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
-import { CoreLoginHelperProvider } from '@core/login/providers/helper';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreSiteHomeProvider } from './sitehome';
 
 /**
@@ -29,7 +29,7 @@ export class CoreSiteHomeIndexLinkHandler extends CoreContentLinksHandlerBase {
     pattern = /\/course\/view\.php.*([\?\&]id=\d+)/;
 
     constructor(private sitesProvider: CoreSitesProvider, private siteHomeProvider: CoreSiteHomeProvider,
-            private loginHelper: CoreLoginHelperProvider) {
+            private linkHelper: CoreContentLinksHelperProvider) {
         super();
     }
 
@@ -46,8 +46,7 @@ export class CoreSiteHomeIndexLinkHandler extends CoreContentLinksHandlerBase {
         CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: (siteId, navCtrl?): void => {
-                // Always use redirect to make it the new history root (to avoid "loops" in history).
-                this.loginHelper.redirect('CoreSiteHomeIndexPage', undefined, siteId);
+                this.linkHelper.goInSite(navCtrl, 'CoreSiteHomeIndexPage', undefined, siteId);
             }
         }];
     }

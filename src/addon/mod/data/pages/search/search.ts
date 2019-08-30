@@ -21,6 +21,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { AddonModDataComponentsModule } from '../../components/components.module';
 import { AddonModDataFieldsDelegate } from '../../providers/fields-delegate';
 import { AddonModDataHelperProvider } from '../../providers/helper';
+import { CoreTagProvider } from '@core/tag/providers/tag';
 
 /**
  * Page that displays the search modal.
@@ -42,7 +43,8 @@ export class AddonModDataSearchPage {
 
     constructor(params: NavParams, private viewCtrl: ViewController, fb: FormBuilder, protected utils: CoreUtilsProvider,
             protected domUtils: CoreDomUtilsProvider, protected fieldsDelegate: AddonModDataFieldsDelegate,
-            protected textUtils: CoreTextUtilsProvider, protected dataHelper: AddonModDataHelperProvider) {
+            protected textUtils: CoreTextUtilsProvider, protected dataHelper: AddonModDataHelperProvider,
+            private tagProvider: CoreTagProvider) {
         this.search = params.get('search');
         this.fields = params.get('fields');
         this.data = params.get('data');
@@ -89,7 +91,7 @@ export class AddonModDataSearchPage {
             search: this.search.advanced
         };
 
-        let template = this.data.asearchtemplate || this.dataHelper.getDefaultTemplate('asearch', this.fieldsArray),
+        let template = this.dataHelper.getTemplate(this.data, 'asearchtemplate', this.fieldsArray),
             replace, render;
 
         // Replace the fields found on template.
@@ -117,9 +119,10 @@ export class AddonModDataSearchPage {
         [placeholder]="\'addon.mod_data.authorlastname\' | translate" formControlName="lastname"></ion-input></span>';
         template = template.replace(replace, render);
 
-        // Tags are unsupported right now.
+        // Searching by tags is not supported.
         replace = new RegExp('##tags##', 'gi');
-        template = template.replace(replace, '');
+        const message = '<p class="item-dimmed">{{ \'addon.mod_data.searchbytagsnotsupported\' | translate }}</p>';
+        template = template.replace(replace, this.tagProvider.areTagsAvailableInSite() ? message : '');
 
         return template;
     }

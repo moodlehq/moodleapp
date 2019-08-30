@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from './app';
@@ -22,12 +22,13 @@ import { CoreSitesFactoryProvider } from './sites-factory';
 import { CoreTextUtilsProvider } from './utils/text';
 import { CoreUrlUtilsProvider } from './utils/url';
 import { CoreUtilsProvider } from './utils/utils';
+import { CoreWSProvider } from './ws';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../configconstants';
 import { CoreSite } from '@classes/site';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { Md5 } from 'ts-md5/dist/md5';
-import { Location } from '@angular/common';
+import { WP_PROVIDER } from '@app/app.module';
 
 /**
  * Response of checking if a site exists and its configuration.
@@ -243,9 +244,13 @@ export class CoreSitesProvider {
     ];
 
     // Constants to validate a site version.
+    protected WORKPLACE_APP = 3;
+    protected MOODLE_APP = 2;
     protected VALID_VERSION = 1;
     protected LEGACY_APP_VERSION = 0;
     protected INVALID_VERSION = -1;
+
+    protected isWPApp: boolean;
 
     protected logger;
     protected services = {};
@@ -321,8 +326,8 @@ export class CoreSitesProvider {
 
     constructor(logger: CoreLoggerProvider, private http: HttpClient, private sitesFactory: CoreSitesFactoryProvider,
             private appProvider: CoreAppProvider, private translate: TranslateService, private urlUtils: CoreUrlUtilsProvider,
-            private eventsProvider: CoreEventsProvider,  private textUtils: CoreTextUtilsProvider, private location: Location,
-            private utils: CoreUtilsProvider) {
+            private eventsProvider: CoreEventsProvider,  private textUtils: CoreTextUtilsProvider,
+            private utils: CoreUtilsProvider, private injector: Injector, private wsProvider: CoreWSProvider) {
         this.logger = logger.getInstance('CoreSitesProvider');
 
         this.appDB = appProvider.getDB();
@@ -363,7 +368,7 @@ export class CoreSitesProvider {
             return this.checkSiteWithProtocol(siteUrl, protocol).catch((error) => {
                 // Do not continue checking if a critical error happened.
                 if (error.critical) {
-                    return Promise.reject(error.error);
+                    return Promise.reject(error);
                 }
 
                 // Retry with the other protocol.
@@ -371,13 +376,17 @@ export class CoreSitesProvider {
 
                 return this.checkSiteWithProtocol(siteUrl, protocol).catch((secondError) => {
                     if (secondError.critical) {
-                        return Promise.reject(secondError.error);
+                        return Promise.reject(secondError);
                     }
 
                     // Site doesn't exist. Return the error message.
-                    return Promise.reject(this.textUtils.getErrorMessageFromError(error) ||
-                            this.textUtils.getErrorMessageFromError(secondError) ||
-                            this.translate.instant('core.cannotconnect'));
+                    if (this.textUtils.getErrorMessageFromError(error)) {
+                        return Promise.reject(error);
+                    } else if (this.textUtils.getErrorMessageFromError(secondError)) {
+                        return Promise.reject(secondError);
+                    } else {
+                        return this.translate.instant('core.cannotconnect');
+                    }
                 });
             });
         }
@@ -415,8 +424,11 @@ export class CoreSitesProvider {
                 }
 
                 // Return the error message.
-                return Promise.reject(this.textUtils.getErrorMessageFromError(error) ||
-                        this.textUtils.getErrorMessageFromError(secondError));
+                if (this.textUtils.getErrorMessageFromError(error)) {
+                    return Promise.reject(error);
+                } else {
+                    return Promise.reject(secondError);
+                }
             });
         }).then(() => {
             // Create a temporary site to check if local_mobile is installed.
@@ -456,7 +468,23 @@ export class CoreSitesProvider {
                         // Error, check if not supported.
                         if (error.available === 1) {
                             // Service supported but an error happened. Return error.
-                            return Promise.reject({ error: error.error });
+                            error.critical = true;
+
+                            if (error.errorcode == 'codingerror') {
+                                // This could be caused by a redirect. Check if it's the case.
+                                return this.utils.checkRedirect(siteUrl).then((redirect) => {
+                                    if (redirect) {
+                                        error.error = this.translate.instant('core.login.sitehasredirect');
+                                    } else {
+                                        // We can't be sure if there is a redirect or not. Display cannot connect error.
+                                        error.error = this.translate.instant('core.cannotconnect');
+                                    }
+
+                                    return Promise.reject(error);
+                                });
+                            }
+
+                            return Promise.reject(error);
                         }
 
                         return data;
@@ -464,6 +492,9 @@ export class CoreSitesProvider {
                 }
 
                 return data;
+            }, (error) => {
+                // Local mobile check returned an error. This only happens if the plugin is installed and it returns an error.
+                return rejectWithCriticalError(error);
             }).then((data) => {
                 siteUrl = temporarySite.getURL();
 
@@ -488,7 +519,8 @@ export class CoreSitesProvider {
      * @return {Promise} A promise to be resolved if the site exists.
      */
     siteExists(siteUrl: string): Promise<void> {
-        return this.http.post(siteUrl + '/login/token.php', {}).timeout(CoreConstants.WS_TIMEOUT).toPromise().catch(() => {
+        return this.http.post(siteUrl + '/login/token.php', {}).timeout(this.wsProvider.getRequestTimeout()).toPromise()
+                .catch(() => {
             // Default error messages are kinda bad, return our own message.
             return Promise.reject({error: this.translate.instant('core.cannotconnect')});
         }).then((data: any) => {
@@ -528,7 +560,7 @@ export class CoreSitesProvider {
                 service: service
             },
             loginUrl = siteUrl + '/login/token.php',
-            promise = this.http.post(loginUrl, params).timeout(CoreConstants.WS_TIMEOUT).toPromise();
+            promise = this.http.post(loginUrl, params).timeout(this.wsProvider.getRequestTimeout()).toPromise();
 
         return promise.then((data: any): any => {
             if (typeof data == 'undefined') {
@@ -642,30 +674,68 @@ export class CoreSitesProvider {
                         return siteId;
                     });
                 });
-            } else if (result == this.LEGACY_APP_VERSION) {
-                let errorKey = 'core.login.legacymoodleversion',
-                    params;
+            }
+
+            return this.treatInvalidAppVersion(result, siteUrl);
+        });
+    }
+
+    /**
+     * Having the result of isValidMoodleVersion, it treats the error message to be shown.
+     *
+     * @param {number} result Result returned by isValidMoodleVersion function.
+     * @param {string} siteUrl The site url.
+     * @param  {string} siteId If site is already added, it will invalidate the token.
+     * @return {Promise<any>} A promise rejected with the error info.
+     */
+    protected treatInvalidAppVersion(result: number, siteUrl: string, siteId?: string): Promise<any> {
+        let errorCode,
+            errorKey,
+            errorExtra = '',
+            errorKeyParams;
+
+        switch (result) {
+            case this.LEGACY_APP_VERSION:
+                errorKey = 'core.login.legacymoodleversion';
+                errorCode = 'legacymoodleversion';
 
                 if (this.appProvider.isDesktop()) {
                     errorKey += 'desktop';
-                    params = {$a: siteUrl};
+                    errorKeyParams = {$a: siteUrl};
                 }
 
-                let error = this.translate.instant(errorKey, params);
                 if (this.appProvider.isWindows() || this.appProvider.isLinux()) {
-                    error += this.translate.instant('core.login.legacymoodleversiondesktopdownloadold');
+                    errorExtra = this.translate.instant('core.login.legacymoodleversiondesktopdownloadold');
                 }
 
-                return Promise.reject({
-                    error: error,
-                    errorcode: 'legacymoodleversion'
-                });
-            } else {
-                return Promise.reject({
-                    error: this.translate.instant('core.login.invalidmoodleversion'),
-                    errorcode: 'invalidmoodleversion'
-                });
-            }
+                break;
+            case this.MOODLE_APP:
+                errorKey = 'core.login.connecttomoodleapp';
+                errorCode = 'connecttomoodleapp';
+                break;
+            case this.WORKPLACE_APP:
+                errorKey = 'core.login.connecttoworkplaceapp';
+                errorCode = 'connecttoworkplaceapp';
+                break;
+            default:
+                errorCode = 'invalidmoodleversion';
+                errorKey = 'core.login.invalidmoodleversion';
+        }
+
+        let promise;
+
+        if (siteId) {
+            promise = this.setSiteLoggedOut(siteId, true);
+        } else {
+            promise = Promise.resolve();
+        }
+
+        return promise.then(() => {
+           return Promise.reject({
+                error: this.translate.instant(errorKey, errorKeyParams) + errorExtra,
+                errorcode: errorCode,
+                loggedout: true
+            });
         });
     }
 
@@ -709,7 +779,7 @@ export class CoreSitesProvider {
      * Check for the minimum required version.
      *
      * @param {any} info Site info.
-     * @return {number} Either VALID_VERSION, LEGACY_APP_VERSION or INVALID_VERSION.
+     * @return {number} Either VALID_VERSION, LEGACY_APP_VERSION, WORKPLACE_APP, MOODLE_APP or INVALID_VERSION.
      */
     protected isValidMoodleVersion(info: any): number {
         if (!info) {
@@ -726,11 +796,9 @@ export class CoreSitesProvider {
             const version = parseInt(info.version, 10);
             if (!isNaN(version)) {
                 if (version >= version31) {
-                    return this.VALID_VERSION;
+                    return this.validateWorkplaceVersion(info);
                 } else if (version >= version24) {
                     return this.LEGACY_APP_VERSION;
-                } else {
-                    return this.INVALID_VERSION;
                 }
             }
         }
@@ -739,7 +807,7 @@ export class CoreSitesProvider {
         const release = this.getReleaseNumber(info.release || '');
         if (release) {
             if (release >= release31) {
-                return this.VALID_VERSION;
+                return this.validateWorkplaceVersion(info);
             }
             if (release >= release24) {
                 return this.LEGACY_APP_VERSION;
@@ -748,6 +816,33 @@ export class CoreSitesProvider {
 
         // Couldn't validate it.
         return this.INVALID_VERSION;
+    }
+
+    /**
+     * Check if needs to be redirected to specific Workplace App or general Moodle App.
+     *
+     * @param {any} info Site info.
+     * @return {number} Either VALID_VERSION, WORKPLACE_APP or MOODLE_APP.
+     */
+    protected validateWorkplaceVersion(info: any): number {
+        const isWorkplace = !!info.functions && info.functions.some((func) => {
+            return func.name == 'tool_program_get_user_programs';
+        });
+
+        if (typeof this.isWPApp == 'undefined') {
+            this.isWPApp = !!WP_PROVIDER && WP_PROVIDER.name == 'AddonBlockProgramsOverviewModule' &&
+                !!this.injector.get(WP_PROVIDER, false);
+        }
+
+        if (!this.isWPApp && isWorkplace) {
+            return this.WORKPLACE_APP;
+        }
+
+        if (this.isWPApp && !isWorkplace) {
+            return this.MOODLE_APP;
+        }
+
+        return this.VALID_VERSION;
     }
 
     /**
@@ -1144,27 +1239,23 @@ export class CoreSitesProvider {
      * @return {Promise<any>} Promise resolved when the user is logged out.
      */
     logout(): Promise<any> {
-        if (!this.currentSite) {
-            // Already logged out.
-            return Promise.resolve();
+        let siteId;
+        const promises = [];
+
+        if (this.currentSite) {
+            const siteConfig = this.currentSite.getStoredConfig();
+            siteId = this.currentSite.getId();
+
+            this.currentSite = undefined;
+
+            if (siteConfig && siteConfig.tool_mobile_forcelogout == '1') {
+                promises.push(this.setSiteLoggedOut(siteId, true));
+            }
+
+            promises.push(this.appDB.deleteRecords(this.CURRENT_SITE_TABLE, { id: 1 }));
         }
-
-        const siteId = this.currentSite.getId(),
-            siteConfig = this.currentSite.getStoredConfig(),
-            promises = [];
-
-        this.currentSite = undefined;
-
-        if (siteConfig && siteConfig.tool_mobile_forcelogout == '1') {
-            promises.push(this.setSiteLoggedOut(siteId, true));
-        }
-
-        promises.push(this.appDB.deleteRecords(this.CURRENT_SITE_TABLE, { id: 1 }));
 
         return Promise.all(promises).finally(() => {
-            // Due to DeepLinker, we need to remove the path from the URL, otherwise some pages are re-created when they shouldn't.
-            this.location.replaceState('');
-
             this.eventsProvider.trigger(CoreEventsProvider.LOGOUT, {}, siteId);
         });
     }
@@ -1270,9 +1361,10 @@ export class CoreSitesProvider {
             return site.fetchSiteInfo().then((info) => {
                 site.setInfo(info);
 
-                if (this.isLegacyMoodleByInfo(info)) {
+                const versionCheck = this.isValidMoodleVersion(info);
+                if (versionCheck != this.VALID_VERSION) {
                     // The Moodle version is not supported, reject.
-                    return Promise.reject(this.translate.instant('core.login.legacymoodleversion'));
+                    return this.treatInvalidAppVersion(versionCheck, site.getURL(), site.getId());
                 }
 
                 // Try to get the site config.
@@ -1293,6 +1385,8 @@ export class CoreSitesProvider {
                         this.eventsProvider.trigger(CoreEventsProvider.SITE_UPDATED, info, siteId);
                     });
                 });
+            }).catch((error) => {
+                // Ignore that we cannot fetch site info. Probably the auth token is invalid.
             });
         });
     }

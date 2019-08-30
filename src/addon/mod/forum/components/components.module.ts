@@ -21,6 +21,7 @@ import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
 import { CoreCourseComponentsModule } from '@core/course/components/components.module';
 import { CoreRatingComponentsModule } from '@core/rating/components/components.module';
+import { CoreTagComponentsModule } from '@core/tag/components/components.module';
 import { AddonModForumIndexComponent } from './index/index';
 import { AddonModForumPostComponent } from './post/post';
 
@@ -37,7 +38,8 @@ import { AddonModForumPostComponent } from './post/post';
         CoreDirectivesModule,
         CorePipesModule,
         CoreCourseComponentsModule,
-        CoreRatingComponentsModule
+        CoreRatingComponentsModule,
+        CoreTagComponentsModule
     ],
     providers: [
     ],

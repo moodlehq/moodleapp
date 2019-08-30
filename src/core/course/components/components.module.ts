@@ -18,10 +18,12 @@ import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreBlockComponentsModule } from '@core/block/components/components.module';
 import { CoreCourseFormatComponent } from './format/format';
 import { CoreCourseModuleComponent } from './module/module';
 import { CoreCourseModuleCompletionComponent } from './module-completion/module-completion';
 import { CoreCourseModuleDescriptionComponent } from './module-description/module-description';
+import { CoreCourseTagAreaComponent } from './tag-area/tag-area';
 import { CoreCourseUnsupportedModuleComponent } from './unsupported-module/unsupported-module';
 
 @NgModule({
@@ -30,9 +32,11 @@ import { CoreCourseUnsupportedModuleComponent } from './unsupported-module/unsup
         CoreCourseModuleComponent,
         CoreCourseModuleCompletionComponent,
         CoreCourseModuleDescriptionComponent,
+        CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent
     ],
     imports: [
+        CoreBlockComponentsModule,
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
@@ -46,10 +50,12 @@ import { CoreCourseUnsupportedModuleComponent } from './unsupported-module/unsup
         CoreCourseModuleComponent,
         CoreCourseModuleCompletionComponent,
         CoreCourseModuleDescriptionComponent,
+        CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent
     ],
     entryComponents: [
-        CoreCourseUnsupportedModuleComponent
+        CoreCourseUnsupportedModuleComponent,
+        CoreCourseTagAreaComponent
     ]
 })
 export class CoreCourseComponentsModule {}

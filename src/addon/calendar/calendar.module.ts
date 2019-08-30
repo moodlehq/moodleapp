@@ -14,18 +14,26 @@
 
 import { NgModule } from '@angular/core';
 import { AddonCalendarProvider } from './providers/calendar';
+import { AddonCalendarOfflineProvider } from './providers/calendar-offline';
 import { AddonCalendarHelperProvider } from './providers/helper';
+import { AddonCalendarSyncProvider } from './providers/calendar-sync';
 import { AddonCalendarMainMenuHandler } from './providers/mainmenu-handler';
+import { AddonCalendarSyncCronHandler } from './providers/sync-cron-handler';
+import { AddonCalendarViewLinkHandler } from './providers/view-link-handler';
 import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
+import { CoreCronDelegate } from '@providers/cron';
 import { CoreInitDelegate } from '@providers/init';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { CoreUpdateManagerProvider } from '@providers/update-manager';
+import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 
 // List of providers (without handlers).
 export const ADDON_CALENDAR_PROVIDERS: any[] = [
     AddonCalendarProvider,
-    AddonCalendarHelperProvider
+    AddonCalendarOfflineProvider,
+    AddonCalendarHelperProvider,
+    AddonCalendarSyncProvider
 ];
 
 @NgModule({
@@ -35,15 +43,24 @@ export const ADDON_CALENDAR_PROVIDERS: any[] = [
     ],
     providers: [
         AddonCalendarProvider,
+        AddonCalendarOfflineProvider,
         AddonCalendarHelperProvider,
-        AddonCalendarMainMenuHandler
+        AddonCalendarSyncProvider,
+        AddonCalendarMainMenuHandler,
+        AddonCalendarSyncCronHandler,
+        AddonCalendarViewLinkHandler
     ]
 })
 export class AddonCalendarModule {
     constructor(mainMenuDelegate: CoreMainMenuDelegate, calendarHandler: AddonCalendarMainMenuHandler,
             initDelegate: CoreInitDelegate, calendarProvider: AddonCalendarProvider, loginHelper: CoreLoginHelperProvider,
-            localNotificationsProvider: CoreLocalNotificationsProvider, updateManager: CoreUpdateManagerProvider) {
+            localNotificationsProvider: CoreLocalNotificationsProvider, updateManager: CoreUpdateManagerProvider,
+            cronDelegate: CoreCronDelegate, syncHandler: AddonCalendarSyncCronHandler,
+            contentLinksDelegate: CoreContentLinksDelegate, viewLinkHandler: AddonCalendarViewLinkHandler) {
+
         mainMenuDelegate.registerHandler(calendarHandler);
+        cronDelegate.register(syncHandler);
+        contentLinksDelegate.registerHandler(viewLinkHandler);
 
         initDelegate.ready().then(() => {
             calendarProvider.scheduleAllSitesEventsNotifications();
@@ -58,7 +75,13 @@ export class AddonCalendarModule {
                             return;
                         }
 
-                        loginHelper.redirect('AddonCalendarListPage', {eventId: data.eventid}, data.siteId);
+                        // Check which page we should load.
+                        calendarProvider.canViewMonth(data.siteId).then((canView) => {
+                            const pageName = canView ? 'AddonCalendarIndexPage' : 'AddonCalendarListPage';
+
+                            loginHelper.redirect(pageName, {eventId: data.eventid}, data.siteId);
+                        });
+
                     });
                 });
             }

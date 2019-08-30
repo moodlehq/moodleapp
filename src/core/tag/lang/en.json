@@ -1,0 +1,16 @@
+{
+    "defautltagcoll": "Default collection",
+    "errorareanotsupported": "This tag area is not supported by the app.",
+    "inalltagcoll": "Everywhere",
+    "itemstaggedwith": "{{$a.tagarea}} tagged with \"{{$a.tag}}\"",
+    "notagsfound": "No tags matching \"{{$a}}\" found",
+    "searchtags": "Search tags",
+    "showingfirsttags": "Showing {{$a}} most popular tags",
+    "tag": "Tag",
+    "tagarea_course": "Courses",
+    "tagarea_course_modules": "Activities and resources",
+    "tagarea_post": "Blog posts",
+    "tagarea_user": "User interests",
+    "tags": "Tags",
+    "warningareasnotsupported": "Some of the tag areas are not displayed because they are not supported by the app."
+}

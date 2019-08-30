@@ -50,6 +50,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         }
     }
     @Output() completionChanged?: EventEmitter<any>; // Will emit an event when the module completion changes.
+    @Output() statusChanged?: EventEmitter<any>; // Will emit an event when the download status changes.
 
     downloadStatus: string;
     canCheckUpdates: boolean;
@@ -66,6 +67,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
             protected eventsProvider: CoreEventsProvider, protected sitesProvider: CoreSitesProvider,
             protected courseProvider: CoreCourseProvider) {
         this.completionChanged = new EventEmitter();
+        this.statusChanged = new EventEmitter();
     }
 
     /**
@@ -148,6 +150,13 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         // Get download size to ask for confirm if it's high.
         this.prefetchHandler.getDownloadSize(this.module, this.courseId, true).then((size) => {
             return this.courseHelper.prefetchModule(this.prefetchHandler, this.module, size, this.courseId, refresh);
+        }).then(() => {
+            const eventData = {
+                sectionId: this.section.id,
+                moduleId: this.module.id,
+                courseId: this.courseId
+            };
+            this.statusChanged.emit(eventData);
         }).catch((error) => {
             // Error, hide spinner.
             this.spinner = false;

@@ -1,0 +1,23 @@
+.addon-block-badges core-block-pre-rendered {
+    .core-block-content {
+        ul.badges {
+            list-style: none;
+            @include margin-horizontal(0);
+            -webkit-padding-start: 0;
+
+            li {
+                position: relative;
+                display: inline-block;
+                padding-top: 1em;
+                text-align: center;
+                vertical-align: top;
+                width: 150px;
+
+                .badge-name {
+                    display: block;
+                    padding: 5px;
+                }
+            }
+        }
+    }
+}

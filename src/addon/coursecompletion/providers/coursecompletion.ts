@@ -110,6 +110,7 @@ export class AddonCourseCompletionProvider {
 
             preSets.cacheKey = this.getCompletionCacheKey(courseId, userId);
             preSets.updateFrequency = preSets.updateFrequency || CoreSite.FREQUENCY_SOMETIMES;
+            preSets.cacheErrors = ['notenroled'];
 
             return site.read('core_completion_get_course_completion_status', data, preSets).then((data) => {
                 if (data.completionstatus) {

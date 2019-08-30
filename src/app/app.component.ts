@@ -25,6 +25,7 @@ import { CoreCustomURLSchemesProvider } from '@providers/urlschemes';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { Keyboard } from '@ionic-native/keyboard';
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
+import { CoreLoginSitesPage } from '@core/login/pages/sites/sites';
 
 @Component({
     templateUrl: 'app.html'
@@ -37,10 +38,10 @@ export class MoodleMobileApp implements OnInit {
     protected lastUrls = {};
     protected lastInAppUrl: string;
 
-    constructor(private platform: Platform, logger: CoreLoggerProvider, keyboard: Keyboard,
+    constructor(private platform: Platform, logger: CoreLoggerProvider, keyboard: Keyboard, private app: IonicApp,
             private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider, private zone: NgZone,
             private appProvider: CoreAppProvider, private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider,
-            private screenOrientation: ScreenOrientation, app: IonicApp, private urlSchemesProvider: CoreCustomURLSchemesProvider,
+            private screenOrientation: ScreenOrientation, private urlSchemesProvider: CoreCustomURLSchemesProvider,
             private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider) {
         this.logger = logger.getInstance('AppComponent');
 
@@ -64,6 +65,11 @@ export class MoodleMobileApp implements OnInit {
                     app.setElementClass('platform-windows', true);
                 }
             }
+
+            // Register back button action to allow closing modals before anything else.
+            this.appProvider.registerBackButtonAction(() => {
+                return this.closeModal();
+            }, 2000);
         });
 
     }
@@ -74,7 +80,9 @@ export class MoodleMobileApp implements OnInit {
     ngOnInit(): void {
         this.eventsProvider.on(CoreEventsProvider.LOGOUT, () => {
             // Go to sites page when user is logged out.
-            this.appProvider.getRootNavController().setRoot('CoreLoginSitesPage');
+            // Due to DeepLinker, we need to use the ViewCtrl instead of name.
+            // Otherwise some pages are re-created when they shouldn't.
+            this.appProvider.getRootNavController().setRoot(CoreLoginSitesPage);
 
             // Unload lang custom strings.
             this.langProvider.clearCustomStrings();
@@ -285,5 +293,22 @@ export class MoodleMobileApp implements OnInit {
         remove.forEach((tempClass) => {
             document.body.classList.remove(tempClass);
         });
+    }
+
+    /**
+     * Close one modal if any.
+     *
+     * @return {boolean} True if one modal was present.
+     */
+    closeModal(): boolean {
+        // Following function is hidden in Ionic Code, however there's no solution for that.
+        const portal = this.app._getActivePortal();
+        if (portal) {
+            portal.pop();
+
+            return true;
+        }
+
+        return false;
     }
 }

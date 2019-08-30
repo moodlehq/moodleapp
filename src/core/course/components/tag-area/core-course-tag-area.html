@@ -1,0 +1,5 @@
+<a ion-item text-wrap *ngFor="let item of items" (click)="openCourse(item.courseId)" [title]="item.courseName">
+    <core-icon name="fa-graduation-cap" item-start></core-icon>
+    <h2>{{ item.courseName }}</h2>
+    <p *ngIf="item.categoryName">{{ 'core.category' | translate }}: {{ item.categoryName }}</p>
+</a>

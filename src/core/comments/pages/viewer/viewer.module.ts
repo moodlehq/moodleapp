@@ -18,6 +18,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CoreCommentsViewerPage } from './viewer';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
+import { CorePipesModule } from '@pipes/pipes.module';
 import { CoreCommentsComponentsModule } from '../../components/components.module';
 
 @NgModule({
@@ -27,6 +28,7 @@ import { CoreCommentsComponentsModule } from '../../components/components.module
     imports: [
         CoreComponentsModule,
         CoreDirectivesModule,
+        CorePipesModule,
         CoreCommentsComponentsModule,
         IonicPageModule.forChild(CoreCommentsViewerPage),
         TranslateModule.forChild()

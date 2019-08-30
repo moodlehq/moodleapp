@@ -4,10 +4,13 @@ ion-app.app-root .item core-format-text,
 ion-app.app-root core-rich-text-editor .core-rte-editor {
   @include core-headings();
 
-  font-size: 1.4rem;
-
   p {
+    font-size: 1.4rem;
     margin-bottom: 1rem;
+  }
+
+  .no-overflow {
+    overflow: auto;
   }
 
   // Fix lists styles in core-format-text.
@@ -93,8 +96,6 @@ ion-app.app-root core-rich-text-editor .core-rte-editor {
   .atto_image_button_right {
     vertical-align: middle;
     max-width: 100%;
-    height: auto;
-    width: auto;
     display: inline-block;
     margin: 0 0.5em;
 
@@ -102,8 +103,6 @@ ion-app.app-root core-rich-text-editor .core-rte-editor {
       /* If the image is display: block then linking the image to URLs won't work. */
       /*display: inline-block;*/
       max-width: 100%;
-      height: auto;
-      width: auto;
     }
   }
 
@@ -172,6 +171,24 @@ ion-app.app-root core-rich-text-editor .core-rte-editor {
     }
     .alert-#{$color-name} p {
       color: $color-base;
+    }
+  }
+}
+
+// Those styles are omitted on RTE.
+ion-app.app-root core-format-text,
+ion-app.app-root .item core-format-text {
+  .atto_image_button_text-top,
+  .atto_image_button_middle,
+  .atto_image_button_text-bottom,
+  .atto_image_button_left,
+  .atto_image_button_right {
+    height: auto;
+    width: auto;
+
+    &.img-responsive {
+      height: auto;
+      width: auto;
     }
   }
 }

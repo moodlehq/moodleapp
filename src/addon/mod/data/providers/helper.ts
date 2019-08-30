@@ -158,11 +158,12 @@ export class AddonModDataHelperProvider {
      * @param {any} entry Entry.
      * @param {number} offset Entry offset.
      * @param {string} mode Mode list or show.
-     * @param {AddonModDataOfflineAction[]} actions Actions that can be performed to the record.
+     * @param {{[name: string]: boolean}} actions Actions that can be performed to the record.
      * @return {string} Generated HTML.
      */
     displayShowFields(template: string, fields: any[], entry: any, offset: number, mode: string,
-            actions: AddonModDataOfflineAction[]): string {
+            actions: {[name: string]: boolean}): string {
+
         if (!template) {
             return '';
         }
@@ -337,7 +338,7 @@ export class AddonModDataHelperProvider {
                             approved: !data.approval || data.manageapproved,
                             canmanageentry: true,
                             fullname: site.getInfo().fullname,
-                            contents: [],
+                            contents: {},
                         }
                     });
                 }
@@ -357,9 +358,9 @@ export class AddonModDataHelperProvider {
      * @param {any}  database     Database activity.
      * @param {any}  accessInfo   Access info to the activity.
      * @param {any}  record       Entry or record where the actions will be performed.
-     * @return {any}              Keyed with the action names and boolean to evalute if it can or cannot be done.
+     * @return {{[name: string]: boolean}} Keyed with the action names and boolean to evalute if it can or cannot be done.
      */
-    getActions(database: any, accessInfo: any, record: any): any {
+    getActions(database: any, accessInfo: any, record: any): {[name: string]: boolean} {
         return {
             more: true,
             moreurl: true,
@@ -367,6 +368,7 @@ export class AddonModDataHelperProvider {
             userpicture: true,
             timeadded: true,
             timemodified: true,
+            tags: true,
 
             edit: record.canmanageentry && !record.deleted, // This already checks capabilities and readonly period.
             delete: record.canmanageentry,
@@ -377,7 +379,6 @@ export class AddonModDataHelperProvider {
             comments: database.comments,
 
             // Unsupported actions.
-            tags: false,
             delcheck: false,
             export: false
         };
@@ -410,10 +411,14 @@ export class AddonModDataHelperProvider {
      * @param {any[]} fields List of database fields.
      * @return {string} Template HTML.
      */
-    getDefaultTemplate( type: 'add' | 'list' | 'single' | 'asearch', fields: any[]): string {
+    getDefaultTemplate(type: string, fields: any[]): string {
+        if (type == 'listtemplateheader' || type == 'listtemplatefooter') {
+            return '';
+        }
+
         const html = [];
 
-        if (type == 'list') {
+        if (type == 'listtemplate') {
             html.push('##delcheck##<br />');
         }
 
@@ -432,7 +437,7 @@ export class AddonModDataHelperProvider {
             );
         });
 
-        if (type == 'list') {
+        if (type == 'listtemplate') {
             html.push(
                 '<tr class="lastrow">',
                 '<td class="controls template-field cell c0 lastcol" style="" colspan="2">',
@@ -440,7 +445,7 @@ export class AddonModDataHelperProvider {
                 '</td>',
                 '</tr>'
             );
-        } else if (type == 'single') {
+        } else if (type == 'singletemplate') {
             html.push(
                 '<tr class="lastrow">',
                 '<td class="controls template-field cell c0 lastcol" style="" colspan="2">',
@@ -448,7 +453,7 @@ export class AddonModDataHelperProvider {
                 '</td>',
                 '</tr>'
             );
-        } else if (type == 'asearch') {
+        } else if (type == 'asearchtemplate') {
             html.push(
                 '<tr class="searchcontrols">',
                 '<td class="template-field cell c0" style="">Author first name: </td>',
@@ -467,7 +472,7 @@ export class AddonModDataHelperProvider {
             '</div>'
         );
 
-        if (type == 'list') {
+        if (type == 'listtemplate') {
             html.push('<hr />');
         }
 
@@ -581,6 +586,28 @@ export class AddonModDataHelperProvider {
                 return [];
             });
         });
+    }
+
+    /**
+     * Returns the template of a certain type.
+     *
+     * @param {any} data Database object.
+     * @param {string} type Type of template.
+     * @param {any[]} fields List of database fields.
+     * @return {string} Template HTML.
+     */
+    getTemplate(data: any, type: string, fields: any[]): string {
+        let template = data[type] || this.getDefaultTemplate(type, fields);
+
+        // Try to fix syntax errors so the template can be parsed by Angular.
+        template = this.domUtils.fixHtml(template);
+
+        // Add core-link directive to links.
+        template = template.replace(/<a ([^>]*href="[^>]*)>/ig, (match, attributes) => {
+            return '<a core-link capture="true" ' + attributes + '>';
+        });
+
+        return template;
     }
 
     /**

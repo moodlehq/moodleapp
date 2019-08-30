@@ -1,0 +1,35 @@
+ion-app.app-root page-addon-calendar-edit-event {
+    .addon-calendar-radio-container ion-item:not(.addon-calendar-radio-title) {
+        &.item-ios {
+            @include padding-horizontal($item-ios-padding-start * 2, null);
+
+            ion-input {
+                @include padding-horizontal($datetime-ios-padding-start - $text-input-ios-margin-start, null);
+            }
+        }
+        &.item-md {
+            @include padding-horizontal($item-md-padding-start * 2, null);
+
+            ion-input {
+                @include padding-horizontal($datetime-md-padding-start - $text-input-md-margin-start, null);
+            }
+        }
+        &.item-wp {
+            @include padding-horizontal($item-wp-padding-start * 2, null);
+
+            ion-input {
+                @include padding-horizontal($datetime-wp-padding-start - $text-input-wp-margin-start, null);
+            }
+        }
+    }
+
+    .addon-calendar-eventtype-container.item-select-disabled {
+        ion-label, ion-select {
+            opacity: 1;
+        }
+
+        .select-icon {
+            display: none;
+        }
+    }
+}

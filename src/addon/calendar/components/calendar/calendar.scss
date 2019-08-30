@@ -1,0 +1,196 @@
+
+$calendar-event-category-color: $purple !default; // Purple.
+$calendar-event-course-color: $red !default; // Red.
+$calendar-event-group-color: $yellow !default; // Yellow.
+$calendar-event-user-color: $blue !default; // Blue.
+$calendar-event-site-color: $green !default; // Green.
+$calendar-today-bgcolor: $core-color !default;
+$calendar-today-color: $white !default;
+$calendar-border-color: $gray !default;
+
+ion-app.app-root page-addon-calendar-list,
+ion-app.app-root page-addon-calendar-day,
+ion-app.app-root addon-calendar-upcoming-events {
+
+    .item.addon-calendar-event {
+        > .icon {
+            color: white;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            line-height: 36px;
+
+            &.fa {
+                font-size: 20px;
+                &::before {
+                    width: 1.9em;
+                }
+            }
+        }
+        > .core-module-icon {
+            margin: 9px 8px 9px 8px;
+        }
+
+        &.addon-calendar-eventtype-category > .icon {
+            background-color: $calendar-event-category-color;
+        }
+        &.addon-calendar-eventtype-course > .icon {
+            background-color: $calendar-event-course-color;
+        }
+        &.addon-calendar-eventtype-group > .icon {
+            background-color: $calendar-event-group-color;
+        }
+        &.addon-calendar-eventtype-user > .icon {
+            background-color: $calendar-event-user-color;
+        }
+        &.addon-calendar-eventtype-site > .icon {
+            background-color: $calendar-event-site-color;
+        }
+    }
+}
+
+ion-app.app-root addon-calendar-calendar {
+
+    .addon-calendar-navigation {
+        @include padding(5px, 10px, null, 10px);
+    }
+
+    .addon-calendar-months {
+        background-color: white;
+        padding: 0;
+    }
+
+    .addon-calendar-day {
+        border-bottom: 1px solid $calendar-border-color;
+        @include border-end(1px, solid, $calendar-border-color);
+        overflow: hidden;
+        min-height: 60px;
+
+        &:first-child {
+            @include padding(null, null, null, 10px);
+        }
+        &:last-child {
+            @include border-end(0, null, null);
+            @include padding(null, 8px, null, null);
+        }
+
+        &.addon-calendar-event-past-day > .addon-calendar-dot-types,
+        &.addon-calendar-event-past-day > .addon-calendar-day-events {
+            opacity: 0.5;
+        }
+
+        .addon-calendar-day-number {
+            margin: 0;
+
+            span {
+                line-height: 24px;
+                font-weight: 500;
+                display: inline-block;
+                margin: 3px;
+                width: max-content;
+                width: 24px;
+                height: 24px;
+                text-align: center;
+            }
+        }
+
+        @include media-breakpoint-up(md) {
+            .addon-calendar-day-number {
+                text-align: left;
+            }
+        }
+
+        &.today .addon-calendar-day-number span {
+            background-color: $calendar-today-bgcolor;
+            color: $calendar-today-color;
+
+            border-radius: 50%;
+        }
+        &.dayblank {
+            background-color: $gray-lighter;
+        }
+
+        .addon-calendar-event {
+            margin-top: 0.6em;
+            margin-bottom: 0.6em;
+            overflow: hidden;
+            white-space: nowrap;
+
+            &.addon-calendar-event-past {
+                opacity: 0.5;
+            }
+
+            .addon-calendar-event-name {
+                font-weight: 500;
+            }
+        }
+
+        .addon-calendar-day-more {
+            @include margin(0.6em, null, 0.6em, 4px);
+        }
+
+        .addon-calendar-dot-types {
+            margin: 0;
+        }
+    }
+
+    .addon-calendar-period {
+        flex-grow: 3;
+        h3 {
+            margin-top: 10px;
+            font-size: 1.6rem;
+        }
+    }
+
+    .addon-calendar-weekday {
+        border-bottom: 1px solid $list-md-border-color;
+    }
+
+    .addon-calendar-day-events {
+        @include text-align('start');
+
+        ion-icon {
+            @include margin-horizontal(null, 2px);
+            font-size: 1em;
+        }
+    }
+
+    .addon-calendar-event, .addon-calendar-day-number, .addon-calendar-day-more {
+        cursor: pointer;
+    }
+
+    .calendar_event_type {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        border: 1px solid white;
+        @include margin-horizontal(1px, 1px);
+
+
+
+        &.calendar_event_category {
+            background-color: $calendar-event-category-color;
+        }
+        &.calendar_event_course {
+            background-color: $calendar-event-course-color;
+        }
+        &.calendar_event_group {
+            background-color: $calendar-event-group-color;
+        }
+        &.calendar_event_user {
+            background-color: $calendar-event-user-color;
+        }
+        &.calendar_event_site {
+            background-color: $calendar-event-site-color;
+        }
+    }
+
+    .core-module-icon {
+        @include margin-horizontal(1px, 1px);
+        width: 16px;
+        height: 16px;
+        display: inline-block;
+        vertical-align: bottom;
+    }
+}

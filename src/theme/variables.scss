@@ -4,6 +4,7 @@
 // Font path is used to include ionicons,
 // roboto, and noto sans fonts
 $font-path: "../assets/fonts";
+$assets-path: "../assets";
 
 // The app direction is used to include
 // rtl styles in your app. For more info, please see:
@@ -28,12 +29,12 @@ $green:           #5e8100; // Accent.
 $red:             #cb3d4d;
 $orange:          #f98012; // Accent (never text).
 $yellow:          #fbad1a; // Accent (never text).
+$purple:          #8e24aa; // Accent (never text).
 $core-color:      $orange;
 
 // Branded apps customization
 // --------------------------------------------------
 @import "bmma";
-
 
 $blue-light:      mix($blue, white, 20%) !default; // Background.
 $blue-dark:       darken($blue, 10%) !default;
@@ -75,19 +76,31 @@ $content-padding: 10px;
 // colors so you can add, rename and remove colors as needed.
 // The "primary" color is the only required color in the map.
 
+$primary: $core-color !default;
+$secondary: $turquoise !default;
+$danger: $red !default;
+$light: $gray-lighter !default;
+$color-gray: $gray-dark !default;
+$dark: $black !default;
+$warning: $yellow !default;
+$success: $green !default;
+$info: $blue !default;
+$inverted-base: $white !default;
+$inverted-contrast: $primary !default;
+
 $colors: (
-  primary:    $core-color,
-  secondary:  $turquoise,
-  danger:     $red,
-  light:      $gray-lighter,
-  gray:       $gray-dark,
-  dark:       $black,
-  warning:    $yellow,
-  success:    $green,
-  info:       $blue,
+  primary:    $primary,
+  secondary:  $secondary,
+  danger:     $danger,
+  light:      $light,
+  gray:       $color-gray,
+  dark:       $dark,
+  warning:    $warning,
+  success:    $success,
+  info:       $info,
   inverted: (
-    base: $white,
-    contrast: $core-color
+    base: $inverted-base,
+    contrast: $inverted-contrast
   )
 );
 
@@ -118,7 +131,16 @@ $refresher-icon-color: $core-color !default;
 
 $core-online-color: #5cb85c;
 
-$core-select-placeholder-color: $core-color !default;
+$core-placeholder-color: $gray-dark !default;
+$core-select-placeholder-color: $core-placeholder-color !default;
+$alert-input-placeholder-color: $core-placeholder-color !default;
+$core-datetime-ios-placeholder-color: $core-placeholder-color !default;
+$searchbar-ios-input-placeholder-color: $core-placeholder-color !default;
+$searchbar-md-input-placeholder-color: $core-placeholder-color !default;
+$searchbar-wp-input-placeholder-color: $core-placeholder-color !default;
+$text-input-placeholder-color: $core-placeholder-color !default;
+
+$core-select-color: $core-color !default;
 $item-avatar-size: 54px !default;
 $input-select-opacity: .5 !default;
 $note-color: $gray-dark !default;
@@ -133,10 +155,7 @@ $core-star-color: $core-color !default;
 
 // Init screen.
 $core-color-init-screen:          #ffffff !default;
-$core-color-init-screen-alt:      #ffffff !default;
 $core-init-screen-spinner-color:  $core-color !default;
-$core-init-screen-logo-width:     60% !default;
-$core-init-screen-logo-max-width: 300px !default;
 
 $core-fixed-url:                  false !default;
 
@@ -154,6 +173,9 @@ $core-login-loading-color: false !default;
 $core-login-item-inner-background-color: $white !default;
 $core-login-item-background-color: $white !default;
 
+$core-action-sheet-color: $core-color !default;
+$core-action-sheet-cancel-color: $danger !default;
+
 // App iOS Variables
 // --------------------------------------------------
 // iOS only Sass variables can go here
@@ -166,12 +188,16 @@ $tabs-ios-tab-color-inactive: $tabs-tab-color-inactive;
 $button-ios-outline-background-color: $core-button-outline-background-color;
 $toolbar-ios-height: 44px + 8; // Avoid toolbar with different heights.
 $checkbox-ios-icon-border-radius: 0px !default;
-$select-ios-placeholder-color: $core-select-placeholder-color;
+$select-ios-placeholder-color: $core-select-color !default;
+$datetime-ios-placeholder-color: $core-datetime-ios-placeholder-color;
 $radio-ios-disabled-opacity: $input-select-opacity !default;
 $checkbox-ios-disabled-opacity: $input-select-opacity !default;
 $toggle-ios-disabled-opacity: $input-select-opacity !default;
 $note-ios-color: $note-color;
 $popover-ios-width: $popover-width;
+$action-sheet-ios-title-color: $core-action-sheet-color;
+$action-sheet-ios-button-text-color: $black !default;
+$action-sheet-ios-button-destructive-text-color: $danger;
 $item-ios-divider-background: $item-divider-background;
 $item-ios-divider-color: $item-divider-color;
 
@@ -187,14 +213,16 @@ $spinner-md-crescent-color: $core-spinner-color;
 $tabs-md-tab-color-inactive: $tabs-tab-color-inactive;
 $button-md-outline-background-color: $core-button-outline-background-color;
 $font-family-md-base: "Roboto", "Noto Sans", "Helvetica Neue", sans-serif !default;
-$select-md-placeholder-color: $core-select-placeholder-color;
+$select-md-placeholder-color: $core-select-color !default;
+$datetime-md-placeholder-color: $core-datetime-ios-placeholder-color !default;
 $label-md-text-color: $text-color !default;
 $radio-md-disabled-opacity: $input-select-opacity !default;
 $checkbox-md-disabled-opacity: $input-select-opacity !default;
 $toggle-md-disabled-opacity: $input-select-opacity !default;
 $note-md-color: $note-color;
 $popover-md-width: $popover-width;
-$action-sheet-md-title-color: $core-color;
+$action-sheet-md-title-color: $core-action-sheet-color;
+$action-sheet-md-button-text-color: $black !default;
 $item-md-divider-background: $item-divider-background;
 $item-md-divider-color: $item-divider-color;
 
@@ -209,15 +237,41 @@ $loading-wp-spinner-color: $core-loading-spinner-color;
 $spinner-wp-circles-color: $core-spinner-color;
 $tabs-wp-tab-color-inactive: $tabs-tab-color-inactive;
 $button-wp-outline-background-color: $core-button-outline-background-color;
-$select-wp-placeholder-color: $core-select-placeholder-color;
+$select-wp-placeholder-color: $core-select-color !default;
+$datetime-wp-placeholder-color: $core-datetime-ios-placeholder-color !default;
 $label-wp-text-color: $text-color !default;
 $radio-wp-disabled-opacity: $input-select-opacity !default;
 $checkbox-wp-disabled-opacity: $input-select-opacity !default;
 $toggle-wp-disabled-opacity: $input-select-opacity !default;
 $note-wp-color: $note-color;
 $popover-wp-width: $popover-width;
+$action-sheet-wp-title-color: $core-action-sheet-color;
+$action-sheet-wp-button-text-color: $black !default;
 $item-wp-divider-background: $item-divider-background;
 $item-wp-divider-color: $item-divider-color;
+
+// Font sizes
+// ---------------------------------------------------
+// Some font sizes are defined in absolute pixels by ionic,
+// override these with relative sizes so they are resizable.
+$alert-ios-message-font-size: 1.4rem;
+$alert-ios-title-font-size: 2.2rem;
+$alert-ios-sub-title-font-size: 1.6rem;
+$alert-md-message-font-size: 1.4rem;
+$alert-md-title-font-size: 2.2rem;
+$alert-md-sub-title-font-size: 1.6rem;
+$alert-button-font-size: 1.4rem;
+$tabs-ios-tab-font-size: 1.4rem;
+$chip-ios-font-size: 1.3rem;
+$chip-md-font-size: 1.3rem;
+
+// Icon sizes
+// ---------------------------------------------------
+// Some font icons have relative sizes set by ionic,
+// define absolute sizes so they aren't scaled with text.
+$tabs-md-tab-icon-size: 24px;
+$tabs-md-tab-min-height: 56px;
+$tabs-ios-tab-min-height: 56px;
 
 // App Theme
 // --------------------------------------------------

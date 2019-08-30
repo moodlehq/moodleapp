@@ -1,0 +1,56 @@
+$core-side-blocks-max-width: 30%;
+$core-side-blocks-min-width: 280px;
+
+.core-course-block-with-blocks > .scroll-content {
+    overflow-y: visible;
+}
+
+ion-app.app-root core-block-course-blocks {
+
+    &.core-no-blocks .core-course-blocks-content {
+        height: auto;
+    }
+
+    &.core-has-blocks {
+        @include media-breakpoint-up(md) {
+            display: flex;
+
+            flex-direction: row;
+            flex-wrap: nowrap;
+
+            .core-course-blocks-content {
+                box-shadow: none !important;
+                flex-grow: 1;
+                max-width: 100%;
+            }
+
+            div.core-course-blocks-side {
+                max-width: $core-side-blocks-max-width;
+                min-width: $core-side-blocks-min-width;
+                @include border-start(1px, solid, $list-md-border-color);
+            }
+
+            .core-course-blocks-content,
+            div.core-course-blocks-side {
+                position: relative;
+                height: 100%;
+
+                .core-loading-center,
+                core-loading.core-loading-loaded {
+                    position: initial;
+                }
+            }
+        }
+
+        @include media-breakpoint-down(sm) {
+            // Disable scroll on individual columns.
+            div.core-course-blocks-side {
+                height: auto;
+
+                &.core-hide-blocks {
+                    display: none;
+                }
+            }
+        }
+    }
+}

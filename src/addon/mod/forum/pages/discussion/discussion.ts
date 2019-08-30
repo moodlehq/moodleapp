@@ -115,7 +115,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         this.postId = navParams.get('postId');
 
         this.isOnline = this.appProvider.isOnline();
-        this.onlineObserver = network.onchange().subscribe((online) => {
+        this.onlineObserver = network.onchange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             zone.run(() => {
                 this.isOnline = this.appProvider.isOnline();
@@ -353,6 +353,9 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                     // The discussion object was not passed as parameter and there is no starting post.
                     return Promise.reject('Invalid forum discussion.');
                 }
+
+                this.defaultSubject = this.translate.instant('addon.mod_forum.re') + ' ' + this.discussion.subject;
+                this.replyData.subject = this.defaultSubject;
 
                 if (this.discussion.userfullname && this.discussion.parent == 0 && this.forum.type == 'single') {
                     // Hide author for first post and type single.

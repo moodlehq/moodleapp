@@ -74,7 +74,7 @@ ion-app.app-root.ios .core-tabs-bar .tab-slide {
     max-width: $tabs-ios-tab-max-width;
     min-height: $tabs-ios-tab-min-height;
 
-    font-size: $tabs-ios-tab-font-size + 4;
+    font-size: $tabs-ios-tab-font-size;
     font-weight: $tabs-ios-tab-font-weight;
     color: $tabs-ios-tab-text-color;
 }
@@ -102,7 +102,6 @@ ion-app.app-root core-tabs {
 
             .scroll-content {
                 overflow: hidden !important;
-                contain: initial;
                 position: relative;
             }
         }

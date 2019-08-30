@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, Injector, ViewChild, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, Injector, ViewChild, OnDestroy, DoCheck, KeyValueDiffers } from '@angular/core';
 import { CoreBlockDelegate } from '../../providers/delegate';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { Subscription } from 'rxjs';
@@ -25,7 +25,7 @@ import { CoreEventsProvider } from '@providers/events';
     selector: 'core-block',
     templateUrl: 'core-block.html'
 })
-export class CoreBlockComponent implements OnInit, OnDestroy {
+export class CoreBlockComponent implements OnInit, OnDestroy, DoCheck {
     @ViewChild(CoreDynamicComponent) dynamicComponent: CoreDynamicComponent;
 
     @Input() block: any; // The block to render.
@@ -33,7 +33,6 @@ export class CoreBlockComponent implements OnInit, OnDestroy {
     @Input() instanceId: number; // The instance ID associated with the context level.
     @Input() extraData: any; // Any extra data to be passed to the block.
 
-    title: string; // The title of the block.
     componentClass: any; // The class of the component to render.
     data: any = {}; // Data to pass to the component.
     class: string; // CSS class to apply to the block.
@@ -41,8 +40,12 @@ export class CoreBlockComponent implements OnInit, OnDestroy {
 
     blockSubscription: Subscription;
 
-    constructor(protected injector: Injector, protected blockDelegate: CoreBlockDelegate,
-            protected eventsProvider: CoreEventsProvider) { }
+    protected differ: any; // To detect changes in the data input.
+
+    constructor(protected injector: Injector, protected blockDelegate: CoreBlockDelegate, differs: KeyValueDiffers,
+            protected eventsProvider: CoreEventsProvider) {
+        this.differ = differs.find([]).create();
+    }
 
     /**
      * Component being initialized.
@@ -56,6 +59,19 @@ export class CoreBlockComponent implements OnInit, OnDestroy {
 
         // Get the data to render the block.
         this.initBlock();
+    }
+
+    /**
+     * Detect and act upon changes that Angular can’t or won’t detect on its own (objects and arrays).
+     */
+    ngDoCheck(): void {
+        if (this.data) {
+            // Check if there's any change in the extraData object.
+            const changes = this.differ.diff(this.extraData);
+            if (changes) {
+                this.data = Object.assign(this.data, this.extraData || {});
+            }
+        }
     }
 
     /**
@@ -80,15 +96,17 @@ export class CoreBlockComponent implements OnInit, OnDestroy {
                 return;
             }
 
-            this.title = data.title;
             this.class = data.class;
             this.componentClass = data.component;
 
             // Set up the data needed by the block component.
             this.data = Object.assign({
+                    title: data.title,
                     block: this.block,
                     contextLevel: this.contextLevel,
                     instanceId: this.instanceId,
+                    link: data.link || null,
+                    linkParams: data.linkParams || null,
                 }, this.extraData || {}, data.componentData || {});
         }).catch(() => {
             // Ignore errors.

@@ -1,6 +1,6 @@
 <ion-card-header text-wrap no-padding id="addon-mod_forum-post-{{post.id}}">
     <ion-item text-wrap>
-        <ion-avatar core-user-avatar [user]="post" item-start (click)="openUserProfile(post.userid)"></ion-avatar>
+        <ion-avatar core-user-avatar [user]="post" item-start></ion-avatar>
         <h2>
             <core-icon name="fa-map-pin" *ngIf="post.parent == 0 && post.pinned"></core-icon>
             <core-icon name="fa-star" class="addon-forum-star" *ngIf="post.parent == 0 && !post.pinned && post.starred"></core-icon>
@@ -30,6 +30,10 @@
         </ng-container>
     </div>
 </ion-card-content>
+<ion-item text-wrap *ngIf="tagsEnabled && post.tags && post.tags.length > 0">
+    <div item-start>{{ 'core.tag.tags' | translate }}:</div>
+    <core-tag-list [tags]="post.tags"></core-tag-list>
+</ion-item>
 <core-rating-rate *ngIf="forum && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id" [itemSetId]="discussionId" [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale" [userId]="post.userid" (onUpdate)="ratingUpdated()"></core-rating-rate>
 <core-rating-aggregate *ngIf="forum && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id" [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale"></core-rating-aggregate>
 <ion-item no-padding text-end *ngIf="post.id && post.canreply && !post.isprivatereply" class="addon-forum-reply-button">

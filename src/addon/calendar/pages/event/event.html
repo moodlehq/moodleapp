@@ -1,39 +1,69 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+        <ion-title>
+            <img *ngIf="event && event.moduleIcon" src="{{event.moduleIcon}}" alt="" role="presentation" class="core-module-icon">
+            <core-icon *ngIf="event && event.icon && !event.moduleIcon" [name]="event.icon" item-start></core-icon>
+            <core-format-text *ngIf="event" [text]="event.name"></core-format-text>
+        </ion-title>
+        <ion-buttons end>
+            <!-- The context menu will be added in here. -->
+        </ion-buttons>
     </ion-navbar>
 </ion-header>
+<core-navbar-buttons end>
+    <core-context-menu>
+        <core-context-menu-item [hidden]="isSplitViewOn || !eventLoaded || (!hasOffline && !event.deleted) || !isOnline"  [priority]="400" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item [hidden]="!canEdit || !event || !event.canedit || event.deleted" [priority]="300" [content]="'core.edit' | translate" (action)="openEdit()" [iconAction]="'create'"></core-context-menu-item>
+        <core-context-menu-item [hidden]="!canDelete || !event || !event.candelete || event.deleted" [priority]="200" [content]="'core.delete' | translate" (action)="deleteEvent()" [iconAction]="'trash'"></core-context-menu-item>
+        <core-context-menu-item [hidden]="!event || !event.deleted" [priority]="200" [content]="'core.restore' | translate" (action)="undoDelete()" [iconAction]="'undo'"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
 <ion-content>
-    <ion-refresher [enabled]="eventLoaded" (ionRefresh)="refreshEvent($event)">
+    <ion-refresher [enabled]="eventLoaded" (ionRefresh)="doRefresh($event)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="eventLoaded">
+        <!-- There is data to be synchronized -->
+        <ion-card class="core-warning-card" icon-start *ngIf="hasOffline || event.deleted">
+            <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendarevent' | translate} }}
+        </ion-card>
+
         <ion-card>
             <ion-card-content *ngIf="event">
-                <ion-item text-wrap>
+                <ion-item text-wrap *ngIf="isSplitViewOn">
+                    <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" item-start alt="" role="presentation" class="core-module-icon">
                     <core-icon *ngIf="event.icon && !event.moduleIcon" [name]="event.icon" item-start></core-icon>
-                    <h2><core-format-text [text]="event.name"></core-format-text></h2>
+                    <h2>{{ 'addon.calendar.eventname' | translate }}</h2>
+                    <p><core-format-text [text]="event.name"></core-format-text></p>
+                    <ion-note item-end *ngIf="event.deleted">
+                        <ion-icon name="trash"></ion-icon> {{ 'core.deletedoffline' | translate }}
+                    </ion-note>
                 </ion-item>
-                <ion-item text-wrap>
-                    <h2>{{ 'addon.calendar.eventstarttime' | translate}}</h2>
-                    <p>{{ event.timestart * 1000 | coreFormatDate }}</p>
+                <ion-item>
+                    <h2>{{ 'addon.calendar.when' | translate }}</h2>
+                    <p><core-format-text [text]="event.formattedtime"></core-format-text></p>
+                    <ion-note item-end *ngIf="!isSplitViewOn && event.deleted">
+                        <ion-icon name="trash"></ion-icon> {{ 'core.deletedoffline' | translate }}
+                    </ion-note>
                 </ion-item>
-                <ion-item text-wrap *ngIf="event.timeduration > 0">
-                    <h2>{{ 'addon.calendar.eventendtime' | translate}}</h2>
-                    <p>{{ (event.timestart + event.timeduration) * 1000 | coreFormatDate }}</p>
+                <ion-item>
+                    <h2>{{ 'addon.calendar.eventtype' | translate }}</h2>
+                    <p>{{ 'addon.calendar.type' + event.formattedType | translate }}</p>
                 </ion-item>
                 <a ion-item text-wrap *ngIf="courseName" [href]="courseUrl" core-link capture="true">
                     <h2>{{ 'core.course' | translate}}</h2>
                     <p><core-format-text [text]="courseName"></core-format-text></p>
                 </a>
+                <ion-item text-wrap *ngIf="groupName">
+                    <h2>{{ 'core.group' | translate}}</h2>
+                    <p>{{ groupName }}</p>
+                </ion-item>
                 <a ion-item text-wrap *ngIf="categoryPath">
                     <h2>{{ 'core.category' | translate}}</h2>
                     <p><core-format-text [text]="categoryPath"></core-format-text></p>
                 </a>
-                <ion-item text-wrap *ngIf="event.moduleIcon">
-                    <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" item-start alt="" role="presentation" class="core-module-icon"> {{event.moduleName}}
-                </ion-item>
                 <ion-item text-wrap *ngIf="event.description">
+                    <h2>{{ 'core.description' | translate}}</h2>
                     <p>
                         <core-format-text [text]="event.description"></core-format-text>
                     </p>

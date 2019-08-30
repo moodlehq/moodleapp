@@ -10,6 +10,7 @@
     "confirmdeleterecord": "Are you sure you want to delete this entry?",
     "descending": "Descending",
     "disapprove": "Undo approval",
+    "edittagsnotsupported": "Sorry, editing tags is not supported by the app.",
     "emptyaddform": "You did not fill out any fields!",
     "entrieslefttoadd": "You must add {{$a.entriesleft}} more entry/entries in order to complete this activity",
     "entrieslefttoaddtoview": "You must add {{$a.entrieslefttoview}} more entry/entries before you can view other participants' entries.",
@@ -34,8 +35,10 @@
     "recorddisapproved": "Entry unapproved",
     "resetsettings": "Reset filters",
     "search": "Search",
+    "searchbytagsnotsupported": "Sorry, searching by tags is not supported by the app.",
     "selectedrequired": "All selected required",
     "single": "View single",
+    "tagarea_data_records": "Data records",
     "timeadded": "Time added",
     "timemodified": "Time modified",
     "usedate": "Include in search."

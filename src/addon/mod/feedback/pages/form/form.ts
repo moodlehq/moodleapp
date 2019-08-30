@@ -82,10 +82,10 @@ export class AddonModFeedbackFormPage implements OnDestroy {
         this.currentSite = sitesProvider.getCurrentSite();
 
         // Refresh online status when changes.
-        this.onlineObserver = network.onchange().subscribe((online) => {
+        this.onlineObserver = network.onchange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             zone.run(() => {
-                this.offline = !online;
+                this.offline = !this.appProvider.isOnline();
             });
         });
     }

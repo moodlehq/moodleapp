@@ -1,34 +1,30 @@
+$core-splash-bgsize: 100vmax !default;
+$core-splash-spinner-color: $core-init-screen-spinner-color !default;
+$core-splash-bgcolor: $core-color-init-screen !default;
+
 ion-app.app-root page-core-login-init {
     .scroll-content {
-        background-color: $core-color-init-screen; /* Change this to add a bg image or change color */
-        background: -webkit-radial-gradient($core-color-init-screen-alt, $core-color-init-screen);
-        background: radial-gradient($core-color-init-screen-alt, $core-color-init-screen);
-        background-repeat: no-repeat;
-        background-position: center center;
-    }
-    .core-bglogo {
+        background: $core-splash-bgcolor; /* Change this to add a bg image or change color */
+        overflow: hidden;
         position: absolute;
         @include position(0, 0, 0, 0);
         height: 100%;
         width: 100%;
         display: table;
+    }
+    .core-bglogo {
+        display: table-cell;
+        text-align: center;
+        vertical-align: middle;
 
-        .core-logo {
-            display: table-cell;
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        img {
-            width: $core-init-screen-logo-width;
-            max-width: $core-init-screen-logo-max-width;
-            display: block;
-            margin: 0 auto;
-            margin-bottom: 30px;
-        }
+        background-image: url("#{$assets-path}/img/splash.png");
+        background-repeat: no-repeat;
+        background-size: 100%;
+        background-size: $core-splash-bgsize;
+        background-position: center;
 
         .spinner circle, .spinner line {
-            stroke: $core-init-screen-spinner-color;
+            stroke: $core-splash-spinner-color;
         }
     }
 }

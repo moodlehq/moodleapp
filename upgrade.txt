@@ -1,6 +1,10 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 3.7.1 ===
+
+- CoreGroupsProvider.getActivityAllowedGroups and CoreGroupsProvider.getActivityAllowedGroupsIfEnabled now return the full response of core_group_get_activity_allowed_groups instead of just the groups.
+
 === 3.7.0 ===
 
 - The pushnotifications addon has been moved to core. All imports of that addon need to be fixed to use the right path and name.

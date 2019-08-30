@@ -67,6 +67,11 @@ export class CoreQuestionHelperProvider {
      * @param {string} [selector] Selector to search the buttons. By default, '.im-controls input[type="submit"]'.
      */
     extractQbehaviourButtons(question: any, selector?: string): void {
+        if (this.questionDelegate.getPreventSubmitMessage(question)) {
+            // The question is not fully supported, don't extract the buttons.
+            return;
+        }
+
         selector = selector || '.im-controls input[type="submit"]';
 
         const element = this.domUtils.convertToElement(question.html);
@@ -76,8 +81,6 @@ export class CoreQuestionHelperProvider {
         buttons.forEach((button) => {
             this.addBehaviourButton(question, button);
         });
-
-        question.html = element.innerHTML;
     }
 
     /**

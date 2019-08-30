@@ -101,11 +101,16 @@ export class CoreLoginReconnectPage {
 
     /**
      * Cancel reconnect.
+     *
+     * @param {Event} [e] Event.
      */
-    cancel(): void {
-        this.sitesProvider.logout().finally(() => {
-            this.navCtrl.setRoot('CoreLoginSitesPage');
-        });
+    cancel(e?: Event): void {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        this.sitesProvider.logout();
     }
 
     /**
@@ -149,16 +154,32 @@ export class CoreLoginReconnectPage {
                     // Go to the site initial page.
                     return this.loginHelper.goToSiteInitialPage(this.navCtrl, this.pageName, this.pageParams);
                 }).catch((error) => {
+                    if (error.loggedout) {
+                        this.loginHelper.treatUserTokenError(siteUrl, error, username, password);
+                    } else {
+                        this.domUtils.showErrorModalDefault(error, 'core.login.errorupdatesite', true);
+                    }
+
                     // Error, go back to login page.
-                    this.domUtils.showErrorModalDefault(error, 'core.login.errorupdatesite', true);
                     this.cancel();
                 });
             });
         }).catch((error) => {
             this.loginHelper.treatUserTokenError(siteUrl, error, username, password);
+
+            if (error.loggedout) {
+                this.cancel();
+            }
         }).finally(() => {
             modal.dismiss();
         });
+    }
+
+    /**
+     * Forgotten password button clicked.
+     */
+    forgottenPassword(): void {
+        this.loginHelper.forgottenPasswordClicked(this.navCtrl, this.siteUrl, this.credForm.value.username, this.siteConfig);
     }
 
     /**

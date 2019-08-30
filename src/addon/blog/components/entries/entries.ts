@@ -15,10 +15,12 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { Content } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonBlogProvider } from '../../providers/blog';
 import { CoreCommentsProvider } from '@core/comments/providers/comments';
+import { CoreTagProvider } from '@core/tag/providers/tag';
 
 /**
  * Component that displays the blog entries.
@@ -37,6 +39,9 @@ export class AddonBlogEntriesComponent implements OnInit {
 
     protected filter = {};
     protected pageLoaded = 0;
+    protected userPageLoaded = 0;
+    protected canLoadMoreEntries = false;
+    protected canLoadMoreUserEntries = true;
 
     @ViewChild(Content) content: Content;
 
@@ -45,14 +50,15 @@ export class AddonBlogEntriesComponent implements OnInit {
     loadMoreError = false;
     entries = [];
     currentUserId: number;
-    showMyIssuesToggle = false;
+    showMyEntriesToggle = false;
     onlyMyEntries = false;
     component = AddonBlogProvider.COMPONENT;
     commentsEnabled: boolean;
+    tagsEnabled: boolean;
 
     constructor(protected blogProvider: AddonBlogProvider, protected domUtils: CoreDomUtilsProvider,
-            protected userProvider: CoreUserProvider, sitesProvider: CoreSitesProvider,
-            protected commentsProvider: CoreCommentsProvider) {
+            protected userProvider: CoreUserProvider, sitesProvider: CoreSitesProvider, protected utils: CoreUtilsProvider,
+            protected commentsProvider: CoreCommentsProvider, private tagProvider: CoreTagProvider) {
         this.currentUserId = sitesProvider.getCurrentSiteUserId();
     }
 
@@ -63,6 +69,7 @@ export class AddonBlogEntriesComponent implements OnInit {
         if (this.userId) {
             this.filter['userid'] = this.userId;
         }
+        this.showMyEntriesToggle = !this.userId;
 
         if (this.courseId) {
             this.filter['courseid'] = this.courseId;
@@ -85,6 +92,7 @@ export class AddonBlogEntriesComponent implements OnInit {
         }
 
         this.commentsEnabled = !this.commentsProvider.areCommentsDisabledInSite();
+        this.tagsEnabled = this.tagProvider.areTagsAvailableInSite();
 
         this.fetchEntries().then(() => {
             this.blogProvider.logView(this.filter).catch(() => {
@@ -104,9 +112,12 @@ export class AddonBlogEntriesComponent implements OnInit {
 
         if (refresh) {
             this.pageLoaded = 0;
+            this.userPageLoaded = 0;
         }
 
-        return this.blogProvider.getEntries(this.filter, this.pageLoaded).then((result) => {
+        const loadPage = this.onlyMyEntries ? this.userPageLoaded : this.pageLoaded;
+
+        return this.blogProvider.getEntries(this.filter, loadPage).then((result) => {
             const promises = result.entries.map((entry) => {
                 switch (entry.publishstate) {
                     case 'draft':
@@ -131,16 +142,25 @@ export class AddonBlogEntriesComponent implements OnInit {
             });
 
             if (refresh) {
-                this.showMyIssuesToggle = false;
                 this.entries = result.entries;
             } else {
-                this.entries = this.entries.concat(result.entries);
+                this.entries = this.utils.uniqueArray(this.entries.concat(result.entries), 'id').sort((a, b) => {
+                    return b.created - a.created;
+                });
             }
 
-            this.canLoadMore = result.totalentries > this.entries.length;
-            this.pageLoaded++;
-
-            this.showMyIssuesToggle = !this.userId;
+            if (this.onlyMyEntries) {
+                const count = this.entries.filter((entry) => {
+                    return entry.userid == this.currentUserId;
+                }).length;
+                this.canLoadMoreUserEntries = result.totalentries > count;
+                this.canLoadMore = this.canLoadMoreUserEntries;
+                this.userPageLoaded++;
+            } else {
+                this.canLoadMoreEntries = result.totalentries > this.entries.length;
+                this.canLoadMore = this.canLoadMoreEntries;
+                this.pageLoaded++;
+            }
 
             return Promise.all(promises);
         }).catch((message) => {
@@ -149,6 +169,30 @@ export class AddonBlogEntriesComponent implements OnInit {
         }).finally(() => {
             this.loaded = true;
         });
+    }
+
+    /**
+     * Toggle between showing only my entries or not.
+     *
+     * @param {boolean} enabled If true, filter my entries. False otherwise.
+     */
+    onlyMyEntriesToggleChanged(enabled: boolean): void {
+        if (enabled) {
+            const count = this.entries.filter((entry) => {
+                return entry.userid == this.currentUserId;
+            }).length;
+            this.userPageLoaded = Math.floor(count / AddonBlogProvider.ENTRIES_PER_PAGE);
+            this.filter['userid'] = this.currentUserId;
+
+            if (count == 0 && this.canLoadMoreUserEntries) {
+                // First time but no entry loaded. Try to load some.
+                this.loadMore();
+            }
+        } else {
+            delete this.filter['userid'];
+        }
+
+        this.canLoadMore = enabled ? this.canLoadMoreUserEntries : this.canLoadMoreEntries;
     }
 
     /**
@@ -169,7 +213,23 @@ export class AddonBlogEntriesComponent implements OnInit {
      * @param {any}     refresher  Refresher instance.
      */
     refresh(refresher?: any): void {
-        this.blogProvider.invalidateEntries(this.filter).finally(() => {
+        const promises = this.entries.map((entry) => {
+            return this.commentsProvider.invalidateCommentsData('user', entry.userid, this.component, entry.id, 'format_blog');
+        });
+
+        promises.push(this.blogProvider.invalidateEntries(this.filter));
+
+        if (this.showMyEntriesToggle) {
+            this.filter['userid'] = this.currentUserId;
+            promises.push(this.blogProvider.invalidateEntries(this.filter));
+
+            if (!this.onlyMyEntries) {
+                delete this.filter['userid'];
+            }
+
+        }
+
+        this.utils.allPromises(promises).finally(() => {
             this.fetchEntries(true).finally(() => {
                 if (refresher) {
                     refresher.complete();

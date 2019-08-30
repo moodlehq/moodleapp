@@ -621,17 +621,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Open a user profile.
-     *
-     * @param {number} userId User to open.
-     */
-    openUserProfile(userId: number): void {
-        // Open a user profile. If this component is inside a split view, use the master nav to open it.
-        const navCtrl = this.splitviewCtrl ? this.splitviewCtrl.getMasterNav() : this.navCtrl;
-        navCtrl.push('CoreUserProfilePage', { userId: userId, courseId: this.courseId });
-    }
-
-    /**
      * Set the submission status name and class.
      *
      * @param {any} status Submission status.
@@ -909,8 +898,8 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
         if (this.assign.teamsubmission) {
             if (response.lastattempt.submissiongroup) {
                 // Get the name of the group.
-                promises.push(this.groupsProvider.getActivityAllowedGroups(this.assign.cmid).then((groups) => {
-                    groups.forEach((group) => {
+                promises.push(this.groupsProvider.getActivityAllowedGroups(this.assign.cmid).then((result) => {
+                    result.groups.forEach((group) => {
                         if (group.id == response.lastattempt.submissiongroup) {
                             this.lastAttempt.submissiongroupname = group.name;
                         }

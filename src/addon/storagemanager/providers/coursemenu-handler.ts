@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { CoreCourseOptionsMenuHandler, CoreCourseOptionsMenuHandlerData } from '@core/course/providers/options-delegate';
 
 /**
@@ -49,9 +49,11 @@ export class AddonStorageManagerCourseMenuHandler implements CoreCourseOptionsMe
     /**
      * Returns the data needed to render the handler.
      *
+     * @param {Injector} injector Injector.
+     * @param {any} course The course.
      * @return {CoreCourseOptionsMenuHandlerData} Data needed to render the handler.
      */
-    getMenuDisplayData(): CoreCourseOptionsMenuHandlerData {
+    getMenuDisplayData(injector: Injector, course: any): CoreCourseOptionsMenuHandlerData {
         return {
             icon: 'cube',
             title: 'addon.storagemanager.managestorage',

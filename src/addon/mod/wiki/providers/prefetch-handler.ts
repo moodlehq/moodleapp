@@ -192,12 +192,7 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
             });
 
             // Fetch group data.
-            promises.push(this.groupsProvider.getActivityGroupMode(module.id, siteId).then((groupMode) => {
-                if (groupMode === CoreGroupsProvider.SEPARATEGROUPS || groupMode === CoreGroupsProvider.VISIBLEGROUPS) {
-                    // Get the groups available for the user.
-                    return this.groupsProvider.getActivityAllowedGroups(module.id, userId, siteId);
-                }
-            }));
+            promises.push(this.groupsProvider.getActivityGroupInfo(module.id, false, userId, siteId));
 
             // Fetch info to provide wiki links.
             promises.push(this.wikiProvider.getWiki(courseId, module.id, false, siteId).then((wiki) => {

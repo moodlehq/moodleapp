@@ -64,7 +64,7 @@ export class CoreQuestionComponent implements OnInit {
     ngOnInit(): void {
         this.offlineEnabled = this.utils.isTrueOrOne(this.offlineEnabled);
 
-        if (!this.question) {
+        if (!this.question || (this.question.type != 'random' && !this.questionDelegate.isQuestionSupported(this.question.type))) {
             this.loaded = true;
 
             return;
@@ -145,6 +145,8 @@ export class CoreQuestionComponent implements OnInit {
                     this.questionHelper.extractQuestionFeedback(this.question);
                     this.questionHelper.extractQuestionComment(this.question);
                 });
+            } else {
+                this.loaded = true;
             }
         }).catch(() => {
             // Ignore errors.

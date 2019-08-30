@@ -21,6 +21,10 @@
     <div padding>
         <core-navigation-bar [previous]="previousChapter > 0 && previousChapter" [next]="nextChapter > 0 && nextChapter" (action)="changeChapter($event)"></core-navigation-bar>
         <core-format-text [component]="component" [componentId]="componentId" [text]="chapterContent"></core-format-text>
+        <div margin-top *ngIf="tagsEnabled && contentsMap && contentsMap[currentChapter] && contentsMap[currentChapter].tags && contentsMap[currentChapter].tags.length > 0">
+            <b>{{ 'core.tag.tags' | translate }}:</b>
+            <core-tag-list [tags]="contentsMap[currentChapter].tags"></core-tag-list>
+        </div>
         <core-navigation-bar [previous]="previousChapter > 0 && previousChapter" [next]="nextChapter > 0 && nextChapter" (action)="changeChapter($event)"></core-navigation-bar>
     </div>
 
