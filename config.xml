@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.smart.study" version="3.7.1" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Moodle</name>
+    <name>com.smart.study</name>
     <description>Smart Study app</description>
     <author email="smartstudy.platform@gmail.com" href="https://smartstudyplatform.com/learn">SmartStudy team</author>
     <content src="index.html" />
