@@ -145,31 +145,20 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     protected checkPageCreatedOrDiscarded(data: any): void {
         if (!this.currentPage && data) {
             // This is an offline page. Check if the page was created.
-            let pageId;
-
-            for (let i = 0, len = data.created.length; i < len; i++) {
-                const page = data.created[i];
-                if (page.title == this.pageTitle) {
-                    pageId = page.pageId;
-                    break;
-                }
-            }
-
-            if (pageId) {
+            const page = data.created.find((page) => page.title == this.pageTitle);
+            if (page) {
                 // Page was created, set the ID so it's retrieved from server.
-                this.currentPage = pageId;
+                this.currentPage = page.pageId;
                 this.pageIsOffline = false;
             } else {
                 // Page not found in created list, check if it was discarded.
-                for (let i = 0, len = data.discarded.length; i < len; i++) {
-                    const page = data.discarded[i];
-                    if (page.title == this.pageTitle) {
-                        // Page discarded, show warning.
-                        this.pageWarning = page.warning;
-                        this.pageContent = '';
-                        this.pageIsOffline = false;
-                        this.hasOffline = false;
-                    }
+                const page = data.discarded.find((page) => page.title == this.pageTitle);
+                if (page) {
+                    // Page discarded, show warning.
+                    this.pageWarning = page.warning;
+                    this.pageContent = '';
+                    this.pageIsOffline = false;
+                    this.hasOffline = false;
                 }
             }
         }
@@ -328,12 +317,9 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
             // If no page specified, search first page.
             if (!this.currentPage && !this.pageTitle) {
-                for (const i in subwikiPages) {
-                    const page = subwikiPages[i];
-                    if (page.firstpage) {
-                        this.currentPage = page.id;
-                        break;
-                    }
+                const firstPage = subwikiPages.find((page) => page.firstpage );
+                if (firstPage) {
+                    this.currentPage = firstPage.id;
                 }
             }
 
@@ -527,7 +513,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      *
      * @param page Page to view.
      */
-    goToPage(page: any): void {
+    protected goToPage(page: any): void {
         if (!page.id) {
             // It's an offline page. Check if we are already in the same offline page.
             if (this.currentPage || !this.pageTitle || page.title != this.pageTitle) {
@@ -536,8 +522,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                     courseId: this.courseId,
                     pageTitle: page.title,
                     wikiId: this.wiki.id,
-                    subwikiId: page.subwikiid,
-                    action: 'page'
+                    subwikiId: page.subwikiid
                 });
 
                 return;
@@ -551,8 +536,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                     pageTitle: page.title,
                     pageId: page.id,
                     wikiId: page.wikiid,
-                    subwikiId: page.subwikiid,
-                    action: 'page'
+                    subwikiId: page.subwikiid
                 });
             });
 
@@ -563,9 +547,9 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Show the map.
      *
-     * @param {MouseEvent} event Event.
+     * @param event Event.
      */
-    openMap(event: MouseEvent): void {
+    openMap(event?: MouseEvent): void {
         const modal = this.modalCtrl.create('AddonModWikiMapPage', {
             pages: this.subwikiPages,
             selected: this.currentPageObj && this.currentPageObj.id,
@@ -576,7 +560,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             enterAnimation: 'core-modal-lateral-transition',
             leaveAnimation: 'core-modal-lateral-transition' });
 
-        // If the modal sends back a SCO, load it.
+        // If the modal sends back a page, load it.
         modal.onDidDismiss((page) => {
             if (page) {
                 if (page.type == 'home') {
@@ -984,9 +968,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
         if (multiLevelList) {
             // As we loop over each subwiki, add it to the current group
-            for (const i in subwikiList) {
-                const subwiki = subwikiList[i];
-
+            subwikiList.forEach((subwiki) => {
                 // Should we create a new grouping?
                 if (subwiki.groupid !== groupValue) {
                     grouping = {label: subwiki.groupLabel, subwikis: []};
@@ -997,16 +979,14 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
                 // Add the subwiki to the currently active grouping.
                 grouping.subwikis.push(subwiki);
-            }
+            });
         } else if (showMyGroupsLabel) {
             const noGrouping = {label: '', subwikis: []},
                 myGroupsGrouping = {label: this.translate.instant('core.mygroups'), subwikis: []},
                 otherGroupsGrouping = {label: this.translate.instant('core.othergroups'), subwikis: []};
 
             // As we loop over each subwiki, add it to the current group
-            for (const i in subwikiList) {
-                const subwiki = subwikiList[i];
-
+            subwikiList.forEach((subwiki) => {
                 // Add the subwiki to the currently active grouping.
                 if (typeof subwiki.canedit == 'undefined') {
                     noGrouping.subwikis.push(subwiki);
@@ -1015,7 +995,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                 } else {
                     otherGroupsGrouping.subwikis.push(subwiki);
                 }
-            }
+            });
 
             // Add each grouping to the subwikis
             if (noGrouping.subwikis.length > 0) {

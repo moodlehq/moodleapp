@@ -38,7 +38,7 @@ export class AddonModWikiMapPage {
     /**
      * Function called when a page is clicked.
      *
-     * @param {any} page Clicked page.
+     * @param page Clicked page.
      */
     goToPage(page: any): void {
         this.viewCtrl.dismiss({type: 'page', goto: page});
@@ -54,7 +54,7 @@ export class AddonModWikiMapPage {
     /**
      * Construct the map of pages.
      *
-     * @param {any[]} pages List of pages.
+     * @param pages List of pages.
      */
     protected constructMap(pages: any[]): void {
         let letter,

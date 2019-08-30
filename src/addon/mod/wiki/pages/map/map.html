@@ -21,7 +21,10 @@
                 </ion-item-divider>
                 <a ion-item text-wrap *ngFor="let page of letter.pages" (click)="goToPage(page)" [class.core-nav-item-selected]="selected == page.id">
                     <ion-icon name="home" item-start *ngIf="page.firstpage"></ion-icon> {{ page.title }}
-                    <ion-note *ngIf="!page.id" item-end color="danger">{{ 'core.offline' | translate }}</ion-note>
+                    <ion-note *ngIf="!page.id" item-end>
+                        <ion-icon name="time"></ion-icon>
+                        <span text-wrap>{{ 'core.notsent' | translate }}</span>
+                    </ion-note>
                 </a>
             </ng-container>
         </ion-list>

@@ -24,7 +24,7 @@
 
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
-    <div padding class="addon-mod_wiki-page-content">
+    <div padding *ngIf="(isMainPage && description) || pageIsOffline || hasOffline || pageWarning">
         <core-course-module-description *ngIf="isMainPage" [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
 
         <!-- Wiki has something offline. -->
@@ -39,7 +39,8 @@
             <ion-icon name="warning"></ion-icon>
             {{ pageWarning }}
         </div>
-
+    </div>
+    <div padding class="addon-mod_wiki-page-content">
         <article [ngClass]="{'addon-mod_wiki-noedit': !canEdit}">
             <core-format-text *ngIf="pageContent" [component]="component" [componentId]="componentId" [text]="pageContent"></core-format-text>
             <core-empty-box *ngIf="!pageContent" icon="document" [message]="'addon.mod_wiki.nocontent' | translate" [inline]="true"></core-empty-box>
