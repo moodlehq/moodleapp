@@ -1,4 +1,6 @@
 {
+    "addon.block_newsitems.pluginname": "Latest news",
+    "addon.block_recentactivity.pluginname": "Recent activity",
     "addon.block_sitemainmenu.pluginname": "Main menu",
     "addon.mod_assign.markingworkflowstate": "Grading workflow state",
     "addon.mod_assign.markingworkflowstateinmarking": "In grading",
