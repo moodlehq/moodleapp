@@ -54,20 +54,10 @@
         "zh-cn": "简体中文",
         "zh-tw": "正體中文"
     },
-    "wsservice": "smartstudy_mobile_app",
-    "wsextservice": "local_mobile",
-    "demo_sites": {
-        "student": {
-            "url": "https://smartstudyplatform.com/learn",
-            "username": "",
-            "password": ""
-        },
-        "teacher": {
-            "url": "https://smartstudyplatform.com/learn",
-            "username": "",
-            "password": ""
-        }
-    },
+    "wsservice" : "moodle_mobile_app",
+    "wsextservice" : "local_mobile",
+    "demo_sites": {},
+    "siteurl": "https://smartstudyplatform.com/learn/",
     "font_sizes": [
         62.5,
         75.89,
