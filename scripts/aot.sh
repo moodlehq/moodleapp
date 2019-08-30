@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# List the installed libraries so we can check everything is fine.
+npm list
+
 # Compile AOT.
 if [ $TRAVIS_BRANCH == 'integration' ] || [ $TRAVIS_BRANCH == 'master' ] || [ $TRAVIS_BRANCH == 'desktop' ] || [ -z $TRAVIS_BRANCH ] ; then
     cd scripts
