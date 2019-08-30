@@ -124,8 +124,6 @@
         <variable name="URL_SCHEME" value="moodlemobile" />
     </plugin>
     <plugin name="cordova-plugin-device" spec="2.0.3" />
-    <plugin name="cordova-plugin-file-opener2" spec="2.0.19" />
-    <plugin name="cordova-plugin-file-transfer" spec="1.7.1" />
     <plugin name="cordova-plugin-globalization" spec="1.11.0" />
     <plugin name="cordova-plugin-inappbrowser" spec="3.1.0" />
     <plugin name="cordova-plugin-ionic-keyboard" spec="2.1.3" />
