@@ -16,7 +16,7 @@ import { Component, Optional } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { AddonCompetencyProvider } from '../../providers/competency';
+import { AddonCompetencyProvider, AddonCompetencySummary } from '../../providers/competency';
 
 /**
  * Page that displays a learning plan.
@@ -29,7 +29,7 @@ import { AddonCompetencyProvider } from '../../providers/competency';
 export class AddonCompetencyCompetencySummaryPage {
     competencyLoaded = false;
     competencyId: number;
-    competency: any;
+    competency: AddonCompetencySummary;
 
     constructor(private navCtrl: NavController, navParams: NavParams, private domUtils: CoreDomUtilsProvider,
             @Optional() private svComponent: CoreSplitViewComponent, private competencyProvider: AddonCompetencyProvider) {
@@ -41,8 +41,7 @@ export class AddonCompetencyCompetencySummaryPage {
      */
     ionViewDidLoad(): void {
         this.fetchCompetency().then(() => {
-            const name = this.competency.competency && this.competency.competency.competency &&
-                    this.competency.competency.competency.shortname;
+            const name = this.competency.competency && this.competency.competency.shortname;
 
             this.competencyProvider.logCompetencyView(this.competencyId, name).catch(() => {
                 // Ignore errors.

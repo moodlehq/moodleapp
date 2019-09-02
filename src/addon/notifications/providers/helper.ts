@@ -14,7 +14,9 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
-import { AddonNotificationsProvider } from './notifications';
+import {
+    AddonNotificationsProvider, AddonNotificationsAnyNotification, AddonNotificationsGetMessagesMessage
+} from './notifications';
 
 /**
  * Service that provides some helper functions for notifications.
@@ -37,7 +39,7 @@ export class AddonNotificationsHelperProvider {
      * @return Promise resolved with notifications and if can load more.
      */
     getNotifications(notifications: any[], limit?: number, toDisplay: boolean = true, forceCache?: boolean, ignoreCache?: boolean,
-            siteId?: string): Promise<{notifications: any[], canLoadMore: boolean}> {
+            siteId?: string): Promise<{notifications: AddonNotificationsAnyNotification[], canLoadMore: boolean}> {
 
         notifications = notifications || [];
         limit = limit || AddonNotificationsProvider.LIST_LIMIT;
@@ -80,7 +82,7 @@ export class AddonNotificationsHelperProvider {
                         promise = Promise.resolve(unread);
                     }
 
-                    return promise.then((notifications) => {
+                    return promise.then((notifications: AddonNotificationsGetMessagesMessage[]) => {
                         return {
                             notifications: notifications,
                             canLoadMore: notifications.length >= limit

@@ -20,7 +20,7 @@ import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
-import { AddonCalendarProvider } from '../../providers/calendar';
+import { AddonCalendarProvider, AddonCalendarCalendarEvent } from '../../providers/calendar';
 import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
 import { AddonCalendarHelperProvider } from '../../providers/helper';
 import { AddonCalendarSyncProvider } from '../../providers/calendar-sync';
@@ -45,7 +45,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     protected day: number;
     protected categories = {};
     protected events = []; // Events (both online and offline).
-    protected onlineEvents = [];
+    protected onlineEvents: AddonCalendarCalendarEvent[] = [];
     protected offlineEvents = {}; // Offline events.
     protected offlineEditedEventsIds = []; // IDs of events edited in offline.
     protected deletedEvents = []; // Events deleted in offline.
@@ -287,7 +287,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         return this.calendarProvider.getDayEvents(this.year, this.month, this.day).catch((error) => {
             if (!this.appProvider.isOnline()) {
                 // Allow navigating to non-cached days in offline (behave as if using emergency cache).
-                return Promise.resolve({ events: [] });
+                return Promise.resolve({ events: <AddonCalendarCalendarEvent[]> [] });
             } else {
                 return Promise.reject(error);
             }

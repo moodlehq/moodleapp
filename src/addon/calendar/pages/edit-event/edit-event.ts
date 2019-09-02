@@ -27,7 +27,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreRichTextEditorComponent } from '@components/rich-text-editor/rich-text-editor.ts';
-import { AddonCalendarProvider } from '../../providers/calendar';
+import { AddonCalendarProvider, AddonCalendarGetAccessInfoResult, AddonCalendarEvent } from '../../providers/calendar';
 import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
 import { AddonCalendarHelperProvider } from '../../providers/helper';
 import { AddonCalendarSyncProvider } from '../../providers/calendar-sync';
@@ -58,7 +58,8 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     courseGroupSet = false;
     advanced = false;
     errors: any;
-    event: any; // The event object (when editing an event).
+    event: AddonCalendarEvent; // The event object (when editing an event).
+    otherEventsCount: number;
 
     // Form variables.
     eventForm: FormGroup;
@@ -70,7 +71,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     protected courseId: number;
     protected originalData: any;
     protected currentSite: CoreSite;
-    protected types: any; // Object with the supported types.
+    protected types: {[name: string]: boolean}; // Object with the supported types.
     protected showAll: boolean;
     protected isDestroyed = false;
     protected error = false;
@@ -152,7 +153,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     protected fetchData(refresh?: boolean): Promise<any> {
-        let accessInfo;
+        let accessInfo: AddonCalendarGetAccessInfoResult;
 
         this.error = false;
 
@@ -197,7 +198,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
                         promises.push(this.calendarProvider.getEventById(this.eventId).then((event) => {
                             this.event = event;
                             if (event && event.repeatid) {
-                                event.othereventscount = event.eventcount ? event.eventcount - 1 : '';
+                                this.otherEventsCount = event.eventcount ? event.eventcount - 1 : 0;
                             }
 
                             return event;
@@ -489,7 +490,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
 
         // Send the data.
         const modal = this.domUtils.showModalLoading('core.sending', true);
-        let event;
+        let event: AddonCalendarEvent;
 
         this.calendarProvider.submitEvent(this.eventId, data).then((result) => {
             event = result.event;
@@ -497,7 +498,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
             if (result.sent) {
                 // Event created or edited, invalidate right days & months.
                 const numberOfRepetitions = formData.repeat ? formData.repeats :
-                    (data.repeateditall && this.event.othereventscount ? this.event.othereventscount + 1 : 1);
+                    (data.repeateditall && this.otherEventsCount ? this.otherEventsCount + 1 : 1);
 
                 return this.calendarHelper.refreshAfterChangeEvent(result.event, numberOfRepetitions).catch(() => {
                     // Ignore errors.

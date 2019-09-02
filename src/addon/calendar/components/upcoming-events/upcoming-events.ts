@@ -17,7 +17,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { AddonCalendarProvider } from '../../providers/calendar';
+import { AddonCalendarProvider, AddonCalendarCalendarEvent } from '../../providers/calendar';
 import { AddonCalendarHelperProvider } from '../../providers/helper';
 import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
@@ -43,8 +43,8 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     protected categoriesRetrieved = false;
     protected categories = {};
     protected currentSiteId: string;
-    protected events = []; // Events (both online and offline).
-    protected onlineEvents = [];
+    protected events: AddonCalendarCalendarEvent[] = []; // Events (both online and offline).
+    protected onlineEvents: AddonCalendarCalendarEvent[] = [];
     protected offlineEvents = []; // Offline events.
     protected deletedEvents = []; // Events deleted in offline.
     protected lookAhead: number;

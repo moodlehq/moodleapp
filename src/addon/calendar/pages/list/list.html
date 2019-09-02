@@ -34,7 +34,7 @@
                     </ion-item-divider>
                     <a ion-item text-wrap [title]="event.name" (click)="gotoEvent(event.id)" [class.core-split-item-selected]="event.id == eventId" class="addon-calendar-event" [ngClass]="['addon-calendar-eventtype-'+event.eventtype]">
                         <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" item-start class="core-module-icon">
-                        <core-icon *ngIf="event.icon && !event.moduleIcon" [name]="event.icon" item-start></core-icon>
+                        <core-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" item-start></core-icon>
                         <h2><core-format-text [text]="event.name"></core-format-text></h2>
                         <p>
                             {{ event.timestart * 1000 | coreFormatDate: "strftimetime" }}

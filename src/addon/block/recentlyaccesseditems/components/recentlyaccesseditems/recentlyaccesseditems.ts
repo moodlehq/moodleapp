@@ -16,7 +16,9 @@ import { Component, OnInit, Injector, Optional } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreBlockBaseComponent } from '@core/block/classes/base-block-component';
-import { AddonBlockRecentlyAccessedItemsProvider } from '../../providers/recentlyaccesseditems';
+import {
+    AddonBlockRecentlyAccessedItemsProvider, AddonBlockRecentlyAccessedItemsItem
+} from '../../providers/recentlyaccesseditems';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 
@@ -28,7 +30,7 @@ import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/hel
     templateUrl: 'addon-block-recentlyaccesseditems.html'
 })
 export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseComponent implements OnInit {
-    items = [];
+    items: AddonBlockRecentlyAccessedItemsItem[] = [];
 
     protected fetchContentDefaultError = 'Error getting recently accessed items data.';
 

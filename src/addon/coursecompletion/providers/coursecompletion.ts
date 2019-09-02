@@ -18,6 +18,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreSite } from '@classes/site';
+import { CoreWSExternalWarning } from '@providers/ws';
 
 /**
  * Service to handle course completion.
@@ -43,7 +44,7 @@ export class AddonCourseCompletionProvider {
      * @param completion Course completion.
      * @return True if user can mark course as self completed, false otherwise.
      */
-    canMarkSelfCompleted(userId: number, completion: any): boolean {
+    canMarkSelfCompleted(userId: number, completion: AddonCourseCompletionCourseCompletionStatus): boolean {
         let selfCompletionActive = false,
             alreadyMarked = false;
 
@@ -68,7 +69,7 @@ export class AddonCourseCompletionProvider {
      * @param completion Course completion.
      * @return Language code of the text to show.
      */
-    getCompletedStatusText(completion: any): string {
+    getCompletedStatusText(completion: AddonCourseCompletionCourseCompletionStatus): string {
         if (completion.completed) {
             return 'addon.coursecompletion.completed';
         } else {
@@ -96,7 +97,9 @@ export class AddonCourseCompletionProvider {
      * @param siteId Site ID. If not defined, use current site.
      * @return Promise to be resolved when the completion is retrieved.
      */
-    getCompletion(courseId: number, userId?: number, preSets?: any, siteId?: string): Promise<any> {
+    getCompletion(courseId: number, userId?: number, preSets?: any, siteId?: string)
+            : Promise<AddonCourseCompletionCourseCompletionStatus> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
             preSets = preSets || {};
@@ -112,7 +115,9 @@ export class AddonCourseCompletionProvider {
             preSets.updateFrequency = preSets.updateFrequency || CoreSite.FREQUENCY_SOMETIMES;
             preSets.cacheErrors = ['notenroled'];
 
-            return site.read('core_completion_get_course_completion_status', data, preSets).then((data) => {
+            return site.read('core_completion_get_course_completion_status', data, preSets)
+                    .then((data: AddonCourseCompletionGetCourseCompletionStatusResult): any => {
+
                 if (data.completionstatus) {
                     return data.completionstatus;
                 }
@@ -243,17 +248,56 @@ export class AddonCourseCompletionProvider {
      * Mark a course as self completed.
      *
      * @param courseId Course ID.
-     * @return Resolved on success.
+     * @return Promise resolved on success.
      */
-    markCourseAsSelfCompleted(courseId: number): Promise<any> {
+    markCourseAsSelfCompleted(courseId: number): Promise<void> {
         const params = {
             courseid: courseId
         };
 
-        return this.sitesProvider.getCurrentSite().write('core_completion_mark_course_self_completed', params).then((response) => {
+        return this.sitesProvider.getCurrentSite().write('core_completion_mark_course_self_completed', params)
+                .then((response: AddonCourseCompletionMarkCourseSelfCompletedResult) => {
+
             if (!response.status) {
                 return Promise.reject(null);
             }
         });
     }
 }
+
+/**
+ * Completion status returned by core_completion_get_course_completion_status.
+ */
+export type AddonCourseCompletionCourseCompletionStatus = {
+    completed: boolean; // True if the course is complete, false otherwise.
+    aggregation: number; // Aggregation method 1 means all, 2 means any.
+    completions: {
+        type: number; // Completion criteria type.
+        title: string; // Completion criteria Title.
+        status: string; // Completion status (Yes/No) a % or number.
+        complete: boolean; // Completion status (true/false).
+        timecompleted: number; // Timestamp for criteria completetion.
+        details: {
+            type: string; // Type description.
+            criteria: string; // Criteria description.
+            requirement: string; // Requirement description.
+            status: string; // Status description, can be anything.
+        }; // Details.
+    }[];
+};
+
+/**
+ * Result of WS core_completion_get_course_completion_status.
+ */
+export type AddonCourseCompletionGetCourseCompletionStatusResult = {
+    completionstatus: AddonCourseCompletionCourseCompletionStatus; // Course status.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS core_completion_mark_course_self_completed.
+ */
+export type AddonCourseCompletionMarkCourseSelfCompletedResult = {
+    status: boolean; // Status, true if success.
+    warnings?: CoreWSExternalWarning[];
+};

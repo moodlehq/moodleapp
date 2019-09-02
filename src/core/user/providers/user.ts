@@ -634,3 +634,21 @@ export class CoreUserProvider {
         });
     }
 }
+
+/**
+ * Data returned by user_summary_exporter.
+ */
+export type CoreUserSummary = {
+    id: number; // Id.
+    email: string; // Email.
+    idnumber: string; // Idnumber.
+    phone1: string; // Phone1.
+    phone2: string; // Phone2.
+    department: string; // Department.
+    institution: string; // Institution.
+    fullname: string; // Fullname.
+    identity: string; // Identity.
+    profileurl: string; // Profileurl.
+    profileimageurl: string; // Profileimageurl.
+    profileimageurlsmall: string; // Profileimageurlsmall.
+};

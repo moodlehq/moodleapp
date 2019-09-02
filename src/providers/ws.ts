@@ -82,126 +82,6 @@ export interface CoreWSAjaxPreSets {
 }
 
 /**
- * Error returned by a WS call.
- */
-export interface CoreWSError {
-    /**
-     * The error message.
-     */
-    message: string;
-
-    /**
-     * Name of the exception. Undefined for local errors (fake WS errors).
-     */
-    exception?: string;
-
-    /**
-     * The error code. Undefined for local errors (fake WS errors).
-     */
-    errorcode?: string;
-}
-
-/**
- * File upload options.
- */
-export interface CoreWSFileUploadOptions extends FileUploadOptions {
-    /**
-     * The file area where to put the file. By default, 'draft'.
-     */
-    fileArea?: string;
-
-    /**
-     * Item ID of the area where to put the file. By default, 0.
-     */
-    itemId?: number;
-}
-
-
-/**
- * Structure of warnings returned by WS.
- */
-export type CoreWSExternalWarning = {
-    /**
-     * Item.
-     * @type {string}
-     */
-    item?: string;
-
-    /**
-     * Item id.
-     * @type {number}
-     */
-    itemid?: number;
-
-    /**
-     * The warning code can be used by the client app to implement specific behaviour.
-     * @type {string}
-     */
-    warningcode: string;
-
-    /**
-     * Untranslated english message to explain the warning.
-     * @type {string}
-     */
-    message: string;
-
-};
-
-/**
- * Structure of files returned by WS.
- */
-export type CoreWSExternalFile = {
-    /**
-     * File name.
-     * @type {string}
-     */
-    filename?: string;
-
-    /**
-     * File path.
-     * @type {string}
-     */
-    filepath?: string;
-
-    /**
-     * File size.
-     * @type {number}
-     */
-    filesize?: number;
-
-    /**
-     * Downloadable file url.
-     * @type {string}
-     */
-    fileurl?: string;
-
-    /**
-     * Time modified.
-     * @type {number}
-     */
-    timemodified?: number;
-
-    /**
-     * File mime type.
-     * @type {string}
-     */
-    mimetype?: string;
-
-    /**
-     * Whether is an external file.
-     * @type {number}
-     */
-    isexternalfile?: number;
-
-    /**
-     * The repository type for external files.
-     * @type {string}
-     */
-    repositorytype?: string;
-
-};
-
-/**
  * This service allows performing WS calls and download/upload files.
  */
 @Injectable()
@@ -948,3 +828,127 @@ export class CoreWSProvider {
         });
     }
 }
+
+/**
+ * Error returned by a WS call.
+ */
+export interface CoreWSError {
+    /**
+     * The error message.
+     */
+    message: string;
+
+    /**
+     * Name of the exception. Undefined for local errors (fake WS errors).
+     */
+    exception?: string;
+
+    /**
+     * The error code. Undefined for local errors (fake WS errors).
+     */
+    errorcode?: string;
+}
+
+/**
+ * File upload options.
+ */
+export interface CoreWSFileUploadOptions extends FileUploadOptions {
+    /**
+     * The file area where to put the file. By default, 'draft'.
+     */
+    fileArea?: string;
+
+    /**
+     * Item ID of the area where to put the file. By default, 0.
+     */
+    itemId?: number;
+}
+
+/**
+ * Structure of warnings returned by WS.
+ */
+export type CoreWSExternalWarning = {
+    /**
+     * Item.
+     */
+    item?: string;
+
+    /**
+     * Item id.
+     */
+    itemid?: number;
+
+    /**
+     * The warning code can be used by the client app to implement specific behaviour.
+     */
+    warningcode: string;
+
+    /**
+     * Untranslated english message to explain the warning.
+     */
+    message: string;
+
+};
+
+/**
+ * Structure of files returned by WS.
+ */
+export type CoreWSExternalFile = {
+    /**
+     * File name.
+     */
+    filename?: string;
+
+    /**
+     * File path.
+     */
+    filepath?: string;
+
+    /**
+     * File size.
+     */
+    filesize?: number;
+
+    /**
+     * Downloadable file url.
+     */
+    fileurl?: string;
+
+    /**
+     * Time modified.
+     */
+    timemodified?: number;
+
+    /**
+     * File mime type.
+     */
+    mimetype?: string;
+
+    /**
+     * Whether is an external file.
+     */
+    isexternalfile?: number;
+
+    /**
+     * The repository type for external files.
+     */
+    repositorytype?: string;
+
+};
+
+/**
+ * Data returned by date_exporter.
+ */
+export type CoreWSDate = {
+    seconds: number; // Seconds.
+    minutes: number; // Minutes.
+    hours: number; // Hours.
+    mday: number; // Mday.
+    wday: number; // Wday.
+    mon: number; // Mon.
+    year: number; // Year.
+    yday: number; // Yday.
+    weekday: string; // Weekday.
+    month: string; // Month.
+    timestamp: number; // Timestamp.
+};

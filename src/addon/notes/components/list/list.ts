@@ -21,7 +21,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { coreSlideInOut } from '@classes/animations';
-import { AddonNotesProvider } from '../../providers/notes';
+import { AddonNotesProvider, AddonNotesNoteFormatted } from '../../providers/notes';
 import { AddonNotesOfflineProvider } from '../../providers/notes-offline';
 import { AddonNotesSyncProvider } from '../../providers/notes-sync';
 
@@ -44,7 +44,7 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
     type = 'course';
     refreshIcon = 'spinner';
     syncIcon = 'spinner';
-    notes: any[];
+    notes: AddonNotesNoteFormatted[];
     hasOffline = false;
     notesLoaded = false;
     user: any;
@@ -101,21 +101,21 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
             // Ignore errors.
         }).then(() => {
             return this.notesProvider.getNotes(this.courseId, this.userId).then((notes) => {
-                notes = notes[this.type + 'notes'] || [];
+                const notesList: AddonNotesNoteFormatted[] = notes[this.type + 'notes'] || [];
 
-                return this.notesProvider.setOfflineDeletedNotes(notes, this.courseId).then((notes) => {
+                return this.notesProvider.setOfflineDeletedNotes(notesList, this.courseId).then((notesList) => {
 
-                    this.hasOffline = notes.some((note) => note.offline || note.deleted);
+                    this.hasOffline = notesList.some((note) => note.offline || note.deleted);
 
                     if (this.userId) {
-                        this.notes = notes;
+                        this.notes = notesList;
 
                         // Get the user profile to retrieve the user image.
                         return this.userProvider.getProfile(this.userId, this.courseId, true).then((user) => {
                             this.user = user;
                         });
                     } else {
-                        return this.notesProvider.getNotesUserData(notes, this.courseId).then((notes) => {
+                        return this.notesProvider.getNotesUserData(notesList, this.courseId).then((notes) => {
                             this.notes = notes;
                         });
                     }
@@ -126,7 +126,7 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
         }).finally(() => {
             let canDelete = this.notes && this.notes.length > 0;
             if (canDelete && this.type == 'personal') {
-                canDelete = this.notes.find((note) =>  {
+                canDelete = !!this.notes.find((note) =>  {
                     return note.usermodified == this.currentUserId;
                 });
             }
@@ -178,6 +178,7 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
     addNote(e: Event): void {
         e.preventDefault();
         e.stopPropagation();
+
         const modal = this.modalCtrl.create('AddonNotesAddPage', { userId: this.userId, courseId: this.courseId, type: this.type });
         modal.onDidDismiss((data) => {
             if (data && data.sent && data.type) {
@@ -192,6 +193,7 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
                 this.typeChanged();
             }
         });
+
         modal.present();
     }
 
@@ -201,7 +203,7 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
      * @param e Click event.
      * @param note Note to delete.
      */
-    deleteNote(e: Event, note: any): void {
+    deleteNote(e: Event, note: AddonNotesNoteFormatted): void {
         e.preventDefault();
         e.stopPropagation();
 
@@ -226,7 +228,7 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
      * @param e Click event.
      * @param note Note to delete.
      */
-    undoDeleteNote(e: Event, note: any): void {
+    undoDeleteNote(e: Event, note: AddonNotesNoteFormatted): void {
         e.preventDefault();
         e.stopPropagation();
 

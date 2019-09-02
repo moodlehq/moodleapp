@@ -21,6 +21,7 @@ import { CoreCoursesHelperProvider } from '@core/courses/providers/helper';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
 import { CoreBlockBaseComponent } from '@core/block/classes/base-block-component';
 import { AddonBlockTimelineProvider } from '../../providers/timeline';
+import { AddonCalendarEvent } from '@addon/calendar/providers/calendar';
 
 /**
  * Component to render a timeline block.
@@ -34,9 +35,9 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     filter = 'next30days';
     currentSite: any;
     timeline = {
-        events: [],
+        events: <AddonCalendarEvent[]> [],
         loaded: false,
-        canLoadMore: undefined
+        canLoadMore: <number> undefined
     };
     timelineCourses = {
         courses: [],

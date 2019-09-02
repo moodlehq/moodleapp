@@ -51,22 +51,22 @@
                     <core-format-text [text]="activity.name"></core-format-text>
                 </a>
             </ion-item>
-            <ion-item text-wrap *ngIf="competency.usercompetency.status">
+            <ion-item text-wrap *ngIf="userCompetency.status">
                 <strong>{{ 'addon.competency.reviewstatus' | translate }}</strong>
-                {{ competency.usercompetency.statusname }}
+                {{ userCompetency.statusname }}
             </ion-item>
             <ion-item text-wrap>
                 <strong>{{ 'addon.competency.proficient' | translate }}</strong>
-                <ion-badge color="success" *ngIf="competency.usercompetency.proficiency">
+                <ion-badge color="success" *ngIf="userCompetency.proficiency">
                     {{ 'core.yes' | translate }}
                 </ion-badge>
-                <ion-badge color="danger" *ngIf="!competency.usercompetency.proficiency">
+                <ion-badge color="danger" *ngIf="!userCompetency.proficiency">
                     {{ 'core.no' | translate }}
                 </ion-badge>
             </ion-item>
             <ion-item text-wrap>
                 <strong>{{ 'addon.competency.rating' | translate }}</strong>
-                <ion-badge color="dark">{{ competency.usercompetency.gradename }}</ion-badge>
+                <ion-badge color="dark">{{ userCompetency.gradename }}</ion-badge>
             </ion-item>
         </ion-card>
 

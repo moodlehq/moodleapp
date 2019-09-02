@@ -42,14 +42,16 @@ export class AddonBlockRecentlyAccessedItemsProvider {
      * @param siteId Site ID. If not defined, use current site.
      * @return Promise resolved when the info is retrieved.
      */
-    getRecentItems(siteId?: string): Promise<any[]> {
+    getRecentItems(siteId?: string): Promise<AddonBlockRecentlyAccessedItemsItem[]> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const preSets = {
                     cacheKey: this.getRecentItemsCacheKey()
                 };
 
-            return site.read('block_recentlyaccesseditems_get_recent_items', undefined, preSets).then((items) => {
+            return site.read('block_recentlyaccesseditems_get_recent_items', undefined, preSets)
+                    .then((items: AddonBlockRecentlyAccessedItemsItem[]) => {
+
                 return items.map((item) => {
                     const modicon = item.icon && this.domUtils.getHTMLElementAttribute(item.icon, 'src');
                     item.iconUrl = this.courseProvider.getModuleIconSrc(item.modname, modicon);
@@ -72,3 +74,27 @@ export class AddonBlockRecentlyAccessedItemsProvider {
         });
     }
 }
+
+/**
+ * Result of WS block_recentlyaccesseditems_get_recent_items.
+ */
+export type AddonBlockRecentlyAccessedItemsItem = {
+    id: number; // Id.
+    courseid: number; // Courseid.
+    cmid: number; // Cmid.
+    userid: number; // Userid.
+    modname: string; // Modname.
+    name: string; // Name.
+    coursename: string; // Coursename.
+    timeaccess: number; // Timeaccess.
+    viewurl: string; // Viewurl.
+    courseviewurl: string; // Courseviewurl.
+    icon: string; // Icon.
+} & AddonBlockRecentlyAccessedItemsItemCalculatedData;
+
+/**
+ * Calculated data for recently accessed item.
+ */
+export type AddonBlockRecentlyAccessedItemsItemCalculatedData = {
+    iconUrl: string; // Icon URL. Calculated by the app.
+};

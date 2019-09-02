@@ -134,7 +134,7 @@
                 <div *ngIf="event && event.repeatid" text-wrap radio-group [formControlName]="'repeateditall'" class="addon-calendar-radio-container">
                     <ion-item class="addon-calendar-radio-title"><h2>{{ 'addon.calendar.repeatedevents' | translate }}</h2></ion-item>
                     <ion-item>
-                        <ion-label>{{ 'addon.calendar.repeateditall' | translate:{$a: event.othereventscount} }}</ion-label>
+                        <ion-label>{{ 'addon.calendar.repeateditall' | translate:{$a: otherEventsCount} }}</ion-label>
                         <ion-radio [value]="1"></ion-radio>
                     </ion-item>
                     <ion-item>

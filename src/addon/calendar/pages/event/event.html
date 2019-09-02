@@ -2,7 +2,7 @@
     <ion-navbar core-back-button>
         <ion-title>
             <img *ngIf="event && event.moduleIcon" src="{{event.moduleIcon}}" alt="" role="presentation" class="core-module-icon">
-            <core-icon *ngIf="event && event.icon && !event.moduleIcon" [name]="event.icon" item-start></core-icon>
+            <core-icon *ngIf="event && event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" item-start></core-icon>
             <core-format-text *ngIf="event" [text]="event.name"></core-format-text>
         </ion-title>
         <ion-buttons end>
@@ -32,7 +32,7 @@
             <ion-card-content *ngIf="event">
                 <ion-item text-wrap *ngIf="isSplitViewOn">
                     <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" item-start alt="" role="presentation" class="core-module-icon">
-                    <core-icon *ngIf="event.icon && !event.moduleIcon" [name]="event.icon" item-start></core-icon>
+                    <core-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" item-start></core-icon>
                     <h2>{{ 'addon.calendar.eventname' | translate }}</h2>
                     <p><core-format-text [text]="event.name"></core-format-text></p>
                     <ion-note item-end *ngIf="event.deleted">

@@ -248,7 +248,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
                     }
 
                     const currentUserId = site.getUserId(),
-                        message = conv.messages[0]; // Treat only the last message, is the one we're interested.
+                        message: any = conv.messages[0]; // Treat only the last message, is the one we're interested.
 
                     if (!message || message.useridfrom == currentUserId) {
                         // No last message or not from current user. Return empty list.

@@ -407,3 +407,27 @@ export class CoreCommentsProvider {
         });
     }
 }
+
+/**
+ * Data returned by comment_area_exporter.
+ */
+export type CoreCommentsArea = {
+    component: string; // Component.
+    commentarea: string; // Commentarea.
+    itemid: number; // Itemid.
+    courseid: number; // Courseid.
+    contextid: number; // Contextid.
+    cid: string; // Cid.
+    autostart: boolean; // Autostart.
+    canpost: boolean; // Canpost.
+    canview: boolean; // Canview.
+    count: number; // Count.
+    collapsediconkey: string; // Collapsediconkey.
+    displaytotalcount: boolean; // Displaytotalcount.
+    displaycancel: boolean; // Displaycancel.
+    fullwidth: boolean; // Fullwidth.
+    linktext: string; // Linktext.
+    notoggle: boolean; // Notoggle.
+    template: string; // Template.
+    canpostorhascomments: boolean; // Canpostorhascomments.
+};

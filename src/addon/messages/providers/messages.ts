@@ -23,6 +23,7 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSite } from '@classes/site';
+import { CoreWSExternalWarning } from '@providers/ws';
 
 /**
  * Service to handle messages.
@@ -89,9 +90,9 @@ export class AddonMessagesProvider {
      *
      * @param userId User ID of the person to block.
      * @param siteId Site ID. If not defined, use current site.
-     * @return Resolved when done.
+     * @return Promise resolved when done.
      */
-    blockContact(userId: number, siteId?: string): Promise<any> {
+    blockContact(userId: number, siteId?: string): Promise<void> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             let promise;
             if (site.wsAvailable('core_message_block_user')) {
@@ -313,7 +314,9 @@ export class AddonMessagesProvider {
      * @param userId User ID viewing the conversation.
      * @return Formatted conversation.
      */
-    protected formatConversation(conversation: any, userId: number): any {
+    protected formatConversation(conversation: AddonMessagesConversationFormatted, userId: number)
+            : AddonMessagesConversationFormatted {
+
         const numMessages = conversation.messages.length,
             lastMessage = numMessages ? conversation.messages[numMessages - 1] : null;
 
@@ -536,10 +539,10 @@ export class AddonMessagesProvider {
      * Get all the contacts of the current user.
      *
      * @param siteId Site ID. If not defined, use current site.
-     * @return Resolved with the WS data.
+     * @return Promise resolved with the WS data.
      * @deprecated since Moodle 3.6
      */
-    getAllContacts(siteId?: string): Promise<any> {
+    getAllContacts(siteId?: string): Promise<AddonMessagesGetContactsResult> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         return this.getContacts(siteId).then((contacts) => {
@@ -562,9 +565,9 @@ export class AddonMessagesProvider {
      * Get all the users blocked by the current user.
      *
      * @param siteId Site ID. If not defined, use current site.
-     * @return Resolved with the WS data.
+     * @return Promise resolved with the WS data.
      */
-    getBlockedContacts(siteId?: string): Promise<any> {
+    getBlockedContacts(siteId?: string): Promise<AddonMessagesGetBlockedUsersResult> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const userId = site.getUserId(),
                 params = {
@@ -585,19 +588,24 @@ export class AddonMessagesProvider {
      * This excludes the blocked users.
      *
      * @param siteId Site ID. If not defined, use current site.
-     * @return Resolved with the WS data.
+     * @return Promise resolved with the WS data.
      * @deprecated since Moodle 3.6
      */
-    getContacts(siteId?: string): Promise<any> {
+    getContacts(siteId?: string): Promise<AddonMessagesGetContactsResult> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const preSets = {
                 cacheKey: this.getCacheKeyForContacts(),
                 updateFrequency: CoreSite.FREQUENCY_OFTEN
             };
 
-            return site.read('core_message_get_contacts', undefined, preSets).then((contacts) => {
+            return site.read('core_message_get_contacts', undefined, preSets).then((contacts: AddonMessagesGetContactsResult) => {
                 // Filter contacts with negative ID, they are notifications.
-                const validContacts = {};
+                const validContacts: AddonMessagesGetContactsResult = {
+                    online: [],
+                    offline: [],
+                    strangers: []
+                };
+
                 for (const typeName in contacts) {
                     if (!validContacts[typeName]) {
                         validContacts[typeName] = [];
@@ -621,11 +629,11 @@ export class AddonMessagesProvider {
      * @param limitFrom Position of the first contact to fetch.
      * @param limitNum Number of contacts to fetch. Default is AddonMessagesProvider.LIMIT_CONTACTS.
      * @param siteId Site ID. If not defined, use current site.
-     * @return Resolved with the list of user contacts.
+     * @return Promise resolved with the list of user contacts.
      * @since 3.6
      */
     getUserContacts(limitFrom: number = 0, limitNum: number = AddonMessagesProvider.LIMIT_CONTACTS , siteId?: string):
-            Promise<{contacts: any[], canLoadMore: boolean}> {
+            Promise<{contacts: AddonMessagesConversationMember[], canLoadMore: boolean}> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
@@ -638,7 +646,9 @@ export class AddonMessagesProvider {
                 updateFrequency: CoreSite.FREQUENCY_OFTEN
             };
 
-            return site.read('core_message_get_user_contacts', params, preSets).then((contacts) => {
+            return site.read('core_message_get_user_contacts', params, preSets)
+                    .then((contacts: AddonMessagesConversationMember[]) => {
+
                 if (!contacts || !contacts.length) {
                     return { contacts: [], canLoadMore: false };
                 }
@@ -663,11 +673,11 @@ export class AddonMessagesProvider {
      * @param limitFrom Position of the first contact request to fetch.
      * @param limitNum Number of contact requests to fetch. Default is AddonMessagesProvider.LIMIT_CONTACTS.
      * @param siteId Site ID. If not defined, use current site.
-     * @return Resolved with the list of contact requests.
+     * @return Promise resolved with the list of contact requests.
      * @since 3.6
      */
     getContactRequests(limitFrom: number = 0, limitNum: number =  AddonMessagesProvider.LIMIT_CONTACTS, siteId?: string):
-            Promise<{requests: any[], canLoadMore: boolean}> {
+            Promise<{requests: AddonMessagesConversationMember[], canLoadMore: boolean}> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const data = {
@@ -680,7 +690,9 @@ export class AddonMessagesProvider {
                 updateFrequency: CoreSite.FREQUENCY_OFTEN
             };
 
-            return site.read('core_message_get_contact_requests', data, preSets).then((requests) => {
+            return site.read('core_message_get_contact_requests', data, preSets)
+                    .then((requests: AddonMessagesConversationMember[]) => {
+
                 if (!requests || !requests.length) {
                     return { requests: [], canLoadMore: false };
                 }
@@ -716,7 +728,7 @@ export class AddonMessagesProvider {
                 typeExpected: 'number'
             };
 
-            return site.read('core_message_get_received_contact_requests_count', data, preSets).then((count) => {
+            return site.read('core_message_get_received_contact_requests_count', data, preSets).then((count: number) => {
                 // Notify the new count so all badges are updated.
                 this.eventsProvider.trigger(AddonMessagesProvider.CONTACT_REQUESTS_COUNT_EVENT, { count }, site.id);
 
@@ -745,7 +757,7 @@ export class AddonMessagesProvider {
      */
     getConversation(conversationId: number, includeContactRequests?: boolean, includePrivacyInfo?: boolean,
             messageOffset: number = 0, messageLimit: number = 1, memberOffset: number = 0, memberLimit: number = 2,
-            newestFirst: boolean = true, siteId?: string, userId?: number): Promise<any> {
+            newestFirst: boolean = true, siteId?: string, userId?: number): Promise<AddonMessagesConversationFormatted> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
@@ -765,7 +777,7 @@ export class AddonMessagesProvider {
                     newestmessagesfirst: newestFirst ? 1 : 0
                 };
 
-            return site.read('core_message_get_conversation', params, preSets).then((conversation) => {
+            return site.read('core_message_get_conversation', params, preSets).then((conversation: AddonMessagesConversation) => {
                 return this.formatConversation(conversation, userId);
             });
         });
@@ -792,7 +804,8 @@ export class AddonMessagesProvider {
      */
     getConversationBetweenUsers(otherUserId: number, includeContactRequests?: boolean, includePrivacyInfo?: boolean,
             messageOffset: number = 0, messageLimit: number = 1, memberOffset: number = 0, memberLimit: number = 2,
-            newestFirst: boolean = true, siteId?: string, userId?: number, preferCache?: boolean): Promise<any> {
+            newestFirst: boolean = true, siteId?: string, userId?: number, preferCache?: boolean)
+            : Promise<AddonMessagesConversationFormatted> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
@@ -813,7 +826,8 @@ export class AddonMessagesProvider {
                     newestmessagesfirst: newestFirst ? 1 : 0
                 };
 
-            return site.read('core_message_get_conversation_between_users', params, preSets).then((conversation) => {
+            return site.read('core_message_get_conversation_between_users', params, preSets)
+                    .then((conversation: AddonMessagesConversation) => {
                 return this.formatConversation(conversation, userId);
             });
         });
@@ -826,12 +840,11 @@ export class AddonMessagesProvider {
      * @param limitFrom Offset for members list.
      * @param limitTo Limit of members.
      * @param siteId Site ID. If not defined, use current site.
-     * @param userId User ID. If not defined, current user in the site.
-     * @return Promise resolved with the response.
+     * @param userId User ID. If not defined, current user in
      * @since 3.6
      */
     getConversationMembers(conversationId: number, limitFrom: number = 0, limitTo?: number, includeContactRequests?: boolean,
-            siteId?: string, userId?: number): Promise<any> {
+            siteId?: string, userId?: number): Promise<{members: AddonMessagesConversationMember[], canLoadMore: boolean}> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
@@ -853,18 +866,21 @@ export class AddonMessagesProvider {
                     includeprivacyinfo: 1,
                 };
 
-            return site.read('core_message_get_conversation_members', params, preSets).then((members) => {
-                const result: any = {};
+            return site.read('core_message_get_conversation_members', params, preSets)
+                    .then((members: AddonMessagesConversationMember[]) => {
 
                 if (limitTo < 1) {
-                    result.canLoadMore = false;
-                    result.members = members;
+                    return {
+                        canLoadMore: false,
+                        members: members
+                    };
                 } else {
-                    result.canLoadMore = members.length > limitTo;
-                    result.members = members.slice(0, limitTo);
+                    return {
+                        canLoadMore: members.length > limitTo,
+                        members: members.slice(0, limitTo)
+                    };
                 }
 
-                return result;
             });
         });
     }
@@ -884,7 +900,8 @@ export class AddonMessagesProvider {
      * @since 3.6
      */
     getConversationMessages(conversationId: number, excludePending: boolean, limitFrom: number = 0, limitTo?: number,
-            newestFirst: boolean = true, timeFrom: number = 0, siteId?: string, userId?: number): Promise<any> {
+            newestFirst: boolean = true, timeFrom: number = 0, siteId?: string, userId?: number)
+            : Promise<AddonMessagesGetConversationMessagesResult> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
@@ -913,7 +930,9 @@ export class AddonMessagesProvider {
                 preSets['emergencyCache'] = false;
             }
 
-            return site.read('core_message_get_conversation_messages', params, preSets).then((result) => {
+            return site.read('core_message_get_conversation_messages', params, preSets)
+                    .then((result: AddonMessagesGetConversationMessagesResult) => {
+
                 if (limitTo < 1) {
                     result.canLoadMore = false;
                     result.messages = result.messages;
@@ -975,7 +994,8 @@ export class AddonMessagesProvider {
      * @since 3.6
      */
     getConversations(type?: number, favourites?: boolean, limitFrom: number = 0, siteId?: string, userId?: number,
-            forceCache?: boolean, ignoreCache?: boolean): Promise<{conversations: any[], canLoadMore: boolean}> {
+            forceCache?: boolean, ignoreCache?: boolean)
+            : Promise<{conversations: AddonMessagesConversationFormatted[], canLoadMore: boolean}> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
@@ -1017,7 +1037,7 @@ export class AddonMessagesProvider {
                 }
 
                 return Promise.reject(error);
-            }).then((response) => {
+            }).then((response: AddonMessagesGetConversationsResult) => {
                 // Format the conversations, adding some calculated fields.
                 const conversations = response.conversations.slice(0, this.LIMIT_MESSAGES).map((conversation) => {
                         return this.formatConversation(conversation, userId);
@@ -1053,7 +1073,9 @@ export class AddonMessagesProvider {
                 cacheKey: this.getCacheKeyForConversationCounts()
             };
 
-            return site.read('core_message_get_conversation_counts', {}, preSets).then((result) => {
+            return site.read('core_message_get_conversation_counts', {}, preSets)
+                    .then((result: AddonMessagesGetConversationCountsResult) => {
+
                 const counts = {
                     favourites: result.favourites,
                     individual: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL],
@@ -1080,10 +1102,14 @@ export class AddonMessagesProvider {
      * @return Promise resolved with messages and a boolean telling if can load more messages.
      */
     getDiscussion(userId: number, excludePending: boolean, lfReceivedUnread: number = 0, lfReceivedRead: number = 0,
-            lfSentUnread: number = 0, lfSentRead: number = 0, toDisplay: boolean = true, siteId?: string): Promise<any> {
+            lfSentUnread: number = 0, lfSentRead: number = 0, toDisplay: boolean = true, siteId?: string)
+            : Promise<{messages: AddonMessagesGetMessagesMessage[], canLoadMore: boolean}> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
-            const result = {},
+            const result = {
+                    messages: <AddonMessagesGetMessagesMessage[]> [],
+                    canLoadMore: false
+                },
                 preSets = {
                     cacheKey: this.getCacheKeyForDiscussion(userId)
                 },
@@ -1107,7 +1133,7 @@ export class AddonMessagesProvider {
             // Get message received by current user.
             return this.getRecentMessages(params, preSets, lfReceivedUnread, lfReceivedRead, toDisplay, site.getId())
                     .then((response) => {
-                result['messages'] = response;
+                result.messages = response;
                 params.useridto = userId;
                 params.useridfrom = site.getUserId();
                 hasReceived = response.length > 0;
@@ -1115,16 +1141,16 @@ export class AddonMessagesProvider {
                 // Get message sent by current user.
                 return this.getRecentMessages(params, preSets, lfSentUnread, lfSentRead, toDisplay, siteId);
             }).then((response) => {
-                result['messages'] = result['messages'].concat(response);
+                result.messages = result.messages.concat(response);
                 hasSent = response.length > 0;
 
-                if (result['messages'].length > this.LIMIT_MESSAGES) {
+                if (result.messages.length > this.LIMIT_MESSAGES) {
                     // Sort messages and get the more recent ones.
-                    result['canLoadMore'] = true;
-                    result['messages'] = this.sortMessages(result['messages']);
-                    result['messages'] = result['messages'].slice(-this.LIMIT_MESSAGES);
+                    result.canLoadMore = true;
+                    result.messages = this.sortMessages(result['messages']);
+                    result.messages = result.messages.slice(-this.LIMIT_MESSAGES);
                 } else {
-                    result['canLoadMore'] = result['messages'].length == this.LIMIT_MESSAGES && (!hasReceived || !hasSent);
+                    result.canLoadMore = result.messages.length == this.LIMIT_MESSAGES && (!hasReceived || !hasSent);
                 }
 
                 if (excludePending) {
@@ -1140,7 +1166,7 @@ export class AddonMessagesProvider {
                         message.text = message.smallmessage;
                     });
 
-                    result['messages'] = result['messages'].concat(offlineMessages);
+                    result.messages = result.messages.concat(offlineMessages);
 
                     return result;
                 });
@@ -1153,11 +1179,11 @@ export class AddonMessagesProvider {
      * If the site is 3.6 or higher, please use getConversations.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Resolved with an object where the keys are the user ID of the other user.
+     * @return Promise resolved with an object where the keys are the user ID of the other user.
      */
-    getDiscussions(siteId?: string): Promise<any> {
+    getDiscussions(siteId?: string): Promise<{[userId: number]: AddonMessagesDiscussion}> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            const discussions = {},
+            const discussions: {[userId: number]: AddonMessagesDiscussion} = {},
                 currentUserId = site.getUserId(),
                 params = {
                     useridto: currentUserId,
@@ -1171,7 +1197,7 @@ export class AddonMessagesProvider {
             /**
              * Convenience function to treat a recent message, adding it to discussions list if needed.
              */
-            const treatRecentMessage = (message: any, userId: number, userFullname: string): void => {
+            const treatRecentMessage = (message: AddonMessagesGetMessagesMessage, userId: number, userFullname: string): void => {
                 if (typeof discussions[userId] === 'undefined') {
                     discussions[userId] = {
                         fullname: userFullname,
@@ -1272,7 +1298,7 @@ export class AddonMessagesProvider {
      * @return Promise resolved with the member info.
      * @since 3.6
      */
-    getMemberInfo(otherUserId: number, siteId?: string, userId?: number): Promise<any> {
+    getMemberInfo(otherUserId: number, siteId?: string, userId?: number): Promise<AddonMessagesConversationMember> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
@@ -1287,7 +1313,9 @@ export class AddonMessagesProvider {
                     includeprivacyinfo: 1,
                 };
 
-            return site.read('core_message_get_member_info', params, preSets).then((members) => {
+            return site.read('core_message_get_member_info', params, preSets)
+                    .then((members: AddonMessagesConversationMember[]): any => {
+
                 if (!members || members.length < 1) {
                     // Should never happen.
                     return Promise.reject(null);
@@ -1313,7 +1341,7 @@ export class AddonMessagesProvider {
      * @param siteId Site ID. If not defined, use current site.
      * @return Promise resolved with the message preferences.
      */
-    getMessagePreferences(siteId?: string): Promise<any> {
+    getMessagePreferences(siteId?: string): Promise<AddonMessagesMessagePreferences> {
         this.logger.debug('Get message preferences');
 
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1322,7 +1350,9 @@ export class AddonMessagesProvider {
                     updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
-            return site.read('core_message_get_user_message_preferences', {}, preSets).then((data) => {
+            return site.read('core_message_get_user_message_preferences', {}, preSets)
+                    .then((data: AddonMessagesGetUserMessagePreferencesResult): any => {
+
                 if (data.preferences) {
                     data.preferences.blocknoncontacts = data.blocknoncontacts;
 
@@ -1341,15 +1371,18 @@ export class AddonMessagesProvider {
      * @param preSets Set of presets for the WS.
      * @param toDisplay True if messages will be displayed to the user, either in view or in a notification.
      * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with the data.
      */
-    protected getMessages(params: any, preSets: any, toDisplay: boolean = true, siteId?: string): Promise<any> {
+    protected getMessages(params: any, preSets: any, toDisplay: boolean = true, siteId?: string)
+            : Promise<AddonMessagesGetMessagesResult> {
+
         params['type'] = 'conversations';
         params['newestfirst'] = 1;
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const userId = site.getUserId();
 
-            return site.read('core_message_get_messages', params, preSets).then((response) => {
+            return site.read('core_message_get_messages', params, preSets).then((response: AddonMessagesGetMessagesResult) => {
                 response.messages.forEach((message) => {
                     message.read = params.read == 0 ? 0 : 1;
                     // Convert times to milliseconds.
@@ -1377,9 +1410,10 @@ export class AddonMessagesProvider {
      * @param limitFromRead Number of unread messages already fetched, so fetch will be done from this number.
      * @param toDisplay True if messages will be displayed to the user, either in view or in a notification.
      * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with the data.
      */
     protected getRecentMessages(params: any, preSets: any, limitFromUnread: number = 0, limitFromRead: number = 0,
-            toDisplay: boolean = true, siteId?: string): Promise<any> {
+            toDisplay: boolean = true, siteId?: string): Promise<AddonMessagesGetMessagesMessage[]> {
         limitFromUnread = limitFromUnread || 0;
         limitFromRead = limitFromRead || 0;
 
@@ -1427,7 +1461,7 @@ export class AddonMessagesProvider {
      * @since 3.7
      */
     getSelfConversation(messageOffset: number = 0, messageLimit: number = 1, newestFirst: boolean = true, siteId?: string,
-            userId?: number): Promise<any> {
+            userId?: number): Promise<AddonMessagesConversationFormatted> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
@@ -1442,7 +1476,8 @@ export class AddonMessagesProvider {
                     newestmessagesfirst: newestFirst ? 1 : 0
                 };
 
-            return site.read('core_message_get_self_conversation', params, preSets).then((conversation) => {
+            return site.read('core_message_get_self_conversation', params, preSets)
+                    .then((conversation: AddonMessagesConversation) => {
                 return this.formatConversation(conversation, userId);
             });
         });
@@ -1466,7 +1501,8 @@ export class AddonMessagesProvider {
                     cacheKey: this.getCacheKeyForUnreadConversationCounts()
                 };
 
-                promise = site.read('core_message_get_unread_conversation_counts', {}, preSets).then((result) => {
+                promise = site.read('core_message_get_unread_conversation_counts', {}, preSets)
+                        .then((result: AddonMessagesGetUnreadConversationCountsResult) => {
                     return {
                         favourites: result.favourites,
                         individual: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL],
@@ -1485,7 +1521,7 @@ export class AddonMessagesProvider {
                         typeExpected: 'number'
                     };
 
-                promise = site.read('core_message_get_unread_conversations_count', params, preSets).then((count) => {
+                promise = site.read('core_message_get_unread_conversations_count', params, preSets).then((count: number) => {
                     return { favourites: 0, individual: count, group: 0, self: 0 };
                 });
             } else {
@@ -1536,7 +1572,7 @@ export class AddonMessagesProvider {
      * @return Promise resolved with the message unread count.
      */
     getUnreadReceivedMessages(toDisplay: boolean = true, forceCache: boolean = false, ignoreCache: boolean = false,
-            siteId?: string): Promise<any> {
+            siteId?: string): Promise<AddonMessagesGetMessagesResult> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     read: 0,
@@ -2049,7 +2085,7 @@ export class AddonMessagesProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with boolean marking success or not.
      */
-    markMessageRead(messageId: number, siteId?: string): Promise<any> {
+    markMessageRead(messageId: number, siteId?: string): Promise<AddonMessagesMarkMessageReadResult> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 messageid: messageId,
@@ -2067,7 +2103,7 @@ export class AddonMessagesProvider {
      * @return Promise resolved if success.
      * @since 3.6
      */
-    markAllConversationMessagesRead(conversationId?: number): Promise<any> {
+    markAllConversationMessagesRead(conversationId?: number): Promise<null> {
         const params = {
                 userid: this.sitesProvider.getCurrentSiteUserId(),
                 conversationid: conversationId
@@ -2085,7 +2121,7 @@ export class AddonMessagesProvider {
      * @param userIdFrom User Id for the sender.
      * @return Promise resolved with boolean marking success or not.
      */
-    markAllMessagesRead(userIdFrom?: number): Promise<any> {
+    markAllMessagesRead(userIdFrom?: number): Promise<boolean> {
         const params = {
                 useridto: this.sitesProvider.getCurrentSiteUserId(),
                 useridfrom: userIdFrom
@@ -2217,8 +2253,9 @@ export class AddonMessagesProvider {
      * @param query The query string.
      * @param limit The number of results to return, 0 for none.
      * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the contacts.
      */
-    searchContacts(query: string, limit: number = 100, siteId?: string): Promise<any> {
+    searchContacts(query: string, limit: number = 100, siteId?: string): Promise<AddonMessagesSearchContactsContact[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const data = {
                     searchtext: query,
@@ -2228,7 +2265,9 @@ export class AddonMessagesProvider {
                     getFromCache: false // Always try to get updated data. If it fails, it will get it from cache.
                 };
 
-            return site.read('core_message_search_contacts', data, preSets).then((contacts) => {
+            return site.read('core_message_search_contacts', data, preSets)
+                    .then((contacts: AddonMessagesSearchContactsContact[]) => {
+
                 if (limit && contacts.length > limit) {
                     contacts = contacts.splice(0, limit);
                 }
@@ -2250,7 +2289,7 @@ export class AddonMessagesProvider {
      * @return Promise resolved with the results.
      */
     searchMessages(query: string, userId?: number, limitFrom: number = 0, limitNum: number = AddonMessagesProvider.LIMIT_SEARCH,
-            siteId?: string): Promise<{messages: any[], canLoadMore: boolean}> {
+            siteId?: string): Promise<{messages: AddonMessagesMessageAreaContact[], canLoadMore: boolean}> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
@@ -2263,13 +2302,15 @@ export class AddonMessagesProvider {
                     getFromCache: false // Always try to get updated data. If it fails, it will get it from cache.
                 };
 
-            return site.read('core_message_data_for_messagearea_search_messages', params, preSets).then((result) => {
+            return site.read('core_message_data_for_messagearea_search_messages', params, preSets)
+                    .then((result: AddonMessagesDataForMessageAreaSearchMessagesResult) => {
+
                 if (!result.contacts || !result.contacts.length) {
                     return { messages: [], canLoadMore: false };
                 }
 
-                result.contacts.forEach((result) => {
-                    result.id = result.userid;
+                result.contacts.forEach((contact) => {
+                    contact.id = contact.userid;
                 });
 
                 this.userProvider.storeUsers(result.contacts, site.id);
@@ -2297,7 +2338,8 @@ export class AddonMessagesProvider {
      * @since 3.6
      */
     searchUsers(query: string, limitFrom: number = 0, limitNum: number = AddonMessagesProvider.LIMIT_SEARCH, siteId?: string):
-            Promise<{contacts: any[], nonContacts: any[], canLoadMoreContacts: boolean, canLoadMoreNonContacts: boolean}> {
+            Promise<{contacts: AddonMessagesConversationMember[], nonContacts: AddonMessagesConversationMember[],
+                canLoadMoreContacts: boolean, canLoadMoreNonContacts: boolean}> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const data = {
@@ -2310,7 +2352,7 @@ export class AddonMessagesProvider {
                     getFromCache: false // Always try to get updated data. If it fails, it will get it from cache.
                 };
 
-            return site.read('core_message_message_search_users', data, preSets).then((result) => {
+            return site.read('core_message_message_search_users', data, preSets).then((result: AddonMessagesSearchUsersResult) => {
                 const contacts = result.contacts || [];
                 const nonContacts = result.noncontacts || [];
 
@@ -2341,7 +2383,9 @@ export class AddonMessagesProvider {
      *         - sent (Boolean) True if message was sent to server, false if stored in device.
      *         - message (Object) If sent=false, contains the stored message.
      */
-    sendMessage(toUserId: number, message: string, siteId?: string): Promise<any> {
+    sendMessage(toUserId: number, message: string, siteId?: string)
+            : Promise<{sent: boolean, message: AddonMessagesSendInstantMessagesMessage}> {
+
         // Convenience function to store a message to be synchronized later.
         const storeOffline = (): Promise<any> => {
             return this.messagesOffline.saveMessage(toUserId, message, siteId).then((entry) => {
@@ -2395,7 +2439,7 @@ export class AddonMessagesProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved if success, rejected if failure.
      */
-    sendMessageOnline(toUserId: number, message: string, siteId?: string): Promise<any> {
+    sendMessageOnline(toUserId: number, message: string, siteId?: string): Promise<AddonMessagesSendInstantMessagesMessage> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const messages = [
@@ -2430,7 +2474,7 @@ export class AddonMessagesProvider {
      * @return Promise resolved if success, rejected if failure. Promise resolved doesn't mean that messages
      *         have been sent, the resolve param can contain errors for messages not sent.
      */
-    sendMessagesOnline(messages: any, siteId?: string): Promise<any> {
+    sendMessagesOnline(messages: any[], siteId?: string): Promise<AddonMessagesSendInstantMessagesMessage[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const data = {
                 messages: messages
@@ -2451,7 +2495,9 @@ export class AddonMessagesProvider {
      *         - message (any) If sent=false, contains the stored message.
      * @since 3.6
      */
-    sendMessageToConversation(conversation: any, message: string, siteId?: string): Promise<any> {
+    sendMessageToConversation(conversation: any, message: string, siteId?: string)
+            : Promise<{sent: boolean, message: AddonMessagesSendMessagesToConversationMessage}> {
+
         // Convenience function to store a message to be synchronized later.
         const storeOffline = (): Promise<any> => {
             return this.messagesOffline.saveConversationMessage(conversation, message, siteId).then((entry) => {
@@ -2506,7 +2552,8 @@ export class AddonMessagesProvider {
      * @return Promise resolved if success, rejected if failure.
      * @since 3.6
      */
-    sendMessageToConversationOnline(conversationId: number, message: string, siteId?: string): Promise<any> {
+    sendMessageToConversationOnline(conversationId: number, message: string, siteId?: string)
+            : Promise<AddonMessagesSendMessagesToConversationMessage> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const messages = [
@@ -2534,7 +2581,9 @@ export class AddonMessagesProvider {
      * @return Promise resolved if success, rejected if failure.
      * @since 3.6
      */
-    sendMessagesToConversationOnline(conversationId: number, messages: any, siteId?: string): Promise<any> {
+    sendMessagesToConversationOnline(conversationId: number, messages: any[], siteId?: string)
+            : Promise<AddonMessagesSendMessagesToConversationMessage[]> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 conversationid: conversationId,
@@ -2603,10 +2652,10 @@ export class AddonMessagesProvider {
      * @param conversations Array of conversations.
      * @return Conversations sorted with most recent last.
      */
-    sortConversations(conversations: any[]): any[] {
+    sortConversations(conversations: AddonMessagesConversationFormatted[]): AddonMessagesConversationFormatted[] {
         return conversations.sort((a, b) => {
-            const timeA = parseInt(a.lastmessagedate, 10),
-                timeB = parseInt(b.lastmessagedate, 10);
+            const timeA = Number(a.lastmessagedate),
+                timeB = Number(b.lastmessagedate);
 
             if (timeA == timeB && a.id) {
                 // Same time, sort by ID.
@@ -2651,7 +2700,9 @@ export class AddonMessagesProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    protected storeLastReceivedMessageIfNeeded(convIdOrUserIdFrom: number, message: any, siteId?: string): Promise<any> {
+    protected storeLastReceivedMessageIfNeeded(convIdOrUserIdFrom: number,
+            message: AddonMessagesGetMessagesMessage | AddonMessagesConversationMessage, siteId?: string): Promise<any> {
+
         const component = AddonMessagesProvider.PUSH_SIMULATION_COMPONENT;
 
         // Get the last received message.
@@ -2675,7 +2726,7 @@ export class AddonMessagesProvider {
      *
      * @param contactTypes List of contacts grouped in types.
      */
-    protected storeUsersFromAllContacts(contactTypes: any): void {
+    protected storeUsersFromAllContacts(contactTypes: AddonMessagesGetContactsResult): void {
         for (const x in contactTypes) {
             this.userProvider.storeUsers(contactTypes[x]);
         }
@@ -2735,3 +2786,377 @@ export class AddonMessagesProvider {
         });
     }
 }
+
+/**
+ * Conversation.
+ */
+export type AddonMessagesConversation = {
+    id: number; // The conversation id.
+    name: string; // The conversation name, if set.
+    subname: string; // A subtitle for the conversation name, if set.
+    imageurl: string; // A link to the conversation picture, if set.
+    type: number; // The type of the conversation (1=individual,2=group,3=self).
+    membercount: number; // Total number of conversation members.
+    ismuted: boolean; // If the user muted this conversation.
+    isfavourite: boolean; // If the user marked this conversation as a favourite.
+    isread: boolean; // If the user has read all messages in the conversation.
+    unreadcount: number; // The number of unread messages in this conversation.
+    members: AddonMessagesConversationMember[];
+    messages: AddonMessagesConversationMessage[];
+    candeletemessagesforallusers: boolean; // @since 3.7. If the user can delete messages in the conversation for all users.
+};
+
+/**
+ * Conversation with some calculated data.
+ */
+export type AddonMessagesConversationFormatted = AddonMessagesConversation & {
+    lastmessage?: string; // Calculated in the app. Last message.
+    lastmessagedate?: number; // Calculated in the app. Date the last message was sent.
+    sentfromcurrentuser?: boolean; // Calculated in the app. Whether last message was sent by the current user.
+    name?: string; // Calculated in the app. If private conversation, name of the other user.
+    userid?: number; // Calculated in the app. URL. If private conversation, ID of the other user.
+    showonlinestatus?: boolean; // Calculated in the app. If private conversation, whether to show online status of the other user.
+    isonline?: boolean; // Calculated in the app. If private conversation, whether the other user is online.
+    isblocked?: boolean; // Calculated in the app. If private conversation, whether the other user is blocked.
+    otherUser?: AddonMessagesConversationMember; // Calculated in the app. Other user in the conversation.
+};
+
+/**
+ * Conversation member.
+ */
+export type AddonMessagesConversationMember = {
+    id: number; // The user id.
+    fullname: string; // The user's name.
+    profileurl: string; // The link to the user's profile page.
+    profileimageurl: string; // User picture URL.
+    profileimageurlsmall: string; // Small user picture URL.
+    isonline: boolean; // The user's online status.
+    showonlinestatus: boolean; // Show the user's online status?.
+    isblocked: boolean; // If the user has been blocked.
+    iscontact: boolean; // Is the user a contact?.
+    isdeleted: boolean; // Is the user deleted?.
+    canmessageevenifblocked: boolean; // If the user can still message even if they get blocked.
+    canmessage: boolean; // If the user can be messaged.
+    requirescontact: boolean; // If the user requires to be contacts.
+    contactrequests?: { // The contact requests.
+        id: number; // The id of the contact request.
+        userid: number; // The id of the user who created the contact request.
+        requesteduserid: number; // The id of the user confirming the request.
+        timecreated: number; // The timecreated timestamp for the contact request.
+    }[];
+    conversations?: { // Conversations between users.
+        id: number; // Conversations id.
+        type: number; // Conversation type: private or public.
+        name: string; // Multilang compatible conversation name2.
+        timecreated: number; // The timecreated timestamp for the conversation.
+    }[];
+};
+
+/**
+ * Conversation message.
+ */
+export type AddonMessagesConversationMessage = {
+    id: number; // The id of the message.
+    useridfrom: number; // The id of the user who sent the message.
+    text: string; // The text of the message.
+    timecreated: number; // The timecreated timestamp for the message.
+};
+
+/**
+ * Message preferences.
+ */
+export type AddonMessagesMessagePreferences = {
+    userid: number; // User id.
+    disableall: number; // Whether all the preferences are disabled.
+    processors: { // Config form values.
+        displayname: string; // Display name.
+        name: string; // Processor name.
+        hassettings: boolean; // Whether has settings.
+        contextid: number; // Context id.
+        userconfigured: number; // Whether is configured by the user.
+    }[];
+    components: { // Available components.
+        displayname: string; // Display name.
+        notifications: AddonMessagesMessagePreferencesNotification[]; // List of notificaitons for the component.
+    }[];
+} & AddonMessagesMessagePreferencesCalculatedData;
+
+/**
+ * Notification processor in message preferences.
+ */
+export type AddonMessagesMessagePreferencesNotification = {
+    displayname: string; // Display name.
+    preferencekey: string; // Preference key.
+    processors: AddonMessagesMessagePreferencesNotificationProcessor[]; // Processors values for this notification.
+};
+
+/**
+ * Notification processor in message preferences.
+ */
+export type AddonMessagesMessagePreferencesNotificationProcessor = {
+    displayname: string; // Display name.
+    name: string; // Processor name.
+    locked: boolean; // Is locked by admin?.
+    lockedmessage?: string; // Text to display if locked.
+    userconfigured: number; // Is configured?.
+    loggedin: {
+        name: string; // Name.
+        displayname: string; // Display name.
+        checked: boolean; // Is checked?.
+    };
+    loggedoff: {
+        name: string; // Name.
+        displayname: string; // Display name.
+        checked: boolean; // Is checked?.
+    };
+};
+
+/**
+ * Message discussion (before 3.6).
+ */
+export type AddonMessagesDiscussion = {
+    fullname: string; // Full name of the other user in the discussion.
+    profileimageurl: string; // Profile image of the other user in the discussion.
+    message?: { // Last message.
+        id: number; // Message ID.
+        user: number; // User ID that sent the message.
+        message: string; // Text of the message.
+        timecreated: number; // Time the message was sent.
+        pending?: boolean; // Whether the message is pending to be sent.
+    };
+    unread?: boolean; // Whether the discussion has unread messages.
+};
+
+/**
+ * Contact for message area.
+ */
+export type AddonMessagesMessageAreaContact = {
+    userid: number; // The user's id.
+    fullname: string; // The user's name.
+    profileimageurl: string; // User picture URL.
+    profileimageurlsmall: string; // Small user picture URL.
+    ismessaging: boolean; // If we are messaging the user.
+    sentfromcurrentuser: boolean; // Was the last message sent from the current user?.
+    lastmessage: string; // The user's last message.
+    lastmessagedate: number; // Timestamp for last message.
+    messageid: number; // The unique search message id.
+    showonlinestatus: boolean; // Show the user's online status?.
+    isonline: boolean; // The user's online status.
+    isread: boolean; // If the user has read the message.
+    isblocked: boolean; // If the user has been blocked.
+    unreadcount: number; // The number of unread messages in this conversation.
+    conversationid: number; // The id of the conversation.
+} & AddonMessagesMessageAreaContactCalculatedData;
+
+/**
+ * Result of WS core_message_get_blocked_users.
+ */
+export type AddonMessagesGetBlockedUsersResult = {
+    users: AddonMessagesBlockedUser[]; // List of blocked users.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * User data returned by core_message_get_blocked_users.
+ */
+export type AddonMessagesBlockedUser = {
+    id: number; // User ID.
+    fullname: string; // User full name.
+    profileimageurl?: string; // User picture URL.
+};
+
+/**
+ * Result of WS core_message_get_contacts.
+ */
+export type AddonMessagesGetContactsResult = {
+    online: AddonMessagesGetContactsContact[]; // List of online contacts.
+    offline: AddonMessagesGetContactsContact[]; // List of offline contacts.
+    strangers: AddonMessagesGetContactsContact[]; // List of users that are not in the user's contact list but have sent a message.
+} & AddonMessagesGetContactsCalculatedData;
+
+/**
+ * User data returned by core_message_get_contacts.
+ */
+export type AddonMessagesGetContactsContact = {
+    id: number; // User ID.
+    fullname: string; // User full name.
+    profileimageurl?: string; // User picture URL.
+    profileimageurlsmall?: string; // Small user picture URL.
+    unread: number; // Unread message count.
+};
+
+/**
+ * User data returned by core_message_search_contacts.
+ */
+export type AddonMessagesSearchContactsContact = {
+    id: number; // User ID.
+    fullname: string; // User full name.
+    profileimageurl?: string; // User picture URL.
+    profileimageurlsmall?: string; // Small user picture URL.
+};
+
+/**
+ * Result of WS core_message_get_conversation_messages.
+ */
+export type AddonMessagesGetConversationMessagesResult = {
+    id: number; // The conversation id.
+    members: AddonMessagesConversationMember[];
+    messages: AddonMessagesConversationMessage[];
+} & AddonMessagesGetConversationMessagesCalculatedData;
+
+/**
+ * Result of WS core_message_get_conversations.
+ */
+export type AddonMessagesGetConversationsResult = {
+    conversations: AddonMessagesConversation[];
+};
+
+/**
+ * Result of WS core_message_get_conversation_counts.
+ */
+export type AddonMessagesGetConversationCountsResult = {
+    favourites: number; // Total number of favourite conversations.
+    types: {
+        1: number; // Total number of individual conversations.
+        2: number; // Total number of group conversations.
+        3: number; // Total number of self conversations.
+    };
+};
+
+/**
+ * Result of WS core_message_get_unread_conversation_counts.
+ */
+export type AddonMessagesGetUnreadConversationCountsResult = {
+    favourites: number; // Total number of unread favourite conversations.
+    types: {
+        1: number; // Total number of unread individual conversations.
+        2: number; // Total number of unread group conversations.
+        3: number; // Total number of unread self conversations.
+    };
+};
+
+/**
+ * Result of WS core_message_get_user_message_preferences.
+ */
+export type AddonMessagesGetUserMessagePreferencesResult = {
+    preferences: AddonMessagesMessagePreferences;
+    blocknoncontacts: number; // Privacy messaging setting to define who can message you.
+    entertosend: boolean; // User preference for using enter to send messages.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS core_message_get_messages.
+ */
+export type AddonMessagesGetMessagesResult = {
+    messages: AddonMessagesGetMessagesMessage[];
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Message data returned by core_message_get_messages.
+ */
+export type AddonMessagesGetMessagesMessage = {
+    id: number; // Message id.
+    useridfrom: number; // User from id.
+    useridto: number; // User to id.
+    subject: string; // The message subject.
+    text: string; // The message text formated.
+    fullmessage: string; // The message.
+    fullmessageformat: number; // Fullmessage format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    fullmessagehtml: string; // The message in html.
+    smallmessage: string; // The shorten message.
+    notification: number; // Is a notification?.
+    contexturl: string; // Context URL.
+    contexturlname: string; // Context URL link name.
+    timecreated: number; // Time created.
+    timeread: number; // Time read.
+    usertofullname: string; // User to full name.
+    userfromfullname: string; // User from full name.
+    component?: string; // The component that generated the notification.
+    eventtype?: string; // The type of notification.
+    customdata?: string; // Custom data to be passed to the message processor.
+} & AddonMessagesGetMessagesMessageCalculatedData;
+
+/**
+ * Result of WS core_message_data_for_messagearea_search_messages.
+ */
+export type AddonMessagesDataForMessageAreaSearchMessagesResult = {
+    contacts: AddonMessagesMessageAreaContact[];
+};
+
+/**
+ * Result of WS core_message_message_search_users.
+ */
+export type AddonMessagesSearchUsersResult = {
+    contacts: AddonMessagesConversationMember[];
+    noncontacts: AddonMessagesConversationMember[];
+};
+
+/**
+ * Result of WS core_message_mark_message_read.
+ */
+export type AddonMessagesMarkMessageReadResult = {
+    messageid: number; // The id of the message in the messages table.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS core_message_send_instant_messages.
+ */
+export type AddonMessagesSendInstantMessagesMessage = {
+    msgid: number; // Test this to know if it succeeds:  id of the created message if it succeeded, -1 when failed.
+    clientmsgid?: string; // Your own id for the message.
+    errormessage?: string; // Error message - if it failed.
+    text?: string; // The text of the message.
+    timecreated?: number; // The timecreated timestamp for the message.
+    conversationid?: number; // The conversation id for this message.
+    useridfrom?: number; // The user id who sent the message.
+    candeletemessagesforallusers: boolean; // If the user can delete messages in the conversation for all users.
+};
+
+/**
+ * Result of WS core_message_send_messages_to_conversation.
+ */
+export type AddonMessagesSendMessagesToConversationMessage = {
+    id: number; // The id of the message.
+    useridfrom: number; // The id of the user who sent the message.
+    text: string; // The text of the message.
+    timecreated: number; // The timecreated timestamp for the message.
+};
+
+/**
+ * Calculated data for core_message_get_contacts.
+ */
+export type AddonMessagesGetContactsCalculatedData = {
+    blocked?: AddonMessagesBlockedUser[]; // Calculated in the app. List of blocked users.
+};
+
+/**
+ * Calculated data for core_message_get_conversation_messages.
+ */
+export type AddonMessagesGetConversationMessagesCalculatedData = {
+    canLoadMore?: boolean; // Calculated in the app. Whether more messages can be loaded.
+};
+
+/**
+ * Calculated data for message preferences.
+ */
+export type AddonMessagesMessagePreferencesCalculatedData = {
+    blocknoncontacts?: number; // Calculated in the app. Based on the result of core_message_get_user_message_preferences.
+};
+
+/**
+ * Calculated data for messages returned by core_message_get_messages.
+ */
+export type AddonMessagesGetMessagesMessageCalculatedData = {
+    pending?: boolean; // Calculated in the app. Whether the message is pending to be sent.
+    read?: number; // Calculated in the app. Whether the message has been read.
+};
+
+/**
+ * Calculated data for contact for message area.
+ */
+export type AddonMessagesMessageAreaContactCalculatedData = {
+    id?: number; // Calculated in the app. User ID.
+};

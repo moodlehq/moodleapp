@@ -14,7 +14,7 @@
 
 import { Component, ViewChild, OnDestroy, NgZone } from '@angular/core';
 import { IonicPage, Content, NavParams, NavController } from 'ionic-angular';
-import { AddonCalendarProvider } from '../../providers/calendar';
+import { AddonCalendarProvider, AddonCalendarGetEventsEvent } from '../../providers/calendar';
 import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
 import { AddonCalendarHelperProvider } from '../../providers/helper';
 import { AddonCalendarSyncProvider } from '../../providers/calendar-sync';
@@ -62,7 +62,7 @@ export class AddonCalendarListPage implements OnDestroy {
     protected manualSyncObserver: any;
     protected onlineObserver: any;
     protected currentSiteId: string;
-    protected onlineEvents = [];
+    protected onlineEvents: AddonCalendarGetEventsEvent[] = [];
     protected offlineEvents = [];
     protected deletedEvents = [];
 
@@ -70,7 +70,7 @@ export class AddonCalendarListPage implements OnDestroy {
     eventsLoaded = false;
     events = []; // Events (both online and offline).
     notificationsEnabled = false;
-    filteredEvents = [];
+    filteredEvents: AddonCalendarGetEventsEvent[] = [];
     canLoadMore = false;
     loadMoreError = false;
     courseId: number;
@@ -402,7 +402,7 @@ export class AddonCalendarListPage implements OnDestroy {
      *
      * @return Filtered events.
      */
-    protected getFilteredEvents(): any[] {
+    protected getFilteredEvents(): AddonCalendarGetEventsEvent[] {
         if (!this.courseId) {
             // No filter, display everything.
             return this.events;
@@ -581,7 +581,7 @@ export class AddonCalendarListPage implements OnDestroy {
      * @param event Event info.
      * @return If date has changed and should be shown.
      */
-    protected endsSameDay(event: any): boolean {
+    protected endsSameDay(event: AddonCalendarGetEventsEvent): boolean {
         if (!event.timeduration) {
             // No duration.
             return true;
