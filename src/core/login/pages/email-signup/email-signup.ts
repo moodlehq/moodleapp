@@ -52,6 +52,7 @@ export class CoreLoginEmailSignupPage {
     // Data for age verification.
     ageVerificationForm: FormGroup;
     countryControl: FormControl;
+    signUpCountryControl: FormControl;
     isMinor = false; // Whether the user is minor age.
     ageDigitalConsentVerification: boolean; // Whether the age verification is enabled.
     supportName: string;
@@ -110,7 +111,8 @@ export class CoreLoginEmailSignupPage {
      */
     protected completeFormGroup(): void {
         this.signupForm.addControl('city', this.fb.control(this.settings.defaultcity || ''));
-        this.signupForm.addControl('country', this.fb.control(this.settings.country || ''));
+        this.signUpCountryControl = this.fb.control(this.settings.country || '');
+        this.signupForm.addControl('country', this.signUpCountryControl);
 
         // Add the name fields.
         for (const i in this.settings.namefields) {
@@ -333,6 +335,10 @@ export class CoreLoginEmailSignupPage {
 
         this.wsProvider.callAjax('core_auth_is_minor', params, {siteUrl: this.siteUrl}).then((result) => {
             if (!result.status) {
+                if (this.countryControl.value) {
+                    this.signUpCountryControl.setValue(this.countryControl.value);
+                }
+
                 // Not a minor, go ahead!
                 this.ageDigitalConsentVerification = false;
             } else {
