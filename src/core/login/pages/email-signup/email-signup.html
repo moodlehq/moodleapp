@@ -31,7 +31,7 @@
                 <ion-label stacked core-mark-required="true">{{ 'core.wheredoyoulive' | translate }}</ion-label>
                 <ion-select name="country" formControlName="country" [placeholder]="'core.login.selectacountry' | translate">
                     <ion-option value="">{{ 'core.login.selectacountry' | translate }}</ion-option>
-                    <ion-option *ngFor="let key of countriesKeys" [value]="key">{{countries[key]}}</ion-option>
+                    <ion-option *ngFor="let country of countries" [value]="country.code">{{country.name}}</ion-option>
                 </ion-select>
             </ion-item>
 
@@ -103,7 +103,7 @@
                 <ion-label stacked id="core-login-signup-country">{{ 'core.user.country' | translate }}</ion-label>
                 <ion-select name="country" formControlName="country" aria-labelledby="core-login-signup-country" [placeholder]="'core.login.selectacountry' | translate">
                     <ion-option value="">{{ 'core.login.selectacountry' | translate }}</ion-option>
-                    <ion-option *ngFor="let key of countriesKeys" [value]="key">{{countries[key]}}</ion-option>
+                    <ion-option *ngFor="let country of countries" [value]="country.code">{{country.name}}</ion-option>
                 </ion-select>
             </ion-item>
 

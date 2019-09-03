@@ -624,6 +624,25 @@ export class CoreUtilsProvider {
     }
 
     /**
+     * Get list of countries with their code and translated name. Sorted by the name of the country.
+     *
+     * @return Promise resolved with the list of countries.
+     */
+    getCountryListSorted(): Promise<any[]> {
+        // Get the keys of the countries.
+        return this.getCountryList().then((countries) => {
+            // Sort translations.
+            const sortedCountries = [];
+
+            Object.keys(countries).sort((a, b) => countries[a].localeCompare(countries[b])).forEach((key) => {
+                sortedCountries.push({code: key, name: countries[key]});
+            });
+
+            return sortedCountries;
+        });
+    }
+
+    /**
      * Get the list of language keys of the countries.
      *
      * @return Promise resolved with the countries list. Rejected if not translated.

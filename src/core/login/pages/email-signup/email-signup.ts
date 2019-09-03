@@ -43,7 +43,6 @@ export class CoreLoginEmailSignupPage {
     authInstructions: string;
     settings: any;
     countries: any;
-    countriesKeys: any[];
     categories: any[];
     settingsLoaded = false;
     captcha = {
@@ -177,9 +176,8 @@ export class CoreLoginEmailSignupPage {
                 });
             }
 
-            return this.utils.getCountryList().then((countries) => {
+            return this.utils.getCountryListSorted().then((countries) => {
                 this.countries = countries;
-                this.countriesKeys = Object.keys(countries);
             });
         });
     }
