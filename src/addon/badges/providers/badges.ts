@@ -86,8 +86,13 @@ export class AddonBadgesProvider {
                     updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
-            return site.read('core_badges_get_user_badges', data, preSets).then((response) => {
+            return site.read('core_badges_get_user_badges', data, preSets).then((response: AddonBadgesGetUserBadgesResult) => {
                 if (response && response.badges) {
+                    // In 3.7, competencies was renamed to alignment. Rename the property in 3.6 too.
+                    response.badges.forEach((badge) => {
+                        badge.alignment = badge.alignment || badge.competencies;
+                    });
+
                     return response.badges;
                 } else {
                     return Promise.reject(null);
@@ -167,7 +172,7 @@ export type AddonBadgesUserBadge = {
         claimcomment: string; // Claim comment.
         dateissued: number; // Date issued.
     };
-    alignment: { // @since 3.6. Badge alignments.
+    alignment?: { // @since 3.7. Calculated by the app for 3.6 sites. Badge alignments.
         id?: number; // Alignment id.
         badgeid?: number; // Badge id.
         targetName?: string; // Target name.
@@ -176,7 +181,16 @@ export type AddonBadgesUserBadge = {
         targetFramework?: string; // Target framework.
         targetCode?: string; // Target code.
     }[];
-    relatedbadges: { // @since 3.6. Related badges.
+    competencies?: { // @deprecated from 3.7. @since 3.6. In 3.7 it was renamed to alignment.
+        id?: number; // Alignment id.
+        badgeid?: number; // Badge id.
+        targetName?: string; // Target name.
+        targetUrl?: string; // Target URL.
+        targetDescription?: string; // Target description.
+        targetFramework?: string; // Target framework.
+        targetCode?: string; // Target code.
+    }[];
+    relatedbadges?: { // @since 3.6. Related badges.
         id: number; // Badge id.
         name: string; // Badge name.
         version?: string; // Version.
