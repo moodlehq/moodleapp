@@ -1144,21 +1144,21 @@ export type CoreCourseSummary = {
     fullname: string; // Fullname.
     shortname: string; // Shortname.
     idnumber: string; // Idnumber.
-    summary: string; // Summary.
-    summaryformat: number; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    startdate: number; // Startdate.
-    enddate: number; // Enddate.
-    visible: boolean; // Visible.
-    fullnamedisplay: string; // Fullnamedisplay.
+    summary: string; // @since 3.3. Summary.
+    summaryformat: number; // @since 3.3. Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    startdate: number; // @since 3.3. Startdate.
+    enddate: number; // @since 3.3. Enddate.
+    visible: boolean; // @since 3.8. Visible.
+    fullnamedisplay: string; // @since 3.3. Fullnamedisplay.
     viewurl: string; // Viewurl.
-    courseimage: string; // Courseimage.
-    progress?: number; // Progress.
-    hasprogress: boolean; // Hasprogress.
-    isfavourite: boolean; // Isfavourite.
-    hidden: boolean; // Hidden.
-    timeaccess?: number; // Timeaccess.
-    showshortname: boolean; // Showshortname.
-    coursecategory: string; // Coursecategory.
+    courseimage: string; // @since 3.6. Courseimage.
+    progress?: number; // @since 3.6. Progress.
+    hasprogress: boolean; // @since 3.6. Hasprogress.
+    isfavourite: boolean; // @since 3.6. Isfavourite.
+    hidden: boolean; // @since 3.6. Hidden.
+    timeaccess?: number; // @since 3.6. Timeaccess.
+    showshortname: boolean; // @since 3.6. Showshortname.
+    coursecategory: string; // @since 3.7. Coursecategory.
 };
 
 /**

@@ -441,8 +441,8 @@ export type AddonNotesGetCourseNotesResult = {
     sitenotes?: AddonNotesNote[]; // Site notes.
     coursenotes?: AddonNotesNote[]; // Couse notes.
     personalnotes?: AddonNotesNote[]; // Personal notes.
-    canmanagesystemnotes?: boolean; // Whether the user can manage notes at system level.
-    canmanagecoursenotes?: boolean; // Whether the user can manage notes at the given course.
+    canmanagesystemnotes?: boolean; // @since 3.7. Whether the user can manage notes at system level.
+    canmanagecoursenotes?: boolean; // @since 3.7. Whether the user can manage notes at the given course.
     warnings?: CoreWSExternalWarning[];
 };
 

@@ -486,7 +486,7 @@ export type AddonNotificationsNotificationPreferencesNotificationProcessor = {
     displayname: string; // Display name.
     name: string; // Processor name.
     locked: boolean; // Is locked by admin?.
-    lockedmessage?: string; // Text to display if locked.
+    lockedmessage?: string; // @since 3.6. Text to display if locked.
     userconfigured: number; // Is configured?.
     loggedin: AddonNotificationsNotificationPreferencesNotificationProcessorState;
     loggedoff: AddonNotificationsNotificationPreferencesNotificationProcessorState;

@@ -86,7 +86,7 @@ export class AddonBadgesProvider {
                     updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
-            return site.read('core_badges_get_user_badges', data, preSets).then((response: AddonBadgesGetUserBadgesResult) => {
+            return site.read('core_badges_get_user_badges', data, preSets).then((response: AddonBadgesGetUserBadgesResult): any => {
                 if (response && response.badges) {
                     // In 3.7, competencies was renamed to alignment. Rename the property in 3.6 too.
                     response.badges.forEach((badge) => {

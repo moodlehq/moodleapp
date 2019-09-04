@@ -1906,7 +1906,7 @@ export type AddonCalendarEventBase = {
     name: string; // Name.
     description?: string; // Description.
     descriptionformat: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    location?: string; // Location.
+    location?: string; // @since 3.6. Location.
     categoryid?: number; // Categoryid.
     groupid?: number; // Groupid.
     userid?: number; // Userid.
@@ -1947,17 +1947,17 @@ export type AddonCalendarEventBase = {
         summaryformat: number; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
         startdate: number; // Startdate.
         enddate: number; // Enddate.
-        visible: boolean; // Visible.
+        visible: boolean; // @since 3.8. Visible.
         fullnamedisplay: string; // Fullnamedisplay.
         viewurl: string; // Viewurl.
-        courseimage: string; // Courseimage.
-        progress?: number; // Progress.
-        hasprogress: boolean; // Hasprogress.
-        isfavourite: boolean; // Isfavourite.
-        hidden: boolean; // Hidden.
-        timeaccess?: number; // Timeaccess.
-        showshortname: boolean; // Showshortname.
-        coursecategory: string; // Coursecategory.
+        courseimage: string; // @since 3.6. Courseimage.
+        progress?: number; // @since 3.6. Progress.
+        hasprogress: boolean; // @since 3.6. Hasprogress.
+        isfavourite: boolean; // @since 3.6. Isfavourite.
+        hidden: boolean; // @since 3.6. Hidden.
+        timeaccess?: number; // @since 3.6. Timeaccess.
+        showshortname: boolean; // @since 3.6. Showshortname.
+        coursecategory: string; // @since 3.7. Coursecategory.
     };
     subscription?: {
         displayeventsource: boolean; // Displayeventsource.
@@ -1974,8 +1974,8 @@ export type AddonCalendarEventBase = {
     iscourseevent: boolean; // Iscourseevent.
     iscategoryevent: boolean; // Iscategoryevent.
     groupname?: string; // Groupname.
-    normalisedeventtype: string; // Normalisedeventtype.
-    normalisedeventtypetext: string; // Normalisedeventtypetext.
+    normalisedeventtype: string; // @since 3.7. Normalisedeventtype.
+    normalisedeventtypetext: string; // @since 3.7. Normalisedeventtypetext.
 };
 
 /**
@@ -2047,7 +2047,7 @@ export type AddonCalendarMonth = {
     date: CoreWSDate;
     periodname: string; // Periodname.
     includenavigation: boolean; // Includenavigation.
-    initialeventsloaded: boolean; // Initialeventsloaded.
+    initialeventsloaded: boolean; // @since 3.5. Initialeventsloaded.
     previousperiod: CoreWSDate;
     previousperiodlink: string; // Previousperiodlink.
     previousperiodname: string; // Previousperiodname.
@@ -2121,7 +2121,7 @@ export type AddonCalendarUpcoming = {
     courseid: number; // Courseid.
     categoryid?: number; // Categoryid.
     isloggedin: boolean; // Isloggedin.
-    date: CoreWSDate; // Date.
+    date: CoreWSDate; // @since 3.8. Date.
 };
 
 /**

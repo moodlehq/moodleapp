@@ -2797,7 +2797,7 @@ export type AddonMessagesConversation = {
     imageurl: string; // A link to the conversation picture, if set.
     type: number; // The type of the conversation (1=individual,2=group,3=self).
     membercount: number; // Total number of conversation members.
-    ismuted: boolean; // If the user muted this conversation.
+    ismuted: boolean; // @since 3.7. If the user muted this conversation.
     isfavourite: boolean; // If the user marked this conversation as a favourite.
     isread: boolean; // If the user has read all messages in the conversation.
     unreadcount: number; // The number of unread messages in this conversation.
@@ -2835,7 +2835,7 @@ export type AddonMessagesConversationMember = {
     isblocked: boolean; // If the user has been blocked.
     iscontact: boolean; // Is the user a contact?.
     isdeleted: boolean; // Is the user deleted?.
-    canmessageevenifblocked: boolean; // If the user can still message even if they get blocked.
+    canmessageevenifblocked: boolean; // @since 3.8. If the user can still message even if they get blocked.
     canmessage: boolean; // If the user can be messaged.
     requirescontact: boolean; // If the user requires to be contacts.
     contactrequests?: { // The contact requests.
@@ -2897,7 +2897,7 @@ export type AddonMessagesMessagePreferencesNotificationProcessor = {
     displayname: string; // Display name.
     name: string; // Processor name.
     locked: boolean; // Is locked by admin?.
-    lockedmessage?: string; // Text to display if locked.
+    lockedmessage?: string; // @since 3.6. Text to display if locked.
     userconfigured: number; // Is configured?.
     loggedin: {
         name: string; // Name.
@@ -2938,14 +2938,14 @@ export type AddonMessagesMessageAreaContact = {
     ismessaging: boolean; // If we are messaging the user.
     sentfromcurrentuser: boolean; // Was the last message sent from the current user?.
     lastmessage: string; // The user's last message.
-    lastmessagedate: number; // Timestamp for last message.
+    lastmessagedate: number; // @since 3.6. Timestamp for last message.
     messageid: number; // The unique search message id.
     showonlinestatus: boolean; // Show the user's online status?.
     isonline: boolean; // The user's online status.
     isread: boolean; // If the user has read the message.
     isblocked: boolean; // If the user has been blocked.
     unreadcount: number; // The number of unread messages in this conversation.
-    conversationid: number; // The id of the conversation.
+    conversationid: number; // @since 3.6. The id of the conversation.
 } & AddonMessagesMessageAreaContactCalculatedData;
 
 /**
@@ -3019,7 +3019,7 @@ export type AddonMessagesGetConversationCountsResult = {
     types: {
         1: number; // Total number of individual conversations.
         2: number; // Total number of group conversations.
-        3: number; // Total number of self conversations.
+        3: number; // @since 3.7. Total number of self conversations.
     };
 };
 
@@ -3031,7 +3031,7 @@ export type AddonMessagesGetUnreadConversationCountsResult = {
     types: {
         1: number; // Total number of unread individual conversations.
         2: number; // Total number of unread group conversations.
-        3: number; // Total number of unread self conversations.
+        3: number; // @since 3.7. Total number of unread self conversations.
     };
 };
 
@@ -3041,7 +3041,7 @@ export type AddonMessagesGetUnreadConversationCountsResult = {
 export type AddonMessagesGetUserMessagePreferencesResult = {
     preferences: AddonMessagesMessagePreferences;
     blocknoncontacts: number; // Privacy messaging setting to define who can message you.
-    entertosend: boolean; // User preference for using enter to send messages.
+    entertosend: boolean; // @since 3.6. User preference for using enter to send messages.
     warnings?: CoreWSExternalWarning[];
 };
 
@@ -3073,9 +3073,9 @@ export type AddonMessagesGetMessagesMessage = {
     timeread: number; // Time read.
     usertofullname: string; // User to full name.
     userfromfullname: string; // User from full name.
-    component?: string; // The component that generated the notification.
-    eventtype?: string; // The type of notification.
-    customdata?: string; // Custom data to be passed to the message processor.
+    component?: string; // @since 3.7. The component that generated the notification.
+    eventtype?: string; // @since 3.7. The type of notification.
+    customdata?: string; // @since 3.7. Custom data to be passed to the message processor.
 } & AddonMessagesGetMessagesMessageCalculatedData;
 
 /**
@@ -3108,11 +3108,11 @@ export type AddonMessagesSendInstantMessagesMessage = {
     msgid: number; // Test this to know if it succeeds:  id of the created message if it succeeded, -1 when failed.
     clientmsgid?: string; // Your own id for the message.
     errormessage?: string; // Error message - if it failed.
-    text?: string; // The text of the message.
-    timecreated?: number; // The timecreated timestamp for the message.
-    conversationid?: number; // The conversation id for this message.
-    useridfrom?: number; // The user id who sent the message.
-    candeletemessagesforallusers: boolean; // If the user can delete messages in the conversation for all users.
+    text?: string; // @since 3.6. The text of the message.
+    timecreated?: number; // @since 3.6. The timecreated timestamp for the message.
+    conversationid?: number; // @since 3.6. The conversation id for this message.
+    useridfrom?: number; // @since 3.6. The user id who sent the message.
+    candeletemessagesforallusers: boolean; // @since 3.7. If the user can delete messages in the conversation for all users.
 };
 
 /**

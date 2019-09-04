@@ -717,7 +717,7 @@ export type AddonCompetencyPath = {
     framework: AddonCompetencyPathNode;
     pluginbaseurl: string; // Pluginbaseurl.
     pagecontextid: number; // Pagecontextid.
-    showlinks: boolean; // Showlinks.
+    showlinks: boolean; // @since 3.7. Showlinks.
 };
 
 /**
@@ -816,7 +816,7 @@ export type AddonCompetencySummary = {
     scaleconfiguration: string; // Scaleconfiguration.
     taxonomyterm: string; // Taxonomyterm.
     comppath: AddonCompetencyPath;
-    pluginbaseurl: string; // Pluginbaseurl.
+    pluginbaseurl: string; // @since 3.7. Pluginbaseurl.
 };
 
 /**
@@ -891,8 +891,8 @@ export type AddonCompetencyUserCompetencySummaryInCourse = {
     usercompetencysummary: AddonCompetencyUserCompetencySummary;
     course: CoreCourseSummary;
     coursemodules: CoreCourseModuleSummary[]; // Coursemodules.
-    plans: AddonCompetencyPlan[]; // Plans.
-    pluginbaseurl: string; // Pluginbaseurl.
+    plans: AddonCompetencyPlan[]; // @since 3.7. Plans.
+    pluginbaseurl: string; // @since 3.7. Pluginbaseurl.
 };
 
 /**
@@ -986,7 +986,7 @@ export type AddonCompetencyDataForCourseCompetenciesPageResult = {
     statistics: AddonCompetencyCourseCompetencyStatistics;
     competencies: AddonCompetencyDataForCourseCompetenciesPageCompetency[];
     manageurl: string; // Url to the manage competencies page.
-    pluginbaseurl: string; // Url to the course competencies page.
+    pluginbaseurl: string; // @since 3.6. Url to the course competencies page.
 };
 
 /**
@@ -1003,5 +1003,5 @@ export type AddonCompetencyDataForCourseCompetenciesPageCompetency = {
         selected: boolean; // If this is the currently selected option.
     }[];
     comppath: AddonCompetencyPath;
-    plans: AddonCompetencyPlan[];
+    plans: AddonCompetencyPlan[]; // @since 3.7.
 };
