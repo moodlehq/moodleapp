@@ -29,8 +29,8 @@ import * as moment from 'moment';
 export class AddonCalendarHelperProvider {
     protected logger;
 
-    protected EVENTICONS = {
-        course: 'fa-university',
+    static EVENTICONS = {
+        course: 'fa-graduation-cap',
         group: 'people',
         site: 'globe',
         user: 'person',
@@ -131,7 +131,7 @@ export class AddonCalendarHelperProvider {
      * @param e Event to format.
      */
     formatEventData(e: any): void {
-        e.eventIcon = this.EVENTICONS[e.eventtype] || '';
+        e.eventIcon = AddonCalendarHelperProvider.EVENTICONS[e.eventtype] || '';
         if (!e.eventIcon) {
             e.eventIcon = this.courseProvider.getModuleIconSrc(e.modulename);
             e.moduleIcon = e.eventIcon;
@@ -310,6 +310,37 @@ export class AddonCalendarHelperProvider {
     }
 
     /**
+     * Filter events to be shown on the events list.
+     *
+     * @param events Events without filtering.
+     * @param filter Filter from popover.
+     * @param categories Categories indexed by ID.
+     * @return Filtered events.
+     */
+    getFilteredEvents(events: any[], filter: any, categories: any): any[] {
+        // Do not filter.
+        if (!filter.filtered) {
+            return events;
+        }
+
+        const courseId = filter.courseId ? Number(filter.courseId) : undefined;
+
+        if (!courseId || courseId < 0) {
+            // Filter only by type.
+            return events.filter((event) => {
+                return filter[event.formattedType];
+            });
+        }
+
+        const categoryId = filter.categoryId ? Number(filter.categoryId) : undefined;
+
+        return  events.filter((event) => {
+            return filter[event.formattedType] &&
+                this.shouldDisplayEvent(event, courseId, categoryId, categories);
+        });
+    }
+
+    /**
      * Check if an event should be displayed based on the filter.
      *
      * @param event Event object.
@@ -352,8 +383,10 @@ export class AddonCalendarHelperProvider {
             return false;
         }
 
+        const eventCourse = (event.course && event.course.id) || event.courseid;
+
         // Show the event if it is from site home or if it matches the selected course.
-        return event.course && (event.course.id == this.sitesProvider.getCurrentSiteHomeId() || event.course.id == courseId);
+        return eventCourse && (eventCourse == this.sitesProvider.getCurrentSiteHomeId() || eventCourse == courseId);
     }
 
     /**

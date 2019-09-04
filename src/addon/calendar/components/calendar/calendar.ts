@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, Input, OnChanges, SimpleChange, Output, EventEmitter } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input, OnChanges, DoCheck, SimpleChange, Output, EventEmitter,
+    KeyValueDiffers } from '@angular/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreSitesProvider } from '@providers/sites';
@@ -32,11 +33,10 @@ import { CoreAppProvider } from '@providers/app';
     selector: 'addon-calendar-calendar',
     templateUrl: 'addon-calendar-calendar.html',
 })
-export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDestroy {
+export class AddonCalendarCalendarComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     @Input() initialYear: number | string; // Initial year to load.
     @Input() initialMonth: number | string; // Initial month to load.
-    @Input() courseId: number | string;
-    @Input() categoryId: number | string; // Category ID the course belongs to.
+    @Input() filter: any; // Filter to apply.
     @Input() canNavigate?: string | boolean; // Whether to include arrows to change the month. Defaults to true.
     @Input() displayNavButtons?: string | boolean; // Whether to display nav buttons created by this component. Defaults to true.
     @Output() onEventClicked = new EventEmitter<number>();
@@ -59,6 +59,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     protected offlineEditedEventsIds = []; // IDs of events edited in offline.
     protected deletedEvents = []; // Events deleted in offline.
     protected currentTime: number;
+    protected differ: any; // To detect changes in the data input.
 
     // Observers.
     protected undeleteEventObserver: any;
@@ -67,6 +68,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     constructor(eventsProvider: CoreEventsProvider,
             sitesProvider: CoreSitesProvider,
             localNotificationsProvider: CoreLocalNotificationsProvider,
+            differs: KeyValueDiffers,
             private calendarProvider: AddonCalendarProvider,
             private calendarHelper: AddonCalendarHelperProvider,
             private calendarOffline: AddonCalendarOfflineProvider,
@@ -102,6 +104,8 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
                 }
             }
         }, this.currentSiteId);
+
+        this.differ = differs.find([]).create();
     }
 
     /**
@@ -125,9 +129,18 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
         this.canNavigate = typeof this.canNavigate == 'undefined' ? true : this.utils.isTrueOrOne(this.canNavigate);
         this.displayNavButtons = typeof this.displayNavButtons == 'undefined' ? true :
                 this.utils.isTrueOrOne(this.displayNavButtons);
+    }
 
-        if ((changes.courseId || changes.categoryId) && this.weeks) {
-            this.filterEvents();
+    /**
+     * Detect and act upon changes that Angular can’t or won’t detect on its own (objects and arrays).
+     */
+    ngDoCheck(): void {
+        if (this.weeks) {
+            // Check if there's any change in the filter object.
+            const changes = this.differ.diff(this.filter);
+            if (changes) {
+                this.filterEvents();
+            }
         }
     }
 
@@ -260,21 +273,12 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     }
 
     /**
-     * Filter events to only display events belonging to a certain course.
+     * Filter events based on the filter popover.
      */
     filterEvents(): void {
-        const courseId = this.courseId ? Number(this.courseId) : undefined,
-            categoryId = this.categoryId ? Number(this.categoryId) : undefined;
-
         this.weeks.forEach((week) => {
             week.days.forEach((day) => {
-                if (!courseId || courseId < 0) {
-                    day.filteredEvents = day.events;
-                } else {
-                    day.filteredEvents = day.events.filter((event) => {
-                        return this.calendarHelper.shouldDisplayEvent(event, courseId, categoryId, this.categories);
-                    });
-                }
+                day.filteredEvents = this.calendarHelper.getFilteredEvents(day.events, this.filter, this.categories);
 
                 // Re-calculate some properties.
                 this.calendarHelper.calculateDayData(day, day.filteredEvents);

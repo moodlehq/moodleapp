@@ -21,11 +21,13 @@ import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
 import { AddonCalendarCalendarComponent } from '../components/calendar/calendar';
 import { AddonCalendarUpcomingEventsComponent } from '../components/upcoming-events/upcoming-events';
+import { AddonCalendarFilterPopoverComponent } from '../components/filter/filter';
 
 @NgModule({
     declarations: [
         AddonCalendarCalendarComponent,
-        AddonCalendarUpcomingEventsComponent
+        AddonCalendarUpcomingEventsComponent,
+        AddonCalendarFilterPopoverComponent
     ],
     imports: [
         CommonModule,
@@ -39,7 +41,11 @@ import { AddonCalendarUpcomingEventsComponent } from '../components/upcoming-eve
     ],
     exports: [
         AddonCalendarCalendarComponent,
-        AddonCalendarUpcomingEventsComponent
+        AddonCalendarUpcomingEventsComponent,
+        AddonCalendarFilterPopoverComponent
+    ],
+    entryComponents: [
+        AddonCalendarFilterPopoverComponent
     ]
 })
 export class AddonCalendarComponentsModule {}

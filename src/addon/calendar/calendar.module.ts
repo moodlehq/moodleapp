@@ -27,6 +27,7 @@ import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { CoreUpdateManagerProvider } from '@providers/update-manager';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
+import { AddonCalendarComponentsModule } from './components/components.module';
 
 // List of providers (without handlers).
 export const ADDON_CALENDAR_PROVIDERS: any[] = [
@@ -40,6 +41,7 @@ export const ADDON_CALENDAR_PROVIDERS: any[] = [
     declarations: [
     ],
     imports: [
+        AddonCalendarComponentsModule,
     ],
     providers: [
         AddonCalendarProvider,
