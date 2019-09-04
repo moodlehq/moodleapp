@@ -15,12 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Script for converting a PHP WS structure to a TS type.
+ * Script for getting the PHP structure of a WS returns or params.
  *
  * The first parameter (required) is the path to the Moodle installation to use.
  * The second parameter (required) is the name to the WS to convert.
- * The third parameter (optional) is the name to put to the TS type. Defaults to "TypeName".
- * The fourth parameter (optional) is a number: 1 to convert the params structure,
+ * The third parameter (optional) is a number: 1 to convert the params structure,
  * 0 to convert the returns structure. Defaults to 0.
  */
 
@@ -37,8 +36,7 @@ if (!isset($argv[2])) {
 
 $moodlepath = $argv[1];
 $wsname = $argv[2];
-$typename = isset($argv[3]) ? $argv[3] : 'TypeName';
-$useparams = !!(isset($argv[4]) && $argv[4]);
+$useparams = !!(isset($argv[3]) && $argv[3]);
 
 define('CLI_SCRIPT', true);
 
@@ -53,10 +51,5 @@ if ($structure === false) {
     die();
 }
 
-if ($useparams) {
-    $description = "Params of WS $wsname.";
-} else {
-    $description = "Result of WS $wsname.";
-}
-
-echo get_ts_doc(null, $description, '') . "export type $typename = " . convert_to_ts(null, $structure, $useparams) . ";\n";
+remove_default_closures($structure);
+echo serialize($structure);

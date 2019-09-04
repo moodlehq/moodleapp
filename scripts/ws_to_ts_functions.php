@@ -19,6 +19,28 @@
  */
 
 /**
+ * Get the structure of a WS params or returns.
+ */
+function get_ws_structure($wsname, $useparams) {
+    global $DB;
+
+    // get all the function descriptions
+    $functions = $DB->get_records('external_functions', array(), 'name');
+    $functiondescs = array();
+    foreach ($functions as $function) {
+        $functiondescs[$function->name] = external_api::external_function_info($function);
+    }
+
+    if (!isset($functiondescs[$wsname])) {
+        return false;
+    } else if ($useparams) {
+        return $functiondescs[$wsname]->parameters_desc;
+    } else {
+        return $functiondescs[$wsname]->returns_desc;
+    }
+}
+
+/**
  * Fix a comment: make sure first letter is uppercase and add a dot at the end if needed.
  */
 function fix_comment($desc) {
@@ -134,5 +156,89 @@ function convert_to_ts($key, $value, $boolisnumber = false, $indentation = '', $
         echo "WARNING: Unknown structure: $key " . get_class($value) . " \n";
 
         return "";
+    }
+}
+
+/**
+ * Concatenate two paths.
+ */
+function concatenate_paths($left, $right, $separator = '/') {
+    if (!is_string($left) || $left == '') {
+        return $right;
+    } else if (!is_string($right) || $right == '') {
+        return $left;
+    }
+
+    $lastCharLeft = substr($left, -1);
+    $firstCharRight = $right[0];
+
+    if ($lastCharLeft === $separator && $firstCharRight === $separator) {
+        return $left . substr($right, 1);
+    } else if ($lastCharLeft !== $separator && $firstCharRight !== '/') {
+        return $left . '/' . $right;
+    } else {
+        return $left . $right;
+    }
+}
+
+/**
+ * Detect changes between 2 WS structures. We only detect fields that have been added or modified, not removed fields.
+ */
+function detect_ws_changes($new, $old, $key = '', $path = '') {
+    $messages = [];
+
+    if (gettype($new) != gettype($old)) {
+        // The type has changed.
+        $messages[] = "Property '$key' has changed type, from '" . gettype($old) . "' to '" . gettype($new) .
+                        ($path != '' ? "' inside $path." : "'.");
+
+    } else if ($new instanceof external_value && $new->type != $old->type) {
+        // The type has changed.
+        $messages[] = "Property '$key' has changed type, from '" . $old->type . "' to '" . $new->type .
+                        ($path != '' ? "' inside $path." : "'.");
+
+    } else if ($new instanceof external_warnings || $new instanceof external_files) {
+        // Ignore these types.
+
+    } else if ($new instanceof external_single_structure) {
+        // Check each subproperty.
+        $newpath = ($path != '' ? "$path." : '') . $key;
+
+        foreach ($new->keys as $subkey => $value) {
+            if (!isset($old->keys[$subkey])) {
+                // New property.
+                $messages[] = "New property '$subkey' found" . ($newpath != '' ? " inside '$newpath'." : '.');
+            } else {
+                $messages = array_merge($messages, detect_ws_changes($value, $old->keys[$subkey], $subkey, $newpath));
+            }
+        }
+    } else if ($new instanceof external_multiple_structure) {
+        // Recursive call with the content.
+        $messages = array_merge($messages, detect_ws_changes($new->content, $old->content, $key, $path));
+    }
+
+    return $messages;
+}
+
+/**
+ * Remove all closures (anonymous functions) in the default values so the object can be serialized.
+ */
+function remove_default_closures($value) {
+    if ($value instanceof external_warnings || $value instanceof external_files) {
+        // Ignore these types.
+
+    } else if ($value instanceof external_value) {
+        if ($value->default instanceof Closure) {
+            $value->default = null;
+        }
+
+    } else if ($value instanceof external_single_structure) {
+
+        foreach ($value->keys as $key => $subvalue) {
+            remove_default_closures($subvalue);
+        }
+
+    } else if ($value instanceof external_multiple_structure) {
+        remove_default_closures($value->content);
     }
 }
