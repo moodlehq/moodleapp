@@ -247,12 +247,10 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
                 return this.fetchEntriesData();
             });
-        }).then(() => {
-            // All data obtained, now fill the context menu.
-            this.fillContextMenu(refresh);
         }).finally(() => {
             this.canAdd = canAdd;
             this.canSearch = canSearch;
+            this.fillContextMenu(refresh);
         });
     }
 

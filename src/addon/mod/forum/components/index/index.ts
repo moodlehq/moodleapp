@@ -244,8 +244,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             this.domUtils.showErrorModalDefault(message, 'addon.mod_forum.errorgetforum', true);
 
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
-        }).then(() => {
-            // All data obtained, now fill the context menu.
+        }).finally(() => {
             this.fillContextMenu(refresh);
         });
     }

@@ -158,8 +158,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
             }));
 
             return Promise.all(promises);
-        }).then(() => {
-            // All data obtained, now fill the context menu.
+        }).finally(() => {
             this.fillContextMenu(refresh);
         });
     }

@@ -219,8 +219,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
                     }
                 });
             });
-        }).then(() => {
-            // All data obtained, now fill the context menu.
+        }).finally(() => {
             this.fillContextMenu(refresh);
         });
     }

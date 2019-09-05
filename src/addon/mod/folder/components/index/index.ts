@@ -129,8 +129,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
             }
 
             this.showModuleData(folder);
-
-            // All data obtained, now fill the context menu.
+        }).finally(() => {
             this.fillContextMenu(refresh);
         });
     }

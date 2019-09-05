@@ -154,8 +154,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             return this.fetchOptions(hasOffline).then(() => {
                 return this.fetchResults();
             });
-        }).then(() => {
-            // All data obtained, now fill the context menu.
+        }).finally(() => {
             this.fillContextMenu(refresh);
         });
     }

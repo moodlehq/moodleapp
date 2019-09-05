@@ -299,8 +299,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                     return this.fetchWikiPage();
                 });
             });
-        }).then(() => {
-            // All data obtained, now fill the context menu.
+        }).finally(() => {
             this.fillContextMenu(refresh);
         }).catch((error) => {
             if (this.pageWarning) {
