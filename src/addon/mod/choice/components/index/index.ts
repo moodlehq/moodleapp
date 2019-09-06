@@ -16,7 +16,7 @@ import { Component, Optional, Injector } from '@angular/core';
 import { Content } from 'ionic-angular';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
-import { AddonModChoiceProvider } from '../../providers/choice';
+import { AddonModChoiceProvider, AddonModChoiceChoice, AddonModChoiceOption, AddonModChoiceResult } from '../../providers/choice';
 import { AddonModChoiceOfflineProvider } from '../../providers/offline';
 import { AddonModChoiceSyncProvider } from '../../providers/sync';
 
@@ -31,9 +31,9 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     component = AddonModChoiceProvider.COMPONENT;
     moduleName = 'choice';
 
-    choice: any;
-    options = [];
-    selectedOption: any;
+    choice: AddonModChoiceChoice;
+    options: AddonModChoiceOption[] = [];
+    selectedOption: {id: number};
     choiceNotOpenYet = false;
     choiceClosed = false;
     canEdit = false;
@@ -43,6 +43,8 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     labels = [];
     results = [];
     publishInfo: string; // Message explaining the user what will happen with his choices.
+    openTimeReadable: string;
+    closeTimeReadable: string;
 
     protected userId: number;
     protected syncEventName = AddonModChoiceSyncProvider.AUTO_SYNCED;
@@ -122,12 +124,12 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
 
         return this.choiceProvider.getChoice(this.courseId, this.module.id).then((choice) => {
             this.choice = choice;
-            this.choice.timeopen = parseInt(choice.timeopen) * 1000;
-            this.choice.openTimeReadable = this.timeUtils.userDate(choice.timeopen);
-            this.choice.timeclose = parseInt(choice.timeclose) * 1000;
-            this.choice.closeTimeReadable = this.timeUtils.userDate(choice.timeclose);
+            this.choice.timeopen = choice.timeopen * 1000;
+            this.choice.timeclose = choice.timeclose * 1000;
+            this.openTimeReadable = this.timeUtils.userDate(choice.timeopen);
+            this.closeTimeReadable = this.timeUtils.userDate(choice.timeclose);
 
-            this.description = choice.intro || choice.description;
+            this.description = choice.intro;
             this.choiceNotOpenYet = choice.timeopen && choice.timeopen > this.now;
             this.choiceClosed = choice.timeclose && choice.timeclose <= this.now;
 
@@ -175,7 +177,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
 
             if (hasOffline) {
                 promise = this.choiceOffline.getResponse(this.choice.id).then((response) => {
-                    const optionsKeys = {};
+                    const optionsKeys: {[id: number]: AddonModChoiceOption} = {};
                     options.forEach((option) => {
                         optionsKeys[option.id] = option;
                     });
@@ -223,7 +225,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
                 promise = Promise.resolve(options);
             }
 
-            promise.then((options) => {
+            promise.then((options: AddonModChoiceOption[]) => {
                 const isOpen = this.isChoiceOpen();
 
                 let hasAnswered = false;
@@ -291,11 +293,11 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             let hasVotes = false;
             this.data = [];
             this.labels = [];
-            results.forEach((result) => {
+            results.forEach((result: AddonModChoiceResultFormatted) => {
                 if (result.numberofuser > 0) {
                     hasVotes = true;
                 }
-                result.percentageamount = parseFloat(result.percentageamount).toFixed(1);
+                result.percentageamountfixed = result.percentageamount.toFixed(1);
                 this.data.push(result.numberofuser);
                 this.labels.push(result.text);
             });
@@ -429,3 +431,10 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
         return result.updated;
     }
 }
+
+/**
+ * Choice result with some calculated data.
+ */
+export type AddonModChoiceResultFormatted = AddonModChoiceResult & {
+    percentageamountfixed: string; // Percentage of users answers with fixed decimals.
+};

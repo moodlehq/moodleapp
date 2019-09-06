@@ -20,6 +20,7 @@ import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModChoiceOfflineProvider } from './offline';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
 
 /**
  * Service that provides some features for choices.
@@ -118,7 +119,9 @@ export class AddonModChoiceProvider {
                 responses: responses
             };
 
-            return site.write('mod_choice_delete_choice_responses', params).then((response) => {
+            return site.write('mod_choice_delete_choice_responses', params)
+                    .then((response: AddonModChoiceDeleteChoiceResponsesResult) => {
+
                 // Other errors ocurring.
                 if (!response || response.status === false) {
                     return Promise.reject(this.utils.createFakeWSError(''));
@@ -179,7 +182,7 @@ export class AddonModChoiceProvider {
      * @return Promise resolved when the choice is retrieved.
      */
     protected getChoiceByDataKey(siteId: string, courseId: number, key: string, value: any, forceCache?: boolean,
-            ignoreCache?: boolean): Promise<any> {
+            ignoreCache?: boolean): Promise<AddonModChoiceChoice> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
@@ -198,7 +201,9 @@ export class AddonModChoiceProvider {
                 preSets.emergencyCache = false;
             }
 
-            return site.read('mod_choice_get_choices_by_courses', params, preSets).then((response) => {
+            return site.read('mod_choice_get_choices_by_courses', params, preSets)
+                    .then((response: AddonModChoiceGetChoicesByCoursesResult): any => {
+
                 if (response && response.choices) {
                     const currentChoice = response.choices.find((choice) => choice[key] == value);
                     if (currentChoice) {
@@ -221,7 +226,8 @@ export class AddonModChoiceProvider {
      * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
      * @return Promise resolved when the choice is retrieved.
      */
-    getChoice(courseId: number, cmId: number, siteId?: string, forceCache?: boolean, ignoreCache?: boolean): Promise<any> {
+    getChoice(courseId: number, cmId: number, siteId?: string, forceCache?: boolean, ignoreCache?: boolean)
+            : Promise<AddonModChoiceChoice> {
         return this.getChoiceByDataKey(siteId, courseId, 'coursemodule', cmId, forceCache, ignoreCache);
     }
 
@@ -235,7 +241,8 @@ export class AddonModChoiceProvider {
      * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
      * @return Promise resolved when the choice is retrieved.
      */
-    getChoiceById(courseId: number, choiceId: number, siteId?: string, forceCache?: boolean, ignoreCache?: boolean): Promise<any> {
+    getChoiceById(courseId: number, choiceId: number, siteId?: string, forceCache?: boolean, ignoreCache?: boolean)
+            : Promise<AddonModChoiceChoice> {
         return this.getChoiceByDataKey(siteId, courseId, 'id', choiceId, forceCache, ignoreCache);
     }
 
@@ -247,7 +254,7 @@ export class AddonModChoiceProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with choice options.
      */
-    getOptions(choiceId: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
+    getOptions(choiceId: number, ignoreCache?: boolean, siteId?: string): Promise<AddonModChoiceOption[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 choiceid: choiceId
@@ -262,7 +269,9 @@ export class AddonModChoiceProvider {
                 preSets.emergencyCache = false;
             }
 
-            return site.read('mod_choice_get_choice_options', params, preSets).then((response) => {
+            return site.read('mod_choice_get_choice_options', params, preSets)
+                    .then((response: AddonModChoiceGetChoiceOptionsResult): any => {
+
                 if (response.options) {
                     return response.options;
                 }
@@ -280,7 +289,7 @@ export class AddonModChoiceProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with choice results.
      */
-    getResults(choiceId: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
+    getResults(choiceId: number, ignoreCache?: boolean, siteId?: string): Promise<AddonModChoiceResult[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 choiceid: choiceId
@@ -294,7 +303,9 @@ export class AddonModChoiceProvider {
                 preSets.emergencyCache = false;
             }
 
-            return site.read('mod_choice_get_choice_results', params, preSets).then((response) => {
+            return site.read('mod_choice_get_choice_results', params, preSets)
+                    .then((response: AddonModChoiceGetChoiceResults): any => {
+
                 if (response.options) {
                     return response.options;
                 }
@@ -456,3 +467,96 @@ export class AddonModChoiceProvider {
         });
     }
 }
+
+/**
+ * Choice returned by mod_choice_get_choices_by_courses.
+ */
+export type AddonModChoiceChoice = {
+    id: number; // Choice instance id.
+    coursemodule: number; // Course module id.
+    course: number; // Course id.
+    name: string; // Choice name.
+    intro: string; // The choice intro.
+    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introfiles?: CoreWSExternalFile[]; // @since 3.2.
+    publish?: boolean; // If choice is published.
+    showresults?: number; // 0 never, 1 after answer, 2 after close, 3 always.
+    display?: number; // Display mode (vertical, horizontal).
+    allowupdate?: boolean; // Allow update.
+    allowmultiple?: boolean; // Allow multiple choices.
+    showunanswered?: boolean; // Show users who not answered yet.
+    includeinactive?: boolean; // Include inactive users.
+    limitanswers?: boolean; // Limit unswers.
+    timeopen?: number; // Date of opening validity.
+    timeclose?: number; // Date of closing validity.
+    showpreview?: boolean; // Show preview before timeopen.
+    timemodified?: number; // Time of last modification.
+    completionsubmit?: boolean; // Completion on user submission.
+    section?: number; // Course section id.
+    visible?: boolean; // Visible.
+    groupmode?: number; // Group mode.
+    groupingid?: number; // Group id.
+};
+
+/**
+ * Option returned by mod_choice_get_choice_options.
+ */
+export type AddonModChoiceOption = {
+    id: number; // Option id.
+    text: string; // Text of the choice.
+    maxanswers: number; // Maximum number of answers.
+    displaylayout: boolean; // True for orizontal, otherwise vertical.
+    countanswers: number; // Number of answers.
+    checked: boolean; // We already answered.
+    disabled: boolean; // Option disabled.
+};
+
+/**
+ * Result returned by mod_choice_get_choice_results.
+ */
+export type AddonModChoiceResult = {
+    id: number; // Choice instance id.
+    text: string; // Text of the choice.
+    maxanswer: number; // Maximum number of answers.
+    userresponses: {
+        userid: number; // User id.
+        fullname: string; // User full name.
+        profileimageurl: string; // Profile user image url.
+        answerid?: number; // Answer id.
+        timemodified?: number; // Time of modification.
+    }[];
+    numberofuser: number; // Number of users answers.
+    percentageamount: number; // Percentage of users answers.
+};
+
+/**
+ * Result of WS mod_choice_get_choices_by_courses.
+ */
+export type AddonModChoiceGetChoicesByCoursesResult = {
+    choices: AddonModChoiceChoice[];
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_choice_get_choice_options.
+ */
+export type AddonModChoiceGetChoiceOptionsResult = {
+    options: AddonModChoiceOption[]; // Options.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_choice_get_choice_results.
+ */
+export type AddonModChoiceGetChoiceResults = {
+    options: AddonModChoiceResult[];
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_choice_delete_choice_responses.
+ */
+export type AddonModChoiceDeleteChoiceResponsesResult = {
+    status: boolean; // Status, true if everything went right.
+    warnings?: CoreWSExternalWarning[];
+};
