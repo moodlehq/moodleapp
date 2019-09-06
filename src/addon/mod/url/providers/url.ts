@@ -21,6 +21,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreConstants } from '@core/constants';
 import { CoreSite } from '@classes/site';
+import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
 
 /**
  * Service that provides some features for urls.
@@ -44,7 +45,7 @@ export class AddonModUrlProvider {
      * @param url URL data.
      * @return Final display type.
      */
-    getFinalDisplayType(url: any): number {
+    getFinalDisplayType(url: AddonModUrlUrl): number {
         if (!url) {
             return -1;
         }
@@ -109,7 +110,7 @@ export class AddonModUrlProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the url is retrieved.
      */
-    protected getUrlDataByKey(courseId: number, key: string, value: any, siteId?: string): Promise<any> {
+    protected getUrlDataByKey(courseId: number, key: string, value: any, siteId?: string): Promise<AddonModUrlUrl> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     courseids: [courseId]
@@ -119,7 +120,9 @@ export class AddonModUrlProvider {
                     updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
-            return site.read('mod_url_get_urls_by_courses', params, preSets).then((response) => {
+            return site.read('mod_url_get_urls_by_courses', params, preSets)
+                    .then((response: AddonModUrlGetUrlsByCoursesResult): any => {
+
                 if (response && response.urls) {
                     const currentUrl = response.urls.find((url) => {
                         return url[key] == value;
@@ -142,7 +145,7 @@ export class AddonModUrlProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the url is retrieved.
      */
-    getUrl(courseId: number, cmId: number, siteId?: string): Promise<any> {
+    getUrl(courseId: number, cmId: number, siteId?: string): Promise<AddonModUrlUrl> {
         return this.getUrlDataByKey(courseId, 'coursemodule', cmId, siteId);
     }
 
@@ -231,3 +234,33 @@ export class AddonModUrlProvider {
         return this.logHelper.logSingle('mod_url_view_url', params, AddonModUrlProvider.COMPONENT, id, name, 'url', {}, siteId);
     }
 }
+
+/**
+ * URL returnd by mod_url_get_urls_by_courses.
+ */
+export type AddonModUrlUrl = {
+    id: number; // Module id.
+    coursemodule: number; // Course module id.
+    course: number; // Course id.
+    name: string; // URL name.
+    intro: string; // Summary.
+    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introfiles: CoreWSExternalFile[];
+    externalurl: string; // External URL.
+    display: number; // How to display the url.
+    displayoptions: string; // Display options (width, height).
+    parameters: string; // Parameters to append to the URL.
+    timemodified: number; // Last time the url was modified.
+    section: number; // Course section id.
+    visible: number; // Module visibility.
+    groupmode: number; // Group mode.
+    groupingid: number; // Grouping id.
+};
+
+/**
+ * Result of WS mod_url_get_urls_by_courses.
+ */
+export type AddonModUrlGetUrlsByCoursesResult = {
+    urls: AddonModUrlUrl[];
+    warnings?: CoreWSExternalWarning[];
+};

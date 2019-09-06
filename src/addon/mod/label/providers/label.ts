@@ -17,6 +17,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
 
 /**
  * Service that provides some features for labels.
@@ -52,7 +53,7 @@ export class AddonModLabelProvider {
      * @return Promise resolved when the label is retrieved.
      */
     protected getLabelByField(courseId: number, key: string, value: any, forceCache?: boolean, ignoreCache?: boolean,
-            siteId?: string): Promise<any> {
+            siteId?: string): Promise<AddonModLabelLabel> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
@@ -70,7 +71,9 @@ export class AddonModLabelProvider {
                  preSets.emergencyCache = false;
              }
 
-            return site.read('mod_label_get_labels_by_courses', params, preSets).then((response) => {
+            return site.read('mod_label_get_labels_by_courses', params, preSets)
+                    .then((response: AddonModLabelGetLabelsByCoursesResult): any => {
+
                 if (response && response.labels) {
                     const currentLabel = response.labels.find((label) => label[key] == value);
                     if (currentLabel) {
@@ -93,7 +96,8 @@ export class AddonModLabelProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the label is retrieved.
      */
-    getLabel(courseId: number, cmId: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
+    getLabel(courseId: number, cmId: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string)
+            : Promise<AddonModLabelLabel> {
         return this.getLabelByField(courseId, 'coursemodule', cmId, forceCache, ignoreCache, siteId);
     }
 
@@ -107,7 +111,8 @@ export class AddonModLabelProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the label is retrieved.
      */
-    getLabelById(courseId: number, labelId: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
+    getLabelById(courseId: number, labelId: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string)
+            : Promise<AddonModLabelLabel> {
         return this.getLabelByField(courseId, 'id', labelId, forceCache, ignoreCache, siteId);
     }
 
@@ -170,3 +175,29 @@ export class AddonModLabelProvider {
         return site.wsAvailable('mod_label_get_labels_by_courses');
     }
 }
+
+/**
+ * Label returned by mod_label_get_labels_by_courses.
+ */
+export type AddonModLabelLabel = {
+    id: number; // Module id.
+    coursemodule: number; // Course module id.
+    course: number; // Course id.
+    name: string; // Label name.
+    intro: string; // Label contents.
+    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introfiles: CoreWSExternalFile[];
+    timemodified: number; // Last time the label was modified.
+    section: number; // Course section id.
+    visible: number; // Module visibility.
+    groupmode: number; // Group mode.
+    groupingid: number; // Grouping id.
+};
+
+/**
+ * Result of WS mod_label_get_labels_by_courses.
+ */
+export type AddonModLabelGetLabelsByCoursesResult = {
+    labels: AddonModLabelLabel[];
+    warnings?: CoreWSExternalWarning[];
+};

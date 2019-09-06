@@ -19,6 +19,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreSite } from '@classes/site';
+import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
 
 /**
  * Service that provides some features for folder.
@@ -43,7 +44,7 @@ export class AddonModFolderProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the book is retrieved.
      */
-    getFolder(courseId: number, cmId: number, siteId?: string): Promise<any> {
+    getFolder(courseId: number, cmId: number, siteId?: string): Promise<AddonModFolderFolder> {
         return this.getFolderByKey(courseId, 'coursemodule', cmId, siteId);
     }
 
@@ -56,7 +57,7 @@ export class AddonModFolderProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the book is retrieved.
      */
-    protected getFolderByKey(courseId: number, key: string, value: any, siteId?: string): Promise<any> {
+    protected getFolderByKey(courseId: number, key: string, value: any, siteId?: string): Promise<AddonModFolderFolder> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     courseids: [courseId]
@@ -66,7 +67,9 @@ export class AddonModFolderProvider {
                     updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
-            return site.read('mod_folder_get_folders_by_courses', params, preSets).then((response) => {
+            return site.read('mod_folder_get_folders_by_courses', params, preSets)
+                    .then((response: AddonModFolderGetFoldersByCoursesResult): any => {
+
                 if (response && response.folders) {
                     const currentFolder = response.folders.find((folder) => {
                         return folder[key] == value;
@@ -147,3 +150,33 @@ export class AddonModFolderProvider {
                 {}, siteId);
     }
 }
+
+/**
+ * Folder returned by mod_folder_get_folders_by_courses.
+ */
+export type AddonModFolderFolder = {
+    id: number; // Module id.
+    coursemodule: number; // Course module id.
+    course: number; // Course id.
+    name: string; // Page name.
+    intro: string; // Summary.
+    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introfiles: CoreWSExternalFile[];
+    revision: number; // Incremented when after each file changes, to avoid cache.
+    timemodified: number; // Last time the folder was modified.
+    display: number; // Display type of folder contents on a separate page or inline.
+    showexpanded: number; // 1 = expanded, 0 = collapsed for sub-folders.
+    showdownloadfolder: number; // Whether to show the download folder button.
+    section: number; // Course section id.
+    visible: number; // Module visibility.
+    groupmode: number; // Group mode.
+    groupingid: number; // Grouping id.
+};
+
+/**
+ * Result of WS mod_folder_get_folders_by_courses.
+ */
+export type AddonModFolderGetFoldersByCoursesResult = {
+    folders: AddonModFolderFolder[];
+    warnings?: CoreWSExternalWarning[];
+};

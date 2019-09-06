@@ -20,6 +20,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSite } from '@classes/site';
+import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
 
 /**
  * Service that provides some features for resources.
@@ -56,7 +57,7 @@ export class AddonModResourceProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the resource is retrieved.
      */
-    protected getResourceDataByKey(courseId: number, key: string, value: any, siteId?: string): Promise<any> {
+    protected getResourceDataByKey(courseId: number, key: string, value: any, siteId?: string): Promise<AddonModResourceResource> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     courseids: [courseId]
@@ -66,7 +67,9 @@ export class AddonModResourceProvider {
                     updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
-            return site.read('mod_resource_get_resources_by_courses', params, preSets).then((response) => {
+            return site.read('mod_resource_get_resources_by_courses', params, preSets)
+                    .then((response: AddonModResourceGetResourcesByCoursesResult): any => {
+
                 if (response && response.resources) {
                     const currentResource = response.resources.find((resource) => {
                         return resource[key] == value;
@@ -89,7 +92,7 @@ export class AddonModResourceProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the resource is retrieved.
      */
-    getResourceData(courseId: number, cmId: number, siteId?: string): Promise<any> {
+    getResourceData(courseId: number, cmId: number, siteId?: string): Promise<AddonModResourceResource> {
         return this.getResourceDataByKey(courseId, 'coursemodule', cmId, siteId);
     }
 
@@ -165,3 +168,37 @@ export class AddonModResourceProvider {
                 'resource', {}, siteId);
     }
 }
+
+/**
+ * Resource returned by mod_resource_get_resources_by_courses.
+ */
+export type AddonModResourceResource = {
+    id: number; // Module id.
+    coursemodule: number; // Course module id.
+    course: number; // Course id.
+    name: string; // Page name.
+    intro: string; // Summary.
+    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introfiles: CoreWSExternalFile[];
+    contentfiles: CoreWSExternalFile[];
+    tobemigrated: number; // Whether this resource was migrated.
+    legacyfiles: number; // Legacy files flag.
+    legacyfileslast: number; // Legacy files last control flag.
+    display: number; // How to display the resource.
+    displayoptions: string; // Display options (width, height).
+    filterfiles: number; // If filters should be applied to the resource content.
+    revision: number; // Incremented when after each file changes, to avoid cache.
+    timemodified: number; // Last time the resource was modified.
+    section: number; // Course section id.
+    visible: number; // Module visibility.
+    groupmode: number; // Group mode.
+    groupingid: number; // Grouping id.
+};
+
+/**
+ * Result of WS mod_resource_get_resources_by_courses.
+ */
+export type AddonModResourceGetResourcesByCoursesResult = {
+    resources: AddonModResourceResource[];
+    warnings?: CoreWSExternalWarning[];
+};

@@ -34,6 +34,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
     component = AddonModFolderProvider.COMPONENT;
     canGetFolder: boolean;
     contents: any;
+    moduleContents: any;
 
     constructor(injector: Injector, private folderProvider: AddonModFolderProvider, private courseProvider: CoreCourseProvider,
             private appProvider: CoreAppProvider, private folderHelper: AddonModFolderHelperProvider) {
@@ -87,9 +88,9 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
 
         if (this.path) {
             // Subfolder.
-            this.contents = module.contents;
+            this.contents = this.moduleContents;
         } else {
-            this.contents = this.folderHelper.formatContents(module.contents);
+            this.contents = this.folderHelper.formatContents(this.moduleContents);
         }
     }
 
@@ -105,7 +106,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
         if (this.canGetFolder) {
             promise = this.folderProvider.getFolder(this.courseId, this.module.id).then((folder) => {
                 return this.courseProvider.loadModuleContents(this.module, this.courseId).then(() => {
-                    folder.contents = this.module.contents;
+                    this.moduleContents = this.module.contents;
 
                     return folder;
                 });
@@ -117,17 +118,13 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
                     folder.contents = this.module.contents;
                 }
                 this.module = folder;
+                this.moduleContents = folder.contents;
 
                 return folder;
             });
         }
 
         return promise.then((folder) => {
-            if (folder) {
-                this.description = folder.intro || folder.description;
-                this.dataRetrieved.emit(folder);
-            }
-
             this.showModuleData(folder);
 
             // All data obtained, now fill the context menu.

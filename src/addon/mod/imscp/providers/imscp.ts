@@ -21,6 +21,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreSite } from '@classes/site';
+import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
 
 /**
  * Service that provides some features for IMSCP.
@@ -157,7 +158,7 @@ export class AddonModImscpProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the imscp is retrieved.
      */
-    protected getImscpByKey(courseId: number, key: string, value: any, siteId?: string): Promise<any> {
+    protected getImscpByKey(courseId: number, key: string, value: any, siteId?: string): Promise<AddonModImscpImscp> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 courseids: [courseId]
@@ -167,7 +168,9 @@ export class AddonModImscpProvider {
                 updateFrequency: CoreSite.FREQUENCY_RARELY
             };
 
-            return site.read('mod_imscp_get_imscps_by_courses', params, preSets).then((response) => {
+            return site.read('mod_imscp_get_imscps_by_courses', params, preSets)
+                    .then((response: AddonModImscpGetImscpsByCoursesResult): any => {
+
                 if (response && response.imscps) {
                     const currentImscp = response.imscps.find((imscp) => imscp[key] == value);
                     if (currentImscp) {
@@ -188,7 +191,7 @@ export class AddonModImscpProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the imscp is retrieved.
      */
-    getImscp(courseId: number, cmId: number, siteId?: string): Promise<any> {
+    getImscp(courseId: number, cmId: number, siteId?: string): Promise<AddonModImscpImscp> {
         return this.getImscpByKey(courseId, 'coursemodule', cmId, siteId);
     }
 
@@ -324,3 +327,32 @@ export class AddonModImscpProvider {
                 siteId);
     }
 }
+
+/**
+ * IMSCP returned by mod_imscp_get_imscps_by_courses.
+ */
+export type AddonModImscpImscp = {
+    id: number; // IMSCP id.
+    coursemodule: number; // Course module id.
+    course: number; // Course id.
+    name: string; // Activity name.
+    intro?: string; // The IMSCP intro.
+    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introfiles?: CoreWSExternalFile[]; // @since 3.2.
+    revision?: number; // Revision.
+    keepold?: number; // Number of old IMSCP to keep.
+    structure?: string; // IMSCP structure.
+    timemodified?: string; // Time of last modification.
+    section?: number; // Course section id.
+    visible?: boolean; // If visible.
+    groupmode?: number; // Group mode.
+    groupingid?: number; // Group id.
+};
+
+/**
+ * Result of WS mod_imscp_get_imscps_by_courses.
+ */
+export type AddonModImscpGetImscpsByCoursesResult = {
+    imscps: AddonModImscpImscp[];
+    warnings?: CoreWSExternalWarning[];
+};

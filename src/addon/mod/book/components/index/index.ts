@@ -121,7 +121,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
         // Try to get the book data.
         promises.push(this.bookProvider.getBook(this.courseId, this.module.id).then((book) => {
             this.dataRetrieved.emit(book);
-            this.description = book.intro || this.description;
+            this.description = book.intro;
         }).catch(() => {
             // Ignore errors since this WS isn't available in some Moodle versions.
         }));
