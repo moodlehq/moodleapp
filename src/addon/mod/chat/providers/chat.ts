@@ -19,6 +19,7 @@ import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
 
 /**
  * Service that provides some features for chats.
@@ -41,7 +42,7 @@ export class AddonModChatProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the chat is retrieved.
      */
-    getChat(courseId: number, cmId: number, siteId?: string): Promise<any> {
+    getChat(courseId: number, cmId: number, siteId?: string): Promise<AddonModChatChat> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 courseids: [courseId]
@@ -51,7 +52,9 @@ export class AddonModChatProvider {
                 updateFrequency: CoreSite.FREQUENCY_RARELY
             };
 
-            return site.read('mod_chat_get_chats_by_courses', params, preSets).then((response) => {
+            return site.read('mod_chat_get_chats_by_courses', params, preSets)
+                    .then((response: AddonModChatGetChatsByCoursesResult): any => {
+
                 if (response.chats) {
                     const chat = response.chats.find((chat) => chat.coursemodule == cmId);
                     if (chat) {
@@ -70,12 +73,14 @@ export class AddonModChatProvider {
      * @param chatId Chat instance ID.
      * @return Promise resolved when the WS is executed.
      */
-    loginUser(chatId: number): Promise<any> {
+    loginUser(chatId: number): Promise<string> {
         const params = {
             chatid: chatId
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_chat_login_user', params).then((response) => {
+        return this.sitesProvider.getCurrentSite().write('mod_chat_login_user', params)
+                .then((response: AddonModChatLoginUserResult): any => {
+
             if (response.chatsid) {
                 return response.chatsid;
             }
@@ -108,14 +113,16 @@ export class AddonModChatProvider {
      * @param beepUserId Beep user ID.
      * @return Promise resolved when the WS is executed.
      */
-    sendMessage(sessionId: number, message: string, beepUserId: number): Promise<any> {
+    sendMessage(sessionId: string, message: string, beepUserId: number): Promise<number> {
         const params = {
             chatsid: sessionId,
             messagetext: message,
             beepid: beepUserId
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_chat_send_chat_message', params).then((response) => {
+        return this.sitesProvider.getCurrentSite().write('mod_chat_send_chat_message', params)
+                .then((response: AddonModChatSendChatMessageResult): any => {
+
             if (response.messageid) {
                 return response.messageid;
             }
@@ -131,7 +138,7 @@ export class AddonModChatProvider {
      * @param lastTime Last time when messages were retrieved.
      * @return Promise resolved when the WS is executed.
      */
-    getLatestMessages(sessionId: number, lastTime: number): Promise<any> {
+    getLatestMessages(sessionId: string, lastTime: number): Promise<AddonModChatGetChatLatestMessagesResult> {
         const params = {
             chatsid: sessionId,
             chatlasttime: lastTime
@@ -149,8 +156,10 @@ export class AddonModChatProvider {
      * @param courseId ID of the course the messages belong to.
      * @return Promise always resolved with the formatted messages.
      */
-    getMessagesUserData(messages: any[], courseId: number): Promise<any> {
-        const promises = messages.map((message) => {
+    getMessagesUserData(messages: (AddonModChatMessage | AddonModChatSessionMessage)[], courseId: number)
+            : Promise<(AddonModChatMessageWithUserData | AddonModChatSessionMessageWithUserData)[]> {
+
+        const promises = messages.map((message: AddonModChatMessageWithUserData | AddonModChatSessionMessageWithUserData) => {
             return this.userProvider.getProfile(message.userid, courseId, true).then((user) => {
                 message.userfullname = user.fullname;
                 message.userprofileimageurl = user.profileimageurl;
@@ -171,7 +180,7 @@ export class AddonModChatProvider {
      * @param sessionId Chat sessiond ID.
      * @return Promise resolved when the WS is executed.
      */
-    getChatUsers(sessionId: number): Promise<any> {
+    getChatUsers(sessionId: string): Promise<AddonModChatGetChatUsersResult> {
         const params = {
             chatsid: sessionId
         };
@@ -206,7 +215,8 @@ export class AddonModChatProvider {
      * @since 3.5
      */
     getSessions(chatId: number, groupId: number = 0, showAll: boolean = false, ignoreCache: boolean = false, siteId?: string):
-            Promise<any[]> {
+            Promise<AddonModChatSession[]> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 chatid: chatId,
@@ -222,7 +232,7 @@ export class AddonModChatProvider {
                 preSets.emergencyCache = false;
             }
 
-            return site.read('mod_chat_get_sessions', params, preSets).then((response) => {
+            return site.read('mod_chat_get_sessions', params, preSets).then((response: AddonModChatGetSessionsResult): any => {
                 if (!response || !response.sessions) {
                     return Promise.reject(null);
                 }
@@ -245,7 +255,8 @@ export class AddonModChatProvider {
      * @since 3.5
      */
     getSessionMessages(chatId: number, sessionStart: number, sessionEnd: number, groupId: number = 0, ignoreCache: boolean = false,
-            siteId?: string): Promise<any[]> {
+            siteId?: string): Promise<AddonModChatSessionMessage[]> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 chatid: chatId,
@@ -262,7 +273,9 @@ export class AddonModChatProvider {
                 preSets.emergencyCache = false;
             }
 
-            return site.read('mod_chat_get_session_messages', params, preSets).then((response) => {
+            return site.read('mod_chat_get_session_messages', params, preSets)
+                    .then((response: AddonModChatGetSessionMessagesResult): any => {
+
                 if (!response || !response.messages) {
                     return Promise.reject(null);
                 }
@@ -390,3 +403,152 @@ export class AddonModChatProvider {
         return this.ROOT_CACHE_KEY + 'sessionsMessages:' + chatId + ':';
     }
 }
+
+/**
+ * Chat returned by mod_chat_get_chats_by_courses.
+ */
+export type AddonModChatChat = {
+    id: number; // Chat id.
+    coursemodule: number; // Course module id.
+    course: number; // Course id.
+    name: string; // Chat name.
+    intro: string; // The Chat intro.
+    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introfiles?: CoreWSExternalFile[]; // @since 3.2.
+    chatmethod?: string; // Chat method (sockets, ajax, header_js).
+    keepdays?: number; // Keep days.
+    studentlogs?: number; // Student logs visible to everyone.
+    chattime?: number; // Chat time.
+    schedule?: number; // Schedule type.
+    timemodified?: number; // Time of last modification.
+    section?: number; // Course section id.
+    visible?: boolean; // Visible.
+    groupmode?: number; // Group mode.
+    groupingid?: number; // Group id.
+};
+
+/**
+ * Chat user returned by mod_chat_get_chat_users.
+ */
+export type AddonModChatUser = {
+    id: number; // User id.
+    fullname: string; // User full name.
+    profileimageurl: string; // User picture URL.
+};
+
+/**
+ * Meessage returned by mod_chat_get_chat_latest_messages.
+ */
+export type AddonModChatMessage = {
+    id: number; // Message id.
+    userid: number; // User id.
+    system: boolean; // True if is a system message (like user joined).
+    message: string; // Message text.
+    timestamp: number; // Timestamp for the message.
+};
+
+/**
+ * Message with user data
+ */
+export type AddonModChatMessageWithUserData = AddonModChatMessage & AddonModChatMessageUserData;
+
+/**
+ * Chat session.
+ */
+export type AddonModChatSession = {
+    sessionstart: number; // Session start time.
+    sessionend: number; // Session end time.
+    sessionusers: AddonModChatSessionUser[]; // Session users.
+    iscomplete: boolean; // Whether the session is completed or not.
+};
+
+/**
+ * Chat user returned by mod_chat_get_sessions.
+ */
+export type AddonModChatSessionUser = {
+    userid: number; // User id.
+    messagecount: number; // Number of messages in the session.
+};
+
+/**
+ * Message returned by mod_chat_get_session_messages.
+ */
+export type AddonModChatSessionMessage = {
+    id: number; // The message record id.
+    chatid: number; // The chat id.
+    userid: number; // The user who wrote the message.
+    groupid: number; // The group this message belongs to.
+    issystem: boolean; // Whether is a system message or not.
+    message: string; // The message text.
+    timestamp: number; // The message timestamp (indicates when the message was sent).
+};
+
+/**
+ * Message with user data
+ */
+export type AddonModChatSessionMessageWithUserData = AddonModChatSessionMessage & AddonModChatMessageUserData;
+
+/**
+ * Result of WS mod_chat_get_chats_by_courses.
+ */
+export type AddonModChatGetChatsByCoursesResult = {
+    chats: AddonModChatChat[];
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_chat_get_chat_users.
+ */
+export type AddonModChatGetChatUsersResult = {
+    users: AddonModChatUser[]; // List of users.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_chat_get_sessions.
+ */
+export type AddonModChatGetSessionsResult = {
+    sessions: AddonModChatSession[]; // List of sessions.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_chat_get_session_messages.
+ */
+export type AddonModChatGetSessionMessagesResult = {
+    messages: AddonModChatSessionMessage[];
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_chat_send_chat_message.
+ */
+export type AddonModChatSendChatMessageResult = {
+    messageid: number; // Message sent id.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_chat_get_chat_latest_messages.
+ */
+export type AddonModChatGetChatLatestMessagesResult = {
+    messages: AddonModChatMessage[]; // List of messages.
+    chatnewlasttime: number; // New last time.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_chat_login_user.
+ */
+export type AddonModChatLoginUserResult = {
+    chatsid: string; // Unique chat session id.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * User data added to messages.
+ */
+type AddonModChatMessageUserData = {
+    userfullname?: string; // Calculated in the app. Full name of the user who wrote the message.
+    userprofileimageurl?: string; // Calculated in the app. Full name of the user who wrote the message.
+};

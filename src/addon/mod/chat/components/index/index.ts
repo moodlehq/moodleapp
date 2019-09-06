@@ -16,7 +16,7 @@ import { Component, Injector } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
-import { AddonModChatProvider } from '../../providers/chat';
+import { AddonModChatProvider, AddonModChatChat } from '../../providers/chat';
 
 /**
  * Component that displays a chat.
@@ -29,7 +29,7 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
     component = AddonModChatProvider.COMPONENT;
     moduleName = 'chat';
 
-    chat: any;
+    chat: AddonModChatChat;
     chatInfo: any;
 
     protected title: string;
@@ -66,7 +66,7 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
         return this.chatProvider.getChat(this.courseId, this.module.id).then((chat) => {
             this.chat = chat;
-            this.description = chat.intro || chat.description;
+            this.description = chat.intro;
 
             const now = this.timeUtils.timestamp();
             const span = chat.chattime - now;

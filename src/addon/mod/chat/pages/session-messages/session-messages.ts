@@ -15,7 +15,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { AddonModChatProvider } from '../../providers/chat';
+import { AddonModChatProvider, AddonModChatSessionMessageWithUserData } from '../../providers/chat';
 import * as moment from 'moment';
 
 /**
@@ -34,7 +34,7 @@ export class AddonModChatSessionMessagesPage {
     protected sessionEnd: number;
     protected groupId: number;
     protected loaded = false;
-    protected messages = [];
+    protected messages: AddonModChatSessionMessageWithUserData[] = [];
 
     constructor(navParams: NavParams, private domUtils: CoreDomUtilsProvider, private chatProvider: AddonModChatProvider) {
         this.courseId = navParams.get('courseId');
@@ -55,7 +55,7 @@ export class AddonModChatSessionMessagesPage {
         return this.chatProvider.getSessionMessages(this.chatId, this.sessionStart, this.sessionEnd, this.groupId)
                 .then((messages) => {
             return this.chatProvider.getMessagesUserData(messages, this.courseId).then((messages) => {
-                this.messages = messages;
+                this.messages = <AddonModChatSessionMessageWithUserData[]> messages;
             });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.errorloadingcontent', true);
@@ -84,7 +84,7 @@ export class AddonModChatSessionMessagesPage {
     * @param prevMessage Previous message object.
     * @return True if messages are from diferent days, false othetwise.
     */
-   showDate(message: any, prevMessage: any): boolean {
+   showDate(message: AddonModChatSessionMessageWithUserData, prevMessage: AddonModChatSessionMessageWithUserData): boolean {
        if (!prevMessage) {
            return true;
        }
