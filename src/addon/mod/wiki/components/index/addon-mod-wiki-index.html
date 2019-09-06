@@ -24,8 +24,8 @@
 
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
-    <div padding *ngIf="(isMainPage && description) || pageIsOffline || hasOffline || pageWarning">
-        <core-course-module-description *ngIf="isMainPage" [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+    <div padding *ngIf="description || pageIsOffline || hasOffline || pageWarning">
+        <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
 
         <!-- Wiki has something offline. -->
         <div class="core-warning-card" icon-start *ngIf="pageIsOffline || hasOffline">
