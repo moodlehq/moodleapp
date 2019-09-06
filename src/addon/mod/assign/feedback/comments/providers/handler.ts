@@ -16,7 +16,9 @@
 import { Injectable, Injector } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { AddonModAssignProvider } from '../../../providers/assign';
+import {
+    AddonModAssignProvider, AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin
+} from '../../../providers/assign';
 import { AddonModAssignOfflineProvider } from '../../../providers/assign-offline';
 import { AddonModAssignFeedbackHandler } from '../../../providers/feedback-delegate';
 import { AddonModAssignFeedbackCommentsComponent } from '../component/comments';
@@ -50,14 +52,14 @@ export class AddonModAssignFeedbackCommentsHandler implements AddonModAssignFeed
     }
 
     /**
-     * Return the Component to use to display the plugin data, either in read or in edit mode.
+     * Return the Component to use to display the plugin data.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
      * @param injector Injector.
      * @param plugin The plugin object.
      * @return The component (or promise resolved with component) to use, undefined if not found.
      */
-    getComponent(injector: Injector, plugin: any): any | Promise<any> {
+    getComponent(injector: Injector, plugin: AddonModAssignPlugin): any | Promise<any> {
         return AddonModAssignFeedbackCommentsComponent;
     }
 
@@ -101,7 +103,8 @@ export class AddonModAssignFeedbackCommentsHandler implements AddonModAssignFeed
      * @param siteId Site ID. If not defined, current site.
      * @return The files (or promise resolved with the files).
      */
-    getPluginFiles(assign: any, submission: any, plugin: any, siteId?: string): any[] | Promise<any[]> {
+    getPluginFiles(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, siteId?: string): any[] | Promise<any[]> {
         return this.assignProvider.getSubmissionPluginAttachments(plugin);
     }
 
@@ -135,7 +138,9 @@ export class AddonModAssignFeedbackCommentsHandler implements AddonModAssignFeed
      * @param userId User ID of the submission.
      * @return Boolean (or promise resolved with boolean): whether the data has changed.
      */
-    hasDataChanged(assign: any, submission: any, plugin: any, inputData: any, userId: number): boolean | Promise<boolean> {
+    hasDataChanged(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, inputData: any, userId: number): boolean | Promise<boolean> {
+
         // Get it from plugin or offline.
         return this.assignOfflineProvider.getSubmissionGrade(assign.id, userId).catch(() => {
             // No offline data found.
@@ -191,7 +196,9 @@ export class AddonModAssignFeedbackCommentsHandler implements AddonModAssignFeed
      * @param siteId Site ID. If not defined, current site.
      * @return If the function is async, it should return a Promise resolved when done.
      */
-    prepareFeedbackData(assignId: number, userId: number, plugin: any, pluginData: any, siteId?: string): void | Promise<any> {
+    prepareFeedbackData(assignId: number, userId: number, plugin: AddonModAssignPlugin, pluginData: any,
+            siteId?: string): void | Promise<any> {
+
         const draft = this.getDraft(assignId, userId, siteId);
 
         if (draft) {
@@ -212,7 +219,9 @@ export class AddonModAssignFeedbackCommentsHandler implements AddonModAssignFeed
      * @param siteId Site ID. If not defined, current site.
      * @return If the function is async, it should return a Promise resolved when done.
      */
-    saveDraft(assignId: number, userId: number, plugin: any, data: any, siteId?: string): void | Promise<any> {
+    saveDraft(assignId: number, userId: number, plugin: AddonModAssignPlugin, data: any, siteId?: string)
+            : void | Promise<any> {
+
         if (data) {
             this.drafts[this.getDraftId(assignId, userId, siteId)] = data;
         }

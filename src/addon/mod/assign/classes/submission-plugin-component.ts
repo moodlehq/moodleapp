@@ -13,15 +13,16 @@
 // limitations under the License.
 
 import { Input } from '@angular/core';
+import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin } from '../providers/assign';
 
 /**
  * Base class for component to render a submission plugin.
  */
 export class AddonModAssignSubmissionPluginComponent {
-    @Input() assign: any; // The assignment.
-    @Input() submission: any; // The submission.
-    @Input() plugin: any; // The plugin object.
-    @Input() configs: any; // The configs for the plugin.
+    @Input() assign: AddonModAssignAssign; // The assignment.
+    @Input() submission: AddonModAssignSubmission; // The submission.
+    @Input() plugin: AddonModAssignPlugin; // The plugin object.
+    @Input() configs: {[name: string]: string}; // The configs for the plugin.
     @Input() edit: boolean; // Whether the user is editing.
     @Input() allowOffline: boolean; // Whether to allow offline.
 

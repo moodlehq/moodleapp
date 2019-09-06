@@ -17,7 +17,7 @@ import { Content, NavController } from 'ionic-angular';
 import { CoreGroupsProvider, CoreGroupInfo } from '@providers/groups';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
-import { AddonModAssignProvider } from '../../providers/assign';
+import { AddonModAssignProvider, AddonModAssignAssign, AddonModAssignSubmissionGradingSummary } from '../../providers/assign';
 import { AddonModAssignHelperProvider } from '../../providers/helper';
 import { AddonModAssignOfflineProvider } from '../../providers/assign-offline';
 import { AddonModAssignSyncProvider } from '../../providers/assign-sync';
@@ -36,13 +36,13 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     component = AddonModAssignProvider.COMPONENT;
     moduleName = 'assign';
 
-    assign: any; // The assign object.
+    assign: AddonModAssignAssign; // The assign object.
     canViewAllSubmissions: boolean; // Whether the user can view all submissions.
     canViewOwnSubmission: boolean; // Whether the user can view their own submission.
     timeRemaining: string; // Message about time remaining to submit.
     lateSubmissions: string; // Message about late submissions.
     showNumbers = true; // Whether to show number of submissions with each status.
-    summary: any; // The summary.
+    summary: AddonModAssignSubmissionGradingSummary; // The grading summary.
     needsGradingAvalaible: boolean; // Whether we can see the submissions that need grading.
 
     groupInfo: CoreGroupInfo = {
@@ -153,7 +153,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             this.assign = assignData;
 
             this.dataRetrieved.emit(this.assign);
-            this.description = this.assign.intro || this.description;
+            this.description = this.assign.intro;
 
             if (sync) {
                 // Try to synchronize the assign.

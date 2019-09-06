@@ -17,6 +17,9 @@ import { IonicPage, ViewController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { AddonModAssignFeedbackDelegate } from '../../providers/feedback-delegate';
+import {
+    AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin
+} from '../../providers/assign';
 
 /**
  * Modal that allows editing a feedback plugin.
@@ -28,9 +31,9 @@ import { AddonModAssignFeedbackDelegate } from '../../providers/feedback-delegat
 })
 export class AddonModAssignEditFeedbackModalPage {
 
-    @Input() assign: any; // The assignment.
-    @Input() submission: any; // The submission.
-    @Input() plugin: any; // The plugin object.
+    @Input() assign: AddonModAssignAssign; // The assignment.
+    @Input() submission: AddonModAssignSubmission; // The submission.
+    @Input() plugin: AddonModAssignPlugin; // The plugin object.
     @Input() userId: number; // The user ID of the submission.
 
     protected forceLeave = false; // To allow leaving the page without checking for changes.
@@ -99,8 +102,8 @@ export class AddonModAssignEditFeedbackModalPage {
      * @return Promise resolved with boolean: whether the data has changed.
      */
     protected hasDataChanged(): Promise<boolean> {
-        return this.feedbackDelegate.hasPluginDataChanged(this.assign, this.userId, this.plugin, this.getInputData(), this.userId)
-                .catch(() => {
+        return this.feedbackDelegate.hasPluginDataChanged(this.assign, this.submission, this.plugin, this.getInputData(),
+                this.userId).catch(() => {
             // Ignore errors.
             return true;
         });

@@ -18,7 +18,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreWSProvider } from '@providers/ws';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { AddonModAssignProvider } from '../../../providers/assign';
+import {
+    AddonModAssignProvider, AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin
+} from '../../../providers/assign';
 import { AddonModAssignOfflineProvider } from '../../../providers/assign-offline';
 import { AddonModAssignHelperProvider } from '../../../providers/helper';
 import { AddonModAssignSubmissionHandler } from '../../../providers/submission-delegate';
@@ -46,7 +48,8 @@ export class AddonModAssignSubmissionOnlineTextHandler implements AddonModAssign
      * @param plugin The plugin object.
      * @return Boolean or promise resolved with boolean: whether it can be edited in offline.
      */
-    canEditOffline(assign: any, submission: any, plugin: any): boolean | Promise<boolean> {
+    canEditOffline(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin): boolean | Promise<boolean> {
         // This plugin uses Moodle filters, it cannot be edited in offline.
         return false;
     }
@@ -62,7 +65,9 @@ export class AddonModAssignSubmissionOnlineTextHandler implements AddonModAssign
      * @param siteId Site ID. If not defined, current site.
      * @return If the function is async, it should return a Promise resolved when done.
      */
-    copySubmissionData(assign: any, plugin: any, pluginData: any, userId?: number, siteId?: string): void | Promise<any> {
+    copySubmissionData(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin, pluginData: any,
+            userId?: number, siteId?: string): void | Promise<any> {
+
         const text = this.assignProvider.getSubmissionPluginText(plugin, true),
             files = this.assignProvider.getSubmissionPluginAttachments(plugin);
         let promise;
@@ -93,7 +98,7 @@ export class AddonModAssignSubmissionOnlineTextHandler implements AddonModAssign
      * @param edit Whether the user is editing.
      * @return The component (or promise resolved with component) to use, undefined if not found.
      */
-    getComponent(injector: Injector, plugin: any, edit?: boolean): any | Promise<any> {
+    getComponent(injector: Injector, plugin: AddonModAssignPlugin, edit?: boolean): any | Promise<any> {
         return AddonModAssignSubmissionOnlineTextComponent;
     }
 
@@ -107,7 +112,8 @@ export class AddonModAssignSubmissionOnlineTextHandler implements AddonModAssign
      * @param siteId Site ID. If not defined, current site.
      * @return The files (or promise resolved with the files).
      */
-    getPluginFiles(assign: any, submission: any, plugin: any, siteId?: string): any[] | Promise<any[]> {
+    getPluginFiles(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, siteId?: string): any[] | Promise<any[]> {
         return this.assignProvider.getSubmissionPluginAttachments(plugin);
     }
 
@@ -118,7 +124,7 @@ export class AddonModAssignSubmissionOnlineTextHandler implements AddonModAssign
      * @param plugin The plugin object.
      * @return The size (or promise resolved with size).
      */
-    getSizeForCopy(assign: any, plugin: any): number | Promise<number> {
+    getSizeForCopy(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): number | Promise<number> {
         const text = this.assignProvider.getSubmissionPluginText(plugin, true),
             files = this.assignProvider.getSubmissionPluginAttachments(plugin),
             promises = [];
@@ -153,7 +159,8 @@ export class AddonModAssignSubmissionOnlineTextHandler implements AddonModAssign
      * @param inputData Data entered by the user for the submission.
      * @return The size (or promise resolved with size).
      */
-    getSizeForEdit(assign: any, submission: any, plugin: any, inputData: any): number | Promise<number> {
+    getSizeForEdit(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, inputData: any): number | Promise<number> {
         const text = this.assignProvider.getSubmissionPluginText(plugin, true);
 
         return text.length;
@@ -182,7 +189,9 @@ export class AddonModAssignSubmissionOnlineTextHandler implements AddonModAssign
      * @param inputData Data entered by the user for the submission.
      * @return Boolean (or promise resolved with boolean): whether the data has changed.
      */
-    hasDataChanged(assign: any, submission: any, plugin: any, inputData: any): boolean | Promise<boolean> {
+    hasDataChanged(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, inputData: any): boolean | Promise<boolean> {
+
         // Get the original text from plugin or offline.
         return this.assignOfflineProvider.getSubmission(assign.id, submission.userid).catch(() => {
             // No offline data found.
@@ -234,7 +243,8 @@ export class AddonModAssignSubmissionOnlineTextHandler implements AddonModAssign
      * @param siteId Site ID. If not defined, current site.
      * @return If the function is async, it should return a Promise resolved when done.
      */
-    prepareSubmissionData(assign: any, submission: any, plugin: any, inputData: any, pluginData: any, offline?: boolean,
+    prepareSubmissionData(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, inputData: any, pluginData: any, offline?: boolean,
             userId?: number, siteId?: string): void | Promise<any> {
 
         let text = this.getTextToSubmit(plugin, inputData);
@@ -274,8 +284,8 @@ export class AddonModAssignSubmissionOnlineTextHandler implements AddonModAssign
      * @param siteId Site ID. If not defined, current site.
      * @return If the function is async, it should return a Promise resolved when done.
      */
-    prepareSyncData(assign: any, submission: any, plugin: any, offlineData: any, pluginData: any, siteId?: string)
-            : void | Promise<any> {
+    prepareSyncData(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, offlineData: any, pluginData: any, siteId?: string): void | Promise<any> {
 
         const textData = offlineData && offlineData.plugindata && offlineData.plugindata.onlinetext_editor;
         if (textData) {

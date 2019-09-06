@@ -34,6 +34,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
     component = AddonModAssignProvider.COMPONENT;
     text: string;
     loaded: boolean;
+    wordLimitEnabled: boolean;
 
     protected wordCountTimeout: any;
     protected element: HTMLElement;
@@ -61,9 +62,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
             // No offline data found, return online text.
             return this.assignProvider.getSubmissionPluginText(this.plugin);
         }).then((text) => {
-            // We receive them as strings, convert to int.
-            this.configs.wordlimit = parseInt(this.configs.wordlimit, 10);
-            this.configs.wordlimitenabled = parseInt(this.configs.wordlimitenabled, 10);
+            this.wordLimitEnabled = !!parseInt(this.configs.wordlimitenabled, 10);
 
             // Set the text.
             this.text = text;
@@ -85,7 +84,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
             }
 
             // Calculate initial words.
-            if (this.configs.wordlimitenabled) {
+            if (this.wordLimitEnabled) {
                 this.words = this.textUtils.countWords(text);
             }
         }).finally(() => {
@@ -100,7 +99,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
      */
     onChange(text: string): void {
         // Count words if needed.
-        if (this.configs.wordlimitenabled) {
+        if (this.wordLimitEnabled) {
             // Cancel previous wait.
             clearTimeout(this.wordCountTimeout);
 

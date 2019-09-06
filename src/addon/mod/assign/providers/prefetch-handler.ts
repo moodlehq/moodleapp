@@ -26,8 +26,8 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
 import { CoreUserProvider } from '@core/user/providers/user';
-import { AddonModAssignProvider } from './assign';
-import { AddonModAssignHelperProvider } from './helper';
+import { AddonModAssignProvider, AddonModAssignGetSubmissionStatusResult, AddonModAssignSubmission } from './assign';
+import { AddonModAssignHelperProvider, AddonModAssignSubmissionFormatted } from './helper';
 import { AddonModAssignSyncProvider } from './assign-sync';
 import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
@@ -106,7 +106,7 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                 if (data.canviewsubmissions) {
                     // Teacher, get all submissions.
                     return this.assignHelper.getSubmissionsUserData(assign, data.submissions, 0, false, siteId)
-                            .then((submissions) => {
+                            .then((submissions: AddonModAssignSubmissionFormatted[]) => {
 
                         const promises = [];
 
@@ -161,9 +161,10 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
         return this.assignProvider.getSubmissionStatusWithRetry(assign, submitId, undefined, blindMarking, true, false, siteId)
                 .then((response) => {
             const promises = [];
+            let userSubmission: AddonModAssignSubmission;
 
             if (response.lastattempt) {
-                const userSubmission = this.assignProvider.getSubmissionObjectFromAttempt(assign, response.lastattempt);
+                userSubmission = this.assignProvider.getSubmissionObjectFromAttempt(assign, response.lastattempt);
                 if (userSubmission && userSubmission.plugins) {
                     // Add submission plugin files.
                     userSubmission.plugins.forEach((plugin) => {
@@ -175,7 +176,7 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
             if (response.feedback && response.feedback.plugins) {
                 // Add feedback plugin files.
                 response.feedback.plugins.forEach((plugin) => {
-                    promises.push(this.feedbackDelegate.getPluginFiles(assign, response, plugin, siteId));
+                    promises.push(this.feedbackDelegate.getPluginFiles(assign, userSubmission, plugin, siteId));
                 });
             }
 
@@ -303,7 +304,7 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
 
                     groupInfo.groups.forEach((group) => {
                         groupProms.push(this.assignHelper.getSubmissionsUserData(assign, data.submissions, group.id, true, siteId)
-                                .then((submissions) => {
+                                .then((submissions: AddonModAssignSubmissionFormatted[]) => {
 
                             const subPromises = [];
 
@@ -327,7 +328,8 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                             }
 
                             // Prefetch the submission of the current user even if it does not exist, this will be create it.
-                            if (!data.submissions || !data.submissions.find((subm) => subm.submitid == userId)) {
+                            if (!data.submissions ||
+                                    !data.submissions.find((subm: AddonModAssignSubmissionFormatted) => subm.submitid == userId)) {
                                 subPromises.push(this.assignProvider.getSubmissionStatusWithRetry(assign, userId, group.id,
                                         false, true, true, siteId).then((subm) => {
                                     return this.prefetchSubmission(assign, courseId, moduleId, subm, userId, siteId);
@@ -385,15 +387,16 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when prefetched, rejected otherwise.
      */
-    protected prefetchSubmission(assign: any, courseId: number, moduleId: number, submission: any, userId?: number,
-            siteId?: string): Promise<any> {
+    protected prefetchSubmission(assign: any, courseId: number, moduleId: number,
+            submission: AddonModAssignGetSubmissionStatusResult, userId?: number, siteId?: string): Promise<any> {
 
         const promises = [],
             blindMarking = assign.blindmarking && !assign.revealidentities;
-        let userIds = [];
+        let userIds = [],
+            userSubmission: AddonModAssignSubmission;
 
         if (submission.lastattempt) {
-            const userSubmission = this.assignProvider.getSubmissionObjectFromAttempt(assign, submission.lastattempt);
+            userSubmission = this.assignProvider.getSubmissionObjectFromAttempt(assign, submission.lastattempt);
 
             // Get IDs of the members who need to submit.
             if (!blindMarking && submission.lastattempt.submissiongroupmemberswhoneedtosubmit) {
@@ -440,10 +443,10 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
             if (submission.feedback.plugins) {
                 submission.feedback.plugins.forEach((plugin) => {
                     // Prefetch the plugin WS data.
-                    promises.push(this.feedbackDelegate.prefetch(assign, submission, plugin, siteId));
+                    promises.push(this.feedbackDelegate.prefetch(assign, userSubmission, plugin, siteId));
 
                     // Prefetch the plugin files.
-                    promises.push(this.feedbackDelegate.getPluginFiles(assign, submission, plugin, siteId).then((files) => {
+                    promises.push(this.feedbackDelegate.getPluginFiles(assign, userSubmission, plugin, siteId).then((files) => {
                         return this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id);
                     }).catch(() => {
                         // Ignore errors.

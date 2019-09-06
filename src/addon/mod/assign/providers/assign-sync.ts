@@ -26,7 +26,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
-import { AddonModAssignProvider } from './assign';
+import { AddonModAssignProvider, AddonModAssignAssign } from './assign';
 import { AddonModAssignOfflineProvider } from './assign-offline';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 
@@ -169,14 +169,14 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
     syncAssign(assignId: number, siteId?: string): Promise<AddonModAssignSyncResult> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        const promises = [],
+        const promises: Promise<any>[] = [],
             result: AddonModAssignSyncResult = {
                 warnings: [],
                 updated: false
             };
-        let assign,
-            courseId,
-            syncPromise;
+        let assign: AddonModAssignAssign,
+            courseId: number,
+            syncPromise: Promise<any>;
 
         if (this.isSyncing(assignId, siteId)) {
             // There's already a sync ongoing for this assign, return the promise.
@@ -269,7 +269,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved if success, rejected otherwise.
      */
-    protected syncSubmission(assign: any, offlineData: any, warnings: string[], siteId?: string): Promise<any> {
+    protected syncSubmission(assign: AddonModAssignAssign, offlineData: any, warnings: string[], siteId?: string): Promise<any> {
         const userId = offlineData.userid,
             pluginData = {};
         let discardError,
@@ -358,8 +358,8 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved if success, rejected otherwise.
      */
-    protected syncSubmissionGrade(assign: any, offlineData: any, warnings: string[], courseId: number, siteId?: string)
-            : Promise<any> {
+    protected syncSubmissionGrade(assign: AddonModAssignAssign, offlineData: any, warnings: string[], courseId: number,
+            siteId?: string): Promise<any> {
 
         const userId = offlineData.userid;
         let discardError;

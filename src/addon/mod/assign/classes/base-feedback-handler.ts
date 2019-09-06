@@ -15,6 +15,7 @@
 import { Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AddonModAssignFeedbackHandler } from '../providers/feedback-delegate';
+import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin } from '../providers/assign';
 
 /**
  * Base handler for feedback plugins.
@@ -48,7 +49,7 @@ export class AddonModAssignBaseFeedbackHandler implements AddonModAssignFeedback
      * @param plugin The plugin object.
      * @return The component (or promise resolved with component) to use, undefined if not found.
      */
-    getComponent(injector: Injector, plugin: any): any | Promise<any> {
+    getComponent(injector: Injector, plugin: AddonModAssignPlugin): any | Promise<any> {
         // Nothing to do.
     }
 
@@ -74,7 +75,8 @@ export class AddonModAssignBaseFeedbackHandler implements AddonModAssignFeedback
      * @param siteId Site ID. If not defined, current site.
      * @return The files (or promise resolved with the files).
      */
-    getPluginFiles(assign: any, submission: any, plugin: any, siteId?: string): any[] | Promise<any[]> {
+    getPluginFiles(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, siteId?: string): any[] | Promise<any[]> {
         return [];
     }
 
@@ -84,7 +86,7 @@ export class AddonModAssignBaseFeedbackHandler implements AddonModAssignFeedback
      * @param plugin The plugin object.
      * @return The plugin name.
      */
-    getPluginName(plugin: any): string {
+    getPluginName(plugin: AddonModAssignPlugin): string {
         // Check if there's a translated string for the plugin.
         const translationId = 'addon.mod_assign_feedback_' + plugin.type + '.pluginname',
             translation = this.translate.instant(translationId);
@@ -109,7 +111,8 @@ export class AddonModAssignBaseFeedbackHandler implements AddonModAssignFeedback
      * @param inputData Data entered by the user for the feedback.
      * @return Boolean (or promise resolved with boolean): whether the data has changed.
      */
-    hasDataChanged(assign: any, submission: any, plugin: any, inputData: any): boolean | Promise<boolean> {
+    hasDataChanged(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, inputData: any, userId: number): boolean | Promise<boolean> {
         return false;
     }
 
@@ -144,7 +147,8 @@ export class AddonModAssignBaseFeedbackHandler implements AddonModAssignFeedback
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    prefetch(assign: any, submission: any, plugin: any, siteId?: string): Promise<any> {
+    prefetch(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, siteId?: string): Promise<any> {
         return Promise.resolve();
     }
 
@@ -158,7 +162,8 @@ export class AddonModAssignBaseFeedbackHandler implements AddonModAssignFeedback
      * @param siteId Site ID. If not defined, current site.
      * @return If the function is async, it should return a Promise resolved when done.
      */
-    prepareFeedbackData(assignId: number, userId: number, plugin: any, pluginData: any, siteId?: string): void | Promise<any> {
+    prepareFeedbackData(assignId: number, userId: number, plugin: AddonModAssignPlugin, pluginData: any,
+            siteId?: string): void | Promise<any> {
         // Nothing to do.
     }
 
@@ -172,7 +177,8 @@ export class AddonModAssignBaseFeedbackHandler implements AddonModAssignFeedback
      * @param siteId Site ID. If not defined, current site.
      * @return If the function is async, it should return a Promise resolved when done.
      */
-    saveDraft(assignId: number, userId: number, plugin: any, data: any, siteId?: string): void | Promise<any> {
+    saveDraft(assignId: number, userId: number, plugin: AddonModAssignPlugin, data: any, siteId?: string)
+            : void | Promise<any> {
         // Nothing to do.
     }
 }

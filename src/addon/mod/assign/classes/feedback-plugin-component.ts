@@ -14,14 +14,15 @@
 
 import { Input } from '@angular/core';
 import { ModalController } from 'ionic-angular';
+import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin } from '../providers/assign';
 
 /**
  * Base class for component to render a feedback plugin.
  */
 export class AddonModAssignFeedbackPluginComponentBase {
-    @Input() assign: any; // The assignment.
-    @Input() submission: any; // The submission.
-    @Input() plugin: any; // The plugin object.
+    @Input() assign: AddonModAssignAssign; // The assignment.
+    @Input() submission: AddonModAssignSubmission; // The submission.
+    @Input() plugin: AddonModAssignPlugin; // The plugin object.
     @Input() userId: number; // The user ID of the submission.
     @Input() configs: any; // The configs for the plugin.
     @Input() canEdit: boolean; // Whether the user can edit.

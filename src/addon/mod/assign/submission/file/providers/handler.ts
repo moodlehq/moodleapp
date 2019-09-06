@@ -21,7 +21,9 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreWSProvider } from '@providers/ws';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
-import { AddonModAssignProvider } from '../../../providers/assign';
+import {
+    AddonModAssignProvider, AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin
+} from '../../../providers/assign';
 import { AddonModAssignOfflineProvider } from '../../../providers/assign-offline';
 import { AddonModAssignHelperProvider } from '../../../providers/helper';
 import { AddonModAssignSubmissionHandler } from '../../../providers/submission-delegate';
@@ -53,7 +55,8 @@ export class AddonModAssignSubmissionFileHandler implements AddonModAssignSubmis
      * @param plugin The plugin object.
      * @return Boolean or promise resolved with boolean: whether it can be edited in offline.
      */
-    canEditOffline(assign: any, submission: any, plugin: any): boolean | Promise<boolean> {
+    canEditOffline(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin): boolean | Promise<boolean> {
         // This plugin doesn't use Moodle filters, it can be edited in offline.
         return true;
     }
@@ -66,7 +69,8 @@ export class AddonModAssignSubmissionFileHandler implements AddonModAssignSubmis
      * @param plugin The plugin object.
      * @param inputData Data entered by the user for the submission.
      */
-    clearTmpData(assign: any, submission: any, plugin: any, inputData: any): void {
+    clearTmpData(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, inputData: any): void {
         const files = this.fileSessionProvider.getFiles(AddonModAssignProvider.COMPONENT, assign.id);
 
         // Clear the files in session for this assign.
@@ -87,7 +91,9 @@ export class AddonModAssignSubmissionFileHandler implements AddonModAssignSubmis
      * @param siteId Site ID. If not defined, current site.
      * @return If the function is async, it should return a Promise resolved when done.
      */
-    copySubmissionData(assign: any, plugin: any, pluginData: any, userId?: number, siteId?: string): void | Promise<any> {
+    copySubmissionData(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin, pluginData: any,
+            userId?: number, siteId?: string): void | Promise<any> {
+
         // We need to re-upload all the existing files.
         const files = this.assignProvider.getSubmissionPluginAttachments(plugin);
 
@@ -105,7 +111,7 @@ export class AddonModAssignSubmissionFileHandler implements AddonModAssignSubmis
      * @param edit Whether the user is editing.
      * @return The component (or promise resolved with component) to use, undefined if not found.
      */
-    getComponent(injector: Injector, plugin: any, edit?: boolean): any | Promise<any> {
+    getComponent(injector: Injector, plugin: AddonModAssignPlugin, edit?: boolean): any | Promise<any> {
         return AddonModAssignSubmissionFileComponent;
     }
 
@@ -119,7 +125,9 @@ export class AddonModAssignSubmissionFileHandler implements AddonModAssignSubmis
      * @param siteId Site ID. If not defined, current site.
      * @return If the function is async, it should return a Promise resolved when done.
      */
-    deleteOfflineData(assign: any, submission: any, plugin: any, offlineData: any, siteId?: string): void | Promise<any> {
+    deleteOfflineData(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, offlineData: any, siteId?: string): void | Promise<any> {
+
         return this.assignHelper.deleteStoredSubmissionFiles(assign.id, AddonModAssignSubmissionFileHandler.FOLDER_NAME,
                 submission.userid, siteId).catch(() => {
             // Ignore errors, maybe the folder doesn't exist.
@@ -136,7 +144,8 @@ export class AddonModAssignSubmissionFileHandler implements AddonModAssignSubmis
      * @param siteId Site ID. If not defined, current site.
      * @return The files (or promise resolved with the files).
      */
-    getPluginFiles(assign: any, submission: any, plugin: any, siteId?: string): any[] | Promise<any[]> {
+    getPluginFiles(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, siteId?: string): any[] | Promise<any[]> {
         return this.assignProvider.getSubmissionPluginAttachments(plugin);
     }
 
@@ -147,7 +156,7 @@ export class AddonModAssignSubmissionFileHandler implements AddonModAssignSubmis
      * @param plugin The plugin object.
      * @return The size (or promise resolved with size).
      */
-    getSizeForCopy(assign: any, plugin: any): number | Promise<number> {
+    getSizeForCopy(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): number | Promise<number> {
         const files = this.assignProvider.getSubmissionPluginAttachments(plugin),
             promises = [];
         let totalSize = 0;
@@ -177,7 +186,8 @@ export class AddonModAssignSubmissionFileHandler implements AddonModAssignSubmis
      * @param inputData Data entered by the user for the submission.
      * @return The size (or promise resolved with size).
      */
-    getSizeForEdit(assign: any, submission: any, plugin: any, inputData: any): number | Promise<number> {
+    getSizeForEdit(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, inputData: any): number | Promise<number> {
         const siteId = this.sitesProvider.getCurrentSiteId();
 
         // Check if there's any change.
@@ -232,7 +242,9 @@ export class AddonModAssignSubmissionFileHandler implements AddonModAssignSubmis
      * @param inputData Data entered by the user for the submission.
      * @return Boolean (or promise resolved with boolean): whether the data has changed.
      */
-    hasDataChanged(assign: any, submission: any, plugin: any, inputData: any): boolean | Promise<boolean> {
+    hasDataChanged(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, inputData: any): boolean | Promise<boolean> {
+
         // Check if there's any offline data.
         return this.assignOfflineProvider.getSubmission(assign.id, submission.userid).catch(() => {
             // No offline data found.
@@ -299,7 +311,8 @@ export class AddonModAssignSubmissionFileHandler implements AddonModAssignSubmis
      * @param siteId Site ID. If not defined, current site.
      * @return If the function is async, it should return a Promise resolved when done.
      */
-    prepareSubmissionData(assign: any, submission: any, plugin: any, inputData: any, pluginData: any, offline?: boolean,
+    prepareSubmissionData(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, inputData: any, pluginData: any, offline?: boolean,
             userId?: number, siteId?: string): void | Promise<any> {
 
         if (this.hasDataChanged(assign, submission, plugin, inputData)) {
@@ -330,8 +343,8 @@ export class AddonModAssignSubmissionFileHandler implements AddonModAssignSubmis
      * @param siteId Site ID. If not defined, current site.
      * @return If the function is async, it should return a Promise resolved when done.
      */
-    prepareSyncData(assign: any, submission: any, plugin: any, offlineData: any, pluginData: any, siteId?: string)
-            : void | Promise<any> {
+    prepareSyncData(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, offlineData: any, pluginData: any, siteId?: string): void | Promise<any> {
 
         const filesData = offlineData && offlineData.plugindata && offlineData.plugindata.files_filemanager;
         if (filesData) {
