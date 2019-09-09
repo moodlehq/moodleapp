@@ -580,6 +580,7 @@
   "addon.mod_forum.favouriteupdated": "forum",
   "addon.mod_forum.forumnodiscussionsyet": "local_moodlemobileapp",
   "addon.mod_forum.group": "local_moodlemobileapp",
+  "addon.mod_forum.lastpost": "forum",
   "addon.mod_forum.lockdiscussion": "forum",
   "addon.mod_forum.lockupdated": "forum",
   "addon.mod_forum.message": "forum",
