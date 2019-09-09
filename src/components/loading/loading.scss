@@ -20,6 +20,16 @@ ion-app.app-root {
         &.core-loading-noheight .core-loading-content {
             height: auto;
         }
+
+        &.safe-area-page {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+
+            > .core-loading-content > *,
+            > .core-loading-content-loading > * {
+                @include safe-area-padding-horizontal(0px, 0px);
+            }
+        }
     }
 
     .scroll-content > core-loading,

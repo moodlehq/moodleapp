@@ -8,7 +8,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <core-loading [hideUntil]="filesLoaded" *ngIf="showPrivateFiles || showSiteFiles">
+    <core-loading [hideUntil]="filesLoaded" *ngIf="showPrivateFiles || showSiteFiles" class="safe-area-page">
         <!-- Allow selecting the files to see: private or site. -->
         <div padding *ngIf="showPrivateFiles && showSiteFiles && !path">
             <ion-select [(ngModel)]="root" (ngModelChange)="rootChanged()" interface="popover" class="core-button-select">

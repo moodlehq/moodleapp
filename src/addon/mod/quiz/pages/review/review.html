@@ -18,8 +18,10 @@
         <!-- Review summary -->
         <ion-card *ngIf="attempt">
             <ion-card-header text-wrap>
-                <h2 *ngIf="attempt.preview">{{ 'addon.mod_quiz.reviewofpreview' | translate }}</h2>
-                <h2 *ngIf="!attempt.preview">{{ 'addon.mod_quiz.reviewofattempt' | translate:{$a: attempt.attempt} }}</h2>
+                <div class="safe-padding-horizontal">
+                    <h2 *ngIf="attempt.preview">{{ 'addon.mod_quiz.reviewofpreview' | translate }}</h2>
+                    <h2 *ngIf="!attempt.preview">{{ 'addon.mod_quiz.reviewofattempt' | translate:{$a: attempt.attempt} }}</h2>
+                </div>
             </ion-card-header>
             <ion-list>
                 <ion-item text-wrap no-lines>

@@ -36,7 +36,9 @@
     <!-- List of user attempts. -->
     <ion-card class="addon-mod_quiz-table" *ngIf="quiz && attempts && attempts.length">
         <ion-card-header text-wrap>
-            <h2>{{ 'addon.mod_quiz.summaryofattempts' | translate }}</h2>
+            <div class="safe-padding-horizontal">
+                <h2>{{ 'addon.mod_quiz.summaryofattempts' | translate }}</h2>
+            </div>
         </ion-card-header>
         <ion-list>
             <!-- "Header" of the table -->

@@ -19,7 +19,7 @@
     </ion-refresher>
 
     <!-- Period name and arrows to navigate. -->
-    <ion-grid padding-top>
+    <ion-grid padding-top class="safe-area-page">
         <ion-row>
             <ion-col text-start *ngIf="currentMoment">
                 <a ion-button icon-only clear (click)="loadPrevious()" [title]="'addon.calendar.dayprev' | translate">
@@ -37,7 +37,7 @@
         </ion-row>
     </ion-grid>
 
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="loaded" class="safe-area-page">
         <!-- There is data to be synchronized -->
         <ion-card class="core-warning-card" icon-start *ngIf="hasOffline">
             <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: 'core.day' | translate} }}

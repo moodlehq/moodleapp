@@ -26,7 +26,9 @@
         <!-- Attempts status. -->
         <ion-card *ngIf="(scorm.displayattemptstatus || (scorm.offlineAttempts && scorm.offlineAttempts.length)) && !skip">
             <ion-card-header text-wrap>
-                <h2>{{ 'addon.mod_scorm.attempts' | translate }}</h2>
+                <div class="safe-padding-horizontal">
+                    <h2>{{ 'addon.mod_scorm.attempts' | translate }}</h2>
+                </div>
             </ion-card-header>
             <ion-list>
                 <ng-container *ngIf="scorm.displayattemptstatus">

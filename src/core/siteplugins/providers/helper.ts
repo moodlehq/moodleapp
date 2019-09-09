@@ -664,7 +664,8 @@ export class CoreSitePluginsHelperProvider {
 
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
             blockName = (handlerSchema.moodlecomponent || plugin.component).replace('block_', ''),
-            titleString = (handlerSchema.displaydata && handlerSchema.displaydata.title) ? handlerSchema.displaydata.title : 'pluginname',
+            titleString = (handlerSchema.displaydata && handlerSchema.displaydata.title) ?
+                handlerSchema.displaydata.title : 'pluginname',
             prefixedTitle = this.getPrefixedString(plugin.addon, titleString);
 
         this.blockDelegate.registerHandler(

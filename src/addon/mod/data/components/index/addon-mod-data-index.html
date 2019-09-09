@@ -66,7 +66,7 @@
         </div>
     </ng-container>
 
-    <div class="addon-data-contents addon-data-entries-{{data.id}}" *ngIf="!isEmpty">
+    <div class="addon-data-contents addon-data-entries-{{data.id}} safe-padding-horizontal" *ngIf="!isEmpty">
         <core-style [css]="data.csstemplate" prefix=".addon-data-entries-{{data.id}}"></core-style>
 
         <core-compile-html [text]="entriesRendered" [jsData]="jsData" [extraImports]="extraImports"></core-compile-html>

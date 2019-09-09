@@ -1,7 +1,7 @@
 <ion-item-divider>
     <h2>{{ 'addon.block_recentlyaccesseditems.pluginname' | translate }}</h2>
 </ion-item-divider>
-<core-loading [hideUntil]="loaded" class="core-loading-center">
+<core-loading [hideUntil]="loaded" class="core-loading-center safe-area-page">
     <div class="core-horizontal-scroll" *ngIf="items && items.length > 0">
         <div *ngFor="let item of items">
             <ion-card>
