@@ -96,7 +96,7 @@ export class AddonNotificationsSettingsPage implements OnDestroy {
                 return Promise.reject('No processor found');
             }
 
-            preferences.disableall = !!preferences.disableall; // Convert to boolean.
+            preferences.enableall = !preferences.disableall;
             this.preferences = preferences;
             this.loadProcessor(this.currentProcessor);
 
@@ -230,17 +230,17 @@ export class AddonNotificationsSettingsPage implements OnDestroy {
     }
 
     /**
-     * Disable all notifications changed.
+     * Enable all notifications changed.
      */
-    disableAll(disable: boolean): void {
+    enableAll(enable: boolean): void {
         const modal = this.domUtils.showModalLoading('core.sending', true);
-        this.userProvider.updateUserPreferences([], disable).then(() => {
+        this.userProvider.updateUserPreferences([], !enable).then(() => {
             // Update the preferences since they were modified.
             this.updatePreferencesAfterDelay();
         }).catch((message) => {
             // Show error and revert change.
             this.domUtils.showErrorModal(message);
-            this.preferences.disableall = !this.preferences.disableall;
+            this.preferences.enableall = !this.preferences.enableall;
         }).finally(() => {
             modal.dismiss();
         });
