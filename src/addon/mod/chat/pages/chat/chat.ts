@@ -21,10 +21,10 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { AddonModChatProvider, AddonModChatMessageWithUserData } from '../../providers/chat';
+import { AddonModChatHelperProvider } from '../../providers/helper';
 import { Network } from '@ionic-native/network';
 import { coreSlideInOut } from '@classes/animations';
 import { CoreSendMessageFormComponent } from '@components/send-message-form/send-message-form';
-import * as moment from 'moment';
 
 /**
  * Page that displays a chat session.
@@ -62,8 +62,8 @@ export class AddonModChatChatPage {
 
     constructor(navParams: NavParams, logger: CoreLoggerProvider, network: Network,  zone: NgZone, private navCtrl: NavController,
             private chatProvider: AddonModChatProvider, private appProvider: CoreAppProvider, sitesProvider: CoreSitesProvider,
-            private modalCtrl: ModalController, private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
-            private eventsProvider: CoreEventsProvider) {
+            private modalCtrl: ModalController, private domUtils: CoreDomUtilsProvider,
+            private eventsProvider: CoreEventsProvider, private chatHelper: AddonModChatHelperProvider) {
 
         this.chatId = navParams.get('chatId');
         this.courseId = navParams.get('courseId');
@@ -210,25 +210,13 @@ export class AddonModChatChatPage {
                         const message = this.messages[index];
                         const prevMessage = index > 0 ? this.messages[index - 1] : null;
 
-                        message.showDate = this.showDate(message, prevMessage);
-                        message.beep = message.message.substr(0, 5) == 'beep ' && message.message.substr(5).trim();
+                        this.chatHelper.formatMessage(this.currentUserId, message, prevMessage);
 
                         if (message.beep && message.beep != this.currentUserId) {
                             this.getUserFullname(message.beep).then((fullname) => {
                                 message.beepwho = fullname;
                             });
                         }
-
-                        message.special = message.system || !!message.beep;
-
-                        if (message.message.substr(0, 4) == '/me ') {
-                            message.special = true;
-                            message.message = message.message.substr(4).trim();
-                        }
-
-                        message.showUserData = this.showUserData(message, prevMessage);
-                        prevMessage ?
-                            prevMessage.showTail = this.showTail(prevMessage, message) : null;
                     }
 
                     this.messages[this.messages.length - 1].showTail = true;
@@ -268,33 +256,9 @@ export class AddonModChatChatPage {
     }
 
     /**
-     * Check if the user info should be displayed for the current message.
-     * User data is only displayed if the previous message was from another user.
-     *
-     * @param message Current message where to show the user info.
-     * @param prevMessage Previous message.
-     * @return Whether user data should be shown.
-     */
-    showUserData(message: any, prevMessage?: any): boolean {
-        return message.userid != this.currentUserId &&
-            (!prevMessage || prevMessage.userid != message.userid || message.showDate || prevMessage.special);
-    }
-
-    /**
-     * Check if a css tail should be shown.
-     *
-     * @param message Current message where to show the user info.
-     * @param nextMessage Next message.
-     * @return Whether user data should be shown.
-     */
-    showTail(message: any, nextMessage?: any): boolean {
-        return !nextMessage || nextMessage.userid != message.userid || nextMessage.showDate || nextMessage.special;
-    }
-
-    /**
      * Convenience function to be called every certain time to fetch chat messages.
      *
-     * @return Promised resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchMessagesInterval(): Promise<void> {
         this.logger.debug('Polling for messages');
@@ -322,22 +286,6 @@ export class AddonModChatChatPage {
         }).finally(() => {
             this.pollingRunning = false;
         });
-    }
-
-    /**
-     * Check if the date should be displayed between messages (when the day changes at midnight for example).
-     *
-     * @param message New message object.
-     * @param prevMessage Previous message object.
-     * @return True if messages are from diferent days, false othetwise.
-     */
-    showDate(message: AddonModChatMessageWithUserData, prevMessage: AddonModChatMessageWithUserData): boolean {
-        if (!prevMessage) {
-            return true;
-        }
-
-        // Check if day has changed.
-        return !moment(message.timestamp * 1000).isSame(prevMessage.timestamp * 1000, 'day');
     }
 
     /**
@@ -371,7 +319,6 @@ export class AddonModChatChatPage {
             this.domUtils.showErrorModalDefault(error, 'addon.mod_chat.errorwhilesendingmessage', true);
         }).finally(() => {
             this.sending = false;
-            this.sendMessageForm.focus();
         });
     }
 
