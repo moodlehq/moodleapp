@@ -4,8 +4,7 @@ $item-message-note-text: $gray-dark !default;
 $item-message-note-font-size: 75% !default;
 $item-message-mine-bg: $gray-light !default;
 
-ion-app.app-root page-addon-messages-discussion.ion-page {
-
+@mixin message-page {
     ion-content {
         background-color: $gray-lighter !important;
         @include darkmode() {
@@ -194,6 +193,12 @@ ion-app.app-root page-addon-messages-discussion.ion-page {
     .addon-message-not-mine.activated .tail {
         border-bottom-color: darken($item-message-bg, 10%);
     }
+}
+
+
+ion-app.app-root page-addon-messages-discussion.ion-page {
+
+    @include message-page();
 
     .toolbar-title {
         padding: 0;

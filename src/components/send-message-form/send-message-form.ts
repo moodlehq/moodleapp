@@ -19,6 +19,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreConstants } from '@core/constants';
 
 /**
@@ -39,13 +40,15 @@ export class CoreSendMessageFormComponent implements OnInit {
     @Input() message: string; // Input text.
     @Input() placeholder = ''; // Placeholder for the input area.
     @Input() showKeyboard = false; // If keyboard is shown or not.
+    @Input() sendDisabled = false; // If send is disabled.
     @Output() onSubmit: EventEmitter<string>; // Send data when submitting the message form.
     @Output() onResize: EventEmitter<void>; // Emit when resizing the textarea.
 
     protected sendOnEnter: boolean;
 
     constructor(private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider, configProvider: CoreConfigProvider,
-            eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider) {
+            eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider,
+            private domUtils: CoreDomUtilsProvider) {
 
         this.onSubmit = new EventEmitter();
         this.onResize = new EventEmitter();
@@ -99,6 +102,10 @@ export class CoreSendMessageFormComponent implements OnInit {
      * @param other The name of the other key that was clicked, undefined if no other key.
      */
     enterClicked(e: Event, other: string): void {
+        if (this.sendDisabled) {
+            return;
+        }
+
         if (this.sendOnEnter && !other) {
             // Enter clicked, send the message.
             this.submitForm(e);
