@@ -116,7 +116,15 @@ export class AddonModChatChatPage {
      * Display the chat users modal.
      */
     showChatUsers(): void {
-        const modal = this.modalCtrl.create('AddonModChatUsersPage', {sessionId: this.sessionId});
+        // Create the toc modal.
+        const modal =  this.modalCtrl.create('AddonModChatUsersPage', {
+            sessionId: this.sessionId
+        }, { cssClass: 'core-modal-lateral',
+            showBackdrop: true,
+            enableBackdropDismiss: true,
+            enterAnimation: 'core-modal-lateral-transition',
+            leaveAnimation: 'core-modal-lateral-transition' });
+
         modal.onDidDismiss((data) => {
             if (data && data.talkTo) {
                 this.newMessage = `To ${data.talkTo}: `;
@@ -125,7 +133,10 @@ export class AddonModChatChatPage {
                 this.sendMessage('', data.beepTo);
             }
         });
-        modal.present();
+
+        modal.present({
+            ev: event
+        });
     }
 
     /**
