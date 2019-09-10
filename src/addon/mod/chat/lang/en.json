@@ -19,6 +19,7 @@
     "mustbeonlinetosendmessages": "You must be online to send messages.",
     "nomessages": "No messages yet",
     "nosessionsfound": "No sessions found",
+    "saidto": "said to",
     "send": "Send",
     "sessionstart": "The next chat session will start on {{$a.date}}, ({{$a.fromnow}} from now)",
     "showincompletesessions": "Show incomplete sessions",

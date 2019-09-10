@@ -13,6 +13,8 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import * as moment from 'moment';
 import AddonModChatMessageWithUserData from './chat';
 
@@ -22,6 +24,13 @@ import AddonModChatMessageWithUserData from './chat';
 @Injectable()
 export class AddonModChatHelperProvider {
 
+    static patternto = new RegExp(/^To\s([^:]+):(.*)/);
+
+    constructor(protected translate: TranslateService,
+        protected textUtils: CoreTextUtilsProvider) {
+
+    }
+
     /**
      * Give some format info about messages.
      *
@@ -30,7 +39,10 @@ export class AddonModChatHelperProvider {
      * @param  prevMessage Previous Message in a discussion (if any).
      * @return Message with additional info.
      */
-    formatMessage(currentUserId: number, message: AddonModChatMessageWithUserData, prevMessage?: any): any {
+    formatMessage(currentUserId: number, message: AddonModChatMessageWithUserData,
+            prevMessage?: AddonModChatMessageWithUserData): any {
+        message.message = message.message.trim();
+
         message.showDate = this.showDate(message, prevMessage);
         message.beep = message.message.substr(0, 5) == 'beep ' && message.message.substr(5).trim();
 
@@ -39,6 +51,12 @@ export class AddonModChatHelperProvider {
         if (message.message.substr(0, 4) == '/me ') {
             message.special = true;
             message.message = message.message.substr(4).trim();
+        }
+
+        if (!message.special && message.message.match(AddonModChatHelperProvider.patternto)) {
+            const matches = message.message.match(AddonModChatHelperProvider.patternto);
+            message.message = '<b>' + this.translate.instant('addon.mod_chat.saidto') +
+                '</b> <i>' + matches[1] + '</i>: ' + matches[2];
         }
 
         message.showUserData = this.showUserData(currentUserId, message, prevMessage);

@@ -133,7 +133,7 @@ export class AddonModChatChatPage {
 
         modal.onDidDismiss((data) => {
             if (data && data.talkTo) {
-                this.newMessage = `To ${data.talkTo}: ` + this.sendMessageForm.message;
+                this.newMessage = `To ${data.talkTo}: ` + (this.sendMessageForm.message || '');
             }
             if (data && data.beepTo) {
                 this.sendMessage('', data.beepTo);

@@ -442,6 +442,7 @@
     "addon.mod_chat.mustbeonlinetosendmessages": "You must be online to send messages.",
     "addon.mod_chat.nomessages": "No messages yet",
     "addon.mod_chat.nosessionsfound": "No sessions found",
+    "addon.mod_chat.saidto": "said to",
     "addon.mod_chat.send": "Send",
     "addon.mod_chat.sessionstart": "The next chat session will start on {{$a.date}}, ({{$a.fromnow}} from now)",
     "addon.mod_chat.showincompletesessions": "Show incomplete sessions",
