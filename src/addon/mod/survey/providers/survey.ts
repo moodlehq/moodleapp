@@ -21,6 +21,7 @@ import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModSurveyOfflineProvider } from './offline';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
 
 /**
  * Service that provides some features for surveys.
@@ -46,7 +47,7 @@ export class AddonModSurveyProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the questions are retrieved.
      */
-    getQuestions(surveyId: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
+    getQuestions(surveyId: number, ignoreCache?: boolean, siteId?: string): Promise<AddonModSurveyQuestion[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     surveyid: surveyId
@@ -61,7 +62,9 @@ export class AddonModSurveyProvider {
                 preSets.emergencyCache = false;
             }
 
-            return site.read('mod_survey_get_questions', params, preSets).then((response) => {
+            return site.read('mod_survey_get_questions', params, preSets)
+                    .then((response: AddonModSurveyGetQuestionsResult): any => {
+
                 if (response.questions) {
                     return response.questions;
                 }
@@ -101,7 +104,9 @@ export class AddonModSurveyProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the survey is retrieved.
      */
-    protected getSurveyDataByKey(courseId: number, key: string, value: any, ignoreCache?: boolean, siteId?: string): Promise<any> {
+    protected getSurveyDataByKey(courseId: number, key: string, value: any, ignoreCache?: boolean, siteId?: string)
+            : Promise<AddonModSurveySurvey> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     courseids: [courseId]
@@ -116,7 +121,9 @@ export class AddonModSurveyProvider {
                 preSets.emergencyCache = false;
             }
 
-            return site.read('mod_survey_get_surveys_by_courses', params, preSets).then((response) => {
+            return site.read('mod_survey_get_surveys_by_courses', params, preSets)
+                    .then((response: AddonModSurveyGetSurveysByCoursesResult): any => {
+
                 if (response && response.surveys) {
                     const currentSurvey = response.surveys.find((survey) => {
                         return survey[key] == value;
@@ -140,7 +147,7 @@ export class AddonModSurveyProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the survey is retrieved.
      */
-    getSurvey(courseId: number, cmId: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
+    getSurvey(courseId: number, cmId: number, ignoreCache?: boolean, siteId?: string): Promise<AddonModSurveySurvey> {
         return this.getSurveyDataByKey(courseId, 'coursemodule', cmId, ignoreCache, siteId);
     }
 
@@ -153,7 +160,7 @@ export class AddonModSurveyProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the survey is retrieved.
      */
-    getSurveyById(courseId: number, id: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
+    getSurveyById(courseId: number, id: number, ignoreCache?: boolean, siteId?: string): Promise<AddonModSurveySurvey> {
         return this.getSurveyDataByKey(courseId, 'id', id, ignoreCache, siteId);
     }
 
@@ -277,17 +284,16 @@ export class AddonModSurveyProvider {
      * @param surveyId Survey ID.
      * @param answers Answers.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when answers are successfully submitted. Rejected with object containing
-     *         the error message (if any) and a boolean indicating if the error was returned by WS.
+     * @return Promise resolved when answers are successfully submitted.
      */
-    submitAnswersOnline(surveyId: number, answers: any[], siteId?: string): Promise<any> {
+    submitAnswersOnline(surveyId: number, answers: any[], siteId?: string): Promise<void> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 surveyid: surveyId,
                 answers: answers
             };
 
-            return site.write('mod_survey_submit_answers', params).then((response) => {
+            return site.write('mod_survey_submit_answers', params).then((response: AddonModSurveySubmitAnswersResult) => {
                 if (!response.status) {
                     return Promise.reject(this.utils.createFakeWSError(''));
                 }
@@ -295,3 +301,64 @@ export class AddonModSurveyProvider {
         });
     }
 }
+
+/**
+ * Survey returned by WS mod_survey_get_surveys_by_courses.
+ */
+export type AddonModSurveySurvey = {
+    id: number; // Survey id.
+    coursemodule: number; // Course module id.
+    course: number; // Course id.
+    name: string; // Survey name.
+    intro?: string; // The Survey intro.
+    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introfiles?: CoreWSExternalFile[]; // @since 3.2.
+    template?: number; // Survey type.
+    days?: number; // Days.
+    questions?: string; // Question ids.
+    surveydone?: number; // Did I finish the survey?.
+    timecreated?: number; // Time of creation.
+    timemodified?: number; // Time of last modification.
+    section?: number; // Course section id.
+    visible?: number; // Visible.
+    groupmode?: number; // Group mode.
+    groupingid?: number; // Group id.
+};
+
+/**
+ * Survey question.
+ */
+export type AddonModSurveyQuestion = {
+    id: number; // Question id.
+    text: string; // Question text.
+    shorttext: string; // Question short text.
+    multi: string; // Subquestions ids.
+    intro: string; // The question intro.
+    type: number; // Question type.
+    options: string; // Question options.
+    parent: number; // Parent question (for subquestions).
+};
+
+/**
+ * Result of WS mod_survey_get_questions.
+ */
+export type AddonModSurveyGetQuestionsResult = {
+    questions: AddonModSurveyQuestion[];
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_survey_get_surveys_by_courses.
+ */
+export type AddonModSurveyGetSurveysByCoursesResult = {
+    surveys: AddonModSurveySurvey[];
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_survey_submit_answers.
+ */
+export type AddonModSurveySubmitAnswersResult = {
+    status: boolean; // Status: true if success.
+    warnings?: CoreWSExternalWarning[];
+};
