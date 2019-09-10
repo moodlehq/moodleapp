@@ -33,8 +33,8 @@ export class AddonModLabelProvider {
     /**
      * Get cache key for label data WS calls.
      *
-     * @param  {number} courseId Course ID.
-     * @return {string} Cache key.
+     * @param courseId Course ID.
+     * @return Cache key.
      */
     protected getLabelDataCacheKey(courseId: number): string {
         return this.ROOT_CACHE_KEY + 'label:' + courseId;
@@ -43,13 +43,13 @@ export class AddonModLabelProvider {
     /**
      * Get a label with key=value. If more than one is found, only the first will be returned.
      *
-     * @param {number} courseId Course ID.
-     * @param {string} key Name of the property to check.
-     * @param {any} value Value to search.
-     * @param {boolean} [forceCache] True to always get the value from cache, false otherwise.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not provided, current site.
-     * @return {Promise<any>} Promise resolved when the label is retrieved.
+     * @param courseId Course ID.
+     * @param key Name of the property to check.
+     * @param value Value to search.
+     * @param forceCache True to always get the value from cache, false otherwise.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not provided, current site.
+     * @return Promise resolved when the label is retrieved.
      */
     protected getLabelByField(courseId: number, key: string, value: any, forceCache?: boolean, ignoreCache?: boolean,
             siteId?: string): Promise<any> {
@@ -86,12 +86,12 @@ export class AddonModLabelProvider {
     /**
      * Get a label by course module ID.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} cmId Course module ID.
-     * @param {boolean} [forceCache] True to always get the value from cache, false otherwise.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the label is retrieved.
+     * @param courseId Course ID.
+     * @param cmId Course module ID.
+     * @param forceCache True to always get the value from cache, false otherwise.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the label is retrieved.
      */
     getLabel(courseId: number, cmId: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
         return this.getLabelByField(courseId, 'coursemodule', cmId, forceCache, ignoreCache, siteId);
@@ -100,12 +100,12 @@ export class AddonModLabelProvider {
     /**
      * Get a label by ID.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} labelId Label ID.
-     * @param {boolean} [forceCache] True to always get the value from cache, false otherwise.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the label is retrieved.
+     * @param courseId Course ID.
+     * @param labelId Label ID.
+     * @param forceCache True to always get the value from cache, false otherwise.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the label is retrieved.
      */
     getLabelById(courseId: number, labelId: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
         return this.getLabelByField(courseId, 'id', labelId, forceCache, ignoreCache, siteId);
@@ -114,9 +114,9 @@ export class AddonModLabelProvider {
     /**
      * Invalidate label data.
      *
-     * @param {number} courseId Course ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateLabelData(courseId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(null).then((site) => {
@@ -127,10 +127,10 @@ export class AddonModLabelProvider {
     /**
      * Invalidate the prefetched content.
      *
-     * @param  {number} moduleId The module ID.
-     * @param  {number} courseId Course ID.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when data is invalidated.
+     * @param moduleId The module ID.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -147,8 +147,8 @@ export class AddonModLabelProvider {
     /**
      * Check if the site has the WS to get label data.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with boolean: whether it's available.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether it's available.
      * @since 3.3
      */
     isGetLabelAvailable(siteId?: string): Promise<boolean> {
@@ -160,8 +160,8 @@ export class AddonModLabelProvider {
     /**
      * Check if the site has the WS to get label data.
      *
-     * @param  {CoreSite} [site] Site. If not defined, current site.
-     * @return {boolean} Whether it's available.
+     * @param site Site. If not defined, current site.
+     * @return Whether it's available.
      * @since 3.3
      */
     isGetLabelAvailableForSite(site?: CoreSite): boolean {

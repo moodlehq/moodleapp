@@ -128,10 +128,10 @@ export class CoreBlockComponent implements OnInit, OnDestroy, DoCheck {
     /**
      * Refresh the data.
      *
-     * @param {any} [refresher] Refresher. Please pass this only if the refresher should finish when this function finishes.
-     * @param {Function} [done] Function to call when done.
-     * @param {boolean} [showErrors=false] If show errors to the user of hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher. Please pass this only if the refresher should finish when this function finishes.
+     * @param done Function to call when done.
+     * @param showErrors If show errors to the user of hide them.
+     * @return Promise resolved when done.
      */
     doRefresh(refresher?: any, done?: () => void, showErrors: boolean = false): Promise<any> {
         if (this.dynamicComponent) {
@@ -144,7 +144,7 @@ export class CoreBlockComponent implements OnInit, OnDestroy, DoCheck {
     /**
      * Invalidate some data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     invalidate(): Promise<any> {
         if (this.dynamicComponent) {

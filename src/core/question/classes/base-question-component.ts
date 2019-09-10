@@ -49,7 +49,7 @@ export class CoreQuestionBaseComponent {
     /**
      * Initialize a question component of type calculated or calculated simple.
      *
-     * @return {void|HTMLElement} Element containing the question HTML, void if the data is not valid.
+     * @return Element containing the question HTML, void if the data is not valid.
      */
     initCalculatedComponent(): void | HTMLElement {
         // Treat the input text first.
@@ -165,7 +165,7 @@ export class CoreQuestionBaseComponent {
     /**
      * Initialize the component and the question text.
      *
-     * @return {void|HTMLElement} Element containing the question HTML, void if the data is not valid.
+     * @return Element containing the question HTML, void if the data is not valid.
      */
     initComponent(): void | HTMLElement {
         if (!this.question) {
@@ -192,7 +192,7 @@ export class CoreQuestionBaseComponent {
     /**
      * Initialize a question component of type essay.
      *
-     * @return {void|HTMLElement} Element containing the question HTML, void if the data is not valid.
+     * @return Element containing the question HTML, void if the data is not valid.
      */
     initEssayComponent(): void | HTMLElement {
         const questionEl = this.initComponent();
@@ -234,8 +234,8 @@ export class CoreQuestionBaseComponent {
     /**
      * Initialize a question component that uses the original question text with some basic treatment.
      *
-     * @param {string} contentSelector The selector to find the question content (text).
-     * @return {void|HTMLElement} Element containing the question HTML, void if the data is not valid.
+     * @param contentSelector The selector to find the question content (text).
+     * @return Element containing the question HTML, void if the data is not valid.
      */
     initOriginalTextComponent(contentSelector: string): void | HTMLElement {
         if (!this.question) {
@@ -272,7 +272,7 @@ export class CoreQuestionBaseComponent {
     /**
      * Initialize a question component that has an input of type "text".
      *
-     * @return {void|HTMLElement} Element containing the question HTML, void if the data is not valid.
+     * @return Element containing the question HTML, void if the data is not valid.
      */
     initInputTextComponent(): void | HTMLElement {
         const questionEl = this.initComponent();
@@ -329,7 +329,7 @@ export class CoreQuestionBaseComponent {
     /**
      * Initialize a question component with a "match" behaviour.
      *
-     * @return {void|HTMLElement} Element containing the question HTML, void if the data is not valid.
+     * @return Element containing the question HTML, void if the data is not valid.
      */
     initMatchComponent(): void | HTMLElement {
         const questionEl = this.initComponent();
@@ -421,7 +421,7 @@ export class CoreQuestionBaseComponent {
     /**
      * Initialize a question component with a multiple choice (checkbox) or single choice (radio).
      *
-     * @return {void|HTMLElement} Element containing the question HTML, void if the data is not valid.
+     * @return Element containing the question HTML, void if the data is not valid.
      */
     initMultichoiceComponent(): void | HTMLElement {
         const questionEl = this.initComponent();

@@ -46,9 +46,9 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider {
     /**
      * Try to synchronize all the comments in a certain site or in all sites.
      *
-     * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
-     * @param {boolean} [force] Wether to force sync not depending on last execution.
-     * @return {Promise<any>}    Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @param force Wether to force sync not depending on last execution.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllComments(siteId?: string, force?: boolean): Promise<any> {
         return this.syncOnSites('all comments', this.syncAllCommentsFunc.bind(this), [force], siteId);
@@ -57,9 +57,9 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider {
     /**
      * Synchronize all the comments in a certain site
      *
-     * @param  {string} siteId Site ID to sync.
-     * @param  {boolean} force Wether to force sync not depending on last execution.
-     * @return {Promise<any>}  Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync.
+     * @param force Wether to force sync not depending on last execution.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     private syncAllCommentsFunc(siteId: string, force: boolean): Promise<any> {
         return this.commentsOffline.getAllComments(siteId).then((comments) => {
@@ -100,13 +100,13 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider {
     /**
      * Sync course comments only if a certain time has passed since the last time.
      *
-     * @param  {string} contextLevel Contextlevel system, course, user...
-     * @param  {number} instanceId   The Instance id of item associated with the context level.
-     * @param  {string} component    Component name.
-     * @param  {number} itemId       Associated id.
-     * @param  {string} [area='']    String comment area. Default empty.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved when the comments are synced or if they don't need to be synced.
+     * @param contextLevel Contextlevel system, course, user...
+     * @param instanceId The Instance id of item associated with the context level.
+     * @param component Component name.
+     * @param itemId Associated id.
+     * @param area String comment area. Default empty.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the comments are synced or if they don't need to be synced.
      */
     private syncCommentsIfNeeded(contextLevel: string, instanceId: number, component: string, itemId: number, area: string = '',
             siteId?: string): Promise<void> {
@@ -122,13 +122,13 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider {
     /**
      * Synchronize comments in a particular area.
      *
-     * @param  {string} contextLevel Contextlevel system, course, user...
-     * @param  {number} instanceId   The Instance id of item associated with the context level.
-     * @param  {string} component    Component name.
-     * @param  {number} itemId       Associated id.
-     * @param  {string} [area='']    String comment area. Default empty.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved if sync is successful, rejected otherwise.
+     * @param contextLevel Contextlevel system, course, user...
+     * @param instanceId The Instance id of item associated with the context level.
+     * @param component Component name.
+     * @param itemId Associated id.
+     * @param area String comment area. Default empty.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if sync is successful, rejected otherwise.
      */
     syncComments(contextLevel: string, instanceId: number, component: string, itemId: number, area: string = '',
             siteId?: string): Promise<any> {
@@ -216,12 +216,12 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider {
     /**
      * Get the ID of a comments sync.
      *
-     * @param  {string} contextLevel Contextlevel system, course, user...
-     * @param  {number} instanceId   The Instance id of item associated with the context level.
-     * @param  {string} component    Component name.
-     * @param  {number} itemId       Associated id.
-     * @param  {string} [area='']    String comment area. Default empty.
-     * @return {string} Sync ID.
+     * @param contextLevel Contextlevel system, course, user...
+     * @param instanceId The Instance id of item associated with the context level.
+     * @param component Component name.
+     * @param itemId Associated id.
+     * @param area String comment area. Default empty.
+     * @return Sync ID.
      */
     protected getSyncId(contextLevel: string, instanceId: number, component: string, itemId: number, area: string = ''): string {
         return contextLevel + '#' + instanceId + '#' + component + '#' + itemId + '#' + area;

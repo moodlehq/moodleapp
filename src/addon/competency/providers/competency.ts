@@ -48,8 +48,8 @@ export class AddonCompetencyProvider {
     /**
      * Check if all competencies features are disabled.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with boolean: whether all competency features are disabled.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether all competency features are disabled.
      */
     allCompetenciesDisabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -62,8 +62,8 @@ export class AddonCompetencyProvider {
     /**
      * Get cache key for user learning plans data WS calls.
      *
-     * @param {number} userId User ID.
-     * @return {string}         Cache key.
+     * @param userId User ID.
+     * @return Cache key.
      */
     protected getLearningPlansCacheKey(userId: number): string {
         return this.ROOT_CACHE_KEY + 'userplans:' + userId;
@@ -72,8 +72,8 @@ export class AddonCompetencyProvider {
     /**
      * Get cache key for learning plan data WS calls.
      *
-     * @param {number} planId Plan ID.
-     * @return {string}         Cache key.
+     * @param planId Plan ID.
+     * @return Cache key.
      */
     protected getLearningPlanCacheKey(planId: number): string {
         return this.ROOT_CACHE_KEY + 'learningplan:' + planId;
@@ -82,9 +82,9 @@ export class AddonCompetencyProvider {
     /**
      * Get cache key for competency in plan data WS calls.
      *
-     * @param {number} planId Plan ID.
-     * @param {number} competencyId Competency ID.
-     * @return {string}         Cache key.
+     * @param planId Plan ID.
+     * @param competencyId Competency ID.
+     * @return Cache key.
      */
     protected getCompetencyInPlanCacheKey(planId: number, competencyId: number): string {
         return this.ROOT_CACHE_KEY + 'plancompetency:' + planId + ':' + competencyId;
@@ -93,10 +93,10 @@ export class AddonCompetencyProvider {
     /**
      * Get cache key for competency in course data WS calls.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} competencyId Competency ID.
-     * @param {number} userId User ID.
-     * @return {string}         Cache key.
+     * @param courseId Course ID.
+     * @param competencyId Competency ID.
+     * @param userId User ID.
+     * @return Cache key.
      */
     protected getCompetencyInCourseCacheKey(courseId: number, competencyId: number, userId: number): string {
         return this.ROOT_CACHE_KEY + 'coursecompetency:' + userId + ':' + courseId + ':' + competencyId;
@@ -105,9 +105,9 @@ export class AddonCompetencyProvider {
     /**
      * Get cache key for competency summary data WS calls.
      *
-     * @param {number} competencyId Competency ID.
-     * @param {number} userId User ID.
-     * @return {string}         Cache key.
+     * @param competencyId Competency ID.
+     * @param userId User ID.
+     * @return Cache key.
      */
     protected getCompetencySummaryCacheKey(competencyId: number, userId: number): string {
         return this.ROOT_CACHE_KEY + 'competencysummary:' + userId + ':' + competencyId;
@@ -116,8 +116,8 @@ export class AddonCompetencyProvider {
     /**
      * Get cache key for course competencies data WS calls.
      *
-     * @param {number} courseId Course ID.
-     * @return {string}         Cache key.
+     * @param courseId Course ID.
+     * @return Cache key.
      */
     protected getCourseCompetenciesCacheKey(courseId: number): string {
         return this.ROOT_CACHE_KEY + 'coursecompetencies:' + courseId;
@@ -126,9 +126,9 @@ export class AddonCompetencyProvider {
     /**
      * Returns whether competencies are enabled.
      *
-     * @param  {number} courseId Course ID.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} competencies if enabled for the given course, false otherwise.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return competencies if enabled for the given course, false otherwise.
      */
     isPluginForCourseEnabled(courseId: number, siteId?: string): Promise<any> {
         if (!this.sitesProvider.isLoggedIn()) {
@@ -143,9 +143,9 @@ export class AddonCompetencyProvider {
     /**
      * Get plans for a certain user.
      *
-     * @param  {number} [userId]    ID of the user. If not defined, current user.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}            Promise to be resolved when the plans are retrieved.
+     * @param userId ID of the user. If not defined, current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise to be resolved when the plans are retrieved.
      */
     getLearningPlans(userId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -174,9 +174,9 @@ export class AddonCompetencyProvider {
     /**
      * Get a certain plan.
      *
-     * @param  {number} planId    ID of the plan.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}            Promise to be resolved when the plans are retrieved.
+     * @param planId ID of the plan.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise to be resolved when the plans are retrieved.
      */
     getLearningPlan(planId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -204,10 +204,10 @@ export class AddonCompetencyProvider {
     /**
      * Get a certain competency in a plan.
      *
-     * @param  {number} planId    ID of the plan.
-     * @param  {number} competencyId    ID of the competency.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}            Promise to be resolved when the plans are retrieved.
+     * @param planId ID of the plan.
+     * @param competencyId ID of the competency.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise to be resolved when the plans are retrieved.
      */
     getCompetencyInPlan(planId: number, competencyId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -236,12 +236,12 @@ export class AddonCompetencyProvider {
     /**
      * Get a certain competency in a course.
      *
-     * @param  {number} courseId    ID of the course.
-     * @param  {number} competencyId    ID of the competency.
-     * @param  {number} [userId]    ID of the user. If not defined, current user.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @param  {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<any>}            Promise to be resolved when the plans are retrieved.
+     * @param courseId ID of the course.
+     * @param competencyId ID of the competency.
+     * @param userId ID of the user. If not defined, current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise to be resolved when the plans are retrieved.
      */
     getCompetencyInCourse(courseId: number, competencyId: number, userId?: number, siteId?: string, ignoreCache?: boolean)
             : Promise<any> {
@@ -279,11 +279,11 @@ export class AddonCompetencyProvider {
     /**
      * Get a certain competency summary.
      *
-     * @param  {number} competencyId    ID of the competency.
-     * @param  {number} [userId]    ID of the user. If not defined, current user.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @param  {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<any>}            Promise to be resolved when the plans are retrieved.
+     * @param competencyId ID of the competency.
+     * @param userId ID of the user. If not defined, current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise to be resolved when the plans are retrieved.
      */
     getCompetencySummary(competencyId: number, userId?: number, siteId?: string, ignoreCache?: boolean): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -318,11 +318,11 @@ export class AddonCompetencyProvider {
     /**
      * Get all competencies in a course.
      *
-     * @param  {number} courseId    ID of the course.
-     * @param  {number} [userId]    ID of the user.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @param  {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<any>}            Promise to be resolved when the course competencies are retrieved.
+     * @param courseId ID of the course.
+     * @param userId ID of the user.
+     * @param siteId Site ID. If not defined, current site.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise to be resolved when the course competencies are retrieved.
      */
     getCourseCompetencies(courseId: number, userId?: number, siteId?: string, ignoreCache?: boolean): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -373,9 +373,9 @@ export class AddonCompetencyProvider {
     /**
      * Invalidates User Learning Plans data.
      *
-     * @param  {number} [userId]    ID of the user. If not defined, current user.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}            Promise resolved when the data is invalidated.
+     * @param userId ID of the user. If not defined, current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateLearningPlans(userId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -388,9 +388,9 @@ export class AddonCompetencyProvider {
     /**
      * Invalidates Learning Plan data.
      *
-     * @param  {number} planId    ID of the plan.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved when the data is invalidated.
+     * @param planId ID of the plan.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateLearningPlan(planId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -401,10 +401,10 @@ export class AddonCompetencyProvider {
     /**
      * Invalidates Competency in Plan data.
      *
-     * @param  {number} planId    ID of the plan.
-     * @param  {number} competencyId    ID of the competency.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved when the data is invalidated.
+     * @param planId ID of the plan.
+     * @param competencyId ID of the competency.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateCompetencyInPlan(planId: number, competencyId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -415,11 +415,11 @@ export class AddonCompetencyProvider {
     /**
      * Invalidates Competency in Course data.
      *
-     * @param  {number} courseId    ID of the course.
-     * @param  {number} competencyId    ID of the competency.
-     * @param  {number} [userId]    ID of the user. If not defined, current user.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved when the data is invalidated.
+     * @param courseId ID of the course.
+     * @param competencyId ID of the competency.
+     * @param userId ID of the user. If not defined, current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateCompetencyInCourse(courseId: number, competencyId: number, userId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -432,10 +432,10 @@ export class AddonCompetencyProvider {
     /**
      * Invalidates Competency Summary data.
      *
-     * @param  {number} competencyId    ID of the competency.
-     * @param  {number} [userId]    ID of the user. If not defined, current user.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved when the data is invalidated.
+     * @param competencyId ID of the competency.
+     * @param userId ID of the user. If not defined, current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateCompetencySummary(competencyId: number, userId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -448,10 +448,10 @@ export class AddonCompetencyProvider {
     /**
      * Invalidates Course Competencies data.
      *
-     * @param  {number} courseId    ID of the course.
-     * @param  {number} [userId]      ID of the user.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved when the data is invalidated.
+     * @param courseId ID of the course.
+     * @param userId ID of the user.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateCourseCompetencies(courseId: number, userId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -477,13 +477,13 @@ export class AddonCompetencyProvider {
     /**
      * Report the competency as being viewed in plan.
      *
-     * @param  {number} planId    ID of the plan.
-     * @param  {number} competencyId  ID of the competency.
-     * @param  {number} planStatus    Current plan Status to decide what action should be logged.
-     * @param  {string} [name] Name of the competency.
-     * @param  {number} [userId] User ID. If not defined, current user.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}  Promise resolved when the WS call is successful.
+     * @param planId ID of the plan.
+     * @param competencyId ID of the competency.
+     * @param planStatus Current plan Status to decide what action should be logged.
+     * @param name Name of the competency.
+     * @param userId User ID. If not defined, current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the WS call is successful.
      */
     logCompetencyInPlanView(planId: number, competencyId: number, planStatus: number, name?: string, userId?: number,
             siteId?: string): Promise<any> {
@@ -519,12 +519,12 @@ export class AddonCompetencyProvider {
     /**
      * Report the competency as being viewed in course.
      *
-     * @param  {number} courseId        ID of the course.
-     * @param  {number} competencyId    ID of the competency.
-     * @param  {string} [name] Name of the competency.
-     * @param  {number} [userId] User ID. If not defined, current user.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}  Promise resolved when the WS call is successful.
+     * @param courseId ID of the course.
+     * @param competencyId ID of the competency.
+     * @param name Name of the competency.
+     * @param userId User ID. If not defined, current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the WS call is successful.
      */
     logCompetencyInCourseView(courseId: number, competencyId: number, name?: string, userId?: number, siteId?: string)
             : Promise<any> {
@@ -558,10 +558,10 @@ export class AddonCompetencyProvider {
     /**
      * Report the competency as being viewed.
      *
-     * @param  {number} competencyId    ID of the competency.
-     * @param  {string} [name] Name of the competency.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}  Promise resolved when the WS call is successful.
+     * @param competencyId ID of the competency.
+     * @param name Name of the competency.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the WS call is successful.
      */
     logCompetencyView(competencyId: number, name?: string, siteId?: string): Promise<any> {
         if (competencyId) {

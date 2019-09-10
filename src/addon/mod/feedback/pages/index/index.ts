@@ -44,7 +44,7 @@ export class AddonModFeedbackIndexPage {
     /**
      * Update some data based on the feedback instance.
      *
-     * @param {any} feedback Feedback instance.
+     * @param feedback Feedback instance.
      */
     updateData(feedback: any): void {
         this.title = feedback.name || this.title;

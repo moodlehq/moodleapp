@@ -29,7 +29,7 @@ export class CoreCourseTagAreaHandler implements CoreTagAreaHandler {
 
     /**
      * Whether or not the handler is enabled on a site level.
-     * @return {boolean|Promise<boolean>} Whether or not the handler is enabled on a site level.
+     * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
         return true;
@@ -38,8 +38,8 @@ export class CoreCourseTagAreaHandler implements CoreTagAreaHandler {
     /**
      * Parses the rendered content of a tag index and returns the items.
      *
-     * @param {string} content Rendered content.
-     * @return {any[]|Promise<any[]>} Area items (or promise resolved with the items).
+     * @param content Rendered content.
+     * @return Area items (or promise resolved with the items).
      */
     parseContent(content: string): any[] | Promise<any[]> {
         const items = [];
@@ -65,8 +65,8 @@ export class CoreCourseTagAreaHandler implements CoreTagAreaHandler {
     /**
      * Get the component to use to display items.
      *
-     * @param {Injector} injector Injector.
-     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
+     * @param injector Injector.
+     * @return The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(injector: Injector): any | Promise<any> {
         return CoreCourseTagAreaComponent;

@@ -117,7 +117,7 @@ export class AddonModDataActionComponent implements OnInit {
     /**
      * Undo delete action.
      *
-     * @return {Promise<any>} Solved when done.
+     * @return Solved when done.
      */
     undoDelete(): Promise<any> {
         const dataId = this.database.id,

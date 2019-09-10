@@ -117,8 +117,8 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
     /**
      * Generate random colors if needed.
      *
-     * @param  {number} n Number of colors needed.
-     * @return {any[]}    Array with the number of background colors requested.
+     * @param n Number of colors needed.
+     * @return Array with the number of background colors requested.
      */
     protected getRandomColors(n: number): any[] {
         while (CoreChartComponent.backgroundColors.length < n) {

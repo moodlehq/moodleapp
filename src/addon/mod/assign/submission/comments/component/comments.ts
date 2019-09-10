@@ -38,7 +38,7 @@ export class AddonModAssignSubmissionCommentsComponent extends AddonModAssignSub
     /**
      * Invalidate the data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     invalidate(): Promise<any> {
         return this.commentsProvider.invalidateCommentsData('module', this.assign.cmid, 'assignsubmission_comments',

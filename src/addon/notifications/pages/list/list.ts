@@ -82,8 +82,8 @@ export class AddonNotificationsListPage {
     /**
      * Convenience function to get notifications. Gets unread notifications first.
      *
-     * @param {boolean} refreh Whether we're refreshing data.
-     * @return {Promise<any>} Resolved when done.
+     * @param refreh Whether we're refreshing data.
+     * @return Resolved when done.
      */
     protected fetchNotifications(refresh?: boolean): Promise<any> {
         this.loadMoreError = false;
@@ -128,7 +128,7 @@ export class AddonNotificationsListPage {
     /**
      * Mark notifications as read.
      *
-     * @param {any[]} notifications Array of notification objects.
+     * @param notifications Array of notification objects.
      */
     protected markNotificationsAsRead(notifications: any[]): void {
         let promise;
@@ -173,7 +173,7 @@ export class AddonNotificationsListPage {
     /**
      * Refresh notifications.
      *
-     * @param {any} [refresher] Refresher.
+     * @param refresher Refresher.
      * @return Promise<any> Promise resolved when done.
      */
     refreshNotifications(refresher?: any): Promise<any> {
@@ -189,7 +189,7 @@ export class AddonNotificationsListPage {
     /**
      * Load more results.
      *
-     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
+     * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
      */
     loadMoreNotifications(infiniteComplete?: any): void {
         this.fetchNotifications().finally(() => {
@@ -200,7 +200,7 @@ export class AddonNotificationsListPage {
     /**
      * Formats the text of a notification.
      *
-     * @param {any} notification The notification object.
+     * @param notification The notification object.
      */
     protected formatText(notification: any): void {
         const text = notification.mobiletext.replace(/-{4,}/ig, '');

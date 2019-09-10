@@ -58,7 +58,7 @@ export class AddonModFeedbackAttemptPage {
     /**
      * Fetch all the data required for the view.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     fetchData(): Promise<any> {
         // Get the feedback to be able to now if questions should be autonumbered.

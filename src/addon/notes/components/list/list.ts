@@ -90,9 +90,9 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
     /**
      * Fetch notes.
      *
-     * @param  {boolean} sync         When to resync notes.
-     * @param  {boolean} [showErrors] When to display errors or not.
-     * @return {Promise<any>}         Promise with the notes.
+     * @param sync When to resync notes.
+     * @param showErrors When to display errors or not.
+     * @return Promise with the notes.
      */
     private fetchNotes(sync: boolean, showErrors?: boolean): Promise<any> {
         const promise = sync ? this.syncNotes(showErrors) : Promise.resolve();
@@ -141,8 +141,8 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
     /**
      * Refresh notes on PTR.
      *
-     * @param {boolean} showErrors Whether to display errors or not.
-     * @param {any}     refresher  Refresher instance.
+     * @param showErrors Whether to display errors or not.
+     * @param refresher Refresher instance.
      */
     refreshNotes(showErrors: boolean, refresher?: any): void {
         this.refreshIcon = 'spinner';
@@ -173,7 +173,7 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
     /**
      * Add a new Note to user and course.
      *
-     * @param {Event} e Event.
+     * @param e Event.
      */
     addNote(e: Event): void {
         e.preventDefault();
@@ -198,8 +198,8 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
     /**
      * Delete a note.
      *
-     * @param {Event} e Click event.
-     * @param {any} note Note to delete.
+     * @param e Click event.
+     * @param note Note to delete.
      */
     deleteNote(e: Event, note: any): void {
         e.preventDefault();
@@ -223,8 +223,8 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
     /**
      * Restore a note.
      *
-     * @param {Event} e Click event.
-     * @param {any} note Note to delete.
+     * @param e Click event.
+     * @param note Note to delete.
      */
     undoDeleteNote(e: Event, note: any): void {
         e.preventDefault();
@@ -245,8 +245,8 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
     /**
      * Tries to synchronize course notes.
      *
-     * @param  {boolean} showErrors Whether to display errors or not.
-     * @return {Promise<any>}       Promise resolved if sync is successful, rejected otherwise.
+     * @param showErrors Whether to display errors or not.
+     * @return Promise resolved if sync is successful, rejected otherwise.
      */
     private syncNotes(showErrors: boolean): Promise<any> {
         return this.notesSync.syncNotes(this.courseId).then((warnings) => {
@@ -263,7 +263,7 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
     /**
      * Show sync warnings if any.
      *
-     * @param {string[]} warnings the warnings
+     * @param warnings the warnings
      */
     private showSyncWarnings(warnings: string[]): void {
         const message = this.textUtils.buildMessage(warnings);

@@ -96,7 +96,7 @@ export class CoreContentLinksChooseSitePage implements OnInit {
     /**
      * Perform the action on a certain site.
      *
-     * @param {string} siteId Site ID.
+     * @param siteId Site ID.
      */
     siteClicked(siteId: string): void {
         if (this.isRootURL) {

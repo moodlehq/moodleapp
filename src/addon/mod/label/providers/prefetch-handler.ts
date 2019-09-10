@@ -44,10 +44,10 @@ export class AddonModLabelPrefetchHandler extends CoreCourseResourcePrefetchHand
     /**
      * Returns module intro files.
      *
-     * @param {any} module The module object returned by WS.
-     * @param {number} courseId Course ID.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<any[]>} Promise resolved with list of intro files.
+     * @param module The module object returned by WS.
+     * @param courseId Course ID.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise resolved with list of intro files.
      */
     getIntroFiles(module: any, courseId: number, ignoreCache?: boolean): Promise<any[]> {
         let promise;
@@ -66,9 +66,9 @@ export class AddonModLabelPrefetchHandler extends CoreCourseResourcePrefetchHand
     /**
      * Invalidate the prefetched content.
      *
-     * @param {number} moduleId The module ID.
-     * @param {number} courseId Course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param moduleId The module ID.
+     * @param courseId Course ID the module belongs to.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number): Promise<any> {
         return this.labelProvider.invalidateContent(moduleId, courseId);
@@ -77,9 +77,9 @@ export class AddonModLabelPrefetchHandler extends CoreCourseResourcePrefetchHand
     /**
      * Invalidate WS calls needed to determine module status.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when invalidated.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @return Promise resolved when invalidated.
      */
     invalidateModule(module: any, courseId: number): Promise<any> {
         const promises = [];

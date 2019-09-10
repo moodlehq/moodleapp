@@ -42,7 +42,7 @@ export class AddonModDataIndexPage {
     /**
      * Update some data based on the data instance.
      *
-     * @param {any} data Data instance.
+     * @param data Data instance.
      */
     updateData(data: any): void {
         this.title = data.name || this.title;

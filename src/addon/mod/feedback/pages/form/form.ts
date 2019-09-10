@@ -113,7 +113,7 @@ export class AddonModFeedbackFormPage implements OnDestroy {
     /**
      * Check if we can leave the page or not.
      *
-     * @return {boolean | Promise<void>} Resolved if we can leave it, rejected if not.
+     * @return Resolved if we can leave it, rejected if not.
      */
     ionViewCanLeave(): boolean | Promise<void> {
         if (this.forceLeave) {
@@ -137,7 +137,7 @@ export class AddonModFeedbackFormPage implements OnDestroy {
     /**
      * Fetch all the data required for the view.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchData(): Promise<any> {
         this.offline = !this.appProvider.isOnline();
@@ -183,7 +183,7 @@ export class AddonModFeedbackFormPage implements OnDestroy {
     /**
      * Fetch access information.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchAccessData(): Promise<any> {
         return this.feedbackProvider.getFeedbackAccessInformation(this.feedback.id, this.offline, true).catch((error) => {
@@ -246,8 +246,8 @@ export class AddonModFeedbackFormPage implements OnDestroy {
     /**
      * Function to allow page navigation through the questions form.
      *
-     * @param  {boolean}       goPrevious If true it will go back to the previous page, if false, it will go forward.
-     * @return {Promise<void>}            Resolved when done.
+     * @param goPrevious If true it will go back to the previous page, if false, it will go forward.
+     * @return Resolved when done.
      */
     gotoPage(goPrevious: boolean): Promise<void> {
         this.domUtils.scrollToTop(this.content);

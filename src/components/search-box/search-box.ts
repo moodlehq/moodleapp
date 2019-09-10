@@ -62,7 +62,7 @@ export class CoreSearchBoxComponent implements OnInit {
     /**
      * Form submitted.
      *
-     * @param {Event} e Event.
+     * @param e Event.
      */
     submitForm(e: Event): void {
         e.preventDefault();

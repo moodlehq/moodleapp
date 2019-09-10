@@ -148,7 +148,7 @@ export class CoreTabComponent implements OnInit, OnDestroy {
      * Get all child core-navbar-buttons. We need to use querySelectorAll because ContentChildren doesn't work with ng-template.
      * https://github.com/angular/angular/issues/14842
      *
-     * @return {CoreNavBarButtonsComponent[]} List of component instances.
+     * @return List of component instances.
      */
     protected getChildrenNavBarButtons(): CoreNavBarButtonsComponent[] {
         const elements = this.element.querySelectorAll('core-navbar-buttons'),
@@ -167,7 +167,7 @@ export class CoreTabComponent implements OnInit, OnDestroy {
     /**
      * Show all hide all children navbar buttons.
      *
-     * @param {boolean} show Whether to show or hide the buttons.
+     * @param show Whether to show or hide the buttons.
      */
     protected showHideNavBarButtons(show: boolean): void {
         const instances = this.getChildrenNavBarButtons();

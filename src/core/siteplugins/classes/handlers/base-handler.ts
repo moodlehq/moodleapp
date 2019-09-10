@@ -24,7 +24,7 @@ export class CoreSitePluginsBaseHandler implements CoreDelegateHandler {
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return {boolean|Promise<boolean>} A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
+     * @return A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
         return true;

@@ -67,7 +67,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit {
     /**
      * Check if we can leave the page or not.
      *
-     * @return {boolean|Promise<void>} Resolved if we can leave it, rejected if not.
+     * @return Resolved if we can leave it, rejected if not.
      */
     ionViewCanLeave(): boolean | Promise<void> {
         if (!this.submissionComponent || this.forceLeave) {
@@ -95,7 +95,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit {
     /**
      * Get the submission.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchSubmission(): Promise<any> {
         return this.assignProvider.getAssignment(this.courseId, this.moduleId).then((assignment) => {
@@ -123,7 +123,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit {
     /**
      * Refresh all the data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected refreshAllData(): Promise<any> {
         const promises = [];
@@ -146,7 +146,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit {
     /**
      * Refresh the data.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshSubmission(refresher: any): void {
         this.refreshAllData().finally(() => {

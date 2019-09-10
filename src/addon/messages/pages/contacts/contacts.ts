@@ -91,9 +91,9 @@ export class AddonMessagesContactsPage implements OnDestroy {
     /**
      * Set the selected user and open the conversation in the split view if needed.
      *
-     * @param {string} tab Active tab: "contacts" or "requests".
-     * @param {number} [userId] Id of the selected user, undefined to use the last selected user in the tab.
-     * @param {boolean} [onInit=false] Whether the contact was selected on initial load.
+     * @param tab Active tab: "contacts" or "requests".
+     * @param userId Id of the selected user, undefined to use the last selected user in the tab.
+     * @param onInit Whether the contact was selected on initial load.
      */
     selectUser(tab: string, userId?: number, onInit: boolean = false): void {
         userId = userId || this.selectedUserId[tab];

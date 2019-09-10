@@ -32,19 +32,16 @@ import { CoreTagItem } from '@core/tag/providers/tag';
 export interface AddonModBookTocChapter {
     /**
      * ID to identify the chapter.
-     * @type {string}
      */
     id: string;
 
     /**
      * Chapter's title.
-     * @type {string}
      */
     title: string;
 
     /**
      * The chapter's level.
-     * @type {number}
      */
     level: number;
 }
@@ -81,10 +78,10 @@ export class AddonModBookProvider {
     /**
      * Get a book by course module ID.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} cmId Course module ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the book is retrieved.
+     * @param courseId Course ID.
+     * @param cmId Course module ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the book is retrieved.
      */
     getBook(courseId: number, cmId: number, siteId?: string): Promise<any> {
         return this.getBookByField(courseId, 'coursemodule', cmId, siteId);
@@ -93,11 +90,11 @@ export class AddonModBookProvider {
     /**
      * Get a book with key=value. If more than one is found, only the first will be returned.
      *
-     * @param {number} courseId Course ID.
-     * @param {string} key Name of the property to check.
-     * @param {any} value Value to search.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the book is retrieved.
+     * @param courseId Course ID.
+     * @param key Name of the property to check.
+     * @param value Value to search.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the book is retrieved.
      */
     protected getBookByField(courseId: number, key: string, value: any, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -128,8 +125,8 @@ export class AddonModBookProvider {
     /**
      * Get cache key for get book data WS calls.
      *
-     * @param {number} courseId Course ID.
-     * @return {string} Cache key.
+     * @param courseId Course ID.
+     * @return Cache key.
      */
     protected getBookDataCacheKey(courseId: number): string {
         return this.ROOT_CACHE_KEY + 'book:' + courseId;
@@ -138,10 +135,10 @@ export class AddonModBookProvider {
     /**
      * Gets a chapter contents.
      *
-     * @param {AddonModBookContentsMap} contentsMap Contents map returned by getContentsMap.
-     * @param {string} chapterId Chapter to retrieve.
-     * @param {number} moduleId The module ID.
-     * @return {Promise<string>} Promise resolved with the contents.
+     * @param contentsMap Contents map returned by getContentsMap.
+     * @param chapterId Chapter to retrieve.
+     * @param moduleId The module ID.
+     * @return Promise resolved with the contents.
      */
     getChapterContent(contentsMap: AddonModBookContentsMap, chapterId: string, moduleId: number): Promise<string> {
         const indexUrl = contentsMap[chapterId] ? contentsMap[chapterId].indexUrl : undefined,
@@ -182,8 +179,8 @@ export class AddonModBookProvider {
      * Convert an array of book contents into an object where contents are organized in chapters.
      * Each chapter has an indexUrl and the list of contents in that chapter.
      *
-     * @param {any[]} contents The module contents.
-     * @return {AddonModBookContentsMap} Contents map.
+     * @param contents The module contents.
+     * @return Contents map.
      */
     getContentsMap(contents: any[]): AddonModBookContentsMap {
         const map: AddonModBookContentsMap = {};
@@ -236,8 +233,8 @@ export class AddonModBookProvider {
     /**
      * Get the first chapter of a book.
      *
-     * @param {AddonModBookTocChapter[]} chapters The chapters list.
-     * @return {string} The chapter id.
+     * @param chapters The chapters list.
+     * @return The chapter id.
      */
     getFirstChapter(chapters: AddonModBookTocChapter[]): string {
         if (!chapters || !chapters.length) {
@@ -250,9 +247,9 @@ export class AddonModBookProvider {
     /**
      * Get the next chapter to the given one.
      *
-     * @param {AddonModBookTocChapter[]} chapters The chapters list.
-     * @param {string} chapterId The current chapter.
-     * @return {string} The next chapter id.
+     * @param chapters The chapters list.
+     * @param chapterId The current chapter.
+     * @return The next chapter id.
      */
     getNextChapter(chapters: AddonModBookTocChapter[], chapterId: string): string {
         let next = '0';
@@ -272,9 +269,9 @@ export class AddonModBookProvider {
     /**
      * Get the previous chapter to the given one.
      *
-     * @param {AddonModBookTocChapter[]} chapters The chapters list.
-     * @param {string} chapterId The current chapter.
-     * @return {string} The next chapter id.
+     * @param chapters The chapters list.
+     * @param chapterId The current chapter.
+     * @return The next chapter id.
      */
     getPreviousChapter(chapters: AddonModBookTocChapter[], chapterId: string): string {
         let previous = '0';
@@ -292,8 +289,8 @@ export class AddonModBookProvider {
     /**
      * Get the book toc as an array.
      *
-     * @param {any[]} contents The module contents.
-     * @return {any[]} The toc.
+     * @param contents The module contents.
+     * @return The toc.
      */
     getToc(contents: any[]): any[] {
         if (!contents || !contents.length) {
@@ -306,8 +303,8 @@ export class AddonModBookProvider {
     /**
      * Get the book toc as an array of chapters (not nested).
      *
-     * @param {any[]} contents The module contents.
-     * @return {AddonModBookTocChapter[]} The toc as a list.
+     * @param contents The module contents.
+     * @return The toc as a list.
      */
     getTocList(contents: any[]): AddonModBookTocChapter[] {
         const chapters = [],
@@ -333,9 +330,9 @@ export class AddonModBookProvider {
     /**
      * Invalidates book data.
      *
-     * @param {number} courseId Course ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateBookData(courseId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -346,10 +343,10 @@ export class AddonModBookProvider {
     /**
      * Invalidate the prefetched content.
      *
-     * @param {number} moduleId The module ID.
-     * @param {number} courseId Course ID of the module.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param moduleId The module ID.
+     * @param courseId Course ID of the module.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -366,8 +363,8 @@ export class AddonModBookProvider {
     /**
      * Check if a file is downloadable. The file param must have a 'type' attribute like in core_course_get_contents response.
      *
-     * @param {any} file File to check.
-     * @return {boolean} Whether it's downloadable.
+     * @param file File to check.
+     * @return Whether it's downloadable.
      */
     isFileDownloadable(file: any): boolean {
         return file.type === 'file';
@@ -376,8 +373,8 @@ export class AddonModBookProvider {
     /**
      * Return whether or not the plugin is enabled.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     isPluginEnabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -388,11 +385,11 @@ export class AddonModBookProvider {
     /**
      * Report a book as being viewed.
      *
-     * @param {number} id Module ID.
-     * @param {string} chapterId Chapter ID.
-     * @param {string} [name] Name of the book.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the WS call is successful.
+     * @param id Module ID.
+     * @param chapterId Chapter ID.
+     * @param name Name of the book.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the WS call is successful.
      */
     logView(id: number, chapterId: string, name?: string, siteId?: string): Promise<any> {
         const params = {

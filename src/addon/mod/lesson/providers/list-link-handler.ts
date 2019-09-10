@@ -33,7 +33,7 @@ export class AddonModLessonListLinkHandler extends CoreContentLinksModuleListHan
     /**
      * Check if the handler is enabled on a site level.
      *
-     * @return {Promise<boolean>} Promise resolved with boolean: whether or not the handler is enabled on a site level.
+     * @return Promise resolved with boolean: whether or not the handler is enabled on a site level.
      */
     isEnabled(): Promise<boolean> {
         return this.lessonProvider.isPluginEnabled();

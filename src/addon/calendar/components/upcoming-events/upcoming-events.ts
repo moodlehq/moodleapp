@@ -106,8 +106,8 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     /**
      * Fetch data.
      *
-     * @param {boolean} [refresh=false] True if we are refreshing events.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh True if we are refreshing events.
+     * @return Promise resolved when done.
      */
     fetchData(refresh: boolean = false): Promise<any> {
         const promises = [];
@@ -151,7 +151,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     /**
      * Fetch upcoming events.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     fetchEvents(): Promise<any> {
         // Don't pass courseId and categoryId, we'll filter them locally.
@@ -185,7 +185,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     /**
      * Load categories to be able to filter events.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected loadCategories(): Promise<any> {
         if (this.categoriesRetrieved) {
@@ -225,8 +225,8 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     /**
      * Refresh events.
      *
-     * @param {boolean} [afterChange] Whether the refresh is done after an event has changed or has been synced.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param afterChange Whether the refresh is done after an event has changed or has been synced.
+     * @return Promise resolved when done.
      */
     refreshData(afterChange?: boolean): Promise<any> {
         const promises = [];
@@ -249,7 +249,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     /**
      * An event was clicked.
      *
-     * @param {any} event Event.
+     * @param event Event.
      */
     eventClicked(event: any): void {
         this.onEventClicked.emit(event.id);
@@ -258,7 +258,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     /**
      * Merge online events with the offline events of that period.
      *
-     * @return {any[]} Merged events.
+     * @return Merged events.
      */
     protected mergeEvents(): any[] {
         if (!this.offlineEvents.length && !this.deletedEvents.length) {
@@ -302,7 +302,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     /**
      * Sort events by timestart.
      *
-     * @param {any[]} events List to sort.
+     * @param events List to sort.
      */
     protected sortEvents(events: any[]): any[] {
         return events.sort((a, b) => {
@@ -317,7 +317,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     /**
      * Undelete a certain event.
      *
-     * @param {number} eventId Event ID.
+     * @param eventId Event ID.
      */
     protected undeleteEvent(eventId: number): void {
         const event = this.onlineEvents.find((event) => {

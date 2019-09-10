@@ -86,7 +86,7 @@ export class CoreSupressEventsDirective implements OnInit {
     /**
      * Stop event default and propagation.
      *
-     * @param {Event} event Event.
+     * @param event Event.
      */
     protected stopBubble(event: Event): void {
         event.preventDefault();

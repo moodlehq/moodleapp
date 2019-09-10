@@ -47,9 +47,9 @@ export class CoreContextMenuPopoverComponent {
     /**
      * Function called when an item is clicked.
      *
-     * @param {Event} event Click event.
-     * @param {CoreContextMenuItemComponent} item Item clicked.
-     * @return {boolean} Return true if success, false if error.
+     * @param event Click event.
+     * @param item Item clicked.
+     * @return Return true if success, false if error.
      */
     itemClicked(event: Event, item: CoreContextMenuItemComponent): boolean {
         if (item.action.observers.length > 0) {

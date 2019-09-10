@@ -134,8 +134,8 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     /**
      * Fetch contacts.
      *
-     * @param {boolean} [refresh=false] True if we are refreshing events.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh True if we are refreshing events.
+     * @return Promise resolved when done.
      */
     fetchData(refresh: boolean = false): Promise<any> {
         const promises = [];
@@ -184,7 +184,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     /**
      * Fetch the events for current month.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     fetchEvents(): Promise<any> {
         // Don't pass courseId and categoryId, we'll filter them locally.
@@ -238,7 +238,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     /**
      * Load categories to be able to filter events.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected loadCategories(): Promise<any> {
         if (this.categoriesRetrieved) {
@@ -285,8 +285,8 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     /**
      * Refresh events.
      *
-     * @param {boolean} [afterChange] Whether the refresh is done after an event has changed or has been synced.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param afterChange Whether the refresh is done after an event has changed or has been synced.
+     * @return Promise resolved when done.
      */
     refreshData(afterChange?: boolean): Promise<any> {
         const promises = [];
@@ -340,8 +340,8 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     /**
      * An event was clicked.
      *
-     * @param {any} calendarEvent Calendar event..
-     * @param {MouseEvent} event Mouse event.
+     * @param calendarEvent Calendar event..
+     * @param event Mouse event.
      */
     eventClicked(calendarEvent: any, event: MouseEvent): void {
         this.onEventClicked.emit(calendarEvent.id);
@@ -351,7 +351,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     /**
      * A day was clicked.
      *
-     * @param {number} day Day.
+     * @param day Day.
      */
     dayClicked(day: number): void {
         this.onDayClicked.emit({day: day, month: this.month, year: this.year});
@@ -461,7 +461,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     /**
      * Sort events by timestart.
      *
-     * @param {any[]} events List to sort.
+     * @param events List to sort.
      */
     protected sortEvents(events: any[]): any[] {
         return events.sort((a, b) => {
@@ -476,7 +476,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
     /**
      * Undelete a certain event.
      *
-     * @param {number} eventId Event ID.
+     * @param eventId Event ID.
      */
     protected undeleteEvent(eventId: number): void {
         if (!this.weeks) {
@@ -498,8 +498,8 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
 
     /**
      * Returns if the event is in the past or not.
-     * @param  {any}     event Event object.
-     * @return {boolean}       True if it's in the past.
+     * @param event Event object.
+     * @return True if it's in the past.
      */
     isEventPast(event: any): boolean {
         return (event.timestart + event.timeduration) < this.currentTime;

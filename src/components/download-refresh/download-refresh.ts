@@ -44,8 +44,8 @@ export class CoreDownloadRefreshComponent {
     /**
      * Download clicked.
      *
-     * @param {Event} e Click event.
-     * @param {boolean} refresh Whether it's refreshing.
+     * @param e Click event.
+     * @param refresh Whether it's refreshing.
      */
     download(e: Event, refresh: boolean): void {
         e.preventDefault();

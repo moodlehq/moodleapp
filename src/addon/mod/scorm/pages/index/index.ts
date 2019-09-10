@@ -40,7 +40,7 @@ export class AddonModScormIndexPage {
     /**
      * Update some data based on the SCORM instance.
      *
-     * @param {any} scorm SCORM instance.
+     * @param scorm SCORM instance.
      */
     updateData(scorm: any): void {
         this.title = scorm.name || this.title;

@@ -31,9 +31,9 @@ export class ZipMock extends Zip {
     /**
      * Create a directory. It creates all the foldes in dirPath 1 by 1 to prevent errors.
      *
-     * @param {string} destination Destination parent folder.
-     * @param {string} dirPath Relative path to the folder.
-     * @return {Promise<void>} Promise resolved when done.
+     * @param destination Destination parent folder.
+     * @param dirPath Relative path to the folder.
+     * @return Promise resolved when done.
      */
     protected createDir(destination: string, dirPath: string): Promise<void> {
         // Create all the folders 1 by 1 in order, otherwise it fails.
@@ -57,10 +57,10 @@ export class ZipMock extends Zip {
     /**
      * Extracts files from a ZIP archive.
      *
-     * @param {string} source Path to the source ZIP file.
-     * @param {string} destination Destination folder.
-     * @param {Function} [onProgress] Optional callback to be called on progress update
-     * @return {Promise<number>} Promise that resolves with a number. 0 is success, -1 is error.
+     * @param source Path to the source ZIP file.
+     * @param destination Destination folder.
+     * @param onProgress Optional callback to be called on progress update
+     * @return Promise that resolves with a number. 0 is success, -1 is error.
      */
     unzip(source: string, destination: string, onProgress?: Function): Promise<number> {
 

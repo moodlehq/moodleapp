@@ -129,9 +129,9 @@ export class AddonModDataEntryPage implements OnDestroy {
     /**
      * Fetch the entry data.
      *
-     * @param  {boolean} [refresh] Whether to refresh the current data or not.
-     * @param  {boolean} [isPtr] Whether is a pull to refresh action.
-     * @return {Promise<any>} Resolved when done.
+     * @param refresh Whether to refresh the current data or not.
+     * @param isPtr Whether is a pull to refresh action.
+     * @return Resolved when done.
      */
     protected fetchEntryData(refresh?: boolean, isPtr?: boolean): Promise<any> {
         this.isPullingToRefresh = isPtr;
@@ -190,8 +190,8 @@ export class AddonModDataEntryPage implements OnDestroy {
     /**
      * Go to selected entry without changing state.
      *
-     * @param  {number} offset Entry offset.
-     * @return {Promise<any>} Resolved when done.
+     * @param offset Entry offset.
+     * @return Resolved when done.
      */
     gotoEntry(offset: number): Promise<any> {
         this.offset = offset;
@@ -205,8 +205,8 @@ export class AddonModDataEntryPage implements OnDestroy {
     /**
      * Refresh all the data.
      *
-     * @param  {boolean} [isPtr] Whether is a pull to refresh action.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param isPtr Whether is a pull to refresh action.
+     * @return Promise resolved when done.
      */
     protected refreshAllData(isPtr?: boolean): Promise<any> {
         const promises = [];
@@ -233,8 +233,8 @@ export class AddonModDataEntryPage implements OnDestroy {
     /**
      * Refresh the data.
      *
-     * @param {any} [refresher] Refresher.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @return Promise resolved when done.
      */
     refreshDatabase(refresher?: any): Promise<any> {
         if (this.entryLoaded) {
@@ -247,8 +247,8 @@ export class AddonModDataEntryPage implements OnDestroy {
     /**
      * Set group to see the database.
      *
-     * @param  {number}       groupId Group identifier to set.
-     * @return {Promise<any>}         Resolved when done.
+     * @param groupId Group identifier to set.
+     * @return Resolved when done.
      */
     setGroup(groupId: number): Promise<any> {
         this.selectedGroup = groupId;
@@ -263,7 +263,7 @@ export class AddonModDataEntryPage implements OnDestroy {
     /**
      * Convenience function to fetch the entry and set next/previous entries.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected setEntryFromOffset(): Promise<any> {
         const emptyOffset = typeof this.offset != 'number';

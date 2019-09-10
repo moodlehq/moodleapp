@@ -39,8 +39,8 @@ export class CoreCoursesRequestPushClickHandler implements CorePushNotifications
     /**
      * Check if a notification click is handled by this handler.
      *
-     * @param {any} notification The notification to check.
-     * @return {boolean} Whether the notification click is handled by this handler
+     * @param notification The notification to check.
+     * @return Whether the notification click is handled by this handler
      */
     handles(notification: any): boolean | Promise<boolean> {
         // Don't support 'courserequestrejected', that way the app will open the notifications page.
@@ -51,8 +51,8 @@ export class CoreCoursesRequestPushClickHandler implements CorePushNotifications
     /**
      * Handle the notification click.
      *
-     * @param {any} notification The notification to check.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param notification The notification to check.
+     * @return Promise resolved when done.
      */
     handleClick(notification: any): Promise<any> {
         const courseId = Number(notification.courseid);

@@ -49,7 +49,7 @@ export class AddonModChatSessionMessagesPage {
     /**
      * Fetch session messages.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchMessages(): Promise<any> {
         return this.chatProvider.getSessionMessages(this.chatId, this.sessionStart, this.sessionEnd, this.groupId)
@@ -67,7 +67,7 @@ export class AddonModChatSessionMessagesPage {
     /**
      * Refresh session messages.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshMessages(refresher: any): void {
         this.chatProvider.invalidateSessionMessages(this.chatId, this.sessionStart, this.groupId).finally(() => {
@@ -80,9 +80,9 @@ export class AddonModChatSessionMessagesPage {
    /**
     * Check if the date should be displayed between messages (when the day changes at midnight for example).
     *
-    * @param  {any} message     New message object.
-    * @param  {any} prevMessage Previous message object.
-    * @return {boolean} True if messages are from diferent days, false othetwise.
+    * @param message New message object.
+    * @param prevMessage Previous message object.
+    * @return True if messages are from diferent days, false othetwise.
     */
    showDate(message: any, prevMessage: any): boolean {
        if (!prevMessage) {

@@ -29,7 +29,7 @@ export class AddonCompetencyMainMenuHandler implements CoreMainMenuHandler  {
     /**
      * Check if the handler is enabled on a site level.
      *
-     * @return {boolean} Whether or not the handler is enabled on a site level.
+     * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
         // Check the user has at least one learn plan available.
@@ -41,7 +41,7 @@ export class AddonCompetencyMainMenuHandler implements CoreMainMenuHandler  {
     /**
      * Returns the data needed to render the handler.
      *
-     * @return {CoreMainMenuHandlerData} Data needed to render the handler.
+     * @return Data needed to render the handler.
      */
     getDisplayData(): CoreMainMenuHandlerData {
         return {

@@ -57,7 +57,7 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
     /**
      * Check if the handler is enabled on a site level.
      *
-     * @return {boolean|Promise<boolean>} Whether or not the handler is enabled on a site level.
+     * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
         return this.resourceProvider.isPluginEnabled();
@@ -66,10 +66,10 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
     /**
      * Get the data required to display the module in the course contents view.
      *
-     * @param {any} module The module object.
-     * @param {number} courseId The course ID.
-     * @param {number} sectionId The section ID.
-     * @return {CoreCourseModuleHandlerData} Data to render the module.
+     * @param module The module object.
+     * @param courseId The course ID.
+     * @param sectionId The section ID.
+     * @return Data to render the module.
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
         const updateStatus = (status: string): void => {
@@ -116,9 +116,9 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
     /**
      * Returns if contents are loaded to show open button.
      *
-     * @param {any} module The module object.
-     * @param {number} courseId The course ID.
-     * @return {Promise<boolean>} Resolved when done.
+     * @param module The module object.
+     * @param courseId The course ID.
+     * @return Resolved when done.
      */
     protected hideOpenButton(module: any, courseId: number): Promise<boolean> {
         let promise;
@@ -140,9 +140,9 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
     /**
      * Returns the activity icon and data.
      *
-     * @param {any} module        The module object.
-     * @param {number} courseId   The course ID.
-     * @return {Promise<any>}     Resource data.
+     * @param module The module object.
+     * @param courseId The course ID.
+     * @return Resource data.
      */
     protected getResourceData(module: any, courseId: number, handlerData: CoreCourseModuleHandlerData): Promise<any> {
         const promises = [];
@@ -238,9 +238,9 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
      * Get the component to render the module. This is needed to support singleactivity course format.
      * The component returned must implement CoreCourseModuleMainComponent.
      *
-     * @param {any} course The course object.
-     * @param {any} module The module object.
-     * @return {any} The component to use, undefined if not found.
+     * @param course The course object.
+     * @param module The module object.
+     * @return The component to use, undefined if not found.
      */
     getMainComponent(course: any, module: any): any {
         return AddonModResourceIndexComponent;

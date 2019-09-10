@@ -75,7 +75,7 @@ export class CoreSharedFilesListPage implements OnInit, OnDestroy {
     /**
      * Load the files.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected loadFiles(): Promise<any> {
         if (this.path) {
@@ -100,7 +100,7 @@ export class CoreSharedFilesListPage implements OnInit, OnDestroy {
     /**
      * Refresh the list of files.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshFiles(refresher: any): void {
         this.loadFiles().finally(() => {
@@ -111,7 +111,7 @@ export class CoreSharedFilesListPage implements OnInit, OnDestroy {
     /**
      * Called when a file is deleted. Remove the file from the list.
      *
-     * @param {number} index Position of the file.
+     * @param index Position of the file.
      */
     fileDeleted(index: number): void {
         this.files.splice(index, 1);
@@ -120,8 +120,8 @@ export class CoreSharedFilesListPage implements OnInit, OnDestroy {
     /**
      * Called when a file is renamed. Update the list.
      *
-     * @param {number} index Position of the file.
-     * @param {any} data Data containing the new FileEntry.
+     * @param index Position of the file.
+     * @param data Data containing the new FileEntry.
      */
     fileRenamed(index: number, data: any): void {
         this.files[index] = data.file;
@@ -130,7 +130,7 @@ export class CoreSharedFilesListPage implements OnInit, OnDestroy {
     /**
      * Open a subfolder.
      *
-     * @param {any} folder The folder to open.
+     * @param folder The folder to open.
      */
     openFolder(folder: any): void {
         const path = this.textUtils.concatenatePaths(this.path, folder.name);
@@ -154,7 +154,7 @@ export class CoreSharedFilesListPage implements OnInit, OnDestroy {
     /**
      * Change site loaded.
      *
-     * @param {string} id Site to load.
+     * @param id Site to load.
      */
     changeSite(id: string): void {
         this.siteId = id;
@@ -166,7 +166,7 @@ export class CoreSharedFilesListPage implements OnInit, OnDestroy {
     /**
      * A file was picked.
      *
-     * @param {any} file Picked file.
+     * @param file Picked file.
      */
     filePicked(file: any): void {
         this.viewCtrl.dismiss(file);

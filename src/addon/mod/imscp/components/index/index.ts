@@ -62,7 +62,7 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         return this.imscpProvider.invalidateContent(this.module.id, this.courseId);
@@ -71,8 +71,8 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
     /**
      * Download imscp contents.
      *
-     * @param  {boolean} [refresh] Whether we're refreshing data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh?: boolean): Promise<any> {
         let downloadFailed = false;
@@ -120,8 +120,8 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
     /**
      * Loads an item.
      *
-     * @param  {string} itemId Item ID.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param itemId Item ID.
+     * @return Promise resolved when done.
      */
     loadItem(itemId: string): Promise<any> {
         return this.imscpProvider.getIframeSrc(this.module, itemId).then((src) => {
@@ -144,7 +144,7 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
     /**
      * Show the TOC.
      *
-     * @param {MouseEvent} event Event.
+     * @param event Event.
      */
     showToc(event: MouseEvent): void {
         // Create the toc modal.

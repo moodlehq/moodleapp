@@ -33,7 +33,7 @@ export class AddonModFeedbackListLinkHandler extends CoreContentLinksModuleListH
     /**
      * Check if the handler is enabled on a site level.
      *
-     * @return {Promise<boolean>} Whether or not the handler is enabled on a site level.
+     * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): Promise<boolean> {
         return this.feedbackProvider.isPluginEnabled();

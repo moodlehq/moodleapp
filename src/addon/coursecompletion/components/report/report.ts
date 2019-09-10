@@ -54,7 +54,7 @@ export class AddonCourseCompletionReportComponent implements OnInit {
     /**
      * Fetch compleiton data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchCompletion(): Promise<any> {
         return this.courseCompletionProvider.getCompletion(this.courseId, this.userId).then((completion) => {
@@ -77,7 +77,7 @@ export class AddonCourseCompletionReportComponent implements OnInit {
     /**
      * Refresh completion data on PTR.
      *
-     * @param {any} [refresher] Refresher instance.
+     * @param refresher Refresher instance.
      */
     refreshCompletion(refresher?: any): void {
         this.courseCompletionProvider.invalidateCourseCompletion(this.courseId, this.userId).finally(() => {

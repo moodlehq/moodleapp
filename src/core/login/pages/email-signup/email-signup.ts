@@ -187,8 +187,8 @@ export class CoreLoginEmailSignupPage {
     /**
      * Treat the site config, checking if it's valid and extracting the data we're interested in.
      *
-     * @param {any} siteConfig Site config to treat.
-     * @return {boolean} True if success.
+     * @param siteConfig Site config to treat.
+     * @return True if success.
      */
     protected treatSiteConfig(siteConfig: any): boolean {
         if (siteConfig && siteConfig.registerauth == 'email' && !this.loginHelper.isEmailSignupDisabled(siteConfig)) {
@@ -212,7 +212,7 @@ export class CoreLoginEmailSignupPage {
     /**
      * Pull to refresh.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshSettings(refresher: any): void {
         this.fetchData().finally(() => {
@@ -223,7 +223,7 @@ export class CoreLoginEmailSignupPage {
     /**
      * Create account.
      *
-     * @param {Event} e Event.
+     * @param e Event.
      */
     create(e: Event): void {
         e.preventDefault();
@@ -292,8 +292,8 @@ export class CoreLoginEmailSignupPage {
     /**
      * Escape mail to avoid special characters to be treated as a RegExp.
      *
-     * @param  {string} text Initial mail.
-     * @return {string}      Escaped mail.
+     * @param text Initial mail.
+     * @return Escaped mail.
      */
     escapeMail(text: string): string {
         return this.textUtils.escapeForRegex(text);
@@ -316,7 +316,7 @@ export class CoreLoginEmailSignupPage {
     /**
      * Verify Age.
      *
-     * @param {Event} e Event.
+     * @param e Event.
      */
     verifyAge(e: Event): void {
         e.preventDefault();

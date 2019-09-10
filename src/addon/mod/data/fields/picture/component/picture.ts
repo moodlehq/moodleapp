@@ -47,8 +47,8 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginCo
     /**
      * Get the files from the input value.
      *
-     * @param  {any} value Input value.
-     * @return {any}     List of files.
+     * @param value Input value.
+     * @return List of files.
      */
     protected getFiles(value: any): any {
         let files = (value && value.files) || [];
@@ -64,9 +64,9 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginCo
     /**
      * Find file in a list.
      *
-     * @param {any[]} files         File list where to search.
-     * @param {string} filenameSeek Filename to search.
-     * @return {any} File found or false.
+     * @param files File list where to search.
+     * @param filenameSeek Filename to search.
+     * @return File found or false.
      */
     protected findFile(files: any[], filenameSeek: string): any {
         return files.find((file) => file.filename == filenameSeek) || false;
@@ -97,7 +97,7 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginCo
     /**
      * Update value being shown.
      *
-     * @param {any} value New value to be set.
+     * @param value New value to be set.
      */
     protected updateValue(value: any): void {
         this.value = value;

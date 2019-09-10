@@ -39,7 +39,7 @@ export class CoreCoursesSearchPage {
     /**
      * Search a new text.
      *
-     * @param {string} text The text to search.
+     * @param text The text to search.
      */
     search(text: string): void {
         this.currentSearch = text;
@@ -55,7 +55,7 @@ export class CoreCoursesSearchPage {
     /**
      * Load more results.
      *
-     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
+     * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
      */
     loadMoreResults(infiniteComplete?: any): void {
         this.searchCourses().finally(() => {
@@ -66,7 +66,7 @@ export class CoreCoursesSearchPage {
     /**
      * Search courses or load the next page of current search.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected searchCourses(): Promise<any> {
         this.loadMoreError = false;

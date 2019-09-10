@@ -89,7 +89,7 @@ export class AddonFilesListPage implements OnDestroy {
     /**
      * Refresh the data.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshData(refresher: any): void {
         this.refreshFiles().finally(() => {
@@ -144,7 +144,7 @@ export class AddonFilesListPage implements OnDestroy {
     /**
      * Fetch the files.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchFiles(): Promise<any> {
         let promise;
@@ -193,7 +193,7 @@ export class AddonFilesListPage implements OnDestroy {
     /**
      * Refresh the displayed files.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected refreshFiles(): Promise<any> {
         const promises = [];

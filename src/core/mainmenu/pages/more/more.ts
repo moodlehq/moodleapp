@@ -124,7 +124,7 @@ export class CoreMainMenuMorePage implements OnDestroy {
     /**
      * Open a handler.
      *
-     * @param {CoreMainMenuHandlerData} handler Handler to open.
+     * @param handler Handler to open.
      */
     openHandler(handler: CoreMainMenuHandlerData): void {
         this.navCtrl.push(handler.page, handler.pageParams);
@@ -133,7 +133,7 @@ export class CoreMainMenuMorePage implements OnDestroy {
     /**
      * Open an embedded custom item.
      *
-     * @param {CoreMainMenuCustomItem} item Item to open.
+     * @param item Item to open.
      */
     openItem(item: CoreMainMenuCustomItem): void {
         this.navCtrl.push('CoreViewerIframePage', {title: item.label, url: item.url});

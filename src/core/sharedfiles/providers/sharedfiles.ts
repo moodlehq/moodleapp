@@ -59,7 +59,7 @@ export class CoreSharedFilesProvider {
      * Checks if there is a new file received in iOS. If more than one file is found, treat only the first one.
      * The file returned is marked as "treated" and will be deleted in the next execution.
      *
-     * @return {Promise<any>} Promise resolved with a new file to be treated. If no new files found, promise is rejected.
+     * @return Promise resolved with a new file to be treated. If no new files found, promise is rejected.
      */
     checkIOSNewFiles(): Promise<any> {
         this.logger.debug('Search for new files on iOS');
@@ -110,8 +110,8 @@ export class CoreSharedFilesProvider {
     /**
      * Deletes a file in the Inbox folder (shared with the app).
      *
-     * @param {any} entry FileEntry.
-     * @return {Promise<any>} Promise resolved when done, rejected otherwise.
+     * @param entry FileEntry.
+     * @return Promise resolved when done, rejected otherwise.
      */
     deleteInboxFile(entry: any): Promise<any> {
         this.logger.debug('Delete inbox file: ' + entry.name);
@@ -132,8 +132,8 @@ export class CoreSharedFilesProvider {
     /**
      * Get the ID of a file for managing "treated" files.
      *
-     * @param {any} entry FileEntry.
-     * @return {string} File ID.
+     * @param entry FileEntry.
+     * @return File ID.
      */
     protected getFileId(entry: any): string {
         return <string> Md5.hashAsciiStr(entry.name);
@@ -142,10 +142,10 @@ export class CoreSharedFilesProvider {
     /**
      * Get the shared files stored in a site.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {string} [path] Path to search inside the site shared folder.
-     * @param {string[]} [mimetypes] List of supported mimetypes. If undefined, all mimetypes supported.
-     * @return {Promise<any[]>} Promise resolved with the files.
+     * @param siteId Site ID. If not defined, current site.
+     * @param path Path to search inside the site shared folder.
+     * @param mimetypes List of supported mimetypes. If undefined, all mimetypes supported.
+     * @return Promise resolved with the files.
      */
     getSiteSharedFiles(siteId?: string, path?: string, mimetypes?: string[]): Promise<any[]> {
         let pathToGet = this.getSiteSharedFilesDirPath(siteId);
@@ -174,8 +174,8 @@ export class CoreSharedFilesProvider {
     /**
      * Get the path to a site's shared files folder.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {string} Path.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Path.
      */
     getSiteSharedFilesDirPath(siteId?: string): string {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -186,8 +186,8 @@ export class CoreSharedFilesProvider {
     /**
      * Check if a file has been treated already.
      *
-     * @param {string} fileId File ID.
-     * @return {Promise<any>} Resolved if treated, rejected otherwise.
+     * @param fileId File ID.
+     * @return Resolved if treated, rejected otherwise.
      */
     protected isFileTreated(fileId: string): Promise<any> {
         return this.appDB.getRecord(this.SHARED_FILES_TABLE, { id: fileId });
@@ -196,8 +196,8 @@ export class CoreSharedFilesProvider {
     /**
      * Mark a file as treated.
      *
-     * @param {string} fileId File ID.
-     * @return {Promise<any>} Promise resolved when marked.
+     * @param fileId File ID.
+     * @return Promise resolved when marked.
      */
     protected markAsTreated(fileId: string): Promise<any> {
         // Check if it's already marked.
@@ -210,10 +210,10 @@ export class CoreSharedFilesProvider {
     /**
      * Store a file in a site's shared folder.
      *
-     * @param {any} entry File entry.
-     * @param {string} [newName] Name of the new file. If not defined, use original file's name.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}Promise resolved when done.
+     * @param entry File entry.
+     * @param newName Name of the new file. If not defined, use original file's name.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     storeFileInSite(entry: any, newName?: string, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -240,8 +240,8 @@ export class CoreSharedFilesProvider {
     /**
      * Unmark a file as treated.
      *
-     * @param {string} fileId File ID.
-     * @return {Promise<any>} Resolved when unmarked.
+     * @param fileId File ID.
+     * @return Resolved when unmarked.
      */
     protected unmarkAsTreated(fileId: string): Promise<any> {
         return this.appDB.deleteRecords(this.SHARED_FILES_TABLE, { id: fileId });

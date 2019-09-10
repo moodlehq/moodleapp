@@ -42,9 +42,9 @@ export class CoreInterceptor implements HttpInterceptor {
     /**
      * Serialize an object to be used in a request.
      *
-     * @param {any} obj Object to serialize.
-     * @param {boolean} [addNull] Add null values to the serialized as empty parameters.
-     * @return {string} Serialization of the object.
+     * @param obj Object to serialize.
+     * @param addNull Add null values to the serialized as empty parameters.
+     * @return Serialization of the object.
      */
     static serialize(obj: any, addNull?: boolean): string {
         let query = '',

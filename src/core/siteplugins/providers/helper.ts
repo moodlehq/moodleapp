@@ -140,11 +140,11 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Download the styles for a handler (if any).
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {string} handlerName Name of the handler in the plugin.
-     * @param {any} handlerSchema Data about the handler.
-     * @param {string} [siteId] Site ID. If not provided, current site.
-     * @return {Promise<string>} Promise resolved with the CSS code.
+     * @param plugin Data of the plugin.
+     * @param handlerName Name of the handler in the plugin.
+     * @param handlerSchema Data about the handler.
+     * @param siteId Site ID. If not provided, current site.
+     * @return Promise resolved with the CSS code.
      */
     downloadStyles(plugin: any, handlerName: string, handlerSchema: any, siteId?: string): Promise<string> {
 
@@ -203,10 +203,10 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Execute a handler's init method if it has any.
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {any} handlerSchema Data about the handler.
-     * @return {Promise<any>} Promise resolved when done. It returns the results of the getContent call and the data returned by
-     *                        the init JS (if any).
+     * @param plugin Data of the plugin.
+     * @param handlerSchema Data about the handler.
+     * @return Promise resolved when done. It returns the results of the getContent call and the data returned by
+     *         the init JS (if any).
      */
     protected executeHandlerInit(plugin: any, handlerSchema: any): Promise<any> {
         if (!handlerSchema.init) {
@@ -219,11 +219,11 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Execute a get_content method and run its javascript (if any).
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {string} method The method to call.
-     * @param {boolean} [isInit] Whether it's the init method.
-     * @return {Promise<any>} Promise resolved when done. It returns the results of the getContent call and the data returned by
-     *                        the JS (if any).
+     * @param plugin Data of the plugin.
+     * @param method The method to call.
+     * @param isInit Whether it's the init method.
+     * @return Promise resolved when done. It returns the results of the getContent call and the data returned by
+     *         the JS (if any).
      */
     protected executeMethodAndJS(plugin: any, method: string, isInit?: boolean): Promise<any> {
         const siteId = this.sitesProvider.getCurrentSiteId(),
@@ -265,8 +265,8 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Fetch site plugins.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved when done. Returns the list of plugins to load.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done. Returns the list of plugins to load.
      */
     fetchSitePlugins(siteId?: string): Promise<any[]> {
         const plugins = [];
@@ -294,8 +294,8 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Given an addon name, return the prefix to add to its string keys.
      *
-     * @param {string} addon Name of the addon (plugin.addon).
-     * @return {string} Prefix.
+     * @param addon Name of the addon (plugin.addon).
+     * @return Prefix.
      */
     protected getPrefixForStrings(addon: string): string {
         if (addon) {
@@ -308,9 +308,9 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Given an addon name and the key of a string, return the full string key (prefixed).
      *
-     * @param {string} addon Name of the addon (plugin.addon).
-     * @param {string} key The key of the string.
-     * @return {string} Full string key.
+     * @param addon Name of the addon (plugin.addon).
+     * @param key The key of the string.
+     * @return Full string key.
      */
     protected getPrefixedString(addon: string, key: string): string {
         return this.getPrefixForStrings(addon) + key;
@@ -319,9 +319,9 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Check if a certain plugin is a site plugin and it's enabled in a certain site.
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {CoreSite} site Site affected.
-     * @return {boolean} Whether it's a site plugin and it's enabled.
+     * @param plugin Data of the plugin.
+     * @param site Site affected.
+     * @return Whether it's a site plugin and it's enabled.
      */
     isSitePluginEnabled(plugin: any, site: CoreSite): boolean {
         if (!site.isFeatureDisabled('sitePlugin_' + plugin.component + '_' + plugin.addon) && plugin.handlers) {
@@ -340,7 +340,7 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Load the lang strings for a plugin.
      *
-     * @param {any} plugin Data of the plugin.
+     * @param plugin Data of the plugin.
      */
     loadLangStrings(plugin: any): void {
         if (!plugin.parsedLang) {
@@ -357,8 +357,8 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Load a site plugin.
      *
-     * @param {any} plugin Data of the plugin.
-     * @return {Promise<any>} Promise resolved when loaded.
+     * @param plugin Data of the plugin.
+     * @return Promise resolved when loaded.
      */
     loadSitePlugin(plugin: any): Promise<any> {
         const promises = [];
@@ -390,8 +390,8 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Load site plugins.
      *
-     * @param {any[]} plugins The plugins to load.
-     * @return {Promise<any>} Promise resolved when loaded.
+     * @param plugins The plugins to load.
+     * @return Promise resolved when loaded.
      */
     loadSitePlugins(plugins: any[]): Promise<any> {
         const promises = [];
@@ -409,12 +409,12 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Load the styles for a handler.
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {string} handlerName Name of the handler in the plugin.
-     * @param {string} fileUrl CSS file URL.
-     * @param {string} cssCode CSS code.
-     * @param {number} [version] Styles version.
-     * @param {string} [siteId] Site ID. If not provided, current site.
+     * @param plugin Data of the plugin.
+     * @param handlerName Name of the handler in the plugin.
+     * @param fileUrl CSS file URL.
+     * @param cssCode CSS code.
+     * @param version Styles version.
+     * @param siteId Site ID. If not provided, current site.
      */
     loadStyles(plugin: any, handlerName: string, fileUrl: string, cssCode: string, version?: number, siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -438,10 +438,10 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Register a site plugin handler in the right delegate.
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {string} handlerName Name of the handler in the plugin.
-     * @param {any} handlerSchema Data about the handler.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param plugin Data of the plugin.
+     * @param handlerName Name of the handler in the plugin.
+     * @param handlerSchema Data about the handler.
+     * @return Promise resolved when done.
      */
     registerHandler(plugin: any, handlerName: string, handlerSchema: any): Promise<any> {
 
@@ -563,10 +563,10 @@ export class CoreSitePluginsHelperProvider {
      * These type of handlers will return a generic template and its JS in the main method, so it will be called
      * before registering the handler.
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {string} handlerName Name of the handler in the plugin.
-     * @param {any} handlerSchema Data about the handler.
-     * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
+     * @param plugin Data of the plugin.
+     * @param handlerName Name of the handler in the plugin.
+     * @param handlerSchema Data about the handler.
+     * @return A string (or a promise resolved with a string) to identify the handler.
      */
     protected registerComponentInitHandler(plugin: any, handlerName: string, handlerSchema: any, delegate: any,
             createHandlerFn: (uniqueName: string, result: any) => any): string | Promise<string> {
@@ -613,10 +613,10 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Given a handler in a plugin, register it in the assign feedback delegate.
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {string} handlerName Name of the handler in the plugin.
-     * @param {any} handlerSchema Data about the handler.
-     * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
+     * @param plugin Data of the plugin.
+     * @param handlerName Name of the handler in the plugin.
+     * @param handlerSchema Data about the handler.
+     * @return A string (or a promise resolved with a string) to identify the handler.
      */
     protected registerAssignFeedbackHandler(plugin: any, handlerName: string, handlerSchema: any): string | Promise<string> {
 
@@ -633,10 +633,10 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Given a handler in a plugin, register it in the assign submission delegate.
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {string} handlerName Name of the handler in the plugin.
-     * @param {any} handlerSchema Data about the handler.
-     * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
+     * @param plugin Data of the plugin.
+     * @param handlerName Name of the handler in the plugin.
+     * @param handlerSchema Data about the handler.
+     * @return A string (or a promise resolved with a string) to identify the handler.
      */
     protected registerAssignSubmissionHandler(plugin: any, handlerName: string, handlerSchema: any): string | Promise<string> {
 
@@ -653,11 +653,11 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Given a handler in a plugin, register it in the block delegate.
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {string} handlerName Name of the handler in the plugin.
-     * @param {any} handlerSchema Data about the handler.
-     * @param {any} initResult Result of init function.
-     * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
+     * @param plugin Data of the plugin.
+     * @param handlerName Name of the handler in the plugin.
+     * @param handlerSchema Data about the handler.
+     * @param initResult Result of init function.
+     * @return A string (or a promise resolved with a string) to identify the handler.
      */
     protected registerBlockHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any):
             string | Promise<string> {
@@ -675,10 +675,10 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Given a handler in a plugin, register it in the course format delegate.
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {string} handlerName Name of the handler in the plugin.
-     * @param {any} handlerSchema Data about the handler.
-     * @return {string} A string to identify the handler.
+     * @param plugin Data of the plugin.
+     * @param handlerName Name of the handler in the plugin.
+     * @param handlerSchema Data about the handler.
+     * @return A string to identify the handler.
      */
     protected registerCourseFormatHandler(plugin: any, handlerName: string, handlerSchema: any): string {
         this.logger.debug('Register site plugin in course format delegate:', plugin, handlerSchema);
@@ -694,11 +694,11 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Given a handler in a plugin, register it in the course options delegate.
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {string} handlerName Name of the handler in the plugin.
-     * @param {any} handlerSchema Data about the handler.
-     * @param {any} initResult Result of the init WS call.
-     * @return {string} A string to identify the handler.
+     * @param plugin Data of the plugin.
+     * @param handlerName Name of the handler in the plugin.
+     * @param handlerSchema Data about the handler.
+     * @param initResult Result of the init WS call.
+     * @return A string to identify the handler.
      */
     protected registerCourseOptionHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any): string {
         if (!handlerSchema.displaydata) {
@@ -734,11 +734,11 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Given a handler in a plugin, register it in the main menu delegate.
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {string} handlerName Name of the handler in the plugin.
-     * @param {any} handlerSchema Data about the handler.
-     * @param {any} initResult Result of the init WS call.
-     * @return {string} A string to identify the handler.
+     * @param plugin Data of the plugin.
+     * @param handlerName Name of the handler in the plugin.
+     * @param handlerSchema Data about the handler.
+     * @param initResult Result of the init WS call.
+     * @return A string to identify the handler.
      */
     protected registerMainMenuHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any): string {
         if (!handlerSchema.displaydata) {
@@ -763,11 +763,11 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Given a handler in a plugin, register it in the message output delegate.
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {string} handlerName Name of the handler in the plugin.
-     * @param {any} handlerSchema Data about the handler.
-     * @param {any} initResult Result of the init WS call.
-     * @return {string} A string to identify the handler.
+     * @param plugin Data of the plugin.
+     * @param handlerName Name of the handler in the plugin.
+     * @param handlerSchema Data about the handler.
+     * @param initResult Result of the init WS call.
+     * @return A string to identify the handler.
      */
     protected registerMessageOutputHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any): string {
         if (!handlerSchema.displaydata) {
@@ -793,11 +793,11 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Given a handler in a plugin, register it in the module delegate.
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {string} handlerName Name of the handler in the plugin.
-     * @param {any} handlerSchema Data about the handler.
-     * @param {any} initResult Result of the init WS call.
-     * @return {string} A string to identify the handler.
+     * @param plugin Data of the plugin.
+     * @param handlerName Name of the handler in the plugin.
+     * @param handlerSchema Data about the handler.
+     * @param initResult Result of the init WS call.
+     * @return A string to identify the handler.
      */
     protected registerModuleHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any): string {
         if (!handlerSchema.displaydata) {
@@ -828,10 +828,10 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Given a handler in a plugin, register it in the question delegate.
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {string} handlerName Name of the handler in the plugin.
-     * @param {any} handlerSchema Data about the handler.
-     * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
+     * @param plugin Data of the plugin.
+     * @param handlerName Name of the handler in the plugin.
+     * @param handlerSchema Data about the handler.
+     * @return A string (or a promise resolved with a string) to identify the handler.
      */
     protected registerQuestionHandler(plugin: any, handlerName: string, handlerSchema: any): string | Promise<string> {
 
@@ -845,10 +845,10 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Given a handler in a plugin, register it in the question behaviour delegate.
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {string} handlerName Name of the handler in the plugin.
-     * @param {any} handlerSchema Data about the handler.
-     * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
+     * @param plugin Data of the plugin.
+     * @param handlerName Name of the handler in the plugin.
+     * @param handlerSchema Data about the handler.
+     * @return A string (or a promise resolved with a string) to identify the handler.
      */
     protected registerQuestionBehaviourHandler(plugin: any, handlerName: string, handlerSchema: any): string | Promise<string> {
 
@@ -864,10 +864,10 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Given a handler in a plugin, register it in the quiz access rule delegate.
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {string} handlerName Name of the handler in the plugin.
-     * @param {any} handlerSchema Data about the handler.
-     * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
+     * @param plugin Data of the plugin.
+     * @param handlerName Name of the handler in the plugin.
+     * @param handlerSchema Data about the handler.
+     * @return A string (or a promise resolved with a string) to identify the handler.
      */
     protected registerQuizAccessRuleHandler(plugin: any, handlerName: string, handlerSchema: any): string | Promise<string> {
 
@@ -882,11 +882,11 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Given a handler in a plugin, register it in the settings delegate.
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {string} handlerName Name of the handler in the plugin.
-     * @param {any} handlerSchema Data about the handler.
-     * @param {any} initResult Result of the init WS call.
-     * @return {string} A string to identify the handler.
+     * @param plugin Data of the plugin.
+     * @param handlerName Name of the handler in the plugin.
+     * @param handlerSchema Data about the handler.
+     * @param initResult Result of the init WS call.
+     * @return A string to identify the handler.
      */
     protected registerSettingsHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any): string {
         if (!handlerSchema.displaydata) {
@@ -911,11 +911,11 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Given a handler in a plugin, register it in the user profile delegate.
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {string} handlerName Name of the handler in the plugin.
-     * @param {any} handlerSchema Data about the handler.
-     * @param {any} initResult Result of the init WS call.
-     * @return {string} A string to identify the handler.
+     * @param plugin Data of the plugin.
+     * @param handlerName Name of the handler in the plugin.
+     * @param handlerSchema Data about the handler.
+     * @param initResult Result of the init WS call.
+     * @return A string to identify the handler.
      */
     protected registerUserProfileHandler(plugin: any, handlerName: string, handlerSchema: any, initResult: any): string {
         if (!handlerSchema.displaydata) {
@@ -951,10 +951,10 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Given a handler in a plugin, register it in the user profile field delegate.
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {string} handlerName Name of the handler in the plugin.
-     * @param {any} handlerSchema Data about the handler.
-     * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
+     * @param plugin Data of the plugin.
+     * @param handlerName Name of the handler in the plugin.
+     * @param handlerSchema Data about the handler.
+     * @return A string (or a promise resolved with a string) to identify the handler.
      */
     protected registerUserProfileFieldHandler(plugin: any, handlerName: string, handlerSchema: any): string | Promise<string> {
 
@@ -970,10 +970,10 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Given a handler in a plugin, register it in the workshop assessment strategy delegate.
      *
-     * @param {any} plugin Data of the plugin.
-     * @param {string} handlerName Name of the handler in the plugin.
-     * @param {any} handlerSchema Data about the handler.
-     * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
+     * @param plugin Data of the plugin.
+     * @param handlerName Name of the handler in the plugin.
+     * @param handlerSchema Data about the handler.
+     * @return A string (or a promise resolved with a string) to identify the handler.
      */
     protected registerWorkshopAssessmentStrategyHandler(plugin: any, handlerName: string, handlerSchema: any)
             : string | Promise<string> {
@@ -990,7 +990,7 @@ export class CoreSitePluginsHelperProvider {
     /**
      * Reload the handlers that are restricted to certain courses.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected reloadCourseRestrictHandlers(): Promise<any> {
         if (!Object.keys(this.courseRestrictHandlers).length) {

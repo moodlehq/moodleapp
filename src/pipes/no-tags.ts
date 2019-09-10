@@ -25,8 +25,8 @@ export class CoreNoTagsPipe implements PipeTransform {
     /**
      * Takes a text and removes HTML tags.
      *
-     * @param {string} text The text to treat.
-     * @return {string} Treated text.
+     * @param text The text to treat.
+     * @return Treated text.
      */
     transform(text: string): string {
         return text.replace(/(<([^>]+)>)/ig, '');

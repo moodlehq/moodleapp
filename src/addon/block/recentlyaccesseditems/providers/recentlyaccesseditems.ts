@@ -30,7 +30,7 @@ export class AddonBlockRecentlyAccessedItemsProvider {
     /**
      * Get cache key for get last accessed items value WS call.
      *
-     * @return {string} Cache key.
+     * @return Cache key.
      */
     protected getRecentItemsCacheKey(): string {
         return this.ROOT_CACHE_KEY + ':recentitems';
@@ -39,8 +39,8 @@ export class AddonBlockRecentlyAccessedItemsProvider {
     /**
      * Get last accessed items.
      *
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any[]>} Promise resolved when the info is retrieved.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved when the info is retrieved.
      */
     getRecentItems(siteId?: string): Promise<any[]> {
 
@@ -63,8 +63,8 @@ export class AddonBlockRecentlyAccessedItemsProvider {
     /**
      * Invalidates get last accessed items WS call.
      *
-     * @param {string} [siteId] Site ID to invalidate. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param siteId Site ID to invalidate. If not defined, use current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateRecentItems(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {

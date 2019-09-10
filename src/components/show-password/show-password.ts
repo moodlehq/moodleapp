@@ -103,7 +103,7 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
     /**
      * Toggle show/hide password.
      *
-     * @param {Event} event The mouse event.
+     * @param event The mouse event.
      */
     toggle(event: Event): void {
         event.preventDefault();

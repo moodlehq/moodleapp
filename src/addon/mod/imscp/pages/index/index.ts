@@ -40,7 +40,7 @@ export class AddonModImscpIndexPage {
     /**
      * Update some data based on the imscp instance.
      *
-     * @param {any} imscp Imscp instance.
+     * @param imscp Imscp instance.
      */
     updateData(imscp: any): void {
         this.title = imscp.name || this.title;

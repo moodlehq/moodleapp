@@ -192,7 +192,7 @@ export class CoreUserProfilePage {
     /**
      * Refresh the user.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshUser(refresher?: any): void {
         const promises = [];
@@ -225,8 +225,8 @@ export class CoreUserProfilePage {
     /**
      * A handler was clicked.
      *
-     * @param {Event} event Click event.
-     * @param {CoreUserProfileHandlerData} handler Handler that was clicked.
+     * @param event Click event.
+     * @param handler Handler that was clicked.
      */
     handlerClicked(event: Event, handler: CoreUserProfileHandlerData): void {
         // Decide which navCtrl to use. If this page is inside a split view, use the split view's master nav.

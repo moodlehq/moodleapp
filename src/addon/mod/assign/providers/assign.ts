@@ -78,9 +78,9 @@ export class AddonModAssignProvider {
      * be used (offline usage).
      * This function doesn't check if the submission is empty, it should be checked before calling this function.
      *
-     * @param {any} assign  Assignment instance.
-     * @param {any} submissionStatus Submission status returned by getSubmissionStatus.
-     * @return {boolean} Whether it can submit.
+     * @param assign Assignment instance.
+     * @param submissionStatus Submission status returned by getSubmissionStatus.
+     * @return Whether it can submit.
      */
     canSubmitOffline(assign: any, submissionStatus: any): boolean {
         if (!this.isSubmissionOpen(assign, submissionStatus)) {
@@ -117,11 +117,11 @@ export class AddonModAssignProvider {
     /**
      * Get an assignment by course module ID.
      *
-     * @param {number} courseId Course ID the assignment belongs to.
-     * @param {number} cmId Assignment module ID.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the assignment.
+     * @param courseId Course ID the assignment belongs to.
+     * @param cmId Assignment module ID.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the assignment.
      */
     getAssignment(courseId: number, cmId: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
         return this.getAssignmentByField(courseId, 'cmid', cmId, ignoreCache, siteId);
@@ -130,12 +130,12 @@ export class AddonModAssignProvider {
     /**
      * Get an assigment with key=value. If more than one is found, only the first will be returned.
      *
-     * @param {number} courseId Course ID.
-     * @param {string} key Name of the property to check.
-     * @param {any} value Value to search.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the assignment is retrieved.
+     * @param courseId Course ID.
+     * @param key Name of the property to check.
+     * @param value Value to search.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the assignment is retrieved.
      */
     protected getAssignmentByField(courseId: number, key: string, value: any, ignoreCache?: boolean, siteId?: string)
             : Promise<any> {
@@ -181,11 +181,11 @@ export class AddonModAssignProvider {
     /**
      * Get an assignment by instance ID.
      *
-     * @param {number} courseId Course ID the assignment belongs to.
-     * @param {number} cmId Assignment instance ID.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}  Promise resolved with the assignment.
+     * @param courseId Course ID the assignment belongs to.
+     * @param cmId Assignment instance ID.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the assignment.
      */
     getAssignmentById(courseId: number, id: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
         return this.getAssignmentByField(courseId, 'id', id, ignoreCache, siteId);
@@ -194,8 +194,8 @@ export class AddonModAssignProvider {
     /**
      * Get cache key for assignment data WS calls.
      *
-     * @param {number} courseId Course ID.
-     * @return {string} Cache key.
+     * @param courseId Course ID.
+     * @return Cache key.
      */
     protected getAssignmentCacheKey(courseId: number): string {
         return this.ROOT_CACHE_KEY + 'assignment:' + courseId;
@@ -204,11 +204,11 @@ export class AddonModAssignProvider {
     /**
      * Get an assignment user mapping for blind marking.
      *
-     * @param {number} assignId Assignment Id.
-     * @param {number} userId User Id to be blinded.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<number>} Promise resolved with the user blind id.
+     * @param assignId Assignment Id.
+     * @param userId User Id to be blinded.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the user blind id.
      */
     getAssignmentUserMappings(assignId: number, userId: number, ignoreCache?: boolean, siteId?: string): Promise<number> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -256,8 +256,8 @@ export class AddonModAssignProvider {
     /**
      * Get cache key for assignment user mappings data WS calls.
      *
-     * @param {number} assignId Assignment ID.
-     * @return {string} Cache key.
+     * @param assignId Assignment ID.
+     * @return Cache key.
      */
     protected getAssignmentUserMappingsCacheKey(assignId: number): string {
         return this.ROOT_CACHE_KEY + 'usermappings:' + assignId;
@@ -266,10 +266,10 @@ export class AddonModAssignProvider {
     /**
      * Returns grade information from assign_grades for the requested assignment id
      *
-     * @param {number} assignId Assignment Id.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}   Resolved with requested info when done.
+     * @param assignId Assignment Id.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Resolved with requested info when done.
      */
     getAssignmentGrades(assignId: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -310,8 +310,8 @@ export class AddonModAssignProvider {
     /**
      * Get cache key for assignment grades data WS calls.
      *
-     * @param {number} assignId Assignment ID.
-     * @return {string} Cache key.
+     * @param assignId Assignment ID.
+     * @return Cache key.
      */
     protected getAssignmentGradesCacheKey(assignId: number): string {
         return this.ROOT_CACHE_KEY + 'assigngrades:' + assignId;
@@ -320,8 +320,8 @@ export class AddonModAssignProvider {
     /**
      * Returns the color name for a given grading status name.
      *
-     * @param {string} status Grading status name
-     * @return {string} The color name.
+     * @param status Grading status name
+     * @return The color name.
      */
     getSubmissionGradingStatusColor(status: string): string {
         if (!status) {
@@ -339,8 +339,8 @@ export class AddonModAssignProvider {
     /**
      * Returns the translation id for a given grading status name.
      *
-     * @param {string} status Grading Status name
-     * @return {string} The status translation identifier.
+     * @param status Grading Status name
+     * @return The status translation identifier.
      */
     getSubmissionGradingStatusTranslationId(status: string): string {
         if (!status) {
@@ -358,9 +358,9 @@ export class AddonModAssignProvider {
     /**
      * Get the submission object from an attempt.
      *
-     * @param {any} assign Assign.
-     * @param {any} attempt Attempt.
-     * @return {any} Submission object or null.
+     * @param assign Assign.
+     * @param attempt Attempt.
+     * @return Submission object or null.
      */
     getSubmissionObjectFromAttempt(assign: any, attempt: any): any {
         if (!attempt) {
@@ -373,8 +373,8 @@ export class AddonModAssignProvider {
     /**
      * Get attachments of a submission plugin.
      *
-     * @param {any} submissionPlugin Submission plugin.
-     * @return {any[]} Submission plugin attachments.
+     * @param submissionPlugin Submission plugin.
+     * @return Submission plugin attachments.
      */
     getSubmissionPluginAttachments(submissionPlugin: any): any[] {
         const files = [];
@@ -403,9 +403,9 @@ export class AddonModAssignProvider {
     /**
      * Get text of a submission plugin.
      *
-     * @param {any} submissionPlugin Submission plugin.
-     * @param {boolean} [keepUrls] True if it should keep original URLs, false if they should be replaced.
-     * @return {string} Submission text.
+     * @param submissionPlugin Submission plugin.
+     * @param keepUrls True if it should keep original URLs, false if they should be replaced.
+     * @return Submission text.
      */
     getSubmissionPluginText(submissionPlugin: any, keepUrls?: boolean): string {
         let text = '';
@@ -426,10 +426,10 @@ export class AddonModAssignProvider {
     /**
      * Get an assignment submissions.
      *
-     * @param {number} assignId Assignment id.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<{canviewsubmissions: boolean, submissions?: any[]}>} Promise resolved when done.
+     * @param assignId Assignment id.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     getSubmissions(assignId: number, ignoreCache?: boolean, siteId?: string)
             : Promise<{canviewsubmissions: boolean, submissions?: any[]}> {
@@ -469,8 +469,8 @@ export class AddonModAssignProvider {
     /**
      * Get cache key for assignment submissions data WS calls.
      *
-     * @param {number} assignId Assignment id.
-     * @return {string} Cache key.
+     * @param assignId Assignment id.
+     * @return Cache key.
      */
     protected getSubmissionsCacheKey(assignId: number): string {
         return this.ROOT_CACHE_KEY + 'submissions:' + assignId;
@@ -479,14 +479,14 @@ export class AddonModAssignProvider {
     /**
      * Get information about an assignment submission status for a given user.
      *
-     * @param {number} assignId Assignment instance id.
-     * @param {number} [userId] User Id (empty for current user).
-     * @param {number} [groupId] Group Id (empty for all participants).
-     * @param {boolean} [isBlind] If blind marking is enabled or not.
-     * @param {number} [filter=true] True to filter WS response and rewrite URLs, false otherwise.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site id (empty for current site).
-     * @return {Promise<any>} Promise always resolved with the user submission status.
+     * @param assignId Assignment instance id.
+     * @param userId User Id (empty for current user).
+     * @param groupId Group Id (empty for all participants).
+     * @param isBlind If blind marking is enabled or not.
+     * @param filter True to filter WS response and rewrite URLs, false otherwise.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site id (empty for current site).
+     * @return Promise always resolved with the user submission status.
      */
     getSubmissionStatus(assignId: number, userId?: number, groupId?: number, isBlind?: boolean, filter: boolean = true,
             ignoreCache?: boolean, siteId?: string): Promise<any> {
@@ -530,14 +530,14 @@ export class AddonModAssignProvider {
      * Get information about an assignment submission status for a given user.
      * If the data doesn't include the user submission, retry ignoring cache.
      *
-     * @param {any} assign Assignment.
-     * @param {number} [userId] User id (empty for current user).
-     * @param {number} [groupId] Group Id (empty for all participants).
-     * @param {boolean} [isBlind] If blind marking is enabled or not.
-     * @param {number} [filter=true] True to filter WS response and rewrite URLs, false otherwise.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site id (empty for current site).
-     * @return {Promise<any>} Promise always resolved with the user submission status.
+     * @param assign Assignment.
+     * @param userId User id (empty for current user).
+     * @param groupId Group Id (empty for all participants).
+     * @param isBlind If blind marking is enabled or not.
+     * @param filter True to filter WS response and rewrite URLs, false otherwise.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site id (empty for current site).
+     * @return Promise always resolved with the user submission status.
      */
     getSubmissionStatusWithRetry(assign: any, userId?: number, groupId?: number, isBlind?: boolean, filter: boolean = true,
             ignoreCache?: boolean, siteId?: string): Promise<any> {
@@ -560,11 +560,11 @@ export class AddonModAssignProvider {
     /**
      * Get cache key for get submission status data WS calls.
      *
-     * @param {number} assignId Assignment instance id.
-     * @param {number} [userId] User id (empty for current user).
-     * @param {number} [groupId] Group Id (empty for all participants).
-     * @param {number} [isBlind] If blind marking is enabled or not.
-     * @return {string} Cache key.
+     * @param assignId Assignment instance id.
+     * @param userId User id (empty for current user).
+     * @param groupId Group Id (empty for all participants).
+     * @param isBlind If blind marking is enabled or not.
+     * @return Cache key.
      */
     protected getSubmissionStatusCacheKey(assignId: number, userId: number, groupId?: number, isBlind?: boolean): string {
         if (!userId) {
@@ -578,8 +578,8 @@ export class AddonModAssignProvider {
     /**
      * Returns the color name for a given status name.
      *
-     * @param {string} status Status name
-     * @return {string} The color name.
+     * @param status Status name
+     * @return The color name.
      */
     getSubmissionStatusColor(status: string): string {
         switch (status) {
@@ -601,8 +601,8 @@ export class AddonModAssignProvider {
     /**
      * Given a list of plugins, returns the plugin names that aren't supported for editing.
      *
-     * @param {any[]} plugins Plugins to check.
-     * @return {Promise<string[]>} Promise resolved with unsupported plugin names.
+     * @param plugins Plugins to check.
+     * @return Promise resolved with unsupported plugin names.
      */
     getUnsupportedEditPlugins(plugins: any[]): Promise<string[]> {
         const notSupported = [],
@@ -624,11 +624,11 @@ export class AddonModAssignProvider {
     /**
      * List the participants for a single assignment, with some summary info about their submissions.
      *
-     * @param {number} assignId Assignment id.
-     * @param {number} [groupId] Group id. If not defined, 0.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with the list of participants and summary of submissions.
+     * @param assignId Assignment id.
+     * @param groupId Group id. If not defined, 0.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the list of participants and summary of submissions.
      */
     listParticipants(assignId: number, groupId?: number, ignoreCache?: boolean, siteId?: string): Promise<any[]> {
         groupId = groupId || 0;
@@ -661,9 +661,9 @@ export class AddonModAssignProvider {
     /**
      * Get cache key for assignment list participants data WS calls.
      *
-     * @param {number} assignId Assignment id.
-     * @param {number} groupId Group id.
-     * @return {string} Cache key.
+     * @param assignId Assignment id.
+     * @param groupId Group id.
+     * @return Cache key.
      */
     protected listParticipantsCacheKey(assignId: number, groupId: number): string {
         return this.listParticipantsPrefixCacheKey(assignId) + ':' + groupId;
@@ -672,8 +672,8 @@ export class AddonModAssignProvider {
     /**
      * Get prefix cache key for assignment list participants data WS calls.
      *
-     * @param {number} assignId Assignment id.
-     * @return {string} Cache key.
+     * @param assignId Assignment id.
+     * @return Cache key.
      */
     protected listParticipantsPrefixCacheKey(assignId: number): string {
         return this.ROOT_CACHE_KEY + 'participants:' + assignId;
@@ -682,9 +682,9 @@ export class AddonModAssignProvider {
     /**
      * Invalidates all submission status data.
      *
-     * @param {number} assignId Assignment instance id.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param assignId Assignment instance id.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAllSubmissionData(assignId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -695,9 +695,9 @@ export class AddonModAssignProvider {
     /**
      * Invalidates assignment data WS calls.
      *
-     * @param {number} courseId Course ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAssignmentData(courseId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -708,9 +708,9 @@ export class AddonModAssignProvider {
     /**
      * Invalidates assignment user mappings data WS calls.
      *
-     * @param {number} assignId Assignment ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param assignId Assignment ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAssignmentUserMappingsData(assignId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -721,9 +721,9 @@ export class AddonModAssignProvider {
     /**
      * Invalidates assignment grades data WS calls.
      *
-     * @param {number} assignId Assignment ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param assignId Assignment ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAssignmentGradesData(assignId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -735,10 +735,10 @@ export class AddonModAssignProvider {
      * Invalidate the prefetched content except files.
      * To invalidate files, use AddonModAssignProvider.invalidateFiles.
      *
-     * @param {number} moduleId The module ID.
-     * @param {number} courseId Course ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param moduleId The module ID.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -762,8 +762,8 @@ export class AddonModAssignProvider {
     /**
      * Invalidate the prefetched files.
      *
-     * @param {number} moduleId The module ID.
-     * @return {Promise<any>} Promise resolved when the files are invalidated.
+     * @param moduleId The module ID.
+     * @return Promise resolved when the files are invalidated.
      */
      invalidateFiles(moduleId: number): Promise<any> {
          return this.filepoolProvider.invalidateFilesByComponent(this.sitesProvider.getCurrentSiteId(),
@@ -773,9 +773,9 @@ export class AddonModAssignProvider {
     /**
      * Invalidates assignment submissions data WS calls.
      *
-     * @param {number} assignId Assignment instance id.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param assignId Assignment instance id.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateSubmissionData(assignId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -786,12 +786,12 @@ export class AddonModAssignProvider {
     /**
      * Invalidates submission status data.
      *
-     * @param {number} assignId Assignment instance id.
-     * @param {number} [userId] User id (empty for current user).
-     * @param {number} [groupId] Group Id (empty for all participants).
-     * @param {boolean} [isBlind] Whether blind marking is enabled or not.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param assignId Assignment instance id.
+     * @param userId User id (empty for current user).
+     * @param groupId Group Id (empty for all participants).
+     * @param isBlind Whether blind marking is enabled or not.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateSubmissionStatusData(assignId: number, userId?: number, groupId?: number, isBlind?: boolean, siteId?: string):
             Promise<any> {
@@ -803,9 +803,9 @@ export class AddonModAssignProvider {
     /**
      * Invalidates assignment participants data.
      *
-     * @param {number} assignId Assignment instance id.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param assignId Assignment instance id.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateListParticipantsData(assignId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -816,8 +816,8 @@ export class AddonModAssignProvider {
     /**
      * Convenience function to check if grading offline is enabled.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with boolean: whether grading offline is enabled.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether grading offline is enabled.
      */
     protected isGradingOfflineEnabled(siteId?: string): Promise<boolean> {
         if (typeof this.gradingOfflineEnabled[siteId] != 'undefined') {
@@ -834,8 +834,8 @@ export class AddonModAssignProvider {
     /**
      * Outcomes only can be edited if mod_assign_submit_grading_form is avalaible.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with true if outcomes edit is enabled, rejected or resolved with false otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with true if outcomes edit is enabled, rejected or resolved with false otherwise.
      * @since 3.2
      */
     isOutcomesEditEnabled(siteId?: string): Promise<boolean> {
@@ -847,8 +847,8 @@ export class AddonModAssignProvider {
     /**
      * Check if assignments plugin is enabled in a certain site.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {boolean} Whether the plugin is enabled.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Whether the plugin is enabled.
      */
     isPluginEnabled(siteId?: string): boolean {
         return true;
@@ -857,9 +857,9 @@ export class AddonModAssignProvider {
     /**
      * Check if a submission is open. This function is based on Moodle's submissions_open.
      *
-     * @param {any} assign Assignment instance.
-     * @param {any} submissionStatus Submission status returned by getSubmissionStatus.
-     * @return {boolean} Whether submission is open.
+     * @param assign Assignment instance.
+     * @param submissionStatus Submission status returned by getSubmissionStatus.
+     * @return Whether submission is open.
      */
     isSubmissionOpen(assign: any, submissionStatus: any): boolean {
         if (!assign || !submissionStatus) {
@@ -914,10 +914,10 @@ export class AddonModAssignProvider {
     /**
      * Report an assignment submission as being viewed.
      *
-     * @param {number} assignId Assignment ID.
-     * @param {string} [name] Name of the assign.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the WS call is successful.
+     * @param assignId Assignment ID.
+     * @param name Name of the assign.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the WS call is successful.
      */
     logSubmissionView(assignId: number, name?: string, siteId?: string): Promise<any> {
 
@@ -934,10 +934,10 @@ export class AddonModAssignProvider {
     /**
      * Report an assignment grading table is being viewed.
      *
-     * @param {number} assignId Assignment ID.
-     * @param {string} [name] Name of the assign.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the WS call is successful.
+     * @param assignId Assignment ID.
+     * @param name Name of the assign.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the WS call is successful.
      */
     logGradingView(assignId: number, name?: string, siteId?: string): Promise<any> {
         const params = {
@@ -951,10 +951,10 @@ export class AddonModAssignProvider {
     /**
      * Report an assign as being viewed.
      *
-     * @param {number} assignId Assignment ID.
-     * @param {string} [name] Name of the assign.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the WS call is successful.
+     * @param assignId Assignment ID.
+     * @param name Name of the assign.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the WS call is successful.
      */
     logView(assignId: number, name?: string, siteId?: string): Promise<any> {
         const params = {
@@ -968,9 +968,9 @@ export class AddonModAssignProvider {
     /**
      * Returns if a submissions needs to be graded.
      *
-     * @param {any} submission Submission.
-     * @param {number} assignId Assignment ID.
-     * @return {Promise<boolean>} Promise resolved with boolean: whether it needs to be graded or not.
+     * @param submission Submission.
+     * @param assignId Assignment ID.
+     * @return Promise resolved with boolean: whether it needs to be graded or not.
      */
     needsSubmissionToBeGraded(submission: any, assignId: number): Promise<boolean> {
         if (!submission.gradingstatus) {
@@ -999,15 +999,15 @@ export class AddonModAssignProvider {
     /**
      * Save current user submission for a certain assignment.
      *
-     * @param {number} assignId Assign ID.
-     * @param {number} courseId Course ID the assign belongs to.
-     * @param {any} pluginData Data to save.
-     * @param {boolean} allowOffline Whether to allow offline usage.
-     * @param {number} timemodified The time the submission was last modified in online.
-     * @param {boolean} [allowsDrafts] Whether the assignment allows submission drafts.
-     * @param {number} [userId] User ID. If not defined, site's current user.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with true if sent to server, resolved with false if stored in offline.
+     * @param assignId Assign ID.
+     * @param courseId Course ID the assign belongs to.
+     * @param pluginData Data to save.
+     * @param allowOffline Whether to allow offline usage.
+     * @param timemodified The time the submission was last modified in online.
+     * @param allowsDrafts Whether the assignment allows submission drafts.
+     * @param userId User ID. If not defined, site's current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with true if sent to server, resolved with false if stored in offline.
      */
     saveSubmission(assignId: number, courseId: number, pluginData: any, allowOffline: boolean, timemodified: number,
             allowsDrafts?: boolean, userId?: number, siteId?: string): Promise<boolean> {
@@ -1046,10 +1046,10 @@ export class AddonModAssignProvider {
     /**
      * Save current user submission for a certain assignment. It will fail if offline or cannot connect.
      *
-     * @param {number} assignId Assign ID.
-     * @param {any} pluginData Data to save.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when saved, rejected otherwise.
+     * @param assignId Assign ID.
+     * @param pluginData Data to save.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when saved, rejected otherwise.
      */
     saveSubmissionOnline(assignId: number, pluginData: any, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1070,13 +1070,13 @@ export class AddonModAssignProvider {
     /**
      * Submit the current user assignment for grading.
      *
-     * @param {number} assignId Assign ID.
-     * @param {number} courseId Course ID the assign belongs to.
-     * @param {boolean} acceptStatement True if submission statement is accepted, false otherwise.
-     * @param {number} timemodified The time the submission was last modified in online.
-     * @param {boolean} [forceOffline] True to always mark it in offline.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with true if sent to server, resolved with false if stored in offline.
+     * @param assignId Assign ID.
+     * @param courseId Course ID the assign belongs to.
+     * @param acceptStatement True if submission statement is accepted, false otherwise.
+     * @param timemodified The time the submission was last modified in online.
+     * @param forceOffline True to always mark it in offline.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with true if sent to server, resolved with false if stored in offline.
      */
     submitForGrading(assignId: number, courseId: number, acceptStatement: boolean, timemodified: number, forceOffline?: boolean,
             siteId?: string): Promise<boolean> {
@@ -1115,10 +1115,10 @@ export class AddonModAssignProvider {
     /**
      * Submit the current user assignment for grading. It will fail if offline or cannot connect.
      *
-     * @param {number} assignId Assign ID.
-     * @param {boolean} acceptStatement True if submission statement is accepted, false otherwise.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when submitted, rejected otherwise.
+     * @param assignId Assign ID.
+     * @param acceptStatement True if submission statement is accepted, false otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when submitted, rejected otherwise.
      */
     submitForGradingOnline(assignId: number, acceptStatement: boolean, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1139,18 +1139,18 @@ export class AddonModAssignProvider {
     /**
      * Submit the grading for the current user and assignment. It will use old or new WS depending on availability.
      *
-     * @param {number} assignId Assign ID.
-     * @param {number} userId User ID.
-     * @param {number} courseId Course ID the assign belongs to.
-     * @param {number} grade Grade to submit.
-     * @param {number} attemptNumber Number of the attempt being graded.
-     * @param {boolean} addAttempt Admit the user to attempt again.
-     * @param {string} workflowState Next workflow State.
-     * @param {boolean} applyToAll If it's a team submission, whether the grade applies to all group members.
-     * @param {any} outcomes Object including all outcomes values. If empty, any of them will be sent.
-     * @param {any} pluginData Feedback plugin data to save.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with true if sent to server, resolved with false if stored offline.
+     * @param assignId Assign ID.
+     * @param userId User ID.
+     * @param courseId Course ID the assign belongs to.
+     * @param grade Grade to submit.
+     * @param attemptNumber Number of the attempt being graded.
+     * @param addAttempt Admit the user to attempt again.
+     * @param workflowState Next workflow State.
+     * @param applyToAll If it's a team submission, whether the grade applies to all group members.
+     * @param outcomes Object including all outcomes values. If empty, any of them will be sent.
+     * @param pluginData Feedback plugin data to save.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with true if sent to server, resolved with false if stored offline.
      */
     submitGradingForm(assignId: number, userId: number, courseId: number, grade: number, attemptNumber: number, addAttempt: boolean,
             workflowState: string, applyToAll: boolean, outcomes: any, pluginData: any, siteId?: string): Promise<boolean> {
@@ -1199,17 +1199,17 @@ export class AddonModAssignProvider {
      * Submit the grading for the current user and assignment. It will use old or new WS depending on availability.
      * It will fail if offline or cannot connect.
      *
-     * @param {number} assignId Assign ID.
-     * @param {number} userId User ID.
-     * @param {number} grade Grade to submit.
-     * @param {number} attemptNumber Number of the attempt being graded.
-     * @param {number} addAttempt Allow the user to attempt again.
-     * @param {string} workflowState Next workflow State.
-     * @param {boolean} applyToAll If it's a team submission, if the grade applies to all group members.
-     * @param {any} outcomes Object including all outcomes values. If empty, any of them will be sent.
-     * @param {any} pluginData Feedback plugin data to save.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when submitted, rejected otherwise.
+     * @param assignId Assign ID.
+     * @param userId User ID.
+     * @param grade Grade to submit.
+     * @param attemptNumber Number of the attempt being graded.
+     * @param addAttempt Allow the user to attempt again.
+     * @param workflowState Next workflow State.
+     * @param applyToAll If it's a team submission, if the grade applies to all group members.
+     * @param outcomes Object including all outcomes values. If empty, any of them will be sent.
+     * @param pluginData Feedback plugin data to save.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when submitted, rejected otherwise.
      */
     submitGradingFormOnline(assignId: number, userId: number, grade: number, attemptNumber: number, addAttempt: boolean,
             workflowState: string, applyToAll: boolean, outcomes: any, pluginData: any, siteId?: string): Promise<any> {

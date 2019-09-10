@@ -133,7 +133,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         const promises = [];
@@ -161,7 +161,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     /**
      * Fetch the courses for my overview.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchContent(): Promise<any> {
         return this.coursesHelper.getUserCoursesWithOptions(this.sort).then((courses) => {
@@ -197,7 +197,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     /**
      * The filter has changed.
      *
-     * @param {any} Received Event.
+     * @param Received Event.
      */
     filterChanged(event: any): void {
         const newValue = event.target.value && event.target.value.trim().toLowerCase();
@@ -239,7 +239,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     /**
      * Prefetch all the shown courses.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     prefetchCourses(): Promise<any> {
         const selected = this.selectedFilter,
@@ -264,7 +264,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     /**
      * Init courses filters.
      *
-     * @param {any[]} courses Courses to filter.
+     * @param courses Courses to filter.
      */
     initCourseFilters(courses: any[]): void {
         if (this.showSortFilter) {
@@ -319,7 +319,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     /**
      * The selected courses sort filter have changed.
      *
-     * @param {string} sort New sorting.
+     * @param sort New sorting.
      */
     switchSort(sort: string): void {
         this.sort = sort;
@@ -344,7 +344,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     /**
      * If switch button that enables the filter input is shown or not.
      *
-     * @return {boolean} If switch button that enables the filter input is shown or not.
+     * @return If switch button that enables the filter input is shown or not.
      */
     showFilterSwitchButton(): boolean {
         return this.loaded && this.courses['all'] && this.courses['all'].length > 5;

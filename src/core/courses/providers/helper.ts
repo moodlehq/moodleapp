@@ -35,8 +35,8 @@ export class CoreCoursesHelperProvider {
     /**
      * Get the courses to display the course picker popover. If a courseId is specified, it will also return its categoryId.
      *
-     * @param {number} [courseId] Course ID to get the category.
-     * @return {Promise<{courses: any[], categoryId: number}>} Promise resolved with the list of courses and the category.
+     * @param courseId Course ID to get the category.
+     * @return Promise resolved with the list of courses and the category.
      */
     getCoursesForPopover(courseId?: number): Promise<{courses: any[], categoryId: number}> {
         return this.coursesProvider.getUserCourses(false).then((courses) => {
@@ -71,8 +71,8 @@ export class CoreCoursesHelperProvider {
      * Given a course object returned by core_enrol_get_users_courses and another one returned by core_course_get_courses_by_field,
      * load some extra data to the first one.
      *
-     * @param {any} course Course returned by core_enrol_get_users_courses.
-     * @param {any} courseByField Course returned by core_course_get_courses_by_field.
+     * @param course Course returned by core_enrol_get_users_courses.
+     * @param courseByField Course returned by core_course_get_courses_by_field.
      */
     loadCourseExtraInfo(course: any, courseByField: any): void {
         if (courseByField) {
@@ -93,8 +93,8 @@ export class CoreCoursesHelperProvider {
      * Given a list of courses returned by core_enrol_get_users_courses, load some extra data using the WebService
      * core_course_get_courses_by_field if available.
      *
-     * @param {any[]} courses List of courses.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param courses List of courses.
+     * @return Promise resolved when done.
      */
     loadCoursesExtraInfo(courses: any[]): Promise<any> {
         if (courses[0] && typeof courses[0].overviewfiles != 'undefined' && typeof courses[0].displayname != 'undefined') {
@@ -128,10 +128,10 @@ export class CoreCoursesHelperProvider {
     /**
      * Get user courses with admin and nav options.
      *
-     * @param  {string}  [sort=fullname] Sort courses after get them. If sort is not defined it won't be sorted.
-     * @param  {number}  [slice=0]    Slice results to get the X first one. If slice > 0 it will be done after sorting.
-     * @param  {string}  [filter]    Filter using some field.
-     * @return {Promise<any[]>} Courses filled with options.
+     * @param sort Sort courses after get them. If sort is not defined it won't be sorted.
+     * @param slice Slice results to get the X first one. If slice > 0 it will be done after sorting.
+     * @param filter Filter using some field.
+     * @return Courses filled with options.
      */
     getUserCoursesWithOptions(sort: string = 'fullname', slice: number = 0, filter?: string): Promise<any[]> {
         return this.coursesProvider.getUserCourses().then((courses) => {
@@ -220,10 +220,10 @@ export class CoreCoursesHelperProvider {
      * Show a context menu to select a course, and return the courseId and categoryId of the selected course (-1 for all courses).
      * Returns an empty object if popover closed without picking a course.
      *
-     * @param {MouseEvent} event Click event.
-     * @param {any[]} courses List of courses, from CoreCoursesHelperProvider.getCoursesForPopover.
-     * @param {number} courseId The course to select at start.
-     * @return {Promise<{courseId?: number, categoryId?: number}>} Promise resolved with the course ID and category ID.
+     * @param event Click event.
+     * @param courses List of courses, from CoreCoursesHelperProvider.getCoursesForPopover.
+     * @param courseId The course to select at start.
+     * @return Promise resolved with the course ID and category ID.
      */
     selectCourse(event: MouseEvent, courses: any[], courseId: number): Promise<{courseId?: number, categoryId?: number}> {
         return new Promise((resolve, reject): any => {

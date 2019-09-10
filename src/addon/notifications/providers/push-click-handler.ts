@@ -34,8 +34,8 @@ export class AddonNotificationsPushClickHandler implements CorePushNotifications
     /**
      * Check if a notification click is handled by this handler.
      *
-     * @param {any} notification The notification to check.
-     * @return {boolean} Whether the notification click is handled by this handler
+     * @param notification The notification to check.
+     * @return Whether the notification click is handled by this handler
      */
     handles(notification: any): boolean | Promise<boolean> {
         if (this.utils.isTrueOrOne(notification.notif)) {
@@ -57,8 +57,8 @@ export class AddonNotificationsPushClickHandler implements CorePushNotifications
     /**
      * Handle the notification click.
      *
-     * @param {any} notification The notification to check.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param notification The notification to check.
+     * @return Promise resolved when done.
      */
     handleClick(notification: any): Promise<any> {
         let promise;

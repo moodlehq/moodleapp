@@ -81,7 +81,7 @@ export class CoreLoginInitPage {
     /**
      * Load the right page.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected loadPage(): Promise<any> {
         if (this.sitesProvider.isLoggedIn()) {

@@ -72,9 +72,9 @@ export class CoreUserProvider {
     /**
      * Change the given user profile picture.
      *
-     * @param  {number} draftItemId New picture draft item id.
-     * @param  {number} userId      User ID.
-     * @return {Promise<string>}       Promise resolve with the new profileimageurl
+     * @param draftItemId New picture draft item id.
+     * @param userId User ID.
+     * @return Promise resolve with the new profileimageurl
      */
     changeProfilePicture(draftItemId: number, userId: number): Promise<string> {
         const data = {
@@ -95,9 +95,9 @@ export class CoreUserProvider {
     /**
      * Store user basic information in local DB to be retrieved if the WS call fails.
      *
-     * @param  {number} userId  User ID.
-     * @param {string} [siteId] ID of the site. If not defined, use current site.
-     * @return {Promise<any>}   Promise resolve when the user is deleted.
+     * @param userId User ID.
+     * @param siteId ID of the site. If not defined, use current site.
+     * @return Promise resolve when the user is deleted.
      */
     deleteStoredUser(userId: number, siteId?: string): Promise<any> {
         if (isNaN(userId)) {
@@ -121,12 +121,12 @@ export class CoreUserProvider {
     /**
      * Get participants for a certain course.
      *
-     * @param  {number} courseId    ID of the course.
-     * @param  {number} limitFrom   Position of the first participant to get.
-     * @param  {number} limitNumber Number of participants to get.
-     * @param  {string} [siteId]    Site Id. If not defined, use current site.
-     * @param  {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<{participants: any[], canLoadMore: boolean}>} Promise resolved when the participants are retrieved.
+     * @param courseId ID of the course.
+     * @param limitFrom Position of the first participant to get.
+     * @param limitNumber Number of participants to get.
+     * @param siteId Site Id. If not defined, use current site.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise resolved when the participants are retrieved.
      */
     getParticipants(courseId: number, limitFrom: number = 0, limitNumber: number = CoreUserProvider.PARTICIPANTS_LIST_LIMIT,
             siteId?: string, ignoreCache?: boolean): Promise<{participants: any[], canLoadMore: boolean}> {
@@ -172,8 +172,8 @@ export class CoreUserProvider {
     /**
      * Get cache key for participant list WS calls.
      *
-     * @param  {number} courseId Course ID.
-     * @return {string}          Cache key.
+     * @param courseId Course ID.
+     * @return Cache key.
      */
     protected getParticipantsListCacheKey(courseId: number): string {
         return this.ROOT_CACHE_KEY + 'list:' + courseId;
@@ -182,11 +182,11 @@ export class CoreUserProvider {
     /**
      * Get user profile. The type of profile retrieved depends on the params.
      *
-     * @param  {number} userId      User's ID.
-     * @param  {number} [courseId]  Course ID to get course profile, undefined or 0 to get site profile.
-     * @param  {boolean} [forceLocal] True to retrieve the user data from local DB, false to retrieve it from WS.
-     * @param {string} [siteId] ID of the site. If not defined, use current site.
-     * @return {Promise<any>}            Promise resolved with the user data.
+     * @param userId User's ID.
+     * @param courseId Course ID to get course profile, undefined or 0 to get site profile.
+     * @param forceLocal True to retrieve the user data from local DB, false to retrieve it from WS.
+     * @param siteId ID of the site. If not defined, use current site.
+     * @return Promise resolved with the user data.
      */
     getProfile(userId: number, courseId?: number, forceLocal: boolean = false, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -205,8 +205,8 @@ export class CoreUserProvider {
     /**
      * Get cache key for a user WS call.
      *
-     * @param  {number} userId User ID.
-     * @return {string}        Cache key.
+     * @param userId User ID.
+     * @return Cache key.
      */
     protected getUserCacheKey(userId: number): string {
         return this.ROOT_CACHE_KEY + 'data:' + userId;
@@ -215,9 +215,9 @@ export class CoreUserProvider {
     /**
      * Get user basic information from local DB.
      *
-     * @param {number} userId User ID.
-     * @param {string} [siteId] ID of the site. If not defined, use current site.
-     * @return {Promise<any>}   Promise resolve when the user is retrieved.
+     * @param userId User ID.
+     * @param siteId ID of the site. If not defined, use current site.
+     * @return Promise resolve when the user is retrieved.
      */
     protected getUserFromLocalDb(userId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -228,10 +228,10 @@ export class CoreUserProvider {
     /**
      * Get user profile from WS.
      *
-     * @param {number} userId         User ID.
-     * @param {number} [courseId] Course ID to get course profile, undefined or 0 to get site profile.
-     * @param {string} [siteId] ID of the site. If not defined, use current site.
-     * @return {Promise<any>}           Promise resolve when the user is retrieved.
+     * @param userId User ID.
+     * @param courseId Course ID to get course profile, undefined or 0 to get site profile.
+     * @param siteId ID of the site. If not defined, use current site.
+     * @return Promise resolve when the user is retrieved.
      */
     protected getUserFromWS(userId: number, courseId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -282,9 +282,9 @@ export class CoreUserProvider {
     /**
      * Get a user preference (online or offline).
      *
-     * @param {string} name Name of the preference.
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {string} Preference value or null if preference not set.
+     * @param name Name of the preference.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Preference value or null if preference not set.
      */
     getUserPreference(name: string, siteId?: string): Promise<string> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -313,8 +313,8 @@ export class CoreUserProvider {
     /**
      * Get cache key for a user preference WS call.
      *
-     * @param {string} name Preference name.
-     * @return {string} Cache key.
+     * @param name Preference name.
+     * @return Cache key.
      */
     protected getUserPreferenceCacheKey(name: string): string {
         return this.ROOT_CACHE_KEY + 'preference:' + name;
@@ -323,9 +323,9 @@ export class CoreUserProvider {
     /**
      * Get a user preference online.
      *
-     * @param {string} name Name of the preference.
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {string} Preference value or null if preference not set.
+     * @param name Name of the preference.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Preference value or null if preference not set.
      */
     getUserPreferenceOnline(name: string, siteId?: string): Promise<string> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -344,9 +344,9 @@ export class CoreUserProvider {
     /**
      * Invalidates user WS calls.
      *
-     * @param {number} userId User ID.
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<any>}       Promise resolved when the data is invalidated.
+     * @param userId User ID.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateUserCache(userId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -357,9 +357,9 @@ export class CoreUserProvider {
     /**
      * Invalidates participant list for a certain course.
      *
-     * @param  {number} courseId Course ID.
-     * @param  {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<any>}         Promise resolved when the list is invalidated.
+     * @param courseId Course ID.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved when the list is invalidated.
      */
     invalidateParticipantsList(courseId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -370,9 +370,9 @@ export class CoreUserProvider {
     /**
      * Invalidate user preference.
      *
-     * @param {string} name Name of the preference.
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param name Name of the preference.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateUserPreference(name: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -383,8 +383,8 @@ export class CoreUserProvider {
     /**
      * Check if course participants is disabled in a certain site.
      *
-     * @param  {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<boolean>}     Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     isParticipantsDisabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -395,8 +395,8 @@ export class CoreUserProvider {
     /**
      * Check if course participants is disabled in a certain site.
      *
-     * @param {CoreSite} [site] Site. If not defined, use current site.
-     * @return {boolean} Whether it's disabled.
+     * @param site Site. If not defined, use current site.
+     * @return Whether it's disabled.
      */
     isParticipantsDisabledInSite(site?: any): boolean {
         site = site || this.sitesProvider.getCurrentSite();
@@ -407,9 +407,9 @@ export class CoreUserProvider {
     /**
      * Returns whether or not participants is enabled for a certain course.
      *
-     * @param {number} courseId Course ID.
-     * @param  {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<any>}    Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+     * @param courseId Course ID.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     isPluginEnabledForCourse(courseId: number, siteId?: string): Promise<any> {
         if (!courseId) {
@@ -423,8 +423,8 @@ export class CoreUserProvider {
     /**
      * Check if update profile picture is disabled in a certain site.
      *
-     * @param  {CoreSite} [site] Site. If not defined, use current site.
-     * @return {boolean}       True if disabled, false otherwise.
+     * @param site Site. If not defined, use current site.
+     * @return True if disabled, false otherwise.
      */
     isUpdatePictureDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
@@ -434,10 +434,10 @@ export class CoreUserProvider {
 
     /**
      * Log User Profile View in Moodle.
-     * @param  {number}       userId   User ID.
-     * @param  {number}       [courseId] Course ID.
-     * @param  {string}       [name] Name of the user.
-     * @return {Promise<any>}          Promise resolved when done.
+     * @param userId User ID.
+     * @param courseId Course ID.
+     * @param name Name of the user.
+     * @return Promise resolved when done.
      */
     logView(userId: number, courseId?: number, name?: string): Promise<any> {
         const params = {
@@ -456,8 +456,8 @@ export class CoreUserProvider {
 
     /**
      * Log Participants list view in Moodle.
-     * @param  {number}       courseId Course ID.
-     * @return {Promise<any>}          Promise resolved when done.
+     * @param courseId Course ID.
+     * @return Promise resolved when done.
      */
     logParticipantsView(courseId?: number): Promise<any> {
         const params = {
@@ -472,10 +472,10 @@ export class CoreUserProvider {
     /**
      * Prefetch user profiles and their images from a certain course. It prevents duplicates.
      *
-     * @param {number[]} userIds List of user IDs.
-     * @param {number} [courseId] Course the users belong to.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when prefetched.
+     * @param userIds List of user IDs.
+     * @param courseId Course the users belong to.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when prefetched.
      */
     prefetchProfiles(userIds: number[], courseId?: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -508,11 +508,11 @@ export class CoreUserProvider {
     /**
      * Store user basic information in local DB to be retrieved if the WS call fails.
      *
-     * @param {number} userId   User ID.
-     * @param {string} fullname User full name.
-     * @param {string} avatar   User avatar URL.
-     * @param  {string} [siteId] ID of the site. If not defined, use current site.
-     * @return {Promise<any>}         Promise resolve when the user is stored.
+     * @param userId User ID.
+     * @param fullname User full name.
+     * @param avatar User avatar URL.
+     * @param siteId ID of the site. If not defined, use current site.
+     * @return Promise resolve when the user is stored.
      */
     protected storeUser(userId: number, fullname: string, avatar: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -529,9 +529,9 @@ export class CoreUserProvider {
     /**
      * Store users basic information in local DB.
      *
-     * @param  {any[]} users     Users to store. Fields stored: id, fullname, profileimageurl.
-     * @param  {string} [siteId] ID of the site. If not defined, use current site.
-     * @return {Promise<any>}        Promise resolve when the user is stored.
+     * @param users Users to store. Fields stored: id, fullname, profileimageurl.
+     * @param siteId ID of the site. If not defined, use current site.
+     * @return Promise resolve when the user is stored.
      */
     storeUsers(users: any[], siteId?: string): Promise<any> {
         const promises = [];
@@ -548,10 +548,10 @@ export class CoreUserProvider {
     /**
      * Set a user preference (online or offline).
      *
-     * @param {string} name Name of the preference.
-     * @param {string} value Value of the preference.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved on success.
+     * @param name Name of the preference.
+     * @param value Value of the preference.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved on success.
      */
     setUserPreference(name: string, value: string, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -587,11 +587,11 @@ export class CoreUserProvider {
     /**
      * Update a preference for a user.
      *
-     * @param  {string} name     Preference name.
-     * @param  {any} value       Preference new value.
-     * @param  {number} [userId] User ID. If not defined, site's current user.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved if success.
+     * @param name Preference name.
+     * @param value Preference new value.
+     * @param userId User ID. If not defined, site's current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if success.
      */
     updateUserPreference(name: string, value: any, userId?: number, siteId?: string): Promise<any> {
         const preferences = [
@@ -607,11 +607,11 @@ export class CoreUserProvider {
     /**
      * Update some preferences for a user.
      *
-     * @param  {{name: string, value: string}[]} preferences List of preferences.
-     * @param  {boolean} [disableNotifications] Whether to disable all notifications. Undefined to not update this value.
-     * @param  {number} [userId]                User ID. If not defined, site's current user.
-     * @param  {string} [siteId]                Site ID. If not defined, current site.
-     * @return {Promise<any>}                   Promise resolved if success.
+     * @param preferences List of preferences.
+     * @param disableNotifications Whether to disable all notifications. Undefined to not update this value.
+     * @param userId User ID. If not defined, site's current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if success.
      */
     updateUserPreferences(preferences: {type: string, value: string}[], disableNotifications?: boolean, userId?: number,
             siteId?: string): Promise<any> {

@@ -31,7 +31,6 @@ export class AddonModLessonMenuModalPage {
      *       the menu dynamically based on the data retrieved by the page that opened the modal.
      *     - The onDidDismiss function takes a while to be called, making the app seem slow. This way we can directly call
      *       the functions we need without having to wait for the modal to be dismissed.
-     * @type {any}
      */
     pageInstance: any;
 
@@ -49,7 +48,7 @@ export class AddonModLessonMenuModalPage {
     /**
      * Load a certain page.
      *
-     * @param {number} pageId The page ID to load.
+     * @param pageId The page ID to load.
      */
     loadPage(pageId: number): void {
         this.pageInstance.changePage && this.pageInstance.changePage(pageId);

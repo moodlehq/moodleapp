@@ -131,7 +131,7 @@ export class AddonModChatChatPage {
     /**
      * Convenience function to login the user.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected loginUser(): Promise<any> {
         return this.chatProvider.loginUser(this.chatId).then((sessionId) => {
@@ -142,7 +142,7 @@ export class AddonModChatChatPage {
     /**
      * Convenience function to fetch chat messages.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchMessages(): Promise<any> {
         return this.chatProvider.getLatestMessages(this.sessionId, this.lastTime).then((messagesInfo) => {
@@ -188,7 +188,7 @@ export class AddonModChatChatPage {
     /**
      * Convenience function to be called every certain time to fetch chat messages.
      *
-     * @return {Promise<any>} Promised resolved when done.
+     * @return Promised resolved when done.
      */
     protected fetchMessagesInterval(): Promise<any> {
         this.logger.debug('Polling for messages');
@@ -221,9 +221,9 @@ export class AddonModChatChatPage {
     /**
      * Check if the date should be displayed between messages (when the day changes at midnight for example).
      *
-     * @param  {any} message     New message object.
-     * @param  {any} prevMessage Previous message object.
-     * @return {boolean} True if messages are from diferent days, false othetwise.
+     * @param message New message object.
+     * @param prevMessage Previous message object.
+     * @return True if messages are from diferent days, false othetwise.
      */
     showDate(message: any, prevMessage: any): boolean {
         if (!prevMessage) {
@@ -237,8 +237,8 @@ export class AddonModChatChatPage {
     /**
      * Send a message to the chat.
      *
-     * @param {string} text     Text of the nessage.
-     * @param {number} [beep=0] ID of the user to beep.
+     * @param text Text of the nessage.
+     * @param beep ID of the user to beep.
      */
     sendMessage(text: string, beep: number = 0): void {
         if (!this.isOnline) {

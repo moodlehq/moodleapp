@@ -256,8 +256,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     /**
      * Fetch conversations.
      *
-     * @param {booleam} [refreshUnreadCounts=true] Whether to refresh unread counts.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refreshUnreadCounts Whether to refresh unread counts.
+     * @return Promise resolved when done.
      */
     protected fetchData(refreshUnreadCounts: boolean = true): Promise<any> {
         this.loadingMessage = this.loadingString;
@@ -329,7 +329,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     /**
      * Fetch data for the expanded option.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchDataForExpandedOption(): Promise<any> {
         const expandedOption = this.getExpandedOption();
@@ -344,10 +344,10 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     /**
      * Fetch data for a certain option.
      *
-     * @param {any} option The option to fetch data for.
-     * @param {boolean} [loadingMore} Whether we are loading more data or just the first ones.
-     * @param {booleam} [getCounts] Whether to get counts data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param option The option to fetch data for.
+     * @param [loadingMore} Whether we are loading more data or just the first ones.
+     * @param getCounts Whether to get counts data.
+     * @return Promise resolved when done.
      */
     fetchDataForOption(option: any, loadingMore?: boolean, getCounts?: boolean): Promise<void> {
         option.loadMoreError = false;
@@ -399,7 +399,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     /**
      * Fetch conversation counts.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchConversationCounts(): Promise<void> {
         // Always try to get the latest data.
@@ -417,10 +417,10 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     /**
      * Find a conversation in the list of loaded conversations.
      *
-     * @param {number} conversationId The conversation ID to search.
-     * @param {number} userId User ID to search (if no conversationId).
-     * @param {any} [option] The option to search in. If not defined, search in all options.
-     * @return {any} Conversation.
+     * @param conversationId The conversation ID to search.
+     * @param userId User ID to search (if no conversationId).
+     * @param option The option to search in. If not defined, search in all options.
+     * @return Conversation.
      */
     protected findConversation(conversationId: number, userId?: number, option?: any): any {
         if (conversationId) {
@@ -443,7 +443,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     /**
      * Get the option that is currently expanded, undefined if they are all collapsed.
      *
-     * @return {any} Option currently expanded.
+     * @return Option currently expanded.
      */
     protected getExpandedOption(): any {
         if (this.favourites.expanded) {
@@ -465,9 +465,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     /**
      * Navigate to a particular conversation.
      *
-     * @param {number} conversationId Conversation Id to load.
-     * @param {number} userId User of the conversation. Only if there is no conversationId.
-     * @param {number} [messageId] Message to scroll after loading the discussion. Used when searching.
+     * @param conversationId Conversation Id to load.
+     * @param userId User of the conversation. Only if there is no conversationId.
+     * @param messageId Message to scroll after loading the discussion. Used when searching.
      */
     gotoConversation(conversationId: number, userId?: number, messageId?: number): void {
         this.selectedConversationId = conversationId;
@@ -493,9 +493,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     /**
      * Function to load more conversations.
      *
-     * @param {any} option The option to fetch data for.
-     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
-     * @return {Promise<any>} Resolved when done.
+     * @param option The option to fetch data for.
+     * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
+     * @return Resolved when done.
      */
     loadMoreConversations(option: any, infiniteComplete?: any): Promise<any> {
         return this.fetchDataForOption(option, true).catch((error) => {
@@ -509,9 +509,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     /**
      * Load offline messages into the conversations.
      *
-     * @param {any} option The option where the messages should be loaded.
-     * @param {any[]} messages Offline messages.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param option The option where the messages should be loaded.
+     * @param messages Offline messages.
+     * @return Promise resolved when done.
      */
     protected loadOfflineMessages(option: any, messages: any[]): Promise<any> {
         const promises = [];
@@ -575,7 +575,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     /**
      * Add an offline conversation into the right list of conversations.
      *
-     * @param {any} conversation Offline conversation to add.
+     * @param conversation Offline conversation to add.
      */
     protected addOfflineConversation(conversation: any): void {
         const option = this.getConversationOption(conversation);
@@ -585,8 +585,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     /**
      * Add a last offline message into a conversation.
      *
-     * @param {any} conversation Conversation where to put the last message.
-     * @param {any} message Offline message to add.
+     * @param conversation Conversation where to put the last message.
+     * @param message Offline message to add.
      */
     protected addLastOfflineMessage(conversation: any, message: any): void {
         conversation.lastmessage = message.text;
@@ -598,8 +598,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     /**
      * Given a conversation, return its option (favourites, group, individual).
      *
-     * @param {any} conversation Conversation to check.
-     * @return {any} Option object.
+     * @param conversation Conversation to check.
+     * @return Option object.
      */
     protected getConversationOption(conversation: any): any {
         if (conversation.isfavourite) {
@@ -614,9 +614,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     /**
      * Refresh the data.
      *
-     * @param {any} [refresher] Refresher.
-     * @param {booleam} [refreshUnreadCounts=true] Whether to refresh unread counts.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @param refreshUnreadCounts Whether to refresh unread counts.
+     * @return Promise resolved when done.
      */
     refreshData(refresher?: any, refreshUnreadCounts: boolean = true): Promise<any> {
         // Don't invalidate conversations and so, they always try to get latest data.
@@ -636,7 +636,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     /**
      * Toogle the visibility of an option (expand/collapse).
      *
-     * @param {any} option The option to expand/collapse.
+     * @param option The option to expand/collapse.
      */
     toggle(option: any): void {
         if (option.expanded) {
@@ -654,9 +654,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     /**
      * Expand a certain option.
      *
-     * @param {any} option The option to expand.
-     * @param {booleam} [getCounts] Whether to get counts data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param option The option to expand.
+     * @param getCounts Whether to get counts data.
+     * @return Promise resolved when done.
      */
     protected expandOption(option: any, getCounts?: boolean): Promise<any> {
         // Collapse all and expand the right one.

@@ -33,7 +33,7 @@ export class AddonModPageListLinkHandler extends CoreContentLinksModuleListHandl
     /**
      * Check if the handler is enabled on a site level.
      *
-     * @return {boolean|Promise<boolean>} Whether or not the handler is enabled on a site level.
+     * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
         return this.pageProvider.isPluginEnabled();

@@ -71,7 +71,7 @@ export class CoreLoginSitePolicyPage {
     /**
      * Fetch the site policy URL.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchSitePolicy(): Promise<any> {
         return this.loginHelper.getSitePolicy(this.siteId).then((sitePolicy) => {

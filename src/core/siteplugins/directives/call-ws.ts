@@ -63,7 +63,7 @@ export class CoreSitePluginsCallWSDirective extends CoreSitePluginsCallWSOnClick
     /**
      * Function called when the WS call is successful.
      *
-     * @param {any} result Result of the WS call.
+     * @param result Result of the WS call.
      */
     protected wsCallSuccess(result: any): void {
         if (typeof this.successMessage != 'undefined') {

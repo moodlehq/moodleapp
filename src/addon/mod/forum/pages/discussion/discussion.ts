@@ -188,7 +188,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     /**
      * Check if we can leave the page or not.
      *
-     * @return {boolean|Promise<void>} Resolved if we can leave it, rejected if not.
+     * @return Resolved if we can leave it, rejected if not.
      */
     ionViewCanLeave(): boolean | Promise<void> {
         let promise: any;
@@ -209,7 +209,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     /**
      * Convenience function to get the forum.
      *
-     * @return {Promise<any>} Promise resolved with the forum.
+     * @return Promise resolved with the forum.
      */
     protected fetchForum(): Promise<any> {
         if (this.courseId && this.cmId) {
@@ -225,10 +225,10 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     /**
      * Convenience function to get the posts.
      *
-     * @param  {boolean} [sync]            Whether to try to synchronize the discussion.
-     * @param  {boolean} [showErrors]      Whether to show errors in a modal.
-     * @param  {boolean} [forceMarkAsRead] Whether to mark all posts as read.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param sync Whether to try to synchronize the discussion.
+     * @param showErrors Whether to show errors in a modal.
+     * @param forceMarkAsRead Whether to mark all posts as read.
+     * @return Promise resolved when done.
      */
     protected fetchPosts(sync?: boolean, showErrors?: boolean, forceMarkAsRead?: boolean): Promise<any> {
         let syncPromise;
@@ -405,8 +405,8 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     /**
      * Tries to synchronize the posts discussion.
      *
-     * @param  {boolean} showErrors Whether to show errors in a modal.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param showErrors Whether to show errors in a modal.
+     * @return Promise resolved when done.
      */
     protected syncDiscussion(showErrors: boolean): Promise<any> {
         const promises = [];
@@ -446,10 +446,10 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     /**
      * Refresh the data.
      *
-     * @param {any}       [refresher] Refresher.
-     * @param {Function}  [done] Function to call when done.
-     * @param {boolean}   [showErrors=false] If show errors to the user of hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @param done Function to call when done.
+     * @param showErrors If show errors to the user of hide them.
+     * @return Promise resolved when done.
      */
     doRefresh(refresher?: any, done?: () => void, showErrors: boolean = false): Promise<any> {
         if (this.discussionLoaded) {
@@ -465,9 +465,9 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     /**
      * Refresh posts.
      *
-     * @param  {boolean} [sync]       Whether to try to synchronize the discussion.
-     * @param  {boolean} [showErrors] Whether to show errors in a modal.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param sync Whether to try to synchronize the discussion.
+     * @param showErrors Whether to show errors in a modal.
+     * @return Promise resolved when done.
      */
     refreshPosts(sync?: boolean, showErrors?: boolean): Promise<any> {
         this.domUtils.scrollToTop(this.content);
@@ -491,8 +491,8 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     /**
      * Function to change posts sorting
      *
-     * @param  {SortType} type Sort type.
-     * @return {Promise<any>} Promised resolved when done.
+     * @param type Sort type.
+     * @return Promised resolved when done.
      */
     changeSort(type: SortType): Promise<any> {
         this.discussionLoaded = false;
@@ -505,7 +505,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     /**
      * Lock or unlock the discussion.
      *
-     * @param {boolean} locked True to lock the discussion, false to unlock.
+     * @param locked True to lock the discussion, false to unlock.
      */
     setLockState(locked: boolean): void {
         const modal = this.domUtils.showModalLoading('core.sending', true);
@@ -532,7 +532,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     /**
      * Pin or unpin the discussion.
      *
-     * @param {boolean} pinned True to pin the discussion, false to unpin it.
+     * @param pinned True to pin the discussion, false to unpin it.
      */
     setPinState(pinned: boolean): void {
         const modal = this.domUtils.showModalLoading('core.sending', true);
@@ -559,7 +559,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     /**
      * Star or unstar the discussion.
      *
-     * @param {boolean} starred True to star the discussion, false to unstar it.
+     * @param starred True to star the discussion, false to unstar it.
      */
     toggleFavouriteState(starred: boolean): void {
         const modal = this.domUtils.showModalLoading('core.sending', true);

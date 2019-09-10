@@ -29,9 +29,9 @@ export class CoreSitePluginsQuestionHandler extends CoreQuestionBaseHandler {
      * Return the Component to use to display the question.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param {Injector} injector Injector.
-     * @param {any} question The question to render.
-     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
+     * @param injector Injector.
+     * @param question The question to render.
+     * @return The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(injector: Injector): any | Promise<any> {
         return CoreSitePluginsQuestionComponent;

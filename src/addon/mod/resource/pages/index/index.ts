@@ -40,7 +40,7 @@ export class AddonModResourceIndexPage {
     /**
      * Update some data based on the resource instance.
      *
-     * @param {any} resource Resource instance.
+     * @param resource Resource instance.
      */
     updateData(resource: any): void {
         this.title = resource.name || this.title;

@@ -40,7 +40,7 @@ export class AddonModLtiIndexPage {
     /**
      * Update some data based on the LTI instance.
      *
-     * @param {any} lti LTI instance.
+     * @param lti LTI instance.
      */
     updateData(lti: any): void {
         this.title = lti.name || this.title;

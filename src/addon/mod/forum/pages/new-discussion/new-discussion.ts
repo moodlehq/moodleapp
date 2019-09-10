@@ -128,8 +128,8 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
     /**
      * Fetch if forum uses groups and the groups it uses.
      *
-     * @param  {boolean} [refresh] Whether we're refreshing data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @return Promise resolved when done.
      */
     protected fetchDiscussionData(refresh?: boolean): Promise<any> {
         return this.groupsProvider.getActivityGroupMode(this.cmId).then((mode) => {
@@ -253,8 +253,8 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
     /**
      * Validate which of the groups returned by getActivityAllowedGroups in visible groups should be shown to post to.
      *
-     * @param  {any[]} forumGroups Forum groups.
-     * @return {Promise<any[]>} Promise resolved with the list of groups.
+     * @param forumGroups Forum groups.
+     * @return Promise resolved with the list of groups.
      */
     protected validateVisibleGroups(forumGroups: any[]): Promise<any[]> {
         // We first check if the user can post to all the groups.
@@ -301,9 +301,9 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
     /**
      * Filter forum groups, returning only those that are inside user groups.
      *
-     * @param  {any[]} forumGroups Forum groups.
-     * @param  {any[]} userGroups User groups.
-     * @return {any[]} Filtered groups.
+     * @param forumGroups Forum groups.
+     * @param userGroups User groups.
+     * @return Filtered groups.
      */
     protected filterGroups(forumGroups: any[], userGroups: any[]): any[] {
         const filtered = [];
@@ -321,9 +321,9 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
     /**
      * Add the "All participants" option to a list of groups if the user can add a discussion to all participants.
      *
-     * @param  {any[]}   groups Groups.
-     * @param  {boolean} check  True to check if the user can add a discussion to all participants.
-     * @return {Promise<any[]>} Promise resolved with the list of groups.
+     * @param groups Groups.
+     * @param check True to check if the user can add a discussion to all participants.
+     * @return Promise resolved with the list of groups.
      */
     protected addAllParticipantsOption(groups: any[], check: boolean): Promise<any[]> {
         if (!this.forumProvider.isAllParticipantsFixed()) {
@@ -365,7 +365,7 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
     /**
      * Pull to refresh.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshGroups(refresher: any): void {
         const promises = [
@@ -384,8 +384,8 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
     /**
      * Convenience function to update or return to discussions depending on device.
      *
-     * @param {number} [discussionIds] Ids of the new discussions.
-     * @param {number} [discTimecreated] The time created of the discussion (if offline).
+     * @param discussionIds Ids of the new discussions.
+     * @param discTimecreated The time created of the discussion (if offline).
      */
     protected returnToDiscussions(discussionIds?: number[], discTimecreated?: number): void {
         const data: any = {
@@ -423,7 +423,7 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
     /**
      * Message changed.
      *
-     * @param {string} text The new text.
+     * @param text The new text.
      */
     onMessageChange(text: string): void {
         this.newDiscussion.message = text;
@@ -515,7 +515,7 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
     /**
      * Check if we can leave the page or not.
      *
-     * @return {boolean|Promise<void>} Resolved if we can leave it, rejected if not.
+     * @return Resolved if we can leave it, rejected if not.
      */
     ionViewCanLeave(): boolean | Promise<void> {
         let promise: any;

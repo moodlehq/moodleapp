@@ -45,37 +45,31 @@ import * as moment from 'moment';
 export type CoreCourseModulePrefetchInfo = {
     /**
      * Downloaded size.
-     * @type {number}
      */
     size?: number;
 
     /**
      * Downloadable size in a readable format.
-     * @type {string}
      */
     sizeReadable?: string;
 
     /**
      * Module status.
-     * @type {string}
      */
     status?: string;
 
     /**
      * Icon's name of the module status.
-     * @type {string}
      */
     statusIcon?: string;
 
     /**
      * Time when the module was last downloaded.
-     * @type {number}
      */
     downloadTime?: number;
 
     /**
      * Download time in a readable format.
-     * @type {string}
      */
     downloadTimeReadable?: string;
 };
@@ -86,25 +80,21 @@ export type CoreCourseModulePrefetchInfo = {
 export type CoreCourseCoursesProgress = {
     /**
      * Number of courses downloaded so far.
-     * @type {number}
      */
     count: number;
 
     /**
      * Toal of courses to download.
-     * @type {number}
      */
     total: number;
 
     /**
      * Whether the download has been successful so far.
-     * @type {boolean}
      */
     success: boolean;
 
     /**
      * Last downloaded course.
-     * @type {number}
      */
     courseId?: number;
 };
@@ -136,11 +126,11 @@ export class CoreCourseHelperProvider {
      * This function treats every module on the sections provided to load the handler data, treat completion
      * and navigate to a module page if required. It also returns if sections has content.
      *
-     * @param {any[]} sections List of sections to treat modules.
-     * @param {number} courseId Course ID of the modules.
-     * @param {any[]} [completionStatus] List of completion status.
-     * @param {string} [courseName] Course name. Recommended if completionStatus is supplied.
-     * @return {boolean} Whether the sections have content.
+     * @param sections List of sections to treat modules.
+     * @param courseId Course ID of the modules.
+     * @param completionStatus List of completion status.
+     * @param courseName Course name. Recommended if completionStatus is supplied.
+     * @return Whether the sections have content.
      */
     addHandlerDataForModules(sections: any[], courseId: number, completionStatus?: any, courseName?: string): boolean {
         let hasContent = false;
@@ -184,11 +174,11 @@ export class CoreCourseHelperProvider {
     /**
      * Calculate the status of a section.
      *
-     * @param {any} section Section to calculate its status. It can't be "All sections".
-     * @param {number} courseId Course ID the section belongs to.
-     * @param {boolean} [refresh] True if it shouldn't use module status cache (slower).
-     * @param {boolean} [checkUpdates=true] Whether to use the WS to check updates. Defaults to true.
-     * @return {Promise<any>} Promise resolved when the status is calculated.
+     * @param section Section to calculate its status. It can't be "All sections".
+     * @param courseId Course ID the section belongs to.
+     * @param refresh True if it shouldn't use module status cache (slower).
+     * @param checkUpdates Whether to use the WS to check updates. Defaults to true.
+     * @return Promise resolved when the status is calculated.
      */
     calculateSectionStatus(section: any, courseId: number, refresh?: boolean, checkUpdates: boolean = true): Promise<any> {
 
@@ -228,11 +218,11 @@ export class CoreCourseHelperProvider {
     /**
      * Calculate the status of a list of sections, setting attributes to determine the icons/data to be shown.
      *
-     * @param {any[]} sections Sections to calculate their status.
-     * @param {number} courseId Course ID the sections belong to.
-     * @param {boolean} [refresh] True if it shouldn't use module status cache (slower).
-     * @param {boolean} [checkUpdates=true] Whether to use the WS to check updates. Defaults to true.
-     * @return {Promise<void>} Promise resolved when the states are calculated.
+     * @param sections Sections to calculate their status.
+     * @param courseId Course ID the sections belong to.
+     * @param refresh True if it shouldn't use module status cache (slower).
+     * @param checkUpdates Whether to use the WS to check updates. Defaults to true.
+     * @return Promise resolved when the states are calculated.
      */
     calculateSectionsStatus(sections: any[], courseId: number, refresh?: boolean, checkUpdates: boolean = true): Promise<void> {
         const promises = [];
@@ -274,12 +264,12 @@ export class CoreCourseHelperProvider {
      * This function will set the icon to "spinner" when starting and it will also set it back to the initial icon if the
      * user cancels. All the other updates of the icon should be made when CoreEventsProvider.COURSE_STATUS_CHANGED is received.
      *
-     * @param {any} data An object where to store the course icon and title: "prefetchCourseIcon", "title" and "downloadSucceeded".
-     * @param {any} course Course to prefetch.
-     * @param {any[]} [sections] List of course sections.
-     * @param {CoreCourseOptionsHandlerToDisplay[]} courseHandlers List of course handlers.
-     * @param {CoreCourseOptionsMenuHandlerToDisplay[]} menuHandlers List of course menu handlers.
-     * @return {Promise<boolean>} Promise resolved when the download finishes, rejected if an error occurs or the user cancels.
+     * @param data An object where to store the course icon and title: "prefetchCourseIcon", "title" and "downloadSucceeded".
+     * @param course Course to prefetch.
+     * @param sections List of course sections.
+     * @param courseHandlers List of course handlers.
+     * @param menuHandlers List of course menu handlers.
+     * @return Promise resolved when the download finishes, rejected if an error occurs or the user cancels.
      */
     confirmAndPrefetchCourse(data: any, course: any, sections?: any[], courseHandlers?: CoreCourseOptionsHandlerToDisplay[],
             menuHandlers?: CoreCourseOptionsMenuHandlerToDisplay[]): Promise<boolean> {
@@ -341,9 +331,9 @@ export class CoreCourseHelperProvider {
     /**
      * Confirm and prefetches a list of courses.
      *
-     * @param {any[]} courses List of courses to download.
-     * @param {Function} [onProgress] Function to call everytime a course is downloaded.
-     * @return {Promise<boolean>} Resolved when downloaded, rejected if error or canceled.
+     * @param courses List of courses to download.
+     * @param onProgress Function to call everytime a course is downloaded.
+     * @return Resolved when downloaded, rejected if error or canceled.
      */
     confirmAndPrefetchCourses(courses: any[], onProgress?: (data: CoreCourseCoursesProgress) => void): Promise<any> {
         const siteId = this.sitesProvider.getCurrentSiteId();
@@ -399,9 +389,9 @@ export class CoreCourseHelperProvider {
     /**
      * Show confirmation dialog and then remove a module files.
      *
-     * @param {any} module Module to remove the files.
-     * @param {number} courseId Course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module to remove the files.
+     * @param courseId Course ID the module belongs to.
+     * @return Promise resolved when done.
      */
     confirmAndRemoveFiles(module: any, courseId: number): Promise<any> {
         return this.domUtils.showConfirm(this.translate.instant('core.course.confirmdeletemodulefiles')).then(() => {
@@ -416,11 +406,11 @@ export class CoreCourseHelperProvider {
     /**
      * Calculate the size to download a section and show a confirm modal if needed.
      *
-     * @param {number} courseId Course ID the section belongs to.
-     * @param {any} [section] Section. If not provided, all sections.
-     * @param {any[]} [sections] List of sections. Used when downloading all the sections.
-     * @param {boolean} [alwaysConfirm] True to show a confirm even if the size isn't high, false otherwise.
-     * @return {Promise<any>} Promise resolved if the user confirms or there's no need to confirm.
+     * @param courseId Course ID the section belongs to.
+     * @param section Section. If not provided, all sections.
+     * @param sections List of sections. Used when downloading all the sections.
+     * @param alwaysConfirm True to show a confirm even if the size isn't high, false otherwise.
+     * @return Promise resolved if the user confirms or there's no need to confirm.
      */
     confirmDownloadSizeSection(courseId: number, section?: any, sections?: any[], alwaysConfirm?: boolean): Promise<any> {
         let sizePromise,
@@ -472,11 +462,11 @@ export class CoreCourseHelperProvider {
      * Helper function to prefetch a module, showing a confirmation modal if the size is big.
      * This function is meant to be called from a context menu option. It will also modify some data like the prefetch icon.
      *
-     * @param {any} instance The component instance that has the context menu. It should have prefetchStatusIcon and isDestroyed.
-     * @param {any} module Module to be prefetched
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {Function} [done] Function to call when done. It will close the context menu.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param instance The component instance that has the context menu. It should have prefetchStatusIcon and isDestroyed.
+     * @param module Module to be prefetched
+     * @param courseId Course ID the module belongs to.
+     * @param done Function to call when done. It will close the context menu.
+     * @return Promise resolved when done.
      */
     contextMenuPrefetch(instance: any, module: any, courseId: number, done?: () => void): Promise<any> {
         const initialIcon = instance.prefetchStatusIcon;
@@ -503,8 +493,8 @@ export class CoreCourseHelperProvider {
     /**
      * Determine the status of a list of courses.
      *
-     * @param {any[]} courses Courses
-     * @return {Promise<string>} Promise resolved with the status.
+     * @param courses Courses
+     * @return Promise resolved with the status.
      */
     determineCoursesStatus(courses: any[]): Promise<string> {
         // Get the status of each course.
@@ -530,13 +520,13 @@ export class CoreCourseHelperProvider {
      * Convenience function to open a module main file, downloading the package if needed.
      * This is meant for modules like mod_resource.
      *
-     * @param {any} module The module to download.
-     * @param {number} courseId The course ID of the module.
-     * @param {string} [component] The component to link the files to.
-     * @param {string|number} [componentId] An ID to use in conjunction with the component.
-     * @param {any[]} [files] List of files of the module. If not provided, use module.contents.
-     * @param {string} [siteId] The site ID. If not defined, current site.
-     * @return {Promise<any>} Resolved on success.
+     * @param module The module to download.
+     * @param courseId The course ID of the module.
+     * @param component The component to link the files to.
+     * @param componentId An ID to use in conjunction with the component.
+     * @param files List of files of the module. If not provided, use module.contents.
+     * @param siteId The site ID. If not defined, current site.
+     * @return Resolved on success.
      */
     downloadModuleAndOpenFile(module: any, courseId: number, component?: string, componentId?: string | number, files?: any[],
             siteId?: string): Promise<any> {
@@ -633,13 +623,13 @@ export class CoreCourseHelperProvider {
      * Convenience function to download a module that has a main file and return the local file's path and other info.
      * This is meant for modules like mod_resource.
      *
-     * @param {any} module The module to download.
-     * @param {number} courseId The course ID of the module.
-     * @param {string} [component] The component to link the files to.
-     * @param {string|number} [componentId] An ID to use in conjunction with the component.
-     * @param {any[]} [files] List of files of the module. If not provided, use module.contents.
-     * @param {string} [siteId] The site ID. If not defined, current site.
-     * @return {Promise<{fixedUrl: string, path: string, status: string}>} Promise resolved when done.
+     * @param module The module to download.
+     * @param courseId The course ID of the module.
+     * @param component The component to link the files to.
+     * @param componentId An ID to use in conjunction with the component.
+     * @param files List of files of the module. If not provided, use module.contents.
+     * @param siteId The site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     downloadModuleWithMainFileIfNeeded(module: any, courseId: number, component?: string, componentId?: string | number,
             files?: any[], siteId?: string): Promise<{fixedUrl: string, path: string, status: string}> {
@@ -729,13 +719,13 @@ export class CoreCourseHelperProvider {
     /**
      * Convenience function to download a module.
      *
-     * @param {any} module The module to download.
-     * @param {number} courseId The course ID of the module.
-     * @param {string} [component] The component to link the files to.
-     * @param {string|number} [componentId] An ID to use in conjunction with the component.
-     * @param {any[]} [files] List of files of the module. If not provided, use module.contents.
-     * @param {string} [siteId] The site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module The module to download.
+     * @param courseId The course ID of the module.
+     * @param component The component to link the files to.
+     * @param componentId An ID to use in conjunction with the component.
+     * @param files List of files of the module. If not provided, use module.contents.
+     * @param siteId The site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     downloadModule(module: any, courseId: number, component?: string, componentId?: string | number, files?: any[], siteId?: string)
             : Promise<any> {
@@ -760,12 +750,12 @@ export class CoreCourseHelperProvider {
     /**
      * Fill the Context Menu for a certain module.
      *
-     * @param {any} instance The component instance that has the context menu.
-     * @param {any} module Module to be prefetched
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {boolean} [invalidateCache] Invalidates the cache first.
-     * @param {string} [component] Component of the module.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param instance The component instance that has the context menu.
+     * @param module Module to be prefetched
+     * @param courseId Course ID the module belongs to.
+     * @param invalidateCache Invalidates the cache first.
+     * @param component Component of the module.
+     * @return Promise resolved when done.
      */
     fillContextMenu(instance: any, module: any, courseId: number, invalidateCache?: boolean, component?: string): Promise<any> {
         return this.getModulePrefetchInfo(module, courseId, invalidateCache, component).then((moduleInfo) => {
@@ -796,9 +786,9 @@ export class CoreCourseHelperProvider {
     /**
      * Get a course. It will first check the user courses, and fallback to another WS if not enrolled.
      *
-     * @param {number} courseId Course ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<{enrolled: boolean, course: any}>} Promise resolved with the course.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the course.
      */
     getCourse(courseId: number, siteId?: string): Promise<{enrolled: boolean, course: any}> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -824,10 +814,10 @@ export class CoreCourseHelperProvider {
      * Get a course, wait for any course format plugin to load, and open the course page. It basically chains the functions
      * getCourse and openCourse.
      *
-     * @param {NavController} navCtrl The nav controller to use. If not defined, the course will be opened in main menu.
-     * @param {number} courseId Course ID.
-     * @param {any} [params] Other params to pass to the course page.
-     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param navCtrl The nav controller to use. If not defined, the course will be opened in main menu.
+     * @param courseId Course ID.
+     * @param params Other params to pass to the course page.
+     * @param siteId Site ID. If not defined, current site.
      */
     getAndOpenCourse(navCtrl: NavController, courseId: number, params?: any, siteId?: string): Promise<any> {
         const modal = this.domUtils.showModalLoading();
@@ -847,10 +837,10 @@ export class CoreCourseHelperProvider {
     /**
      * Check if the course has a block with that name.
      *
-     * @param {number} courseId Course ID.
-     * @param {string} name     Block name to search.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with true if the block exists or false otherwise.
+     * @param courseId Course ID.
+     * @param name Block name to search.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with true if the block exists or false otherwise.
      * @since 3.3
      */
     hasABlockNamed(courseId: number, name: string, siteId?: string): Promise<boolean> {
@@ -866,10 +856,10 @@ export class CoreCourseHelperProvider {
     /**
      * Initialize the prefetch icon for selected courses.
      *
-     * @param  {any[]}        courses  Courses array to get info from.
-     * @param  {any}          prefetch Prefetch information.
-     * @param  {number}       [minCourses=2] Min course to show icon.
-     * @return {Promise<any>}          Resolved with the prefetch information updated when done.
+     * @param courses Courses array to get info from.
+     * @param prefetch Prefetch information.
+     * @param minCourses Min course to show icon.
+     * @return Resolved with the prefetch information updated when done.
      */
     initPrefetchCoursesIcons(courses: any[], prefetch: any, minCourses: number = 2): Promise<any> {
         if (!courses || courses.length < minCourses) {
@@ -895,10 +885,10 @@ export class CoreCourseHelperProvider {
      * Load offline completion into a list of sections.
      * This should be used in 3.6 sites or higher, where the course contents already include the completion.
      *
-     * @param {number} courseId The course to get the completion.
-     * @param {any[]} sections List of sections of the course.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param courseId The course to get the completion.
+     * @param sections List of sections of the course.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     loadOfflineCompletion(courseId: number, sections: any[], siteId?: string): Promise<any> {
         return this.courseOffline.getCourseManualCompletions(courseId, siteId).then((offlineCompletions) => {
@@ -944,9 +934,9 @@ export class CoreCourseHelperProvider {
     /**
      * Prefetch all the courses in the array.
      *
-     * @param  {any[]}        courses  Courses array to prefetch.
-     * @param  {any}          prefetch Prefetch information to be updated.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param courses Courses array to prefetch.
+     * @param prefetch Prefetch information to be updated.
+     * @return Promise resolved when done.
      */
     prefetchCourses(courses: any[], prefetch: any): Promise<any> {
         prefetch.icon = 'spinner';
@@ -964,9 +954,9 @@ export class CoreCourseHelperProvider {
     /**
      * Get a course download promise (if any).
      *
-     * @param {number} courseId Course ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Download promise, undefined if not found.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Download promise, undefined if not found.
      */
     getCourseDownloadPromise(courseId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -977,9 +967,9 @@ export class CoreCourseHelperProvider {
     /**
      * Get a course status icon and the langkey to use as a title.
      *
-     * @param {number} courseId Course ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<{icon: string, title: string}>} Promise resolved with the icon name and the title key.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the icon name and the title key.
      */
     getCourseStatusIconAndTitle(courseId: number, siteId?: string): Promise<{icon: string, title: string}> {
         return this.courseProvider.getCourseStatus(courseId, siteId).then((status) => {
@@ -990,8 +980,8 @@ export class CoreCourseHelperProvider {
     /**
      * Get a course status icon and the langkey to use as a title from status.
      *
-     * @param {string} status Course status.
-     * @return {{icon: string, title: string}} Title and icon name.
+     * @param status Course status.
+     * @return Title and icon name.
      */
     getCourseStatusIconAndTitleFromStatus(status: string): {icon: string, title: string} {
         if (status == CoreConstants.DOWNLOADED) {
@@ -1016,10 +1006,10 @@ export class CoreCourseHelperProvider {
     /**
      * Get the course ID from a module instance ID, showing an error message if it can't be retrieved.
      *
-     * @param {number} id Instance ID.
-     * @param {string} module Name of the module. E.g. 'glossary'.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<number>} Promise resolved with the module's course ID.
+     * @param id Instance ID.
+     * @param module Name of the module. E.g. 'glossary'.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the module's course ID.
      */
     getModuleCourseIdByInstance(id: number, module: any, siteId?: string): Promise<number> {
         return this.courseProvider.getModuleBasicInfoByInstance(id, module, siteId).then((cm) => {
@@ -1034,11 +1024,11 @@ export class CoreCourseHelperProvider {
     /**
      * Get prefetch info for a module.
      *
-     * @param {any} module Module to get the info from.
-     * @param {number} courseId Course ID the section belongs to.
-     * @param {boolean} [invalidateCache] Invalidates the cache first.
-     * @param {string} [component] Component of the module.
-     * @return {Promise<CoreCourseModulePrefetchInfo>} Promise resolved with the info.
+     * @param module Module to get the info from.
+     * @param courseId Course ID the section belongs to.
+     * @param invalidateCache Invalidates the cache first.
+     * @param component Component of the module.
+     * @return Promise resolved with the info.
      */
     getModulePrefetchInfo(module: any, courseId: number, invalidateCache?: boolean, component?: string)
             : Promise<CoreCourseModulePrefetchInfo> {
@@ -1102,8 +1092,8 @@ export class CoreCourseHelperProvider {
     /**
      * Get the download ID of a section. It's used to interact with CoreCourseModulePrefetchDelegate.
      *
-     * @param {any} section Section.
-     * @return {string} Section download ID.
+     * @param section Section.
+     * @return Section download ID.
      */
     getSectionDownloadId(section: any): string {
         return 'Section-' + section.id;
@@ -1112,16 +1102,16 @@ export class CoreCourseHelperProvider {
     /**
      * Navigate to a module.
      *
-     * @param {number} moduleId Module's ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [courseId] Course ID. If not defined we'll try to retrieve it from the site.
-     * @param {number} [sectionId] Section the module belongs to. If not defined we'll try to retrieve it from the site.
-     * @param {string} [modName] If set, the app will retrieve all modules of this type with a single WS call. This reduces the
-     *                           number of WS calls, but it isn't recommended for modules that can return a lot of contents.
-     * @param {any} [modParams] Params to pass to the module
-     * @param {NavController} [navCtrl] NavController for adding new pages to the current history. Optional for legacy support, but
-     *                                  generates a warning if omitted.
-     * @return {Promise<void>} Promise resolved when done.
+     * @param moduleId Module's ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param courseId Course ID. If not defined we'll try to retrieve it from the site.
+     * @param sectionId Section the module belongs to. If not defined we'll try to retrieve it from the site.
+     * @param modName If set, the app will retrieve all modules of this type with a single WS call. This reduces the
+     *                number of WS calls, but it isn't recommended for modules that can return a lot of contents.
+     * @param modParams Params to pass to the module
+     * @param navCtrl NavController for adding new pages to the current history. Optional for legacy support, but
+     *                generates a warning if omitted.
+     * @return Promise resolved when done.
      */
     navigateToModule(moduleId: number, siteId?: string, courseId?: number, sectionId?: number, modName?: string, modParams?: any,
                      navCtrl?: NavController)
@@ -1201,12 +1191,12 @@ export class CoreCourseHelperProvider {
     /**
      * Open a module.
      *
-     * @param {NavController} navCtrl The NavController to use.
-     * @param {any} module The module to open.
-     * @param {number} courseId The course ID of the module.
-     * @param {number} [sectionId] The section ID of the module.
-     * @param {any} [modParams] Params to pass to the module
-     * @param {boolean} True if module can be opened, false otherwise.
+     * @param navCtrl The NavController to use.
+     * @param module The module to open.
+     * @param courseId The course ID of the module.
+     * @param sectionId The section ID of the module.
+     * @param modParams Params to pass to the module
+     * @param True if module can be opened, false otherwise.
      */
     openModule(navCtrl: NavController, module: any, courseId: number, sectionId?: number, modParams?: any): boolean {
         if (!module.handlerData) {
@@ -1225,12 +1215,12 @@ export class CoreCourseHelperProvider {
     /**
      * Prefetch all the activities in a course and also the course addons.
      *
-     * @param {any} course The course to prefetch.
-     * @param {any[]} sections List of course sections.
-     * @param {CoreCourseOptionsHandlerToDisplay[]} courseHandlers List of course options handlers.
-     * @param {CoreCourseOptionsMenuHandlerToDisplay[]} courseMenuHandlers List of course menu handlers.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}                Promise resolved when the download finishes.
+     * @param course The course to prefetch.
+     * @param sections List of course sections.
+     * @param courseHandlers List of course options handlers.
+     * @param courseMenuHandlers List of course menu handlers.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the download finishes.
      */
     prefetchCourse(course: any, sections: any[], courseHandlers: CoreCourseOptionsHandlerToDisplay[],
            courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[], siteId?: string): Promise<any> {
@@ -1300,12 +1290,12 @@ export class CoreCourseHelperProvider {
      * Helper function to prefetch a module, showing a confirmation modal if the size is big
      * and invalidating contents if refreshing.
      *
-     * @param {handler} handler Prefetch handler to use. Must implement 'prefetch' and 'invalidateContent'.
-     * @param {any} module Module to download.
-     * @param {any} size Object containing size to download (in bytes) and a boolean to indicate if its totally calculated.
-     * @param {number} courseId Course ID of the module.
-     * @param {boolean} [refresh] True if refreshing, false otherwise.
-     * @return {Promise<any>} Promise resolved when downloaded.
+     * @param handler Prefetch handler to use. Must implement 'prefetch' and 'invalidateContent'.
+     * @param module Module to download.
+     * @param size Object containing size to download (in bytes) and a boolean to indicate if its totally calculated.
+     * @param courseId Course ID of the module.
+     * @param refresh True if refreshing, false otherwise.
+     * @return Promise resolved when downloaded.
      */
     prefetchModule(handler: any, module: any, size: any, courseId: number, refresh?: boolean): Promise<any> {
         // Show confirmation if needed.
@@ -1325,10 +1315,10 @@ export class CoreCourseHelperProvider {
      * Prefetch one section or all the sections.
      * If the section is "All sections" it will prefetch all the sections.
      *
-     * @param {any} section Section.
-     * @param {number} courseId Course ID the section belongs to.
-     * @param {any[]} [sections] List of sections. Used when downloading all the sections.
-     * @return {Promise<any>} Promise resolved when the prefetch is finished.
+     * @param section Section.
+     * @param courseId Course ID the section belongs to.
+     * @param sections List of sections. Used when downloading all the sections.
+     * @return Promise resolved when the prefetch is finished.
      */
     prefetchSection(section: any, courseId: number, sections?: any[]): Promise<any> {
         if (section.id != CoreCourseProvider.ALL_SECTIONS_ID) {
@@ -1370,9 +1360,9 @@ export class CoreCourseHelperProvider {
      * Prefetch a certain section if it needs to be prefetched.
      * If the section is "All sections" it will be ignored.
      *
-     * @param {any} section Section to prefetch.
-     * @param {number} courseId Course ID the section belongs to.
-     * @return {Promise<any>} Promise resolved when the section is prefetched.
+     * @param section Section to prefetch.
+     * @param courseId Course ID the section belongs to.
+     * @return Promise resolved when the section is prefetched.
      */
     protected prefetchSingleSectionIfNeeded(section: any, courseId: number): Promise<any> {
         if (section.id == CoreCourseProvider.ALL_SECTIONS_ID) {
@@ -1422,10 +1412,10 @@ export class CoreCourseHelperProvider {
      * Start or restore the prefetch of a section.
      * If the section is "All sections" it will be ignored.
      *
-     * @param {any} section Section to download.
-     * @param {any} result Result of CoreCourseModulePrefetchDelegate.getModulesStatus for this section.
-     * @param {number} courseId Course ID the section belongs to.
-     * @return {Promise<any>} Promise resolved when the section has been prefetched.
+     * @param section Section to download.
+     * @param result Result of CoreCourseModulePrefetchDelegate.getModulesStatus for this section.
+     * @param courseId Course ID the section belongs to.
+     * @return Promise resolved when the section has been prefetched.
      */
     protected prefetchSingleSection(section: any, result: any, courseId: number): Promise<any> {
         if (section.id == CoreCourseProvider.ALL_SECTIONS_ID) {
@@ -1454,8 +1444,8 @@ export class CoreCourseHelperProvider {
     /**
      * Check if a section has content.
      *
-     * @param {any} section Section to check.
-     * @return {boolean} Whether the section has content.
+     * @param section Section to check.
+     * @return Whether the section has content.
      */
     sectionHasContent(section: any): boolean {
         if (section.hiddenbynumsections) {
@@ -1474,11 +1464,11 @@ export class CoreCourseHelperProvider {
      * will be displayed until it is complete, before the course page is opened.  If the promise is already complete,
      * they will see the result immediately.
      *
-     * @param {NavController} navCtrl The nav controller to use. If not defined, the course will be opened in main menu.
-     * @param {any} course Course to open
-     * @param {any} [params] Params to pass to the course page.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param navCtrl The nav controller to use. If not defined, the course will be opened in main menu.
+     * @param course Course to open
+     * @param params Params to pass to the course page.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     openCourse(navCtrl: NavController, course: any, params?: any, siteId?: string): Promise<any> {
         if (!siteId || siteId == this.sitesProvider.getCurrentSiteId()) {

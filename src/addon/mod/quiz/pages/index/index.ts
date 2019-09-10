@@ -40,7 +40,7 @@ export class AddonModQuizIndexPage {
     /**
      * Update some data based on the quiz instance.
      *
-     * @param {any} quiz Quiz instance.
+     * @param quiz Quiz instance.
      */
     updateData(quiz: any): void {
         this.title = quiz.name || this.title;

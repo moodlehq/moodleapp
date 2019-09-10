@@ -129,7 +129,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     /**
      * Get a class that defines the dynamic component.
      *
-     * @return {any} The component class.
+     * @return The component class.
      */
     protected getComponentClass(): any {
         // tslint:disable: no-this-assignment
@@ -221,11 +221,11 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     /**
      * Call a certain function on the component instance.
      *
-     * @param {string} name Name of the function to call.
-     * @param {any[]} params List of params to send to the function.
-     * @param {boolean} [callWhenCreated=true] If this param is true and the component hasn't been created yet, call the function
-     *                                         once the component has been created.
-     * @return {any} Result of the call. Undefined if no component instance or the function doesn't exist.
+     * @param name Name of the function to call.
+     * @param params List of params to send to the function.
+     * @param callWhenCreated If this param is true and the component hasn't been created yet, call the function
+     *                        once the component has been created.
+     * @return Result of the call. Undefined if no component instance or the function doesn't exist.
      */
     callComponentFunction(name: string, params?: any[], callWhenCreated: boolean = true): any {
         if (this.componentInstance) {

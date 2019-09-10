@@ -144,7 +144,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Check if the current page was created or discarded.
      *
-     * @param {any} data Data about created and deleted pages.
+     * @param data Data about created and deleted pages.
      */
     protected checkPageCreatedOrDiscarded(data: any): void {
         if (!this.currentPage && data) {
@@ -182,7 +182,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Construct the map of pages.
      *
-     * @param {any[]} subwikiPages List of pages.
+     * @param subwikiPages List of pages.
      */
     constructMap(subwikiPages: any[]): void {
         let letter,
@@ -216,10 +216,10 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Get the wiki data.
      *
-     * @param {boolean} [refresh=false] If it's refreshing content.
-     * @param {boolean} [sync=false] If it should try to sync.
-     * @param {boolean} [showErrors=false] If show errors to the user of hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh If it's refreshing content.
+     * @param sync If it should try to sync.
+     * @param showErrors If show errors to the user of hide them.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
 
@@ -315,8 +315,8 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Get wiki page contents.
      *
-     * @param {number} pageId Page to get.
-     * @return {Promise<any>} Promise resolved with the page data.
+     * @param pageId Page to get.
+     * @return Promise resolved with the page data.
      */
     protected fetchPageContents(pageId: number): Promise<any> {
         if (!pageId) {
@@ -361,7 +361,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Fetch the list of pages of a subwiki.
      *
-     * @param {any} subwiki Subwiki.
+     * @param subwiki Subwiki.
      */
     protected fetchSubwikiPages(subwiki: any): Promise<any> {
         let subwikiPages;
@@ -409,7 +409,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Get the subwikis.
      *
-     * @param {number} wikiId Wiki ID.
+     * @param wikiId Wiki ID.
      */
     protected fetchSubwikis(wikiId: number): Promise<any> {
         return this.wikiProvider.getSubwikis(wikiId).then((subwikis) => {
@@ -424,7 +424,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Fetch the page to be shown.
      *
-     * @return {Promise<any>} [description]
+     * @return [description]
      */
     protected fetchWikiPage(): Promise<any> {
         // Search the current Subwiki.
@@ -458,7 +458,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Get the wiki home view. If cannot determine or it's current view, return undefined.
      *
-     * @return {ViewController} The view controller of the home view
+     * @return The view controller of the home view
      */
     protected getWikiHomeView(): ViewController {
 
@@ -580,7 +580,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Go to view a certain page.
      *
-     * @param {any} page Page to view.
+     * @param page Page to view.
      */
     goToPage(page: any): void {
         if (!page.id) {
@@ -621,10 +621,10 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Go to the page to view a certain subwiki.
      *
-     * @param {number} subwikiId Subwiki ID.
-     * @param {number} userId User ID of the subwiki.
-     * @param {number} groupId Group ID of the subwiki.
-     * @param {boolean} canEdit Whether the subwiki can be edited.
+     * @param subwikiId Subwiki ID.
+     * @param userId User ID of the subwiki.
+     * @param groupId Group ID of the subwiki.
+     * @param canEdit Whether the subwiki can be edited.
      */
     goToSubwiki(subwikiId: number, userId: number, groupId: number, canEdit: boolean): void {
         // Check if the subwiki is disabled.
@@ -648,7 +648,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Checks if there is any subwiki selected.
      *
-     * @return {boolean} Whether there is any subwiki selected.
+     * @return Whether there is any subwiki selected.
      */
     protected isAnySubwikiSelected(): boolean {
         return this.subwikiData.subwikiSelected > 0 || this.subwikiData.userSelected > 0 || this.subwikiData.groupSelected > 0;
@@ -657,8 +657,8 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Checks if the given subwiki is the one picked on the subwiki picker.
      *
-     * @param {any} subwiki Subwiki to check.
-     * @return {boolean} Whether it's the selected subwiki.
+     * @param subwiki Subwiki to check.
+     * @return Whether it's the selected subwiki.
      */
     protected isSubwikiSelected(subwiki: any): boolean {
         const subwikiId = parseInt(subwiki.id, 10) || 0;
@@ -676,8 +676,8 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Replace edit links to have full url.
      *
-     * @param {string} content Content to treat.
-     * @return {string} Treated content.
+     * @param content Content to treat.
+     * @return Treated content.
      */
     protected replaceEditLinks(content: string): string {
         content = content.trim();
@@ -693,9 +693,9 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Sets the selected subwiki for the subwiki picker.
      *
-     * @param {number} subwikiId Subwiki ID to select.
-     * @param {number} userId User ID of the subwiki to select.
-     * @param {number} groupId Group ID of the subwiki to select.
+     * @param subwikiId Subwiki ID to select.
+     * @param userId User ID of the subwiki to select.
+     * @param groupId Group ID of the subwiki to select.
      */
     protected setSelectedWiki(subwikiId: number, userId: number, groupId: number): void {
         this.subwikiData.subwikiSelected = this.wikiOffline.convertToPositiveNumber(subwikiId);
@@ -706,8 +706,8 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Checks if sync has succeed from result sync data.
      *
-     * @param  {any}     result Data returned on the sync function.
-     * @return {boolean}        If suceed or not.
+     * @param result Data returned on the sync function.
+     * @return If suceed or not.
      */
     protected hasSyncSucceed(result: any): boolean {
         result.wikiId = this.wiki.id;
@@ -755,7 +755,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         const promises = [];
@@ -783,8 +783,8 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Compares sync event data with current data to check if refresh content is needed.
      *
-     * @param {any} syncEventData Data receiven on sync observer.
-     * @return {boolean} True if refresh is needed, false otherwise.
+     * @param syncEventData Data receiven on sync observer.
+     * @return True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: any): boolean {
         if (this.currentSubwiki && syncEventData.subwikiId == this.currentSubwiki.id &&
@@ -806,7 +806,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Show the TOC.
      *
-     * @param {MouseEvent} event Event.
+     * @param event Event.
      */
     showSubwikiPicker(event: MouseEvent): void {
         const popover = this.popoverCtrl.create(AddonModWikiSubwikiPickerComponent, {
@@ -828,7 +828,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Performs the sync of the activity.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected sync(): Promise<any> {
         return this.wikiSync.syncWiki(this.wiki.id, this.courseId, this.wiki.coursemodule);
@@ -847,8 +847,8 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Create the subwiki list for the selector and store it in the cache.
      *
-     * @param {any[]} userGroups Groups.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param userGroups Groups.
+     * @return Promise resolved when done.
      */
     protected createSubwikiList(userGroups: any[]): Promise<any> {
         const subwikiList = [],
@@ -938,9 +938,9 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Fill the subwiki data.
      *
-     * @param {any[]} subwikiList List of subwikis.
-     * @param {boolean} showMyGroupsLabel Whether subwikis should be grouped in "My groups" and "Other groups".
-     * @param {boolean} multiLevelList Whether it's a multi level list.
+     * @param subwikiList List of subwikis.
+     * @param showMyGroupsLabel Whether subwikis should be grouped in "My groups" and "Other groups".
+     * @param multiLevelList Whether it's a multi level list.
      */
     protected fillSubwikiData(subwikiList: any[], showMyGroupsLabel: boolean, multiLevelList: boolean): void {
         let groupValue = -1,

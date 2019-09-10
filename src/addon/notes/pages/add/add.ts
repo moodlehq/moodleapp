@@ -43,7 +43,7 @@ export class AddonNotesAddPage {
     /**
      * Send the note or store it offline.
      *
-     * @param {Event} e Event.
+     * @param e Event.
      */
     addNote(e: Event): void {
         e.preventDefault();

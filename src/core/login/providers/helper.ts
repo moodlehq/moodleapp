@@ -39,31 +39,26 @@ import { Md5 } from 'ts-md5/dist/md5';
 export interface CoreLoginSSOData {
     /**
      * The site's URL.
-     * @type {string}
      */
     siteUrl: string;
 
     /**
      * User's token.
-     * @type {string}
      */
     token?: string;
 
     /**
      * User's private token.
-     * @type {string}
      */
     privateToken?: string;
 
     /**
      * Name of the page to go after authenticated.
-     * @type {string}
      */
     pageName?: string;
 
     /**
      * Params to page to the page.
-     * @type {string}
      */
     pageParams?: any;
 }
@@ -102,8 +97,8 @@ export class CoreLoginHelperProvider {
     /**
      * Accept site policy.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if success, rejected if failure.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if success, rejected if failure.
      */
     acceptSitePolicy(siteId?: string): Promise<void> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -133,8 +128,8 @@ export class CoreLoginHelperProvider {
     /**
      * Function to handle URL received by Custom URL Scheme. If it's a SSO login, perform authentication.
      *
-     * @param {string} url URL received.
-     * @return {boolean} True if it's a SSO URL, false otherwise.
+     * @param url URL received.
+     * @return True if it's a SSO URL, false otherwise.
      * @deprecated Please use CoreCustomURLSchemesProvider.handleCustomURL instead.
      */
     appLaunchedByURL(url: string): boolean {
@@ -209,8 +204,8 @@ export class CoreLoginHelperProvider {
     /**
      * Check if a site allows requesting a password reset through the app.
      *
-     * @param {string} siteUrl URL of the site.
-     * @return {Promise<any>} Promise resolved with boolean: whether can be done through the app.
+     * @param siteUrl URL of the site.
+     * @return Promise resolved with boolean: whether can be done through the app.
      */
     canRequestPasswordReset(siteUrl: string): Promise<any> {
         return this.requestPasswordReset(siteUrl).then(() => {
@@ -236,11 +231,10 @@ export class CoreLoginHelperProvider {
     /**
      * Show a confirm modal if needed and open a browser to perform SSO login.
      *
-     * @param  {string} siteurl     URL of the site where the SSO login will be performed.
-     * @param  {number} typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
-     * @param  {string} [service]   The service to use. If not defined, external service will be used.
-     * @param  {string} [launchUrl] The URL to open for SSO. If not defined, local_mobile launch URL will be used.
-     * @return {Void}
+     * @param siteurl URL of the site where the SSO login will be performed.
+     * @param typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
+     * @param service The service to use. If not defined, external service will be used.
+     * @param launchUrl The URL to open for SSO. If not defined, local_mobile launch URL will be used.
      */
     confirmAndOpenBrowserForSSOLogin(siteUrl: string, typeOfLogin: number, service?: string, launchUrl?: string): void {
         // Show confirm only if it's needed. Treat "false" (string) as false to prevent typing errors.
@@ -263,10 +257,10 @@ export class CoreLoginHelperProvider {
     /**
      * Helper function to act when the forgotten password is clicked.
      *
-     * @param {NavController} navCtrl NavController to use to navigate.
-     * @param {string} siteUrl Site URL.
-     * @param {string} username Username.
-     * @param {any} [siteConfig] Site config.
+     * @param navCtrl NavController to use to navigate.
+     * @param siteUrl Site URL.
+     * @param username Username.
+     * @param siteConfig Site config.
      */
     forgottenPasswordClicked(navCtrl: NavController, siteUrl: string, username: string, siteConfig?: any): void {
         if (siteConfig && siteConfig.forgottenpasswordurl) {
@@ -295,8 +289,8 @@ export class CoreLoginHelperProvider {
     /**
      * Format profile fields, filtering the ones that shouldn't be shown on signup and classifying them in categories.
      *
-     * @param {any[]} profileFields Profile fields to format.
-     * @return {any} Categories with the fields to show in each one.
+     * @param profileFields Profile fields to format.
+     * @return Categories with the fields to show in each one.
      */
     formatProfileFieldsForSignup(profileFields: any[]): any {
         if (!profileFields) {
@@ -331,15 +325,15 @@ export class CoreLoginHelperProvider {
      * Builds an object with error messages for some common errors.
      * Please notice that this function doesn't support all possible error types.
      *
-     * @param {string} [requiredMsg] Code of the string for required error.
-     * @param {string} [emailMsg] Code of the string for invalid email error.
-     * @param {string} [patternMsg] Code of the string for pattern not match error.
-     * @param {string} [urlMsg] Code of the string for invalid url error.
-     * @param {string} [minlengthMsg] Code of the string for "too short" error.
-     * @param {string} [maxlengthMsg] Code of the string for "too long" error.
-     * @param {string} [minMsg] Code of the string for min value error.
-     * @param {string} [maxMsg] Code of the string for max value error.
-     * @return {any} Object with the errors.
+     * @param requiredMsg Code of the string for required error.
+     * @param emailMsg Code of the string for invalid email error.
+     * @param patternMsg Code of the string for pattern not match error.
+     * @param urlMsg Code of the string for invalid url error.
+     * @param minlengthMsg Code of the string for "too short" error.
+     * @param maxlengthMsg Code of the string for "too long" error.
+     * @param minMsg Code of the string for min value error.
+     * @param maxMsg Code of the string for max value error.
+     * @return Object with the errors.
      */
     getErrorMessages(requiredMsg?: string, emailMsg?: string, patternMsg?: string, urlMsg?: string, minlengthMsg?: string,
             maxlengthMsg?: string, minMsg?: string, maxMsg?: string): any {
@@ -376,8 +370,8 @@ export class CoreLoginHelperProvider {
     /**
      * Get the site policy.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<string>} Promise resolved with the site policy.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the site policy.
      */
     getSitePolicy(siteId?: string): Promise<string> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -397,7 +391,7 @@ export class CoreLoginHelperProvider {
     /**
      * Get fixed site or sites.
      *
-     * @return {string|any[]} Fixed site or list of fixed sites.
+     * @return Fixed site or list of fixed sites.
      */
     getFixedSites(): string | any[] {
         return CoreConfigConstants.siteurl;
@@ -406,8 +400,8 @@ export class CoreLoginHelperProvider {
     /**
      * Get the valid identity providers from a site config.
      *
-     * @param {any} siteConfig Site's public config.
-     * @return {any[]} Valid identity providers.
+     * @param siteConfig Site's public config.
+     * @return Valid identity providers.
      */
     getValidIdentityProviders(siteConfig: any): any[] {
         const validProviders = [],
@@ -429,9 +423,9 @@ export class CoreLoginHelperProvider {
      * Go to the page to add a new site.
      * If a fixed URL is configured, go to credentials instead.
      *
-     * @param {boolean} [setRoot] True to set the new page as root, false to add it to the stack.
-     * @param {boolean} [showKeyboard] Whether to show keyboard in the new page. Only if no fixed URL set.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param setRoot True to set the new page as root, false to add it to the stack.
+     * @param showKeyboard Whether to show keyboard in the new page. Only if no fixed URL set.
+     * @return Promise resolved when done.
      */
     goToAddSite(setRoot?: boolean, showKeyboard?: boolean): Promise<any> {
         let pageName,
@@ -461,10 +455,10 @@ export class CoreLoginHelperProvider {
     /**
      * Open a page that doesn't belong to any site.
      *
-     * @param {NavController} [navCtrl] Nav Controller.
-     * @param {string} [page] Page to open.
-     * @param {any} [params] Params of the page.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param navCtrl Nav Controller.
+     * @param page Page to open.
+     * @param params Params of the page.
+     * @return Promise resolved when done.
      */
     goToNoSitePage(navCtrl: NavController, page: string, params?: any): Promise<any> {
         navCtrl = navCtrl || this.appProvider.getRootNavController();
@@ -498,12 +492,12 @@ export class CoreLoginHelperProvider {
     /**
      * Go to the initial page of a site depending on 'userhomepage' setting.
      *
-     * @param {NavController} [navCtrl] NavController to use. Defaults to app root NavController.
-     * @param {string} [page] Name of the page to load after loading the main page.
-     * @param {any} [params] Params to pass to the page.
-     * @param {NavOptions} [options] Navigation options.
-     * @param {string} [url] URL to open once the main menu is loaded.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param navCtrl NavController to use. Defaults to app root NavController.
+     * @param page Name of the page to load after loading the main page.
+     * @param params Params to pass to the page.
+     * @param options Navigation options.
+     * @param url URL to open once the main menu is loaded.
+     * @return Promise resolved when done.
      */
     goToSiteInitialPage(navCtrl?: NavController, page?: string, params?: any, options?: NavOptions, url?: string): Promise<any> {
         return this.openMainMenu(navCtrl, page, params, options, url);
@@ -513,10 +507,10 @@ export class CoreLoginHelperProvider {
      * Convenient helper to handle authentication in the app using a token received by SSO login. If it's a new account,
      * the site is stored and the user is authenticated. If the account already exists, update its token.
      *
-     * @param {string} siteUrl Site's URL.
-     * @param {string} token User's token.
-     * @param {string} [privateToken] User's private token.
-     * @return {Promise<any>} Promise resolved when the user is authenticated with the token.
+     * @param siteUrl Site's URL.
+     * @param token User's token.
+     * @param privateToken User's private token.
+     * @return Promise resolved when the user is authenticated with the token.
      */
     handleSSOLoginAuthentication(siteUrl: string, token: string, privateToken?: string): Promise<any> {
         // Always create a new site to prevent overriding data if another user credentials were introduced.
@@ -526,7 +520,7 @@ export class CoreLoginHelperProvider {
     /**
      * Check if the app is configured to use several fixed URLs.
      *
-     * @return {boolean} Whether there are several fixed URLs.
+     * @return Whether there are several fixed URLs.
      */
     hasSeveralFixedSites(): boolean {
         return CoreConfigConstants.siteurl && Array.isArray(CoreConfigConstants.siteurl) &&
@@ -536,7 +530,7 @@ export class CoreLoginHelperProvider {
     /**
      * Function called when a page starts loading in any InAppBrowser window.
      *
-     * @param {string} url Loaded url.
+     * @param url Loaded url.
      * @deprecated
      */
     inAppBrowserLoadStart(url: string): void {
@@ -546,8 +540,8 @@ export class CoreLoginHelperProvider {
     /**
      * Given a site public config, check if email signup is disabled.
      *
-     * @param {any} config Site public config.
-     * @return {boolean} Whether email signup is disabled.
+     * @param config Site public config.
+     * @return Whether email signup is disabled.
      */
     isEmailSignupDisabled(config: any): boolean {
         let disabledFeatures = config && config.tool_mobile_disabledfeatures;
@@ -565,7 +559,7 @@ export class CoreLoginHelperProvider {
     /**
      * Check if the app is configured to use a fixed URL (only 1).
      *
-     * @return {boolean} Whether there is 1 fixed URL.
+     * @return Whether there is 1 fixed URL.
      */
     isFixedUrlSet(): boolean {
         if (Array.isArray(CoreConfigConstants.siteurl)) {
@@ -578,9 +572,9 @@ export class CoreLoginHelperProvider {
     /**
      * Check if current site is logged out, triggering mmCoreEventSessionExpired if it is.
      *
-     * @param {string} [pageName] Name of the page to go once authenticated if logged out. If not defined, site initial page.
-     * @param {any} [params] Params of the page to go once authenticated if logged out.
-     * @return {boolean} True if user is logged out, false otherwise.
+     * @param pageName Name of the page to go once authenticated if logged out. If not defined, site initial page.
+     * @param params Params of the page to go once authenticated if logged out.
+     * @return True if user is logged out, false otherwise.
      */
     isSiteLoggedOut(pageName?: string, params?: any): boolean {
         const site = this.sitesProvider.getCurrentSite();
@@ -603,8 +597,8 @@ export class CoreLoginHelperProvider {
     /**
      * Check if SSO login should use an embedded browser.
      *
-     * @param {number} code Code to check.
-     * @return {boolean} True if embedded browser, false othwerise.
+     * @param code Code to check.
+     * @return True if embedded browser, false othwerise.
      */
     isSSOEmbeddedBrowser(code: number): boolean {
         if (this.appProvider.isLinux()) {
@@ -618,8 +612,8 @@ export class CoreLoginHelperProvider {
     /**
      * Check if SSO login is needed based on code returned by the WS.
      *
-     * @param {number} code Code to check.
-     * @return {boolean} True if SSO login is needed, false othwerise.
+     * @param code Code to check.
+     * @return True if SSO login is needed, false othwerise.
      */
     isSSOLoginNeeded(code: number): boolean {
         return code == CoreConstants.LOGIN_SSO_CODE || code == CoreConstants.LOGIN_SSO_INAPP_CODE;
@@ -628,10 +622,10 @@ export class CoreLoginHelperProvider {
     /**
      * Load a site and load a certain page in that site.
      *
-     * @param {string} page Name of the page to load.
-     * @param {any} params Params to pass to the page.
-     * @param {string} siteId Site to load.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param page Name of the page to load.
+     * @param params Params to pass to the page.
+     * @param siteId Site to load.
+     * @return Promise resolved when done.
      */
     protected loadSiteAndPage(page: string, params: any, siteId: string): Promise<any> {
         const navCtrl = this.appProvider.getRootNavController();
@@ -658,8 +652,8 @@ export class CoreLoginHelperProvider {
     /**
      * Load a certain page in the main menu page.
      *
-     * @param {string} page Name of the page to load.
-     * @param {any} params Params to pass to the page.
+     * @param page Name of the page to load.
+     * @param params Params to pass to the page.
      */
     loadPageInMainMenu(page: string, params: any): void {
         if (!this.appProvider.isMainMenuOpen()) {
@@ -684,12 +678,12 @@ export class CoreLoginHelperProvider {
     /**
      * Open the main menu, loading a certain page.
      *
-     * @param {NavController} navCtrl NavController.
-     * @param {string} page Name of the page to load.
-     * @param {any} params Params to pass to the page.
-     * @param {NavOptions} [options] Navigation options.
-     * @param {string} [url] URL to open once the main menu is loaded.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param navCtrl NavController.
+     * @param page Name of the page to load.
+     * @param params Params to pass to the page.
+     * @param options Navigation options.
+     * @param url URL to open once the main menu is loaded.
+     * @return Promise resolved when done.
      */
     protected openMainMenu(navCtrl: NavController, page: string, params: any, options?: NavOptions, url?: string): Promise<any> {
         navCtrl = navCtrl || this.appProvider.getRootNavController();
@@ -712,12 +706,12 @@ export class CoreLoginHelperProvider {
     /**
      * Open a browser to perform OAuth login (Google, Facebook, Microsoft).
      *
-     * @param {string} siteUrl URL of the site where the login will be performed.
-     * @param {any} provider The identity provider.
-     * @param {string} [launchUrl] The URL to open for SSO. If not defined, tool/mobile launch URL will be used.
-     * @param {string} [pageName] Name of the page to go once authenticated. If not defined, site initial page.
-     * @param {any} [pageParams] Params of the state to go once authenticated.
-     * @return {boolean} True if success, false if error.
+     * @param siteUrl URL of the site where the login will be performed.
+     * @param provider The identity provider.
+     * @param launchUrl The URL to open for SSO. If not defined, tool/mobile launch URL will be used.
+     * @param pageName Name of the page to go once authenticated. If not defined, site initial page.
+     * @param pageParams Params of the state to go once authenticated.
+     * @return True if success, false if error.
      */
     openBrowserForOAuthLogin(siteUrl: string, provider: any, launchUrl?: string, pageName?: string, pageParams?: any): boolean {
         launchUrl = launchUrl || siteUrl + '/admin/tool/mobile/launch.php';
@@ -752,12 +746,12 @@ export class CoreLoginHelperProvider {
     /**
      * Open a browser to perform SSO login.
      *
-     * @param {string} siteurl URL of the site where the SSO login will be performed.
-     * @param {number} typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
-     * @param {string} [service] The service to use. If not defined, external service will be used.
-     * @param {string} [launchUrl] The URL to open for SSO. If not defined, local_mobile launch URL will be used.
-     * @param {string} [pageName] Name of the page to go once authenticated. If not defined, site initial page.
-     * @param {any} [pageParams] Params of the state to go once authenticated.
+     * @param siteurl URL of the site where the SSO login will be performed.
+     * @param typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
+     * @param service The service to use. If not defined, external service will be used.
+     * @param launchUrl The URL to open for SSO. If not defined, local_mobile launch URL will be used.
+     * @param pageName Name of the page to go once authenticated. If not defined, site initial page.
+     * @param pageParams Params of the state to go once authenticated.
      */
     openBrowserForSSOLogin(siteUrl: string, typeOfLogin: number, service?: string, launchUrl?: string, pageName?: string,
             pageParams?: any): void {
@@ -780,8 +774,8 @@ export class CoreLoginHelperProvider {
     /**
      * Convenient helper to open change password page.
      *
-     * @param {string} siteUrl Site URL to construct change password URL.
-     * @param {string} error Error message.
+     * @param siteUrl Site URL to construct change password URL.
+     * @param error Error message.
      */
     openChangePassword(siteUrl: string, error: string): void {
         this.domUtils.showAlert(this.translate.instant('core.notice'), error, undefined, 3000).then((alert) => {
@@ -796,7 +790,7 @@ export class CoreLoginHelperProvider {
     /**
      * Open forgotten password in inappbrowser.
      *
-     * @param {string} siteUrl URL of the site.
+     * @param siteUrl URL of the site.
      */
     openForgottenPassword(siteUrl: string): void {
         this.utils.openInApp(siteUrl + '/login/forgot_password.php');
@@ -805,10 +799,10 @@ export class CoreLoginHelperProvider {
     /*
      * Function to open in app browser to change password or complete user profile.
      *
-     * @param {string} siteId The site ID.
-     * @param {string} path The relative path of the URL to open.
-     * @param {string} alertMessage The key of the message to display before opening the in app browser.
-     * @param {boolean} [invalidateCache] Whether to invalidate site's cache (e.g. when the user is forced to change password).
+     * @param siteId The site ID.
+     * @param path The relative path of the URL to open.
+     * @param alertMessage The key of the message to display before opening the in app browser.
+     * @param invalidateCache Whether to invalidate site's cache (e.g. when the user is forced to change password).
      */
     openInAppForEdit(siteId: string, path: string, alertMessage: string, invalidateCache?: boolean): void {
         if (!siteId || siteId !== this.sitesProvider.getCurrentSiteId()) {
@@ -842,11 +836,11 @@ export class CoreLoginHelperProvider {
     /**
      * Prepare the app to perform SSO login.
      *
-     * @param {string} siteUrl URL of the site where the SSO login will be performed.
-     * @param {string} [service] The service to use. If not defined, external service will be used.
-     * @param {string} [launchUrl] The URL to open for SSO. If not defined, local_mobile launch URL will be used.
-     * @param {string} [pageName] Name of the page to go once authenticated. If not defined, site initial page.
-     * @param {any} [pageParams] Params of the state to go once authenticated.
+     * @param siteUrl URL of the site where the SSO login will be performed.
+     * @param service The service to use. If not defined, external service will be used.
+     * @param launchUrl The URL to open for SSO. If not defined, local_mobile launch URL will be used.
+     * @param pageName Name of the page to go once authenticated. If not defined, site initial page.
+     * @param pageParams Params of the state to go once authenticated.
      */
     prepareForSSOLogin(siteUrl: string, service?: string, launchUrl?: string, pageName?: string, pageParams?: any): string {
         service = service || CoreConfigConstants.wsextservice;
@@ -873,10 +867,10 @@ export class CoreLoginHelperProvider {
     /**
      * Redirect to a new page, setting it as the root page and loading the right site if needed.
      *
-     * @param {string} page Name of the page to load. Special cases: OPEN_COURSE (to open course page).
-     * @param {any} params Params to pass to the page.
-     * @param {string} [siteId] Site to load. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param page Name of the page to load. Special cases: OPEN_COURSE (to open course page).
+     * @param params Params to pass to the page.
+     * @param siteId Site to load. If not defined, current site.
+     * @return Promise resolved when done.
      */
     redirect(page: string, params?: any, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -911,10 +905,10 @@ export class CoreLoginHelperProvider {
     /**
      * Request a password reset.
      *
-     * @param {string} siteUrl URL of the site.
-     * @param {string} [username] Username to search.
-     * @param {string} [email] Email to search.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param siteUrl URL of the site.
+     * @param username Username to search.
+     * @param email Email to search.
+     * @return Promise resolved when done.
      */
     requestPasswordReset(siteUrl: string, username?: string, email?: string): Promise<any> {
         const params: any = {};
@@ -933,7 +927,7 @@ export class CoreLoginHelperProvider {
     /**
      * Function that should be called when the session expires. Reserved for core use.
      *
-     * @param {any} data Data received by the SESSION_EXPIRED event.
+     * @param data Data received by the SESSION_EXPIRED event.
      */
     sessionExpired(data: any): void {
         const siteId = data && data.siteId,
@@ -1015,8 +1009,8 @@ export class CoreLoginHelperProvider {
     /**
      * Check if a confirm should be shown to open a SSO authentication.
      *
-     * @param {number} typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
-     * @return {boolean} True if confirm modal should be shown, false otherwise.
+     * @param typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
+     * @return True if confirm modal should be shown, false otherwise.
      */
     shouldShowSSOConfirm(typeOfLogin: number): boolean {
         return !this.isSSOEmbeddedBrowser(typeOfLogin) &&
@@ -1026,7 +1020,7 @@ export class CoreLoginHelperProvider {
     /**
      * Show a modal warning the user that he should use the Classic app.
      *
-     * @param {string} message The warning message.
+     * @param message The warning message.
      */
     protected showLegacyNoticeModal(message: string): void {
         let link;
@@ -1048,7 +1042,7 @@ export class CoreLoginHelperProvider {
     /**
      * Show a modal warning the user that he should use the Workplace app.
      *
-     * @param {string} message The warning message.
+     * @param message The warning message.
      */
     protected showWorkplaceNoticeModal(message: string): void {
         let link;
@@ -1065,7 +1059,7 @@ export class CoreLoginHelperProvider {
     /**
      * Show a modal warning the user that he should use the current Moodle app.
      *
-     * @param {string} message The warning message.
+     * @param message The warning message.
      */
     protected showMoodleAppNoticeModal(message: string): void {
         let link;
@@ -1089,8 +1083,8 @@ export class CoreLoginHelperProvider {
     /**
      * Show a modal warning the user that he should use a different app.
      *
-     * @param {string} message The warning message.
-     * @param {string} link Link to the app to download if any.
+     * @param message The warning message.
+     * @param link Link to the app to download if any.
      */
     protected showDownloadAppNoticeModal(message: string, link?: string): void {
         const buttons: any[] = [
@@ -1127,10 +1121,10 @@ export class CoreLoginHelperProvider {
     /**
      * Show a modal to inform the user that a confirmation email was sent, and a button to resend the email on 3.6+ sites.
      *
-     * @param {string} siteUrl Site URL.
-     * @param {string} [email] Email of the user. If set displayed in the message.
-     * @param {string} [username] Username. If not set the button to resend email will not be shown.
-     * @param {string} [password] User password. If not set the button to resend email will not be shown.
+     * @param siteUrl Site URL.
+     * @param email Email of the user. If set displayed in the message.
+     * @param username Username. If not set the button to resend email will not be shown.
+     * @param password User password. If not set the button to resend email will not be shown.
      */
     protected showNotConfirmedModal(siteUrl: string, email?: string, username?: string, password?: string): void {
         const title = this.translate.instant('core.login.mustconfirm');
@@ -1187,7 +1181,7 @@ export class CoreLoginHelperProvider {
     /**
      * Function called when site policy is not agreed. Reserved for core use.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param siteId Site ID. If not defined, current site.
      */
     sitePolicyNotAgreed(siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -1215,10 +1209,10 @@ export class CoreLoginHelperProvider {
     /**
      * Convenient helper to handle get User Token error. It redirects to change password page if forcepassword is set.
      *
-     * @param {string} siteUrl Site URL to construct change password URL.
-     * @param {any} error Error object containing errorcode and error message.
-     * @param {string} [username] Username.
-     * @param {string} [password] User password.
+     * @param siteUrl Site URL to construct change password URL.
+     * @param error Error object containing errorcode and error message.
+     * @param username Username.
+     * @param password User password.
      */
     treatUserTokenError(siteUrl: string, error: any, username?: string, password?: string): void {
         if (error.errorcode == 'forcepasswordchangenotice') {
@@ -1239,8 +1233,8 @@ export class CoreLoginHelperProvider {
     /**
      * Convenient helper to validate a browser SSO login.
      *
-     * @param {string} url URL received, to be validated.
-     * @return {Promise<CoreLoginSSOData>} Promise resolved on success.
+     * @param url URL received, to be validated.
+     * @return Promise resolved on success.
      */
     validateBrowserSSOLogin(url: string): Promise<CoreLoginSSOData> {
         // Split signature:::token

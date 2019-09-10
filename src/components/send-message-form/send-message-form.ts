@@ -66,7 +66,7 @@ export class CoreSendMessageFormComponent implements OnInit {
     /**
      * Form submitted.
      *
-     * @param {Event} $event Mouse event.
+     * @param $event Mouse event.
      */
     submitForm($event: Event): void {
         $event.preventDefault();
@@ -95,8 +95,8 @@ export class CoreSendMessageFormComponent implements OnInit {
     /**
      * Enter key clicked.
      *
-     * @param {Event} e Event.
-     * @param {string} other The name of the other key that was clicked, undefined if no other key.
+     * @param e Event.
+     * @param other The name of the other key that was clicked, undefined if no other key.
      */
     enterClicked(e: Event, other: string): void {
         if (this.sendOnEnter && !other) {

@@ -156,7 +156,7 @@ export class CoreQuestionComponent implements OnInit {
     /**
      * Update the sequence check of the question.
      *
-     * @param {any} sequenceChecks Object with sequence checks. The keys are the question slot.
+     * @param sequenceChecks Object with sequence checks. The keys are the question slot.
      */
     updateSequenceCheck(sequenceChecks: any): void {
         if (sequenceChecks[this.question.slot]) {

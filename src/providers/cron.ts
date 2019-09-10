@@ -27,57 +27,54 @@ import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 export interface CoreCronHandler {
     /**
      * A name to identify the handler.
-     * @type {string}
      */
     name: string;
 
     /**
      * Returns handler's interval in milliseconds. Defaults to CoreCronDelegate.DEFAULT_INTERVAL.
      *
-     * @return {number} Interval time (in milliseconds).
+     * @return Interval time (in milliseconds).
      */
     getInterval?(): number;
 
     /**
      * Check whether the process uses network or not. True if not defined.
      *
-     * @return {boolean} Whether the process uses network or not
+     * @return Whether the process uses network or not
      */
     usesNetwork?(): boolean;
 
     /**
      * Check whether it's a synchronization process or not. True if not defined.
      *
-     * @return {boolean} Whether it's a synchronization process or not.
+     * @return Whether it's a synchronization process or not.
      */
     isSync?(): boolean;
 
     /**
      * Check whether the sync can be executed manually. Call isSync if not defined.
      *
-     * @return {boolean} Whether the sync can be executed manually.
+     * @return Whether the sync can be executed manually.
      */
     canManualSync?(): boolean;
 
     /**
      * Execute the process.
      *
-     * @param {string} [siteId] ID of the site affected. If not defined, all sites.
-     * @param {boolean} [force] Determines if it's a forced execution.
-     * @return {Promise<any>} Promise resolved when done. If the promise is rejected, this function will be called again often,
-     *                        it shouldn't be abused.
+     * @param siteId ID of the site affected. If not defined, all sites.
+     * @param force Determines if it's a forced execution.
+     * @return Promise resolved when done. If the promise is rejected, this function will be called again often,
+     *         it shouldn't be abused.
      */
     execute?(siteId?: string, force?: boolean): Promise<any>;
 
     /**
      * Whether the handler is running. Used internally by the provider, there's no need to set it.
-     * @type {boolean}
      */
     running?: boolean;
 
     /**
      * Timeout ID for the handler scheduling. Used internally by the provider, there's no need to set it.
-     * @type {number}
      */
     timeout?: number;
 }
@@ -135,10 +132,10 @@ export class CoreCronDelegate {
      * Try to execute a handler. It will schedule the next execution once done.
      * If the handler cannot be executed or it fails, it will be re-executed after mmCoreCronMinInterval.
      *
-     * @param {string} name Name of the handler.
-     * @param {boolean} [force] Wether the execution is forced (manual sync).
-     * @param {string}  [siteId] Site ID. If not defined, all sites.
-     * @return {Promise<any>} Promise resolved if handler is executed successfully, rejected otherwise.
+     * @param name Name of the handler.
+     * @param force Wether the execution is forced (manual sync).
+     * @param siteId Site ID. If not defined, all sites.
+     * @return Promise resolved if handler is executed successfully, rejected otherwise.
      */
     protected checkAndExecuteHandler(name: string, force?: boolean, siteId?: string): Promise<any> {
         if (!this.handlers[name] || !this.handlers[name].execute) {
@@ -204,10 +201,10 @@ export class CoreCronDelegate {
     /**
      * Run a handler, cancelling the execution if it takes more than MAX_TIME_PROCESS.
      *
-     * @param {string} name Name of the handler.
-     * @param {boolean} [force] Wether the execution is forced (manual sync).
-     * @param {string} [siteId] Site ID. If not defined, all sites.
-     * @return {Promise<any>} Promise resolved when the handler finishes or reaches max time, rejected if it fails.
+     * @param name Name of the handler.
+     * @param force Wether the execution is forced (manual sync).
+     * @param siteId Site ID. If not defined, all sites.
+     * @return Promise resolved when the handler finishes or reaches max time, rejected if it fails.
      */
     protected executeHandler(name: string, force?: boolean, siteId?: string): Promise<any> {
         return new Promise((resolve, reject): void => {
@@ -232,8 +229,8 @@ export class CoreCronDelegate {
      * Force execution of synchronization cron tasks without waiting for the scheduled time.
      * Please notice that some tasks may not be executed depending on the network connection and sync settings.
      *
-     * @param {string} [siteId] Site ID. If not defined, all sites.
-     * @return {Promise<any>} Promise resolved if all handlers are executed successfully, rejected otherwise.
+     * @param siteId Site ID. If not defined, all sites.
+     * @return Promise resolved if all handlers are executed successfully, rejected otherwise.
      */
     forceSyncExecution(siteId?: string): Promise<any> {
         const promises = [];
@@ -252,9 +249,9 @@ export class CoreCronDelegate {
      * Force execution of a cron tasks without waiting for the scheduled time.
      * Please notice that some tasks may not be executed depending on the network connection and sync settings.
      *
-     * @param {string} [name]  If provided, the name of the handler.
-     * @param {string} [siteId] Site ID. If not defined, all sites.
-     * @return {Promise<any>} Promise resolved if handler has been executed successfully, rejected otherwise.
+     * @param name If provided, the name of the handler.
+     * @param siteId Site ID. If not defined, all sites.
+     * @return Promise resolved if handler has been executed successfully, rejected otherwise.
      */
     forceCronHandlerExecution(name?: string, siteId?: string): Promise<any> {
         const handler = this.handlers[name];
@@ -273,8 +270,8 @@ export class CoreCronDelegate {
     /**
      * Get a handler's interval.
      *
-     * @param {string} name Handler's name.
-     * @return {number} Handler's interval.
+     * @param name Handler's name.
+     * @return Handler's interval.
      */
     protected getHandlerInterval(name: string): number {
         if (!this.handlers[name] || !this.handlers[name].getInterval) {
@@ -296,8 +293,8 @@ export class CoreCronDelegate {
     /**
      * Get a handler's last execution ID.
      *
-     * @param {string} name Handler's name.
-     * @return {string} Handler's last execution ID.
+     * @param name Handler's name.
+     * @return Handler's last execution ID.
      */
     protected getHandlerLastExecutionId(name: string): string {
         return 'last_execution_' + name;
@@ -306,8 +303,8 @@ export class CoreCronDelegate {
     /**
      * Get a handler's last execution time. If not defined, return 0.
      *
-     * @param {string} name Handler's name.
-     * @return {Promise<number>} Promise resolved with the handler's last execution time.
+     * @param name Handler's name.
+     * @return Promise resolved with the handler's last execution time.
      */
     protected getHandlerLastExecutionTime(name: string): Promise<number> {
         const id = this.getHandlerLastExecutionId(name);
@@ -324,8 +321,8 @@ export class CoreCronDelegate {
     /**
      * Check if a handler uses network. Defaults to true.
      *
-     * @param {string} name Handler's name.
-     * @return {boolean} True if handler uses network or not defined, false otherwise.
+     * @param name Handler's name.
+     * @return True if handler uses network or not defined, false otherwise.
      */
     protected handlerUsesNetwork(name: string): boolean {
         if (!this.handlers[name] || !this.handlers[name].usesNetwork) {
@@ -339,7 +336,7 @@ export class CoreCronDelegate {
     /**
      * Check if there is any manual sync handler registered.
      *
-     * @return {boolean} Whether it has at least 1 manual sync handler.
+     * @return Whether it has at least 1 manual sync handler.
      */
     hasManualSyncHandlers(): boolean {
         for (const name in this.handlers) {
@@ -354,7 +351,7 @@ export class CoreCronDelegate {
     /**
      * Check if there is any sync handler registered.
      *
-     * @return {boolean} Whether it has at least 1 sync handler.
+     * @return Whether it has at least 1 sync handler.
      */
     hasSyncHandlers(): boolean {
         for (const name in this.handlers) {
@@ -369,8 +366,8 @@ export class CoreCronDelegate {
     /**
      * Check if a handler can be manually synced. Defaults will use isSync instead.
      *
-     * @param {string} name Handler's name.
-     * @return {boolean} True if handler is a sync process and can be manually executed or not defined, false otherwise.
+     * @param name Handler's name.
+     * @return True if handler is a sync process and can be manually executed or not defined, false otherwise.
      */
     protected isHandlerManualSync(name: string): boolean {
         if (!this.handlers[name] || !this.handlers[name].canManualSync) {
@@ -384,8 +381,8 @@ export class CoreCronDelegate {
     /**
      * Check if a handler is a sync process. Defaults to true.
      *
-     * @param {string} name Handler's name.
-     * @return {boolean} True if handler is a sync process or not defined, false otherwise.
+     * @param name Handler's name.
+     * @return True if handler is a sync process or not defined, false otherwise.
      */
     protected isHandlerSync(name: string): boolean {
         if (!this.handlers[name] || !this.handlers[name].isSync) {
@@ -399,7 +396,7 @@ export class CoreCronDelegate {
     /**
      * Register a handler to be executed every certain time.
      *
-     * @param {CoreCronHandler} handler The handler to register.
+     * @param handler The handler to register.
      */
     register(handler: CoreCronHandler): void {
         if (!handler || !handler.name) {
@@ -424,9 +421,9 @@ export class CoreCronDelegate {
     /**
      * Schedule a next execution for a handler.
      *
-     * @param {string} name Name of the handler.
-     * @param {number} [time] Time to the next execution. If not supplied it will be calculated using the last execution and
-     *                        the handler's interval. This param should be used only if it's really necessary.
+     * @param name Name of the handler.
+     * @param time Time to the next execution. If not supplied it will be calculated using the last execution and
+     *             the handler's interval. This param should be used only if it's really necessary.
      */
     protected scheduleNextExecution(name: string, time?: number): void {
         if (!this.handlers[name]) {
@@ -470,9 +467,9 @@ export class CoreCronDelegate {
     /**
      * Set a handler's last execution time.
      *
-     * @param {string} name Handler's name.
-     * @param {number} time Time to set.
-     * @return {Promise}    Promise resolved when the execution time is saved.
+     * @param name Handler's name.
+     * @param time Time to set.
+     * @return Promise resolved when the execution time is saved.
      */
     protected setHandlerLastExecutionTime(name: string, time: number): Promise<any> {
         const id = this.getHandlerLastExecutionId(name),
@@ -487,7 +484,7 @@ export class CoreCronDelegate {
     /**
      * Start running a handler periodically.
      *
-     * @param {string} name Name of the handler.
+     * @param name Name of the handler.
      */
     protected startHandler(name: string): void {
         if (!this.handlers[name]) {
@@ -522,7 +519,7 @@ export class CoreCronDelegate {
     /**
      * Stop running a handler periodically.
      *
-     * @param {string} name Name of the handler.
+     * @param name Name of the handler.
      */
     protected stopHandler(name: string): void {
         if (!this.handlers[name]) {

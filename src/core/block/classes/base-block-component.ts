@@ -49,10 +49,10 @@ export class CoreBlockBaseComponent implements OnInit {
     /**
      * Refresh the data.
      *
-     * @param {any}       [refresher] Refresher.
-     * @param {Function}  [done] Function to call when done.
-     * @param {boolean}   [showErrors=false] If show errors to the user of hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @param done Function to call when done.
+     * @param showErrors If show errors to the user of hide them.
+     * @return Promise resolved when done.
      */
     doRefresh(refresher?: any, done?: () => void, showErrors: boolean = false): Promise<any> {
         if (this.loaded) {
@@ -68,8 +68,8 @@ export class CoreBlockBaseComponent implements OnInit {
     /**
      * Perform the refresh content function.
      *
-     * @param  {boolean}      [showErrors=false] Wether to show errors to the user or hide them.
-     * @return {Promise<any>} Resolved when done.
+     * @param showErrors Wether to show errors to the user or hide them.
+     * @return Resolved when done.
      */
     protected refreshContent(showErrors: boolean = false): Promise<any> {
         // Wrap the call in a try/catch so the workflow isn't interrupted if an error occurs.
@@ -94,7 +94,7 @@ export class CoreBlockBaseComponent implements OnInit {
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         return Promise.resolve();
@@ -103,9 +103,9 @@ export class CoreBlockBaseComponent implements OnInit {
     /**
      * Loads the component contents and shows the corresponding error.
      *
-     * @param {boolean}       [refresh=false] Whether we're refreshing data.
-     * @param  {boolean}      [showErrors=false] Wether to show errors to the user or hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @param showErrors Wether to show errors to the user or hide them.
+     * @return Promise resolved when done.
      */
     protected loadContent(refresh?: boolean, showErrors: boolean = false): Promise<any> {
         // Wrap the call in a try/catch so the workflow isn't interrupted if an error occurs.
@@ -131,8 +131,8 @@ export class CoreBlockBaseComponent implements OnInit {
     /**
      * Download the component contents.
      *
-     * @param {boolean} [refresh] Whether we're refreshing data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh?: boolean): Promise<any> {
         return Promise.resolve();

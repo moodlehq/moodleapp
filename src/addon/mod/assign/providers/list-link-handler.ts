@@ -33,7 +33,7 @@ export class AddonModAssignListLinkHandler extends CoreContentLinksModuleListHan
     /**
      * Check if the handler is enabled on a site level.
      *
-     * @return {boolean} Whether or not the handler is enabled on a site level.
+     * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean {
         return this.assignProvider.isPluginEnabled();

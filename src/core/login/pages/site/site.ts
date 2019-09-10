@@ -65,8 +65,8 @@ export class CoreLoginSitePage {
     /**
      * Try to connect to a site.
      *
-     * @param {Event} e Event.
-     * @param {string} url The URL to connect to.
+     * @param e Event.
+     * @param url The URL to connect to.
      */
     connect(e: Event, url: string): void {
         e.preventDefault();
@@ -135,7 +135,7 @@ export class CoreLoginSitePage {
     /**
      * The filter has changed.
      *
-     * @param {any} Received Event.
+     * @param Received Event.
      */
     filterChanged(event: any): void {
         const newValue = event.target.value && event.target.value.trim().toLowerCase();
@@ -159,8 +159,8 @@ export class CoreLoginSitePage {
     /**
      * Show an error that aims people to solve the issue.
      *
-     * @param {string} url The URL the user was trying to connect to.
-     * @param {any} error Error to display.
+     * @param url The URL the user was trying to connect to.
+     * @param error Error to display.
      */
     protected showLoginIssue(url: string, error: any): void {
         const modal = this.modalCtrl.create('CoreLoginSiteErrorPage', {

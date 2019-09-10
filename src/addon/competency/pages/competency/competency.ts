@@ -76,7 +76,7 @@ export class AddonCompetencyCompetencyPage {
     /**
      * Fetches the competency and updates the view.
      *
-     * @return {Promise<void>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchCompetency(): Promise<void> {
         let promise;
@@ -124,7 +124,7 @@ export class AddonCompetencyCompetencyPage {
     /**
      * Refreshes the competency.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshCompetency(refresher: any): void {
         let promise;
@@ -144,7 +144,7 @@ export class AddonCompetencyCompetencyPage {
     /**
      * Opens the summary of a competency.
      *
-     * @param {number} competencyId
+     * @param competencyId
      */
     openCompetencySummary(competencyId: number): void {
         // Decide which navCtrl to use. If this page is inside a split view, use the split view's master nav.

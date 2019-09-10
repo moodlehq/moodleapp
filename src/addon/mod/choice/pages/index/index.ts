@@ -40,7 +40,7 @@ export class AddonModChoiceIndexPage {
     /**
      * Update some data based on the choice instance.
      *
-     * @param {any} choice Choice instance.
+     * @param choice Choice instance.
      */
     updateData(choice: any): void {
         this.title = choice.name || this.title;

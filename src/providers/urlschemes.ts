@@ -35,43 +35,36 @@ import { CoreConstants } from '@core/constants';
 export interface CoreCustomURLSchemesParams {
     /**
      * The site's URL.
-     * @type {string}
      */
     siteUrl: string;
 
     /**
      * User's token. If set, user will be authenticated.
-     * @type {string}
      */
     token?: string;
 
     /**
      * User's private token.
-     * @type {string}
      */
     privateToken?: string;
 
     /**
      * Username.
-     * @type {string}
      */
     username?: string;
 
     /**
      * URL to open once authenticated.
-     * @type {string}
      */
     redirect?: any;
 
     /**
      * Name of the page to go once authenticated.
-     * @type {string}
      */
     pageName?: string;
 
     /**
      * Params to pass to the page.
-     * @type {string}
      */
     pageParams?: any;
 }
@@ -96,8 +89,8 @@ export class CoreCustomURLSchemesProvider {
     /**
      * Handle an URL received by custom URL scheme.
      *
-     * @param {string} url URL to treat.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param url URL to treat.
+     * @return Promise resolved when done.
      */
     handleCustomURL(url: string): Promise<any> {
         if (!this.isCustomURL(url)) {
@@ -307,8 +300,8 @@ export class CoreCustomURLSchemesProvider {
      * Get the data from a custom URL scheme. The structure of the URL is:
      * moodlemobile://username@domain.com?token=TOKEN&privatetoken=PRIVATETOKEN&redirect=http://domain.com/course/view.php?id=2
      *
-     * @param {string} url URL to treat.
-     * @return {Promise<CoreCustomURLSchemesParams>} Promise resolved with the data.
+     * @param url URL to treat.
+     * @return Promise resolved with the data.
      */
     protected getCustomURLData(url: string): Promise<CoreCustomURLSchemesParams> {
         const urlScheme = CoreConfigConstants.customurlscheme + '://';
@@ -369,8 +362,8 @@ export class CoreCustomURLSchemesProvider {
     /**
      * Get the data from a "link" custom URL scheme. This kind of URL is deprecated.
      *
-     * @param {string} url URL to treat.
-     * @return {Promise<CoreCustomURLSchemesParams>} Promise resolved with the data.
+     * @param url URL to treat.
+     * @return Promise resolved with the data.
      */
     protected getCustomURLLinkData(url: string): Promise<CoreCustomURLSchemesParams> {
         const contentLinksScheme = CoreConfigConstants.customurlscheme + '://link=';
@@ -433,8 +426,8 @@ export class CoreCustomURLSchemesProvider {
     /**
      * Get the data from a "token" custom URL scheme. This kind of URL is deprecated.
      *
-     * @param {string} url URL to treat.
-     * @return {Promise<CoreCustomURLSchemesParams>} Promise resolved with the data.
+     * @param url URL to treat.
+     * @return Promise resolved with the data.
      */
     protected getCustomURLTokenData(url: string): Promise<CoreCustomURLSchemesParams> {
         const ssoScheme = CoreConfigConstants.customurlscheme + '://token=';
@@ -479,8 +472,8 @@ export class CoreCustomURLSchemesProvider {
     /**
      * Check whether a URL is a custom URL scheme.
      *
-     * @param {string} url URL to check.
-     * @return {boolean} Whether it's a custom URL scheme.
+     * @param url URL to check.
+     * @return Whether it's a custom URL scheme.
      */
     isCustomURL(url: string): boolean {
         if (!url) {
@@ -493,8 +486,8 @@ export class CoreCustomURLSchemesProvider {
     /**
      * Check whether a URL is a custom URL scheme with the "link" param (deprecated).
      *
-     * @param {string} url URL to check.
-     * @return {boolean} Whether it's a custom URL scheme.
+     * @param url URL to check.
+     * @return Whether it's a custom URL scheme.
      */
     isCustomURLLink(url: string): boolean {
         if (!url) {
@@ -507,8 +500,8 @@ export class CoreCustomURLSchemesProvider {
     /**
      * Check whether a URL is a custom URL scheme with a "token" param (deprecated).
      *
-     * @param {string} url URL to check.
-     * @return {boolean} Whether it's a custom URL scheme.
+     * @param url URL to check.
+     * @return Whether it's a custom URL scheme.
      */
     isCustomURLToken(url: string): boolean {
         if (!url) {

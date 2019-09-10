@@ -36,7 +36,7 @@ export class AddonModBookTocPage {
     /**
      * Function called when a course is clicked.
      *
-     * @param {string} id ID of the clicked chapter.
+     * @param id ID of the clicked chapter.
      */
     loadChapter(id: string): void {
         this.viewCtrl.dismiss(id);

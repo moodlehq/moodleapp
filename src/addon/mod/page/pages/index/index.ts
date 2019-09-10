@@ -40,7 +40,7 @@ export class AddonModPageIndexPage {
     /**
      * Update some data based on the page instance.
      *
-     * @param {any} page Page instance.
+     * @param page Page instance.
      */
     updateData(page: any): void {
         this.title = page.name || this.title;

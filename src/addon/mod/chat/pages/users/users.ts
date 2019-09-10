@@ -75,7 +75,7 @@ export class AddonModChatUsersPage {
     /**
      * Add "To user:".
      *
-     * @param {any} user User object.
+     * @param user User object.
      */
      talkTo(user: any): void {
         this.viewCtrl.dismiss({talkTo: user.fullname});
@@ -84,7 +84,7 @@ export class AddonModChatUsersPage {
     /**
      * Beep a user.
      *
-     * @param {any} user User object.
+     * @param user User object.
      */
     beepTo(user: any): void {
         this.viewCtrl.dismiss({beepTo: user.id});

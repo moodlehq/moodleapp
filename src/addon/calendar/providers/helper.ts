@@ -49,8 +49,8 @@ export class AddonCalendarHelperProvider {
     /**
      * Calculate some day data based on a list of events for that day.
      *
-     * @param {any} day Day.
-     * @param {any[]} events Events.
+     * @param day Day.
+     * @param events Events.
      */
     calculateDayData(day: any, events: any[]): void {
         day.hasevents = events.length > 0;
@@ -71,9 +71,9 @@ export class AddonCalendarHelperProvider {
     /**
      * Check if current user can create/edit events.
      *
-     * @param {number} [courseId] Course ID. If not defined, site calendar.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with boolean: whether the user can create events.
+     * @param courseId Course ID. If not defined, site calendar.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether the user can create events.
      */
     canEditEvents(courseId?: number, siteId?: string): Promise<boolean> {
         return this.calendarProvider.canEditEvents(siteId).then((canEdit) => {
@@ -94,8 +94,8 @@ export class AddonCalendarHelperProvider {
      * Classify events into their respective months and days. If an event duration covers more than one day,
      * it will be included in all the days it lasts.
      *
-     * @param {any[]} events Events to classify.
-     * @return {{[monthId: string]: {[day: number]: any[]}}} Object with the classified events.
+     * @param events Events to classify.
+     * @return Object with the classified events.
      */
     classifyIntoMonths(events: any[]): {[monthId: string]: {[day: number]: any[]}} {
 
@@ -128,7 +128,7 @@ export class AddonCalendarHelperProvider {
     /**
      * Convenience function to format some event data to be rendered.
      *
-     * @param {any} e Event to format.
+     * @param e Event to format.
      */
     formatEventData(e: any): void {
         e.icon = this.EVENTICONS[e.eventtype] || false;
@@ -157,8 +157,8 @@ export class AddonCalendarHelperProvider {
     /**
      * Get options (name & value) for each allowed event type.
      *
-     * @param {any} eventTypes Result of getAllowedEventTypes.
-     * @return {{name: string, value: string}[]} Options.
+     * @param eventTypes Result of getAllowedEventTypes.
+     * @return Options.
      */
     getEventTypeOptions(eventTypes: any): {name: string, value: string}[] {
         const options = [];
@@ -185,9 +185,9 @@ export class AddonCalendarHelperProvider {
     /**
      * Get the month "id" (year + month).
      *
-     * @param {number} year Year.
-     * @param {number} month Month.
-     * @return {string} The "id".
+     * @param year Year.
+     * @param month Month.
+     * @return The "id".
      */
     getMonthId(year: number, month: number): string {
         return year + '#' + month;
@@ -198,10 +198,10 @@ export class AddonCalendarHelperProvider {
      *
      * The result has the same structure than getMonthlyEvents, but it only contains fields that are actually used by the app.
      *
-     * @param {number} year Year to get.
-     * @param {number} month Month to get.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the response.
+     * @param year Year to get.
+     * @param month Month to get.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the response.
      */
     getOfflineMonthWeeks(year: number, month: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -256,9 +256,9 @@ export class AddonCalendarHelperProvider {
     /**
      * Check if the data of an event has changed.
      *
-     * @param {any} data Current data.
-     * @param {any} [original] Original data.
-     * @return {boolean} True if data has changed, false otherwise.
+     * @param data Current data.
+     * @param original Original data.
+     * @return True if data has changed, false otherwise.
      */
     hasEventDataChanged(data: any, original?: any): boolean {
         if (!original) {
@@ -297,11 +297,11 @@ export class AddonCalendarHelperProvider {
     /**
      * Check if an event should be displayed based on the filter.
      *
-     * @param {any} event Event object.
-     * @param {number} courseId Course ID to filter.
-     * @param {number} categoryId Category ID the course belongs to.
-     * @param {any} categories Categories indexed by ID.
-     * @return {boolean} Whether it should be displayed.
+     * @param event Event object.
+     * @param courseId Course ID to filter.
+     * @param categoryId Category ID the course belongs to.
+     * @param categories Categories indexed by ID.
+     * @return Whether it should be displayed.
      */
     shouldDisplayEvent(event: any, courseId: number, categoryId: number, categories: any): boolean {
         if (event.eventtype == 'user' || event.eventtype == 'site') {
@@ -345,9 +345,9 @@ export class AddonCalendarHelperProvider {
      * Refresh the month & day for several created/edited/deleted events, and invalidate the months & days
      * for their repeated events if needed.
      *
-     * @param {{event: any, repeated: number}[]} events Events that have been touched and number of times each event is repeated.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Resolved when done.
+     * @param events Events that have been touched and number of times each event is repeated.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Resolved when done.
      */
     refreshAfterChangeEvents(events: {event: any, repeated: number}[], siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -458,10 +458,10 @@ export class AddonCalendarHelperProvider {
      * Refresh the month & day for a created/edited/deleted event, and invalidate the months & days
      * for their repeated events if needed.
      *
-     * @param {any} event Event that has been touched.
-     * @param {number} repeated Number of times the event is repeated.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Resolved when done.
+     * @param event Event that has been touched.
+     * @param repeated Number of times the event is repeated.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Resolved when done.
      */
     refreshAfterChangeEvent(event: any, repeated: number, siteId?: string): Promise<any> {
         return this.refreshAfterChangeEvents([{event: event, repeated: repeated}], siteId);

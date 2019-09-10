@@ -40,7 +40,7 @@ export class AddonModUrlIndexPage {
     /**
      * Update some data based on the url instance.
      *
-     * @param {any} url Url instance.
+     * @param url Url instance.
      */
     updateData(url: any): void {
         this.title = url.name || this.title;

@@ -50,8 +50,8 @@ export class AddonMessagesIndexPage implements OnDestroy {
     /**
      * Navigate to a particular discussion.
      *
-     * @param {number} discussionUserId Discussion Id to load.
-     * @param {number} [messageId]      Message to scroll after loading the discussion. Used when searching.
+     * @param discussionUserId Discussion Id to load.
+     * @param messageId Message to scroll after loading the discussion. Used when searching.
      */
     gotoDiscussion(discussionUserId: number, messageId?: number): void {
         const params = {

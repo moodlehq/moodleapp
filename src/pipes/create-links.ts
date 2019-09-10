@@ -26,8 +26,8 @@ export class CoreCreateLinksPipe implements PipeTransform {
     /**
      * Takes some text and adds anchor tags to all links that aren't inside anchors.
      *
-     * @param {string} text Text to treat.
-     * @return {string} Treated text.
+     * @param text Text to treat.
+     * @return Treated text.
      */
     transform(text: string): string {
         return text.replace(this.replacePattern, '<a href="$1">$1</a>');

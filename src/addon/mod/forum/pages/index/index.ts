@@ -40,7 +40,7 @@ export class AddonModForumIndexPage {
     /**
      * Update some data based on the forum instance.
      *
-     * @param {any} forum Forum instance.
+     * @param forum Forum instance.
      */
     updateData(forum: any): void {
         this.title = forum.name || this.title;

@@ -99,7 +99,7 @@ export class AddonModQuizPreflightModalPage implements OnInit {
     /**
      * Check that the data is valid and send it back.
      *
-     * @param {Event} e Event.
+     * @param e Event.
      */
     sendData(e: Event): void {
         e.preventDefault();

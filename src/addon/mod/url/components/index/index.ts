@@ -68,7 +68,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         return this.urlProvider.invalidateContent(this.module.id, this.courseId);
@@ -77,8 +77,8 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     /**
      * Download url contents.
      *
-     * @param {boolean} [refresh] Whether we're refreshing data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh?: boolean): Promise<any> {
         let canGetUrl = this.canGetUrl,
@@ -138,8 +138,8 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     /**
      * Calculate the display options to determine how the URL should be rendered.
      *
-     * @param {any} url Object with the URL data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param url Object with the URL data.
+     * @return Promise resolved when done.
      */
     protected calculateDisplayOptions(url: any): Promise<any> {
         const displayType = this.urlProvider.getFinalDisplayType(url);
@@ -175,7 +175,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     /**
      * Log view into the site and checks module completion.
      *
-     * @return {Promise<void>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected logView(): Promise<void> {
         return this.urlProvider.logView(this.module.instance, this.module.name).then(() => {

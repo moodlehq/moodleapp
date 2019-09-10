@@ -45,7 +45,7 @@ export class AddonCalendarSettingsPage {
     /**
      * Update default time.
      *
-     * @param {number} newTime New time.
+     * @param newTime New time.
      */
     updateDefaultTime(newTime: number): void {
         this.calendarProvider.setDefaultNotificationTime(newTime);

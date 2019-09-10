@@ -134,7 +134,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     /**
      * Check if we can leave the page or not.
      *
-     * @return {boolean|Promise<void>} Resolved if we can leave it, rejected if not.
+     * @return Resolved if we can leave it, rejected if not.
      */
     ionViewCanLeave(): boolean | Promise<void> {
         if (this.forceLeave) {
@@ -175,7 +175,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     /**
      * A behaviour button in a question was clicked (Check, Redo, ...).
      *
-     * @param {any} button Clicked button.
+     * @param button Clicked button.
      */
     behaviourButtonClicked(button: any): void {
         // Confirm that the user really wants to do it.
@@ -216,9 +216,9 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     /**
      * Change the current page. If slot is supplied, try to scroll to that question.
      *
-     * @param {number} page Page to load. -1 means summary.
-     * @param {boolean} [fromModal] Whether the page was selected using the navigation modal.
-     * @param {number} [slot] Slot of the question to scroll to.
+     * @param page Page to load. -1 means summary.
+     * @param fromModal Whether the page was selected using the navigation modal.
+     * @param slot Slot of the question to scroll to.
      */
     changePage(page: number, fromModal?: boolean, slot?: number): void {
         if (page != -1 && (this.attempt.state == AddonModQuizProvider.ATTEMPT_OVERDUE || this.attempt.finishedOffline)) {
@@ -285,7 +285,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     /**
      * Convenience function to get the quiz data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchData(): Promise<any> {
         // Wait for any ongoing sync to finish. We won't sync a quiz while it's being played.
@@ -348,9 +348,9 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     /**
      * Finish an attempt, either by timeup or because the user clicked to finish it.
      *
-     * @param {boolean} [userFinish] Whether the user clicked to finish the attempt.
-     * @param {boolean} [timeUp] Whether the quiz time is up.
-     * @return {Promise<void>} Promise resolved when done.
+     * @param userFinish Whether the user clicked to finish the attempt.
+     * @param timeUp Whether the quiz time is up.
+     * @return Promise resolved when done.
      */
     finishAttempt(userFinish?: boolean, timeUp?: boolean): Promise<void> {
         let promise;
@@ -387,7 +387,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     /**
      * Fix sequence checks of current page.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fixSequenceChecks(): Promise<any> {
         // Get current page data again to get the latest sequencechecks.
@@ -410,7 +410,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     /**
      * Get the input answers.
      *
-     * @return {any} Object with the answers.
+     * @return Object with the answers.
      */
     protected getAnswers(): any {
         return this.questionHelper.getAnswersFromForm(document.forms['addon-mod_quiz-player-form']);
@@ -434,8 +434,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     /**
      * Load a page questions.
      *
-     * @param {number} page The page to load.
-     * @return {Promise<void>} Promise resolved when done.
+     * @param page The page to load.
+     * @return Promise resolved when done.
      */
     protected loadPage(page: number): Promise<void> {
         return this.quizProvider.getAttemptData(this.attempt.id, page, this.preflightData, this.offline, true).then((data) => {
@@ -477,7 +477,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     /**
      * Load attempt summary.
      *
-     * @return {Promise<void>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected loadSummary(): Promise<void> {
         this.summaryQuestions = [];
@@ -502,7 +502,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     /**
      * Load data to navigate the questions using the navigation modal.
      *
-     * @return {Promise<void>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected loadNavigation(): Promise<void> {
         // We use the attempt summary to build the navigation because it contains all the questions.
@@ -520,7 +520,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     /**
      * Open the navigation modal.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     openNavigation(): Promise<any> {
         let promise;
@@ -552,10 +552,10 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     /**
      * Process attempt.
      *
-     * @param {boolean} [userFinish] Whether the user clicked to finish the attempt.
-     * @param {boolean} [timeUp] Whether the quiz time is up.
-     * @return {Promise<any>} Promise resolved when done.
-     * @param {boolean} [retrying] Whether we're retrying the change.
+     * @param userFinish Whether the user clicked to finish the attempt.
+     * @param timeUp Whether the quiz time is up.
+     * @return Promise resolved when done.
+     * @param retrying Whether we're retrying the change.
      */
     protected processAttempt(userFinish?: boolean, timeUp?: boolean, retrying?: boolean): Promise<any> {
         // Get the answers to send.
@@ -591,7 +591,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     /**
      * Scroll to a certain question.
      *
-     * @param {number} slot Slot of the question to scroll to.
+     * @param slot Slot of the question to scroll to.
      */
     protected scrollToQuestion(slot: number): void {
         this.domUtils.scrollToElementBySelector(this.content, '#addon-mod_quiz-question-' + slot);
@@ -600,7 +600,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     /**
      * Show connection error.
      *
-     * @param {Event} ev Click event.
+     * @param ev Click event.
      */
     showConnectionError(ev: Event): void {
         this.autoSave.showAutoSaveError(ev);
@@ -633,7 +633,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     /**
      * Start or continue an attempt.
      *
-     * @return {Promise<any>} [description]
+     * @return [description]
      */
     protected startOrContinueAttempt(): Promise<any> {
         const attempt = this.newAttempt ? undefined : this.lastAttempt;

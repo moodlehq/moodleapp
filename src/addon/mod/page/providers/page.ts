@@ -40,10 +40,10 @@ export class AddonModPageProvider {
     /**
      * Get a page by course module ID.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} cmId     Course module ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved when the book is retrieved.
+     * @param courseId Course ID.
+     * @param cmId Course module ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the book is retrieved.
      */
     getPageData(courseId: number, cmId: number, siteId?: string): Promise<any> {
         return this.getPageByKey(courseId, 'coursemodule', cmId, siteId);
@@ -52,11 +52,11 @@ export class AddonModPageProvider {
     /**
      * Get a page.
      *
-     * @param {number} courseId  Course ID.
-     * @param {string} key       Name of the property to check.
-     * @param {any}  value     Value to search.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}          Promise resolved when the book is retrieved.
+     * @param courseId Course ID.
+     * @param key Name of the property to check.
+     * @param value Value to search.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the book is retrieved.
      */
     protected getPageByKey(courseId: number, key: string, value: any, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -86,8 +86,8 @@ export class AddonModPageProvider {
     /**
      * Get cache key for page data WS calls.
      *
-     * @param {number} courseId Course ID.
-     * @return {string}         Cache key.
+     * @param courseId Course ID.
+     * @return Cache key.
      */
     protected getPageCacheKey(courseId: number): string {
         return this.ROOT_CACHE_KEY + 'page:' + courseId;
@@ -96,10 +96,9 @@ export class AddonModPageProvider {
     /**
      * Invalidate the prefetched content.
      *
-     * @param  {number} moduleId The module ID.
-     * @param  {number} courseId Course ID of the module.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}
+     * @param moduleId The module ID.
+     * @param courseId Course ID of the module.
+     * @param siteId Site ID. If not defined, current site.
      */
     invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<any> {
         const promises = [];
@@ -114,9 +113,9 @@ export class AddonModPageProvider {
     /**
      * Invalidates page data.
      *
-     * @param {number} courseId Course ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}   Promise resolved when the data is invalidated.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidatePageData(courseId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -127,7 +126,7 @@ export class AddonModPageProvider {
     /**
      * Returns whether or not getPage WS available or not.
      *
-     * @return {boolean} If WS is avalaible.
+     * @return If WS is avalaible.
      * @since 3.3
      */
     isGetPageWSAvailable(): boolean {
@@ -137,8 +136,8 @@ export class AddonModPageProvider {
     /**
      * Return whether or not the plugin is enabled.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     isPluginEnabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -149,10 +148,10 @@ export class AddonModPageProvider {
     /**
      * Report a page as being viewed.
      *
-     * @param {number} id Module ID.
-     * @param {string} [name] Name of the page.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}  Promise resolved when the WS call is successful.
+     * @param id Module ID.
+     * @param name Name of the page.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the WS call is successful.
      */
     logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {

@@ -25,14 +25,13 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 export interface CoreSettingsHandler extends CoreDelegateHandler {
     /**
      * The highest priority is displayed first.
-     * @type {number}
      */
     priority: number;
 
     /**
      * Returns the data needed to render the handler.
      *
-     * @return {CoreSettingsHandlerData} Data.
+     * @return Data.
      */
     getDisplayData(): CoreSettingsHandlerData;
 }
@@ -43,31 +42,26 @@ export interface CoreSettingsHandler extends CoreDelegateHandler {
 export interface CoreSettingsHandlerData {
     /**
      * Name of the page to load for the handler.
-     * @type {string}
      */
     page: string;
 
     /**
      * Params list of the page to load for the handler.
-     * @type {any}
      */
     params?: any;
 
     /**
      * Title to display for the handler.
-     * @type {string}
      */
     title: string;
 
     /**
      * Name of the icon to display for the handler.
-     * @type {string}
      */
     icon?: string; // Name of the icon to display in the menu.
 
     /**
      * Class to add to the displayed handler.
-     * @type {string}
      */
     class?: string;
 }
@@ -97,8 +91,6 @@ export class CoreSettingsDelegate extends CoreDelegate {
 
     /**
      * Get the handlers for the current site.
-     *
-     * @return {CoreSettingsHandlerData[]}
      */
     getHandlers(): CoreSettingsHandlerData[] {
         return this.siteHandlers;

@@ -70,10 +70,10 @@ export class CoreCourseLogHelperProvider {
     /**
      * Delete the offline saved activity logs.
      *
-     * @param  {string}         component   Component name.
-     * @param  {number}         componentId Component ID.
-     * @param  {string}         [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when deleted, rejected if failure.
+     * @param component Component name.
+     * @param componentId Component ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when deleted, rejected if failure.
      */
     protected deleteLogs(component: string, componentId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -86,11 +86,11 @@ export class CoreCourseLogHelperProvider {
     /**
      * Delete a WS based log.
      *
-     * @param  {string}         component   Component name.
-     * @param  {number}         componentId Component ID.
-     * @param  {string}         ws          WS name.
-     * @param  {string}         [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when deleted, rejected if failure.
+     * @param component Component name.
+     * @param componentId Component ID.
+     * @param ws WS name.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when deleted, rejected if failure.
      */
     protected deleteWSLogsByComponent(component: string, componentId: number, ws: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -103,10 +103,10 @@ export class CoreCourseLogHelperProvider {
     /**
      * Delete the offline saved activity logs using call data.
      *
-     * @param  {string}         ws          WS name.
-     * @param  {any}            data        Data to send to the WS.
-     * @param  {string}         [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when deleted, rejected if failure.
+     * @param ws WS name.
+     * @param data Data to send to the WS.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when deleted, rejected if failure.
      */
     protected deleteWSLogs(ws: string, data: any, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -119,8 +119,8 @@ export class CoreCourseLogHelperProvider {
     /**
      * Get all the offline saved activity logs.
      *
-     * @param  {string}         [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with the list of offline logs.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the list of offline logs.
      */
     protected getAllLogs(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -132,10 +132,10 @@ export class CoreCourseLogHelperProvider {
     /**
      * Get the offline saved activity logs.
      *
-     * @param  {string}         component   Component name.
-     * @param  {number}         componentId Component ID.
-     * @param  {string}         [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with the list of offline logs.
+     * @param component Component name.
+     * @param componentId Component ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the list of offline logs.
      */
     protected getLogs(component: string, componentId: number, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -148,12 +148,12 @@ export class CoreCourseLogHelperProvider {
     /**
      * Perform log online. Data will be saved offline for syncing.
      *
-     * @param  {string}         ws          WS name.
-     * @param  {any}            data        Data to send to the WS.
-     * @param  {string}         component   Component name.
-     * @param  {number}         componentId Component ID.
-     * @param  {string}         [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param ws WS name.
+     * @param data Data to send to the WS.
+     * @param component Component name.
+     * @param componentId Component ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     log(ws: string, data: any, component: string, componentId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -177,11 +177,11 @@ export class CoreCourseLogHelperProvider {
     /**
      * Perform the log online.
      *
-     * @param  {string}       ws       WS name.
-     * @param  {any}          data     Data to send to the WS.
-     * @param  {string}       [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}  Promise resolved when log is successfully submitted. Rejected with object containing
-     *                            the error message (if any) and a boolean indicating if the error was returned by WS.
+     * @param ws WS name.
+     * @param data Data to send to the WS.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when log is successfully submitted. Rejected with object containing
+     *         the error message (if any) and a boolean indicating if the error was returned by WS.
      */
     protected logOnline(ws: string, data: any, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -201,15 +201,15 @@ export class CoreCourseLogHelperProvider {
      * Perform log online. Data will be saved offline for syncing.
      * It also triggers a Firebase view_item event.
      *
-     * @param  {string}         ws          WS name.
-     * @param  {any}            data        Data to send to the WS.
-     * @param  {string}         component   Component name.
-     * @param  {number}         componentId Component ID.
-     * @param  {string}         [name] Name of the viewed item.
-     * @param  {string}         [category] Category of the viewed item.
-     * @param  {string}         [eventData] Data to pass to the Firebase event.
-     * @param  {string}         [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param ws WS name.
+     * @param data Data to send to the WS.
+     * @param component Component name.
+     * @param componentId Component ID.
+     * @param name Name of the viewed item.
+     * @param category Category of the viewed item.
+     * @param eventData Data to pass to the Firebase event.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     logSingle(ws: string, data: any, component: string, componentId: number, name?: string, category?: string, eventData?: any,
             siteId?: string): Promise<any> {
@@ -222,14 +222,14 @@ export class CoreCourseLogHelperProvider {
      * Perform log online. Data will be saved offline for syncing.
      * It also triggers a Firebase view_item_list event.
      *
-     * @param  {string}         ws          WS name.
-     * @param  {any}            data        Data to send to the WS.
-     * @param  {string}         component   Component name.
-     * @param  {number}         componentId Component ID.
-     * @param  {string}         category    Category of the viewed item.
-     * @param  {string}         [eventData] Data to pass to the Firebase event.
-     * @param  {string}         [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param ws WS name.
+     * @param data Data to send to the WS.
+     * @param component Component name.
+     * @param componentId Component ID.
+     * @param category Category of the viewed item.
+     * @param eventData Data to pass to the Firebase event.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     logList(ws: string, data: any, component: string, componentId: number, category: string, eventData?: any, siteId?: string)
             : Promise<any> {
@@ -241,12 +241,12 @@ export class CoreCourseLogHelperProvider {
     /**
      * Save activity log for offline sync.
      *
-     * @param  {string}         ws          WS name.
-     * @param  {any}            data        Data to send to the WS.
-     * @param  {string}         component   Component name.
-     * @param  {number}         componentId Component ID.
-     * @param  {string}         [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<number>} Resolved with the inserted rowId field.
+     * @param ws WS name.
+     * @param data Data to send to the WS.
+     * @param component Component name.
+     * @param componentId Component ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Resolved with the inserted rowId field.
      */
     protected storeOffline(ws: string, data: any, component: string, componentId: number, siteId?: string):
             Promise<number> {
@@ -266,8 +266,8 @@ export class CoreCourseLogHelperProvider {
     /**
      * Sync all the offline saved activity logs.
      *
-     * @param  {string}         [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}   Promise resolved when done.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     syncSite(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -297,10 +297,10 @@ export class CoreCourseLogHelperProvider {
     /**
      * Sync the offline saved activity logs.
      *
-     * @param  {string}         component   Component name.
-     * @param  {number}         componentId Component ID.
-     * @param  {string}         [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}   Promise resolved when done.
+     * @param component Component name.
+     * @param componentId Component ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     syncIfNeeded(component: string, componentId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -329,9 +329,9 @@ export class CoreCourseLogHelperProvider {
     /**
      * Sync and delete given logs.
      *
-     * @param  {any[]}        logs   Array of log objects.
-     * @param  {string}       siteId Site Id.
-     * @return {Promise<any>}        Promise resolved when done.
+     * @param logs Array of log objects.
+     * @param siteId Site Id.
+     * @return Promise resolved when done.
      */
     protected syncLogs(logs: any[], siteId: string): Promise<any> {
         return Promise.all(logs.map((log) => {

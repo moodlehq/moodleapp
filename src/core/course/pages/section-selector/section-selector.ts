@@ -69,7 +69,7 @@ export class CoreCourseSectionSelectorPage {
     /**
      * Select a section.
      *
-     * @param {any} section Selected section object.
+     * @param section Selected section object.
      */
     selectSection(section: any): void {
         if (section.uservisible !== false) {

@@ -36,13 +36,11 @@ import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 export interface AddonModAssignSyncResult {
     /**
      * List of warnings.
-     * @type {string[]}
      */
     warnings: string[];
 
     /**
      * Whether data was updated in the site.
-     * @type {boolean}
      */
     updated: boolean;
 }
@@ -74,9 +72,9 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
     /**
      * Convenience function to get scale selected option.
      *
-     * @param {string} options Possible options.
-     * @param {number} selected Selected option to search.
-     * @return {number} Index of the selected option.
+     * @param options Possible options.
+     * @param selected Selected option to search.
+     * @return Index of the selected option.
      */
     protected getSelectedScaleId(options: string, selected: string): number {
         let optionsList = options.split(',');
@@ -98,9 +96,9 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
     /**
      * Check if an assignment has data to synchronize.
      *
-     * @param {number} assignId Assign ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with boolean: whether it has data to sync.
+     * @param assignId Assign ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether it has data to sync.
      */
     hasDataToSync(assignId: number, siteId?: string): Promise<boolean> {
         return this.assignOfflineProvider.hasAssignOfflineData(assignId, siteId);
@@ -109,9 +107,9 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
     /**
      * Try to synchronize all the assignments in a certain site or in all sites.
      *
-     * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
-     * @param {boolean} force Wether to force sync not depending on last execution.
-     * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @param force Wether to force sync not depending on last execution.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllAssignments(siteId?: string, force?: boolean): Promise<any> {
         return this.syncOnSites('all assignments', this.syncAllAssignmentsFunc.bind(this), [force], siteId);
@@ -120,9 +118,9 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
     /**
      * Sync all assignments on a site.
      *
-     * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
-     * @param {boolean} [force] Wether to force sync not depending on last execution.
-     * @param {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @param force Wether to force sync not depending on last execution.
+     * @param Promise resolved if sync is successful, rejected if sync fails.
      */
     protected syncAllAssignmentsFunc(siteId?: string, force?: boolean): Promise<any> {
         // Get all assignments that have offline data.
@@ -149,9 +147,9 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
     /**
      * Sync an assignment only if a certain time has passed since the last time.
      *
-     * @param {number} assignId Assign ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<void|AddonModAssignSyncResult>} Promise resolved when the assign is synced or it doesn't need to be synced.
+     * @param assignId Assign ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the assign is synced or it doesn't need to be synced.
      */
     syncAssignIfNeeded(assignId: number, siteId?: string): Promise<void | AddonModAssignSyncResult> {
         return this.isSyncNeeded(assignId, siteId).then((needed) => {
@@ -164,9 +162,9 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
     /**
      * Try to synchronize an assign.
      *
-     * @param {number} assignId Assign ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<AddonModAssignSyncResult>} Promise resolved in success.
+     * @param assignId Assign ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved in success.
      */
     syncAssign(assignId: number, siteId?: string): Promise<AddonModAssignSyncResult> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -265,11 +263,11 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
     /**
      * Synchronize a submission.
      *
-     * @param {any} assign Assignment.
-     * @param {any} offlineData Submission offline data.
-     * @param {string[]} warnings List of warnings.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if success, rejected otherwise.
+     * @param assign Assignment.
+     * @param offlineData Submission offline data.
+     * @param warnings List of warnings.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if success, rejected otherwise.
      */
     protected syncSubmission(assign: any, offlineData: any, warnings: string[], siteId?: string): Promise<any> {
         const userId = offlineData.userid,
@@ -353,12 +351,12 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
     /**
      * Synchronize a submission grade.
      *
-     * @param {any} assign Assignment.
-     * @param {any} offlineData Submission grade offline data.
-     * @param {string[]} warnings List of warnings.
-     * @param {number} courseId Course Id.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if success, rejected otherwise.
+     * @param assign Assignment.
+     * @param offlineData Submission grade offline data.
+     * @param warnings List of warnings.
+     * @param courseId Course Id.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if success, rejected otherwise.
      */
     protected syncSubmissionGrade(assign: any, offlineData: any, warnings: string[], courseId: number, siteId?: string)
             : Promise<any> {

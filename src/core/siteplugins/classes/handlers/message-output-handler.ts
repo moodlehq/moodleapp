@@ -28,7 +28,7 @@ export class CoreSitePluginsMessageOutputHandler extends CoreSitePluginsBaseHand
     /**
      * Returns the data needed to render the handler.
      *
-     * @return {AddonMessageOutputHandlerData} Data.
+     * @return Data.
      */
     getDisplayData(): AddonMessageOutputHandlerData {
         return {

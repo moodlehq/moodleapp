@@ -61,7 +61,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     /**
      * Show the TOC.
      *
-     * @param {MouseEvent} event Event.
+     * @param event Event.
      */
     showToc(event: MouseEvent): void {
         // Create the toc modal.
@@ -88,8 +88,8 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     /**
      * Change the current chapter.
      *
-     * @param {string} chapterId Chapter to load.
-     * @return {Promise<void>} Promise resolved when done.
+     * @param chapterId Chapter to load.
+     * @return Promise resolved when done.
      */
     changeChapter(chapterId: string): void {
         if (chapterId && chapterId != this.currentChapter) {
@@ -102,7 +102,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         return this.bookProvider.invalidateContent(this.module.id, this.courseId);
@@ -111,8 +111,8 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     /**
      * Download book contents and load the current chapter.
      *
-     * @param {boolean} [refresh] Whether we're refreshing data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh?: boolean): Promise<any> {
         const promises = [];
@@ -175,8 +175,8 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     /**
      * Load a book chapter.
      *
-     * @param {string} chapterId Chapter to load.
-     * @return {Promise<void>} Promise resolved when done.
+     * @param chapterId Chapter to load.
+     * @return Promise resolved when done.
      */
     protected loadChapter(chapterId: string): Promise<void> {
         this.currentChapter = chapterId;

@@ -64,7 +64,7 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         return this.pageProvider.invalidateContent(this.module.id, this.courseId);
@@ -73,8 +73,8 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
     /**
      * Download page contents.
      *
-     * @param {boolean} [refresh] Whether we're refreshing data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh?: boolean): Promise<any> {
         let downloadFailed = false;

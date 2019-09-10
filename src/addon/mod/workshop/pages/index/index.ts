@@ -42,7 +42,7 @@ export class AddonModWorkshopIndexPage {
     /**
      * Update some data based on the workshop instance.
      *
-     * @param {any} workshop Workshop instance.
+     * @param workshop Workshop instance.
      */
     updateData(workshop: any): void {
         this.title = workshop.name || this.title;

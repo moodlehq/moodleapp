@@ -78,7 +78,7 @@ export class CoreTagIndexPage {
     /**
      * Fetch first page of tag index per area.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     fetchData(): Promise<any> {
         return this.tagProvider.getTagIndexPerArea(this.tagId, this.tagName, this.collectionId, this.areaId, this.fromContextId,
@@ -116,7 +116,7 @@ export class CoreTagIndexPage {
     /**
      * Refresh data.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshData(refresher: any): void {
         this.tagProvider.invalidateTagIndexPerArea(this.tagId, this.tagName, this.collectionId, this.areaId, this.fromContextId,
@@ -130,7 +130,7 @@ export class CoreTagIndexPage {
     /**
      * Navigate to an index area.
      *
-     * @param {any} area Area.
+     * @param area Area.
      */
     openArea(area: any): void {
         this.selectedAreaId = area.id;

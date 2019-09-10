@@ -37,14 +37,14 @@ export class CoreCommentsProvider {
     /**
      * Add a comment.
      *
-     * @param  {string} content      Comment text.
-     * @param  {string} contextLevel Contextlevel system, course, user...
-     * @param  {number} instanceId   The Instance id of item associated with the context level.
-     * @param  {string} component    Component name.
-     * @param  {number} itemId       Associated id.
-     * @param  {string} [area='']    String comment area. Default empty.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<boolean>}    Promise resolved with boolean: true if comment was sent to server, false if stored in device.
+     * @param content Comment text.
+     * @param contextLevel Contextlevel system, course, user...
+     * @param instanceId The Instance id of item associated with the context level.
+     * @param component Component name.
+     * @param itemId Associated id.
+     * @param area String comment area. Default empty.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: true if comment was sent to server, false if stored in device.
      */
     addComment(content: string, contextLevel: string, instanceId: number, component: string, itemId: number, area: string = '',
             siteId?: string): Promise<boolean> {
@@ -79,14 +79,14 @@ export class CoreCommentsProvider {
     /**
      * Add a comment. It will fail if offline or cannot connect.
      *
-     * @param  {string} content      Comment text.
-     * @param  {string} contextLevel Contextlevel system, course, user...
-     * @param  {number} instanceId   The Instance id of item associated with the context level.
-     * @param  {string} component    Component name.
-     * @param  {number} itemId       Associated id.
-     * @param  {string} [area='']    String comment area. Default empty.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved when added, rejected otherwise.
+     * @param content Comment text.
+     * @param contextLevel Contextlevel system, course, user...
+     * @param instanceId The Instance id of item associated with the context level.
+     * @param component Component name.
+     * @param itemId Associated id.
+     * @param area String comment area. Default empty.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when added, rejected otherwise.
      */
     addCommentOnline(content: string, contextLevel: string, instanceId: number, component: string, itemId: number,
             area: string = '', siteId?: string): Promise<any> {
@@ -114,10 +114,10 @@ export class CoreCommentsProvider {
     /**
      * Add several comments. It will fail if offline or cannot connect.
      *
-     * @param  {any[]}  comments Comments to save.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved when added, rejected otherwise. Promise resolved doesn't mean that comments
-     *                           have been added, the resolve param can contain errors for comments not sent.
+     * @param comments Comments to save.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when added, rejected otherwise. Promise resolved doesn't mean that comments
+     *         have been added, the resolve param can contain errors for comments not sent.
      */
     addCommentsOnline(comments: any[], siteId?: string): Promise<any> {
         if (!comments || !comments.length) {
@@ -136,8 +136,8 @@ export class CoreCommentsProvider {
     /**
      * Check if Calendar is disabled in a certain site.
      *
-     * @param {CoreSite} [site] Site. If not defined, use current site.
-     * @return {boolean} Whether it's disabled.
+     * @param site Site. If not defined, use current site.
+     * @return Whether it's disabled.
      */
     areCommentsDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
@@ -148,8 +148,8 @@ export class CoreCommentsProvider {
     /**
      * Check if comments are disabled in a certain site.
      *
-     * @param  {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<boolean>} Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     areCommentsDisabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -160,10 +160,10 @@ export class CoreCommentsProvider {
     /**
      * Delete a comment.
      *
-     * @param  {any} comment         Comment object to delete.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<void>}       Promise resolved when deleted, rejected otherwise. Promise resolved doesn't mean that comments
-     *                               have been deleted, the resolve param can contain errors for comments not deleted.
+     * @param comment Comment object to delete.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when deleted, rejected otherwise. Promise resolved doesn't mean that comments
+     *         have been deleted, the resolve param can contain errors for comments not deleted.
      */
     deleteComment(comment: any, siteId?: string): Promise<void> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -204,15 +204,15 @@ export class CoreCommentsProvider {
     /**
      * Delete a comment. It will fail if offline or cannot connect.
      *
-     * @param  {number[]} commentIds Comment IDs to delete.
-     * @param  {string} contextLevel Contextlevel system, course, user...
-     * @param  {number} instanceId   The Instance id of item associated with the context level.
-     * @param  {string} component    Component name.
-     * @param  {number} itemId       Associated id.
-     * @param  {string} [area='']    String comment area. Default empty.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<void>}       Promise resolved when deleted, rejected otherwise. Promise resolved doesn't mean that comments
-     *                               have been deleted, the resolve param can contain errors for comments not deleted.
+     * @param commentIds Comment IDs to delete.
+     * @param contextLevel Contextlevel system, course, user...
+     * @param instanceId The Instance id of item associated with the context level.
+     * @param component Component name.
+     * @param itemId Associated id.
+     * @param area String comment area. Default empty.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when deleted, rejected otherwise. Promise resolved doesn't mean that comments
+     *         have been deleted, the resolve param can contain errors for comments not deleted.
      */
     deleteCommentsOnline(commentIds: number[], contextLevel: string, instanceId: number, component: string, itemId: number,
             area: string = '', siteId?: string): Promise<void> {
@@ -233,8 +233,8 @@ export class CoreCommentsProvider {
     /**
      * Returns whether WS to add/delete comments are available in site.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with true if available, resolved with false or rejected otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with true if available, resolved with false or rejected otherwise.
      * @since 3.8
      */
     isAddCommentsAvailable(siteId?: string): Promise<boolean> {
@@ -251,12 +251,12 @@ export class CoreCommentsProvider {
     /**
      * Get cache key for get comments data WS calls.
      *
-     * @param  {string} contextLevel Contextlevel system, course, user...
-     * @param  {number} instanceId   The Instance id of item associated with the context level.
-     * @param  {string} component    Component name.
-     * @param  {number} itemId       Associated id.
-     * @param  {string} [area='']    String comment area. Default empty.
-     * @return {string} Cache key.
+     * @param contextLevel Contextlevel system, course, user...
+     * @param instanceId The Instance id of item associated with the context level.
+     * @param component Component name.
+     * @param itemId Associated id.
+     * @param area String comment area. Default empty.
+     * @return Cache key.
      */
     protected getCommentsCacheKey(contextLevel: string, instanceId: number, component: string, itemId: number,
             area: string = ''): string {
@@ -266,9 +266,9 @@ export class CoreCommentsProvider {
     /**
      * Get cache key for get comments instance data WS calls.
      *
-     * @param  {string} contextLevel Contextlevel system, course, user...
-     * @param  {number} instanceId   The Instance id of item associated with the context level.
-     * @return {string} Cache key.
+     * @param contextLevel Contextlevel system, course, user...
+     * @param instanceId The Instance id of item associated with the context level.
+     * @return Cache key.
      */
     protected getCommentsPrefixCacheKey(contextLevel: string, instanceId: number): string {
         return this.ROOT_CACHE_KEY + 'comments:' + contextLevel + ':' + instanceId;
@@ -277,14 +277,14 @@ export class CoreCommentsProvider {
     /**
      * Retrieve a list of comments.
      *
-     * @param  {string} contextLevel Contextlevel system, course, user...
-     * @param  {number} instanceId   The Instance id of item associated with the context level.
-     * @param  {string} component    Component name.
-     * @param  {number} itemId       Associated id.
-     * @param  {string} [area='']    String comment area. Default empty.
-     * @param  {number} [page=0]     Page number (0 based). Default 0.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the comments.
+     * @param contextLevel Contextlevel system, course, user...
+     * @param instanceId The Instance id of item associated with the context level.
+     * @param component Component name.
+     * @param itemId Associated id.
+     * @param area String comment area. Default empty.
+     * @param page Page number (0 based). Default 0.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the comments.
      */
     getComments(contextLevel: string, instanceId: number, component: string, itemId: number, area: string = '', page: number = 0,
             siteId?: string): Promise<any> {
@@ -316,13 +316,13 @@ export class CoreCommentsProvider {
     /**
      * Get comments count number to show on the comments component.
      *
-     * @param  {string} contextLevel Contextlevel system, course, user...
-     * @param  {number} instanceId   The Instance id of item associated with the context level.
-     * @param  {string} component    Component name.
-     * @param  {number} itemId       Associated id.
-     * @param  {string} [area='']    String comment area. Default empty.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<string>}     Comments count with plus sign if needed.
+     * @param contextLevel Contextlevel system, course, user...
+     * @param instanceId The Instance id of item associated with the context level.
+     * @param component Component name.
+     * @param itemId Associated id.
+     * @param area String comment area. Default empty.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Comments count with plus sign if needed.
      */
     getCommentsCount(contextLevel: string, instanceId: number, component: string, itemId: number, area: string = '',
             siteId?: string): Promise<string> {
@@ -371,13 +371,13 @@ export class CoreCommentsProvider {
     /**
      * Invalidates comments data.
      *
-     * @param  {string} contextLevel Contextlevel system, course, user...
-     * @param  {number} instanceId   The Instance id of item associated with the context level.
-     * @param  {string} component    Component name.
-     * @param  {number} itemId       Associated id.
-     * @param  {string} [area='']    String comment area. Default empty.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param contextLevel Contextlevel system, course, user...
+     * @param instanceId The Instance id of item associated with the context level.
+     * @param component Component name.
+     * @param itemId Associated id.
+     * @param area String comment area. Default empty.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateCommentsData(contextLevel: string, instanceId: number, component: string, itemId: number,
             area: string = '', siteId?: string): Promise<any> {
@@ -396,10 +396,10 @@ export class CoreCommentsProvider {
     /**
      * Invalidates all comments data for an instance.
      *
-     * @param  {string} contextLevel Contextlevel system, course, user...
-     * @param  {number} instanceId   The Instance id of item associated with the context level.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param contextLevel Contextlevel system, course, user...
+     * @param instanceId The Instance id of item associated with the context level.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateCommentsByInstance(contextLevel: string, instanceId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {

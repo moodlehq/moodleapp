@@ -65,7 +65,7 @@ export class AddonBadgesIssuedBadgePage {
     /**
      * Fetch the issued badge required for the view.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     fetchIssuedBadge(): Promise<any> {
         const promises = [];
@@ -101,7 +101,7 @@ export class AddonBadgesIssuedBadgePage {
     /**
      * Refresh the badges.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshBadges(refresher: any): void {
         this.badgesProvider.invalidateUserBadges(this.courseId, this.userId).finally(() => {

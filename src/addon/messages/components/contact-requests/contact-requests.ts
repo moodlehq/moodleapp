@@ -71,8 +71,8 @@ export class AddonMessagesContactRequestsComponent implements OnInit, OnDestroy 
     /**
      * Fetch contact requests.
      *
-     * @param {boolean} [refresh=false] True if we are refreshing contact requests, false if we are loading more.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh True if we are refreshing contact requests, false if we are loading more.
+     * @return Promise resolved when done.
      */
     fetchData(refresh: boolean = false): Promise<any> {
         this.loadMoreError = false;
@@ -103,8 +103,8 @@ export class AddonMessagesContactRequestsComponent implements OnInit, OnDestroy 
     /**
      * Refresh contact requests.
      *
-     * @param {any} [refresher] Refresher.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @return Promise resolved when done.
      */
     refreshData(refresher?: any): Promise<any> {
         // Refresh the number of contacts requests to update badges.
@@ -119,8 +119,8 @@ export class AddonMessagesContactRequestsComponent implements OnInit, OnDestroy 
     /**
      * Load more contact requests.
      *
-     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
-     * @return {Promise<any>} Resolved when done.
+     * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
+     * @return Resolved when done.
      */
     loadMore(infiniteComplete?: any): Promise<any> {
         return this.fetchData().finally(() => {
@@ -131,8 +131,8 @@ export class AddonMessagesContactRequestsComponent implements OnInit, OnDestroy 
     /**
      * Notify that a contact has been selected.
      *
-     * @param {number} userId User id.
-     * @param {boolean} [onInit=false] Whether the contact is selected on initial load.
+     * @param userId User id.
+     * @param onInit Whether the contact is selected on initial load.
      */
     selectUser(userId: number, onInit: boolean = false): void {
         this.selectedUserId = userId;

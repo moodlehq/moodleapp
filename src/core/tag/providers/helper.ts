@@ -26,8 +26,8 @@ export class CoreTagHelperProvider {
     /**
      * Parses the rendered content of the "core_tag/tagfeed" web template and returns the items.
      *
-     * @param {string} content Rendered content.
-     * @return {any[]} Area items.
+     * @param content Rendered content.
+     * @return Area items.
      */
     parseFeedContent(content: string): any[] {
         const items = [];

@@ -62,7 +62,7 @@ export class AddonCompetencyPlanListPage {
     /**
      * Fetches the learning plans and updates the view.
      *
-     * @return {Promise<void>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchLearningPlans(): Promise<void> {
         return this.competencyProvider.getLearningPlans(this.userId).then((plans) => {
@@ -89,7 +89,7 @@ export class AddonCompetencyPlanListPage {
     /**
      * Refreshes the learning plans.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshLearningPlans(refresher: any): void {
         this.competencyProvider.invalidateLearningPlans(this.userId).finally(() => {
@@ -102,7 +102,7 @@ export class AddonCompetencyPlanListPage {
     /**
      * Opens a learning plan.
      *
-     * @param {number} planId Learning plan to load.
+     * @param planId Learning plan to load.
      */
     openPlan(planId: number): void {
         this.planId = planId;

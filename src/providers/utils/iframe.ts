@@ -46,9 +46,9 @@ export class CoreIframeUtilsProvider {
     /**
      * Check if a frame uses an online URL but the app is offline. If it does, the iframe is hidden and a warning is shown.
      *
-     * @param {any} element The frame to check (iframe, embed, ...).
-     * @param {boolean} [isSubframe] Whether it's a frame inside another frame.
-     * @return {boolean} True if frame is online and the app is offline, false otherwise.
+     * @param element The frame to check (iframe, embed, ...).
+     * @param isSubframe Whether it's a frame inside another frame.
+     * @return True if frame is online and the app is offline, false otherwise.
      */
     checkOnlineFrameInOffline(element: any, isSubframe?: boolean): boolean {
         const src = element.src || element.data;
@@ -146,8 +146,8 @@ export class CoreIframeUtilsProvider {
      * Given an element, return the content window and document.
      * Please notice that the element should be an iframe, embed or similar.
      *
-     * @param {any} element Element to treat (iframe, embed, ...).
-     * @return {{ window: Window, document: Document }} Window and Document.
+     * @param element Element to treat (iframe, embed, ...).
+     * @return Window and Document.
      */
     getContentWindowAndDocument(element: any): { window: Window, document: Document } {
         let contentWindow: Window = element.contentWindow,
@@ -188,10 +188,10 @@ export class CoreIframeUtilsProvider {
      * Redefine the open method in the contentWindow of an element and the sub frames.
      * Please notice that the element should be an iframe, embed or similar.
      *
-     * @param {any} element Element to treat (iframe, embed, ...).
-     * @param {Window} contentWindow The window of the element contents.
-     * @param {Document} contentDocument The document of the element contents.
-     * @param {NavController} [navCtrl] NavController to use if a link can be opened in the app.
+     * @param element Element to treat (iframe, embed, ...).
+     * @param contentWindow The window of the element contents.
+     * @param contentDocument The document of the element contents.
+     * @param navCtrl NavController to use if a link can be opened in the app.
      */
     redefineWindowOpen(element: any, contentWindow: Window, contentDocument: Document, navCtrl?: NavController): void {
         if (contentWindow) {
@@ -264,9 +264,9 @@ export class CoreIframeUtilsProvider {
      * Intercept window.open in a frame and its subframes, shows an error modal instead.
      * Search links (<a>) and open them in browser or InAppBrowser if needed.
      *
-     * @param {any} element Element to treat (iframe, embed, ...).
-     * @param {boolean} [isSubframe] Whether it's a frame inside another frame.
-     * @param {NavController} [navCtrl] NavController to use if a link can be opened in the app.
+     * @param element Element to treat (iframe, embed, ...).
+     * @param isSubframe Whether it's a frame inside another frame.
+     * @param navCtrl NavController to use if a link can be opened in the app.
      */
     treatFrame(element: any, isSubframe?: boolean, navCtrl?: NavController): void {
         if (element) {
@@ -300,8 +300,8 @@ export class CoreIframeUtilsProvider {
      * Search links (<a>) in a frame and open them in browser or InAppBrowser if needed.
      * Only links that haven't been treated by the frame's Javascript will be treated.
      *
-     * @param {any} element Element to treat (iframe, embed, ...).
-     * @param {Document} contentDocument The document of the element contents.
+     * @param element Element to treat (iframe, embed, ...).
+     * @param contentDocument The document of the element contents.
      */
     treatFrameLinks(element: any, contentDocument: Document): void {
         if (!contentDocument) {

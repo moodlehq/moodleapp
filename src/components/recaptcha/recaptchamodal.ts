@@ -44,7 +44,7 @@ export class CoreRecaptchaModalComponent {
     /**
      * The iframe with the recaptcha was loaded.
      *
-     * @param {HTMLIFrameElement} iframe Iframe element.
+     * @param iframe Iframe element.
      */
     loaded(iframe: HTMLIFrameElement): void {
         // Search the iframe content.

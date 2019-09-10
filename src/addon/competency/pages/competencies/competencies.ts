@@ -69,7 +69,7 @@ export class AddonCompetencyCompetenciesPage {
     /**
      * Fetches the competencies and updates the view.
      *
-     * @return {Promise<void>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchCompetencies(): Promise<void> {
         let promise;
@@ -102,7 +102,7 @@ export class AddonCompetencyCompetenciesPage {
     /**
      * Opens a competency.
      *
-     * @param {number} competencyId
+     * @param competencyId
      */
     openCompetency(competencyId: number): void {
         this.competencyId = competencyId;
@@ -118,7 +118,7 @@ export class AddonCompetencyCompetenciesPage {
     /**
      * Refreshes the competencies.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshCompetencies(refresher: any): void {
         let promise;

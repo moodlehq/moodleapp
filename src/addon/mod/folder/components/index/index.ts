@@ -70,7 +70,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         return this.folderProvider.invalidateContent(this.module.id, this.courseId);
@@ -78,7 +78,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
 
     /**
      * Convenience function to set scope data using module.
-     * @param {any} module Module to show.
+     * @param module Module to show.
      */
     protected showModuleData(module: any): void {
         this.description = module.intro || module.description;
@@ -96,8 +96,8 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
     /**
      * Download folder contents.
      *
-     * @param {boolean} [refresh] Whether we're refreshing data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh?: boolean): Promise<any> {
         let promise;
