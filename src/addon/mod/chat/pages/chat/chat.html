@@ -40,6 +40,11 @@
                         <span><ion-icon name="notifications"></ion-icon> {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
                         {{ 'addon.mod_chat.messageyoubeep' | translate:{$a: message.beepwho} }} </span>
                     </ion-badge>
+
+                    <ion-badge text-wrap color="info" *ngIf="!message.system && !message.beep">
+                        <span><core-icon name="fa-asterisk"></core-icon> {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
+                            <strong>{{ message.userfullname }} <core-format-text [text]="message.message" (afterRender)="last && scrollToBottom()"></core-format-text></strong></span>
+                    </ion-badge>
                 </div>
 
                 <ion-item text-wrap *ngIf="!message.special" class="addon-message" [class.addon-message-mine]="message.userid == currentUserId" [class.addon-message-not-mine]="message.userid != currentUserId" [class.addon-message-no-user]="!message.showUserData" [@coreSlideInOut]="message.userid == currentUserId ? '' : 'fromLeft'">

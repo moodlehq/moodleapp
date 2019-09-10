@@ -221,6 +221,11 @@ export class AddonModChatChatPage {
 
                         message.special = message.system || !!message.beep;
 
+                        if (message.message.substr(0, 4) == '/me ') {
+                            message.special = true;
+                            message.message = message.message.substr(4).trim();
+                        }
+
                         message.showUserData = this.showUserData(message, prevMessage);
                         prevMessage ?
                             prevMessage.showTail = this.showTail(prevMessage, message) : null;
