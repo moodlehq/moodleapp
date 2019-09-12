@@ -24,6 +24,14 @@
             <p><a [href]="privacyPolicy" core-link auto-login="no">{{ privacyPolicy }}</a></p>
         </ion-item>
     </ion-item-group>
+        <ion-item-group *ngIf="siteUrl">
+        <ion-item-divider text-wrap>
+            {{ 'core.login.siteurl' | translate }}<ng-container *ngIf="isPrefixedUrl"> *</ng-container>
+        </ion-item-divider>
+        <ion-item text-wrap>
+            <p><a [href]="siteUrl" core-link auto-login="yes">{{ siteUrl }}</a></p>
+        </ion-item>
+    </ion-item-group>
     <ion-item-group>
         <ion-item-divider text-wrap>
             {{ 'core.settings.deviceinfo' | translate }}
