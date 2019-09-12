@@ -3,13 +3,17 @@
   white-space: normal;
   word-break: break-word;
   padding: $content-padding;
-  background-color: white;
+  background-color: $white;
   border-top-width: 1px;
   border-bottom-width: 1px;
   border-right-width: 0;
   border-left-width: 0;
   border-style: solid;
   border-color: $list-border-color;
+
+  @include darkmode {
+    background-color: $core-dark-item-bg-color;
+  }
 
   table, tbody {
     display: block;
@@ -45,6 +49,11 @@ page-addon-mod-data-edit {
     .addon-data-contents form,
     form .addon-data-advanced-search {
         background-color: $list-background-color;
+
+        @include darkmode() {
+          background-color: $core-dark-item-bg-color;
+          color: $core-dark-text-color;
+        }
 
         .item.item-input .item-block .item-inner ion-input,
         .item.item-input.item-input-has-focus .item-inner ion-input,

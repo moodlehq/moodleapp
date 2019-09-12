@@ -1,4 +1,4 @@
-<ion-item #container class="core-timer" [attr.text-center]="align == 'center' ? true : null" [attr.text-end]="align == 'right' ? true : null" role="timer">
+<ion-item #container no-lines class="core-timer" [attr.text-center]="align == 'center' ? true : null" [attr.text-end]="align == 'right' ? true : null" role="timer">
     <ion-icon name="timer" item-start role="presentation"></ion-icon>
     <label *ngIf="timeLeft > 0 && timerText">{{ timerText }}</label>
     <span *ngIf="timeLeft > 0">{{ timeLeft | coreSecondsToHMS }}</span>

@@ -7,6 +7,9 @@ ion-app.app-root {
             text-align: center;
             padding-top: 10px;
             clear: both;
+            @include darkmode() {
+                color: $core-dark-text-color;
+            }
         }
 
         .core-loading-content {

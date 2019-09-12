@@ -1,0 +1,74 @@
+ion-app.app-root page-core-login-credentials,
+ion-app.app-root page-core-login-reconnect,
+ion-app.app-root page-core-login-site {
+    .scroll-content {
+        background: $core-login-page-background-color;
+
+        @include darkmode() {
+            background: $core-dark-login-page-background-color;
+        }
+    }
+
+    img {
+        max-width: 100%;
+    }
+
+    img.login-logo {
+        width: 90%;
+        max-width: 300px;
+    }
+
+    .box {
+        padding: 16px;
+        margin: 8px;
+        background: $core-login-box-background-color;
+        border: 1px solid $core-login-box-background-border;
+        color: $core-login-box-text-color;
+
+        @include darkmode() {
+            background: $core-dark-login-box-background-color;
+            border-color: $core-dark-login-box-background-border;
+            color: $core-dark-login-box-text-color;
+        }
+    }
+
+    .core-sitename, .core-siteurl {
+        @if $core-fixed-url { display: none; }
+    }
+
+    @if $core-login-button-outline {
+        .button-md.button-default-md, .button-ios.button-default-ios {
+            @extend .button-md-light;
+        }
+    }
+
+    @if $core-login-loading-color {
+        .core-loading-container {
+            color: $core-login-loading-color;
+
+            .spinner circle, .spinner line {
+                stroke: $core-login-loading-color;
+            }
+        }
+    }
+
+    @if $core-dark-login-button-outline {
+        .button-md.button-default-md, .button-ios.button-default-ios {
+            @extend .button-md-light;
+        }
+    }
+
+    @include darkmode() {
+        .core-loading-container {
+            color: $core-dark-login-loading-color;
+
+            .spinner circle, .spinner line {
+                stroke: $core-dark-login-loading-color;
+            }
+        }
+    }
+
+    .item-input {
+        margin-bottom: 20px;
+    }
+}

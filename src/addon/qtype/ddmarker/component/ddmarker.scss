@@ -69,6 +69,7 @@ addon-qtype-ddmarker {
         display: inline-block;
         zoom: 1;
         border-radius: 10px;
+        color: $text-color;
     }
     div.markertexts span.markertext {
         z-index: 3;

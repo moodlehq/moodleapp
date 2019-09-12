@@ -6,6 +6,10 @@ ion-app.app-root core-grades-course {
     font-size: 16px;
     color: $text-color;
 
+    @include darkmode() {
+      color: $core-dark-text-color;
+    }
+
     tr {
       border-bottom: 1px solid $list-border-color;
     }
@@ -19,6 +23,10 @@ ion-app.app-root core-grades-course {
       vertical-align: bottom;
       font-weight: bold;
       background-color: $white;
+
+      @include darkmode() {
+        background-color: $black;
+      }
     }
     tbody th {
       font-weight: normal;
@@ -58,11 +66,17 @@ ion-app.app-root core-grades-course {
     .odd {
       td, th, th.core-split-item-selected {
         background-color: $gray-lighter;
+        @include darkmode() {
+          background-color: $gray-darker;
+        }
       }
     }
     .even {
       td, th, th.core-split-item-selected {
         background-color: $white;
+        @include darkmode() {
+          background-color: $black;
+        }
       }
     }
 

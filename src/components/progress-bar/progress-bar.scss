@@ -13,6 +13,10 @@ ion-app.app-root core-progress-bar {
         color: $gray-darker;
         @include position(-16px, 10px, null, null);
         position: absolute;
+
+        @include darkmode() {
+            color: $gray-lighter;
+        }
     }
 
     progress {
@@ -35,6 +39,9 @@ ion-app.app-root core-progress-bar {
         .progress-bar-fallback span,
         &[value]::-webkit-progress-value {
             background-color: $core-progressbar-color;
+            @include darkmode() {
+                background-color: $core-progressbar-color;
+            }
             border-radius: 0;
         }
 

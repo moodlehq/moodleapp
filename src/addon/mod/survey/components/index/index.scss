@@ -11,10 +11,16 @@ ion-app.app-root addon-mod-survey-index {
 
   ion-grid {
     background-color: $white;
+    @include darkmode() {
+      background-color: $black;
+    }
   }
 
   .even {
     background-color: $gray-light;
+    @include darkmode() {
+      background-color: $gray-darker;
+    }
   }
 
   .addon-mod_survey-textarea textarea {

@@ -43,6 +43,10 @@ ion-app.app-root.ios {
       @extend .card-ios ;
       @extend .card-content-ios;
 
+      @include darkmode() {
+        background-color: $core-dark-item-bg-color;
+      }
+
       &[icon-start] {
         @include padding(null, null, null, $card-ios-padding-left * 2 + 20);
 

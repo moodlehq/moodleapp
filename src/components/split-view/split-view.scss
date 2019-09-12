@@ -22,6 +22,10 @@ ion-app.app-root core-split-view {
         .split-pane-side .core-split-item-selected {
             background-color: $gray-lighter;
             @include core-selected-item($core-splitview-selected);
+
+            @include darkmode() {
+              background-color: $black;
+            }
         }
 
         .item-ios[detail-push] .item-inner,

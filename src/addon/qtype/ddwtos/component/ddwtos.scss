@@ -69,14 +69,21 @@ addon-qtype-ddwtos {
 
     span.incorrect {
         background-color: $red-light;
+        @include darkmode() {
+            background-color: $red-dark;
+        }
     }
     span.correct {
         background-color: $green-light;
+        @include darkmode() {
+            background-color: $green-dark;
+        }
     }
 
     @for $i from 0 to length($core-dd-question-colors) {
         .group#{$i + 1} {
             background: nth($core-dd-question-colors, $i + 1);
+            color: $text-color;
         }
     }
 

@@ -29,4 +29,10 @@ ion-app.app-root core-block {
   .item-divider .icon {
     color: $black;
   }
+
+  @include darkmode() {
+    .item-divider .icon {
+      color: $core-dark-text-color
+    }
+  }
 }

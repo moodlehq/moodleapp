@@ -30,7 +30,7 @@
                 <p class="item-heading">{{ 'core.login.username' | translate }}</p>
                 <p>{{username}}</p>
             </ion-item>
-            <form [formGroup]="credForm" (ngSubmit)="login($event)">
+            <form [formGroup]="credForm" (ngSubmit)="login($event)" class="core-login-form">
                 <ion-item margin-bottom>
                     <core-show-password item-content [name]="'password'">
                         <ion-input class="core-ioninput-password" name="password" type="password" placeholder="{{ 'core.login.password' | translate }}" formControlName="password" [clearOnEdit]="false"></ion-input>
@@ -50,12 +50,12 @@
         </ion-list>
 
         <!-- Forgotten password button. -->
-        <div padding-top>
+        <div padding-top class="core-login-forgotten-password">
             <button ion-button block text-wrap color="light" (click)="forgottenPassword()">{{ 'core.login.forgotten' | translate }}</button>
         </div>
 
         <!-- Identity providers. -->
-        <ion-list *ngIf="identityProviders && identityProviders.length" padding-top>
+        <ion-list *ngIf="identityProviders && identityProviders.length" padding-top class="core-login-identity-providers">
             <ion-list-header text-wrap>{{ 'core.login.potentialidps' | translate }}</ion-list-header>
             <button ion-item *ngFor="let provider of identityProviders" text-wrap class="core-oauth-icon" (click)="oauthClicked(provider)" title="{{provider.name}}">
                 <img [src]="provider.iconurl" alt="" width="32" height="32" item-start>
