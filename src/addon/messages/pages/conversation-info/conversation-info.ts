@@ -69,7 +69,7 @@ export class AddonMessagesConversationInfoPage implements OnInit {
     /**
      * Get conversation members.
      *
-     * @param [loadingMore} Whether we are loading more data or just the first ones.
+     * @param loadingMore Whether we are loading more data or just the first ones.
      * @return Promise resolved when done.
      */
     protected fetchMembers(loadingMore?: boolean): Promise<any> {

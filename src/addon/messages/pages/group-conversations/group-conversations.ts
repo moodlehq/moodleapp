@@ -345,7 +345,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * Fetch data for a certain option.
      *
      * @param option The option to fetch data for.
-     * @param [loadingMore} Whether we are loading more data or just the first ones.
+     * @param loadingMore Whether we are loading more data or just the first ones.
      * @param getCounts Whether to get counts data.
      * @return Promise resolved when done.
      */

@@ -48,7 +48,7 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
     /**
      * Detect changes on input properties.
      *
-     * @param } changes Changes.
+     * @param changes Changes.
      */
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
         if (changes.enabled && this.enabled && this.position == 'bottom') {
