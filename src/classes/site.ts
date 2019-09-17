@@ -1404,8 +1404,8 @@ export class CoreSite {
             return false;
         }
 
-        const siteUrl = this.textUtils.removeEndingSlash(this.urlUtils.removeProtocolAndWWW(this.siteUrl));
-        url = this.urlUtils.removeProtocolAndWWW(url);
+        const siteUrl = this.textUtils.addEndingSlash(this.urlUtils.removeProtocolAndWWW(this.siteUrl));
+        url = this.textUtils.addEndingSlash(this.urlUtils.removeProtocolAndWWW(url));
 
         return url.indexOf(siteUrl) == 0;
     }
