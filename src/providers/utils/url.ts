@@ -121,8 +121,8 @@ export class CoreUrlUtilsProvider {
             return url;
         }
 
-        // Check if is a valid URL (contains the pluginfile endpoint).
-        if (!this.isPluginFileUrl(url)) {
+        // Check if is a valid URL (contains the pluginfile endpoint) and belongs to the site.
+        if (!this.isPluginFileUrl(url) || url.indexOf(this.textUtils.addEndingSlash(siteUrl)) !== 0) {
             return url;
         }
 
