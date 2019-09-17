@@ -3,12 +3,6 @@ Merit Square
 
 This is the primary repository of source code for the official Merit Square Mobile app.
 
-* [User documentation]
-* [Developer documentation]
-* [Development environment setup]
-* [Bug Tracker]
-* [Release Notes]
-
 License
 -------
 
