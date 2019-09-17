@@ -22,7 +22,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from './text';
 import { CoreAppProvider } from '../app';
 import { CoreConfigProvider } from '../config';
-import { CoreConfigConstants } from '../../configconstants';
 import { CoreUrlUtilsProvider } from './url';
 import { CoreFileProvider } from '@providers/file';
 import { CoreConstants } from '@core/constants';
@@ -72,10 +71,6 @@ export class CoreDomUtilsProvider {
         // Check if debug messages should be displayed.
         configProvider.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false).then((debugDisplay) => {
             this.debugDisplay = !!debugDisplay;
-        });
-        // Set the font size based on user preference.
-        configProvider.get(CoreConstants.SETTINGS_FONT_SIZE, CoreConfigConstants.font_sizes[0]).then((fontSize) => {
-            document.documentElement.style.fontSize = fontSize + '%';
         });
     }
 
