@@ -232,7 +232,6 @@ export class CoreSitesProvider {
     protected WORKPLACE_APP = 3;
     protected MOODLE_APP = 2;
     protected VALID_VERSION = 1;
-    protected LEGACY_APP_VERSION = 0;
     protected INVALID_VERSION = -1;
 
     protected isWPApp: boolean;
@@ -675,25 +674,9 @@ export class CoreSitesProvider {
      */
     protected treatInvalidAppVersion(result: number, siteUrl: string, siteId?: string): Promise<any> {
         let errorCode,
-            errorKey,
-            errorExtra = '',
-            errorKeyParams;
+            errorKey;
 
         switch (result) {
-            case this.LEGACY_APP_VERSION:
-                errorKey = 'core.login.legacymoodleversion';
-                errorCode = 'legacymoodleversion';
-
-                if (this.appProvider.isDesktop()) {
-                    errorKey += 'desktop';
-                    errorKeyParams = {$a: siteUrl};
-                }
-
-                if (this.appProvider.isWindows() || this.appProvider.isLinux()) {
-                    errorExtra = this.translate.instant('core.login.legacymoodleversiondesktopdownloadold');
-                }
-
-                break;
             case this.MOODLE_APP:
                 errorKey = 'core.login.connecttomoodleapp';
                 errorCode = 'connecttomoodleapp';
@@ -717,7 +700,7 @@ export class CoreSitesProvider {
 
         return promise.then(() => {
            return Promise.reject({
-                error: this.translate.instant(errorKey, errorKeyParams) + errorExtra,
+                error: this.translate.instant(errorKey),
                 errorcode: errorCode,
                 loggedout: true
             });
@@ -764,16 +747,14 @@ export class CoreSitesProvider {
      * Check for the minimum required version.
      *
      * @param info Site info.
-     * @return Either VALID_VERSION, LEGACY_APP_VERSION, WORKPLACE_APP, MOODLE_APP or INVALID_VERSION.
+     * @return Either VALID_VERSION, WORKPLACE_APP, MOODLE_APP or INVALID_VERSION.
      */
     protected isValidMoodleVersion(info: any): number {
         if (!info) {
             return this.INVALID_VERSION;
         }
 
-        const version24 = 2012120300, // Moodle 2.4 version.
-            release24 = '2.4',
-            version31 = 2016052300,
+        const version31 = 2016052300,
             release31 = '3.1';
 
         // Try to validate by version.
@@ -782,8 +763,6 @@ export class CoreSitesProvider {
             if (!isNaN(version)) {
                 if (version >= version31) {
                     return this.validateWorkplaceVersion(info);
-                } else if (version >= version24) {
-                    return this.LEGACY_APP_VERSION;
                 }
             }
         }
@@ -793,9 +772,6 @@ export class CoreSitesProvider {
         if (release) {
             if (release >= release31) {
                 return this.validateWorkplaceVersion(info);
-            }
-            if (release >= release24) {
-                return this.LEGACY_APP_VERSION;
             }
         }
 
@@ -1542,9 +1518,10 @@ export class CoreSitesProvider {
      *
      * @param info The site info.
      * @return Whether it's a legacy Moodle.
+     * @deprecated since 3.7.1
      */
     isLegacyMoodleByInfo(info: any): boolean {
-        return this.isValidMoodleVersion(info) == this.LEGACY_APP_VERSION;
+        return false;
     }
 
     /**

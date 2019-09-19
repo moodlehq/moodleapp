@@ -12,7 +12,7 @@
     "areyousure": "Are you sure?",
     "back": "Back",
     "cancel": "Cancel",
-    "cannotconnect": "Cannot connect: Verify that you have correctly typed the URL and that your site uses Moodle 2.4 or later.",
+    "cannotconnect": "Cannot connect: Verify that you have correctly typed the URL and that your site uses Moodle 3.1 or later.",
     "cannotdownloadfiles": "File downloading is disabled. Please contact your site administrator.",
     "captureaudio": "Record audio",
     "capturedimage": "Taken picture.",
