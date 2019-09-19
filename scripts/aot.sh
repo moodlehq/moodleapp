@@ -4,7 +4,7 @@
 npm list --depth=0
 
 # Compile AOT.
-if [ $TRAVIS_BRANCH == 'integration' ] || [ $TRAVIS_BRANCH == 'master' ] || [ $TRAVIS_BRANCH == 'desktop' ] || [ -z $TRAVIS_BRANCH ] ; then
+if [ $TRAVIS_BRANCH == 'integration' ] || [ $TRAVIS_BRANCH == 'master' ] || [ $TRAVIS_BRANCH == 'desktop' ] || [ $TRAVIS_BRANCH == 'security' ] || [ -z $TRAVIS_BRANCH ] ; then
     cd scripts
     ./build_lang.sh
     cd ..
