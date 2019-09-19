@@ -1024,28 +1024,6 @@ export class CoreLoginHelperProvider {
     }
 
     /**
-     * Show a modal warning the user that he should use the Classic app.
-     *
-     * @param {string} message The warning message.
-     */
-    protected showLegacyNoticeModal(message: string): void {
-        let link;
-
-        if (this.appProvider.isWindows()) {
-            link = 'https://download.moodle.org/desktop/download.php?platform=windows&version=342';
-        } else if (this.appProvider.isLinux()) {
-            link = 'https://download.moodle.org/desktop/download.php?platform=linux&version=342&arch=' +
-                    (this.appProvider.is64Bits() ? '64' : '32');
-        } else if (this.platform.is('android')) {
-            link = 'market://details?id=com.moodle.classic';
-        } else if (this.platform.is('ios')) {
-            link = 'itms-apps://itunes.apple.com/app/id1403448117';
-        }
-
-        this.showDownloadAppNoticeModal(message, link);
-    }
-
-    /**
      * Show a modal warning the user that he should use the Workplace app.
      *
      * @param {string} message The warning message.
@@ -1225,8 +1203,6 @@ export class CoreLoginHelperProvider {
             this.openChangePassword(siteUrl, this.textUtils.getErrorMessageFromError(error));
         } else if (error.errorcode == 'usernotconfirmed') {
             this.showNotConfirmedModal(siteUrl, undefined, username, password);
-        } else if (error.errorcode == 'legacymoodleversion') {
-            this.showLegacyNoticeModal(this.textUtils.getErrorMessageFromError(error));
         } else if (error.errorcode == 'connecttomoodleapp') {
             this.showMoodleAppNoticeModal(this.textUtils.getErrorMessageFromError(error));
         } else if (error.errorcode == 'connecttoworkplaceapp') {
