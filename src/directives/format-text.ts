@@ -425,7 +425,6 @@ export class CoreFormatTextDirective implements OnChanges {
             });
 
             videos.forEach((video) => {
-                this.treatVideoFilters(video, navCtrl);
                 this.treatMedia(video);
             });
 
@@ -550,40 +549,6 @@ export class CoreFormatTextDirective implements OnChanges {
     }
 
     /**
-     * Treat video filters. Currently only treating youtube video using video JS.
-     *
-     * @param el Video element.
-     * @param navCtrl NavController to use.
-     */
-    protected treatVideoFilters(video: HTMLElement, navCtrl: NavController): void {
-        // Treat Video JS Youtube video links and translate them to iframes.
-        if (!video.classList.contains('video-js')) {
-            return;
-        }
-
-        const data = this.textUtils.parseJSON(video.getAttribute('data-setup') || video.getAttribute('data-setup-lazy') || '{}'),
-            youtubeData = data.techOrder && data.techOrder[0] && data.techOrder[0] == 'youtube' &&
-                    this.parseYoutubeUrl(data.sources && data.sources[0] && data.sources[0].src);
-
-        if (!youtubeData || !youtubeData.videoId) {
-            return;
-        }
-
-        const iframe = document.createElement('iframe');
-        iframe.id = video.id;
-        iframe.src = 'https://www.youtube.com/embed/' + youtubeData.videoId; // Don't apply other params to align with Moodle web.
-        iframe.setAttribute('frameborder', '0');
-        iframe.setAttribute('allowfullscreen', '1');
-        iframe.width = '100%';
-        iframe.height = '300';
-
-        // Replace video tag by the iframe.
-        video.parentNode.replaceChild(iframe, video);
-
-        this.iframeUtils.treatFrame(iframe, false, navCtrl);
-    }
-
-    /**
      * Add media adapt class and apply CoreExternalContentDirective to the media element and its sources and tracks.
      *
      * @param element Video or audio to treat.
@@ -692,55 +657,5 @@ export class CoreFormatTextDirective implements OnChanges {
         }
 
         this.iframeUtils.treatFrame(iframe, false, navCtrl);
-    }
-
-    /**
-     * Parse a YouTube URL.
-     * Based on Youtube.parseUrl from Moodle media/player/videojs/amd/src/Youtube-lazy.js
-     *
-     * @param url URL of the video.
-     */
-    protected parseYoutubeUrl(url: string): {videoId: string, listId?: string, start?: number} {
-        const result = {
-            videoId: null,
-            listId: null,
-            start: null
-        };
-
-        if (!url) {
-            return result;
-        }
-
-        url = this.textUtils.decodeHTML(url);
-
-        // Get the video ID.
-        let match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-
-        if (match && match[2].length === 11) {
-            result.videoId = match[2];
-        }
-
-        // Now get the playlist (if any).
-        match = url.match(/[?&]list=([^#\&\?]+)/);
-
-        if (match && match[1]) {
-            result.listId = match[1];
-        }
-
-        // Now get the start time (if any).
-        match = url.match(/[?&]start=(\d+)/);
-
-        if (match && match[1]) {
-            result.start = parseInt(match[1], 10);
-        } else {
-            // No start param, but it could have a time param.
-            match = url.match(/[?&]t=(\d+h)?(\d+m)?(\d+s)?/);
-            if (match) {
-                result.start = (match[1] ? parseInt(match[1], 10) * 3600 : 0) + (match[2] ? parseInt(match[2], 10) * 60 : 0) +
-                        (match[3] ? parseInt(match[3], 10) : 0);
-            }
-        }
-
-        return result;
     }
 }

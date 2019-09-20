@@ -148,6 +148,7 @@ import { AddonRemoteThemesModule } from '@addon/remotethemes/remotethemes.module
 import { AddonQbehaviourModule } from '@addon/qbehaviour/qbehaviour.module';
 import { AddonQtypeModule } from '@addon/qtype/qtype.module';
 import { AddonStorageManagerModule } from '@addon/storagemanager/storagemanager.module';
+import { AddonFilterModule } from '@addon/filter/filter.module';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
@@ -290,7 +291,8 @@ export const WP_PROVIDER: any = null;
         AddonRemoteThemesModule,
         AddonQbehaviourModule,
         AddonQtypeModule,
-        AddonStorageManagerModule
+        AddonStorageManagerModule,
+        AddonFilterModule
     ],
     bootstrap: [IonicApp],
     entryComponents: [

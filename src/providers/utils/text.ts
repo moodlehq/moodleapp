@@ -732,6 +732,7 @@ export class CoreTextUtilsProvider {
      *
      * @param text The text to be treated.
      * @return Promise resolved with the formatted text.
+     * @deprecated since 3.8.0. Now this is handled by AddonFilterMultilangHandler.
      */
     treatMultilangTags(text: string): Promise<string> {
         if (!text || typeof text != 'string') {

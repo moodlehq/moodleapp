@@ -74,8 +74,8 @@ export class CoreFilterDelegate extends CoreDelegate {
      * @return Promise resolved with the filtered text.
      */
     filterText(text: string, filters: CoreFilterFilter[], options?: any, skipFilters?: string[]): Promise<string> {
-        if (!text) {
-            return Promise.resolve(text);
+        if (!text || typeof text != 'string') {
+            return Promise.resolve('');
         }
 
         // Wait for filters to be initialized.
