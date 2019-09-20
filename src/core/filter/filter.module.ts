@@ -14,10 +14,13 @@
 
 import { NgModule } from '@angular/core';
 import { CoreFilterProvider } from './providers/filter';
+import { CoreFilterDelegate } from './providers/delegate';
+import { CoreFilterDefaultHandler } from './providers/default-filter';
 
 // List of providers (without handlers).
 export const CORE_FILTER_PROVIDERS: any[] = [
-    CoreFilterProvider
+    CoreFilterProvider,
+    CoreFilterDelegate
 ];
 
 @NgModule({
@@ -26,7 +29,9 @@ export const CORE_FILTER_PROVIDERS: any[] = [
     imports: [
     ],
     providers: [
-        CoreFilterProvider
+        CoreFilterProvider,
+        CoreFilterDelegate,
+        CoreFilterDefaultHandler
     ]
 })
 export class CoreFilterModule { }
