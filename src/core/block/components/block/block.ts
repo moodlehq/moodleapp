@@ -57,8 +57,10 @@ export class CoreBlockComponent implements OnInit, OnDestroy, DoCheck {
             return;
         }
 
-        // Get the data to render the block.
-        this.initBlock();
+        if (this.block.visible) {
+            // Get the data to render the block.
+            this.initBlock();
+        }
     }
 
     /**
