@@ -1,10 +1,10 @@
 {
-  "name": "moodlemobile",
+  "name": "Copperstone University E - Campus",
   "version": "3.7.1",
-  "description": "The official app for Moodle.",
+  "description": "The official app for Coppestone University.",
   "author": {
-    "name": "Moodle Pty Ltd.",
-    "email": "mobile@moodle.com"
+    "name": "Copperstone University Pty Ltd.",
+    "email": "mirriamchibala@gmail.com"
   },
   "config": {
     "ionic_webpack": "./config/webpack.config.js",
