@@ -6,14 +6,14 @@
         versionCode = "35200"
         android-versionCode="35200"
         version   = "3.5.2">
-    <name>Moodle</name>
+    <name>Copperstone University E - Campus</name>
 
     <description>
-        Moodle official app
+        Copperstone University official app
     </description>
 
-    <author href="http://moodle.com" email="mobile@moodle.com">
-        Moodle Mobile team
+    <author href="http://copperstoneuniversity.online" email="mirriamchibala@gmail.com">
+        Copperstone University Mobile team
     </author>
 
     <edit-config target="CFBundleShortVersionString" file="*-Info.plist" mode="merge">
