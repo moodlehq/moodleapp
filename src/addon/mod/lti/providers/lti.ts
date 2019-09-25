@@ -50,7 +50,7 @@ export class AddonModLtiProvider {
     /**
      * Delete launcher.
      *
-     * @return {Promise<any>} Promise resolved when the launcher file is deleted.
+     * @return Promise resolved when the launcher file is deleted.
      */
     deleteLauncher(): Promise<any> {
         return this.fileProvider.removeFile(this.LAUNCHER_FILE_NAME);
@@ -59,9 +59,9 @@ export class AddonModLtiProvider {
     /**
      * Generates a launcher file.
      *
-     * @param {string} url Launch URL.
-     * @param {AddonModLtiParam[]} params Launch params.
-     * @return {Promise<string>} Promise resolved with the file URL.
+     * @param url Launch URL.
+     * @param params Launch params.
+     * @return Promise resolved with the file URL.
      */
     generateLauncher(url: string, params: AddonModLtiParam[]): Promise<string> {
         if (!this.fileProvider.isAvailable()) {
@@ -100,9 +100,9 @@ export class AddonModLtiProvider {
     /**
      * Get a LTI.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} cmId Course module ID.
-     * @return {Promise<any>} Promise resolved when the LTI is retrieved.
+     * @param courseId Course ID.
+     * @param cmId Course module ID.
+     * @return Promise resolved when the LTI is retrieved.
      */
     getLti(courseId: number, cmId: number): Promise<any> {
         const params: any = {
@@ -128,8 +128,8 @@ export class AddonModLtiProvider {
     /**
      * Get cache key for LTI data WS calls.
      *
-     * @param {number} courseId Course ID.
-     * @return {string} Cache key.
+     * @param courseId Course ID.
+     * @return Cache key.
      */
     protected getLtiCacheKey(courseId: number): string {
         return this.ROOT_CACHE_KEY + 'lti:' + courseId;
@@ -138,8 +138,8 @@ export class AddonModLtiProvider {
     /**
      * Get a LTI launch data.
      *
-     * @param {number} id LTI id.
-     * @return {Promise<any>} Promise resolved when the launch data is retrieved.
+     * @param id LTI id.
+     * @return Promise resolved when the launch data is retrieved.
      */
     getLtiLaunchData(id: number): Promise<any> {
         const params: any = {
@@ -166,8 +166,8 @@ export class AddonModLtiProvider {
     /**
      * Get cache key for LTI launch data WS calls.
      *
-     * @param {number} id LTI id.
-     * @return {string} Cache key.
+     * @param id LTI id.
+     * @return Cache key.
      */
     protected getLtiLaunchDataCacheKey(id: number): string {
         return this.ROOT_CACHE_KEY + 'launch:' + id;
@@ -176,8 +176,8 @@ export class AddonModLtiProvider {
     /**
      * Invalidates LTI data.
      *
-     * @param {number} courseId Course ID.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param courseId Course ID.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateLti(courseId: number): Promise<any> {
         return this.sitesProvider.getCurrentSite().invalidateWsCacheForKey(this.getLtiCacheKey(courseId));
@@ -186,8 +186,8 @@ export class AddonModLtiProvider {
     /**
      * Invalidates options.
      *
-     * @param {number} id LTI id.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param id LTI id.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateLtiLaunchData(id: number): Promise<any> {
         return this.sitesProvider.getCurrentSite().invalidateWsCacheForKey(this.getLtiLaunchDataCacheKey(id));
@@ -196,9 +196,9 @@ export class AddonModLtiProvider {
     /**
      * Launch LTI.
      *
-     * @param {string} url Launch URL.
-     * @param {AddonModLtiParam[]} params Launch params.
-     * @return {Promise<any>} Promise resolved when the WS call is successful.
+     * @param url Launch URL.
+     * @param params Launch params.
+     * @return Promise resolved when the WS call is successful.
      */
     launch(url: string, params: AddonModLtiParam[]): Promise<any> {
         if (!this.urlUtils.isHttpURL(url)) {
@@ -214,10 +214,10 @@ export class AddonModLtiProvider {
     /**
      * Report the LTI as being viewed.
      *
-     * @param {string} id LTI id.
-     * @param {string} [name] Name of the lti.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}  Promise resolved when the WS call is successful.
+     * @param id LTI id.
+     * @param name Name of the lti.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the WS call is successful.
      */
     logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params: any = {

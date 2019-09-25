@@ -138,7 +138,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit {
     /**
      * Convenience function to load the assessment data.
      *
-     * @return {Promise<any>} Promised resvoled when data is loaded.
+     * @return Promised resvoled when data is loaded.
      */
     protected load(): Promise<any> {
         return this.workshopHelper.getReviewerAssessmentById(this.workshop.id, this.assessmentId, this.userId)
@@ -224,7 +224,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit {
     /**
      * Check if data has changed.
      *
-     * @return {boolean} True if data has changed.
+     * @return True if data has changed.
      */
     hasDataChanged(): boolean {
         if (!this.assessmentStrategyLoaded) {
@@ -254,7 +254,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit {
     /**
      * Save the assessment.
      *
-     * @return {Promise<any>} Promise resolved when done, rejected if assessment could not be saved.
+     * @return Promise resolved when done, rejected if assessment could not be saved.
      */
     saveAssessment(): Promise<any> {
         const files = this.fileSessionProvider.getFiles(AddonModWorkshopProvider.COMPONENT,
@@ -332,7 +332,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit {
     /**
      * Feedback text changed.
      *
-     * @param {string} text The new text.
+     * @param text The new text.
      */
     onFeedbackChange(text: string): void {
         this.feedbackText = text;

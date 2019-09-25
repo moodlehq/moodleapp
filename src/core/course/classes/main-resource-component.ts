@@ -99,10 +99,10 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     /**
      * Refresh the data.
      *
-     * @param {any}       [refresher] Refresher.
-     * @param {Function}  [done] Function to call when done.
-     * @param {boolean}   [showErrors=false] If show errors to the user of hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @param done Function to call when done.
+     * @param showErrors If show errors to the user of hide them.
+     * @return Promise resolved when done.
      */
     doRefresh(refresher?: any, done?: () => void, showErrors: boolean = false): Promise<any> {
         if (this.loaded && this.module) {
@@ -129,9 +129,9 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     /**
      * Perform the refresh content function.
      *
-     * @param  {boolean}      [sync=false]       If the refresh needs syncing.
-     * @param  {boolean}      [showErrors=false] Wether to show errors to the user or hide them.
-     * @return {Promise<any>} Resolved when done.
+     * @param sync If the refresh needs syncing.
+     * @param showErrors Wether to show errors to the user or hide them.
+     * @return Resolved when done.
      */
      protected refreshContent(sync: boolean = false, showErrors: boolean = false): Promise<any> {
         if (!this.module) {
@@ -166,7 +166,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         return Promise.resolve();
@@ -175,8 +175,8 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     /**
      * Download the component contents.
      *
-     * @param {boolean} [refresh] Whether we're refreshing data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh?: boolean): Promise<any> {
         return Promise.resolve();
@@ -185,8 +185,8 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     /**
      * Loads the component contents and shows the corresponding error.
      *
-     * @param {boolean} [refresh] Whether we're refreshing data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @return Promise resolved when done.
      */
     protected loadContent(refresh?: boolean): Promise<any> {
         if (!this.module) {
@@ -242,7 +242,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     /**
      * Go to blog posts.
      *
-     * @param {any} event Event.
+     * @param event Event.
      */
     gotoBlog(event: any): void {
         this.linkHelper.goInSite(this.navCtrl, 'AddonBlogEntriesPage', { cmId: this.module.id });
@@ -251,7 +251,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     /**
      * Prefetch the module.
      *
-     * @param {Function}  [done] Function to call when done.
+     * @param done Function to call when done.
      */
     prefetch(done?: () => void): void {
         this.courseHelper.contextMenuPrefetch(this, this.module, this.courseId, done);

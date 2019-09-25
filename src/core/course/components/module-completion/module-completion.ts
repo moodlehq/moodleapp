@@ -58,7 +58,7 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
     /**
      * Completion clicked.
      *
-     * @param {Event} e The click event.
+     * @param e The click event.
      */
     completionClicked(e: Event): void {
         if (this.completion) {

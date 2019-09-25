@@ -40,7 +40,7 @@ export class AddonModSurveyIndexPage {
     /**
      * Update some data based on the survey instance.
      *
-     * @param {any} survey Survey instance.
+     * @param survey Survey instance.
      */
     updateData(survey: any): void {
         this.title = survey.name || this.title;

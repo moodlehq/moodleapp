@@ -29,7 +29,7 @@ export class AddonModUrlHelperProvider {
     /**
      * Opens a URL.
      *
-     * @param {string} url The URL to go to.
+     * @param url The URL to go to.
      */
     open(url: string): void {
         const modal = this.domUtils.showModalLoading();

@@ -64,8 +64,8 @@ export class CoreUserParticipantsComponent implements OnInit {
     /**
      * Fetch all the data required for the view.
      *
-     * @param {boolean} [refresh] Empty events array first.
-     * @return {Promise<any>}     Resolved when done.
+     * @param refresh Empty events array first.
+     * @return Resolved when done.
      */
     fetchData(refresh: boolean = false): Promise<any> {
         const firstToGet = refresh ? 0 : this.participants.length;
@@ -87,8 +87,8 @@ export class CoreUserParticipantsComponent implements OnInit {
     /**
      * Function to load more data.
      *
-     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
-     * @return {Promise<any>} Resolved when done.
+     * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
+     * @return Resolved when done.
      */
     loadMoreData(infiniteComplete?: any): Promise<any> {
         return this.fetchData().finally(() => {
@@ -99,7 +99,7 @@ export class CoreUserParticipantsComponent implements OnInit {
     /**
      * Refresh data.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshParticipants(refresher: any): void {
         this.userProvider.invalidateParticipantsList(this.courseId).finally(() => {
@@ -111,7 +111,7 @@ export class CoreUserParticipantsComponent implements OnInit {
 
     /**
      * Navigate to a particular user profile.
-     * @param {number} userId  User Id where to navigate.
+     * @param userId User Id where to navigate.
      */
     gotoParticipant(userId: number): void {
         this.participantId = userId;

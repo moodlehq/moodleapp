@@ -78,7 +78,7 @@ export class AddonMessagesSettingsPage implements OnDestroy {
     /**
      * Fetches preference data.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected fetchPreferences(): Promise<any> {
         return this.messagesProvider.getMessagePreferences().then((preferences) => {
@@ -133,7 +133,7 @@ export class AddonMessagesSettingsPage implements OnDestroy {
     /**
      * Save the contactable privacy setting..
      *
-     * @param {number|boolean} value The value to set.
+     * @param value The value to set.
      */
     saveContactablePrivacy(value: number | boolean): void {
         if (this.contactablePrivacy == this.previousContactableValue) {
@@ -164,9 +164,9 @@ export class AddonMessagesSettingsPage implements OnDestroy {
     /**
      * Change the value of a certain preference.
      *
-     * @param {any}    notification Notification object.
-     * @param {string} state        State name, ['loggedin', 'loggedoff'].
-     * @param {any}    processor    Notification processor.
+     * @param notification Notification object.
+     * @param state State name, ['loggedin', 'loggedoff'].
+     * @param processor Notification processor.
      */
     changePreference(notification: any, state: string, processor: any): void {
         if (this.groupMessagingEnabled) {
@@ -238,7 +238,7 @@ export class AddonMessagesSettingsPage implements OnDestroy {
     /**
      * Refresh the list of preferences.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshPreferences(refresher: any): void {
         this.messagesProvider.invalidateMessagePreferences().finally(() => {

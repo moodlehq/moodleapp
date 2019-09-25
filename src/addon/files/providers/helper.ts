@@ -30,8 +30,8 @@ export class AddonFilesHelperProvider {
     /**
      * Select a file, upload it and move it to private files.
      *
-     * @param {any} [info] Private files info. See AddonFilesProvider.getPrivateFilesInfo.
-     * @return {Promise<any>} Promise resolved when a file is uploaded, rejected otherwise.
+     * @param info Private files info. See AddonFilesProvider.getPrivateFilesInfo.
+     * @return Promise resolved when a file is uploaded, rejected otherwise.
      */
     uploadPrivateFile(info?: any): Promise<any> {
         // Calculate the max size.

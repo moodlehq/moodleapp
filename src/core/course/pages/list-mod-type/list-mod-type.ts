@@ -63,7 +63,7 @@ export class CoreCourseListModTypePage {
     /**
      * Fetches the data.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected fetchData(): Promise<any> {
         // Get all the modules in the course.
@@ -113,7 +113,7 @@ export class CoreCourseListModTypePage {
     /**
      * Refresh the data.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshData(refresher: any): void {
         this.courseProvider.invalidateSections(this.courseId).finally(() => {

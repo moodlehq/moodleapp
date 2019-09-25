@@ -93,8 +93,8 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     /**
      * Compares sync event data with current data to check if refresh content is needed.
      *
-     * @param {any} syncEventData Data received on sync observer.
-     * @return {boolean}          True if refresh is needed, false otherwise.
+     * @param syncEventData Data received on sync observer.
+     * @return True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: any): boolean {
         return false;
@@ -103,7 +103,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     /**
      * An autosync event has been received, check if refresh is needed and update the view.
      *
-     * @param {any} syncEventData Data receiven on sync observer.
+     * @param syncEventData Data receiven on sync observer.
      */
     protected autoSyncEventReceived(syncEventData: any): void {
         if (this.isRefreshSyncNeeded(syncEventData)) {
@@ -115,9 +115,9 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     /**
      * Perform the refresh content function.
      *
-     * @param  {boolean}      [sync=false]       If the refresh needs syncing.
-     * @param  {boolean}      [showErrors=false] Wether to show errors to the user or hide them.
-     * @return {Promise<any>} Resolved when done.
+     * @param sync If the refresh needs syncing.
+     * @param showErrors Wether to show errors to the user or hide them.
+     * @return Resolved when done.
      */
     protected refreshContent(sync: boolean = false, showErrors: boolean = false): Promise<any> {
         if (!this.module) {
@@ -154,9 +154,9 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     /**
      * Show loading and perform the load content function.
      *
-     * @param  {boolean}      [sync=false]       If the fetch needs syncing.
-     * @param  {boolean}      [showErrors=false] Wether to show errors to the user or hide them.
-     * @return {Promise<any>} Resolved when done.
+     * @param sync If the fetch needs syncing.
+     * @param showErrors Wether to show errors to the user or hide them.
+     * @return Resolved when done.
      */
     protected showLoadingAndFetch(sync: boolean = false, showErrors: boolean = false): Promise<any> {
         this.refreshIcon = 'spinner';
@@ -173,9 +173,9 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     /**
      * Show loading and perform the refresh content function.
      *
-     * @param  {boolean}      [sync=false]       If the refresh needs syncing.
-     * @param  {boolean}      [showErrors=false] Wether to show errors to the user or hide them.
-     * @return {Promise<any>} Resolved when done.
+     * @param sync If the refresh needs syncing.
+     * @param showErrors Wether to show errors to the user or hide them.
+     * @return Resolved when done.
      */
     protected showLoadingAndRefresh(sync: boolean = false, showErrors: boolean = false): Promise<any> {
         this.refreshIcon = 'spinner';
@@ -189,10 +189,10 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     /**
      * Download the component contents.
      *
-     * @param {boolean}       [refresh=false] Whether we're refreshing data.
-     * @param  {boolean}      [sync=false]       If the refresh needs syncing.
-     * @param  {boolean}      [showErrors=false] Wether to show errors to the user or hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @param sync If the refresh needs syncing.
+     * @param showErrors Wether to show errors to the user or hide them.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
         return Promise.resolve();
@@ -201,10 +201,10 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     /**
      * Loads the component contents and shows the corresponding error.
      *
-     * @param {boolean}       [refresh=false] Whether we're refreshing data.
-     * @param  {boolean}      [sync=false]       If the refresh needs syncing.
-     * @param  {boolean}      [showErrors=false] Wether to show errors to the user or hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @param sync If the refresh needs syncing.
+     * @param showErrors Wether to show errors to the user or hide them.
+     * @return Promise resolved when done.
      */
     protected loadContent(refresh?: boolean, sync: boolean = false, showErrors: boolean = false): Promise<any> {
         this.isOnline = this.appProvider.isOnline();
@@ -245,8 +245,8 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     /**
      * Displays some data based on the current status.
      *
-     * @param {string} status The current status.
-     * @param {string} [previousStatus] The previous status. If not defined, there is no previous status.
+     * @param status The current status.
+     * @param previousStatus The previous status. If not defined, there is no previous status.
      */
     protected showStatus(status: string, previousStatus?: string): void {
         // To be overridden.
@@ -255,7 +255,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     /**
      * Watch for changes on the status.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected setStatusListener(): Promise<any> {
         if (typeof this.statusObserver == 'undefined') {
@@ -283,7 +283,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     /**
      * Performs the sync of the activity.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected sync(): Promise<any> {
         return Promise.resolve(true);
@@ -292,8 +292,8 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     /**
      * Checks if sync has succeed from result sync data.
      *
-     * @param  {any}     result Data returned on the sync function.
-     * @return {boolean}        If suceed or not.
+     * @param result Data returned on the sync function.
+     * @return If suceed or not.
      */
     protected hasSyncSucceed(result: any): boolean {
         return true;
@@ -302,8 +302,8 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     /**
      * Tries to synchronize the activity.
      *
-     * @param  {boolean}      [showErrors=false] If show errors to the user of hide them.
-     * @return {Promise<boolean>} Promise resolved with true if sync succeed, or false if failed.
+     * @param showErrors If show errors to the user of hide them.
+     * @return Promise resolved with true if sync succeed, or false if failed.
      */
     protected syncActivity(showErrors: boolean = false): Promise<boolean> {
         return this.sync().then((result) => {

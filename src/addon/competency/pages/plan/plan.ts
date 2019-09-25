@@ -52,7 +52,7 @@ export class AddonCompetencyPlanPage {
     /**
      * Fetches the learning plan and updates the view.
      *
-     * @return {Promise<void>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchLearningPlan(): Promise<void> {
         return this.competencyProvider.getLearningPlan(this.planId).then((plan) => {
@@ -74,7 +74,7 @@ export class AddonCompetencyPlanPage {
     /**
      * Navigates to a particular competency.
      *
-     * @param {number} competencyId
+     * @param competencyId
      */
     openCompetency(competencyId: number): void {
         const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
@@ -88,7 +88,7 @@ export class AddonCompetencyPlanPage {
     /**
      * Refreshes the learning plan.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshLearningPlan(refresher: any): void {
         this.competencyProvider.invalidateLearningPlan(this.planId).finally(() => {

@@ -77,8 +77,8 @@ export class CoreLoginSitesPage {
     /**
      * Delete a site.
      *
-     * @param {Event} e Click event.
-     * @param {number} index Position of the site.
+     * @param e Click event.
+     * @param index Position of the site.
      */
     deleteSite(e: Event, index: number): void {
         e.stopPropagation();
@@ -112,7 +112,7 @@ export class CoreLoginSitesPage {
     /**
      * Login in a site.
      *
-     * @param {string} siteId The site ID.
+     * @param siteId The site ID.
      */
     login(siteId: string): void {
         const modal = this.domUtils.showModalLoading();

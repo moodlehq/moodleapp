@@ -32,8 +32,8 @@ export class CoreBytesToSizePipe implements PipeTransform {
     /**
      * Takes a number and turns it to a human readable size.
      *
-     * @param {number|string} value The bytes to convert.
-     * @return {string} Readable bytes.
+     * @param value The bytes to convert.
+     * @return Readable bytes.
      */
     transform(value: number | string): string {
         if (typeof value == 'string') {

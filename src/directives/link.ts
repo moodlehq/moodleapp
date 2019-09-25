@@ -87,7 +87,7 @@ export class CoreLinkDirective implements OnInit {
     /**
      * Convenience function to correctly navigate, open file or url in the browser.
      *
-     * @param {string} href HREF to be opened.
+     * @param href HREF to be opened.
      */
     protected navigate(href: string): void {
         const contentLinksScheme = CoreConfigConstants.customurlscheme + '://link=';

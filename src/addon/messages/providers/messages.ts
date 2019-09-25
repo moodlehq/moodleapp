@@ -67,9 +67,9 @@ export class AddonMessagesProvider {
     /**
      * Add a contact.
      *
-     * @param {number} userId  User ID of the person to add.
-     * @param {string} [siteId]  Site ID. If not defined, use current site.
-     * @return {Promise<any>}  Resolved when done.
+     * @param userId User ID of the person to add.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Resolved when done.
      * @deprecated since Moodle 3.6
      */
     addContact(userId: number, siteId?: string): Promise<any> {
@@ -87,9 +87,9 @@ export class AddonMessagesProvider {
     /**
      * Block a user.
      *
-     * @param {number} userId User ID of the person to block.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any>} Resolved when done.
+     * @param userId User ID of the person to block.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Resolved when done.
      */
     blockContact(userId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -120,9 +120,9 @@ export class AddonMessagesProvider {
     /**
      * Confirm a contact request from another user.
      *
-     * @param {number} userId ID of the user who made the contact request.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any>} Resolved when done.
+     * @param userId ID of the user who made the contact request.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Resolved when done.
      * @since 3.6
      */
     confirmContactRequest(userId: number, siteId?: string): Promise<any> {
@@ -149,9 +149,9 @@ export class AddonMessagesProvider {
     /**
      * Send a contact request to another user.
      *
-     * @param {number} userId ID of the receiver of the contact request.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any>} Resolved when done.
+     * @param userId ID of the receiver of the contact request.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Resolved when done.
      * @since 3.6
      */
     createContactRequest(userId: number, siteId?: string): Promise<any> {
@@ -173,9 +173,9 @@ export class AddonMessagesProvider {
     /**
      * Decline a contact request from another user.
      *
-     * @param {number} userId ID of the user who made the contact request.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any>} Resolved when done.
+     * @param userId ID of the user who made the contact request.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Resolved when done.
      * @since 3.6
      */
     declineContactRequest(userId: number, siteId?: string): Promise<any> {
@@ -200,10 +200,10 @@ export class AddonMessagesProvider {
     /**
      * Delete a conversation.
      *
-     * @param {number} conversationId Conversation to delete.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @return {Promise<any>} Promise resolved when the conversation has been deleted.
+     * @param conversationId Conversation to delete.
+     * @param siteId Site ID. If not defined, use current site.
+     * @param userId User ID. If not defined, current user in the site.
+     * @return Promise resolved when the conversation has been deleted.
      */
     deleteConversation(conversationId: number, siteId?: string, userId?: number): Promise<any> {
         return this.deleteConversations([conversationId], siteId, userId);
@@ -212,10 +212,10 @@ export class AddonMessagesProvider {
     /**
      * Delete several conversations.
      *
-     * @param {number[]} conversationIds Conversations to delete.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @return {Promise<any>} Promise resolved when the conversations have been deleted.
+     * @param conversationIds Conversations to delete.
+     * @param siteId Site ID. If not defined, use current site.
+     * @param userId User ID. If not defined, current user in the site.
+     * @return Promise resolved when the conversations have been deleted.
      */
     deleteConversations(conversationIds: number[], siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -243,9 +243,9 @@ export class AddonMessagesProvider {
     /**
      * Delete a message (online or offline).
      *
-     * @param {any} message    Message to delete.
-     * @param {boolean} [deleteForAll] Whether the message should be deleted for all users.
-     * @return {Promise<any>}  Promise resolved when the message has been deleted.
+     * @param message Message to delete.
+     * @param deleteForAll Whether the message should be deleted for all users.
+     * @return Promise resolved when the message has been deleted.
      */
     deleteMessage(message: any, deleteForAll?: boolean): Promise<any> {
         if (message.id) {
@@ -268,10 +268,10 @@ export class AddonMessagesProvider {
     /**
      * Delete a message from the server.
      *
-     * @param {number} id       Message ID.
-     * @param {number} read     1 if message is read, 0 otherwise.
-     * @param {number} [userId] User we want to delete the message for. If not defined, use current user.
-     * @return {Promise<any>}   Promise resolved when the message has been deleted.
+     * @param id Message ID.
+     * @param read 1 if message is read, 0 otherwise.
+     * @param userId User we want to delete the message for. If not defined, use current user.
+     * @return Promise resolved when the message has been deleted.
      */
     deleteMessageOnline(id: number, read: number, userId?: number): Promise<any> {
         const params: any = {
@@ -291,9 +291,9 @@ export class AddonMessagesProvider {
     /**
      * Delete a message for all users.
      *
-     * @param {number} id Message ID.
-     * @param {number} [userId] User we want to delete the message for. If not defined, use current user.
-     * @return {Promise<any>} Promise resolved when the message has been deleted.
+     * @param id Message ID.
+     * @param userId User we want to delete the message for. If not defined, use current user.
+     * @return Promise resolved when the message has been deleted.
      */
     deleteMessageForAllOnline(id: number, userId?: number): Promise<any> {
         const params: any = {
@@ -309,9 +309,9 @@ export class AddonMessagesProvider {
     /**
      * Format a conversation.
      *
-     * @param {any} conversation Conversation to format.
-     * @param {number} userId User ID viewing the conversation.
-     * @return {any} Formatted conversation.
+     * @param conversation Conversation to format.
+     * @param userId User ID viewing the conversation.
+     * @return Formatted conversation.
      */
     protected formatConversation(conversation: any, userId: number): any {
         const numMessages = conversation.messages.length,
@@ -346,8 +346,8 @@ export class AddonMessagesProvider {
     /**
      * Get the cache key for blocked contacts.
      *
-     * @param {number} userId The user who's contacts we're looking for.
-     * @return {string} Cache key.
+     * @param userId The user who's contacts we're looking for.
+     * @return Cache key.
      */
     protected getCacheKeyForBlockedContacts(userId: number): string {
         return this.ROOT_CACHE_KEY + 'blockedContacts:' + userId;
@@ -356,7 +356,7 @@ export class AddonMessagesProvider {
     /**
      * Get the cache key for contacts.
      *
-     * @return {string} Cache key.
+     * @return Cache key.
      */
     protected getCacheKeyForContacts(): string {
         return this.ROOT_CACHE_KEY + 'contacts';
@@ -365,7 +365,7 @@ export class AddonMessagesProvider {
     /**
      * Get the cache key for comfirmed contacts.
      *
-     * @return {string} Cache key.
+     * @return Cache key.
      */
     protected getCacheKeyForUserContacts(): string {
         return this.ROOT_CACHE_KEY + 'userContacts';
@@ -374,7 +374,7 @@ export class AddonMessagesProvider {
     /**
      * Get the cache key for contact requests.
      *
-     * @return {string} Cache key.
+     * @return Cache key.
      */
     protected getCacheKeyForContactRequests(): string {
         return this.ROOT_CACHE_KEY + 'contactRequests';
@@ -383,7 +383,7 @@ export class AddonMessagesProvider {
     /**
      * Get the cache key for contact requests count.
      *
-     * @return {string} Cache key.
+     * @return Cache key.
      */
     protected getCacheKeyForContactRequestsCount(): string {
         return this.ROOT_CACHE_KEY + 'contactRequestsCount';
@@ -392,8 +392,8 @@ export class AddonMessagesProvider {
     /**
      * Get the cache key for a discussion.
      *
-     * @param {number} userId The other person with whom the current user is having the discussion.
-     * @return {string} Cache key.
+     * @param userId The other person with whom the current user is having the discussion.
+     * @return Cache key.
      */
     protected getCacheKeyForDiscussion(userId: number): string {
         return this.ROOT_CACHE_KEY + 'discussion:' + userId;
@@ -402,8 +402,8 @@ export class AddonMessagesProvider {
     /**
      * Get the cache key for the message count.
      *
-     * @param {number} userId  User ID.
-     * @return {string} Cache key.
+     * @param userId User ID.
+     * @return Cache key.
      */
     protected getCacheKeyForMessageCount(userId: number): string {
         return this.ROOT_CACHE_KEY + 'count:' + userId;
@@ -412,7 +412,7 @@ export class AddonMessagesProvider {
     /**
      * Get the cache key for unread conversation counts.
      *
-     * @return {string} Cache key.
+     * @return Cache key.
      */
     protected getCacheKeyForUnreadConversationCounts(): string {
         return this.ROOT_CACHE_KEY + 'unreadConversationCounts';
@@ -421,7 +421,7 @@ export class AddonMessagesProvider {
     /**
      * Get the cache key for the list of discussions.
      *
-     * @return {string} Cache key.
+     * @return Cache key.
      */
     protected getCacheKeyForDiscussions(): string {
         return this.ROOT_CACHE_KEY + 'discussions';
@@ -430,9 +430,9 @@ export class AddonMessagesProvider {
     /**
      * Get cache key for get conversations.
      *
-     * @param {number} userId User ID.
-     * @param {number} conversationId Conversation ID.
-     * @return {string} Cache key.
+     * @param userId User ID.
+     * @param conversationId Conversation ID.
+     * @return Cache key.
      */
     protected getCacheKeyForConversation(userId: number, conversationId: number): string {
         return this.ROOT_CACHE_KEY + 'conversation:' + userId + ':' + conversationId;
@@ -441,9 +441,9 @@ export class AddonMessagesProvider {
     /**
      * Get cache key for get conversations between users.
      *
-     * @param {number} userId User ID.
-     * @param {number} otherUserId Other user ID.
-     * @return {string} Cache key.
+     * @param userId User ID.
+     * @param otherUserId Other user ID.
+     * @return Cache key.
      */
     protected getCacheKeyForConversationBetweenUsers(userId: number, otherUserId: number): string {
         return this.ROOT_CACHE_KEY + 'conversationBetweenUsers:' + userId + ':' + otherUserId;
@@ -452,9 +452,9 @@ export class AddonMessagesProvider {
     /**
      * Get cache key for get conversation members.
      *
-     * @param {number} userId User ID.
-     * @param {number} conversationId Conversation ID.
-     * @return {string} Cache key.
+     * @param userId User ID.
+     * @param conversationId Conversation ID.
+     * @return Cache key.
      */
     protected getCacheKeyForConversationMembers(userId: number, conversationId: number): string {
         return this.ROOT_CACHE_KEY + 'conversationMembers:' + userId + ':' + conversationId;
@@ -463,9 +463,9 @@ export class AddonMessagesProvider {
     /**
      * Get cache key for get conversation messages.
      *
-     * @param {number} userId User ID.
-     * @param {number} conversationId Conversation ID.
-     * @return {string} Cache key.
+     * @param userId User ID.
+     * @param conversationId Conversation ID.
+     * @return Cache key.
      */
     protected getCacheKeyForConversationMessages(userId: number, conversationId: number): string {
         return this.ROOT_CACHE_KEY + 'conversationMessages:' + userId + ':' + conversationId;
@@ -474,10 +474,10 @@ export class AddonMessagesProvider {
     /**
      * Get cache key for get conversations.
      *
-     * @param {number} userId User ID.
-     * @param {number} [type] Filter by type.
-     * @param {boolean} [favourites] Filter favourites.
-     * @return {string} Cache key.
+     * @param userId User ID.
+     * @param type Filter by type.
+     * @param favourites Filter favourites.
+     * @return Cache key.
      */
     protected getCacheKeyForConversations(userId: number, type?: number, favourites?: boolean): string {
         return this.getCommonCacheKeyForUserConversations(userId) + ':' + type + ':' + favourites;
@@ -486,7 +486,7 @@ export class AddonMessagesProvider {
     /**
      * Get cache key for conversation counts.
      *
-     * @return {string} Cache key.
+     * @return Cache key.
      */
     protected getCacheKeyForConversationCounts(): string {
         return this.ROOT_CACHE_KEY + 'conversationCounts';
@@ -495,9 +495,9 @@ export class AddonMessagesProvider {
     /**
      * Get cache key for member info.
      *
-     * @param {number} userId User ID.
-     * @param {number} otherUserId The other user ID.
-     * @return {string} Cache key.
+     * @param userId User ID.
+     * @param otherUserId The other user ID.
+     * @return Cache key.
      */
     protected getCacheKeyForMemberInfo(userId: number, otherUserId: number): string {
         return this.ROOT_CACHE_KEY + 'memberInfo:' + userId + ':' + otherUserId;
@@ -506,8 +506,8 @@ export class AddonMessagesProvider {
     /**
      * Get cache key for get self conversation.
      *
-     * @param {number} userId User ID.
-     * @return {string} Cache key.
+     * @param userId User ID.
+     * @return Cache key.
      */
     protected getCacheKeyForSelfConversation(userId: number): string {
         return this.ROOT_CACHE_KEY + 'selfconversation:' + userId;
@@ -516,8 +516,8 @@ export class AddonMessagesProvider {
     /**
      * Get common cache key for get user conversations.
      *
-     * @param {number} userId User ID.
-     * @return {string} Cache key.
+     * @param userId User ID.
+     * @return Cache key.
      */
     protected getCommonCacheKeyForUserConversations(userId: number): string {
         return this.getRootCacheKeyForConversations() + userId;
@@ -526,7 +526,7 @@ export class AddonMessagesProvider {
     /**
      * Get root cache key for get conversations.
      *
-     * @return {string} Cache key.
+     * @return Cache key.
      */
     protected getRootCacheKeyForConversations(): string {
         return this.ROOT_CACHE_KEY + 'conversations:';
@@ -535,8 +535,8 @@ export class AddonMessagesProvider {
     /**
      * Get all the contacts of the current user.
      *
-     * @param  {string} [siteId]  Site ID. If not defined, use current site.
-     * @return {Promise<any>} Resolved with the WS data.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Resolved with the WS data.
      * @deprecated since Moodle 3.6
      */
     getAllContacts(siteId?: string): Promise<any> {
@@ -561,8 +561,8 @@ export class AddonMessagesProvider {
     /**
      * Get all the users blocked by the current user.
      *
-     * @param  {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any>} Resolved with the WS data.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Resolved with the WS data.
      */
     getBlockedContacts(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -584,8 +584,8 @@ export class AddonMessagesProvider {
      *
      * This excludes the blocked users.
      *
-     * @param  {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any>} Resolved with the WS data.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Resolved with the WS data.
      * @deprecated since Moodle 3.6
      */
     getContacts(siteId?: string): Promise<any> {
@@ -618,10 +618,10 @@ export class AddonMessagesProvider {
     /**
      * Get the list of user contacts.
      *
-     * @param {number} [limitFrom=0] Position of the first contact to fetch.
-     * @param {number} [limitNum] Number of contacts to fetch. Default is AddonMessagesProvider.LIMIT_CONTACTS.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<{contacts: any[], canLoadMore: boolean}>} Resolved with the list of user contacts.
+     * @param limitFrom Position of the first contact to fetch.
+     * @param limitNum Number of contacts to fetch. Default is AddonMessagesProvider.LIMIT_CONTACTS.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Resolved with the list of user contacts.
      * @since 3.6
      */
     getUserContacts(limitFrom: number = 0, limitNum: number = AddonMessagesProvider.LIMIT_CONTACTS , siteId?: string):
@@ -660,10 +660,10 @@ export class AddonMessagesProvider {
     /**
      * Get the contact request sent to the current user.
      *
-     * @param {number} [limitFrom=0] Position of the first contact request to fetch.
-     * @param {number} [limitNum] Number of contact requests to fetch. Default is AddonMessagesProvider.LIMIT_CONTACTS.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<{requests: any[], canLoadMore: boolean}>} Resolved with the list of contact requests.
+     * @param limitFrom Position of the first contact request to fetch.
+     * @param limitNum Number of contact requests to fetch. Default is AddonMessagesProvider.LIMIT_CONTACTS.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Resolved with the list of contact requests.
      * @since 3.6
      */
     getContactRequests(limitFrom: number = 0, limitNum: number =  AddonMessagesProvider.LIMIT_CONTACTS, siteId?: string):
@@ -702,8 +702,8 @@ export class AddonMessagesProvider {
     /**
      * Get the number of contact requests sent to the current user.
      *
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<number>} Resolved with the number of contact requests.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Resolved with the number of contact requests.
      * @since 3.6
      */
     getContactRequestsCount(siteId?: string): Promise<number> {
@@ -728,19 +728,19 @@ export class AddonMessagesProvider {
     /**
      * Get a conversation by the conversation ID.
      *
-     * @param {number} conversationId Conversation ID to fetch.
-     * @param {boolean} [includeContactRequests] Include contact requests.
-     * @param {boolean} [includePrivacyInfo] Include privacy info.
-     * @param {number} [messageOffset=0] Offset for messages list.
-     * @param {number} [messageLimit=1] Limit of messages. Defaults to 1 (last message).
-     *                                  We recommend getConversationMessages to get them.
-     * @param {number} [memberOffset=0] Offset for members list.
-     * @param {number} [memberLimit=2] Limit of members. Defaults to 2 (to be able to know the other user in individual ones).
-     *                                 We recommend getConversationMembers to get them.
-     * @param {boolean} [newestFirst=true] Whether to order messages by newest first.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @return {Promise<any>} Promise resolved with the response.
+     * @param conversationId Conversation ID to fetch.
+     * @param includeContactRequests Include contact requests.
+     * @param includePrivacyInfo Include privacy info.
+     * @param messageOffset Offset for messages list.
+     * @param messageLimit Limit of messages. Defaults to 1 (last message).
+     *                     We recommend getConversationMessages to get them.
+     * @param memberOffset Offset for members list.
+     * @param memberLimit Limit of members. Defaults to 2 (to be able to know the other user in individual ones).
+     *                    We recommend getConversationMembers to get them.
+     * @param newestFirst Whether to order messages by newest first.
+     * @param siteId Site ID. If not defined, use current site.
+     * @param userId User ID. If not defined, current user in the site.
+     * @return Promise resolved with the response.
      * @since 3.6
      */
     getConversation(conversationId: number, includeContactRequests?: boolean, includePrivacyInfo?: boolean,
@@ -774,20 +774,20 @@ export class AddonMessagesProvider {
     /**
      * Get a conversation between two users.
      *
-     * @param {number} otherUserId The other user ID.
-     * @param {boolean} [includeContactRequests] Include contact requests.
-     * @param {boolean} [includePrivacyInfo] Include privacy info.
-     * @param {number} [messageOffset=0] Offset for messages list.
-     * @param {number} [messageLimit=1] Limit of messages. Defaults to 1 (last message).
-     *                                  We recommend getConversationMessages to get them.
-     * @param {number} [memberOffset=0] Offset for members list.
-     * @param {number} [memberLimit=2] Limit of members. Defaults to 2 (to be able to know the other user in individual ones).
-     *                                 We recommend getConversationMembers to get them.
-     * @param {boolean} [newestFirst=true] Whether to order messages by newest first.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @param {boolean} [preferCache] True if shouldn't call WS if data is cached, false otherwise.
-     * @return {Promise<any>} Promise resolved with the response.
+     * @param otherUserId The other user ID.
+     * @param includeContactRequests Include contact requests.
+     * @param includePrivacyInfo Include privacy info.
+     * @param messageOffset Offset for messages list.
+     * @param messageLimit Limit of messages. Defaults to 1 (last message).
+     *                     We recommend getConversationMessages to get them.
+     * @param memberOffset Offset for members list.
+     * @param memberLimit Limit of members. Defaults to 2 (to be able to know the other user in individual ones).
+     *                    We recommend getConversationMembers to get them.
+     * @param newestFirst Whether to order messages by newest first.
+     * @param siteId Site ID. If not defined, use current site.
+     * @param userId User ID. If not defined, current user in the site.
+     * @param preferCache True if shouldn't call WS if data is cached, false otherwise.
+     * @return Promise resolved with the response.
      * @since 3.6
      */
     getConversationBetweenUsers(otherUserId: number, includeContactRequests?: boolean, includePrivacyInfo?: boolean,
@@ -822,12 +822,12 @@ export class AddonMessagesProvider {
     /**
      * Get a conversation members.
      *
-     * @param {number} conversationId Conversation ID to fetch.
-     * @param {number} [limitFrom=0] Offset for members list.
-     * @param {number} [limitTo] Limit of members.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @return {Promise<any>} Promise resolved with the response.
+     * @param conversationId Conversation ID to fetch.
+     * @param limitFrom Offset for members list.
+     * @param limitTo Limit of members.
+     * @param siteId Site ID. If not defined, use current site.
+     * @param userId User ID. If not defined, current user in the site.
+     * @return Promise resolved with the response.
      * @since 3.6
      */
     getConversationMembers(conversationId: number, limitFrom: number = 0, limitTo?: number, includeContactRequests?: boolean,
@@ -872,15 +872,15 @@ export class AddonMessagesProvider {
     /**
      * Get a conversation by the conversation ID.
      *
-     * @param {number} conversationId Conversation ID to fetch.
-     * @param {boolean} excludePending True to exclude messages pending to be sent.
-     * @param {number} [limitFrom=0] Offset for messages list.
-     * @param {number} [limitTo] Limit of messages.
-     * @param {boolean} [newestFirst=true] Whether to order messages by newest first.
-     * @param {number} [timeFrom] The timestamp from which the messages were created.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @return {Promise<any>} Promise resolved with the response.
+     * @param conversationId Conversation ID to fetch.
+     * @param excludePending True to exclude messages pending to be sent.
+     * @param limitFrom Offset for messages list.
+     * @param limitTo Limit of messages.
+     * @param newestFirst Whether to order messages by newest first.
+     * @param timeFrom The timestamp from which the messages were created.
+     * @param siteId Site ID. If not defined, use current site.
+     * @param userId User ID. If not defined, current user in the site.
+     * @return Promise resolved with the response.
      * @since 3.6
      */
     getConversationMessages(conversationId: number, excludePending: boolean, limitFrom: number = 0, limitTo?: number,
@@ -963,15 +963,15 @@ export class AddonMessagesProvider {
      * Get the discussions of a certain user. This function is used in Moodle sites higher than 3.6.
      * If the site is older than 3.6, please use getDiscussions.
      *
-     * @param {number} [type] Filter by type.
-     * @param {boolean} [favourites] Whether to restrict the results to contain NO favourite conversations (false), ONLY favourite
-     *                               conversation (true), or ignore any restriction altogether (undefined or null).
-     * @param {number} [limitFrom=0] The offset to start at.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @param {boolean} [forceCache] True if it should return cached data. Has priority over ignoreCache.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<any>} Promise resolved with the conversations.
+     * @param type Filter by type.
+     * @param favourites Whether to restrict the results to contain NO favourite conversations (false), ONLY favourite
+     *                   conversation (true), or ignore any restriction altogether (undefined or null).
+     * @param limitFrom The offset to start at.
+     * @param siteId Site ID. If not defined, use current site.
+     * @param userId User ID. If not defined, current user in the site.
+     * @param forceCache True if it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise resolved with the conversations.
      * @since 3.6
      */
     getConversations(type?: number, favourites?: boolean, limitFrom: number = 0, siteId?: string, userId?: number,
@@ -1041,9 +1041,9 @@ export class AddonMessagesProvider {
     /**
      * Get conversation counts by type.
      *
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<favourites: number, individual: number, group: number, self: number>} Promise resolved with favourite,
-     *                                      individual, group and self conversation counts.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with favourite,
+     *         individual, group and self conversation counts.
      * @since 3.6
      */
     getConversationCounts(siteId?: string): Promise<{favourites: number, individual: number, group: number, self: number}> {
@@ -1069,15 +1069,15 @@ export class AddonMessagesProvider {
     /**
      * Return the current user's discussion with another user.
      *
-     * @param  {number} userId               The ID of the other user.
-     * @param  {boolean} excludePending      True to exclude messages pending to be sent.
-     * @param  {number} [lfReceivedUnread=0] Number of unread received messages already fetched, so fetch will be done from this.
-     * @param  {number} [lfReceivedRead=0]   Number of read received messages already fetched, so fetch will be done from this.
-     * @param  {number} [lfSentUnread=0]     Number of unread sent messages already fetched, so fetch will be done from this.
-     * @param  {number} [lfSentRead=0]       Number of read sent messages already fetched, so fetch will be done from this.
-     * @param  {boolean} [toDisplay=true]    True if messages will be displayed to the user, either in view or in a notification.
-     * @param  {string} [siteId]             Site ID. If not defined, use current site.
-     * @return {Promise<any>}                     Promise resolved with messages and a boolean telling if can load more messages.
+     * @param userId The ID of the other user.
+     * @param excludePending True to exclude messages pending to be sent.
+     * @param lfReceivedUnread Number of unread received messages already fetched, so fetch will be done from this.
+     * @param lfReceivedRead Number of read received messages already fetched, so fetch will be done from this.
+     * @param lfSentUnread Number of unread sent messages already fetched, so fetch will be done from this.
+     * @param lfSentRead Number of read sent messages already fetched, so fetch will be done from this.
+     * @param toDisplay True if messages will be displayed to the user, either in view or in a notification.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with messages and a boolean telling if can load more messages.
      */
     getDiscussion(userId: number, excludePending: boolean, lfReceivedUnread: number = 0, lfReceivedRead: number = 0,
             lfSentUnread: number = 0, lfSentRead: number = 0, toDisplay: boolean = true, siteId?: string): Promise<any> {
@@ -1152,8 +1152,8 @@ export class AddonMessagesProvider {
      * Get the discussions of the current user. This function is used in Moodle sites older than 3.6.
      * If the site is 3.6 or higher, please use getConversations.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Resolved with an object where the keys are the user ID of the other user.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Resolved with an object where the keys are the user ID of the other user.
      */
     getDiscussions(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1240,9 +1240,9 @@ export class AddonMessagesProvider {
     /**
      * Get user images for all the discussions that don't have one already.
      *
-     * @param {any} discussions List of discussions.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}             Promise always resolved. Resolve param is the formatted discussions.
+     * @param discussions List of discussions.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise always resolved. Resolve param is the formatted discussions.
      */
     protected getDiscussionsUserImg(discussions: any, siteId?: string): Promise<any> {
         const promises = [];
@@ -1266,10 +1266,10 @@ export class AddonMessagesProvider {
     /**
      * Get conversation member info by user id, works even if no conversation betwen the users exists.
      *
-     * @param {number} otherUserId The other user ID.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @return {Promise<any>} Promise resolved with the member info.
+     * @param otherUserId The other user ID.
+     * @param siteId Site ID. If not defined, use current site.
+     * @param userId User ID. If not defined, current user in the site.
+     * @return Promise resolved with the member info.
      * @since 3.6
      */
     getMemberInfo(otherUserId: number, siteId?: string, userId?: number): Promise<any> {
@@ -1301,7 +1301,7 @@ export class AddonMessagesProvider {
     /**
      * Get the cache key for the get message preferences call.
      *
-     * @return {string} Cache key.
+     * @return Cache key.
      */
     protected getMessagePreferencesCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'messagePreferences';
@@ -1310,8 +1310,8 @@ export class AddonMessagesProvider {
     /**
      * Get message preferences.
      *
-     * @param  {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any>}         Promise resolved with the message preferences.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with the message preferences.
      */
     getMessagePreferences(siteId?: string): Promise<any> {
         this.logger.debug('Get message preferences');
@@ -1337,11 +1337,10 @@ export class AddonMessagesProvider {
     /**
      * Get messages according to the params.
      *
-     * @param  {any} params            Parameters to pass to the WS.
-     * @param  {any} preSets           Set of presets for the WS.
-     * @param  {boolean} [toDisplay=true] True if messages will be displayed to the user, either in view or in a notification.
-     * @param  {string} [siteId]          Site ID. If not defined, use current site.
-     * @return {Promise<any>}
+     * @param params Parameters to pass to the WS.
+     * @param preSets Set of presets for the WS.
+     * @param toDisplay True if messages will be displayed to the user, either in view or in a notification.
+     * @param siteId Site ID. If not defined, use current site.
      */
     protected getMessages(params: any, preSets: any, toDisplay: boolean = true, siteId?: string): Promise<any> {
         params['type'] = 'conversations';
@@ -1372,13 +1371,12 @@ export class AddonMessagesProvider {
     /**
      * Get the most recent messages.
      *
-     * @param  {any} params              Parameters to pass to the WS.
-     * @param  {any} preSets             Set of presets for the WS.
-     * @param  {number} [limitFromUnread=0] Number of read messages already fetched, so fetch will be done from this number.
-     * @param  {number} [limitFromRead=0]   Number of unread messages already fetched, so fetch will be done from this number.
-     * @param  {boolean} [toDisplay=true]   True if messages will be displayed to the user, either in view or in a notification.
-     * @param  {string} [siteId]            Site ID. If not defined, use current site.
-     * @return {Promise<any>}
+     * @param params Parameters to pass to the WS.
+     * @param preSets Set of presets for the WS.
+     * @param limitFromUnread Number of read messages already fetched, so fetch will be done from this number.
+     * @param limitFromRead Number of unread messages already fetched, so fetch will be done from this number.
+     * @param toDisplay True if messages will be displayed to the user, either in view or in a notification.
+     * @param siteId Site ID. If not defined, use current site.
      */
     protected getRecentMessages(params: any, preSets: any, limitFromUnread: number = 0, limitFromRead: number = 0,
             toDisplay: boolean = true, siteId?: string): Promise<any> {
@@ -1419,13 +1417,13 @@ export class AddonMessagesProvider {
     /**
      * Get a self conversation.
      *
-     * @param {number} [messageOffset=0] Offset for messages list.
-     * @param {number} [messageLimit=1] Limit of messages. Defaults to 1 (last message).
-     *                                  We recommend getConversationMessages to get them.
-     * @param {boolean} [newestFirst=true] Whether to order messages by newest first.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @param {string} [userId] User ID to get the self conversation for. If not defined, current user in the site.
-     * @return {Promise<any>} Promise resolved with the response.
+     * @param messageOffset Offset for messages list.
+     * @param messageLimit Limit of messages. Defaults to 1 (last message).
+     *                     We recommend getConversationMessages to get them.
+     * @param newestFirst Whether to order messages by newest first.
+     * @param siteId Site ID. If not defined, use current site.
+     * @param userId User ID to get the self conversation for. If not defined, current user in the site.
+     * @return Promise resolved with the response.
      * @since 3.7
      */
     getSelfConversation(messageOffset: number = 0, messageLimit: number = 1, newestFirst: boolean = true, siteId?: string,
@@ -1453,8 +1451,8 @@ export class AddonMessagesProvider {
     /**
      * Get unread conversation counts by type.
      *
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any>} Resolved with the unread favourite, individual and group conversation counts.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Resolved with the unread favourite, individual and group conversation counts.
      */
     getUnreadConversationCounts(siteId?: string):
             Promise<{favourites: number, individual: number, group: number, self: number, orMore?: boolean}> {
@@ -1531,11 +1529,11 @@ export class AddonMessagesProvider {
     /**
      * Get the latest unread received messages.
      *
-     * @param  {boolean} [toDisplay=true] True if messages will be displayed to the user, either in view or in a notification.
-     * @param  {boolean} [forceCache]     True if it should return cached data. Has priority over ignoreCache.
-     * @param  {boolean} [ignoreCache]    True if it should ignore cached data (it will always fail in offline or server down).
-     * @param  {string} [siteId]          Site ID. If not defined, use current site.
-     * @return {Promise<any>}                  Promise resolved with the message unread count.
+     * @param toDisplay True if messages will be displayed to the user, either in view or in a notification.
+     * @param forceCache True if it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with the message unread count.
      */
     getUnreadReceivedMessages(toDisplay: boolean = true, forceCache: boolean = false, ignoreCache: boolean = false,
             siteId?: string): Promise<any> {
@@ -1563,9 +1561,9 @@ export class AddonMessagesProvider {
     /**
      * Invalidate all contacts cache.
      *
-     * @param {number} userId    The user ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Resolved when done.
+     * @param userId The user ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Resolved when done.
      */
     invalidateAllContactsCache(userId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -1578,9 +1576,8 @@ export class AddonMessagesProvider {
     /**
      * Invalidate blocked contacts cache.
      *
-     * @param {number} userId    The user ID.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}
+     * @param userId The user ID.
+     * @param siteId Site ID. If not defined, current site.
      */
     invalidateBlockedContactsCache(userId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1591,8 +1588,8 @@ export class AddonMessagesProvider {
     /**
      * Invalidate contacts cache.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Resolved when done.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Resolved when done.
      */
     invalidateContactsCache(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1603,8 +1600,8 @@ export class AddonMessagesProvider {
     /**
      * Invalidate user contacts cache.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Resolved when done.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Resolved when done.
      */
     invalidateUserContacts(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1615,8 +1612,8 @@ export class AddonMessagesProvider {
     /**
      * Invalidate contact requests cache.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Resolved when done.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Resolved when done.
      */
     invalidateContactRequestsCache(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1627,8 +1624,8 @@ export class AddonMessagesProvider {
     /**
      * Invalidate contact requests count cache.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Resolved when done.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Resolved when done.
      */
     invalidateContactRequestsCountCache(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1639,10 +1636,10 @@ export class AddonMessagesProvider {
     /**
      * Invalidate conversation.
      *
-     * @param {number} conversationId Conversation ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @return {Promise<any>} Resolved when done.
+     * @param conversationId Conversation ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User ID. If not defined, current user in the site.
+     * @return Resolved when done.
      */
     invalidateConversation(conversationId: number, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1655,10 +1652,10 @@ export class AddonMessagesProvider {
     /**
      * Invalidate conversation between users.
      *
-     * @param {number} otherUserId Other user ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @return {Promise<any>} Resolved when done.
+     * @param otherUserId Other user ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User ID. If not defined, current user in the site.
+     * @return Resolved when done.
      */
     invalidateConversationBetweenUsers(otherUserId: number, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1671,10 +1668,10 @@ export class AddonMessagesProvider {
     /**
      * Invalidate conversation members cache.
      *
-     * @param {number} conversationId Conversation ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @return {Promise<any>} Resolved when done.
+     * @param conversationId Conversation ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User ID. If not defined, current user in the site.
+     * @return Resolved when done.
      */
     invalidateConversationMembers(conversationId: number, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1687,10 +1684,10 @@ export class AddonMessagesProvider {
     /**
      * Invalidate conversation messages cache.
      *
-     * @param {number} conversationId Conversation ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @return {Promise<any>} Resolved when done.
+     * @param conversationId Conversation ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User ID. If not defined, current user in the site.
+     * @return Resolved when done.
      */
     invalidateConversationMessages(conversationId: number, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1703,9 +1700,9 @@ export class AddonMessagesProvider {
     /**
      * Invalidate conversations cache.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @return {Promise<any>} Resolved when done.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User ID. If not defined, current user in the site.
+     * @return Resolved when done.
      */
     invalidateConversations(siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1718,8 +1715,8 @@ export class AddonMessagesProvider {
     /**
      * Invalidate conversation counts cache.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Resolved when done.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Resolved when done.
      */
     invalidateConversationCounts(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1730,9 +1727,9 @@ export class AddonMessagesProvider {
     /**
      * Invalidate discussion cache.
      *
-     * @param {number} userId    The user ID with whom the current user is having the discussion.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Resolved when done.
+     * @param userId The user ID with whom the current user is having the discussion.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Resolved when done.
      */
     invalidateDiscussionCache(userId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1745,8 +1742,8 @@ export class AddonMessagesProvider {
      *
      * Note that {@link this.getDiscussions} uses the contacts, so we need to invalidate contacts too.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Resolved when done.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Resolved when done.
      */
     invalidateDiscussionsCache(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1761,10 +1758,10 @@ export class AddonMessagesProvider {
     /**
      * Invalidate member info cache.
      *
-     * @param {number} otherUserId The other user ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @return {Promise<any>} Resolved when done.
+     * @param otherUserId The other user ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User ID. If not defined, current user in the site.
+     * @return Resolved when done.
      */
     invalidateMemberInfo(otherUserId: number, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1777,8 +1774,8 @@ export class AddonMessagesProvider {
     /**
      * Invalidate get message preferences.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}         Promise resolved when data is invalidated.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when data is invalidated.
      */
     invalidateMessagePreferences(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1789,9 +1786,9 @@ export class AddonMessagesProvider {
     /**
      * Invalidate all cache entries with member info.
      *
-     * @param {number} userId Id of the user to invalidate.
-     * @param {CoreSite} site Site object.
-     * @return {Promie<any>} Promise resolved when done.
+     * @param userId Id of the user to invalidate.
+     * @param site Site object.
+     * @return Promise resolved when done.
      */
     protected invalidateAllMemberInfo(userId: number, site: CoreSite): Promise<any> {
         return this.utils.allPromises([
@@ -1814,9 +1811,9 @@ export class AddonMessagesProvider {
     /**
      * Invalidate a self conversation.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @return {Promise<any>} Resolved when done.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User ID. If not defined, current user in the site.
+     * @return Resolved when done.
      */
     invalidateSelfConversation(siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1829,8 +1826,8 @@ export class AddonMessagesProvider {
     /**
      * Invalidate unread conversation counts cache.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Resolved when done.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Resolved when done.
      */
     invalidateUnreadConversationCounts(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1848,9 +1845,9 @@ export class AddonMessagesProvider {
     /**
      * Checks if the a user is blocked by the current user.
      *
-     * @param {number} userId The user ID to check against.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<boolean>} Resolved with boolean, rejected when we do not know.
+     * @param userId The user ID to check against.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Resolved with boolean, rejected when we do not know.
      */
     isBlocked(userId: number, siteId?: string): Promise<boolean> {
         if (this.isGroupMessagingEnabled()) {
@@ -1873,9 +1870,9 @@ export class AddonMessagesProvider {
     /**
      * Checks if the a user is a contact of the current user.
      *
-     * @param {number} userId The user ID to check against.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<boolean>} Resolved with boolean, rejected when we do not know.
+     * @param userId The user ID to check against.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Resolved with boolean, rejected when we do not know.
      */
     isContact(userId: number, siteId?: string): Promise<boolean> {
         if (this.isGroupMessagingEnabled()) {
@@ -1900,7 +1897,7 @@ export class AddonMessagesProvider {
     /**
      * Returns whether or not group messaging is supported.
      *
-     * @return {boolean} If related WS is available on current site.
+     * @return If related WS is available on current site.
      * @since 3.6
      */
     isGroupMessagingEnabled(): boolean {
@@ -1910,8 +1907,8 @@ export class AddonMessagesProvider {
     /**
      * Returns whether or not group messaging is supported in a certain site.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with boolean: whether related WS is available on a certain site.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether related WS is available on a certain site.
      * @since 3.6
      */
     isGroupMessagingEnabledInSite(siteId?: string): Promise<boolean> {
@@ -1925,7 +1922,7 @@ export class AddonMessagesProvider {
     /**
      * Returns whether or not we can mark all messages as read.
      *
-     * @return {boolean} If related WS is available on current site.
+     * @return If related WS is available on current site.
      * @since  3.2
      */
     isMarkAllMessagesReadEnabled(): boolean {
@@ -1935,7 +1932,7 @@ export class AddonMessagesProvider {
     /**
      * Returns whether or not we can count unread messages.
      *
-     * @return {boolean} True if enabled, false otherwise.
+     * @return True if enabled, false otherwise.
      * @since  3.2
      */
     isMessageCountEnabled(): boolean {
@@ -1945,7 +1942,7 @@ export class AddonMessagesProvider {
     /**
      * Returns whether or not the message preferences are enabled for the current site.
      *
-     * @return {boolean} True if enabled, false otherwise.
+     * @return True if enabled, false otherwise.
      * @since  3.2
      */
     isMessagePreferencesEnabled(): boolean {
@@ -1957,8 +1954,8 @@ export class AddonMessagesProvider {
      *
      * This could call a WS so do not abuse this method.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}   Resolved when enabled, otherwise rejected.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Resolved when enabled, otherwise rejected.
      */
     isMessagingEnabledForSite(siteId?: string): Promise<any> {
         return this.isPluginEnabled(siteId).then((enabled) => {
@@ -1971,8 +1968,8 @@ export class AddonMessagesProvider {
     /**
      * Returns whether or not a site supports muting or unmuting a conversation.
      *
-     * @param {CoreSite} [site] The site to check, undefined for current site.
-     * @return {boolean} If related WS is available on current site.
+     * @param site The site to check, undefined for current site.
+     * @return If related WS is available on current site.
      * @since 3.7
      */
     isMuteConversationEnabled(site?: CoreSite): boolean {
@@ -1984,8 +1981,8 @@ export class AddonMessagesProvider {
     /**
      * Returns whether or not a site supports muting or unmuting a conversation.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with boolean: whether related WS is available on a certain site.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether related WS is available on a certain site.
      * @since 3.7
      */
     isMuteConversationEnabledInSite(siteId?: string): Promise<boolean> {
@@ -1999,8 +1996,8 @@ export class AddonMessagesProvider {
     /**
      * Returns whether or not the plugin is enabled in a certain site.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved with true if enabled, rejected or resolved with false otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with true if enabled, rejected or resolved with false otherwise.
      */
     isPluginEnabled(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -2011,7 +2008,6 @@ export class AddonMessagesProvider {
     /**
      * Returns whether or not we can search messages.
      *
-     * @return {boolean}
      * @since  3.2
      */
     isSearchMessagesEnabled(): boolean {
@@ -2021,8 +2017,8 @@ export class AddonMessagesProvider {
     /**
      * Returns whether or not self conversation is supported in a certain site.
      *
-     * @param {CoreSite} [site] Site. If not defined, current site.
-     * @return {boolean} If related WS is available on the site.
+     * @param site Site. If not defined, current site.
+     * @return If related WS is available on the site.
      * @since 3.7
      */
     isSelfConversationEnabled(site?: CoreSite): boolean {
@@ -2034,8 +2030,8 @@ export class AddonMessagesProvider {
     /**
      * Returns whether or not self conversation is supported in a certain site.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with boolean: whether related WS is available on a certain site.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether related WS is available on a certain site.
      * @since 3.7
      */
     isSelfConversationEnabledInSite(siteId?: string): Promise<boolean> {
@@ -2049,9 +2045,9 @@ export class AddonMessagesProvider {
     /**
      * Mark message as read.
      *
-     * @param {number} messageId ID of message to mark as read
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @returns {Promise<any>} Promise resolved with boolean marking success or not.
+     * @param messageId ID of message to mark as read
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean marking success or not.
      */
     markMessageRead(messageId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -2067,8 +2063,8 @@ export class AddonMessagesProvider {
     /**
      * Mark all messages of a conversation as read.
      *
-     * @param {number} conversationId Conversation ID.
-     * @returns {Promise<any>} Promise resolved if success.
+     * @param conversationId Conversation ID.
+     * @return Promise resolved if success.
      * @since 3.6
      */
     markAllConversationMessagesRead(conversationId?: number): Promise<any> {
@@ -2086,8 +2082,8 @@ export class AddonMessagesProvider {
     /**
      * Mark all messages of a discussion as read.
      *
-     * @param   {number}  userIdFrom  User Id for the sender.
-     * @returns {Promise<any>} Promise resolved with boolean marking success or not.
+     * @param userIdFrom User Id for the sender.
+     * @return Promise resolved with boolean marking success or not.
      */
     markAllMessagesRead(userIdFrom?: number): Promise<any> {
         const params = {
@@ -2104,11 +2100,11 @@ export class AddonMessagesProvider {
     /**
      * Mute or unmute a conversation.
      *
-     * @param {number} conversationId Conversation ID.
-     * @param {boolean} set Whether to mute or unmute.
-     * @param {string} [siteId]  Site ID. If not defined, use current site.
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @return {Promise<any>}  Resolved when done.
+     * @param conversationId Conversation ID.
+     * @param set Whether to mute or unmute.
+     * @param siteId Site ID. If not defined, use current site.
+     * @param userId User ID. If not defined, current user in the site.
+     * @return Resolved when done.
      */
     muteConversation(conversationId: number, set: boolean, siteId?: string, userId?: number): Promise<any> {
         return this.muteConversations([conversationId], set, siteId, userId);
@@ -2117,11 +2113,11 @@ export class AddonMessagesProvider {
     /**
      * Mute or unmute some conversations.
      *
-     * @param {number[]} conversations Conversation IDs.
-     * @param {boolean} set Whether to mute or unmute.
-     * @param {string} [siteId]  Site ID. If not defined, use current site.
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @return {Promise<any>}  Resolved when done.
+     * @param conversations Conversation IDs.
+     * @param set Whether to mute or unmute.
+     * @param siteId Site ID. If not defined, use current site.
+     * @param userId User ID. If not defined, current user in the site.
+     * @return Resolved when done.
      */
     muteConversations(conversations: number[], set: boolean, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -2151,8 +2147,8 @@ export class AddonMessagesProvider {
     /**
      * Refresh the number of contact requests sent to the current user.
      *
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<number>} Resolved with the number of contact requests.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Resolved with the number of contact requests.
      * @since 3.6
      */
     refreshContactRequestsCount(siteId?: string): Promise<number> {
@@ -2166,8 +2162,8 @@ export class AddonMessagesProvider {
     /**
      * Refresh unread conversation counts and trigger event.
      *
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any>} Resolved with the unread favourite, individual and group conversation counts.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Resolved with the unread favourite, individual and group conversation counts.
      */
     refreshUnreadConversationCounts(siteId?: string):
             Promise<{favourites: number, individual: number, group: number, orMore?: boolean}> {
@@ -2182,9 +2178,9 @@ export class AddonMessagesProvider {
     /**
      * Remove a contact.
      *
-     * @param {number} userId User ID of the person to remove.
-     * @param {string} [siteId]  Site ID. If not defined, use current site.
-     * @return {Promise<any>}  Resolved when done.
+     * @param userId User ID of the person to remove.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Resolved when done.
      */
     removeContact(userId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -2218,10 +2214,9 @@ export class AddonMessagesProvider {
      * of results which would take a while to process. The limit here is just a convenience to
      * prevent viewed to crash because too many DOM elements are created.
      *
-     * @param {string} query The query string.
-     * @param {number} [limit=100] The number of results to return, 0 for none.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}
+     * @param query The query string.
+     * @param limit The number of results to return, 0 for none.
+     * @param siteId Site ID. If not defined, current site.
      */
     searchContacts(query: string, limit: number = 100, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -2247,12 +2242,12 @@ export class AddonMessagesProvider {
     /**
      * Search for all the messges with a specific text.
      *
-     * @param {string} query The query string.
-     * @param {number} [userId] The user ID. If not defined, current user.
-     * @param {number} [limitFrom=0] Position of the first result to get. Defaults to 0.
-     * @param {number} [limitNum] Number of results to get. Defaults to AddonMessagesProvider.LIMIT_SEARCH.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the results.
+     * @param query The query string.
+     * @param userId The user ID. If not defined, current user.
+     * @param limitFrom Position of the first result to get. Defaults to 0.
+     * @param limitNum Number of results to get. Defaults to AddonMessagesProvider.LIMIT_SEARCH.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the results.
      */
     searchMessages(query: string, userId?: number, limitFrom: number = 0, limitNum: number = AddonMessagesProvider.LIMIT_SEARCH,
             siteId?: string): Promise<{messages: any[], canLoadMore: boolean}> {
@@ -2294,11 +2289,11 @@ export class AddonMessagesProvider {
     /**
      * Search for users.
      *
-     * @param {string} query Text to search for.
-     * @param {number} [limitFrom=0] Position of the first found user to fetch.
-     * @param {number} [limitNum] Number of found users to fetch. Defaults to AddonMessagesProvider.LIMIT_SEARCH.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any>} Resolved with two lists of found users: contacts and non-contacts.
+     * @param query Text to search for.
+     * @param limitFrom Position of the first found user to fetch.
+     * @param limitNum Number of found users to fetch. Defaults to AddonMessagesProvider.LIMIT_SEARCH.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Resolved with two lists of found users: contacts and non-contacts.
      * @since 3.6
      */
     searchUsers(query: string, limitFrom: number = 0, limitNum: number = AddonMessagesProvider.LIMIT_SEARCH, siteId?: string):
@@ -2339,12 +2334,12 @@ export class AddonMessagesProvider {
     /**
      * Send a message to someone.
      *
-     * @param {number} userIdTo  User ID to send the message to.
-     * @param {string} message   The message to send
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}       Promise resolved with:
-     *                                 - sent (Boolean) True if message was sent to server, false if stored in device.
-     *                                 - message (Object) If sent=false, contains the stored message.
+     * @param userIdTo User ID to send the message to.
+     * @param message The message to send
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with:
+     *         - sent (Boolean) True if message was sent to server, false if stored in device.
+     *         - message (Object) If sent=false, contains the stored message.
      */
     sendMessage(toUserId: number, message: string, siteId?: string): Promise<any> {
         // Convenience function to store a message to be synchronized later.
@@ -2395,10 +2390,10 @@ export class AddonMessagesProvider {
     /**
      * Send a message to someone. It will fail if offline or cannot connect.
      *
-     * @param {number} toUserId  User ID to send the message to.
-     * @param {string} message   The message to send
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved if success, rejected if failure.
+     * @param toUserId User ID to send the message to.
+     * @param message The message to send
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if success, rejected if failure.
      */
     sendMessageOnline(toUserId: number, message: string, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -2430,10 +2425,10 @@ export class AddonMessagesProvider {
      * IMPORTANT: Sending several messages at once for the same discussions can cause problems with display order,
      * since messages with same timecreated aren't ordered by ID.
      *
-     * @param  {any} messages Messages to send. Each message must contain touserid, text and textformat.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved if success, rejected if failure. Promise resolved doesn't mean that messages
-     *                           have been sent, the resolve param can contain errors for messages not sent.
+     * @param messages Messages to send. Each message must contain touserid, text and textformat.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if success, rejected if failure. Promise resolved doesn't mean that messages
+     *         have been sent, the resolve param can contain errors for messages not sent.
      */
     sendMessagesOnline(messages: any, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -2448,12 +2443,12 @@ export class AddonMessagesProvider {
     /**
      * Send a message to a conversation.
      *
-     * @param {any} conversation Conversation.
-     * @param {string} message The message to send.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with:
-     *                                - sent (boolean) True if message was sent to server, false if stored in device.
-     *                                - message (any) If sent=false, contains the stored message.
+     * @param conversation Conversation.
+     * @param message The message to send.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with:
+     *         - sent (boolean) True if message was sent to server, false if stored in device.
+     *         - message (any) If sent=false, contains the stored message.
      * @since 3.6
      */
     sendMessageToConversation(conversation: any, message: string, siteId?: string): Promise<any> {
@@ -2505,10 +2500,10 @@ export class AddonMessagesProvider {
     /**
      * Send a message to a conversation. It will fail if offline or cannot connect.
      *
-     * @param {number} conversationId Conversation ID.
-     * @param {string} message The message to send
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if success, rejected if failure.
+     * @param conversationId Conversation ID.
+     * @param message The message to send
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if success, rejected if failure.
      * @since 3.6
      */
     sendMessageToConversationOnline(conversationId: number, message: string, siteId?: string): Promise<any> {
@@ -2533,10 +2528,10 @@ export class AddonMessagesProvider {
     /**
      * Send some messages to a conversation. It will fail if offline or cannot connect.
      *
-     * @param {number} conversationId Conversation ID.
-     * @param {any} messages Messages to send. Each message must contain text and, optionally, textformat.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if success, rejected if failure.
+     * @param conversationId Conversation ID.
+     * @param messages Messages to send. Each message must contain text and, optionally, textformat.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if success, rejected if failure.
      * @since 3.6
      */
     sendMessagesToConversationOnline(conversationId: number, messages: any, siteId?: string): Promise<any> {
@@ -2558,11 +2553,11 @@ export class AddonMessagesProvider {
     /**
      * Set or unset a conversation as favourite.
      *
-     * @param {number} conversationId Conversation ID.
-     * @param {boolean} set Whether to set or unset it as favourite.
-     * @param {string} [siteId]  Site ID. If not defined, use current site.
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @return {Promise<any>}  Resolved when done.
+     * @param conversationId Conversation ID.
+     * @param set Whether to set or unset it as favourite.
+     * @param siteId Site ID. If not defined, use current site.
+     * @param userId User ID. If not defined, current user in the site.
+     * @return Resolved when done.
      */
     setFavouriteConversation(conversationId: number, set: boolean, siteId?: string, userId?: number): Promise<any> {
         return this.setFavouriteConversations([conversationId], set, siteId, userId);
@@ -2571,11 +2566,11 @@ export class AddonMessagesProvider {
     /**
      * Set or unset some conversations as favourites.
      *
-     * @param {number[]} conversations Conversation IDs.
-     * @param {boolean} set Whether to set or unset them as favourites.
-     * @param {string} [siteId]  Site ID. If not defined, use current site.
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @return {Promise<any>}  Resolved when done.
+     * @param conversations Conversation IDs.
+     * @param set Whether to set or unset them as favourites.
+     * @param siteId Site ID. If not defined, use current site.
+     * @param userId User ID. If not defined, current user in the site.
+     * @return Resolved when done.
      */
     setFavouriteConversations(conversations: number[], set: boolean, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -2605,8 +2600,8 @@ export class AddonMessagesProvider {
     /**
      * Helper method to sort conversations by last message time.
      *
-     * @param {any[]} conversations Array of conversations.
-     * @return {any[]} Conversations sorted with most recent last.
+     * @param conversations Array of conversations.
+     * @return Conversations sorted with most recent last.
      */
     sortConversations(conversations: any[]): any[] {
         return conversations.sort((a, b) => {
@@ -2625,8 +2620,8 @@ export class AddonMessagesProvider {
     /**
      * Helper method to sort messages by time.
      *
-     * @param {any[]} messages Array of messages containing the key 'timecreated'.
-     * @return {any[]} Messages sorted with most recent last.
+     * @param messages Array of messages containing the key 'timecreated'.
+     * @return Messages sorted with most recent last.
      */
     sortMessages(messages: any[]): any[] {
         return messages.sort((a, b) => {
@@ -2651,10 +2646,10 @@ export class AddonMessagesProvider {
     /**
      * Store the last received message if it's newer than the last stored.
      *
-     * @param  {number} convIdOrUserIdFrom Conversation ID (3.6+) or ID of the useridfrom retrieved (3.5-), 0 for all users.
-     * @param  {any} message       Last message received.
-     * @param  {string} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise<any>}      Promise resolved when done.
+     * @param convIdOrUserIdFrom Conversation ID (3.6+) or ID of the useridfrom retrieved (3.5-), 0 for all users.
+     * @param message Last message received.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     protected storeLastReceivedMessageIfNeeded(convIdOrUserIdFrom: number, message: any, siteId?: string): Promise<any> {
         const component = AddonMessagesProvider.PUSH_SIMULATION_COMPONENT;
@@ -2678,7 +2673,7 @@ export class AddonMessagesProvider {
     /**
      * Store user data from contacts in local DB.
      *
-     * @param {any} contactTypes List of contacts grouped in types.
+     * @param contactTypes List of contacts grouped in types.
      */
     protected storeUsersFromAllContacts(contactTypes: any): void {
         for (const x in contactTypes) {
@@ -2689,8 +2684,8 @@ export class AddonMessagesProvider {
     /**
      * Store user data from discussions in local DB.
      *
-     * @param {any} discussions List of discussions.
-     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param discussions List of discussions.
+     * @param siteId Site ID. If not defined, current site.
      */
     protected storeUsersFromDiscussions(discussions: any, siteId?: string): void {
         const users = [];
@@ -2707,9 +2702,9 @@ export class AddonMessagesProvider {
     /**
      * Unblock a user.
      *
-     * @param {number} userId User ID of the person to unblock.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any>} Resolved when done.
+     * @param userId User ID of the person to unblock.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Resolved when done.
      */
     unblockContact(userId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {

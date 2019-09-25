@@ -55,7 +55,7 @@ export class AddonModWikiIndexPage {
     /**
      * Update some data based on the data received.
      *
-     * @param {any} data The data received.
+     * @param data The data received.
      */
     updateData(data: any): void {
         if (typeof data == 'string') {

@@ -148,8 +148,8 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     /**
      * Fetch the data needed to render the form.
      *
-     * @param {boolean} [refresh] Whether it's refreshing data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether it's refreshing data.
+     * @return Promise resolved when done.
      */
     protected fetchData(refresh?: boolean): Promise<any> {
         let accessInfo;
@@ -289,9 +289,9 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     /**
      * Load an event data into the form.
      *
-     * @param {any} event Event data.
-     * @param {boolean} isOffline Whether the data is from offline or not.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param event Event data.
+     * @param isOffline Whether the data is from offline or not.
+     * @return Promise resolved when done.
      */
     protected loadEventData(event: any, isOffline: boolean): Promise<any> {
         const courseId = event.course ? event.course.id : event.courseid;
@@ -344,7 +344,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     /**
      * Pull to refresh.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshData(refresher: any): void {
         const promises = [
@@ -375,7 +375,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     /**
      * A course was selected, get its groups.
      *
-     * @param {number} courseId Course ID.
+     * @param courseId Course ID.
      */
     groupCourseSelected(courseId: number): void {
         if (!courseId) {
@@ -396,8 +396,8 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     /**
      * Load groups of a certain course.
      *
-     * @param {number} courseId Course ID.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param courseId Course ID.
+     * @return Promise resolved when done.
      */
     protected loadGroups(courseId: number): Promise<any> {
         this.loadingGroups = true;
@@ -515,7 +515,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     /**
      * Convenience function to update or return to event list depending on device.
      *
-     * @param {number} [event] Event.
+     * @param event Event.
      */
     protected returnToList(event?: any): void {
         // Unblock the sync because the view will be destroyed and the sync process could be triggered before ngOnDestroy.
@@ -568,7 +568,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     /**
      * Check if we can leave the page or not.
      *
-     * @return {boolean|Promise<void>} Resolved if we can leave it, rejected if not.
+     * @return Resolved if we can leave it, rejected if not.
      */
     ionViewCanLeave(): boolean | Promise<void> {
 

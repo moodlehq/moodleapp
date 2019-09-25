@@ -39,9 +39,9 @@ export class AddonCourseCompletionProvider {
      * Returns whether or not the user can mark a course as self completed.
      * It can if it's configured in the course and it hasn't been completed yet.
      *
-     * @param {number} userId     User ID.
-     * @param {any}    completion Course completion.
-     * @return {boolean} True if user can mark course as self completed, false otherwise.
+     * @param userId User ID.
+     * @param completion Course completion.
+     * @return True if user can mark course as self completed, false otherwise.
      */
     canMarkSelfCompleted(userId: number, completion: any): boolean {
         let selfCompletionActive = false,
@@ -65,8 +65,8 @@ export class AddonCourseCompletionProvider {
     /**
      * Get completed status text. The language code returned is meant to be translated.
      *
-     * @param {any} completion Course completion.
-     * @return {string} Language code of the text to show.
+     * @param completion Course completion.
+     * @return Language code of the text to show.
      */
     getCompletedStatusText(completion: any): string {
         if (completion.completed) {
@@ -90,11 +90,11 @@ export class AddonCourseCompletionProvider {
     /**
      * Get course completion status for a certain course and user.
      *
-     * @param {number} courseId  Course ID.
-     * @param {number} [userId]  User ID. If not defined, use current user.
-     * @param {any}    [preSets] Presets to use when calling the WebService.
-     * @param {string} [siteId]  Site ID. If not defined, use current site.
-     * @return {Promise<any>} Promise to be resolved when the completion is retrieved.
+     * @param courseId Course ID.
+     * @param userId User ID. If not defined, use current user.
+     * @param preSets Presets to use when calling the WebService.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise to be resolved when the completion is retrieved.
      */
     getCompletion(courseId: number, userId?: number, preSets?: any, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -125,9 +125,9 @@ export class AddonCourseCompletionProvider {
     /**
      * Get cache key for get completion WS calls.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} useIid   User ID.
-     * @return {string} Cache key.
+     * @param courseId Course ID.
+     * @param useIid User ID.
+     * @return Cache key.
      */
     protected getCompletionCacheKey(courseId: number, userId: number): string {
         return this.ROOT_CACHE_KEY + 'view:' + courseId + ':' + userId;
@@ -136,9 +136,9 @@ export class AddonCourseCompletionProvider {
     /**
      * Invalidates view course completion WS call.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} [userId] User ID. If not defined, use current user.
-     * @return {Promise<any>} Promise resolved when the list is invalidated.
+     * @param courseId Course ID.
+     * @param userId User ID. If not defined, use current user.
+     * @return Promise resolved when the list is invalidated.
      */
     invalidateCourseCompletion(courseId: number, userId?: number): Promise<any> {
         userId = userId || this.sitesProvider.getCurrentSiteUserId();
@@ -149,7 +149,7 @@ export class AddonCourseCompletionProvider {
     /**
      * Returns whether or not the view course completion plugin is enabled for the current site.
      *
-     * @return {boolean} True if plugin enabled, false otherwise.
+     * @return True if plugin enabled, false otherwise.
      */
    isPluginViewEnabled(): boolean {
        return this.sitesProvider.isLoggedIn();
@@ -158,9 +158,9 @@ export class AddonCourseCompletionProvider {
     /**
      * Returns whether or not the view course completion plugin is enabled for a certain course.
      *
-     * @param {number}  courseId           Course ID.
-     * @param {boolean} [preferCache=true] True if shouldn't call WS if data is cached, false otherwise.
-     * @return {Promise<boolean>} Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+     * @param courseId Course ID.
+     * @param preferCache True if shouldn't call WS if data is cached, false otherwise.
+     * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     isPluginViewEnabledForCourse(courseId: number, preferCache: boolean = true): Promise<boolean> {
         if (!courseId) {
@@ -187,9 +187,9 @@ export class AddonCourseCompletionProvider {
     /**
      * Returns whether or not the view course completion plugin is enabled for a certain user.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} [userId] User ID. If not defined, use current user.
-     * @return {Promise<boolean>} Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+     * @param courseId Course ID.
+     * @param userId User ID. If not defined, use current user.
+     * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     isPluginViewEnabledForUser(courseId: number, userId?: number): Promise<boolean> {
         // Check if user wants to view his own completion.
@@ -242,8 +242,8 @@ export class AddonCourseCompletionProvider {
     /**
      * Mark a course as self completed.
      *
-     * @param {number} courseId Course ID.
-     * @return {Promise<any>} Resolved on success.
+     * @param courseId Course ID.
+     * @return Resolved on success.
      */
     markCourseAsSelfCompleted(courseId: number): Promise<any> {
         const params = {

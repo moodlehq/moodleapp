@@ -103,7 +103,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
     /**
      * Check if we can leave the page or not.
      *
-     * @return {boolean|Promise<void>} Resolved if we can leave it, rejected if not.
+     * @return Resolved if we can leave it, rejected if not.
      */
     ionViewCanLeave(): boolean | Promise<void> {
         if (this.forceLeave) {
@@ -131,7 +131,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
     /**
      * Fetch the submission data.
      *
-     * @return {Promise<void>} Resolved when done.
+     * @return Resolved when done.
      */
     protected fetchSubmissionData(): Promise<void> {
         return this.workshopProvider.getWorkshop(this.courseId, this.module.id).then((workshopData) => {
@@ -225,7 +225,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
     /**
      * Get the form input data.
      *
-     * @return {any} Object with all the info.
+     * @return Object with all the info.
      */
     protected getInputData(): any {
         const submissionId = this.submission.id || 'newsub';
@@ -250,7 +250,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
     /**
      * Check if data has changed.
      *
-     * @return {boolean} True if changed or false if not.
+     * @return True if changed or false if not.
      */
     protected hasDataChanged(): boolean {
         if (!this.loaded) {
@@ -277,7 +277,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
     /**
      * Pull to refresh.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshSubmission(refresher: any): void {
         if (this.loaded) {
@@ -315,7 +315,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
     /**
      * Send submission and save.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected saveSubmission(): Promise<any> {
         const inputData = this.getInputData();

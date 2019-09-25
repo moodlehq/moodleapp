@@ -52,12 +52,12 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Returns a list of pages that can be downloaded.
      *
-     * @param {any} module The module object returned by WS.
-     * @param {number} courseId The course ID.
-     * @param {boolean} [offline] Whether it should return cached data. Has priority over ignoreCache.
-     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} List of pages.
+     * @param module The module object returned by WS.
+     * @param courseId The course ID.
+     * @param offline Whether it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return List of pages.
      */
     protected getAllPages(module: any, courseId: number, offline?: boolean, ignoreCache?: boolean, siteId?: string)
             : Promise<any[]> {
@@ -75,11 +75,11 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Get the download size of a module.
      *
-     * @param {any} module Module.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @return {Promise<{size: number, total: boolean}>} Promise resolved with the size and a boolean indicating if it was able
-     *                                                   to calculate the total size.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @return Promise resolved with the size and a boolean indicating if it was able
+     *         to calculate the total size.
      */
     getDownloadSize(module: any, courseId: number, single?: boolean): Promise<{ size: number, total: boolean }> {
         const promises = [],
@@ -112,11 +112,11 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Get list of files. If not defined, we'll assume they're in module.contents.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with the list of files.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the list of files.
      */
     getFiles(module: any, courseId: number, single?: boolean, siteId?: string): Promise<any[]> {
 
@@ -137,9 +137,9 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Invalidate the prefetched content.
      *
-     * @param {number} moduleId The module ID.
-     * @param {number} courseId The course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param moduleId The module ID.
+     * @param courseId The course ID the module belongs to.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number): Promise<any> {
         return this.wikiProvider.invalidateContent(moduleId, courseId);
@@ -148,11 +148,11 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Prefetch a module.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {string} [dirPath] Path of the directory where to store all the content files.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param dirPath Path of the directory where to store all the content files.
+     * @return Promise resolved when done.
      */
     prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string): Promise<any> {
         // Get the download time of the package before starting the download (otherwise we'd always get current time).
@@ -170,12 +170,12 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Prefetch a wiki.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {boolean} single True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {string} siteId Site ID.
-     * @param {number} downloadTime The previous download time, 0 if no previous download.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param siteId Site ID.
+     * @param downloadTime The previous download time, 0 if no previous download.
+     * @return Promise resolved when done.
      */
     protected prefetchWiki(module: any, courseId: number, single: boolean, siteId: string, downloadTime: number): Promise<any> {
         const userId = this.sitesProvider.getCurrentSiteUserId();
@@ -211,10 +211,10 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Sync a module.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     sync(module: any, courseId: number, siteId?: any): Promise<any> {
         return this.syncProvider.syncWiki(module.instance, module.course, module.id, siteId);

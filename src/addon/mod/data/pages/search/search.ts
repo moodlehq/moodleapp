@@ -82,7 +82,7 @@ export class AddonModDataSearchPage {
     /**
      * Displays Advanced Search Fields.
      *
-     * @return {string}         Generated HTML.
+     * @return Generated HTML.
      */
     protected renderAdvancedSearchFields(): string {
         this.jsData = {
@@ -130,8 +130,8 @@ export class AddonModDataSearchPage {
     /**
      * Retrieve the entered data in search in a form.
      *
-     * @param {any} searchedData Array with the entered form values.
-     * @return {any[]}          Array with the answers.
+     * @param searchedData Array with the entered form values.
+     * @return Array with the answers.
      */
     getSearchDataFromForm(searchedData: any): any[] {
         const advancedSearch = [];
@@ -172,7 +172,7 @@ export class AddonModDataSearchPage {
     /**
      * Close modal.
      *
-     * @param {any} [data] Data to return to the page.
+     * @param data Data to return to the page.
      */
     closeModal(data?: any): void {
         this.viewCtrl.dismiss(data);
@@ -181,7 +181,7 @@ export class AddonModDataSearchPage {
     /**
      * Toggles between advanced to normal search.
      *
-     * @param {boolean} advanced True for advanced, false for basic.
+     * @param advanced True for advanced, false for basic.
      */
     changeAdvanced(advanced: boolean): void {
         this.search.searchingAdvanced = advanced;
@@ -190,7 +190,7 @@ export class AddonModDataSearchPage {
     /**
      * Done editing.
      *
-     * @param {Event} e Event.
+     * @param e Event.
      */
     searchEntries(e: Event): void {
         e.preventDefault();

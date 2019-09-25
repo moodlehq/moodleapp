@@ -49,7 +49,7 @@ export class CoreSitePluginsPluginPage {
     /**
      * Refresh the data.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshData(refresher: any): void {
         this.content.refreshContent(false).finally(() => {
@@ -95,7 +95,7 @@ export class CoreSitePluginsPluginPage {
     /**
      * Check if we can leave the page or not.
      *
-     * @return {boolean|Promise<void>} Resolved if we can leave it, rejected if not.
+     * @return Resolved if we can leave it, rejected if not.
      */
     ionViewCanLeave(): boolean | Promise<void> {
         return this.content.callComponentFunction('ionViewCanLeave');

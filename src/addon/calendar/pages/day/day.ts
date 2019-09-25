@@ -208,9 +208,9 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     /**
      * Fetch all the data required for the view.
      *
-     * @param {boolean} [sync] Whether it should try to synchronize offline events.
-     * @param {boolean} [showErrors] Whether to show sync errors to the user.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param sync Whether it should try to synchronize offline events.
+     * @param showErrors Whether to show sync errors to the user.
+     * @return Promise resolved when done.
      */
     fetchData(sync?: boolean, showErrors?: boolean): Promise<any> {
 
@@ -280,7 +280,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     /**
      * Fetch the events for current day.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     fetchEvents(): Promise<any> {
         // Don't pass courseId and categoryId, we'll filter them locally.
@@ -328,7 +328,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     /**
      * Merge online events with the offline events of that period.
      *
-     * @return {any[]} Merged events.
+     * @return Merged events.
      */
     protected mergeEvents(): any[] {
         this.hasOffline = false;
@@ -389,7 +389,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     /**
      * Sort events by timestart.
      *
-     * @param {any[]} events List to sort.
+     * @param events List to sort.
      */
     protected sortEvents(events: any[]): any[] {
         return events.sort((a, b) => {
@@ -404,10 +404,10 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     /**
      * Refresh the data.
      *
-     * @param {any} [refresher] Refresher.
-     * @param {Function} [done] Function to call when done.
-     * @param {boolean} [showErrors] Whether to show sync errors to the user.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @param done Function to call when done.
+     * @param showErrors Whether to show sync errors to the user.
+     * @return Promise resolved when done.
      */
     doRefresh(refresher?: any, done?: () => void, showErrors?: boolean): Promise<any> {
         if (this.loaded) {
@@ -423,10 +423,10 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     /**
      * Refresh the data.
      *
-     * @param {boolean} [sync] Whether it should try to synchronize offline events.
-     * @param {boolean} [showErrors] Whether to show sync errors to the user.
-     * @param {boolean} [afterChange] Whether the refresh is done after an event has changed or has been synced.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param sync Whether it should try to synchronize offline events.
+     * @param showErrors Whether to show sync errors to the user.
+     * @param afterChange Whether the refresh is done after an event has changed or has been synced.
+     * @return Promise resolved when done.
      */
     refreshData(sync?: boolean, showErrors?: boolean, afterChange?: boolean): Promise<any> {
         this.syncIcon = 'spinner';
@@ -449,7 +449,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     /**
      * Load categories to be able to filter events.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected loadCategories(): Promise<any> {
         return this.coursesProvider.getCategories(0, true).then((cats) => {
@@ -467,8 +467,8 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     /**
      * Try to synchronize offline events.
      *
-     * @param {boolean} [showErrors] Whether to show sync errors to the user.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param showErrors Whether to show sync errors to the user.
+     * @return Promise resolved when done.
      */
     protected sync(showErrors?: boolean): Promise<any> {
         return this.calendarSync.syncEvents().then((result) => {
@@ -495,7 +495,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     /**
      * Navigate to a particular event.
      *
-     * @param {number} eventId Event to load.
+     * @param eventId Event to load.
      */
     gotoEvent(eventId: number): void {
         if (eventId < 0) {
@@ -511,7 +511,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     /**
      * Show the context menu.
      *
-     * @param {MouseEvent} event Event.
+     * @param event Event.
      */
     openCourseFilter(event: MouseEvent): void {
         this.coursesHelper.selectCourse(event, this.courses, this.courseId).then((result) => {
@@ -532,7 +532,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     /**
      * Open page to create/edit an event.
      *
-     * @param {number} [eventId] Event ID to edit.
+     * @param eventId Event ID to edit.
      */
     openEdit(eventId?: number): void {
         const params: any = {};
@@ -658,9 +658,9 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     /**
      * Find an event and mark it as deleted.
      *
-     * @param {number} eventId Event ID.
-     * @param {boolean} deleted Whether to mark it as deleted or not.
-     * @return {boolean} Whether the event was found.
+     * @param eventId Event ID.
+     * @param deleted Whether to mark it as deleted or not.
+     * @return Whether the event was found.
      */
     protected markAsDeleted(eventId: number, deleted: boolean): boolean {
         const event = this.onlineEvents.find((event) => {
@@ -678,8 +678,8 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
 
     /**
      * Returns if the event is in the past or not.
-     * @param  {any}     event Event object.
-     * @return {boolean}       True if it's in the past.
+     * @param event Event object.
+     * @return True if it's in the past.
      */
     isEventPast(event: any): boolean {
         return (event.timestart + event.timeduration) < this.currentTime;

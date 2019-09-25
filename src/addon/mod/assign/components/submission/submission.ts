@@ -131,7 +131,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     /**
      * Calculate the time remaining message and class.
      *
-     * @param {any} response Response of get submission status.
+     * @param response Response of get submission status.
      */
     protected calculateTimeRemaining(response: any): void {
         if (this.assign.duedate > 0) {
@@ -178,7 +178,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     /**
      * Check if the user can leave the view. If there are changes to be saved, it will ask for confirm.
      *
-     * @return {Promise<void>} Promise resolved if can leave the view, rejected otherwise.
+     * @return Promise resolved if can leave the view, rejected otherwise.
      */
     canLeave(): Promise<void> {
         // Check if there is data to save.
@@ -252,7 +252,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     /**
      * Discard feedback drafts.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected discardDrafts(): Promise<any> {
         if (this.feedback && this.feedback.plugins) {
@@ -277,7 +277,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     /**
      * Check if there's data to save (grade).
      *
-     * @return {Promise<boolean>} Promise resolved with boolean: whether there's data to save.
+     * @return Promise resolved with boolean: whether there's data to save.
      */
     protected hasDataToSave(): Promise<boolean> {
         if (!this.canSaveGrades || !this.loaded) {
@@ -329,7 +329,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     /**
      * Invalidate and refresh data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     invalidateAndRefresh(): Promise<any> {
         this.loaded = false;
@@ -363,7 +363,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     /**
      * Load the data to render the submission.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected loadData(): Promise<any> {
         let isBlind = !!this.blindId;
@@ -458,8 +458,8 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     /**
      * Load the data to render the feedback and grade.
      *
-     * @param {any} feedback The feedback data from the submission status.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param feedback The feedback data from the submission status.
+     * @return Promise resolved when done.
      */
     protected loadFeedback(feedback: any): Promise<any> {
         this.grade = {
@@ -623,7 +623,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     /**
      * Set the submission status name and class.
      *
-     * @param {any} status Submission status.
+     * @param status Submission status.
      */
     protected setStatusNameAndClass(status: any): void {
         if (this.hasOffline || this.submittedOffline) {
@@ -679,7 +679,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     /**
      * Submit for grading.
      *
-     * @param {boolean} acceptStatement Whether the statement has been accepted.
+     * @param acceptStatement Whether the statement has been accepted.
      */
     submitForGrading(acceptStatement: boolean): void {
         if (this.assign.requiresubmissionstatement && !acceptStatement) {
@@ -712,7 +712,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     /**
      * Submit a grade and feedback.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     submitGrade(): Promise<any> {
         // Check if there's something to be saved.
@@ -774,7 +774,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     /**
      * Treat the grade info.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected treatGradeInfo(): Promise<any> {
         // Check if grading method is simple or not.
@@ -857,8 +857,8 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     /**
      * Treat the last attempt.
      *
-     * @param {any} response Response of get submission status.
-     * @param {any[]} promises List where to add the promises.
+     * @param response Response of get submission status.
+     * @param promises List where to add the promises.
      */
     protected treatLastAttempt(response: any, promises: any[]): void {
         if (!response.lastattempt) {

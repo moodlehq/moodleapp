@@ -29,7 +29,7 @@ export class CameraMock extends Camera {
     /**
      * Remove intermediate image files that are kept in temporary storage after calling camera.getPicture.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     cleanup(): Promise<any> {
         // This function is iOS only, nothing to do.
@@ -39,8 +39,8 @@ export class CameraMock extends Camera {
     /**
      * Take a picture.
      *
-     * @param {CameraOptions} options Options that you want to pass to the camera.
-     * @return {Promise<any>} Promise resolved when captured.
+     * @param options Options that you want to pass to the camera.
+     * @return Promise resolved when captured.
      */
     getPicture(options: CameraOptions): Promise<any> {
         return this.captureHelper.captureMedia('image', options);

@@ -78,7 +78,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit {
     /**
      * Open a course.
      *
-     * @param {any} course The course to open.
+     * @param course The course to open.
      */
     openCourse(course: any): void {
         if (course.isEnrolled) {

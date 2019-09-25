@@ -144,9 +144,9 @@ export class AddonCalendarEventPage implements OnDestroy {
     /**
      * Fetches the event and updates the view.
      *
-     * @param {boolean} [sync] Whether it should try to synchronize offline events.
-     * @param {boolean} [showErrors] Whether to show sync errors to the user.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param sync Whether it should try to synchronize offline events.
+     * @param showErrors Whether to show sync errors to the user.
+     * @return Promise resolved when done.
      */
     fetchEvent(sync?: boolean, showErrors?: boolean): Promise<any> {
         const currentSite = this.sitesProvider.getCurrentSite(),
@@ -312,7 +312,7 @@ export class AddonCalendarEventPage implements OnDestroy {
     /**
      * Add a reminder for this event.
      *
-     * @param {Event} e    Click event.
+     * @param e Click event.
      */
     addNotificationTime(e: Event): void {
         e.preventDefault();
@@ -342,8 +342,8 @@ export class AddonCalendarEventPage implements OnDestroy {
     /**
      * Cancel the selected notification.
      *
-     * @param {number} id  Reminder ID.
-     * @param {Event} e    Click event.
+     * @param id Reminder ID.
+     * @param e Click event.
      */
     cancelNotification(id: number, e: Event): void {
         e.preventDefault();
@@ -359,10 +359,10 @@ export class AddonCalendarEventPage implements OnDestroy {
     /**
      * Refresh the data.
      *
-     * @param {any} [refresher] Refresher.
-     * @param {Function} [done] Function to call when done.
-     * @param {boolean} [showErrors] Whether to show sync errors to the user.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @param done Function to call when done.
+     * @param showErrors Whether to show sync errors to the user.
+     * @return Promise resolved when done.
      */
     doRefresh(refresher?: any, done?: () => void, showErrors?: boolean): Promise<any> {
         if (this.eventLoaded) {
@@ -378,9 +378,9 @@ export class AddonCalendarEventPage implements OnDestroy {
     /**
      * Refresh the event.
      *
-     * @param {boolean} [sync] Whether it should try to synchronize offline events.
-     * @param {boolean} [showErrors] Whether to show sync errors to the user.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param sync Whether it should try to synchronize offline events.
+     * @param showErrors Whether to show sync errors to the user.
+     * @return Promise resolved when done.
      */
     refreshEvent(sync?: boolean, showErrors?: boolean): Promise<any> {
         this.syncIcon = 'spinner';
@@ -511,8 +511,8 @@ export class AddonCalendarEventPage implements OnDestroy {
     /**
      * Check the result of an automatic sync or a manual sync not done by this page.
      *
-     * @param {boolean} isManual Whether it's a manual sync.
-     * @param {any} data Sync result.
+     * @param isManual Whether it's a manual sync.
+     * @param data Sync result.
      */
     protected checkSyncResult(isManual: boolean, data: any): void {
         if (!data) {

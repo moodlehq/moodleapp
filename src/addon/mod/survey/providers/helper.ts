@@ -26,8 +26,8 @@ export class AddonModSurveyHelperProvider {
     /**
      * Turns a string with values separated by commas into an array.
      *
-     * @param {any} value Value to convert.
-     * @return {string[]}    Array.
+     * @param value Value to convert.
+     * @return Array.
      */
     protected commaStringToArray(value: any): string[] {
         if (typeof value == 'string') {
@@ -44,8 +44,8 @@ export class AddonModSurveyHelperProvider {
     /**
      * Gets the parent questions and puts them in an object: ID -> question.
      *
-     * @param {Object[]} questions Questions.
-     * @return {any}            Object with parent questions.
+     * @param questions Questions.
+     * @return Object with parent questions.
      */
     protected getParentQuestions(questions: any[]): any {
         const parents = {};
@@ -63,8 +63,8 @@ export class AddonModSurveyHelperProvider {
      * Format a questions list, turning "multi" and "options" strings into arrays and adding the properties
      * 'num' and 'name'.
      *
-     * @param {any[]} questions Questions.
-     * @return {any[]}           Promise resolved with the formatted questions.
+     * @param questions Questions.
+     * @return Promise resolved with the formatted questions.
      */
     formatQuestions(questions: any[]): any[] {
 

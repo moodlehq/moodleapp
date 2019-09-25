@@ -105,7 +105,7 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
     /**
      * Fetch assignment data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchAssignment(): Promise<any> {
 
@@ -138,8 +138,8 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
     /**
      * Set group to see the summary.
      *
-     * @param  {number}       groupId Group ID.
-     * @return {Promise<any>}         Resolved when done.
+     * @param groupId Group ID.
+     * @return Resolved when done.
      */
     setGroup(groupId: number): Promise<any> {
         this.groupId = groupId;
@@ -242,7 +242,7 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
     /**
      * Load a certain submission.
      *
-     * @param {any} submission The submission to load.
+     * @param submission The submission to load.
      */
     loadSubmission(submission: any): void {
         if (this.selectedSubmissionId === submission.submitid && this.splitviewCtrl.isOn()) {
@@ -263,7 +263,7 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
     /**
      * Refresh all the data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected refreshAllData(): Promise<any> {
         const promises = [];
@@ -284,7 +284,7 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
     /**
      * Refresh the list.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshList(refresher: any): void {
         this.refreshAllData().finally(() => {

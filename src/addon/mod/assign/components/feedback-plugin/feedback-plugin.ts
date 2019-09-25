@@ -96,7 +96,7 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
     /**
      * Invalidate the plugin data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     invalidate(): Promise<any> {
         return Promise.resolve(this.dynamicComponent && this.dynamicComponent.callComponentFunction('invalidate', []));

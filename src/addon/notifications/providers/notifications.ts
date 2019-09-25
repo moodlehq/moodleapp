@@ -47,9 +47,9 @@ export class AddonNotificationsProvider {
     /**
      * Function to format notification data.
      *
-     * @param {any[]} notifications List of notifications.
-     * @param {boolean} [read] Whether the notifications are read or unread.
-     * @return {Promise<any[]>} Promise resolved with notifications.
+     * @param notifications List of notifications.
+     * @param read Whether the notifications are read or unread.
+     * @return Promise resolved with notifications.
      */
     protected formatNotificationsData(notifications: any[], read?: boolean): Promise<any> {
         const promises = notifications.map((notification) => {
@@ -105,7 +105,7 @@ export class AddonNotificationsProvider {
     /**
      * Get the cache key for the get notification preferences call.
      *
-     * @return {string} Cache key.
+     * @return Cache key.
      */
     protected getNotificationPreferencesCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'notificationPreferences';
@@ -114,8 +114,8 @@ export class AddonNotificationsProvider {
     /**
      * Get notification preferences.
      *
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved with the notification preferences.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with the notification preferences.
      */
     getNotificationPreferences(siteId?: string): Promise<any> {
         this.logger.debug('Get notification preferences');
@@ -135,7 +135,7 @@ export class AddonNotificationsProvider {
     /**
      * Get cache key for notification list WS calls.
      *
-     * @return {string} Cache key.
+     * @return Cache key.
      */
     protected getNotificationsCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'list';
@@ -144,14 +144,14 @@ export class AddonNotificationsProvider {
     /**
      * Get notifications from site.
      *
-     * @param {boolean} read True if should get read notifications, false otherwise.
-     * @param {number} limitFrom Position of the first notification to get.
-     * @param {number} limitNumber Number of notifications to get or 0 to use the default limit.
-     * @param {boolean} [toDisplay=true] True if notifications will be displayed to the user, either in view or in a notification.
-     * @param {boolean} [forceCache] True if it should return cached data. Has priority over ignoreCache.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any[]>} Promise resolved with notifications.
+     * @param read True if should get read notifications, false otherwise.
+     * @param limitFrom Position of the first notification to get.
+     * @param limitNumber Number of notifications to get or 0 to use the default limit.
+     * @param toDisplay True if notifications will be displayed to the user, either in view or in a notification.
+     * @param forceCache True if it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with notifications.
      */
     getNotifications(read: boolean, limitFrom: number, limitNumber: number = 0, toDisplay: boolean = true,
             forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any[]> {
@@ -199,13 +199,13 @@ export class AddonNotificationsProvider {
     /**
      * Get notifications from site using the new WebService.
      *
-     * @param {number} offset Position of the first notification to get.
-     * @param {number} [limit] Number of notifications to get. Defaults to LIST_LIMIT.
-     * @param {boolean} [toDisplay=true] True if notifications will be displayed to the user, either in view or in a notification.
-     * @param {boolean} [forceCache] True if it should return cached data. Has priority over ignoreCache.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<{notifications: any[], canLoadMore: boolean}>} Promise resolved with notifications and if can load more.
+     * @param offset Position of the first notification to get.
+     * @param limit Number of notifications to get. Defaults to LIST_LIMIT.
+     * @param toDisplay True if notifications will be displayed to the user, either in view or in a notification.
+     * @param forceCache True if it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with notifications and if can load more.
      * @since 3.2
      */
     getPopupNotifications(offset: number, limit?: number, toDisplay: boolean = true, forceCache?: boolean, ignoreCache?: boolean,
@@ -260,13 +260,13 @@ export class AddonNotificationsProvider {
     /**
      * Get read notifications from site.
      *
-     * @param {number} limitFrom Position of the first notification to get.
-     * @param {number} limitNumber Number of notifications to get.
-     * @param {boolean} [toDisplay=true] True if notifications will be displayed to the user, either in view or in a notification.
-     * @param {boolean} [forceCache] True if it should return cached data. Has priority over ignoreCache.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any[]>} Promise resolved with notifications.
+     * @param limitFrom Position of the first notification to get.
+     * @param limitNumber Number of notifications to get.
+     * @param toDisplay True if notifications will be displayed to the user, either in view or in a notification.
+     * @param forceCache True if it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with notifications.
      */
     getReadNotifications(limitFrom: number, limitNumber: number, toDisplay: boolean = true,
             forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any[]> {
@@ -276,13 +276,13 @@ export class AddonNotificationsProvider {
     /**
      * Get unread notifications from site.
      *
-     * @param {number} limitFrom Position of the first notification to get.
-     * @param {number} limitNumber Number of notifications to get.
-     * @param {boolean} [toDisplay=true] True if notifications will be displayed to the user, either in view or in a notification.
-     * @param {boolean} [forceCache] True if it should return cached data. Has priority over ignoreCache.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any[]>} Promise resolved with notifications.
+     * @param limitFrom Position of the first notification to get.
+     * @param limitNumber Number of notifications to get.
+     * @param toDisplay True if notifications will be displayed to the user, either in view or in a notification.
+     * @param forceCache True if it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with notifications.
      */
     getUnreadNotifications(limitFrom: number, limitNumber: number, toDisplay: boolean = true,
             forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any[]> {
@@ -292,9 +292,9 @@ export class AddonNotificationsProvider {
     /**
      * Get unread notifications count. Do not cache calls.
      *
-     * @param {number} [userId] The user id who received the notification. If not defined, use current user.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<number>} Promise resolved with the message notifications count.
+     * @param userId The user id who received the notification. If not defined, use current user.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with the message notifications count.
      */
     getUnreadNotificationsCount(userId?: number, siteId?: string): Promise<number> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -334,8 +334,8 @@ export class AddonNotificationsProvider {
     /**
      * Returns whether or not popup WS is available for a certain site.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with true if available, resolved with false or rejected otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with true if available, resolved with false or rejected otherwise.
      */
     isPopupAvailable(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -346,7 +346,7 @@ export class AddonNotificationsProvider {
     /**
      * Mark all message notification as read.
      *
-     * @returns {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      * @since 3.2
      */
     markAllNotificationsAsRead(): Promise<any> {
@@ -360,9 +360,9 @@ export class AddonNotificationsProvider {
     /**
      * Mark a single notification as read.
      *
-     * @param {number} notificationId ID of notification to mark as read
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @returns {Promise<any>} Resolved when done.
+     * @param notificationId ID of notification to mark as read
+     * @param siteId Site ID. If not defined, current site.
+     * @return Resolved when done.
      * @since 3.5
      */
     markNotificationRead(notificationId: number, siteId?: string): Promise<any> {
@@ -385,8 +385,8 @@ export class AddonNotificationsProvider {
     /**
      * Invalidate get notification preferences.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when data is invalidated.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when data is invalidated.
      */
     invalidateNotificationPreferences(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -397,8 +397,8 @@ export class AddonNotificationsProvider {
     /**
      * Invalidates notifications list WS calls.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the list is invalidated.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the list is invalidated.
      */
     invalidateNotificationsList(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -409,7 +409,7 @@ export class AddonNotificationsProvider {
     /**
      * Returns whether or not we can mark all notifications as read.
      *
-     * @return {boolean} True if enabled, false otherwise.
+     * @return True if enabled, false otherwise.
      * @since 3.2
      */
     isMarkAllNotificationsAsReadEnabled(): boolean {
@@ -419,7 +419,7 @@ export class AddonNotificationsProvider {
     /**
      * Returns whether or not we can count unread notifications precisely.
      *
-     * @return {boolean} True if enabled, false otherwise.
+     * @return True if enabled, false otherwise.
      * @since 3.2
      */
     isPreciseNotificationCountEnabled(): boolean {
@@ -429,7 +429,7 @@ export class AddonNotificationsProvider {
     /**
      * Returns whether or not the notification preferences are enabled for the current site.
      *
-     * @return {boolean} True if enabled, false otherwise.
+     * @return True if enabled, false otherwise.
      * @since 3.2
      */
     isNotificationPreferencesEnabled(): boolean {

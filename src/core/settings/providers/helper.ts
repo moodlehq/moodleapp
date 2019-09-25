@@ -39,10 +39,10 @@ export class CoreSettingsHelper {
     /**
      * Get a certain processor from a list of processors.
      *
-     * @param {any[]} processors List of processors.
-     * @param {string} name Name of the processor to get.
-     * @param {boolean} [fallback=true] True to return first processor if not found, false to not return any. Defaults to true.
-     * @return {any} Processor.
+     * @param processors List of processors.
+     * @param name Name of the processor to get.
+     * @param fallback True to return first processor if not found, false to not return any. Defaults to true.
+     * @return Processor.
      */
     getProcessor(processors: any[], name: string, fallback: boolean = true): any {
         if (!processors || !processors.length) {
@@ -63,9 +63,9 @@ export class CoreSettingsHelper {
     /**
      * Return the components and notifications that have a certain processor.
      *
-     * @param {string} processor Name of the processor to filter.
-     * @param {any[]} components Array of components.
-     * @return {any[]} Filtered components.
+     * @param processor Name of the processor to filter.
+     * @param components Array of components.
+     * @return Filtered components.
      */
     getProcessorComponents(processor: string, components: any[]): any[] {
         const result = [];
@@ -104,8 +104,8 @@ export class CoreSettingsHelper {
     /**
      * Get the synchronization promise of a site.
      *
-     * @param {string} siteId ID of the site.
-     * @return {Promise<any> | null} Sync promise or null if site is not being syncrhonized.
+     * @param siteId ID of the site.
+     * @return Sync promise or null if site is not being syncrhonized.
      */
     getSiteSyncPromise(siteId: string): Promise<any> {
         if (this.syncPromises[siteId]) {
@@ -118,9 +118,9 @@ export class CoreSettingsHelper {
     /**
      * Synchronize a site.
      *
-     * @param {boolean} syncOnlyOnWifi True to sync only on wifi, false otherwise.
-     * @param {string} siteId ID of the site to synchronize.
-     * @return {Promise<any>} Promise resolved when synchronized, rejected if failure.
+     * @param syncOnlyOnWifi True to sync only on wifi, false otherwise.
+     * @param siteId ID of the site to synchronize.
+     * @return Promise resolved when synchronized, rejected if failure.
      */
     synchronizeSite(syncOnlyOnWifi: boolean, siteId: string): Promise<any> {
         if (this.syncPromises[siteId]) {

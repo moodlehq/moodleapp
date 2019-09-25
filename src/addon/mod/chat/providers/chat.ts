@@ -36,10 +36,10 @@ export class AddonModChatProvider {
     /**
      * Get a chat.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} cmId Course module ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the chat is retrieved.
+     * @param courseId Course ID.
+     * @param cmId Course module ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the chat is retrieved.
      */
     getChat(courseId: number, cmId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -67,8 +67,8 @@ export class AddonModChatProvider {
     /**
      * Log the user into a chat room.
      *
-     * @param  {number} chatId Chat instance ID.
-     * @return {Promise<any>} Promise resolved when the WS is executed.
+     * @param chatId Chat instance ID.
+     * @return Promise resolved when the WS is executed.
      */
     loginUser(chatId: number): Promise<any> {
         const params = {
@@ -87,10 +87,10 @@ export class AddonModChatProvider {
     /**
      * Report a chat as being viewed.
      *
-     * @param  {number} id Chat instance ID.
-     * @param {string} [name] Name of the chat.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}  Promise resolved when the WS call is successful.
+     * @param id Chat instance ID.
+     * @param name Name of the chat.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the WS call is successful.
      */
     logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {
@@ -103,10 +103,10 @@ export class AddonModChatProvider {
     /**
      * Send a message to a chat.
      *
-     * @param  {number} sessionId  Chat sessiond ID.
-     * @param  {string} message    Message text.
-     * @param  {number} beepUserId Beep user ID.
-     * @return {Promise<any>} Promise resolved when the WS is executed.
+     * @param sessionId Chat sessiond ID.
+     * @param message Message text.
+     * @param beepUserId Beep user ID.
+     * @return Promise resolved when the WS is executed.
      */
     sendMessage(sessionId: number, message: string, beepUserId: number): Promise<any> {
         const params = {
@@ -127,9 +127,9 @@ export class AddonModChatProvider {
     /**
      * Get the latest messages from a chat session.
      *
-     * @param  {number} sessionId Chat sessiond ID.
-     * @param  {number} lastTime  Last time when messages were retrieved.
-     * @return {Promise<any>} Promise resolved when the WS is executed.
+     * @param sessionId Chat sessiond ID.
+     * @param lastTime Last time when messages were retrieved.
+     * @return Promise resolved when the WS is executed.
      */
     getLatestMessages(sessionId: number, lastTime: number): Promise<any> {
         const params = {
@@ -145,9 +145,9 @@ export class AddonModChatProvider {
     /**
      * Get user data for messages since they only have userid.
      *
-     * @param  {any[]}  messages Messages to get the user data for.
-     * @param  {number} courseId ID of the course the messages belong to.
-     * @return {Promise<any>} Promise always resolved with the formatted messages.
+     * @param messages Messages to get the user data for.
+     * @param courseId ID of the course the messages belong to.
+     * @return Promise always resolved with the formatted messages.
      */
     getMessagesUserData(messages: any[], courseId: number): Promise<any> {
         const promises = messages.map((message) => {
@@ -168,8 +168,8 @@ export class AddonModChatProvider {
     /**
      * Get the actives users of a current chat.
      *
-     * @param  {number} sessionId Chat sessiond ID.
-     * @return {Promise<any>} Promise resolved when the WS is executed.
+     * @param sessionId Chat sessiond ID.
+     * @return Promise resolved when the WS is executed.
      */
     getChatUsers(sessionId: number): Promise<any> {
         const params = {
@@ -185,8 +185,8 @@ export class AddonModChatProvider {
     /**
      * Return whether WS for passed sessions are available.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with a boolean.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with a boolean.
      */
     areSessionsAvailable(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -197,12 +197,12 @@ export class AddonModChatProvider {
     /**
      * Get chat sessions.
      *
-     * @param {number} chatId Chat ID.
-     * @param {number} [groupId=0] Group ID, 0 means that the function will determine the user group.
-     * @param {boolean} [showAll=false] Whether to include incomplete sessions or not.
-     * @param {boolean} [ignoreCache=false] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with the list of sessions.
+     * @param chatId Chat ID.
+     * @param groupId Group ID, 0 means that the function will determine the user group.
+     * @param showAll Whether to include incomplete sessions or not.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the list of sessions.
      * @since 3.5
      */
     getSessions(chatId: number, groupId: number = 0, showAll: boolean = false, ignoreCache: boolean = false, siteId?: string):
@@ -235,13 +235,13 @@ export class AddonModChatProvider {
     /**
      * Get chat session messages.
      *
-     * @param {number} chatId Chat ID.
-     * @param {number} sessionStart Session start time.
-     * @param {number} sessionEnd Session end time.
-     * @param {number} [groupId=0] Group ID, 0 means that the function will determine the user group.
-     * @param {boolean} [ignoreCache=false] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with the list of messages.
+     * @param chatId Chat ID.
+     * @param sessionStart Session start time.
+     * @param sessionEnd Session end time.
+     * @param groupId Group ID, 0 means that the function will determine the user group.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the list of messages.
      * @since 3.5
      */
     getSessionMessages(chatId: number, sessionStart: number, sessionEnd: number, groupId: number = 0, ignoreCache: boolean = false,
@@ -275,8 +275,8 @@ export class AddonModChatProvider {
     /**
      * Invalidate chats.
      *
-     * @param {number} courseId Course ID.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param courseId Course ID.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateChats(courseId: number): Promise<any> {
         const site = this.sitesProvider.getCurrentSite();
@@ -287,10 +287,10 @@ export class AddonModChatProvider {
     /**
      * Invalidate chat sessions.
      *
-     * @param {number} chatId Chat ID.
-     * @param {number} [groupId=0] Group ID, 0 means that the function will determine the user group.
-     * @param {boolean} [showAll=false] Whether to include incomplete sessions or not.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param chatId Chat ID.
+     * @param groupId Group ID, 0 means that the function will determine the user group.
+     * @param showAll Whether to include incomplete sessions or not.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateSessions(chatId: number, groupId: number = 0, showAll: boolean = false): Promise<any> {
         const site = this.sitesProvider.getCurrentSite();
@@ -301,8 +301,8 @@ export class AddonModChatProvider {
     /**
      * Invalidate all chat sessions.
      *
-     * @param {number} chatId Chat ID.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param chatId Chat ID.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAllSessions(chatId: number): Promise<any> {
         const site = this.sitesProvider.getCurrentSite();
@@ -313,10 +313,10 @@ export class AddonModChatProvider {
     /**
      * Invalidate chat session messages.
      *
-     * @param {number} chatId Chat ID.
-     * @param {number} sessionStart Session start time.
-     * @param {number} [groupId=0] Group ID, 0 means that the function will determine the user group.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param chatId Chat ID.
+     * @param sessionStart Session start time.
+     * @param groupId Group ID, 0 means that the function will determine the user group.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateSessionMessages(chatId: number, sessionStart: number, groupId: number = 0): Promise<any> {
         const site = this.sitesProvider.getCurrentSite();
@@ -327,8 +327,8 @@ export class AddonModChatProvider {
     /**
      * Invalidate all chat session messages.
      *
-     * @param {number} chatId Chat ID.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param chatId Chat ID.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAllSessionMessages(chatId: number): Promise<any> {
         const site = this.sitesProvider.getCurrentSite();
@@ -339,8 +339,8 @@ export class AddonModChatProvider {
     /**
      * Get cache key for chats WS call.
      *
-     * @param {number} courseId Course ID.
-     * @return {string} Cache key.
+     * @param courseId Course ID.
+     * @return Cache key.
      */
     protected getChatsCacheKey(courseId: number): string {
         return  this.ROOT_CACHE_KEY + 'chats:' + courseId;
@@ -349,10 +349,10 @@ export class AddonModChatProvider {
     /**
      * Get cache key for sessions WS call.
      *
-     * @param {number} chatId Chat ID.
-     * @param {number} groupId Goup ID, 0 means that the function will determine the user group.
-     * @param {boolean} showAll Whether to include incomplete sessions or not.
-     * @return {string} Cache key.
+     * @param chatId Chat ID.
+     * @param groupId Goup ID, 0 means that the function will determine the user group.
+     * @param showAll Whether to include incomplete sessions or not.
+     * @return Cache key.
      */
     protected getSessionsCacheKey(chatId: number, groupId: number, showAll: boolean): string {
         return  this.getSessionsCacheKeyPrefix(chatId) + groupId + ':' + (showAll ? 1 : 0);
@@ -361,8 +361,8 @@ export class AddonModChatProvider {
     /**
      * Get cache key prefix for sessions WS call.
      *
-     * @param {number} chatId Chat ID.
-     * @return {string} Cache key prefix.
+     * @param chatId Chat ID.
+     * @return Cache key prefix.
      */
     protected getSessionsCacheKeyPrefix(chatId: number): string {
         return  this.ROOT_CACHE_KEY + 'sessions:' + chatId + ':';
@@ -371,10 +371,10 @@ export class AddonModChatProvider {
     /**
      * Get cache key for session messages WS call.
      *
-     * @param {number} chatId Chat ID.
-     * @param {number} sessionStart Session start time.
-     * @param {number} groupId Group ID, 0 means that the function will determine the user group.
-     * @return {string} Cache key.
+     * @param chatId Chat ID.
+     * @param sessionStart Session start time.
+     * @param groupId Group ID, 0 means that the function will determine the user group.
+     * @return Cache key.
      */
     protected getSessionMessagesCacheKey(chatId: number, sessionStart: number, groupId: number): string {
         return this.getSessionMessagesCacheKeyPrefix(chatId) + sessionStart + ':' + groupId;
@@ -383,8 +383,8 @@ export class AddonModChatProvider {
     /**
      * Get cache key prefix for session messages WS call.
      *
-     * @param {number} chatId Chat ID.
-     * @return {string} Cache key prefix.
+     * @param chatId Chat ID.
+     * @return Cache key prefix.
      */
     protected getSessionMessagesCacheKeyPrefix(chatId: number): string {
         return this.ROOT_CACHE_KEY + 'sessionsMessages:' + chatId + ':';

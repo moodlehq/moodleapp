@@ -57,10 +57,10 @@ export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityCompo
     /**
      * Get the LTI data.
      *
-     * @param {boolean} [refresh=false] If it's refreshing content.
-     * @param {boolean} [sync=false] If it should try to sync.
-     * @param {boolean} [showErrors=false] If show errors to the user of hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh If it's refreshing content.
+     * @param sync If it should try to sync.
+     * @param showErrors If show errors to the user of hide them.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
         return this.ltiProvider.getLti(this.courseId, this.module.id).then((ltiData) => {
@@ -76,7 +76,7 @@ export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityCompo
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         const promises = [];

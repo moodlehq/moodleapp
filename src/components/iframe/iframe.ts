@@ -22,8 +22,6 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreIframeUtilsProvider } from '@providers/utils/iframe';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
-/**
- */
 @Component({
     selector: 'core-iframe',
     templateUrl: 'core-iframe.html'

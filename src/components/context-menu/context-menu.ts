@@ -76,7 +76,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
     /**
      * Add a context menu item.
      *
-     * @param {CoreContextMenuItemComponent} item The item to add.
+     * @param item The item to add.
      */
     addItem(item: CoreContextMenuItemComponent): void {
         if (this.parentContextMenu) {
@@ -108,7 +108,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
      * Merge the current context menu with the one passed as parameter. All the items in this menu will be moved to the
      * one passed as parameter.
      *
-     * @param {CoreContextMenuComponent} contextMenu The context menu where to move the items.
+     * @param contextMenu The context menu where to move the items.
      */
     mergeContextMenus(contextMenu: CoreContextMenuComponent): void {
         this.parentContextMenu = contextMenu;
@@ -128,7 +128,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
     /**
      * Remove an item from the context menu.
      *
-     * @param {CoreContextMenuItemComponent} item The item to remove.
+     * @param item The item to remove.
      */
     removeItem(item: CoreContextMenuItemComponent): void {
         if (this.parentContextMenu) {
@@ -173,7 +173,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
     /**
      * Show the context menu.
      *
-     * @param {MouseEvent} event Event.
+     * @param event Event.
      */
     showContextMenu(event: MouseEvent): void {
         if (!this.expanded) {

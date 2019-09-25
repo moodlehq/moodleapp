@@ -40,7 +40,7 @@ export class AddonModChatIndexPage {
     /**
      * Update some data based on the chat instance.
      *
-     * @param {any} chat Chat instance.
+     * @param chat Chat instance.
      */
     updateData(chat: any): void {
         this.title = chat.name || this.title;

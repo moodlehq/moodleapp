@@ -27,8 +27,8 @@ export class CoreUrlUtilsProvider {
     /**
      * Add or remove 'www' from a URL. The url needs to have http or https protocol.
      *
-     * @param {string} url URL to modify.
-     * @return {string} Modified URL.
+     * @param url URL to modify.
+     * @return Modified URL.
      */
     addOrRemoveWWW(url: string): string {
         if (url) {
@@ -47,9 +47,9 @@ export class CoreUrlUtilsProvider {
     /**
      * Given a URL and a text, return an HTML link.
      *
-     * @param {string} url URL.
-     * @param {string} text Text of the link.
-     * @return {string} Link.
+     * @param url URL.
+     * @param text Text of the link.
+     * @return Link.
      */
     buildLink(url: string, text: string): string {
         return '<a href="' + url + '">' + text + '</a>';
@@ -58,8 +58,8 @@ export class CoreUrlUtilsProvider {
     /**
      * Extracts the parameters from a URL and stores them in an object.
      *
-     * @param {string} url URL to treat.
-     * @return {any} Object with the params.
+     * @param url URL to treat.
+     * @return Object with the params.
      */
     extractUrlParams(url: string): any {
         const regex = /[?&]+([^=&]+)=?([^&]*)?/gi,
@@ -104,10 +104,10 @@ export class CoreUrlUtilsProvider {
      * For download remote files from Moodle we need to use the special /webservice/pluginfile passing
      * the ws token as a get parameter.
      *
-     * @param {string} url The url to be fixed.
-     * @param {string} token Token to use.
-     * @param {string} siteUrl The URL of the site the URL belongs to.
-     * @return {string} Fixed URL.
+     * @param url The url to be fixed.
+     * @param token Token to use.
+     * @param siteUrl The URL of the site the URL belongs to.
+     * @return Fixed URL.
      */
     fixPluginfileURL(url: string, token: string, siteUrl: string): string {
         if (!url) {
@@ -146,8 +146,8 @@ export class CoreUrlUtilsProvider {
     /**
      * Formats a URL, trim, lowercase, etc...
      *
-     * @param {string} url The url to be formatted.
-     * @return {string} Fromatted url.
+     * @param url The url to be formatted.
+     * @return Fromatted url.
      */
     formatURL(url: string): string {
         url = url.trim();
@@ -171,9 +171,9 @@ export class CoreUrlUtilsProvider {
     /**
      * Returns the URL to the documentation of the app, based on Moodle version and current language.
      *
-     * @param {string} [release] Moodle release.
-     * @param {string} [page=Mobile_app] Docs page to go to.
-     * @return {Promise<string>} Promise resolved with the Moodle docs URL.
+     * @param release Moodle release.
+     * @param page Docs page to go to.
+     * @return Promise resolved with the Moodle docs URL.
      */
     getDocsUrl(release?: string, page: string = 'Mobile_app'): Promise<string> {
         let docsUrl = 'https://docs.moodle.org/en/' + page;
@@ -199,8 +199,8 @@ export class CoreUrlUtilsProvider {
      * Example:
      * http://mysite.com/a/course.html?id=1 -> course.html
      *
-     * @param {string} url URL to treat.
-     * @return {string} Last file without params.
+     * @param url URL to treat.
+     * @return Last file without params.
      */
     getLastFileWithoutParams(url: string): string {
         let filename = url.substr(url.lastIndexOf('/') + 1);
@@ -215,8 +215,8 @@ export class CoreUrlUtilsProvider {
      * Get the protocol from a URL.
      * E.g. http://www.google.com returns 'http'.
      *
-     * @param {string} url URL to treat.
-     * @return {string} Protocol, undefined if no protocol found.
+     * @param url URL to treat.
+     * @return Protocol, undefined if no protocol found.
      */
     getUrlProtocol(url: string): string {
         if (!url) {
@@ -233,8 +233,8 @@ export class CoreUrlUtilsProvider {
      * Get the scheme from a URL. Please notice that, if a URL has protocol, it will return the protocol.
      * E.g. javascript:doSomething() returns 'javascript'.
      *
-     * @param {string} url URL to treat.
-     * @return {string} Scheme, undefined if no scheme found.
+     * @param url URL to treat.
+     * @return Scheme, undefined if no scheme found.
      */
     getUrlScheme(url: string): string {
         if (!url) {
@@ -250,8 +250,8 @@ export class CoreUrlUtilsProvider {
     /*
      * Gets a username from a URL like: user@mysite.com.
      *
-     * @param {string} url URL to treat.
-     * @return {string} Username. Undefined if no username found.
+     * @param url URL to treat.
+     * @return Username. Undefined if no username found.
      */
     getUsernameFromUrl(url: string): string {
         if (url.indexOf('@') > -1) {
@@ -269,8 +269,8 @@ export class CoreUrlUtilsProvider {
     /**
      * Returns if a URL has any protocol (not a relative URL).
      *
-     * @param {string} url The url to test against the pattern.
-     * @return {boolean} Whether the url is absolute.
+     * @param url The url to test against the pattern.
+     * @return Whether the url is absolute.
      */
     isAbsoluteURL(url: string): boolean {
         return /^[^:]{2,}:\/\//i.test(url) || /^(tel:|mailto:|geo:)/.test(url);
@@ -279,8 +279,8 @@ export class CoreUrlUtilsProvider {
     /**
      * Returns if a URL is downloadable: plugin file OR theme/image.php OR gravatar.
      *
-     * @param {string} url The URL to test.
-     * @return {boolean} Whether the URL is downloadable.
+     * @param url The URL to test.
+     * @return Whether the URL is downloadable.
      */
     isDownloadableUrl(url: string): boolean {
         return this.isPluginFileUrl(url) || this.isThemeImageUrl(url) || this.isGravatarUrl(url);
@@ -289,8 +289,8 @@ export class CoreUrlUtilsProvider {
     /**
      * Returns if a URL is a gravatar URL.
      *
-     * @param {string} url The URL to test.
-     * @return {boolean} Whether the URL is a gravatar URL.
+     * @param url The URL to test.
+     * @return Whether the URL is a gravatar URL.
      */
     isGravatarUrl(url: string): boolean {
         return url && url.indexOf('gravatar.com/avatar') !== -1;
@@ -299,8 +299,8 @@ export class CoreUrlUtilsProvider {
     /**
      * Check if a URL uses http or https protocol.
      *
-     * @param {string} url The url to test.
-     * @return {boolean} Whether the url uses http or https protocol.
+     * @param url The url to test.
+     * @return Whether the url uses http or https protocol.
      */
     isHttpURL(url: string): boolean {
         return /^https?\:\/\/.+/i.test(url);
@@ -309,8 +309,8 @@ export class CoreUrlUtilsProvider {
     /**
      * Returns if a URL is a pluginfile URL.
      *
-     * @param {string} url The URL to test.
-     * @return {boolean} Whether the URL is a pluginfile URL.
+     * @param url The URL to test.
+     * @return Whether the URL is a pluginfile URL.
      */
     isPluginFileUrl(url: string): boolean {
         return url && url.indexOf('/pluginfile.php') !== -1;
@@ -319,8 +319,8 @@ export class CoreUrlUtilsProvider {
     /**
      * Returns if a URL is a theme image URL.
      *
-     * @param {string} url The URL to test.
-     * @return {boolean} Whether the URL is a theme image URL.
+     * @param url The URL to test.
+     * @return Whether the URL is a theme image URL.
      */
     isThemeImageUrl(url: string): boolean {
         return url && url.indexOf('/theme/image.php') !== -1;
@@ -329,8 +329,8 @@ export class CoreUrlUtilsProvider {
     /**
      * Remove protocol and www from a URL.
      *
-     * @param {string} url URL to treat.
-     * @return {string} Treated URL.
+     * @param url URL to treat.
+     * @return Treated URL.
      */
     removeProtocolAndWWW(url: string): string {
         // Remove protocol.
@@ -344,8 +344,8 @@ export class CoreUrlUtilsProvider {
     /**
      * Remove the parameters from a URL, returning the URL without them.
      *
-     * @param {string} url URL to treat.
-     * @return {string} URL without params.
+     * @param url URL to treat.
+     * @return URL without params.
      */
     removeUrlParams(url: string): string {
         const matches = url.match(/^[^\?]+/);

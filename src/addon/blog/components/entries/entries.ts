@@ -104,8 +104,8 @@ export class AddonBlogEntriesComponent implements OnInit {
     /**
      * Fetch blog entries.
      *
-     * @param {boolean} [refresh] Empty events array first.
-     * @return {Promise<any>}         Promise with the entries.
+     * @param refresh Empty events array first.
+     * @return Promise with the entries.
      */
     private fetchEntries(refresh: boolean = false): Promise<any> {
         this.loadMoreError = false;
@@ -174,7 +174,7 @@ export class AddonBlogEntriesComponent implements OnInit {
     /**
      * Toggle between showing only my entries or not.
      *
-     * @param {boolean} enabled If true, filter my entries. False otherwise.
+     * @param enabled If true, filter my entries. False otherwise.
      */
     onlyMyEntriesToggleChanged(enabled: boolean): void {
         if (enabled) {
@@ -198,8 +198,8 @@ export class AddonBlogEntriesComponent implements OnInit {
     /**
      * Function to load more entries.
      *
-     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
-     * @return {Promise<any>} Resolved when done.
+     * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
+     * @return Resolved when done.
      */
     loadMore(infiniteComplete?: any): Promise<any> {
         return this.fetchEntries().finally(() => {
@@ -210,7 +210,7 @@ export class AddonBlogEntriesComponent implements OnInit {
     /**
      * Refresh blog entries on PTR.
      *
-     * @param {any}     refresher  Refresher instance.
+     * @param refresher Refresher instance.
      */
     refresh(refresher?: any): void {
         const promises = this.entries.map((entry) => {

@@ -101,8 +101,8 @@ export class AddonMessagesContactsComponent {
     /**
      * Refresh the data.
      *
-     * @param {any} [refresher] Refresher.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @return Promise resolved when done.
      */
     refreshData(refresher?: any): Promise<any> {
         let promise;
@@ -125,7 +125,7 @@ export class AddonMessagesContactsComponent {
     /**
      * Fetch contacts.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchData(): Promise<any> {
         this.loadingMessage = this.loadingMessages;
@@ -147,8 +147,8 @@ export class AddonMessagesContactsComponent {
 
     /**
      * Sort user list by fullname
-     * @param  {any[]} list List to sort.
-     * @return {any[]}      Sorted list.
+     * @param list List to sort.
+     * @return Sorted list.
      */
     protected sortUsers(list: any[]): any[] {
         return list.sort((a, b) => {
@@ -179,8 +179,8 @@ export class AddonMessagesContactsComponent {
     /**
      * Search users from the UI.
      *
-     * @param  {string}       query Text to search for.
-     * @return {Promise<any>}       Resolved when done.
+     * @param query Text to search for.
+     * @return Resolved when done.
      */
     search(query: string): Promise<any> {
         this.appProvider.closeKeyboard();
@@ -196,8 +196,8 @@ export class AddonMessagesContactsComponent {
     /**
      * Perform the search of users.
      *
-     * @param  {string}       query Text to search for.
-     * @return {Promise<any>}       Resolved when done.
+     * @param query Text to search for.
+     * @return Resolved when done.
      */
     protected performSearch(query: string): Promise<any> {
         return this.messagesProvider.searchContacts(query).then((result) => {
@@ -214,8 +214,8 @@ export class AddonMessagesContactsComponent {
     /**
      * Navigate to a particular discussion.
      *
-     * @param {number} discussionUserId Discussion Id to load.
-     * @param {boolean} [onlyWithSplitView=false]  Only go to Discussion if split view is on.
+     * @param discussionUserId Discussion Id to load.
+     * @param onlyWithSplitView Only go to Discussion if split view is on.
      */
     gotoDiscussion(discussionUserId: number, onlyWithSplitView: boolean = false): void {
         this.discussionUserId = discussionUserId;

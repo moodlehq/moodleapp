@@ -35,8 +35,8 @@ export class AddonBadgesProvider {
      * This method is called quite often and thus should only perform a quick
      * check, we should not be calling WS from here.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with true if enabled, false otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with true if enabled, false otherwise.
      */
     isPluginEnabled(siteId?: string): Promise<boolean> {
 
@@ -54,9 +54,9 @@ export class AddonBadgesProvider {
     /**
      * Get the cache key for the get badges call.
      *
-     * @param {number} courseId ID of the course to get the badges from.
-     * @param {number} userId ID of the user to get the badges from.
-     * @return {string} Cache key.
+     * @param courseId ID of the course to get the badges from.
+     * @param userId ID of the user to get the badges from.
+     * @return Cache key.
      */
     protected getBadgesCacheKey(courseId: number, userId: number): string {
         return this.ROOT_CACHE_KEY + 'badges:' + courseId + ':' + userId;
@@ -65,10 +65,10 @@ export class AddonBadgesProvider {
     /**
      * Get issued badges for a certain user in a course.
      *
-     * @param {number} courseId ID of the course to get the badges from.
-     * @param {number} userId ID of the user to get the badges from.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}Promise to be resolved when the badges are retrieved.
+     * @param courseId ID of the course to get the badges from.
+     * @param userId ID of the user to get the badges from.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise to be resolved when the badges are retrieved.
      */
     getUserBadges(courseId: number, userId: number, siteId?: string): Promise<any> {
 
@@ -98,10 +98,10 @@ export class AddonBadgesProvider {
     /**
      * Invalidate get badges WS call.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} userId ID of the user to get the badges from.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when data is invalidated.
+     * @param courseId Course ID.
+     * @param userId ID of the user to get the badges from.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when data is invalidated.
      */
     invalidateUserBadges(courseId: number, userId: number, siteId?: string): Promise<any> {
 

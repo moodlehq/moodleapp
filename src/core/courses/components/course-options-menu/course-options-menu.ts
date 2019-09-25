@@ -43,7 +43,7 @@ export class CoreCoursesCourseOptionsMenuComponent implements OnInit {
 
     /**
      * Do an action over the course.
-     * @param {string} action Action name to take.
+     * @param action Action name to take.
      */
     action(action: string): void {
         this.viewCtrl.dismiss(action);

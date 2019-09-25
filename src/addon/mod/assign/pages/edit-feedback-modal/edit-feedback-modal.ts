@@ -47,7 +47,7 @@ export class AddonModAssignEditFeedbackModalPage {
     /**
      * Check if we can leave the page or not.
      *
-     * @return {boolean|Promise<void>} Resolved if we can leave it, rejected if not.
+     * @return Resolved if we can leave it, rejected if not.
      */
     ionViewCanLeave(): boolean | Promise<void> {
         if (this.forceLeave) {
@@ -64,7 +64,7 @@ export class AddonModAssignEditFeedbackModalPage {
     /**
      * Close modal.
      *
-     * @param {any} data Data to return to the page.
+     * @param data Data to return to the page.
      */
     closeModal(data: any): void {
         this.viewCtrl.dismiss(data);
@@ -73,7 +73,7 @@ export class AddonModAssignEditFeedbackModalPage {
     /**
      * Done editing.
      *
-     * @param {Event} e Click event.
+     * @param e Click event.
      */
     done(e: Event): void {
         e.preventDefault();
@@ -87,7 +87,7 @@ export class AddonModAssignEditFeedbackModalPage {
     /**
      * Get the input data.
      *
-     * @return {any} Object with the data.
+     * @return Object with the data.
      */
     protected getInputData(): any {
         return this.domUtils.getDataFromForm(document.forms['addon-mod_assign-edit-feedback-form']);
@@ -96,7 +96,7 @@ export class AddonModAssignEditFeedbackModalPage {
     /**
      * Check if data has changed.
      *
-     * @return {Promise<boolean>} Promise resolved with boolean: whether the data has changed.
+     * @return Promise resolved with boolean: whether the data has changed.
      */
     protected hasDataChanged(): Promise<boolean> {
         return this.feedbackDelegate.hasPluginDataChanged(this.assign, this.userId, this.plugin, this.getInputData(), this.userId)

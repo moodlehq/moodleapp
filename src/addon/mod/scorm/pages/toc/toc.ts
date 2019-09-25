@@ -45,7 +45,7 @@ export class AddonModScormTocPage {
     /**
      * Function called when a SCO is clicked.
      *
-     * @param {any} sco Clicked SCO.
+     * @param sco Clicked SCO.
      */
     loadSco(sco: any): void {
         if (!sco.prereq || !sco.isvisible || !sco.launch) {

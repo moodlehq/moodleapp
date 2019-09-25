@@ -72,7 +72,7 @@ export class CoreSitePluginsCallWSNewContentDirective extends CoreSitePluginsCal
     /**
      * Function called when the WS call is successful.
      *
-     * @param {any} result Result of the WS call.
+     * @param result Result of the WS call.
      */
     protected wsCallSuccess(result: any): void {
         let args = this.args || {};

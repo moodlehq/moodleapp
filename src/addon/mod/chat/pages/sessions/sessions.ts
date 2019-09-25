@@ -62,8 +62,8 @@ export class AddonModChatSessionsPage {
     /**
      * Fetch chat sessions.
      *
-     * @param {number} [showLoading] Display a loading modal.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param showLoading Display a loading modal.
+     * @return Promise resolved when done.
      */
     fetchSessions(showLoading?: boolean): Promise<any> {
         const modal = showLoading ? this.domUtils.showModalLoading() : null;
@@ -112,7 +112,7 @@ export class AddonModChatSessionsPage {
     /**
      * Refresh chat sessions.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshSessions(refresher: any): void {
         const promises = [
@@ -130,7 +130,7 @@ export class AddonModChatSessionsPage {
     /**
      * Navigate to a session.
      *
-     * @param {any} session Chat session.
+     * @param session Chat session.
      */
     openSession(session: any): void {
         this.selectedSessionStart = session.sessionstart;
@@ -148,8 +148,8 @@ export class AddonModChatSessionsPage {
     /**
      * Show more session users.
      *
-     * @param {any} session Chat session.
-     * @param {Event} $event The event.
+     * @param session Chat session.
+     * @param $event The event.
      */
     showMoreUsers(session: any, $event: Event): void {
         session.sessionusers = session.allsessionusers;

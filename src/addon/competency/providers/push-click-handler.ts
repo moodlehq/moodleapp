@@ -33,8 +33,8 @@ export class AddonCompetencyPushClickHandler implements CorePushNotificationsCli
     /**
      * Check if a notification click is handled by this handler.
      *
-     * @param {any} notification The notification to check.
-     * @return {boolean} Whether the notification click is handled by this handler
+     * @param notification The notification to check.
+     * @return Whether the notification click is handled by this handler
      */
     handles(notification: any): boolean | Promise<boolean> {
         if (this.utils.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'moodle' &&
@@ -51,8 +51,8 @@ export class AddonCompetencyPushClickHandler implements CorePushNotificationsCli
     /**
      * Handle the notification click.
      *
-     * @param {any} notification The notification to check.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param notification The notification to check.
+     * @return Promise resolved when done.
      */
     handleClick(notification: any): Promise<any> {
         const contextUrlParams = this.urlUtils.extractUrlParams(notification.contexturl);

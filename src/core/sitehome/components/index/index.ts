@@ -58,7 +58,7 @@ export class CoreSiteHomeIndexComponent implements OnInit {
     /**
      * Refresh the data.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     doRefresh(refresher: any): void {
         const promises = [];
@@ -93,7 +93,7 @@ export class CoreSiteHomeIndexComponent implements OnInit {
     /**
      * Convenience function to fetch the data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected loadContent(): Promise<any> {
         this.hasContent = false;

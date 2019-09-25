@@ -54,7 +54,7 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         const promises = [];
@@ -73,7 +73,7 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
     /**
      * Fetch the data to render the block.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchContent(): Promise<any> {
         return this.courseProvider.getSections(this.siteHomeId, false, true).then((sections) => {

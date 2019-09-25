@@ -36,8 +36,8 @@ export class CoreCoursesSelfEnrolPasswordPage {
     /**
      * Submit password.
      *
-     * @param {Event} e Event.
-     * @param {string} password Password to submit.
+     * @param e Event.
+     * @param password Password to submit.
      */
     submitPassword(e: Event, password: string): void {
         e.preventDefault();

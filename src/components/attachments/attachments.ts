@@ -106,8 +106,8 @@ export class CoreAttachmentsComponent implements OnInit {
     /**
      * Delete a file from the list.
      *
-     * @param {number} index The index of the file.
-     * @param {boolean} [askConfirm] Whether to ask confirm.
+     * @param index The index of the file.
+     * @param askConfirm Whether to ask confirm.
      */
     delete(index: number, askConfirm?: boolean): void {
         let promise;
@@ -129,8 +129,8 @@ export class CoreAttachmentsComponent implements OnInit {
     /**
      * A file was renamed.
      *
-     * @param {number} index Index of the file.
-     * @param {any} data The data received.
+     * @param index Index of the file.
+     * @param data The data received.
      */
     renamed(index: number, data: any): void {
         this.files[index] = data.file;

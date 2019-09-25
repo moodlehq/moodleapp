@@ -28,13 +28,13 @@ export class AddonNotificationsHelperProvider {
     /**
      * Get some notifications. It will try to use the new WS if available.
      *
-     * @param {any[]} notifications Current list of loaded notifications. It's used to calculate the offset.
-     * @param {number} [limit] Number of notifications to get. Defaults to LIST_LIMIT.
-     * @param {boolean} [toDisplay=true] True if notifications will be displayed to the user, either in view or in a notification.
-     * @param {boolean} [forceCache] True if it should return cached data. Has priority over ignoreCache.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<{notifications: any[], canLoadMore: boolean}>} Promise resolved with notifications and if can load more.
+     * @param notifications Current list of loaded notifications. It's used to calculate the offset.
+     * @param limit Number of notifications to get. Defaults to LIST_LIMIT.
+     * @param toDisplay True if notifications will be displayed to the user, either in view or in a notification.
+     * @param forceCache True if it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with notifications and if can load more.
      */
     getNotifications(notifications: any[], limit?: number, toDisplay: boolean = true, forceCache?: boolean, ignoreCache?: boolean,
             siteId?: string): Promise<{notifications: any[], canLoadMore: boolean}> {

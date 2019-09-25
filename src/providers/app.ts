@@ -30,25 +30,21 @@ import { CoreConfigConstants } from '../configconstants';
 export interface CoreRedirectData {
     /**
      * ID of the site to load.
-     * @type {string}
      */
     siteId?: string;
 
     /**
      * Name of the page to redirect to.
-     * @type {string}
      */
     page?: string;
 
     /**
      * Params to pass to the page.
-     * @type {any}
      */
     params?: any;
 
     /**
      * Timestamp when this redirect was last modified.
-     * @type {number}
      */
     timemodified?: number;
 }
@@ -111,7 +107,7 @@ export class CoreAppProvider {
     /**
      * Check if the browser supports mediaDevices.getUserMedia.
      *
-     * @return {boolean} Whether the function is supported.
+     * @return Whether the function is supported.
      */
     canGetUserMedia(): boolean {
         return !!(navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
@@ -120,7 +116,7 @@ export class CoreAppProvider {
     /**
      * Check if the browser supports MediaRecorder.
      *
-     * @return {boolean} Whether the function is supported.
+     * @return Whether the function is supported.
      */
     canRecordMedia(): boolean {
         return !!(<any> window).MediaRecorder;
@@ -138,7 +134,7 @@ export class CoreAppProvider {
     /**
      * Get the application global database.
      *
-     * @return {SQLiteDB} App's DB.
+     * @return App's DB.
      */
     getDB(): SQLiteDB {
         return this.db;
@@ -147,7 +143,7 @@ export class CoreAppProvider {
     /**
      * Get an ID for a main menu.
      *
-     * @return {number} Main menu ID.
+     * @return Main menu ID.
      */
     getMainMenuId(): number {
         return this.mainMenuId++;
@@ -156,7 +152,7 @@ export class CoreAppProvider {
     /**
      * Get the app's root NavController.
      *
-     * @return {NavController} Root NavController.
+     * @return Root NavController.
      */
     getRootNavController(): NavController {
         // Function getRootNav is deprecated. Get the first root nav, there should always be one.
@@ -166,7 +162,7 @@ export class CoreAppProvider {
     /**
      * Checks if the app is running in a 64 bits desktop environment (not browser).
      *
-     * @return {boolean} Whether the app is running in a 64 bits desktop environment (not browser).
+     * @return Whether the app is running in a 64 bits desktop environment (not browser).
      */
     is64Bits(): boolean {
         const process = (<any> window).process;
@@ -177,7 +173,7 @@ export class CoreAppProvider {
     /**
      * Checks if the app is running in a desktop environment (not browser).
      *
-     * @return {boolean} Whether the app is running in a desktop environment (not browser).
+     * @return Whether the app is running in a desktop environment (not browser).
      */
     isDesktop(): boolean {
         const process = (<any> window).process;
@@ -188,7 +184,7 @@ export class CoreAppProvider {
     /**
      * Check if the keyboard is visible.
      *
-     * @return {boolean} Whether keyboard is visible.
+     * @return Whether keyboard is visible.
      */
     isKeyboardVisible(): boolean {
         return this.isKeyboardShown;
@@ -197,7 +193,7 @@ export class CoreAppProvider {
     /**
      * Check if the app is running in a Linux environment.
      *
-     * @return {boolean} Whether it's running in a Linux environment.
+     * @return Whether it's running in a Linux environment.
      */
     isLinux(): boolean {
         if (!this.isDesktop()) {
@@ -214,7 +210,7 @@ export class CoreAppProvider {
     /**
      * Check if the app is running in a Mac OS environment.
      *
-     * @return {boolean} Whether it's running in a Mac OS environment.
+     * @return Whether it's running in a Mac OS environment.
      */
     isMac(): boolean {
         if (!this.isDesktop()) {
@@ -231,7 +227,7 @@ export class CoreAppProvider {
     /**
      * Check if the main menu is open.
      *
-     * @return {boolean} Whether the main menu is open.
+     * @return Whether the main menu is open.
      */
     isMainMenuOpen(): boolean {
         return typeof this.mainMenuOpen != 'undefined';
@@ -240,7 +236,7 @@ export class CoreAppProvider {
     /**
      * Checks if the app is running in a mobile or tablet device (Cordova).
      *
-     * @return {boolean} Whether the app is running in a mobile or tablet device.
+     * @return Whether the app is running in a mobile or tablet device.
      */
     isMobile(): boolean {
         return this.platform.is('cordova');
@@ -249,7 +245,7 @@ export class CoreAppProvider {
     /**
      * Checks if the current window is wider than a mobile.
      *
-     * @return {boolean} Whether the app the current window is wider than a mobile.
+     * @return Whether the app the current window is wider than a mobile.
      */
     isWide(): boolean {
         return this.platform.width() > 768;
@@ -258,7 +254,7 @@ export class CoreAppProvider {
     /**
      * Returns whether we are online.
      *
-     * @return {boolean} Whether the app is online.
+     * @return Whether the app is online.
      */
     isOnline(): boolean {
         if (this.forceOffline) {
@@ -277,7 +273,7 @@ export class CoreAppProvider {
     /**
      * Check if device uses a limited connection.
      *
-     * @return {boolean} Whether the device uses a limited connection.
+     * @return Whether the device uses a limited connection.
      */
     isNetworkAccessLimited(): boolean {
         const type = this.network.type;
@@ -294,7 +290,7 @@ export class CoreAppProvider {
     /**
      * Check if device uses a wifi connection.
      *
-     * @return {boolean} Whether the device uses a wifi connection.
+     * @return Whether the device uses a wifi connection.
      */
     isWifi(): boolean {
         return this.isOnline() && !this.isNetworkAccessLimited();
@@ -303,7 +299,7 @@ export class CoreAppProvider {
     /**
      * Check if the app is running in a Windows environment.
      *
-     * @return {boolean} Whether it's running in a Windows environment.
+     * @return Whether it's running in a Windows environment.
      */
     isWindows(): boolean {
         if (!this.isDesktop()) {
@@ -330,8 +326,8 @@ export class CoreAppProvider {
     /**
      * Set a main menu as open or not.
      *
-     * @param {number} id Main menu ID.
-     * @param {boolean} open Whether it's open or not.
+     * @param id Main menu ID.
+     * @param open Whether it's open or not.
      */
     setMainMenuOpen(id: number, open: boolean): void {
         if (open) {
@@ -382,7 +378,7 @@ export class CoreAppProvider {
     /**
      * Check if there's an ongoing SSO authentication process.
      *
-     * @return {boolean} Whether there's a SSO authentication ongoing.
+     * @return Whether there's a SSO authentication ongoing.
      */
     isSSOAuthenticationOngoing(): boolean {
         return !!this.ssoAuthenticationPromise;
@@ -391,7 +387,7 @@ export class CoreAppProvider {
     /**
      * Returns a promise that will be resolved once SSO authentication finishes.
      *
-     * @return {Promise<any>} Promise resolved once SSO authentication finishes.
+     * @return Promise resolved once SSO authentication finishes.
      */
     waitForSSOAuthentication(): Promise<any> {
         return this.ssoAuthenticationPromise || Promise.resolve();
@@ -400,7 +396,7 @@ export class CoreAppProvider {
     /**
      * Retrieve redirect data.
      *
-     * @return {CoreRedirectData} Object with siteid, state, params and timemodified.
+     * @return Object with siteid, state, params and timemodified.
      */
     getRedirect(): CoreRedirectData {
         if (localStorage && localStorage.getItem) {
@@ -428,9 +424,9 @@ export class CoreAppProvider {
     /**
      * Store redirect params.
      *
-     * @param {string} siteId Site ID.
-     * @param {string} page Page to go.
-     * @param {any} params Page params.
+     * @param siteId Site ID.
+     * @param page Page to go.
+     * @param params Page params.
      */
     storeRedirect(siteId: string, page: string, params: any): void {
         if (localStorage && localStorage.setItem) {
@@ -511,14 +507,14 @@ export class CoreAppProvider {
      * button is pressed. This method decides which of the registered back button
      * actions has the highest priority and should be called.
      *
-     * @param {Function} fn Called when the back button is pressed,
-     * if this registered action has the highest priority.
-     * @param {number} priority Set the priority for this action. All actions sorted by priority will be executed since one of
-     * them returns true.
-     *   * Priorities higher or equal than 1000 will go before closing modals
-     *   * Priorities lower than 500 will only be executed if you are in the first state of the app (before exit).
-     * @returns {Function} A function that, when called, will unregister
-     * the back button action.
+     * @param fn Called when the back button is pressed,
+     *           if this registered action has the highest priority.
+     * @param priority Set the priority for this action. All actions sorted by priority will be executed since one of
+     *                 them returns true.
+     *                 * Priorities higher or equal than 1000 will go before closing modals
+     *                 * Priorities lower than 500 will only be executed if you are in the first state of the app (before exit).
+     * @return A function that, when called, will unregister
+     *         the back button action.
      */
     registerBackButtonAction(fn: Function, priority: number = 0): Function {
         const action = { fn: fn, priority: priority };
@@ -579,7 +575,7 @@ export class CoreAppProvider {
     /**
      * Set value of forceOffline flag. If true, the app will think the device is offline.
      *
-     * @param {boolean} value Value to set.
+     * @param value Value to set.
      */
     setForceOffline(value: boolean): void {
         this.forceOffline = !!value;

@@ -42,7 +42,7 @@ export class AddonModBookIndexPage {
     /**
      * Update some data based on the book instance.
      *
-     * @param {any} book Book instance.
+     * @param book Book instance.
      */
     updateData(book: any): void {
         this.title = book.name || this.title;

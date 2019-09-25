@@ -187,9 +187,9 @@ export class CoreCourseSectionPage implements OnDestroy {
     /**
      * Fetch and load all the data required for the view.
      *
-     * @param {boolean} [refresh] If it's refreshing content.
-     * @param {boolean} [sync] If it should try to sync.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh If it's refreshing content.
+     * @param sync If it should try to sync.
+     * @return Promise resolved when done.
      */
     protected loadData(refresh?: boolean, sync?: boolean): Promise<any> {
         // First of all, get the course because the data might have changed.
@@ -348,8 +348,8 @@ export class CoreCourseSectionPage implements OnDestroy {
     /**
      * Refresh the data.
      *
-     * @param  {any} [refresher] Refresher.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @return Promise resolved when done.
      */
     doRefresh(refresher?: any): Promise<any> {
         return this.invalidateData().finally(() => {
@@ -402,7 +402,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     /**
      * Refresh list after a completion change since there could be new activities.
      *
-     * @param {boolean} [sync] If it should try to sync.
+     * @param sync If it should try to sync.
      */
     protected refreshAfterCompletionChange(sync?: boolean): void {
         // Save scroll position to restore it once done.
@@ -428,7 +428,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     /**
      * Determines the prefetch icon of the course.
      *
-     * @return {Promise<void>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected determineCoursePrefetchIcon(): Promise<void> {
         return this.courseHelper.getCourseStatusIconAndTitle(this.course.id).then((data) => {
@@ -460,7 +460,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     /**
      * Update the course status icon and title.
      *
-     * @param {string} status Status to show.
+     * @param status Status to show.
      */
     protected updateCourseStatus(status: string): void {
         const statusData = this.courseHelper.getCourseStatusIconAndTitleFromStatus(status);
@@ -479,7 +479,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     /**
      * Opens a menu item registered to the delegate.
      *
-     * @param {CoreCourseMenuHandlerToDisplay} item Item to open
+     * @param item Item to open
      */
     openMenuItem(item: CoreCourseOptionsMenuHandlerToDisplay): void {
         const params = Object.assign({ course: this.course}, item.data.pageParams);

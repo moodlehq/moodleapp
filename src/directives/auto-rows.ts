@@ -56,7 +56,7 @@ export class CoreAutoRowsDirective {
 
     /**
      * Resize the textarea.
-     * @param {any} $event Event fired.
+     * @param $event Event fired.
      */
     protected resize($event?: any): void {
         let nativeElement = this.element.nativeElement;

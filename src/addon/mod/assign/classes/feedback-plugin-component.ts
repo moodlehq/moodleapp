@@ -32,7 +32,7 @@ export class AddonModAssignFeedbackPluginComponentBase {
     /**
      * Open a modal to edit the feedback plugin.
      *
-     * @return {Promise<any>} Promise resolved with the input data, rejected if cancelled.
+     * @return Promise resolved with the input data, rejected if cancelled.
      */
     editFeedback(): Promise<any> {
         if (this.canEdit) {
@@ -62,7 +62,7 @@ export class AddonModAssignFeedbackPluginComponentBase {
     /**
      * Invalidate the data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     invalidate(): Promise<any> {
         return Promise.resolve();

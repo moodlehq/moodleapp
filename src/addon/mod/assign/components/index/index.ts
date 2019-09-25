@@ -141,10 +141,10 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Get assignment data.
      *
-     * @param {boolean} [refresh=false] If it's refreshing content.
-     * @param {boolean} [sync=false] If it should try to sync.
-     * @param {boolean} [showErrors=false] If show errors to the user of hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh If it's refreshing content.
+     * @param sync If it should try to sync.
+     * @param showErrors If show errors to the user of hide them.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
 
@@ -228,8 +228,8 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Set group to see the summary.
      *
-     * @param  {number}       groupId Group ID.
-     * @return {Promise<any>}         Resolved when done.
+     * @param groupId Group ID.
+     * @return Resolved when done.
      */
     setGroup(groupId: number): Promise<any> {
         this.group = groupId;
@@ -245,8 +245,8 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Go to view a list of submissions.
      *
-     * @param {string} status Status to see.
-     * @param {number} count Number of submissions with the status.
+     * @param status Status to see.
+     * @param count Number of submissions with the status.
      */
     goToSubmissionList(status: string, count: number): void {
         if (typeof status == 'undefined') {
@@ -270,8 +270,8 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Checks if sync has succeed from result sync data.
      *
-     * @param {any} result Data returned by the sync function.
-     * @return {boolean} If succeed or not.
+     * @param result Data returned by the sync function.
+     * @return If succeed or not.
      */
     protected hasSyncSucceed(result: any): boolean {
         if (result.updated) {
@@ -284,7 +284,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         const promises = [];
@@ -325,8 +325,8 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Compares sync event data with current data to check if refresh content is needed.
      *
-     * @param {any} syncEventData Data receiven on sync observer.
-     * @return {boolean}          True if refresh is needed, false otherwise.
+     * @param syncEventData Data receiven on sync observer.
+     * @return True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: any): boolean {
         if (this.assign && syncEventData.assignId == this.assign.id) {
@@ -344,7 +344,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Performs the sync of the activity.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected sync(): Promise<any> {
         return this.syncProvider.syncAssign(this.assign.id);

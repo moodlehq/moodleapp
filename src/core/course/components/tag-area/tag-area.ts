@@ -33,7 +33,7 @@ export class CoreCourseTagAreaComponent {
     /**
      * Open a course.
      *
-     * @param {number} courseId The course to open.
+     * @param courseId The course to open.
      */
     openCourse(courseId: number): void {
         // If this component is inside a split view, use the master nav to open it.

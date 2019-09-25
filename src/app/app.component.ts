@@ -266,7 +266,7 @@ export class MoodleMobileApp implements OnInit {
     /**
      * Convenience function to add version to body classes.
      *
-     * @param {string} release Current release number of the site.
+     * @param release Current release number of the site.
      */
     protected addVersionClass(release: string): void {
         const parts = release.split('.');
@@ -298,7 +298,7 @@ export class MoodleMobileApp implements OnInit {
     /**
      * Close one modal if any.
      *
-     * @return {boolean} True if one modal was present.
+     * @return True if one modal was present.
      */
     closeModal(): boolean {
         // Following function is hidden in Ionic Code, however there's no solution for that.

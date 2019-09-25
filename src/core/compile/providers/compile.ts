@@ -154,10 +154,10 @@ export class CoreCompileProvider {
     /**
      * Create and compile a dynamic component.
      *
-     * @param {string} template The template of the component.
-     * @param {any} componentClass The JS class of the component.
-     * @param {any[]} [extraImports] Extra imported modules if needed and not imported by this class.
-     * @return {Promise<ComponentFactory<any>>} Promise resolved with the factory to instantiate the component.
+     * @param template The template of the component.
+     * @param componentClass The JS class of the component.
+     * @param extraImports Extra imported modules if needed and not imported by this class.
+     * @return Promise resolved with the factory to instantiate the component.
      */
     createAndCompileComponent(template: string, componentClass: any, extraImports: any[] = []): Promise<ComponentFactory<any>> {
         // Create the component using the template and the class.
@@ -190,8 +190,8 @@ export class CoreCompileProvider {
     /**
      * Eval some javascript using the context of the function.
      *
-     * @param {string} javascript The javascript to eval.
-     * @return {any} Result of the eval.
+     * @param javascript The javascript to eval.
+     * @return Result of the eval.
      */
     protected evalInContext(javascript: string): any {
         // tslint:disable: no-eval
@@ -201,9 +201,9 @@ export class CoreCompileProvider {
     /**
      * Execute some javascript code, using a certain instance as the context.
      *
-     * @param {any} instance Instance to use as the context. In the JS code, "this" will be this instance.
-     * @param {string} javascript The javascript code to eval.
-     * @return {any} Result of the javascript execution.
+     * @param instance Instance to use as the context. In the JS code, "this" will be this instance.
+     * @param javascript The javascript code to eval.
+     * @return Result of the javascript execution.
      */
     executeJavascript(instance: any, javascript: string): any {
         try {
@@ -216,8 +216,8 @@ export class CoreCompileProvider {
     /**
      * Inject all the core libraries in a certain object.
      *
-     * @param {any} instance The instance where to inject the libraries.
-     * @param {any[]} [extraProviders] Extra imported providers if needed and not imported by this class.
+     * @param instance The instance where to inject the libraries.
+     * @param extraProviders Extra imported providers if needed and not imported by this class.
      */
     injectLibraries(instance: any, extraProviders: any[] = []): void {
         const providers = (<any[]> CORE_PROVIDERS).concat(CORE_CONTENTLINKS_PROVIDERS).concat(CORE_COURSE_PROVIDERS)
@@ -284,10 +284,10 @@ export class CoreCompileProvider {
     /**
      * Instantiate a dynamic component.
      *
-     * @param {string} template The template of the component.
-     * @param {any} componentClass The JS class of the component.
-     * @param {Injector} [injector] The injector to use. It's recommended to pass it so NavController and similar can be injected.
-     * @return {Promise<ComponentRef<any>>} Promise resolved with the component instance.
+     * @param template The template of the component.
+     * @param componentClass The JS class of the component.
+     * @param injector The injector to use. It's recommended to pass it so NavController and similar can be injected.
+     * @return Promise resolved with the component instance.
      */
     instantiateDynamicComponent(template: string, componentClass: any, injector?: Injector): Promise<ComponentRef<any>> {
         injector = injector || this.injector;

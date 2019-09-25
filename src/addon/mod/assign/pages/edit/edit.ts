@@ -80,7 +80,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
     /**
      * Check if we can leave the page or not.
      *
-     * @return {boolean|Promise<void>} Resolved if we can leave it, rejected if not.
+     * @return Resolved if we can leave it, rejected if not.
      */
     ionViewCanLeave(): boolean | Promise<void> {
         if (this.forceLeave) {
@@ -101,7 +101,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
     /**
      * Fetch assignment data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchAssignment(): Promise<any> {
         const currentUserId = this.sitesProvider.getCurrentSiteUserId();
@@ -175,7 +175,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
     /**
      * Get the input data.
      *
-     * @return {any} Input data.
+     * @return Input data.
      */
     protected getInputData(): any {
         return this.domUtils.getDataFromForm(document.forms['addon-mod_assign-edit-form']);
@@ -184,7 +184,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
     /**
      * Check if data has changed.
      *
-     * @return {Promise<boolean>} Promise resolved with boolean: whether data has changed.
+     * @return Promise resolved with boolean: whether data has changed.
      */
     protected hasDataChanged(): Promise<boolean> {
         // Usually the hasSubmissionDataChanged call will be resolved inmediately, causing the modal to be shown just an instant.
@@ -220,8 +220,8 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
     /**
      * Get data to submit based on the input data.
      *
-     * @param {any} inputData The input data.
-     * @return {Promise<any>} Promise resolved with the data to submit.
+     * @param inputData The input data.
+     * @return Promise resolved with the data to submit.
      */
     protected prepareSubmissionData(inputData: any): Promise<any> {
         // If there's offline data, always save it in offline.
@@ -263,7 +263,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
     /**
      * Save the submission.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected saveSubmission(): Promise<any> {
         const inputData = this.getInputData();

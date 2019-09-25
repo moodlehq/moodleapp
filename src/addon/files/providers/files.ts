@@ -31,7 +31,7 @@ export class AddonFilesProvider {
     /**
      * Check if core_user_get_private_files_info WS call is available.
      *
-     * @return {boolean} Whether the WS is available, false otherwise.
+     * @return Whether the WS is available, false otherwise.
      */
     canGetPrivateFilesInfo(): boolean {
         return this.sitesProvider.wsAvailableInCurrentSite('core_user_get_private_files_info');
@@ -40,7 +40,7 @@ export class AddonFilesProvider {
     /**
      * Check if user can view his private files.
      *
-     * @return {boolean} Whether the user can view his private files.
+     * @return Whether the user can view his private files.
      */
     canViewPrivateFiles(): boolean {
         return this.sitesProvider.getCurrentSite().canAccessMyFiles() && !this.isPrivateFilesDisabledInSite();
@@ -49,7 +49,7 @@ export class AddonFilesProvider {
     /**
      * Check if user can view site files.
      *
-     * @return {boolean} Whether the user can view site files.
+     * @return Whether the user can view site files.
      */
     canViewSiteFiles(): boolean {
         return !this.isSiteFilesDisabledInSite();
@@ -58,7 +58,7 @@ export class AddonFilesProvider {
     /**
      * Check if user can upload private files.
      *
-     * @return {boolean} Whether the user can upload private files.
+     * @return Whether the user can upload private files.
      */
     canUploadFiles(): boolean {
         const currentSite = this.sitesProvider.getCurrentSite();
@@ -69,9 +69,9 @@ export class AddonFilesProvider {
     /**
      * Get the list of files.
      *
-     * @param {any} params A list of parameters accepted by the Web service.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with the files.
+     * @param params A list of parameters accepted by the Web service.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the files.
      */
     getFiles(params: any, siteId?: string): Promise<any[]> {
 
@@ -121,8 +121,8 @@ export class AddonFilesProvider {
     /**
      * Get cache key for file list WS calls.
      *
-     * @param {any} params Params of the WS.
-     * @return {string} Cache key.
+     * @param params Params of the WS.
+     * @return Cache key.
      */
     protected getFilesListCacheKey(params: any): string {
         const root = !params.component ? 'site' : 'my';
@@ -133,7 +133,7 @@ export class AddonFilesProvider {
     /**
      * Get the private files of the current user.
      *
-     * @return {Promise<any[]>} Promise resolved with the files.
+     * @return Promise resolved with the files.
      */
     getPrivateFiles(): Promise<any[]> {
         return this.getFiles(this.getPrivateFilesRootParams());
@@ -142,7 +142,7 @@ export class AddonFilesProvider {
     /**
      * Get params to get root private files directory.
      *
-     * @return {any} Params.
+     * @return Params.
      */
     protected getPrivateFilesRootParams(): any {
         return {
@@ -160,9 +160,9 @@ export class AddonFilesProvider {
     /**
      * Get private files info.
      *
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved with the info.
+     * @param userId User ID. If not defined, current user in the site.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with the info.
      */
     getPrivateFilesInfo(userId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -183,8 +183,8 @@ export class AddonFilesProvider {
     /**
      * Get the cache key for private files info WS calls.
      *
-     * @param {number} userId User ID.
-     * @return {string} Cache key.
+     * @param userId User ID.
+     * @return Cache key.
      */
     protected getPrivateFilesInfoCacheKey(userId: number): string {
         return this.getPrivateFilesInfoCommonCacheKey() + ':' + userId;
@@ -193,7 +193,7 @@ export class AddonFilesProvider {
     /**
      * Get the common part of the cache keys for private files info WS calls.
      *
-     * @return {string} Cache key.
+     * @return Cache key.
      */
     protected getPrivateFilesInfoCommonCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'privateInfo';
@@ -202,7 +202,7 @@ export class AddonFilesProvider {
     /**
      * Get the site files.
      *
-     * @return {Promise<any[]>} Promise resolved with the files.
+     * @return Promise resolved with the files.
      */
     getSiteFiles(): Promise<any[]> {
         return this.getFiles(this.getSiteFilesRootParams());
@@ -211,7 +211,7 @@ export class AddonFilesProvider {
     /**
      * Get params to get root site files directory.
      *
-     * @return {any} Params.
+     * @return Params.
      */
     protected getSiteFilesRootParams(): any {
         return {
@@ -227,10 +227,10 @@ export class AddonFilesProvider {
     /**
      * Invalidates list of files in a certain directory.
      *
-     * @param {string} root Root of the directory ('my' for private files, 'site' for site files).
-     * @param {string} path Path to the directory.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param root Root of the directory ('my' for private files, 'site' for site files).
+     * @param path Path to the directory.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateDirectory(root: string, path: string, siteId?: string): Promise<any> {
         let params;
@@ -252,8 +252,8 @@ export class AddonFilesProvider {
     /**
      * Invalidates private files info for all users.
      *
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidatePrivateFilesInfo(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -264,9 +264,9 @@ export class AddonFilesProvider {
     /**
      * Invalidates private files info for a certain user.
      *
-     * @param {number} [userId] User ID. If not defined, current user in the site.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param userId User ID. If not defined, current user in the site.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidatePrivateFilesInfoForUser(userId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -279,8 +279,8 @@ export class AddonFilesProvider {
     /**
      * Check if Files is disabled in a certain site.
      *
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<boolean>} Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     isDisabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -291,8 +291,8 @@ export class AddonFilesProvider {
     /**
      * Check if Files is disabled in a certain site.
      *
-     * @param {CoreSite} [site] Site. If not defined, use current site.
-     * @return {boolean} Whether it's disabled.
+     * @param site Site. If not defined, use current site.
+     * @return Whether it's disabled.
      */
     isDisabledInSite(site: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
@@ -303,7 +303,7 @@ export class AddonFilesProvider {
     /**
      * Return whether or not the plugin is enabled.
      *
-     * @return {boolean} True if enabled, false otherwise.
+     * @return True if enabled, false otherwise.
      */
     isPluginEnabled(): boolean {
         return this.canViewPrivateFiles() || this.canViewSiteFiles() || this.canUploadFiles();
@@ -312,8 +312,8 @@ export class AddonFilesProvider {
     /**
      * Check if private files is disabled in a certain site.
      *
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<boolean>} Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     isPrivateFilesDisabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -324,8 +324,8 @@ export class AddonFilesProvider {
     /**
      * Check if private files is disabled in a certain site.
      *
-     * @param {CoreSite} [site] Site. If not defined, use current site.
-     * @return {boolean} Whether it's disabled.
+     * @param site Site. If not defined, use current site.
+     * @return Whether it's disabled.
      */
     isPrivateFilesDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
@@ -336,8 +336,8 @@ export class AddonFilesProvider {
     /**
      * Check if site files is disabled in a certain site.
      *
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<boolean>} Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     isSiteFilesDisabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -348,8 +348,8 @@ export class AddonFilesProvider {
     /**
      * Check if site files is disabled in a certain site.
      *
-     * @param {CoreSite} [site] Site. If not defined, use current site.
-     * @return {boolean} Whether it's disabled.
+     * @param site Site. If not defined, use current site.
+     * @return Whether it's disabled.
      */
     isSiteFilesDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
@@ -360,8 +360,8 @@ export class AddonFilesProvider {
     /**
      * Check if upload files is disabled in a certain site.
      *
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<boolean>} Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     isUploadDisabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -372,8 +372,8 @@ export class AddonFilesProvider {
     /**
      * Check if upload files is disabled in a certain site.
      *
-     * @param {CoreSite} [site] Site. If not defined, use current site.
-     * @return {boolean} Whether it's disabled.
+     * @param site Site. If not defined, use current site.
+     * @return Whether it's disabled.
      */
     isUploadDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
@@ -384,9 +384,9 @@ export class AddonFilesProvider {
     /**
      * Move a file from draft area to private files.
      *
-     * @param {number} draftId The draft area ID of the file.
-     * @param {string} [siteid] ID of the site. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved in success, rejected otherwise.
+     * @param draftId The draft area ID of the file.
+     * @param siteid ID of the site. If not defined, use current site.
+     * @return Promise resolved in success, rejected otherwise.
      */
     moveFromDraftToPrivate(draftId: number, siteId?: string): Promise<any> {
         const params = {
@@ -404,8 +404,8 @@ export class AddonFilesProvider {
     /**
      * Check the Moodle version in order to check if upload files is working.
      *
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<boolean>} Promise resolved with true if WS is working, false otherwise.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with true if WS is working, false otherwise.
      */
     versionCanUploadFiles(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {

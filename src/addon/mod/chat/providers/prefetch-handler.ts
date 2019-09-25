@@ -51,7 +51,7 @@ export class AddonModChatPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return {boolean|Promise<boolean>} A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
+     * @return A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
         return this.chatProvider.areSessionsAvailable();
@@ -60,9 +60,9 @@ export class AddonModChatPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Invalidate the prefetched content.
      *
-     * @param {number} moduleId The module ID.
-     * @param {number} courseId The course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param moduleId The module ID.
+     * @param courseId The course ID the module belongs to.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number): Promise<any> {
         return this.chatProvider.getChat(courseId, moduleId).then((chat) => {
@@ -79,9 +79,9 @@ export class AddonModChatPrefetchHandler extends CoreCourseActivityPrefetchHandl
      * Invalidate WS calls needed to determine module status (usually, to check if module is downloadable).
      * It doesn't need to invalidate check updates. It should NOT invalidate files nor all the prefetched data.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when invalidated.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @return Promise resolved when invalidated.
      */
     invalidateModule(module: any, courseId: number): Promise<any> {
         const promises = [
@@ -95,11 +95,11 @@ export class AddonModChatPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Prefetch a module.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {string} [dirPath] Path of the directory where to store all the content files.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param dirPath Path of the directory where to store all the content files.
+     * @return Promise resolved when done.
      */
     prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string): Promise<any> {
         return this.prefetchPackage(module, courseId, single, this.prefetchChat.bind(this));
@@ -108,11 +108,11 @@ export class AddonModChatPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Prefetch a chat.
      *
-     * @param {any} module The module object returned by WS.
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {boolean} single True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {string} siteId Site ID.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module The module object returned by WS.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param siteId Site ID.
+     * @return Promise resolved when done.
      */
     protected prefetchChat(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
         // Prefetch chat and group info.
@@ -158,12 +158,12 @@ export class AddonModChatPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Prefetch chat session messages and user profiles.
      *
-     * @param {number} chatId Chat ID.
-     * @param {any} session Session object.
-     * @param {number} groupId Group ID.
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {string} siteId Site ID.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param chatId Chat ID.
+     * @param session Session object.
+     * @param groupId Group ID.
+     * @param courseId Course ID the module belongs to.
+     * @param siteId Site ID.
+     * @return Promise resolved when done.
      */
     protected prefetchSession(chatId: number, session: any, groupId: number, courseId: number, siteId: string): Promise<any> {
         return this.chatProvider.getSessionMessages(chatId, session.sessionstart, session.sessionend, groupId, true, siteId)

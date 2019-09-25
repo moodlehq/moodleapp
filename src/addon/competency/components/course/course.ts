@@ -52,7 +52,7 @@ export class AddonCompetencyCourseComponent {
     /**
      * Fetches the competencies and updates the view.
      *
-     * @return {Promise<void>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchCourseCompetencies(): Promise<void> {
         return this.competencyProvider.getCourseCompetencies(this.courseId, this.userId).then((competencies) => {
@@ -70,7 +70,7 @@ export class AddonCompetencyCourseComponent {
     /**
      * Opens a competency.
      *
-     * @param {number} competencyId
+     * @param competencyId
      */
     openCompetency(competencyId: number): void {
         if (this.appProvider.isWide()) {
@@ -83,7 +83,7 @@ export class AddonCompetencyCourseComponent {
     /**
      * Opens the summary of a competency.
      *
-     * @param {number} competencyId
+     * @param competencyId
      */
     openCompetencySummary(competencyId: number): void {
         this.navCtrl.push('AddonCompetencyCompetencySummaryPage', {competencyId});
@@ -92,7 +92,7 @@ export class AddonCompetencyCourseComponent {
     /**
      * Refreshes the competencies.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshCourseCompetencies(refresher: any): void {
         this.competencyProvider.invalidateCourseCompetencies(this.courseId, this.userId).finally(() => {

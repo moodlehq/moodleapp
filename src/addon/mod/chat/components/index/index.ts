@@ -58,10 +58,10 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Download chat.
      *
-     * @param  {boolean}      [refresh=false]    If it's refreshing content.
-     * @param  {boolean}      [sync=false]       If it should try to sync.
-     * @param  {boolean}      [showErrors=false] If show errors to the user of hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh If it's refreshing content.
+     * @param sync If it should try to sync.
+     * @param showErrors If show errors to the user of hide them.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
         return this.chatProvider.getChat(this.courseId, this.module.id).then((chat) => {

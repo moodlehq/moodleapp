@@ -78,7 +78,7 @@ export class AddonNotificationsSettingsPage implements OnDestroy {
     /**
      * Fetches preference data.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected fetchPreferences(): Promise<any> {
         return this.notificationsProvider.getNotificationPreferences().then((preferences) => {
@@ -116,7 +116,7 @@ export class AddonNotificationsSettingsPage implements OnDestroy {
     /**
      * Load a processor.
      *
-     * @param {any} processor Processor object.
+     * @param processor Processor object.
      */
     protected loadProcessor(processor: any): void {
         if (!processor) {
@@ -151,7 +151,7 @@ export class AddonNotificationsSettingsPage implements OnDestroy {
     /**
      * The selected processor was changed.
      *
-     * @param {string} name Name of the selected processor.
+     * @param name Name of the selected processor.
      */
     changeProcessor(name: string): void {
         this.preferences.processors.forEach((processor) => {
@@ -164,7 +164,7 @@ export class AddonNotificationsSettingsPage implements OnDestroy {
     /**
      * Refresh the list of preferences.
      *
-     * @param {any} [refresher] Refresher.
+     * @param refresher Refresher.
      */
     refreshPreferences(refresher?: any): void {
         this.notificationsProvider.invalidateNotificationPreferences().finally(() => {
@@ -177,7 +177,7 @@ export class AddonNotificationsSettingsPage implements OnDestroy {
     /**
      * Open extra preferences.
      *
-     * @param {AddonMessageOutputHandlerData} handlerData
+     * @param handlerData
      */
     openExtraPreferences(handlerData: AddonMessageOutputHandlerData): void {
         // Decide which navCtrl to use. If this page is inside a split view, use the split view's master nav.
@@ -188,8 +188,8 @@ export class AddonNotificationsSettingsPage implements OnDestroy {
     /**
      * Change the value of a certain preference.
      *
-     * @param {any} notification Notification object.
-     * @param {string} state State name, ['loggedin', 'loggedoff'].
+     * @param notification Notification object.
+     * @param state State name, ['loggedin', 'loggedoff'].
      */
     changePreference(notification: any, state: string): void {
         const processorState = notification.currentProcessor[state];
@@ -243,7 +243,7 @@ export class AddonNotificationsSettingsPage implements OnDestroy {
     /**
      * Change the notification sound setting.
      *
-     * @param {enabled} enabled True to enable the notification sound, false to disable it.
+     * @param enabled True to enable the notification sound, false to disable it.
      */
     changeNotificationSound(enabled: boolean): void {
         this.configProvider.set(CoreConstants.SETTINGS_NOTIFICATION_SOUND, enabled ? 1 : 0).finally(() => {

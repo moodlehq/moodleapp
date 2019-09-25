@@ -64,7 +64,7 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         const promises = [];
@@ -80,8 +80,8 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Compares sync event data with current data to check if refresh content is needed.
      *
-     * @param {any} syncEventData Data receiven on sync observer.
-     * @return {boolean}          True if refresh is needed, false otherwise.
+     * @param syncEventData Data receiven on sync observer.
+     * @return True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: any): boolean {
         if (this.survey && syncEventData.surveyId == this.survey.id && syncEventData.userId == this.userId) {
@@ -94,10 +94,10 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Download survey contents.
      *
-     * @param  {boolean}      [refresh=false]    If it's refreshing content.
-     * @param  {boolean}      [sync=false]       If it should try to sync.
-     * @param  {boolean}      [showErrors=false] If show errors to the user of hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh If it's refreshing content.
+     * @param sync If it should try to sync.
+     * @param showErrors If show errors to the user of hide them.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
         return this.surveyProvider.getSurvey(this.courseId, this.module.id).then((survey) => {
@@ -135,7 +135,7 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Convenience function to get survey questions.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchQuestions(): Promise<any> {
         return this.surveyProvider.getQuestions(this.survey.id).then((questions) => {
@@ -161,7 +161,7 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Check if answers are valid to be submitted.
      *
-     * @return {boolean}  If answers are valid
+     * @return If answers are valid
      */
     isValidResponse(): boolean {
         for (const x in this.answers) {
@@ -213,7 +213,7 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Performs the sync of the activity.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected sync(): Promise<any> {
         return this.surveySync.syncSurvey(this.survey.id, this.userId);
@@ -222,8 +222,8 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Checks if sync has succeed from result sync data.
      *
-     * @param  {any}     result Data returned on the sync function.
-     * @return {boolean}        If suceed or not.
+     * @param result Data returned on the sync function.
+     * @return If suceed or not.
      */
     protected hasSyncSucceed(result: any): boolean {
         return result.answersSent;

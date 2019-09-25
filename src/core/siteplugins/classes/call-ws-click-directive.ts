@@ -63,7 +63,7 @@ export class CoreSitePluginsCallWSOnClickBaseDirective extends CoreSitePluginsCa
     /**
      * Call a WS.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected callWS(): Promise<any> {
         const modal = this.domUtils.showModalLoading();

@@ -34,10 +34,10 @@ export class AddonMessageOutputAirnotifierProvider {
     /**
      * Enables or disables a device.
      *
-     * @param {number} deviceId Device ID.
-     * @param {boolean} enable True to enable, false to disable.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if success.
+     * @param deviceId Device ID.
+     * @param enable True to enable, false to disable.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if success.
      */
     enableDevice(deviceId: number, enable: boolean, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -62,7 +62,7 @@ export class AddonMessageOutputAirnotifierProvider {
     /**
      * Get the cache key for the get user devices call.
      *
-     * @return {string} Cache key.
+     * @return Cache key.
      */
     protected getUserDevicesCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'userDevices';
@@ -71,8 +71,8 @@ export class AddonMessageOutputAirnotifierProvider {
     /**
      * Get user devices.
      *
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved with the devices.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with the devices.
      */
     getUserDevices(siteId?: string): Promise<any> {
         this.logger.debug('Get user devices');
@@ -95,8 +95,8 @@ export class AddonMessageOutputAirnotifierProvider {
     /**
      * Invalidate get user devices.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when data is invalidated.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when data is invalidated.
      */
     invalidateUserDevices(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -107,7 +107,7 @@ export class AddonMessageOutputAirnotifierProvider {
     /**
      * Returns whether or not the plugin is enabled for the current site.
      *
-     * @return {boolean} True if enabled, false otherwise.
+     * @return True if enabled, false otherwise.
      * @since 3.2
      */
     isEnabled(): boolean {

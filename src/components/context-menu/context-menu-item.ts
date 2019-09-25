@@ -85,9 +85,9 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
     /**
      * Get a boolean value from item.
      *
-     * @param {any} value Value to check.
-     * @param {boolean} defaultValue Value to use if undefined.
-     * @return {boolean} Boolean value.
+     * @param value Value to check.
+     * @param defaultValue Value to use if undefined.
+     * @return Boolean value.
      */
     protected getBooleanValue(value: any, defaultValue: boolean): boolean {
         if (typeof value == 'undefined') {

@@ -44,7 +44,7 @@ export class CoreLoginForgottenPasswordPage {
     /**
      * Request to reset the password.
      *
-     * @param {Event} e Event.
+     * @param e Event.
      */
     resetPassword(e: Event): void {
         e.preventDefault();

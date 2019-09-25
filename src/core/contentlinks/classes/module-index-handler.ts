@@ -24,16 +24,15 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
     /**
      * If this boolean is set to true, the app will retrieve all modules with this modName with a single WS call.
      * This reduces the number of WS calls, but it isn't recommended for modules that can return a lot of contents.
-     * @type {boolean}
      */
     protected useModNameToGetModule = false;
 
     /**
      * Construct the handler.
      *
-     * @param {CoreCourseHelperProvider} courseHelper The CoreCourseHelperProvider instance.
-     * @param {string} addon Name of the addon as it's registered in course delegate. It'll be used to check if it's disabled.
-     * @param {string} modName Name of the module (assign, book, ...).
+     * @param courseHelper The CoreCourseHelperProvider instance.
+     * @param addon Name of the addon as it's registered in course delegate. It'll be used to check if it's disabled.
+     * @param modName Name of the module (assign, book, ...).
      */
     constructor(protected courseHelper: CoreCourseHelperProvider, public addon: string, public modName: string) {
         super();
@@ -46,11 +45,11 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
     /**
      * Get the list of actions for a link (url).
      *
-     * @param {string[]} siteIds List of sites the URL belongs to.
-     * @param {string} url The URL to treat.
-     * @param {any} params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
-     * @return {CoreContentLinksAction[]|Promise<CoreContentLinksAction[]>} List of (or promise resolved with list of) actions.
+     * @param siteIds List of sites the URL belongs to.
+     * @param url The URL to treat.
+     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
+     * @param courseId Course ID related to the URL. Optional but recommended.
+     * @return List of (or promise resolved with list of) actions.
      */
     getActions(siteIds: string[], url: string, params: any, courseId?: number):
             CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {

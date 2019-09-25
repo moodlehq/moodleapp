@@ -64,7 +64,7 @@ export class AddonModDataFieldMultimenuComponent extends AddonModDataFieldPlugin
     /**
      * Update value being shown.
      *
-     * @param {any} value New value to be set.
+     * @param value New value to be set.
      */
     protected updateValue(value: any): void {
         this.value = value || {};

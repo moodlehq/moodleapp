@@ -77,8 +77,8 @@ export class AddonNotificationsActionsComponent implements OnInit {
     /**
      * Default action. Open in browser.
      *
-     * @param {string} siteId Site ID to use.
-     * @param {NavController} [navCtrl] NavController.
+     * @param siteId Site ID to use.
+     * @param navCtrl NavController.
      */
     protected defaultAction(siteId: string, navCtrl?: NavController): void {
         const url = (this.data && this.data.appurl) || this.contextUrl;

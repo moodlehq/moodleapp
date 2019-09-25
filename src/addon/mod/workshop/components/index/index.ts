@@ -118,7 +118,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Function called when we receive an event of submission changes.
      *
-     * @param {any} data Data received by the event.
+     * @param data Data received by the event.
      */
     protected eventReceived(data: any): void {
         if ((this.workshop && this.workshop.id === data.workshopId) || data.cmId === this.module.id) {
@@ -132,7 +132,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         const promises = [];
@@ -161,8 +161,8 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Compares sync event data with current data to check if refresh content is needed.
      *
-     * @param {any} syncEventData Data receiven on sync observer.
-     * @return {boolean}          True if refresh is needed, false otherwise.
+     * @param syncEventData Data receiven on sync observer.
+     * @return True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: any): boolean {
         if (this.workshop && syncEventData.workshopId == this.workshop.id) {
@@ -178,10 +178,10 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Download feedback contents.
      *
-     * @param  {boolean}      [refresh=false]    If it's refreshing content.
-     * @param  {boolean}      [sync=false]       If it should try to sync.
-     * @param  {boolean}      [showErrors=false] If show errors to the user of hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh If it's refreshing content.
+     * @param sync If it should try to sync.
+     * @param showErrors If show errors to the user of hide them.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
         return this.workshopProvider.getWorkshop(this.courseId, this.module.id).then((workshop) => {
@@ -240,8 +240,8 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Retrieves and shows submissions grade page.
      *
-     * @param  {number}       page Page number to be retrieved.
-     * @return {Promise<any>}      Resolved when done.
+     * @param page Page number to be retrieved.
+     * @return Resolved when done.
      */
     gotoSubmissionsPage(page: number): Promise<any> {
         return this.workshopProvider.getGradesReport(this.workshop.id, this.group, page).then((report) => {
@@ -269,7 +269,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Open task.
      *
-     * @param {any} task Task to be done.
+     * @param task Task to be done.
      */
     runTask(task: any): void {
         if (task.code == 'submit') {
@@ -315,8 +315,8 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
 
     /**
      * Set group to see the workshop.
-     * @param {number} groupId Group Id.
-     * @return {Promise<any>}  Promise resolved when done.
+     * @param groupId Group Id.
+     * @return Promise resolved when done.
      */
     setGroup(groupId: number): Promise<any> {
         this.group = groupId;
@@ -327,7 +327,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Convenience function to set current phase information.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected setPhaseInfo(): Promise<any> {
         this.submission = false;
@@ -417,7 +417,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Performs the sync of the activity.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected sync(): Promise<any> {
         return this.workshopSync.syncWorkshop(this.workshop.id);
@@ -426,8 +426,8 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Checks if sync has succeed from result sync data.
      *
-     * @param  {any}     result Data returned on the sync function.
-     * @return {boolean}        If suceed or not.
+     * @param result Data returned on the sync function.
+     * @return If suceed or not.
      */
     protected hasSyncSucceed(result: any): boolean {
         return result.updated;

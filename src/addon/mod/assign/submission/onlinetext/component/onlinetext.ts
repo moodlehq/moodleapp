@@ -96,7 +96,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
     /**
      * Text changed.
      *
-     * @param {string} text The new text.
+     * @param text The new text.
      */
     onChange(text: string): void {
         // Count words if needed.

@@ -187,7 +187,7 @@ export class CoreMainMenuPage implements OnDestroy {
     /**
      * Handle a redirect.
      *
-     * @param {any} data Data received.
+     * @param data Data received.
      */
     protected handleRedirect(data: any): void {
         // Check if the redirect page is the root page of any of the tabs.

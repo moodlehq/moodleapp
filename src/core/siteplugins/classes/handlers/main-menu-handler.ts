@@ -31,7 +31,7 @@ export class CoreSitePluginsMainMenuHandler extends CoreSitePluginsBaseHandler i
     /**
      * Returns the data needed to render the handler.
      *
-     * @return {CoreMainMenuHandlerData} Data.
+     * @return Data.
      */
     getDisplayData(): CoreMainMenuHandlerData {
         return {

@@ -26,8 +26,8 @@ export class AddonModScormPluginFileHandler implements CorePluginFileHandler {
     /**
      * Return the RegExp to match the revision on pluginfile URLs.
      *
-     * @param {string[]} args Arguments of the pluginfile URL defining component and filearea at least.
-     * @return {RegExp} RegExp to match the revision on pluginfile URLs.
+     * @param args Arguments of the pluginfile URL defining component and filearea at least.
+     * @return RegExp to match the revision on pluginfile URLs.
      */
     getComponentRevisionRegExp(args: string[]): RegExp {
         // Check filearea.
@@ -40,8 +40,8 @@ export class AddonModScormPluginFileHandler implements CorePluginFileHandler {
     /**
      * Should return the string to remove the revision on pluginfile url.
      *
-     * @param {string[]} args Arguments of the pluginfile URL defining component and filearea at least.
-     * @return {string} String to remove the revision on pluginfile url.
+     * @param args Arguments of the pluginfile URL defining component and filearea at least.
+     * @return String to remove the revision on pluginfile url.
      */
     getComponentRevisionReplace(args: string[]): string {
         // Component + Filearea + Revision

@@ -40,7 +40,7 @@ export class AddonModAssignIndexPage {
     /**
      * Update some data based on the assign instance.
      *
-     * @param {any} assign Assign instance.
+     * @param assign Assign instance.
      */
     updateData(assign: any): void {
         this.title = assign.name || this.title;

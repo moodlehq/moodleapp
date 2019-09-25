@@ -104,7 +104,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
     /**
      * Convenience function to get the file state and set variables based on it.
      *
-     * @return {Promise<void>} Promise resolved when state has been calculated.
+     * @return Promise resolved when state has been calculated.
      */
     protected calculateState(): Promise<void> {
         return this.filepoolProvider.getFileStateByUrl(this.siteId, this.fileUrl, this.timemodified).then((state) => {
@@ -118,7 +118,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
     /**
      * Convenience function to open a file, downloading it if needed.
      *
-     * @return {Promise<string>} Promise resolved when file is opened.
+     * @return Promise resolved when file is opened.
      */
     protected openFile(): Promise<any> {
         return this.fileHelper.downloadAndOpenFile(this.file, this.component, this.componentId, this.state, (event) => {
@@ -134,8 +134,8 @@ export class CoreFileComponent implements OnInit, OnDestroy {
     /**
      * Download a file and, optionally, open it afterwards.
      *
-     * @param {Event} [e] Click event.
-     * @param {boolean} openAfterDownload Whether the file should be opened after download.
+     * @param e Click event.
+     * @param openAfterDownload Whether the file should be opened after download.
      */
     download(e?: Event, openAfterDownload: boolean = false): void {
         e && e.preventDefault();
@@ -198,7 +198,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
     /**
      * Delete the file.
      *
-     * @param {Event} e Click event.
+     * @param e Click event.
      */
     delete(e: Event): void {
         e.preventDefault();

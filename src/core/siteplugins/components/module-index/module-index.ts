@@ -102,9 +102,9 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     /**
      * Refresh the data.
      *
-     * @param {any} [refresher] Refresher.
-     * @param {Function} [done] Function to call when done.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @param done Function to call when done.
+     * @return Promise resolved when done.
      */
     doRefresh(refresher?: any, done?: () => void): Promise<any> {
         if (this.content) {
@@ -173,9 +173,9 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     /**
      * Call a certain function on the component instance.
      *
-     * @param {string} name Name of the function to call.
-     * @param {any[]} params List of params to send to the function.
-     * @return {any} Result of the call. Undefined if no component instance or the function doesn't exist.
+     * @param name Name of the function to call.
+     * @param params List of params to send to the function.
+     * @return Result of the call. Undefined if no component instance or the function doesn't exist.
      */
     callComponentFunction(name: string, params?: any[]): any {
         return this.content.callComponentFunction(name, params);

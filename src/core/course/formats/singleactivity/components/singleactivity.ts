@@ -64,10 +64,10 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
     /**
      * Refresh the data.
      *
-     * @param {any} [refresher] Refresher.
-     * @param {Function} [done] Function to call when done.
-     * @param {boolean} [afterCompletionChange] Whether the refresh is due to a completion change.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @param done Function to call when done.
+     * @param afterCompletionChange Whether the refresh is due to a completion change.
+     * @return Promise resolved when done.
      */
     doRefresh(refresher?: any, done?: () => void, afterCompletionChange?: boolean): Promise<any> {
         if (afterCompletionChange) {

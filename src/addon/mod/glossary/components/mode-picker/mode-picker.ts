@@ -57,9 +57,9 @@ export class AddonModGlossaryModePickerPopoverComponent {
     /**
      * Function called when a mode is clicked.
      *
-     * @param {Event} event Click event.
-     * @param {string} key Clicked mode key.
-     * @return {boolean} Return true if success, false if error.
+     * @param event Click event.
+     * @param key Clicked mode key.
+     * @return Return true if success, false if error.
      */
     modePicked(event: Event, key: string): boolean {
         this.viewCtrl.dismiss(key);

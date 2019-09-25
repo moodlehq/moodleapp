@@ -40,10 +40,10 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
     /**
      * Get the data required to display the module in the course contents view.
      *
-     * @param {any} module The module object.
-     * @param {number} courseId The course ID.
-     * @param {number} sectionId The section ID.
-     * @return {CoreCourseModuleHandlerData} Data to render the module.
+     * @param module The module object.
+     * @param courseId The course ID.
+     * @param sectionId The section ID.
+     * @return Data to render the module.
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
         const hasOffline = !!(this.handlerSchema.offlinefunctions && Object.keys(this.handlerSchema.offlinefunctions).length),
@@ -70,7 +70,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
     /**
      * Get the icon src for the module.
      *
-     * @return {string} The icon src.
+     * @return The icon src.
      */
     getIconSrc(): string {
         return this.handlerSchema.displaydata.icon;
@@ -81,10 +81,10 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
      * The component returned must implement CoreCourseModuleMainComponent.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param {Injector} injector Injector.
-     * @param {any} course The course object.
-     * @param {any} module The module object.
-     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
+     * @param injector Injector.
+     * @param course The course object.
+     * @param module The module object.
+     * @return The component (or promise resolved with component) to use, undefined if not found.
      */
     getMainComponent(injector: Injector, course: any, module: any): any | Promise<any> {
         return CoreSitePluginsModuleIndexComponent;

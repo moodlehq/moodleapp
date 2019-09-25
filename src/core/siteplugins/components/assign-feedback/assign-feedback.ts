@@ -60,7 +60,7 @@ export class CoreSitePluginsAssignFeedbackComponent extends CoreSitePluginsCompi
     /**
      * Invalidate the data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     invalidate(): Promise<any> {
         return Promise.resolve();

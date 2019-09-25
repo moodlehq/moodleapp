@@ -43,7 +43,7 @@ export class AddonModForumSortOrderSelectorPage {
     /**
      * Select a sort order.
      *
-     * @param {any} sortOrder Selected sort order.
+     * @param sortOrder Selected sort order.
      */
     selectSortOrder(sortOrder: any): void {
         this.viewCtrl.dismiss(sortOrder);

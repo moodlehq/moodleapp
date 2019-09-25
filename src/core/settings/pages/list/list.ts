@@ -54,8 +54,8 @@ export class CoreSettingsListPage {
     /**
      * Open a handler.
      *
-     * @param {string} page Page to open.
-     * @param {any} params Params of the page to open.
+     * @param page Page to open.
+     * @param params Params of the page to open.
      */
     openHandler(page: string, params?: any): void {
         this.selectedPage = page;

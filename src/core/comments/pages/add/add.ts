@@ -49,7 +49,7 @@ export class CoreCommentsAddPage {
     /**
      * Send the comment or store it offline.
      *
-     * @param {Event} e Event.
+     * @param e Event.
      */
     addComment(e: Event): void {
         e.preventDefault();

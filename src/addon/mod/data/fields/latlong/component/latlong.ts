@@ -35,9 +35,9 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
     /**
      * Format latitude and longitude in a simple text.
      *
-     * @param  {number} north Degrees north.
-     * @param  {number} east  Degrees East.
-     * @return {string}       Readable Latitude and logitude.
+     * @param north Degrees north.
+     * @param east Degrees East.
+     * @return Readable Latitude and logitude.
      */
     formatLatLong(north: number, east: number): string {
         if (north !== null || east !== null) {
@@ -51,9 +51,9 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
     /**
      * Get link to maps from latitude and longitude.
      *
-     * @param  {number} north Degrees north.
-     * @param  {number} east  Degrees East.
-     * @return {string}       Link to maps depending on platform.
+     * @param north Degrees north.
+     * @param east Degrees East.
+     * @return Link to maps depending on platform.
      */
     getLatLongLink(north: number, east: number): string {
         if (north !== null || east !== null) {
@@ -87,7 +87,7 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
     /**
      * Update value being shown.
      *
-     * @param {any} value New value to be set.
+     * @param value New value to be set.
      */
     protected updateValue(value: any): void {
         this.value = value;

@@ -42,13 +42,13 @@ export class AddonModFolderPrefetchHandler extends CoreCourseResourcePrefetchHan
     /**
      * Download or prefetch the content.
      *
-     * @param {any} module The module object returned by WS.
-     * @param {number} courseId Course ID.
-     * @param {boolean} [prefetch] True to prefetch, false to download right away.
-     * @param {string} [dirPath] Path of the directory where to store all the content files. This is to keep the files
-     *                           relative paths and make the package work in an iframe. Undefined to download the files
-     *                           in the filepool root folder.
-     * @return {Promise<any>} Promise resolved when all content is downloaded. Data returned is not reliable.
+     * @param module The module object returned by WS.
+     * @param courseId Course ID.
+     * @param prefetch True to prefetch, false to download right away.
+     * @param dirPath Path of the directory where to store all the content files. This is to keep the files
+     *                relative paths and make the package work in an iframe. Undefined to download the files
+     *                in the filepool root folder.
+     * @return Promise resolved when all content is downloaded. Data returned is not reliable.
      */
     downloadOrPrefetch(module: any, courseId: number, prefetch?: boolean, dirPath?: string): Promise<any> {
         const promises = [];
@@ -65,9 +65,9 @@ export class AddonModFolderPrefetchHandler extends CoreCourseResourcePrefetchHan
     /**
      * Invalidate the prefetched content.
      *
-     * @param {number} moduleId The module ID.
-     * @param {number} courseId Course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param moduleId The module ID.
+     * @param courseId Course ID the module belongs to.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number): Promise<any> {
         return this.folderProvider.invalidateContent(moduleId, courseId);
@@ -76,9 +76,9 @@ export class AddonModFolderPrefetchHandler extends CoreCourseResourcePrefetchHan
     /**
      * Invalidate WS calls needed to determine module status.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when invalidated.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @return Promise resolved when invalidated.
      */
     invalidateModule(module: any, courseId: number): Promise<any> {
         const promises = [];

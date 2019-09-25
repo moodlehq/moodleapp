@@ -40,8 +40,8 @@ export class AddonBlogProvider {
      * This method is called quite often and thus should only perform a quick
      * check, we should not be calling WS from here.
      *
-     * @param  {string} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with true if enabled, resolved with false or rejected otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with true if enabled, resolved with false or rejected otherwise.
      */
     isPluginEnabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -53,8 +53,8 @@ export class AddonBlogProvider {
     /**
      * Get the cache key for the blog entries.
      *
-     * @param  {any}     [filter]     Filter to apply on search.
-     * @return {string}          Cache key.
+     * @param filter Filter to apply on search.
+     * @return Cache key.
      */
     getEntriesCacheKey(filter: any = {}): string {
         return this.ROOT_CACHE_KEY + this.utils.sortAndStringify(filter);
@@ -63,10 +63,10 @@ export class AddonBlogProvider {
     /**
      * Get blog entries.
      *
-     * @param  {any}     [filter]     Filter to apply on search.
-     * @param  {any}     [page=0]     Page of the blog entries to fetch.
-     * @param  {string}  [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}         Promise to be resolved when the entries are retrieved.
+     * @param filter Filter to apply on search.
+     * @param page Page of the blog entries to fetch.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise to be resolved when the entries are retrieved.
      */
     getEntries(filter: any = {}, page: number = 0, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -88,9 +88,9 @@ export class AddonBlogProvider {
     /**
      * Invalidate blog entries WS call.
      *
-     * @param  {any}     [filter]     Filter to apply on search
-     * @param  {string}  [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}         Promise resolved when data is invalidated.
+     * @param filter Filter to apply on search
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when data is invalidated.
      */
     invalidateEntries(filter: any = {}, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -101,9 +101,9 @@ export class AddonBlogProvider {
     /**
      * Trigger the blog_entries_viewed event.
      *
-     * @param  {any}     [filter]     Filter to apply on search.
-     * @param  {string}  [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}         Promise to be resolved when done.
+     * @param filter Filter to apply on search.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise to be resolved when done.
      */
     logView(filter: any = {}, siteId?: string): Promise<any> {
         this.pushNotificationsProvider.logViewListEvent('blog', 'core_blog_view_entries', filter, siteId);

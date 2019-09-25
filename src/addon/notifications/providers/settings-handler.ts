@@ -33,7 +33,7 @@ export class AddonNotificationsSettingsHandler implements CoreSettingsHandler {
     /**
      * Check if the handler is enabled on a site level.
      *
-     * @return {boolean | Promise<boolean>} Whether or not the handler is enabled on a site level.
+     * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
         // Preferences or notification sound setting available.
@@ -44,7 +44,7 @@ export class AddonNotificationsSettingsHandler implements CoreSettingsHandler {
     /**
      * Returns the data needed to render the handler.
      *
-     * @return {CoreSettingsHandlerData} Data needed to render the handler.
+     * @return Data needed to render the handler.
      */
     getDisplayData(): CoreSettingsHandlerData {
         return {

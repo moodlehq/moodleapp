@@ -75,7 +75,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         const promises = [];
@@ -94,7 +94,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     /**
      * Fetch the courses for my overview.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchContent(): Promise<any> {
         if (this.sort == 'sortbydates') {
@@ -120,8 +120,8 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     /**
      * Load more events.
      *
-     * @param {any} course Course.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param course Course.
+     * @return Promise resolved when done.
      */
     loadMoreCourse(course: any): Promise<any> {
         return this.timelineProvider.getActionEventsByCourse(course.id, course.canLoadMore).then((courseEvents) => {
@@ -135,8 +135,8 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     /**
      * Fetch the timeline.
      *
-     * @param {number} [afterEventId] The last event id.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param afterEventId The last event id.
+     * @return Promise resolved when done.
      */
     protected fetchMyOverviewTimeline(afterEventId?: number): Promise<any> {
         return this.timelineProvider.getActionEventsByTimesort(afterEventId).then((events) => {
@@ -148,7 +148,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     /**
      * Fetch the timeline by courses.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchMyOverviewTimelineByCourses(): Promise<any> {
         return this.coursesHelper.getUserCoursesWithOptions().then((courses) => {
@@ -210,7 +210,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     /**
      * Change timeline sort being viewed.
      *
-     * @param {string} sort New sorting.
+     * @param sort New sorting.
      */
     switchSort(sort: string): void {
         this.sort = sort;

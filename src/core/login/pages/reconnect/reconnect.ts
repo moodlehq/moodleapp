@@ -102,7 +102,7 @@ export class CoreLoginReconnectPage {
     /**
      * Cancel reconnect.
      *
-     * @param {Event} [e] Event.
+     * @param e Event.
      */
     cancel(e?: Event): void {
         if (e) {
@@ -116,7 +116,7 @@ export class CoreLoginReconnectPage {
     /**
      * Tries to authenticate the user.
      *
-     * @param {Event} e Event.
+     * @param e Event.
      */
     login(e: Event): void {
         e.preventDefault();
@@ -185,7 +185,7 @@ export class CoreLoginReconnectPage {
     /**
      * An OAuth button was clicked.
      *
-     * @param {any} provider The provider that was clicked.
+     * @param provider The provider that was clicked.
      */
     oauthClicked(provider: any): void {
         if (!this.loginHelper.openBrowserForOAuthLogin(this.siteUrl, provider, this.siteConfig.launchurl)) {

@@ -111,8 +111,8 @@ export class CoreIconComponent implements OnChanges, OnDestroy {
     /**
      * Check if the value is true or on.
      *
-     * @param  {any}     val value to be checked.
-     * @return {boolean}     If has a value equivalent to true.
+     * @param val value to be checked.
+     * @return If has a value equivalent to true.
      */
     isTrueProperty(val: any): boolean {
         if (typeof val === 'string') {

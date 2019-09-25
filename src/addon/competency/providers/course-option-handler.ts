@@ -30,7 +30,7 @@ export class AddonCompetencyCourseOptionHandler implements CoreCourseOptionsHand
 
     /**
      * Whether or not the handler is enabled ona site level.
-     * @return {boolean|Promise<boolean>} Whether or not the handler is enabled on a site level.
+     * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
         return true;
@@ -39,11 +39,11 @@ export class AddonCompetencyCourseOptionHandler implements CoreCourseOptionsHand
     /**
      * Whether or not the handler is enabled for a certain course.
      *
-     * @param {number} courseId The course ID.
-     * @param {any} accessData Access type and data. Default, guest, ...
-     * @param {any} [navOptions] Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
-     * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
+     * @param courseId The course ID.
+     * @param accessData Access type and data. Default, guest, ...
+     * @param navOptions Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
+     * @param admOptions Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
+     * @return True or promise resolved with true if enabled.
      */
     isEnabledForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any): boolean | Promise<boolean> {
         if (accessData && accessData.type == CoreCourseProvider.ACCESS_GUEST) {
@@ -62,9 +62,9 @@ export class AddonCompetencyCourseOptionHandler implements CoreCourseOptionsHand
     /**
      * Returns the data needed to render the handler.
      *
-     * @param {Injector} injector Injector.
-     * @param {number} course The course.
-     * @return {CoreCourseOptionsHandlerData|Promise<CoreCourseOptionsHandlerData>} Data or promise resolved with the data.
+     * @param injector Injector.
+     * @param course The course.
+     * @return Data or promise resolved with the data.
      */
     getDisplayData?(injector: Injector, course: any): CoreCourseOptionsHandlerData | Promise<CoreCourseOptionsHandlerData> {
         return {
@@ -77,10 +77,10 @@ export class AddonCompetencyCourseOptionHandler implements CoreCourseOptionsHand
     /**
      * Should invalidate the data to determine if the handler is enabled for a certain course.
      *
-     * @param {number} courseId The course ID.
-     * @param {any} [navOptions] Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
-     * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param courseId The course ID.
+     * @param navOptions Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
+     * @param admOptions Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
+     * @return Promise resolved when done.
      */
     invalidateEnabledForCourse(courseId: number, navOptions?: any, admOptions?: any): Promise<any> {
         if (navOptions && typeof navOptions.competencies != 'undefined') {
@@ -94,8 +94,8 @@ export class AddonCompetencyCourseOptionHandler implements CoreCourseOptionsHand
     /**
      * Called when a course is downloaded. It should prefetch all the data to be able to see the addon in offline.
      *
-     * @param {any} course The course.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param course The course.
+     * @return Promise resolved when done.
      */
     prefetch(course: any): Promise<any> {
         // Get the competencies in the course.

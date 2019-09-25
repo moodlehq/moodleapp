@@ -46,9 +46,9 @@ export class AddonModResourceHelperProvider {
     /**
      * Get the HTML to display an embedded resource.
      *
-     * @param {any} module The module object.
-     * @param {number} courseId The course ID.
-     * @return {Promise<any>} Promise resolved with the HTML.
+     * @param module The module object.
+     * @param courseId The course ID.
+     * @return Promise resolved with the HTML.
      */
     getEmbeddedHtml(module: any, courseId: number): Promise<any> {
         return this.courseHelper.downloadModuleWithMainFileIfNeeded(module, courseId, AddonModResourceProvider.COMPONENT,
@@ -76,8 +76,8 @@ export class AddonModResourceHelperProvider {
     /**
      * Download all the files needed and returns the src of the iframe.
      *
-     * @param {any} module The module object.
-     * @return {Promise<string>} Promise resolved with the iframe src.
+     * @param module The module object.
+     * @return Promise resolved with the iframe src.
      */
     getIframeSrc(module: any): Promise<string> {
         if (!module.contents.length) {
@@ -108,9 +108,9 @@ export class AddonModResourceHelperProvider {
     /**
      * Whether the resource has to be displayed embedded.
      *
-     * @param {any} module    The module object.
-     * @param {number} [display] The display mode (if available).
-     * @return {boolean}         Whether the resource should be displayed embeded.
+     * @param module The module object.
+     * @param display The display mode (if available).
+     * @return Whether the resource should be displayed embeded.
      */
     isDisplayedEmbedded(module: any, display: number): boolean {
         if ((!module.contents.length && !module.contentsinfo) || !this.fileProvider.isAvailable() ||
@@ -132,8 +132,8 @@ export class AddonModResourceHelperProvider {
     /**
      * Whether the resource has to be displayed in an iframe.
      *
-     * @param {any} module The module object.
-     * @return {boolean}   Whether the resource should be displayed in an iframe.
+     * @param module The module object.
+     * @return Whether the resource should be displayed in an iframe.
      */
     isDisplayedInIframe(module: any): boolean {
         if ((!module.contents.length && !module.contentsinfo) || !this.fileProvider.isAvailable()) {
@@ -155,8 +155,8 @@ export class AddonModResourceHelperProvider {
     /**
      * Check if the resource is a Nextcloud file.
      *
-     * @param {any} module Module to check.
-     * @return {boolean} Whether it's a Nextcloud file.
+     * @param module Module to check.
+     * @return Whether it's a Nextcloud file.
      */
     isNextcloudFile(module: any): boolean {
         if (module.contentsinfo) {
@@ -169,9 +169,9 @@ export class AddonModResourceHelperProvider {
     /**
      * Opens a file of the resource activity.
      *
-     * @param  {any} module        Module where to get the contents.
-     * @param  {number} courseId   Course Id, used for completion purposes.
-     * @return {Promise<any>}      Resolved when done.
+     * @param module Module where to get the contents.
+     * @param courseId Course Id, used for completion purposes.
+     * @return Resolved when done.
      */
     openModuleFile(module: any, courseId: number): Promise<any> {
         const modal = this.domUtils.showModalLoading();

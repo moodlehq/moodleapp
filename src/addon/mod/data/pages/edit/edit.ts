@@ -93,7 +93,7 @@ export class AddonModDataEditPage {
     /**
      * Check if we can leave the page or not and ask to confirm the lost of data.
      *
-     * @return {boolean | Promise<void>} Resolved if we can leave it, rejected if not.
+     * @return Resolved if we can leave it, rejected if not.
      */
     ionViewCanLeave(): boolean | Promise<void> {
         if (this.forceLeave || !this.entry) {
@@ -122,7 +122,7 @@ export class AddonModDataEditPage {
     /**
      * Fetch the entry data.
      *
-     * @return {Promise<any>}         Resolved when done.
+     * @return Resolved when done.
      */
     protected fetchEntryData(): Promise<any> {
         return this.dataProvider.getDatabase(this.courseId, this.module.id).then((data) => {
@@ -159,8 +159,8 @@ export class AddonModDataEditPage {
     /**
      * Saves data.
      *
-     * @param {Event} e Event.
-     * @return {Promise<any>} Resolved when done.
+     * @param e Event.
+     * @return Resolved when done.
      */
     save(e: Event): Promise<any> {
         e.preventDefault();
@@ -256,8 +256,8 @@ export class AddonModDataEditPage {
     /**
      * Set group to see the database.
      *
-     * @param  {number}       groupId Group identifier to set.
-     * @return {Promise<any>}         Resolved when done.
+     * @param groupId Group identifier to set.
+     * @return Resolved when done.
      */
     setGroup(groupId: number): Promise<any> {
         this.selectedGroup = groupId;
@@ -269,7 +269,7 @@ export class AddonModDataEditPage {
     /**
      * Displays Edit Search Fields.
      *
-     * @return {string}  Generated HTML.
+     * @return Generated HTML.
      */
     protected displayEditFields(): string {
         this.jsData = {
@@ -315,7 +315,7 @@ export class AddonModDataEditPage {
     /**
      * Return to the entry list (previous page) discarding temp data.
      *
-     * @return {Promise<any>}  Resolved when done.
+     * @return Resolved when done.
      */
     protected returnToEntryList(): Promise<any> {
         const inputData = this.editForm.value;

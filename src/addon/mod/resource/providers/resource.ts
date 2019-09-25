@@ -40,8 +40,8 @@ export class AddonModResourceProvider {
     /**
      * Get cache key for resource data WS calls.
      *
-     * @param {number} courseId Course ID.
-     * @return {string}         Cache key.
+     * @param courseId Course ID.
+     * @return Cache key.
      */
     protected getResourceCacheKey(courseId: number): string {
         return this.ROOT_CACHE_KEY + 'resource:' + courseId;
@@ -50,11 +50,11 @@ export class AddonModResourceProvider {
     /**
      * Get a resource data.
      *
-     * @param {number} courseId Course ID.
-     * @param {string} key     Name of the property to check.
-     * @param {any}  value   Value to search.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}  Promise resolved when the resource is retrieved.
+     * @param courseId Course ID.
+     * @param key Name of the property to check.
+     * @param value Value to search.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the resource is retrieved.
      */
     protected getResourceDataByKey(courseId: number, key: string, value: any, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -84,10 +84,10 @@ export class AddonModResourceProvider {
     /**
      * Get a resource by course module ID.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} cmId     Course module ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}   Promise resolved when the resource is retrieved.
+     * @param courseId Course ID.
+     * @param cmId Course module ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the resource is retrieved.
      */
     getResourceData(courseId: number, cmId: number, siteId?: string): Promise<any> {
         return this.getResourceDataByKey(courseId, 'coursemodule', cmId, siteId);
@@ -96,10 +96,10 @@ export class AddonModResourceProvider {
     /**
      * Invalidate the prefetched content.
      *
-     * @param  {number} moduleId The module ID.
-     * @param  {number} courseId Course ID of the module.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved when the data is invalidated.
+     * @param moduleId The module ID.
+     * @param courseId Course ID of the module.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -116,9 +116,9 @@ export class AddonModResourceProvider {
     /**
      * Invalidates resource data.
      *
-     * @param {number} courseid Course ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}   Promise resolved when the data is invalidated.
+     * @param courseid Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateResourceData(courseId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -129,7 +129,7 @@ export class AddonModResourceProvider {
     /**
      * Returns whether or not getResource WS available or not.
      *
-     * @return {boolean} If WS is abalaible.
+     * @return If WS is abalaible.
      * @since 3.3
      */
     isGetResourceWSAvailable(): boolean {
@@ -139,8 +139,8 @@ export class AddonModResourceProvider {
     /**
      * Return whether or not the plugin is enabled.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     isPluginEnabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -151,10 +151,10 @@ export class AddonModResourceProvider {
     /**
      * Report the resource as being viewed.
      *
-     * @param {number} id Module ID.
-     * @param {string} [name] Name of the resource.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}  Promise resolved when the WS call is successful.
+     * @param id Module ID.
+     * @param name Name of the resource.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the WS call is successful.
      */
     logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {

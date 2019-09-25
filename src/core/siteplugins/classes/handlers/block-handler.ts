@@ -33,11 +33,11 @@ export class CoreSitePluginsBlockHandler extends CoreSitePluginsBaseHandler impl
      * Gets display data for this block. The class and title can be provided either by data from
      * the handler schema (mobile.php) or using default values.
      *
-     * @param {Injector} injector Injector
-     * @param {any} block Block data
-     * @param {string} contextLevel Context level (not used)
-     * @param {number} instanceId Instance id (not used)
-     * @return {CoreBlockHandlerData|Promise<CoreBlockHandlerData>} Data or promise resolved with the data
+     * @param injector Injector
+     * @param block Block data
+     * @param contextLevel Context level (not used)
+     * @param instanceId Instance id (not used)
+     * @return Data or promise resolved with the data
      */
     getDisplayData(injector: Injector, block: any, contextLevel: string, instanceId: number):
             CoreBlockHandlerData | Promise<CoreBlockHandlerData> {

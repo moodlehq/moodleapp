@@ -164,9 +164,9 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     /**
      * Fetch all the data required for the view.
      *
-     * @param {boolean} [sync] Whether it should try to synchronize offline events.
-     * @param {boolean} [showErrors] Whether to show sync errors to the user.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param sync Whether it should try to synchronize offline events.
+     * @param showErrors Whether to show sync errors to the user.
+     * @return Promise resolved when done.
      */
     fetchData(sync?: boolean, showErrors?: boolean): Promise<any> {
 
@@ -230,10 +230,10 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     /**
      * Refresh the data.
      *
-     * @param {any} [refresher] Refresher.
-     * @param {Function} [done] Function to call when done.
-     * @param {boolean} [showErrors] Whether to show sync errors to the user.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @param done Function to call when done.
+     * @param showErrors Whether to show sync errors to the user.
+     * @return Promise resolved when done.
      */
     doRefresh(refresher?: any, done?: () => void, showErrors?: boolean): Promise<any> {
         if (this.loaded) {
@@ -249,10 +249,10 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     /**
      * Refresh the data.
      *
-     * @param {boolean} [sync] Whether it should try to synchronize offline events.
-     * @param {boolean} [showErrors] Whether to show sync errors to the user.
-     * @param {boolean} [afterChange] Whether the refresh is done after an event has changed or has been synced.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param sync Whether it should try to synchronize offline events.
+     * @param showErrors Whether to show sync errors to the user.
+     * @param afterChange Whether the refresh is done after an event has changed or has been synced.
+     * @return Promise resolved when done.
      */
     refreshData(sync?: boolean, showErrors?: boolean, afterChange?: boolean): Promise<any> {
         this.syncIcon = 'spinner';
@@ -276,7 +276,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     /**
      * Navigate to a particular event.
      *
-     * @param {number} eventId Event to load.
+     * @param eventId Event to load.
      */
     gotoEvent(eventId: number): void {
         if (eventId < 0) {
@@ -292,7 +292,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     /**
      * View a certain day.
      *
-     * @param {any} data Data with the year, month and day.
+     * @param data Data with the year, month and day.
      */
     gotoDay(data: any): void {
         const params: any = {
@@ -311,7 +311,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     /**
      * Show the context menu.
      *
-     * @param {MouseEvent} event Event.
+     * @param event Event.
      */
     openCourseFilter(event: MouseEvent): void {
         this.coursesHelper.selectCourse(event, this.courses, this.courseId).then((result) => {
@@ -330,7 +330,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     /**
      * Open page to create/edit an event.
      *
-     * @param {number} [eventId] Event ID to edit.
+     * @param eventId Event ID to edit.
      */
     openEdit(eventId?: number): void {
         const params: any = {};

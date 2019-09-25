@@ -64,7 +64,7 @@ export class AddonBadgesUserBadgesPage {
     /**
      * Fetch all the badges required for the view.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     fetchBadges(): Promise<any> {
         this.currentTime = this.timeUtils.timestamp();
@@ -79,7 +79,7 @@ export class AddonBadgesUserBadgesPage {
     /**
      * Refresh the badges.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshBadges(refresher: any): void {
         this.badgesProvider.invalidateUserBadges(this.courseId, this.userId).finally(() => {
@@ -92,7 +92,7 @@ export class AddonBadgesUserBadgesPage {
     /**
      * Navigate to a particular badge.
      *
-     * @param {string} badgeHash Badge to load.
+     * @param badgeHash Badge to load.
      */
     loadIssuedBadge(badgeHash: string): void {
         this.badgeHash = badgeHash;

@@ -43,8 +43,8 @@ export class CoreUserSyncProvider extends CoreSyncBaseProvider {
     /**
      * Try to synchronize user preferences in a certain site or in all sites.
      *
-     * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
-     * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncPreferences(siteId?: string): Promise<any> {
         const syncFunctionLog = 'all user preferences';
@@ -55,8 +55,8 @@ export class CoreUserSyncProvider extends CoreSyncBaseProvider {
     /**
      * Sync user preferences of a site.
      *
-     * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
-     * @param {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @param Promise resolved if sync is successful, rejected if sync fails.
      */
     protected syncPreferencesFunc(siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();

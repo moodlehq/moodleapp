@@ -44,7 +44,7 @@ export class AddonModLessonIndexPage {
     /**
      * Update some data based on the lesson instance.
      *
-     * @param {any} lesson Lesson instance.
+     * @param lesson Lesson instance.
      */
     updateData(lesson: any): void {
         this.title = lesson.name || this.title;

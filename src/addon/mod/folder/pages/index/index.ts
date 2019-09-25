@@ -42,7 +42,7 @@ export class AddonModFolderIndexPage {
     /**
      * Update some data based on the folder instance.
      *
-     * @param {any} folder Folder instance.
+     * @param folder Folder instance.
      */
     updateData(folder: any): void {
         this.title = folder.name || this.title;

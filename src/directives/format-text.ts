@@ -37,7 +37,6 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
  *
  * Example usage:
  * <core-format-text [text]="myText" [component]="component" [componentId]="componentId"></core-format-text>
- *
  */
 @Directive({
     selector: 'core-format-text'
@@ -89,8 +88,8 @@ export class CoreFormatTextDirective implements OnChanges {
     /**
      * Apply CoreExternalContentDirective to a certain element.
      *
-     * @param {HTMLElement} element Element to add the attributes to.
-     * @return {CoreExternalContentDirective} External content instance.
+     * @param element Element to add the attributes to.
+     * @return External content instance.
      */
     protected addExternalContent(element: HTMLElement): CoreExternalContentDirective {
         // Angular 2 doesn't let adding directives dynamically. Create the CoreExternalContentDirective manually.
@@ -113,7 +112,7 @@ export class CoreFormatTextDirective implements OnChanges {
     /**
      * Add class to adapt media to a certain element.
      *
-     * @param {HTMLElement} element Element to add the class to.
+     * @param element Element to add the class to.
      */
     protected addMediaAdaptClass(element: HTMLElement): void {
         element.classList.add('core-media-adapt-width');
@@ -122,7 +121,7 @@ export class CoreFormatTextDirective implements OnChanges {
     /**
      * Wrap an image with a container to adapt its width.
      *
-     * @param {HTMLElement} img Image to adapt.
+     * @param img Image to adapt.
      */
     protected adaptImage(img: HTMLElement): void {
         // Element to wrap the image.
@@ -251,7 +250,7 @@ export class CoreFormatTextDirective implements OnChanges {
     /**
      * Listener to call when the element is clicked.
      *
-     * @param {MouseEvent} e Click event.
+     * @param e Click event.
      */
     protected elementClicked(e: MouseEvent): void {
         if (e.defaultPrevented) {
@@ -352,7 +351,7 @@ export class CoreFormatTextDirective implements OnChanges {
     /**
      * Apply formatText and set sub-directives.
      *
-     * @return {Promise<HTMLElement>} Promise resolved with a div element containing the code.
+     * @return Promise resolved with a div element containing the code.
      */
     protected formatContents(): Promise<HTMLElement> {
 
@@ -497,8 +496,8 @@ export class CoreFormatTextDirective implements OnChanges {
     /**
      * Returns the element width in pixels.
      *
-     * @param {HTMLElement} element Element to get width from.
-     * @return {number} The width of the element in pixels. When 0 is returned it means the element is not visible.
+     * @param element Element to get width from.
+     * @return The width of the element in pixels. When 0 is returned it means the element is not visible.
      */
     protected getElementWidth(element: HTMLElement): number {
         let width = this.domUtils.getElementWidth(element);
@@ -526,8 +525,8 @@ export class CoreFormatTextDirective implements OnChanges {
     /**
      * Returns the element height in pixels.
      *
-     * @param {HTMLElement} elementAng Element to get height from.
-     * @return {number} The height of the element in pixels. When 0 is returned it means the element is not visible.
+     * @param elementAng Element to get height from.
+     * @return The height of the element in pixels. When 0 is returned it means the element is not visible.
      */
     protected getElementHeight(element: HTMLElement): number {
         return this.domUtils.getElementHeight(element) || 0;
@@ -553,8 +552,8 @@ export class CoreFormatTextDirective implements OnChanges {
     /**
      * Treat video filters. Currently only treating youtube video using video JS.
      *
-     * @param {HTMLElement} el Video element.
-     * @param {NavController} navCtrl NavController to use.
+     * @param el Video element.
+     * @param navCtrl NavController to use.
      */
     protected treatVideoFilters(video: HTMLElement, navCtrl: NavController): void {
         // Treat Video JS Youtube video links and translate them to iframes.
@@ -587,7 +586,7 @@ export class CoreFormatTextDirective implements OnChanges {
     /**
      * Add media adapt class and apply CoreExternalContentDirective to the media element and its sources and tracks.
      *
-     * @param {HTMLElement} element Video or audio to treat.
+     * @param element Video or audio to treat.
      */
     protected treatMedia(element: HTMLElement): void {
         this.addMediaAdaptClass(element);
@@ -615,10 +614,10 @@ export class CoreFormatTextDirective implements OnChanges {
     /**
      * Add media adapt class and treat the iframe source.
      *
-     * @param {HTMLIFrameElement} iframe Iframe to treat.
-     * @param {CoreSite} site Site instance.
-     * @param {boolean} canTreatVimeo Whether Vimeo videos can be treated in the site.
-     * @param {NavController} navCtrl NavController to use.
+     * @param iframe Iframe to treat.
+     * @param site Site instance.
+     * @param canTreatVimeo Whether Vimeo videos can be treated in the site.
+     * @param navCtrl NavController to use.
      */
     protected treatIframe(iframe: HTMLIFrameElement, site: CoreSite, canTreatVimeo: boolean, navCtrl: NavController): void {
         const src = iframe.src,
@@ -699,7 +698,7 @@ export class CoreFormatTextDirective implements OnChanges {
      * Parse a YouTube URL.
      * Based on Youtube.parseUrl from Moodle media/player/videojs/amd/src/Youtube-lazy.js
      *
-     * @param {string} url URL of the video.
+     * @param url URL of the video.
      */
     protected parseYoutubeUrl(url: string): {videoId: string, listId?: string, start?: number} {
         const result = {

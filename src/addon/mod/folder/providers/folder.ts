@@ -38,10 +38,10 @@ export class AddonModFolderProvider {
     /**
      * Get a folder by course module ID.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} cmId     Course module ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved when the book is retrieved.
+     * @param courseId Course ID.
+     * @param cmId Course module ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the book is retrieved.
      */
     getFolder(courseId: number, cmId: number, siteId?: string): Promise<any> {
         return this.getFolderByKey(courseId, 'coursemodule', cmId, siteId);
@@ -50,11 +50,11 @@ export class AddonModFolderProvider {
     /**
      * Get a folder.
      *
-     * @param {number} courseId  Course ID.
-     * @param {string} key       Name of the property to check.
-     * @param {any}  value     Value to search.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}          Promise resolved when the book is retrieved.
+     * @param courseId Course ID.
+     * @param key Name of the property to check.
+     * @param value Value to search.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the book is retrieved.
      */
     protected getFolderByKey(courseId: number, key: string, value: any, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -84,8 +84,8 @@ export class AddonModFolderProvider {
     /**
      * Get cache key for folder data WS calls.
      *
-     * @param {number} courseId Course ID.
-     * @return {string}         Cache key.
+     * @param courseId Course ID.
+     * @return Cache key.
      */
     protected getFolderCacheKey(courseId: number): string {
         return this.ROOT_CACHE_KEY + 'folder:' + courseId;
@@ -94,10 +94,9 @@ export class AddonModFolderProvider {
     /**
      * Invalidate the prefetched content.
      *
-     * @param  {number} moduleId The module ID.
-     * @param  {number} courseId Course ID of the module.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}
+     * @param moduleId The module ID.
+     * @param courseId Course ID of the module.
+     * @param siteId Site ID. If not defined, current site.
      */
     invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<any> {
         const promises = [];
@@ -111,9 +110,9 @@ export class AddonModFolderProvider {
     /**
      * Invalidates folder data.
      *
-     * @param {number} courseId Course ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}   Promise resolved when the data is invalidated.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateFolderData(courseId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -124,7 +123,7 @@ export class AddonModFolderProvider {
     /**
      * Returns whether or not getFolder WS available or not.
      *
-     * @return {boolean} If WS is avalaible.
+     * @return If WS is avalaible.
      * @since 3.3
      */
     isGetFolderWSAvailable(): boolean {
@@ -134,10 +133,10 @@ export class AddonModFolderProvider {
     /**
      * Report a folder as being viewed.
      *
-     * @param {number} id Module ID.
-     * @param {string} [name] Name of the folder.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}  Promise resolved when the WS call is successful.
+     * @param id Module ID.
+     * @param name Name of the folder.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the WS call is successful.
      */
     logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {

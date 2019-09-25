@@ -21,29 +21,27 @@ import { CoreLoggerProvider } from './logger';
 export interface CorePluginFileHandler {
     /**
      * A name to identify the handler.
-     * @type {string}
      */
     name: string;
 
     /**
      * The "component" of the handler. It should match the "component" of pluginfile URLs.
-     * @type {string}
      */
     component: string;
 
     /**
      * Return the RegExp to match the revision on pluginfile URLs.
      *
-     * @param {string[]} args Arguments of the pluginfile URL defining component and filearea at least.
-     * @return {RegExp} RegExp to match the revision on pluginfile URLs.
+     * @param args Arguments of the pluginfile URL defining component and filearea at least.
+     * @return RegExp to match the revision on pluginfile URLs.
      */
     getComponentRevisionRegExp?(args: string[]): RegExp;
 
     /**
      * Should return the string to remove the revision on pluginfile url.
      *
-     * @param {string[]} args Arguments of the pluginfile URL defining component and filearea at least.
-     * @return {string} String to remove the revision on pluginfile url.
+     * @param args Arguments of the pluginfile URL defining component and filearea at least.
+     * @return String to remove the revision on pluginfile url.
      */
     getComponentRevisionReplace?(args: string[]): string;
 }
@@ -63,8 +61,8 @@ export class CorePluginFileDelegate {
     /**
      * Get the handler for a certain pluginfile url.
      *
-     * @param {string} component Component of the plugin.
-     * @return {CorePluginFileHandler} Handler. Undefined if no handler found for the plugin.
+     * @param component Component of the plugin.
+     * @return Handler. Undefined if no handler found for the plugin.
      */
     protected getPluginHandler(component: string): CorePluginFileHandler {
         if (typeof this.handlers[component] != 'undefined') {
@@ -75,8 +73,8 @@ export class CorePluginFileDelegate {
     /**
      * Get the RegExp of the component and filearea described in the URL.
      *
-     * @param {string[]} args Arguments of the pluginfile URL defining component and filearea at least.
-     * @return {RegExp}  RegExp to match the revision or undefined if not found.
+     * @param args Arguments of the pluginfile URL defining component and filearea at least.
+     * @return RegExp to match the revision or undefined if not found.
      */
     getComponentRevisionRegExp(args: string[]): RegExp {
         // Get handler based on component (args[1]).
@@ -90,8 +88,8 @@ export class CorePluginFileDelegate {
     /**
      * Register a handler.
      *
-     * @param {CorePluginFileHandler} handler The handler to register.
-     * @return {boolean} True if registered successfully, false otherwise.
+     * @param handler The handler to register.
+     * @return True if registered successfully, false otherwise.
      */
     registerHandler(handler: CorePluginFileHandler): boolean {
         if (typeof this.handlers[handler.component] !== 'undefined') {
@@ -109,9 +107,9 @@ export class CorePluginFileDelegate {
     /**
      * Removes the revision number from a file URL.
      *
-     * @param {string} url URL to be replaced.
-     * @param {string[]} args Arguments of the pluginfile URL defining component and filearea at least.
-     * @return {string} Replaced URL without revision.
+     * @param url URL to be replaced.
+     * @param args Arguments of the pluginfile URL defining component and filearea at least.
+     * @return Replaced URL without revision.
      */
     removeRevisionFromUrl(url: string, args: string[]): string {
         // Get handler based on component (args[1]).

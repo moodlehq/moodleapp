@@ -157,8 +157,8 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     /**
      * Check if the user can access as guest.
      *
-     * @return {Promise<boolean>} Promise resolved if can access as guest, rejected otherwise. Resolve param indicates if
-     *                            password is required for guest access.
+     * @return Promise resolved if can access as guest, rejected otherwise. Resolve param indicates if
+     *         password is required for guest access.
      */
     protected canAccessAsGuest(): Promise<boolean> {
         if (!this.isGuestEnabled) {
@@ -192,7 +192,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     /**
      * Convenience function to get course. We use this to determine if a user can see the course or not.
      *
-     * @param {boolean} refresh Whether the user is refreshing the data.
+     * @param refresh Whether the user is refreshing the data.
      */
     protected getCourse(refresh?: boolean): Promise<any> {
         // Get course enrolment methods.
@@ -336,7 +336,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     /**
      * User clicked in a self enrol button.
      *
-     * @param {number} instanceId The instance ID of the enrolment method.
+     * @param instanceId The instance ID of the enrolment method.
      */
     selfEnrolClicked(instanceId: number): void {
         this.domUtils.showConfirm(this.translate.instant('core.courses.confirmselfenrol')).then(() => {
@@ -349,9 +349,9 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     /**
      * Self enrol in a course.
      *
-     * @param {string} password Password to use.
-     * @param {number} instanceId The instance ID.
-     * @return {Promise<any>} Promise resolved when self enrolled.
+     * @param password Password to use.
+     * @param instanceId The instance ID.
+     * @return Promise resolved when self enrolled.
      */
     selfEnrolInCourse(password: string, instanceId: number): Promise<any> {
         const modal = this.domUtils.showModalLoading('core.loading', true);
@@ -390,7 +390,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     /**
      * Refresh the data.
      *
-     * @param {any} [refresher] The refresher if this was triggered by a Pull To Refresh.
+     * @param refresher The refresher if this was triggered by a Pull To Refresh.
      */
     refreshData(refresher?: any): Promise<any> {
         const promises = [];
@@ -418,7 +418,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     /**
      * Update the course status icon and title.
      *
-     * @param {string} status Status to show.
+     * @param status Status to show.
      */
     protected updateCourseStatus(status: string): void {
         const statusData = this.courseHelper.getCourseStatusIconAndTitleFromStatus(status);
@@ -430,8 +430,8 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     /**
      * Wait for the user to be enrolled in the course.
      *
-     * @param {boolean} first If it's the first call (true) or it's a recursive call (false).
-     * @return {Promise<any>} Promise resolved when enrolled or timeout.
+     * @param first If it's the first call (true) or it's a recursive call (false).
+     * @return Promise resolved when enrolled or timeout.
      */
     protected waitForEnrolled(first?: boolean): Promise<any> {
         if (first) {

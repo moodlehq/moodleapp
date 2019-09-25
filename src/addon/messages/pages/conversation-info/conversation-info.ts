@@ -52,7 +52,7 @@ export class AddonMessagesConversationInfoPage implements OnInit {
     /**
      * Fetch the required data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchData(): Promise<any> {
         // Get the conversation data first.
@@ -69,8 +69,8 @@ export class AddonMessagesConversationInfoPage implements OnInit {
     /**
      * Get conversation members.
      *
-     * @param {boolean} [loadingMore} Whether we are loading more data or just the first ones.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param loadingMore Whether we are loading more data or just the first ones.
+     * @return Promise resolved when done.
      */
     protected fetchMembers(loadingMore?: boolean): Promise<any> {
         this.loadMoreError = false;
@@ -91,8 +91,8 @@ export class AddonMessagesConversationInfoPage implements OnInit {
     /**
      * Function to load more members.
      *
-     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
-     * @return {Promise<any>} Resolved when done.
+     * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
+     * @return Resolved when done.
      */
     loadMoreMembers(infiniteComplete?: any): Promise<any> {
         return this.fetchMembers(true).catch((error) => {
@@ -106,8 +106,8 @@ export class AddonMessagesConversationInfoPage implements OnInit {
     /**
      * Refresh the data.
      *
-     * @param {any} [refresher] Refresher.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @return Promise resolved when done.
      */
     refreshData(refresher?: any): Promise<any> {
         const promises = [];
@@ -125,7 +125,7 @@ export class AddonMessagesConversationInfoPage implements OnInit {
     /**
      * Close modal.
      *
-     * @param {number} [userId] User conversation to load.
+     * @param userId User conversation to load.
      */
     closeModal(userId?: number): void {
         this.viewCtrl.dismiss(userId);

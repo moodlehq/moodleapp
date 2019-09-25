@@ -57,7 +57,7 @@ export class AddonModQuizAttemptPage implements OnInit {
     /**
      * Refresh the data.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     doRefresh(refresher: any): void {
         this.refreshData().finally(() => {
@@ -68,7 +68,7 @@ export class AddonModQuizAttemptPage implements OnInit {
     /**
      * Get quiz data and attempt data.
      *
-     * @return {Promise<void>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchQuizData(): Promise<void> {
         return this.quizProvider.getQuizById(this.courseId, this.quizId).then((quizData) => {
@@ -84,7 +84,7 @@ export class AddonModQuizAttemptPage implements OnInit {
     /**
      * Get the attempt data.
      *
-     * @return {Promise<void>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchAttempt(): Promise<void> {
         const promises = [];
@@ -158,7 +158,7 @@ export class AddonModQuizAttemptPage implements OnInit {
     /**
      * Refresh the data.
      *
-     * @return {Promise<void>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected refreshData(): Promise<void> {
         const promises = [];

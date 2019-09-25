@@ -58,7 +58,7 @@ export class AddonModWorkshopPhaseInfoPage {
     /**
      * Open task.
      *
-     * @param {any} task Task to be done.
+     * @param task Task to be done.
      */
     runTask(task: any): void {
         if (task.code == 'submit') {

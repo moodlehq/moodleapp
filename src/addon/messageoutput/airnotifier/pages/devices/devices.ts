@@ -47,7 +47,7 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnDestroy {
     /**
      * Fetches the list of devices.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchDevices(): Promise<any> {
         return this.airnotifierProivder.getUserDevices().then((devices) => {
@@ -94,7 +94,7 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnDestroy {
     /**
      * Refresh the list of devices.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshDevices(refresher: any): void {
         this.airnotifierProivder.invalidateUserDevices().finally(() => {
@@ -107,8 +107,8 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnDestroy {
     /**
      * Enable or disable a certain device.
      *
-     * @param {any} device The device object.
-     * @param {boolean} enable True to enable the device, false to disable it.
+     * @param device The device object.
+     * @param enable True to enable the device, false to disable it.
      */
     enableDevice(device: any, enable: boolean): void {
         device.updating = true;

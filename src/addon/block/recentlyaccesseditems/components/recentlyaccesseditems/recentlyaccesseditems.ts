@@ -50,7 +50,7 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         return this.recentItemsProvider.invalidateRecentItems();
@@ -59,7 +59,7 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
     /**
      * Fetch the data to render the block.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchContent(): Promise<any> {
         return this.recentItemsProvider.getRecentItems().then((items) => {
@@ -70,8 +70,8 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
     /**
      * Event clicked.
      *
-     * @param {Event} e    Click event.
-     * @param {any} item   Activity item info.
+     * @param e Click event.
+     * @param item Activity item info.
      */
     action(e: Event, item: any): void {
         e.preventDefault();

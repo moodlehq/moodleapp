@@ -66,8 +66,8 @@ export class AddonModGlossaryEntryPage {
     /**
      * Refresh the data.
      *
-     * @param {any} [refresher] Refresher.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @return Promise resolved when done.
      */
      doRefresh(refresher?: any): Promise<any> {
         return this.glossaryProvider.invalidateEntry(this.entry.id).catch(() => {
@@ -82,8 +82,8 @@ export class AddonModGlossaryEntryPage {
     /**
      * Convenience function to get the glossary entry.
      *
-     * @param {boolean} [refresh] Whether we're refreshing data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @return Promise resolved when done.
      */
     protected fetchEntry(refresh?: boolean): Promise<any> {
         return this.glossaryProvider.getEntry(this.entryId).then((result) => {

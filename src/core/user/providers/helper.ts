@@ -30,10 +30,10 @@ export class CoreUserHelperProvider {
     /**
      * Formats a user address, concatenating address, city and country.
      *
-     * @param {string} address Address.
-     * @param {string} city    City.
-     * @param {string} country Country.
-     * @return {string} Formatted address.
+     * @param address Address.
+     * @param city City.
+     * @param country Country.
+     * @return Formatted address.
      */
     formatAddress(address: string, city: string, country: string): string {
         const separator = this.translate.instant('core.listsep');
@@ -49,8 +49,8 @@ export class CoreUserHelperProvider {
     /**
      * Formats a user role list, translating and concatenating them.
      *
-     * @param {any[]} [roles] List of user roles.
-     * @return {string} The formatted roles.
+     * @param roles List of user roles.
+     * @return The formatted roles.
      */
     formatRoleList(roles?: any[]): string {
         if (!roles || roles.length <= 0) {

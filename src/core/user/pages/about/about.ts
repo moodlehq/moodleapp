@@ -83,7 +83,7 @@ export class CoreUserAboutPage {
     /**
      * Refresh the user.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshUser(refresher?: any): void {
         this.userProvider.invalidateUserCache(this.userId).finally(() => {

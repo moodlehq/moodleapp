@@ -117,7 +117,7 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
     /**
      * Refresh comments.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     doRefresh(): Promise<any> {
         return this.invalidateComments().then(() => {
@@ -128,7 +128,7 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
     /**
      * Invalidate comments data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     invalidateComments(): Promise<any> {
         return this.commentsProvider.invalidateCommentsData(this.contextLevel, this.instanceId, this.component, this.itemId,
@@ -170,9 +170,9 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
     /**
      * Check if a certain value in data is undefined or equal to this instance value.
      *
-     * @param {any} data Data object.
-     * @param {string} name Name of the property to check.
-     * @return {boolean} Whether it's undefined or equal.
+     * @param data Data object.
+     * @param name Name of the property to check.
+     * @return Whether it's undefined or equal.
      */
     protected undefinedOrEqual(data: any, name: string): boolean {
         return typeof data[name] == 'undefined' || data[name] == this[name];

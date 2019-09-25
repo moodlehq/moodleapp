@@ -78,7 +78,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         const promises = [];
@@ -96,8 +96,8 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Compares sync event data with current data to check if refresh content is needed.
      *
-     * @param {any} syncEventData Data receiven on sync observer.
-     * @return {boolean}          True if refresh is needed, false otherwise.
+     * @param syncEventData Data receiven on sync observer.
+     * @return True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: any): boolean {
         if (this.choice && syncEventData.choiceId == this.choice.id && syncEventData.userId == this.userId) {
@@ -112,10 +112,10 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Download choice contents.
      *
-     * @param  {boolean}      [refresh=false]    If it's refreshing content.
-     * @param  {boolean}      [sync=false]       If it should try to sync.
-     * @param  {boolean}      [showErrors=false] If show errors to the user of hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh If it's refreshing content.
+     * @param sync If it should try to sync.
+     * @param showErrors If show errors to the user of hide them.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
         this.now = new Date().getTime();
@@ -163,8 +163,8 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Convenience function to get choice options.
      *
-     * @param {boolean} hasOffline True if there are responses stored offline.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param hasOffline True if there are responses stored offline.
+     * @return Promise resolved when done.
      */
     protected fetchOptions(hasOffline: boolean): Promise<any> {
         return this.choiceProvider.getOptions(this.choice.id).then((options) => {
@@ -277,7 +277,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Convenience function to get choice results.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected fetchResults(): Promise<any> {
         if (this.choiceNotOpenYet) {
@@ -307,7 +307,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Check if a choice is open.
      *
-     * @return {boolean} True if choice is open, false otherwise.
+     * @return True if choice is open, false otherwise.
      */
     protected isChoiceOpen(): boolean {
         return (this.choice.timeopen === 0 || this.choice.timeopen <= this.now) &&
@@ -317,7 +317,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Return true if the user has selected at least one option.
      *
-     * @return {boolean} True if the user has responded.
+     * @return True if the user has responded.
      */
     canSave(): boolean {
         if (this.choice.allowmultiple) {
@@ -391,8 +391,8 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Function to call when some data has changed. It will refresh/prefetch data.
      *
-     * @param {boolean} online Whether the data was sent to server or stored in offline.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param online Whether the data was sent to server or stored in offline.
+     * @return Promise resolved when done.
      */
     protected dataUpdated(online: boolean): Promise<any> {
         if (online && this.isPrefetched()) {
@@ -413,7 +413,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Performs the sync of the activity.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected sync(): Promise<any> {
         return this.choiceSync.syncChoice(this.choice.id, this.userId);
@@ -422,8 +422,8 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Checks if sync has succeed from result sync data.
      *
-     * @param  {any} result Data returned on the sync function.
-     * @return {boolean} Whether it succeed or not.
+     * @param result Data returned on the sync function.
+     * @return Whether it succeed or not.
      */
     protected hasSyncSucceed(result: any): boolean {
         return result.updated;
