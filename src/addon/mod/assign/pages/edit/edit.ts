@@ -20,7 +20,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreFileUploaderHelperProvider } from '@core/fileuploader/providers/helper';
-import { AddonModAssignProvider } from '../../providers/assign';
+import { AddonModAssignProvider, AddonModAssignAssign, AddonModAssignSubmission } from '../../providers/assign';
 import { AddonModAssignOfflineProvider } from '../../providers/assign-offline';
 import { AddonModAssignSyncProvider } from '../../providers/assign-sync';
 import { AddonModAssignHelperProvider } from '../../providers/helper';
@@ -35,9 +35,9 @@ import { AddonModAssignHelperProvider } from '../../providers/helper';
 })
 export class AddonModAssignEditPage implements OnInit, OnDestroy {
     title: string; // Title to display.
-    assign: any; // Assignment.
+    assign: AddonModAssignAssign; // Assignment.
     courseId: number; // Course ID the assignment belongs to.
-    userSubmission: any; // The user submission.
+    userSubmission: AddonModAssignSubmission; // The user submission.
     allowOffline: boolean; // Whether offline is allowed.
     submissionStatement: string; // The submission statement.
     submissionStatementAccepted: boolean; // Whether submission statement is accepted.
@@ -129,7 +129,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
                     const userSubmission = this.assignProvider.getSubmissionObjectFromAttempt(this.assign, response.lastattempt);
 
                     // Check if the user can edit it in offline.
-                    return this.assignHelper.canEditSubmissionOffline(this.assign, userSubmission).then((canEditOffline) => {
+                    return this.assignHelper.canEditSubmissionOffline(this.assign, userSubmission).then((canEditOffline): any => {
                         if (canEditOffline) {
                             return response;
                         }
@@ -301,7 +301,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
                 } else {
                     // Try to send it to server.
                     promise = this.assignProvider.saveSubmission(this.assign.id, this.courseId, pluginData, this.allowOffline,
-                            this.userSubmission.timemodified, this.assign.submissiondrafts, this.userId);
+                            this.userSubmission.timemodified, !!this.assign.submissiondrafts, this.userId);
                 }
 
                 return promise.then(() => {

@@ -17,7 +17,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCourseProvider } from '@core/course/providers/course';
-import { AddonModAssignProvider } from '../../providers/assign';
+import { AddonModAssignProvider, AddonModAssignAssign } from '../../providers/assign';
 import { AddonModAssignSubmissionComponent } from '../../components/submission/submission';
 
 /**
@@ -40,7 +40,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit {
     loaded: boolean; // Whether data has been loaded.
     canSaveGrades: boolean; // Whether the user can save grades.
 
-    protected assign: any; // The assignment the submission belongs to.
+    protected assign: AddonModAssignAssign; // The assignment the submission belongs to.
     protected blindMarking: boolean; // Whether it uses blind marking.
     protected forceLeave = false; // To allow leaving the page without checking for changes.
 

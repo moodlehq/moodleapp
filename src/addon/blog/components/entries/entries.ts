@@ -18,7 +18,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUserProvider } from '@core/user/providers/user';
-import { AddonBlogProvider } from '../../providers/blog';
+import { AddonBlogProvider, AddonBlogPost } from '../../providers/blog';
 import { CoreCommentsProvider } from '@core/comments/providers/comments';
 import { CoreTagProvider } from '@core/tag/providers/tag';
 
@@ -48,7 +48,7 @@ export class AddonBlogEntriesComponent implements OnInit {
     loaded = false;
     canLoadMore = false;
     loadMoreError = false;
-    entries = [];
+    entries: AddonBlogPostFormatted[] = [];
     currentUserId: number;
     showMyEntriesToggle = false;
     onlyMyEntries = false;
@@ -118,7 +118,7 @@ export class AddonBlogEntriesComponent implements OnInit {
         const loadPage = this.onlyMyEntries ? this.userPageLoaded : this.pageLoaded;
 
         return this.blogProvider.getEntries(this.filter, loadPage).then((result) => {
-            const promises = result.entries.map((entry) => {
+            const promises = result.entries.map((entry: AddonBlogPostFormatted) => {
                 switch (entry.publishstate) {
                     case 'draft':
                         entry.publishTranslated = 'publishtonoone';
@@ -237,5 +237,12 @@ export class AddonBlogEntriesComponent implements OnInit {
             });
         });
     }
-
 }
+
+/**
+ * Blog post with some calculated data.
+ */
+type AddonBlogPostFormatted = AddonBlogPost & {
+    publishTranslated?: string; // Calculated in the app. Key of the string to translate the publish state of the post.
+    user?: any; // Calculated in the app. Data of the user that wrote the post.
+};

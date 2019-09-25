@@ -17,6 +17,9 @@ import { Injectable, Injector } from '@angular/core';
 import { CoreCommentsProvider } from '@core/comments/providers/comments';
 import { AddonModAssignSubmissionHandler } from '../../../providers/submission-delegate';
 import { AddonModAssignSubmissionCommentsComponent } from '../component/comments';
+import {
+    AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin
+} from '../../../providers/assign';
 
 /**
  * Handler for comments submission plugin.
@@ -38,7 +41,8 @@ export class AddonModAssignSubmissionCommentsHandler implements AddonModAssignSu
      * @param plugin The plugin object.
      * @return Boolean or promise resolved with boolean: whether it can be edited in offline.
      */
-    canEditOffline(assign: any, submission: any, plugin: any): boolean | Promise<boolean> {
+    canEditOffline(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin): boolean | Promise<boolean> {
         // This plugin is read only, but return true to prevent blocking the edition.
         return true;
     }
@@ -52,7 +56,7 @@ export class AddonModAssignSubmissionCommentsHandler implements AddonModAssignSu
      * @param edit Whether the user is editing.
      * @return The component (or promise resolved with component) to use, undefined if not found.
      */
-    getComponent(injector: Injector, plugin: any, edit?: boolean): any | Promise<any> {
+    getComponent(injector: Injector, plugin: AddonModAssignPlugin, edit?: boolean): any | Promise<any> {
         return edit ? undefined : AddonModAssignSubmissionCommentsComponent;
     }
 
@@ -84,7 +88,9 @@ export class AddonModAssignSubmissionCommentsHandler implements AddonModAssignSu
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    prefetch(assign: any, submission: any, plugin: any, siteId?: string): Promise<any> {
+    prefetch(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, siteId?: string): Promise<any> {
+
         return this.commentsProvider.getComments('module', assign.cmid, 'assignsubmission_comments', submission.id,
                 'submission_comments', 0, siteId).catch(() => {
             // Fail silently (Moodle < 3.1.1, 3.2)

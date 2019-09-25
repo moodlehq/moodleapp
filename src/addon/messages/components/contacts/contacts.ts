@@ -16,7 +16,9 @@ import { Component } from '@angular/core';
 import { NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreSitesProvider } from '@providers/sites';
-import { AddonMessagesProvider } from '../../providers/messages';
+import {
+    AddonMessagesProvider, AddonMessagesGetContactsResult, AddonMessagesSearchContactsContact
+} from '../../providers/messages';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
@@ -42,7 +44,10 @@ export class AddonMessagesContactsComponent {
     searchType = 'search';
     loadingMessage = '';
     hasContacts = false;
-    contacts = {
+    contacts: AddonMessagesGetContactsFormatted = {
+        online: [],
+        offline: [],
+        strangers: [],
         search: []
     };
     searchString = '';
@@ -205,7 +210,7 @@ export class AddonMessagesContactsComponent {
             this.searchString = query;
             this.contactTypes = ['search'];
 
-            this.contacts['search'] = this.sortUsers(result);
+            this.contacts.search = this.sortUsers(result);
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingcontacts', true);
         });
@@ -234,3 +239,10 @@ export class AddonMessagesContactsComponent {
         this.memberInfoObserver && this.memberInfoObserver.off();
     }
 }
+
+/**
+ * Contacts with some calculated data.
+ */
+export type AddonMessagesGetContactsFormatted = AddonMessagesGetContactsResult & {
+    search?: AddonMessagesSearchContactsContact[]; // Calculated in the app. Result of searching users.
+};

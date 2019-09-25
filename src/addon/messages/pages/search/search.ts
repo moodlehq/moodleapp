@@ -16,7 +16,7 @@ import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
-import { AddonMessagesProvider } from '../../providers/messages';
+import { AddonMessagesProvider, AddonMessagesConversationMember, AddonMessagesMessageAreaContact } from '../../providers/messages';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreAppProvider } from '@providers/app';
@@ -38,21 +38,21 @@ export class AddonMessagesSearchPage implements OnDestroy {
     contacts = {
         type: 'contacts',
         titleString: 'addon.messages.contacts',
-        results: [],
+        results: <AddonMessagesConversationMember[]> [],
         canLoadMore: false,
         loadingMore: false
     };
     nonContacts = {
         type: 'noncontacts',
         titleString: 'addon.messages.noncontacts',
-        results: [],
+        results: <AddonMessagesConversationMember[]> [],
         canLoadMore: false,
         loadingMore: false
     };
     messages = {
         type: 'messages',
         titleString: 'addon.messages.messages',
-        results: [],
+        results: <AddonMessagesMessageAreaContact[]> [],
         canLoadMore: false,
         loadingMore: false,
         loadMoreError: false
@@ -116,9 +116,9 @@ export class AddonMessagesSearchPage implements OnDestroy {
         this.displaySearching = !loadMore;
 
         const promises = [];
-        let newContacts = [];
-        let newNonContacts = [];
-        let newMessages = [];
+        let newContacts: AddonMessagesConversationMember[] = [];
+        let newNonContacts: AddonMessagesConversationMember[] = [];
+        let newMessages: AddonMessagesMessageAreaContact[] = [];
         let canLoadMoreContacts = false;
         let canLoadMoreNonContacts = false;
         let canLoadMoreMessages = false;

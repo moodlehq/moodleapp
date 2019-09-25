@@ -20,7 +20,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreEventsProvider, CoreEventObserver } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { AddonNotificationsProvider } from '../../providers/notifications';
+import { AddonNotificationsProvider, AddonNotificationsAnyNotification } from '../../providers/notifications';
 import { AddonNotificationsHelperProvider } from '../../providers/helper';
 import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers/delegate';
 
@@ -34,7 +34,7 @@ import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers
 })
 export class AddonNotificationsListPage {
 
-    notifications = [];
+    notifications: AddonNotificationsAnyNotification[] = [];
     notificationsLoaded = false;
     canLoadMore = false;
     loadMoreError = false;
@@ -130,11 +130,12 @@ export class AddonNotificationsListPage {
      *
      * @param notifications Array of notification objects.
      */
-    protected markNotificationsAsRead(notifications: any[]): void {
+    protected markNotificationsAsRead(notifications: AddonNotificationsAnyNotification[]): void {
+
         let promise;
 
         if (notifications.length > 0) {
-            const promises = notifications.map((notification) => {
+            const promises: Promise<any>[] = notifications.map((notification) => {
                 if (notification.read) {
                     // Already read, don't mark it.
                     return Promise.resolve();
@@ -202,7 +203,7 @@ export class AddonNotificationsListPage {
      *
      * @param notification The notification object.
      */
-    protected formatText(notification: any): void {
+    protected formatText(notification: AddonNotificationsAnyNotification): void {
         const text = notification.mobiletext.replace(/-{4,}/ig, '');
         notification.mobiletext = this.textUtils.replaceNewLines(text, '<br>');
     }

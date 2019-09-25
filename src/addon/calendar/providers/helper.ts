@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseProvider } from '@core/course/providers/course';
-import { AddonCalendarProvider } from './calendar';
+import { AddonCalendarProvider, AddonCalendarCalendarEvent } from './calendar';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigProvider } from '@providers/config';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -130,11 +130,11 @@ export class AddonCalendarHelperProvider {
      *
      * @param e Event to format.
      */
-    formatEventData(e: any): void {
-        e.icon = this.EVENTICONS[e.eventtype] || false;
-        if (!e.icon) {
-            e.icon = this.courseProvider.getModuleIconSrc(e.modulename);
-            e.moduleIcon = e.icon;
+    formatEventData(e: AddonCalendarCalendarEvent): void {
+        e.eventIcon = this.EVENTICONS[e.eventtype] || '';
+        if (!e.eventIcon) {
+            e.eventIcon = this.courseProvider.getModuleIconSrc(e.modulename);
+            e.moduleIcon = e.eventIcon;
         }
 
         e.formattedType = this.calendarProvider.getEventType(e);
@@ -160,7 +160,7 @@ export class AddonCalendarHelperProvider {
      * @param eventTypes Result of getAllowedEventTypes.
      * @return Options.
      */
-    getEventTypeOptions(eventTypes: any): {name: string, value: string}[] {
+    getEventTypeOptions(eventTypes: {[name: string]: boolean}): {name: string, value: string}[] {
         const options = [];
 
         if (eventTypes.user) {

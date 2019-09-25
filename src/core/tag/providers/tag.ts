@@ -18,74 +18,6 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 
 /**
- * Structure of a tag cloud returned by WS.
- */
-export interface CoreTagCloud {
-    tags: CoreTagCloudTag[];
-    tagscount: number;
-    totalcount: number;
-}
-
-/**
- * Structure of a tag cloud tag returned by WS.
- */
-export interface CoreTagCloudTag {
-    name: string;
-    viewurl: string;
-    flag: boolean;
-    isstandard: boolean;
-    count: number;
-    size: number;
-}
-
-/**
- * Structure of a tag collection returned by WS.
- */
-export interface CoreTagCollection {
-    id: number;
-    name: string;
-    isdefault: boolean;
-    component: string;
-    sortoder: number;
-    searchable: boolean;
-    customurl: string;
-}
-
-/**
- * Structure of a tag index returned by WS.
- */
-export interface CoreTagIndex {
-    tagid: number;
-    ta: number;
-    component: string;
-    itemtype: string;
-    nextpageurl: string;
-    prevpageurl: string;
-    exclusiveurl: string;
-    exclusivetext: string;
-    title: string;
-    content: string;
-    hascontent: number;
-    anchor: string;
-}
-
-/**
- * Structure of a tag item returned by WS.
- */
-export interface CoreTagItem {
-    id: number;
-    name: string;
-    rawname: string;
-    isstandard: boolean;
-    tagcollid: number;
-    taginstanceid: number;
-    taginstancecontextid: number;
-    itemid: number;
-    ordering: number;
-    flag: number;
-}
-
-/**
  * Service to handle tags.
  */
 @Injectable()
@@ -343,3 +275,71 @@ export class CoreTagProvider {
             + contextId + ':' +  (recursive ? 1 : 0);
     }
 }
+
+/**
+ * Structure of a tag cloud returned by WS.
+ */
+export type CoreTagCloud = {
+    tags: CoreTagCloudTag[];
+    tagscount: number;
+    totalcount: number;
+};
+
+/**
+ * Structure of a tag cloud tag returned by WS.
+ */
+export type CoreTagCloudTag = {
+    name: string;
+    viewurl: string;
+    flag: boolean;
+    isstandard: boolean;
+    count: number;
+    size: number;
+};
+
+/**
+ * Structure of a tag collection returned by WS.
+ */
+export type CoreTagCollection = {
+    id: number;
+    name: string;
+    isdefault: boolean;
+    component: string;
+    sortoder: number;
+    searchable: boolean;
+    customurl: string;
+};
+
+/**
+ * Structure of a tag index returned by WS.
+ */
+export type CoreTagIndex = {
+    tagid: number;
+    ta: number;
+    component: string;
+    itemtype: string;
+    nextpageurl: string;
+    prevpageurl: string;
+    exclusiveurl: string;
+    exclusivetext: string;
+    title: string;
+    content: string;
+    hascontent: number;
+    anchor: string;
+};
+
+/**
+ * Structure of a tag item returned by WS.
+ */
+export type CoreTagItem = {
+    id: number;
+    name: string;
+    rawname: string;
+    isstandard: boolean;
+    tagcollid: number;
+    taginstanceid: number;
+    taginstancecontextid: number;
+    itemid: number;
+    ordering: number;
+    flag: number;
+};

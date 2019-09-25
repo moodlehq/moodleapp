@@ -20,7 +20,7 @@ import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreGroupsProvider, CoreGroupInfo } from '@providers/groups';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { AddonModChatProvider } from '../../providers/chat';
+import { AddonModChatProvider, AddonModChatSession, AddonModChatSessionUser } from '../../providers/chat';
 
 /**
  * Page that displays list of chat sessions.
@@ -73,13 +73,13 @@ export class AddonModChatSessionsPage {
             this.groupId = this.groupsProvider.validateGroupId(this.groupId, groupInfo);
 
             return this.chatProvider.getSessions(this.chatId, this.groupId, this.showAll);
-        }).then((sessions) => {
+        }).then((sessions: AddonModChatSessionFormatted[]) => {
             // Fetch user profiles.
             const promises = [];
 
             sessions.forEach((session) => {
                 session.duration = session.sessionend - session.sessionstart;
-                session.sessionusers.forEach((sessionUser) => {
+                session.sessionusers.forEach((sessionUser: AddonModChatUserSessionFormatted) => {
                     if (!sessionUser.userfullname) {
                         // The WS does not return the user name, fetch user profile.
                         promises.push(this.userProvider.getProfile(sessionUser.userid, this.courseId, true).then((user) => {
@@ -156,3 +156,18 @@ export class AddonModChatSessionsPage {
         $event.stopPropagation();
     }
 }
+
+/**
+ * Fields added to chat session in this view.
+ */
+type AddonModChatSessionFormatted = AddonModChatSession & {
+    duration?: number; // Session duration.
+    allsessionusers?: AddonModChatUserSessionFormatted[]; // All session users.
+};
+
+/**
+ * Fields added to user session in this view.
+ */
+type AddonModChatUserSessionFormatted = AddonModChatSessionUser & {
+    userfullname?: string; // User full name.
+};

@@ -16,7 +16,7 @@ import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@
 import { Content } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
-import { AddonMessagesProvider } from '../../providers/messages';
+import { AddonMessagesProvider, AddonMessagesConversationMember } from '../../providers/messages';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 
 /**
@@ -33,7 +33,7 @@ export class AddonMessagesConfirmedContactsComponent implements OnInit, OnDestro
     loaded = false;
     canLoadMore = false;
     loadMoreError = false;
-    contacts = [];
+    contacts: AddonMessagesConversationMember[] = [];
     selectedUserId: number;
 
     protected memberInfoObserver;

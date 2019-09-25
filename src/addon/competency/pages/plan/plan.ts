@@ -17,7 +17,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { AddonCompetencyProvider } from '../../providers/competency';
+import { AddonCompetencyProvider, AddonCompetencyDataForPlanPageResult } from '../../providers/competency';
 import { AddonCompetencyHelperProvider } from '../../providers/helper';
 
 /**
@@ -31,7 +31,7 @@ import { AddonCompetencyHelperProvider } from '../../providers/helper';
 export class AddonCompetencyPlanPage {
     protected planId: number;
     planLoaded = false;
-    plan: any;
+    plan: AddonCompetencyDataForPlanPageResult;
     user: any;
 
     constructor(private navCtrl: NavController, navParams: NavParams, private appProvider: CoreAppProvider,
@@ -62,9 +62,6 @@ export class AddonCompetencyPlanPage {
                 this.user = user;
             });
 
-            plan.competencies.forEach((competency) => {
-                competency.usercompetency = competency.usercompetencyplan || competency.usercompetency;
-            });
             this.plan = plan;
         }).catch((message) => {
             this.domUtils.showErrorModalDefault(message, 'Error getting learning plan data.');

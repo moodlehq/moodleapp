@@ -13,7 +13,9 @@
 // limitations under the License.
 
 import { Component, Input, OnInit, Injector, ViewChild } from '@angular/core';
-import { AddonModAssignProvider } from '../../providers/assign';
+import {
+    AddonModAssignProvider, AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin
+} from '../../providers/assign';
 import { AddonModAssignHelperProvider } from '../../providers/helper';
 import { AddonModAssignSubmissionDelegate } from '../../providers/submission-delegate';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
@@ -28,9 +30,9 @@ import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-comp
 export class AddonModAssignSubmissionPluginComponent implements OnInit {
     @ViewChild(CoreDynamicComponent) dynamicComponent: CoreDynamicComponent;
 
-    @Input() assign: any; // The assignment.
-    @Input() submission: any; // The submission.
-    @Input() plugin: any; // The plugin object.
+    @Input() assign: AddonModAssignAssign; // The assignment.
+    @Input() submission: AddonModAssignSubmission; // The submission.
+    @Input() plugin: AddonModAssignPlugin; // The plugin object.
     @Input() edit: boolean | string; // Whether the user is editing.
     @Input() allowOffline: boolean | string; // Whether to allow offline.
 

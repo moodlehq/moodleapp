@@ -17,7 +17,9 @@ import { IonicPage, Platform, NavController, NavParams, Content } from 'ionic-an
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
-import { AddonMessagesProvider } from '../../providers/messages';
+import {
+    AddonMessagesProvider, AddonMessagesConversationFormatted, AddonMessagesConversationMessage
+} from '../../providers/messages';
 import { AddonMessagesOfflineProvider } from '../../providers/messages-offline';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -45,19 +47,19 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     selectedConversationId: number;
     selectedUserId: number;
     contactRequestsCount = 0;
-    favourites: any = {
+    favourites: AddonMessagesGroupConversationOption = {
         type: null,
         favourites: true,
         count: 0,
-        unread: 0
+        unread: 0,
     };
-    group: any = {
+    group: AddonMessagesGroupConversationOption = {
         type: AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP,
         favourites: false,
         count: 0,
         unread: 0
     };
-    individual: any = {
+    individual: AddonMessagesGroupConversationOption = {
         type: AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL,
         favourites: false,
         count: 0,
@@ -331,7 +333,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      *
      * @return Promise resolved when done.
      */
-    protected fetchDataForExpandedOption(): Promise<any> {
+    protected fetchDataForExpandedOption(): Promise<void> {
         const expandedOption = this.getExpandedOption();
 
         if (expandedOption) {
@@ -349,12 +351,12 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @param getCounts Whether to get counts data.
      * @return Promise resolved when done.
      */
-    fetchDataForOption(option: any, loadingMore?: boolean, getCounts?: boolean): Promise<void> {
+    fetchDataForOption(option: AddonMessagesGroupConversationOption, loadingMore?: boolean, getCounts?: boolean): Promise<void> {
         option.loadMoreError = false;
 
         const limitFrom = loadingMore ? option.conversations.length : 0,
             promises = [];
-        let data,
+        let data: {conversations: AddonMessagesConversationForList[], canLoadMore: boolean},
             offlineMessages;
 
         // Get the conversations and, if needed, the offline messages. Always try to get the latest data.
@@ -422,7 +424,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @param option The option to search in. If not defined, search in all options.
      * @return Conversation.
      */
-    protected findConversation(conversationId: number, userId?: number, option?: any): any {
+    protected findConversation(conversationId: number, userId?: number, option?: AddonMessagesGroupConversationOption)
+            : AddonMessagesConversationForList {
+
         if (conversationId) {
             const conversations = option ? (option.conversations || []) : ((this.favourites.conversations || [])
                     .concat(this.group.conversations || []).concat(this.individual.conversations || []));
@@ -445,7 +449,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      *
      * @return Option currently expanded.
      */
-    protected getExpandedOption(): any {
+    protected getExpandedOption(): AddonMessagesGroupConversationOption {
         if (this.favourites.expanded) {
             return this.favourites;
         } else if (this.group.expanded) {
@@ -495,9 +499,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      *
      * @param option The option to fetch data for.
      * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
-     * @return Resolved when done.
+     * @return Promise resolved when done.
      */
-    loadMoreConversations(option: any, infiniteComplete?: any): Promise<any> {
+    loadMoreConversations(option: AddonMessagesGroupConversationOption, infiniteComplete?: any): Promise<void> {
         return this.fetchDataForOption(option, true).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
             option.loadMoreError = true;
@@ -513,7 +517,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @param messages Offline messages.
      * @return Promise resolved when done.
      */
-    protected loadOfflineMessages(option: any, messages: any[]): Promise<any> {
+    protected loadOfflineMessages(option: AddonMessagesGroupConversationOption, messages: any[]): Promise<any> {
         const promises = [];
 
         messages.forEach((message) => {
@@ -588,7 +592,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @param conversation Conversation where to put the last message.
      * @param message Offline message to add.
      */
-    protected addLastOfflineMessage(conversation: any, message: any): void {
+    protected addLastOfflineMessage(conversation: any, message: AddonMessagesConversationMessage): void {
         conversation.lastmessage = message.text;
         conversation.lastmessagedate = message.timecreated / 1000;
         conversation.lastmessagepending = true;
@@ -601,7 +605,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @param conversation Conversation to check.
      * @return Option object.
      */
-    protected getConversationOption(conversation: any): any {
+    protected getConversationOption(conversation: AddonMessagesConversationForList): AddonMessagesGroupConversationOption {
         if (conversation.isfavourite) {
             return this.favourites;
         } else if (conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP) {
@@ -618,7 +622,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @param refreshUnreadCounts Whether to refresh unread counts.
      * @return Promise resolved when done.
      */
-    refreshData(refresher?: any, refreshUnreadCounts: boolean = true): Promise<any> {
+    refreshData(refresher?: any, refreshUnreadCounts: boolean = true): Promise<void> {
         // Don't invalidate conversations and so, they always try to get latest data.
         const promises = [
             this.messagesProvider.invalidateContactRequestsCountCache(this.siteId)
@@ -638,7 +642,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      *
      * @param option The option to expand/collapse.
      */
-    toggle(option: any): void {
+    toggle(option: AddonMessagesGroupConversationOption): void {
         if (option.expanded) {
             // Already expanded, close it.
             option.expanded = false;
@@ -658,7 +662,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @param getCounts Whether to get counts data.
      * @return Promise resolved when done.
      */
-    protected expandOption(option: any, getCounts?: boolean): Promise<any> {
+    protected expandOption(option: AddonMessagesGroupConversationOption, getCounts?: boolean): Promise<void> {
         // Collapse all and expand the right one.
         this.favourites.expanded = false;
         this.group.expanded = false;
@@ -715,3 +719,25 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         this.memberInfoObserver && this.memberInfoObserver.off();
     }
 }
+
+/**
+ * Conversation options.
+ */
+export type AddonMessagesGroupConversationOption = {
+    type: number; // Option type.
+    favourites: boolean; // Whether it contains favourites conversations.
+    count: number; // Number of conversations.
+    unread?: number; // Number of unread conversations.
+    expanded?: boolean; // Whether the option is currently expanded.
+    loading?: boolean; // Whether the option is being loaded.
+    canLoadMore?: boolean; // Whether it can load more data.
+    loadMoreError?: boolean; // Whether there was an error loading more conversations.
+    conversations?: AddonMessagesConversationForList[]; // List of conversations.
+};
+
+/**
+ * Formatted conversation with some calculated data for the list.
+ */
+export type AddonMessagesConversationForList = AddonMessagesConversationFormatted & {
+    lastmessagepending?: boolean; // Calculated in the app. Whether last message is pending to be sent.
+};

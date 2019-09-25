@@ -18,7 +18,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreAppProvider } from '@providers/app';
 import { AddonMessagesOfflineProvider } from './messages-offline';
-import { AddonMessagesProvider } from './messages';
+import { AddonMessagesProvider, AddonMessagesConversationFormatted } from './messages';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -258,7 +258,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
                 // Get conversation name and add errors to warnings array.
                 return this.messagesProvider.getConversation(conversationId, false, false).catch(() => {
                     // Ignore errors.
-                    return {};
+                    return <AddonMessagesConversationFormatted> {};
                 }).then((conversation) => {
                     errors.forEach((error) => {
                         warnings.push(this.translate.instant('addon.messages.warningconversationmessagenotsent', {

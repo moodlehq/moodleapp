@@ -18,6 +18,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { AddonModAssignDefaultFeedbackHandler } from './default-feedback-handler';
+import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin } from './assign';
 
 /**
  * Interface that all feedback handlers must implement.
@@ -47,7 +48,7 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
      * @param plugin The plugin object.
      * @return The component (or promise resolved with component) to use, undefined if not found.
      */
-    getComponent?(injector: Injector, plugin: any): any | Promise<any>;
+    getComponent?(injector: Injector, plugin: AddonModAssignPlugin): any | Promise<any>;
 
     /**
      * Return the draft saved data of the feedback plugin.
@@ -69,7 +70,8 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
      * @param siteId Site ID. If not defined, current site.
      * @return The files (or promise resolved with the files).
      */
-    getPluginFiles?(assign: any, submission: any, plugin: any, siteId?: string): any[] | Promise<any[]>;
+    getPluginFiles?(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, siteId?: string): any[] | Promise<any[]>;
 
     /**
      * Get a readable name to use for the plugin.
@@ -77,7 +79,7 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
      * @param plugin The plugin object.
      * @return The plugin name.
      */
-    getPluginName?(plugin: any): string;
+    getPluginName?(plugin: AddonModAssignPlugin): string;
 
     /**
      * Check if the feedback data has changed for this plugin.
@@ -89,7 +91,8 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
      * @param userId User ID of the submission.
      * @return Boolean (or promise resolved with boolean): whether the data has changed.
      */
-    hasDataChanged?(assign: any, submission: any, plugin: any, inputData: any, userId: number): boolean | Promise<boolean>;
+    hasDataChanged?(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, inputData: any, userId: number): boolean | Promise<boolean>;
 
     /**
      * Check whether the plugin has draft data stored.
@@ -111,7 +114,8 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    prefetch?(assign: any, submission: any, plugin: any, siteId?: string): Promise<any>;
+    prefetch?(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, siteId?: string): Promise<any>;
 
     /**
      * Prepare and add to pluginData the data to send to the server based on the draft data saved.
@@ -123,7 +127,8 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
      * @param siteId Site ID. If not defined, current site.
      * @return If the function is async, it should return a Promise resolved when done.
      */
-    prepareFeedbackData?(assignId: number, userId: number, plugin: any, pluginData: any, siteId?: string): void | Promise<any>;
+    prepareFeedbackData?(assignId: number, userId: number, plugin: AddonModAssignPlugin, pluginData: any,
+            siteId?: string): void | Promise<any>;
 
     /**
      * Save draft data of the feedback plugin.
@@ -135,7 +140,8 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
      * @param siteId Site ID. If not defined, current site.
      * @return If the function is async, it should return a Promise resolved when done.
      */
-    saveDraft?(assignId: number, userId: number, plugin: any, data: any, siteId?: string): void | Promise<any>;
+    saveDraft?(assignId: number, userId: number, plugin: AddonModAssignPlugin, data: any, siteId?: string)
+            : void | Promise<any>;
 }
 
 /**
@@ -160,7 +166,8 @@ export class AddonModAssignFeedbackDelegate extends CoreDelegate {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    discardPluginFeedbackData(assignId: number, userId: number, plugin: any, siteId?: string): Promise<any> {
+    discardPluginFeedbackData(assignId: number, userId: number, plugin: AddonModAssignPlugin, siteId?: string)
+            : Promise<any> {
         return Promise.resolve(this.executeFunctionOnEnabled(plugin.type, 'discardDraft', [assignId, userId, siteId]));
     }
 
@@ -171,7 +178,7 @@ export class AddonModAssignFeedbackDelegate extends CoreDelegate {
      * @param plugin The plugin object.
      * @return Promise resolved with the component to use, undefined if not found.
      */
-    getComponentForPlugin(injector: Injector, plugin: any): Promise<any> {
+    getComponentForPlugin(injector: Injector, plugin: AddonModAssignPlugin): Promise<any> {
         return Promise.resolve(this.executeFunctionOnEnabled(plugin.type, 'getComponent', [injector, plugin]));
     }
 
@@ -184,7 +191,8 @@ export class AddonModAssignFeedbackDelegate extends CoreDelegate {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the draft data.
      */
-    getPluginDraftData(assignId: number, userId: number, plugin: any, siteId?: string): Promise<any> {
+    getPluginDraftData(assignId: number, userId: number, plugin: AddonModAssignPlugin, siteId?: string)
+            : Promise<any> {
         return Promise.resolve(this.executeFunctionOnEnabled(plugin.type, 'getDraft', [assignId, userId, siteId]));
     }
 
@@ -198,7 +206,8 @@ export class AddonModAssignFeedbackDelegate extends CoreDelegate {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the files.
      */
-    getPluginFiles(assign: any, submission: any, plugin: any, siteId?: string): Promise<any[]> {
+    getPluginFiles(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, siteId?: string): Promise<any[]> {
         return Promise.resolve(this.executeFunctionOnEnabled(plugin.type, 'getPluginFiles', [assign, submission, plugin, siteId]));
     }
 
@@ -208,7 +217,7 @@ export class AddonModAssignFeedbackDelegate extends CoreDelegate {
      * @param plugin Plugin to get the name for.
      * @return Human readable name.
      */
-    getPluginName(plugin: any): string {
+    getPluginName(plugin: AddonModAssignPlugin): string {
         return this.executeFunctionOnEnabled(plugin.type, 'getPluginName', [plugin]);
     }
 
@@ -222,7 +231,8 @@ export class AddonModAssignFeedbackDelegate extends CoreDelegate {
      * @param userId User ID of the submission.
      * @return Promise resolved with true if data has changed, resolved with false otherwise.
      */
-    hasPluginDataChanged(assign: any, submission: any, plugin: any, inputData: any, userId: number): Promise<boolean> {
+    hasPluginDataChanged(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, inputData: any, userId: number): Promise<boolean> {
         return Promise.resolve(this.executeFunctionOnEnabled(plugin.type, 'hasDataChanged',
                 [assign, submission, plugin, inputData, userId]));
     }
@@ -236,7 +246,8 @@ export class AddonModAssignFeedbackDelegate extends CoreDelegate {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with true if it has draft data.
      */
-    hasPluginDraftData(assignId: number, userId: number, plugin: any, siteId?: string): Promise<boolean> {
+    hasPluginDraftData(assignId: number, userId: number, plugin: AddonModAssignPlugin, siteId?: string)
+            : Promise<boolean> {
         return Promise.resolve(this.executeFunctionOnEnabled(plugin.type, 'hasDraftData', [assignId, userId, siteId]));
     }
 
@@ -259,7 +270,8 @@ export class AddonModAssignFeedbackDelegate extends CoreDelegate {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    prefetch(assign: any, submission: any, plugin: any, siteId?: string): Promise<any> {
+    prefetch(assign: AddonModAssignAssign, submission: AddonModAssignSubmission, plugin: AddonModAssignPlugin,
+            siteId?: string): Promise<any> {
         return Promise.resolve(this.executeFunctionOnEnabled(plugin.type, 'prefetch', [assign, submission, plugin, siteId]));
     }
 
@@ -273,7 +285,8 @@ export class AddonModAssignFeedbackDelegate extends CoreDelegate {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when data has been gathered.
      */
-    preparePluginFeedbackData(assignId: number, userId: number, plugin: any, pluginData: any, siteId?: string): Promise<any> {
+    preparePluginFeedbackData(assignId: number, userId: number, plugin: AddonModAssignPlugin, pluginData: any,
+            siteId?: string): Promise<any> {
 
         return Promise.resolve(this.executeFunctionOnEnabled(plugin.type, 'prepareFeedbackData',
                 [assignId, userId, plugin, pluginData, siteId]));
@@ -289,7 +302,8 @@ export class AddonModAssignFeedbackDelegate extends CoreDelegate {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when data has been saved.
      */
-    saveFeedbackDraft(assignId: number, userId: number, plugin: any, inputData: any, siteId?: string): Promise<any> {
+    saveFeedbackDraft(assignId: number, userId: number, plugin: AddonModAssignPlugin, inputData: any,
+            siteId?: string): Promise<any> {
         return Promise.resolve(this.executeFunctionOnEnabled(plugin.type, 'saveDraft',
                 [assignId, userId, plugin, inputData, siteId]));
     }

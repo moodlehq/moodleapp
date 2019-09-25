@@ -14,7 +14,9 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
-import { AddonModAssignProvider } from '../../../providers/assign';
+import {
+    AddonModAssignProvider, AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin
+} from '../../../providers/assign';
 import { AddonModAssignFeedbackHandler } from '../../../providers/feedback-delegate';
 import { AddonModAssignFeedbackEditPdfComponent } from '../component/editpdf';
 
@@ -29,14 +31,14 @@ export class AddonModAssignFeedbackEditPdfHandler implements AddonModAssignFeedb
     constructor(private assignProvider: AddonModAssignProvider) { }
 
     /**
-     * Return the Component to use to display the plugin data, either in read or in edit mode.
+     * Return the Component to use to display the plugin data.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
      * @param injector Injector.
      * @param plugin The plugin object.
      * @return The component (or promise resolved with component) to use, undefined if not found.
      */
-    getComponent(injector: Injector, plugin: any): any | Promise<any> {
+    getComponent(injector: Injector, plugin: AddonModAssignPlugin): any | Promise<any> {
         return AddonModAssignFeedbackEditPdfComponent;
     }
 
@@ -50,7 +52,8 @@ export class AddonModAssignFeedbackEditPdfHandler implements AddonModAssignFeedb
      * @param siteId Site ID. If not defined, current site.
      * @return The files (or promise resolved with the files).
      */
-    getPluginFiles(assign: any, submission: any, plugin: any, siteId?: string): any[] | Promise<any[]> {
+    getPluginFiles(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, siteId?: string): any[] | Promise<any[]> {
         return this.assignProvider.getSubmissionPluginAttachments(plugin);
     }
 

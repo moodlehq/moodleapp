@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreWSExternalWarning } from '@providers/ws';
 import { CoreSite } from '@classes/site';
 
 /**
@@ -70,7 +71,7 @@ export class AddonBadgesProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise to be resolved when the badges are retrieved.
      */
-    getUserBadges(courseId: number, userId: number, siteId?: string): Promise<any> {
+    getUserBadges(courseId: number, userId: number, siteId?: string): Promise<AddonBadgesUserBadge[]> {
 
         this.logger.debug('Get badges for course ' + courseId);
 
@@ -85,8 +86,13 @@ export class AddonBadgesProvider {
                     updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
-            return site.read('core_badges_get_user_badges', data, preSets).then((response) => {
+            return site.read('core_badges_get_user_badges', data, preSets).then((response: AddonBadgesGetUserBadgesResult): any => {
                 if (response && response.badges) {
+                    // In 3.7, competencies was renamed to alignment. Rename the property in 3.6 too.
+                    response.badges.forEach((badge) => {
+                        badge.alignment = badge.alignment || badge.competencies;
+                    });
+
                     return response.badges;
                 } else {
                     return Promise.reject(null);
@@ -110,3 +116,85 @@ export class AddonBadgesProvider {
         });
     }
 }
+
+/**
+ * Result of WS core_badges_get_user_badges.
+ */
+export type AddonBadgesGetUserBadgesResult = {
+    badges: AddonBadgesUserBadge[]; // List of badges.
+    warnings?: CoreWSExternalWarning[]; // List of warnings.
+};
+
+/**
+ * Badge data returned by WS core_badges_get_user_badges.
+ */
+export type AddonBadgesUserBadge = {
+    id?: number; // Badge id.
+    name: string; // Badge name.
+    description: string; // Badge description.
+    timecreated?: number; // Time created.
+    timemodified?: number; // Time modified.
+    usercreated?: number; // User created.
+    usermodified?: number; // User modified.
+    issuername: string; // Issuer name.
+    issuerurl: string; // Issuer URL.
+    issuercontact: string; // Issuer contact.
+    expiredate?: number; // Expire date.
+    expireperiod?: number; // Expire period.
+    type?: number; // Type.
+    courseid?: number; // Course id.
+    message?: string; // Message.
+    messagesubject?: string; // Message subject.
+    attachment?: number; // Attachment.
+    notification?: number; // @since 3.6. Whether to notify when badge is awarded.
+    nextcron?: number; // @since 3.6. Next cron.
+    status?: number; // Status.
+    issuedid?: number; // Issued id.
+    uniquehash: string; // Unique hash.
+    dateissued: number; // Date issued.
+    dateexpire: number; // Date expire.
+    visible?: number; // Visible.
+    email?: string; // @since 3.6. User email.
+    version?: string; // @since 3.6. Version.
+    language?: string; // @since 3.6. Language.
+    imageauthorname?: string; // @since 3.6. Name of the image author.
+    imageauthoremail?: string; // @since 3.6. Email of the image author.
+    imageauthorurl?: string; // @since 3.6. URL of the image author.
+    imagecaption?: string; // @since 3.6. Caption of the image.
+    badgeurl: string; // Badge URL.
+    endorsement?: { // @since 3.6.
+        id: number; // Endorsement id.
+        badgeid: number; // Badge id.
+        issuername: string; // Endorsement issuer name.
+        issuerurl: string; // Endorsement issuer URL.
+        issueremail: string; // Endorsement issuer email.
+        claimid: string; // Claim URL.
+        claimcomment: string; // Claim comment.
+        dateissued: number; // Date issued.
+    };
+    alignment?: { // @since 3.7. Calculated by the app for 3.6 sites. Badge alignments.
+        id?: number; // Alignment id.
+        badgeid?: number; // Badge id.
+        targetName?: string; // Target name.
+        targetUrl?: string; // Target URL.
+        targetDescription?: string; // Target description.
+        targetFramework?: string; // Target framework.
+        targetCode?: string; // Target code.
+    }[];
+    competencies?: { // @deprecated from 3.7. @since 3.6. In 3.7 it was renamed to alignment.
+        id?: number; // Alignment id.
+        badgeid?: number; // Badge id.
+        targetName?: string; // Target name.
+        targetUrl?: string; // Target URL.
+        targetDescription?: string; // Target description.
+        targetFramework?: string; // Target framework.
+        targetCode?: string; // Target code.
+    }[];
+    relatedbadges?: { // @since 3.6. Related badges.
+        id: number; // Badge id.
+        name: string; // Badge name.
+        version?: string; // Version.
+        language?: string; // Language.
+        type?: number; // Type.
+    }[];
+};

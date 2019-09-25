@@ -19,7 +19,7 @@ import { AddonModUrlIndexComponent } from '../components/index/index';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
-import { AddonModUrlProvider } from './url';
+import { AddonModUrlProvider, AddonModUrlUrl } from './url';
 import { AddonModUrlHelperProvider } from './helper';
 import { CoreConstants } from '@core/constants';
 
@@ -90,7 +90,8 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
                     if (handler.urlProvider.isGetUrlWSAvailable()) {
                         return handler.urlProvider.getUrl(courseId, module.id).catch(() => {
                             // Ignore errors.
-                        }).then((url) => {
+                            return undefined;
+                        }).then((url: AddonModUrlUrl) => {
                             const displayType = handler.urlProvider.getFinalDisplayType(url);
 
                             return displayType == CoreConstants.RESOURCELIB_DISPLAY_OPEN ||

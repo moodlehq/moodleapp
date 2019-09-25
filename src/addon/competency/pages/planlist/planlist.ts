@@ -16,7 +16,7 @@ import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { AddonCompetencyProvider } from '../../providers/competency';
+import { AddonCompetencyProvider, AddonCompetencyPlan } from '../../providers/competency';
 import { AddonCompetencyHelperProvider } from '../../providers/helper';
 
 /**
@@ -33,7 +33,7 @@ export class AddonCompetencyPlanListPage {
     protected userId: number;
     protected planId: number;
     plansLoaded = false;
-    plans = [];
+    plans: AddonCompetencyPlan[] = [];
 
     constructor(navParams: NavParams, private domUtils: CoreDomUtilsProvider, private competencyProvider: AddonCompetencyProvider,
             private competencyHelperProvider: AddonCompetencyHelperProvider) {
@@ -66,7 +66,7 @@ export class AddonCompetencyPlanListPage {
      */
     protected fetchLearningPlans(): Promise<void> {
         return this.competencyProvider.getLearningPlans(this.userId).then((plans) => {
-            plans.forEach((plan) => {
+            plans.forEach((plan: AddonCompetencyPlanFormatted) => {
                 plan.statusname = this.competencyHelperProvider.getPlanStatusName(plan.status);
                 switch (plan.status) {
                     case AddonCompetencyProvider.STATUS_ACTIVE:
@@ -109,3 +109,10 @@ export class AddonCompetencyPlanListPage {
         this.splitviewCtrl.push('AddonCompetencyPlanPage', { planId });
     }
 }
+
+/**
+ * Competency plan with some calculated data.
+ */
+type AddonCompetencyPlanFormatted = AddonCompetencyPlan & {
+    statuscolor?: string; // Calculated in the app. Color of the plan's status.
+};

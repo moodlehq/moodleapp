@@ -19,7 +19,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { AddonCalendarProvider } from '../../providers/calendar';
+import { AddonCalendarProvider, AddonCalendarWeek } from '../../providers/calendar';
 import { AddonCalendarHelperProvider } from '../../providers/helper';
 import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
@@ -44,7 +44,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, OnDest
 
     periodName: string;
     weekDays: any[];
-    weeks: any[];
+    weeks: AddonCalendarWeek[];
     loaded = false;
     timeFormat: string;
     isCurrentMonth: boolean;

@@ -1135,3 +1135,38 @@ export class CoreCourseProvider {
         }, siteId);
     }
 }
+
+/**
+ * Data returned by course_summary_exporter.
+ */
+export type CoreCourseSummary = {
+    id: number; // Id.
+    fullname: string; // Fullname.
+    shortname: string; // Shortname.
+    idnumber: string; // Idnumber.
+    summary: string; // @since 3.3. Summary.
+    summaryformat: number; // @since 3.3. Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    startdate: number; // @since 3.3. Startdate.
+    enddate: number; // @since 3.3. Enddate.
+    visible: boolean; // @since 3.8. Visible.
+    fullnamedisplay: string; // @since 3.3. Fullnamedisplay.
+    viewurl: string; // Viewurl.
+    courseimage: string; // @since 3.6. Courseimage.
+    progress?: number; // @since 3.6. Progress.
+    hasprogress: boolean; // @since 3.6. Hasprogress.
+    isfavourite: boolean; // @since 3.6. Isfavourite.
+    hidden: boolean; // @since 3.6. Hidden.
+    timeaccess?: number; // @since 3.6. Timeaccess.
+    showshortname: boolean; // @since 3.6. Showshortname.
+    coursecategory: string; // @since 3.7. Coursecategory.
+};
+
+/**
+ * Data returned by course_module_summary_exporter.
+ */
+export type CoreCourseModuleSummary = {
+    id: number; // Id.
+    name: string; // Name.
+    url?: string; // Url.
+    iconurl: string; // Iconurl.
+};

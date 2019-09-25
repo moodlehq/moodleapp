@@ -36,14 +36,14 @@
 
         <ng-container *ngFor="let question of questions; let index=index; let isEven=even;">
             <!-- Parent question (Category header) -->
-            <div *ngIf="question.multi && question.multi.length" [attr.padding-top]="index == 1">
+            <div *ngIf="question.multiArray && question.multiArray.length" [attr.padding-top]="index == 1">
                 <h3 padding-horizontal>{{ question.text }}</h3>
                 <ion-grid no-padding>
                     <ion-row no-padding align-items-center class="hidden-phone">
                         <ion-col col-7>
                             <div padding>{{ 'addon.mod_survey.responses' | translate }}</div>
                         </ion-col>
-                        <ion-col text-center *ngFor="let option of question.options">
+                        <ion-col text-center *ngFor="let option of question.optionsArray">
                             <div padding>{{ option }}</div>
                         </ion-col>
                     </ion-row>
@@ -61,20 +61,20 @@
                     </ion-col>
 
                     <!-- Tablet view: radio buttons -->
-                    <ion-col class="hidden-phone" text-center *ngFor="let option of question.options; let value=index;">
+                    <ion-col class="hidden-phone" text-center *ngFor="let option of question.optionsArray; let value=index;">
                         <ion-radio [value]="value + 1" [attr.aria-labelledby]="'addon-mod_survey-'+question.name"></ion-radio>
                     </ion-col>
                     <ion-col class="hidden-tablet">
                         <ion-select padding [(ngModel)]="answers[question.name]" [attr.aria-labelledby]="'addon-mod_survey-'+question.name" interface="action-sheet" [required]="question.required">
                             <ion-option value="-1" selected disabled>{{ 'core.choose' | translate }}</ion-option>
-                            <ion-option *ngFor="let option of question.options; let value=index;" [value]="value +1">{{option}}</ion-option>
+                            <ion-option *ngFor="let option of question.optionsArray; let value=index;" [value]="value +1">{{option}}</ion-option>
                         </ion-select>
                     </ion-col>
                 </ion-row>
             </ion-grid>
 
             <!-- Single question (don't belong to a category) -->
-            <ng-container *ngIf="(!question.multi || question.multi.length == 0) && question.parent === 0">
+            <ng-container *ngIf="(!question.multiArray || question.multiArray.length == 0) && question.parent === 0">
                 <ion-grid no-padding text-wrap *ngIf="question.type > 0" [class.even]="isEven">
                     <ion-row no-padding align-items-center>
                         <ion-col col-7>
@@ -82,7 +82,7 @@
                         </ion-col>
                         <ion-col col-5>
                             <ion-select padding [(ngModel)]="answers[question.name]" [attr.aria-labelledby]="'addon-mod_survey-'+question.name" interface="action-sheet" [required]="question.required">
-                            <ion-option *ngFor="let option of question.options; let value=index;" [value]="value">{{option}}</ion-option>
+                            <ion-option *ngFor="let option of question.optionsArray; let value=index;" [value]="value">{{option}}</ion-option>
                         </ion-select>
                         </ion-col>
                     </ion-row>

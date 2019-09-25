@@ -15,6 +15,7 @@
 import { Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AddonModAssignSubmissionHandler } from '../providers/submission-delegate';
+import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin } from '../providers/assign';
 
 /**
  * Base handler for submission plugins.
@@ -38,7 +39,8 @@ export class AddonModAssignBaseSubmissionHandler implements AddonModAssignSubmis
      * @param plugin The plugin object.
      * @return Boolean or promise resolved with boolean: whether it can be edited in offline.
      */
-    canEditOffline(assign: any, submission: any, plugin: any): boolean | Promise<boolean> {
+    canEditOffline(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin): boolean | Promise<boolean> {
         return false;
     }
 
@@ -50,7 +52,8 @@ export class AddonModAssignBaseSubmissionHandler implements AddonModAssignSubmis
      * @param plugin The plugin object.
      * @param inputData Data entered by the user for the submission.
      */
-    clearTmpData(assign: any, submission: any, plugin: any, inputData: any): void {
+    clearTmpData(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, inputData: any): void {
         // Nothing to do.
     }
 
@@ -65,7 +68,8 @@ export class AddonModAssignBaseSubmissionHandler implements AddonModAssignSubmis
      * @param siteId Site ID. If not defined, current site.
      * @return If the function is async, it should return a Promise resolved when done.
      */
-    copySubmissionData(assign: any, plugin: any, pluginData: any, userId?: number, siteId?: string): void | Promise<any> {
+    copySubmissionData(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin, pluginData: any,
+            userId?: number, siteId?: string): void | Promise<any> {
         // Nothing to do.
     }
 
@@ -79,7 +83,8 @@ export class AddonModAssignBaseSubmissionHandler implements AddonModAssignSubmis
      * @param siteId Site ID. If not defined, current site.
      * @return If the function is async, it should return a Promise resolved when done.
      */
-    deleteOfflineData(assign: any, submission: any, plugin: any, offlineData: any, siteId?: string): void | Promise<any> {
+    deleteOfflineData(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, offlineData: any, siteId?: string): void | Promise<any> {
         // Nothing to do.
     }
 
@@ -92,7 +97,7 @@ export class AddonModAssignBaseSubmissionHandler implements AddonModAssignSubmis
      * @param edit Whether the user is editing.
      * @return The component (or promise resolved with component) to use, undefined if not found.
      */
-    getComponent(injector: Injector, plugin: any, edit?: boolean): any | Promise<any> {
+    getComponent(injector: Injector, plugin: AddonModAssignPlugin, edit?: boolean): any | Promise<any> {
         // Nothing to do.
     }
 
@@ -106,7 +111,8 @@ export class AddonModAssignBaseSubmissionHandler implements AddonModAssignSubmis
      * @param siteId Site ID. If not defined, current site.
      * @return The files (or promise resolved with the files).
      */
-    getPluginFiles(assign: any, submission: any, plugin: any, siteId?: string): any[] | Promise<any[]> {
+    getPluginFiles(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, siteId?: string): any[] | Promise<any[]> {
         return [];
     }
 
@@ -116,7 +122,7 @@ export class AddonModAssignBaseSubmissionHandler implements AddonModAssignSubmis
      * @param plugin The plugin object.
      * @return The plugin name.
      */
-    getPluginName(plugin: any): string {
+    getPluginName(plugin: AddonModAssignPlugin): string {
         // Check if there's a translated string for the plugin.
         const translationId = 'addon.mod_assign_submission_' + plugin.type + '.pluginname',
             translation = this.translate.instant(translationId);
@@ -139,7 +145,7 @@ export class AddonModAssignBaseSubmissionHandler implements AddonModAssignSubmis
      * @param plugin The plugin object.
      * @return The size (or promise resolved with size).
      */
-    getSizeForCopy(assign: any, plugin: any): number | Promise<number> {
+    getSizeForCopy(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): number | Promise<number> {
         return 0;
     }
 
@@ -147,10 +153,12 @@ export class AddonModAssignBaseSubmissionHandler implements AddonModAssignSubmis
      * Get the size of data (in bytes) this plugin will send to add or edit a submission.
      *
      * @param assign The assignment.
+     * @param submission The submission.
      * @param plugin The plugin object.
      * @return The size (or promise resolved with size).
      */
-    getSizeForEdit(assign: any, plugin: any): number | Promise<number> {
+    getSizeForEdit(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, inputData: any): number | Promise<number> {
         return 0;
     }
 
@@ -163,7 +171,8 @@ export class AddonModAssignBaseSubmissionHandler implements AddonModAssignSubmis
      * @param inputData Data entered by the user for the submission.
      * @return Boolean (or promise resolved with boolean): whether the data has changed.
      */
-    hasDataChanged(assign: any, submission: any, plugin: any, inputData: any): boolean | Promise<boolean> {
+    hasDataChanged(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, inputData: any): boolean | Promise<boolean> {
         return false;
     }
 
@@ -194,7 +203,8 @@ export class AddonModAssignBaseSubmissionHandler implements AddonModAssignSubmis
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    prefetch(assign: any, submission: any, plugin: any, siteId?: string): Promise<any> {
+    prefetch?(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, siteId?: string): Promise<any> {
         return Promise.resolve();
     }
 
@@ -211,7 +221,8 @@ export class AddonModAssignBaseSubmissionHandler implements AddonModAssignSubmis
      * @param siteId Site ID. If not defined, current site.
      * @return If the function is async, it should return a Promise resolved when done.
      */
-    prepareSubmissionData?(assign: any, submission: any, plugin: any, inputData: any, pluginData: any, offline?: boolean,
+    prepareSubmissionData(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, inputData: any, pluginData: any, offline?: boolean,
             userId?: number, siteId?: string): void | Promise<any> {
         // Nothing to do.
     }
@@ -228,8 +239,8 @@ export class AddonModAssignBaseSubmissionHandler implements AddonModAssignSubmis
      * @param siteId Site ID. If not defined, current site.
      * @return If the function is async, it should return a Promise resolved when done.
      */
-    prepareSyncData?(assign: any, submission: any, plugin: any, offlineData: any, pluginData: any, siteId?: string)
-            : void | Promise<any> {
+    prepareSyncData(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, offlineData: any, pluginData: any, siteId?: string): void | Promise<any> {
         // Nothing to do.
     }
 }

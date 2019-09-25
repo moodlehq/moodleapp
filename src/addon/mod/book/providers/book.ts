@@ -25,38 +25,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreSite } from '@classes/site';
 import { CoreTagItem } from '@core/tag/providers/tag';
-
-/**
- * A book chapter inside the toc list.
- */
-export interface AddonModBookTocChapter {
-    /**
-     * ID to identify the chapter.
-     */
-    id: string;
-
-    /**
-     * Chapter's title.
-     */
-    title: string;
-
-    /**
-     * The chapter's level.
-     */
-    level: number;
-}
-
-/**
- * Map of book contents. For each chapter it has its index URL and the list of paths of the files the chapter has. Each path
- * is identified by the relative path in the book, and the value is the URL of the file.
- */
-export type AddonModBookContentsMap = {
-    [chapter: string]: {
-        indexUrl?: string,
-        paths: {[path: string]: string},
-        tags?: CoreTagItem[]
-    }
-};
+import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
 
 /**
  * Service that provides some features for books.
@@ -83,7 +52,7 @@ export class AddonModBookProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the book is retrieved.
      */
-    getBook(courseId: number, cmId: number, siteId?: string): Promise<any> {
+    getBook(courseId: number, cmId: number, siteId?: string): Promise<AddonModBookBook> {
         return this.getBookByField(courseId, 'coursemodule', cmId, siteId);
     }
 
@@ -96,7 +65,7 @@ export class AddonModBookProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the book is retrieved.
      */
-    protected getBookByField(courseId: number, key: string, value: any, siteId?: string): Promise<any> {
+    protected getBookByField(courseId: number, key: string, value: any, siteId?: string): Promise<AddonModBookBook> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     courseids: [courseId]
@@ -106,7 +75,9 @@ export class AddonModBookProvider {
                     updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
-            return site.read('mod_book_get_books_by_courses', params, preSets).then((response) => {
+            return site.read('mod_book_get_books_by_courses', params, preSets)
+                    .then((response: AddonModBookGetBooksByCoursesResult): any => {
+
                 // Search the book.
                 if (response && response.books) {
                     for (const i in response.books) {
@@ -401,3 +372,66 @@ export class AddonModBookProvider {
                 {chapterid: chapterId}, siteId);
     }
 }
+
+/**
+ * A book chapter inside the toc list.
+ */
+export type AddonModBookTocChapter = {
+    /**
+     * ID to identify the chapter.
+     */
+    id: string;
+
+    /**
+     * Chapter's title.
+     */
+    title: string;
+
+    /**
+     * The chapter's level.
+     */
+    level: number;
+};
+
+/**
+ * Map of book contents. For each chapter it has its index URL and the list of paths of the files the chapter has. Each path
+ * is identified by the relative path in the book, and the value is the URL of the file.
+ */
+export type AddonModBookContentsMap = {
+    [chapter: string]: {
+        indexUrl?: string,
+        paths: {[path: string]: string},
+        tags?: CoreTagItem[]
+    }
+};
+
+/**
+ * Book returned by mod_book_get_books_by_courses.
+ */
+export type AddonModBookBook = {
+    id: number; // Book id.
+    coursemodule: number; // Course module id.
+    course: number; // Course id.
+    name: string; // Book name.
+    intro: string; // The Book intro.
+    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introfiles?: CoreWSExternalFile[]; // @since 3.2.
+    numbering: number; // Book numbering configuration.
+    navstyle: number; // Book navigation style configuration.
+    customtitles: number; // Book custom titles type.
+    revision?: number; // Book revision.
+    timecreated?: number; // Time of creation.
+    timemodified?: number; // Time of last modification.
+    section?: number; // Course section id.
+    visible?: boolean; // Visible.
+    groupmode?: number; // Group mode.
+    groupingid?: number; // Group id.
+};
+
+/**
+ * Result of WS mod_book_get_books_by_courses.
+ */
+export type AddonModBookGetBooksByCoursesResult = {
+    books: AddonModBookBook[];
+    warnings?: CoreWSExternalWarning[];
+};

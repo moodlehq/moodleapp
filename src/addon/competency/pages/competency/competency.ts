@@ -18,8 +18,14 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { AddonCompetencyProvider } from '../../providers/competency';
+import {
+    AddonCompetencyProvider, AddonCompetencyUserCompetencySummary, AddonCompetencyUserCompetencySummaryInPlan,
+    AddonCompetencyUserCompetencySummaryInCourse, AddonCompetencyUserCompetencyPlan,
+    AddonCompetencyUserCompetency, AddonCompetencyUserCompetencyCourse
+} from '../../providers/competency';
 import { AddonCompetencyHelperProvider } from '../../providers/helper';
+import { CoreUserSummary } from '@core/user/providers/user';
+import { CoreCourseModuleSummary } from '@core/course/providers/course';
 
 /**
  * Page that displays a learning plan.
@@ -36,9 +42,10 @@ export class AddonCompetencyCompetencyPage {
     courseId: number;
     userId: number;
     planStatus: number;
-    coursemodules: any;
-    user: any;
-    competency: any;
+    coursemodules: CoreCourseModuleSummary[];
+    user: CoreUserSummary;
+    competency: AddonCompetencyUserCompetencySummary;
+    userCompetency: AddonCompetencyUserCompetencyPlan | AddonCompetencyUserCompetency | AddonCompetencyUserCompetencyCourse;
 
     constructor(private navCtrl: NavController, navParams: NavParams, private translate: TranslateService,
             private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
@@ -79,7 +86,8 @@ export class AddonCompetencyCompetencyPage {
      * @return Promise resolved when done.
      */
     protected fetchCompetency(): Promise<void> {
-        let promise;
+        let promise: Promise<AddonCompetencyUserCompetencySummaryInPlan | AddonCompetencyUserCompetencySummaryInCourse>;
+
         if (this.planId) {
             this.planStatus = null;
             promise = this.competencyProvider.getCompetencyInPlan(this.planId, this.competencyId);
@@ -90,23 +98,21 @@ export class AddonCompetencyCompetencyPage {
         }
 
         return promise.then((competency) => {
-            competency.usercompetencysummary.usercompetency = competency.usercompetencysummary.usercompetencyplan ||
-                competency.usercompetencysummary.usercompetency;
+
             this.competency = competency.usercompetencysummary;
+            this.userCompetency = this.competency.usercompetencyplan || this.competency.usercompetency;
 
             if (this.planId) {
-                this.planStatus = competency.plan.status;
+                this.planStatus = (<AddonCompetencyUserCompetencySummaryInPlan> competency).plan.status;
                 this.competency.usercompetency.statusname =
                     this.competencyHelperProvider.getCompetencyStatusName(this.competency.usercompetency.status);
             } else {
-                this.competency.usercompetency = this.competency.usercompetencycourse;
-                this.coursemodules = competency.coursemodules;
+                this.userCompetency = this.competency.usercompetencycourse;
+                this.coursemodules = (<AddonCompetencyUserCompetencySummaryInCourse> competency).coursemodules;
             }
 
             if (this.competency.user.id != this.sitesProvider.getCurrentSiteUserId()) {
-                this.competency.user.profileimageurl = this.competency.user.profileimageurl || true;
-
-                // Get the user profile image from the returned object.
+                // Get the user profile from the returned object.
                 this.user = this.competency.user;
             }
 

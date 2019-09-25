@@ -17,7 +17,10 @@ import { IonicPage, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { AddonCompetencyProvider } from '../../providers/competency';
+import {
+    AddonCompetencyProvider, AddonCompetencyDataForCourseCompetenciesPageResult, AddonCompetencyDataForPlanPageResult,
+    AddonCompetencyDataForPlanPageCompetency, AddonCompetencyDataForCourseCompetenciesPageCompetency
+} from '../../providers/competency';
 
 /**
  * Page that displays the list of competencies of a learning plan.
@@ -36,7 +39,7 @@ export class AddonCompetencyCompetenciesPage {
     protected userId: number;
 
     competenciesLoaded = false;
-    competencies = [];
+    competencies: AddonCompetencyDataForPlanPageCompetency[] | AddonCompetencyDataForCourseCompetenciesPageCompetency[] = [];
     title: string;
 
     constructor(navParams: NavParams, private translate: TranslateService, private domUtils: CoreDomUtilsProvider,
@@ -59,7 +62,7 @@ export class AddonCompetencyCompetenciesPage {
         this.fetchCompetencies().then(() => {
             if (!this.competencyId && this.splitviewCtrl.isOn() && this.competencies.length > 0) {
                 // Take first and load it.
-                this.openCompetency(this.competencies[0].id);
+                this.openCompetency(this.competencies[0].competency.id);
             }
         }).finally(() => {
             this.competenciesLoaded = true;
@@ -72,7 +75,7 @@ export class AddonCompetencyCompetenciesPage {
      * @return Promise resolved when done.
      */
     protected fetchCompetencies(): Promise<void> {
-        let promise;
+        let promise: Promise<AddonCompetencyDataForPlanPageResult | AddonCompetencyDataForCourseCompetenciesPageResult>;
 
         if (this.planId) {
             promise = this.competencyProvider.getLearningPlan(this.planId);
@@ -83,13 +86,16 @@ export class AddonCompetencyCompetenciesPage {
         }
 
         return promise.then((response) => {
-            if (response.competencycount <= 0) {
-                return Promise.reject(this.translate.instant('addon.competency.errornocompetenciesfound'));
-            }
 
             if (this.planId) {
-                this.title = response.plan.name;
-                this.userId = response.plan.userid;
+                const resp = <AddonCompetencyDataForPlanPageResult> response;
+
+                if (resp.competencycount <= 0) {
+                    return Promise.reject(this.translate.instant('addon.competency.errornocompetenciesfound'));
+                }
+
+                this.title = resp.plan.name;
+                this.userId = resp.plan.userid;
             } else {
                 this.title = this.translate.instant('addon.competency.coursecompetencies');
             }

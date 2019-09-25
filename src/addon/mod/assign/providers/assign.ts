@@ -27,6 +27,7 @@ import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { AddonModAssignOfflineProvider } from './assign-offline';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreInterceptor } from '@classes/interceptor';
+import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
 
 /**
  * Service that provides some functions for assign.
@@ -123,7 +124,7 @@ export class AddonModAssignProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the assignment.
      */
-    getAssignment(courseId: number, cmId: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
+    getAssignment(courseId: number, cmId: number, ignoreCache?: boolean, siteId?: string): Promise<AddonModAssignAssign> {
         return this.getAssignmentByField(courseId, 'cmid', cmId, ignoreCache, siteId);
     }
 
@@ -138,7 +139,7 @@ export class AddonModAssignProvider {
      * @return Promise resolved when the assignment is retrieved.
      */
     protected getAssignmentByField(courseId: number, key: string, value: any, ignoreCache?: boolean, siteId?: string)
-            : Promise<any> {
+            : Promise<AddonModAssignAssign> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
@@ -161,7 +162,7 @@ export class AddonModAssignProvider {
                 delete params.includenotenrolledcourses;
 
                 return site.read('mod_assign_get_assignments', params, preSets);
-            }).then((response) => {
+            }).then((response: AddonModAssignGetAssignmentsResult): any => {
                 // Search the assignment to return.
                 if (response.courses && response.courses.length) {
                     const assignments = response.courses[0].assignments;
@@ -187,7 +188,7 @@ export class AddonModAssignProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the assignment.
      */
-    getAssignmentById(courseId: number, id: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
+    getAssignmentById(courseId: number, id: number, ignoreCache?: boolean, siteId?: string): Promise<AddonModAssignAssign> {
         return this.getAssignmentByField(courseId, 'id', id, ignoreCache, siteId);
     }
 
@@ -225,7 +226,9 @@ export class AddonModAssignProvider {
                 preSets.emergencyCache = false;
             }
 
-            return site.read('mod_assign_get_user_mappings', params, preSets).then((response) => {
+            return site.read('mod_assign_get_user_mappings', params, preSets)
+                    .then((response: AddonModAssignGetUserMappingsResult): any => {
+
                 // Search the user.
                 if (response.assignments && response.assignments.length) {
                     if (!userId || userId < 0) {
@@ -271,7 +274,7 @@ export class AddonModAssignProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Resolved with requested info when done.
      */
-    getAssignmentGrades(assignId: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
+    getAssignmentGrades(assignId: number, ignoreCache?: boolean, siteId?: string): Promise<AddonModAssignGrade[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     assignmentids: [assignId]
@@ -285,7 +288,7 @@ export class AddonModAssignProvider {
                 preSets.emergencyCache = false;
             }
 
-            return site.read('mod_assign_get_grades', params, preSets).then((response) => {
+            return site.read('mod_assign_get_grades', params, preSets).then((response: AddonModAssignGetGradesResult): any => {
                 // Search the assignment.
                 if (response.assignments && response.assignments.length) {
                     const assignment = response.assignments[0];
@@ -294,7 +297,7 @@ export class AddonModAssignProvider {
                         return assignment.grades;
                     }
                 } else if (response.warnings && response.warnings.length) {
-                    if (response.warnings[0].warningcode == 3) {
+                    if (response.warnings[0].warningcode == '3') {
                         // No grades found.
                         return [];
                     }
@@ -362,7 +365,9 @@ export class AddonModAssignProvider {
      * @param attempt Attempt.
      * @return Submission object or null.
      */
-    getSubmissionObjectFromAttempt(assign: any, attempt: any): any {
+    getSubmissionObjectFromAttempt(assign: AddonModAssignAssign, attempt: AddonModAssignSubmissionAttempt)
+            : AddonModAssignSubmission {
+
         if (!attempt) {
             return null;
         }
@@ -432,7 +437,7 @@ export class AddonModAssignProvider {
      * @return Promise resolved when done.
      */
     getSubmissions(assignId: number, ignoreCache?: boolean, siteId?: string)
-            : Promise<{canviewsubmissions: boolean, submissions?: any[]}> {
+            : Promise<{canviewsubmissions: boolean, submissions?: AddonModAssignSubmission[]}> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
@@ -448,9 +453,11 @@ export class AddonModAssignProvider {
                 preSets.emergencyCache = false;
             }
 
-            return site.read('mod_assign_get_submissions', params, preSets).then((response): any => {
+            return site.read('mod_assign_get_submissions', params, preSets)
+                    .then((response: AddonModAssignGetSubmissionsResult): any => {
+
                 // Check if we can view submissions, with enough permissions.
-                if (response.warnings.length > 0 && response.warnings[0].warningcode == 1) {
+                if (response.warnings.length > 0 && response.warnings[0].warningcode == '1') {
                     return {canviewsubmissions: false};
                 }
 
@@ -489,7 +496,7 @@ export class AddonModAssignProvider {
      * @return Promise always resolved with the user submission status.
      */
     getSubmissionStatus(assignId: number, userId?: number, groupId?: number, isBlind?: boolean, filter: boolean = true,
-            ignoreCache?: boolean, siteId?: string): Promise<any> {
+            ignoreCache?: boolean, siteId?: string): Promise<AddonModAssignGetSubmissionStatusResult> {
 
         userId = userId || 0;
 
@@ -540,7 +547,7 @@ export class AddonModAssignProvider {
      * @return Promise always resolved with the user submission status.
      */
     getSubmissionStatusWithRetry(assign: any, userId?: number, groupId?: number, isBlind?: boolean, filter: boolean = true,
-            ignoreCache?: boolean, siteId?: string): Promise<any> {
+            ignoreCache?: boolean, siteId?: string): Promise<AddonModAssignGetSubmissionStatusResult> {
 
         return this.getSubmissionStatus(assign.id, userId, groupId, isBlind, filter, ignoreCache, siteId).then((response) => {
             const userSubmission = this.getSubmissionObjectFromAttempt(assign, response.lastattempt);
@@ -630,7 +637,9 @@ export class AddonModAssignProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the list of participants and summary of submissions.
      */
-    listParticipants(assignId: number, groupId?: number, ignoreCache?: boolean, siteId?: string): Promise<any[]> {
+    listParticipants(assignId: number, groupId?: number, ignoreCache?: boolean, siteId?: string)
+            : Promise<AddonModAssignParticipant[]> {
+
         groupId = groupId || 0;
 
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1051,14 +1060,14 @@ export class AddonModAssignProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when saved, rejected otherwise.
      */
-    saveSubmissionOnline(assignId: number, pluginData: any, siteId?: string): Promise<any> {
+    saveSubmissionOnline(assignId: number, pluginData: any, siteId?: string): Promise<void> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 assignmentid: assignId,
                 plugindata: pluginData
             };
 
-            return site.write('mod_assign_save_submission', params).then((warnings) => {
+            return site.write('mod_assign_save_submission', params).then((warnings: CoreWSExternalWarning[]) => {
                 if (warnings && warnings.length) {
                     // The WebService returned warnings, reject.
                     return Promise.reject(warnings[0]);
@@ -1120,14 +1129,14 @@ export class AddonModAssignProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when submitted, rejected otherwise.
      */
-    submitForGradingOnline(assignId: number, acceptStatement: boolean, siteId?: string): Promise<any> {
+    submitForGradingOnline(assignId: number, acceptStatement: boolean, siteId?: string): Promise<void> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 assignmentid: assignId,
                 acceptsubmissionstatement: acceptStatement ? 1 : 0
             };
 
-            return site.write('mod_assign_submit_for_grading', params).then((warnings) => {
+            return site.write('mod_assign_submit_for_grading', params).then((warnings: CoreWSExternalWarning[]) => {
                 if (warnings && warnings.length) {
                     // The WebService returned warnings, reject.
                     return Promise.reject(warnings[0]);
@@ -1169,7 +1178,10 @@ export class AddonModAssignProvider {
         return this.isGradingOfflineEnabled(siteId).then((enabled) => {
             if (!enabled) {
                 return this.submitGradingFormOnline(assignId, userId, grade, attemptNumber, addAttempt, workflowState,
-                        applyToAll, outcomes, pluginData, siteId);
+                        applyToAll, outcomes, pluginData, siteId).then(() => {
+
+                    return true;
+                });
             }
 
             if (!this.appProvider.isOnline()) {
@@ -1212,7 +1224,7 @@ export class AddonModAssignProvider {
      * @return Promise resolved when submitted, rejected otherwise.
      */
     submitGradingFormOnline(assignId: number, userId: number, grade: number, attemptNumber: number, addAttempt: boolean,
-            workflowState: string, applyToAll: boolean, outcomes: any, pluginData: any, siteId?: string): Promise<any> {
+            workflowState: string, applyToAll: boolean, outcomes: any, pluginData: any, siteId?: string): Promise<void | null> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
@@ -1243,7 +1255,7 @@ export class AddonModAssignProvider {
                         jsonformdata: JSON.stringify(serialized)
                     };
 
-                return site.write('mod_assign_submit_grading_form', params).then((warnings) => {
+                return site.write('mod_assign_submit_grading_form', params).then((warnings: CoreWSExternalWarning[]) => {
                     if (warnings && warnings.length) {
                         // The WebService returned warnings, reject.
                         return Promise.reject(warnings[0]);
@@ -1271,3 +1283,285 @@ export class AddonModAssignProvider {
         });
     }
 }
+
+/**
+ * Assign data returned by mod_assign_get_assignments.
+ */
+export type AddonModAssignAssign = {
+    id: number; // Assignment id.
+    cmid: number; // Course module id.
+    course: number; // Course id.
+    name: string; // Assignment name.
+    nosubmissions: number; // No submissions.
+    submissiondrafts: number; // Submissions drafts.
+    sendnotifications: number; // Send notifications.
+    sendlatenotifications: number; // Send notifications.
+    sendstudentnotifications: number; // Send student notifications (default).
+    duedate: number; // Assignment due date.
+    allowsubmissionsfromdate: number; // Allow submissions from date.
+    grade: number; // Grade type.
+    timemodified: number; // Last time assignment was modified.
+    completionsubmit: number; // If enabled, set activity as complete following submission.
+    cutoffdate: number; // Date after which submission is not accepted without an extension.
+    gradingduedate?: number; // @since 3.3. The expected date for marking the submissions.
+    teamsubmission: number; // If enabled, students submit as a team.
+    requireallteammemberssubmit: number; // If enabled, all team members must submit.
+    teamsubmissiongroupingid: number; // The grouping id for the team submission groups.
+    blindmarking: number; // If enabled, hide identities until reveal identities actioned.
+    hidegrader?: number; // @since 3.7. If enabled, hide grader to student.
+    revealidentities: number; // Show identities for a blind marking assignment.
+    attemptreopenmethod: string; // Method used to control opening new attempts.
+    maxattempts: number; // Maximum number of attempts allowed.
+    markingworkflow: number; // Enable marking workflow.
+    markingallocation: number; // Enable marking allocation.
+    requiresubmissionstatement: number; // Student must accept submission statement.
+    preventsubmissionnotingroup?: number; // @since 3.2. Prevent submission not in group.
+    submissionstatement?: string; // @since 3.2. Submission statement formatted.
+    submissionstatementformat?: number; // @since 3.2. Submissionstatement format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    configs: AddonModAssignConfig[]; // Configuration settings.
+    intro?: string; // Assignment intro, not allways returned because it deppends on the activity configuration.
+    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introfiles?: CoreWSExternalFile[]; // @since 3.2.
+    introattachments?: CoreWSExternalFile[];
+};
+
+/**
+ * Config setting in an assign.
+ */
+export type AddonModAssignConfig = {
+    id?: number; // Assign_plugin_config id.
+    assignment?: number; // Assignment id.
+    plugin: string; // Plugin.
+    subtype: string; // Subtype.
+    name: string; // Name.
+    value: string; // Value.
+};
+
+/**
+ * Grade of an assign, returned by mod_assign_get_grades.
+ */
+export type AddonModAssignGrade = {
+    id: number; // Grade id.
+    assignment?: number; // Assignment id.
+    userid: number; // Student id.
+    attemptnumber: number; // Attempt number.
+    timecreated: number; // Grade creation time.
+    timemodified: number; // Grade last modified time.
+    grader: number; // Grader, -1 if grader is hidden.
+    grade: string; // Grade.
+    gradefordisplay?: string; // Grade rendered into a format suitable for display.
+};
+
+/**
+ * Assign submission returned by mod_assign_get_submissions.
+ */
+export type AddonModAssignSubmission = {
+    id: number; // Submission id.
+    userid: number; // Student id.
+    attemptnumber: number; // Attempt number.
+    timecreated: number; // Submission creation time.
+    timemodified: number; // Submission last modified time.
+    status: string; // Submission status.
+    groupid: number; // Group id.
+    assignment?: number; // Assignment id.
+    latest?: number; // Latest attempt.
+    plugins?: AddonModAssignPlugin[]; // Plugins.
+    gradingstatus?: string; // @since 3.2. Grading status.
+};
+
+/**
+ * Assign plugin.
+ */
+export type AddonModAssignPlugin = {
+    type: string; // Submission plugin type.
+    name: string; // Submission plugin name.
+    fileareas?: { // Fileareas.
+        area: string; // File area.
+        files?: CoreWSExternalFile[];
+    }[];
+    editorfields?: { // Editorfields.
+        name: string; // Field name.
+        description: string; // Field description.
+        text: string; // Field value.
+        format: number; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    }[];
+};
+
+/**
+ * Grading summary of an assign submission.
+ */
+export type AddonModAssignSubmissionGradingSummary = {
+    participantcount: number; // Number of users who can submit.
+    submissiondraftscount: number; // Number of submissions in draft status.
+    submissionsenabled: boolean; // Whether submissions are enabled or not.
+    submissionssubmittedcount: number; // Number of submissions in submitted status.
+    submissionsneedgradingcount: number; // Number of submissions that need grading.
+    warnofungroupedusers: string; // Whether we need to warn people about groups.
+};
+
+/**
+ * Attempt of an assign submission.
+ */
+export type AddonModAssignSubmissionAttempt = {
+    submission?: AddonModAssignSubmission; // Submission info.
+    teamsubmission?: AddonModAssignSubmission; // Submission info.
+    submissiongroup?: number; // The submission group id (for group submissions only).
+    submissiongroupmemberswhoneedtosubmit?: number[]; // List of users who still need to submit (for group submissions only).
+    submissionsenabled: boolean; // Whether submissions are enabled or not.
+    locked: boolean; // Whether new submissions are locked.
+    graded: boolean; // Whether the submission is graded.
+    canedit: boolean; // Whether the user can edit the current submission.
+    caneditowner?: boolean; // @since 3.2. Whether the owner of the submission can edit it.
+    cansubmit: boolean; // Whether the user can submit.
+    extensionduedate: number; // Extension due date.
+    blindmarking: boolean; // Whether blind marking is enabled.
+    gradingstatus: string; // Grading status.
+    usergroups: number[]; // User groups in the course.
+};
+
+/**
+ * Previous attempt of an assign submission.
+ */
+export type AddonModAssignSubmissionPreviousAttempt = {
+    attemptnumber: number; // Attempt number.
+    submission?: AddonModAssignSubmission; // Submission info.
+    grade?: AddonModAssignGrade; // Grade information.
+    feedbackplugins?: AddonModAssignPlugin[]; // Feedback info.
+};
+
+/**
+ * Feedback of an assign submission.
+ */
+export type AddonModAssignSubmissionFeedback = {
+    grade: AddonModAssignGrade; // Grade information.
+    gradefordisplay: string; // Grade rendered into a format suitable for display.
+    gradeddate: number; // The date the user was graded.
+    plugins?: AddonModAssignPlugin[]; // Plugins info.
+};
+
+/**
+ * Participant returned by mod_assign_list_participants.
+ */
+export type AddonModAssignParticipant = {
+    id: number; // ID of the user.
+    username?: string; // The username.
+    firstname?: string; // The first name(s) of the user.
+    lastname?: string; // The family name of the user.
+    fullname: string; // The fullname of the user.
+    email?: string; // Email address.
+    address?: string; // Postal address.
+    phone1?: string; // Phone 1.
+    phone2?: string; // Phone 2.
+    icq?: string; // Icq number.
+    skype?: string; // Skype id.
+    yahoo?: string; // Yahoo id.
+    aim?: string; // Aim id.
+    msn?: string; // Msn number.
+    department?: string; // Department.
+    institution?: string; // Institution.
+    idnumber?: string; // The idnumber of the user.
+    interests?: string; // User interests (separated by commas).
+    firstaccess?: number; // First access to the site (0 if never).
+    lastaccess?: number; // Last access to the site (0 if never).
+    suspended?: boolean; // @since 3.2. Suspend user account, either false to enable user login or true to disable it.
+    description?: string; // User profile description.
+    descriptionformat?: number; // Int format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    city?: string; // Home city of the user.
+    url?: string; // URL of the user.
+    country?: string; // Home country code of the user, such as AU or CZ.
+    profileimageurlsmall?: string; // User image profile URL - small version.
+    profileimageurl?: string; // User image profile URL - big version.
+    customfields?: { // User custom fields (also known as user profile fields).
+        type: string; // The type of the custom field - text field, checkbox...
+        value: string; // The value of the custom field.
+        name: string; // The name of the custom field.
+        shortname: string; // The shortname of the custom field - to be able to build the field class in the code.
+    }[];
+    preferences?: { // Users preferences.
+        name: string; // The name of the preferences.
+        value: string; // The value of the preference.
+    }[];
+    recordid?: number; // @since 3.7. Record id.
+    groups?: { // User groups.
+        id: number; // Group id.
+        name: string; // Group name.
+        description: string; // Group description.
+    }[];
+    roles?: { // User roles.
+        roleid: number; // Role id.
+        name: string; // Role name.
+        shortname: string; // Role shortname.
+        sortorder: number; // Role sortorder.
+    }[];
+    enrolledcourses?: { // Courses where the user is enrolled - limited by which courses the user is able to see.
+        id: number; // Id of the course.
+        fullname: string; // Fullname of the course.
+        shortname: string; // Shortname of the course.
+    }[];
+    submitted: boolean; // Have they submitted their assignment.
+    requiregrading: boolean; // Is their submission waiting for grading.
+    grantedextension?: boolean; // @since 3.3. Have they been granted an extension.
+    groupid?: number; // For group assignments this is the group id.
+    groupname?: string; // For group assignments this is the group name.
+};
+
+/**
+ * Result of WS mod_assign_get_assignments.
+ */
+export type AddonModAssignGetAssignmentsResult = {
+    courses: { // List of courses.
+        id: number; // Course id.
+        fullname: string; // Course full name.
+        shortname: string; // Course short name.
+        timemodified: number; // Last time modified.
+        assignments: AddonModAssignAssign[]; // Assignment info.
+    }[];
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_assign_get_user_mappings.
+ */
+export type AddonModAssignGetUserMappingsResult = {
+    assignments: { // List of assign user mapping data.
+        assignmentid: number; // Assignment id.
+        mappings: {
+            id: number; // User mapping id.
+            userid: number; // Student id.
+        }[];
+    }[];
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_assign_get_grades.
+ */
+export type AddonModAssignGetGradesResult = {
+    assignments: { // List of assignment grade information.
+        assignmentid: number; // Assignment id.
+        grades: AddonModAssignGrade[];
+    }[];
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_assign_get_submissions.
+ */
+export type AddonModAssignGetSubmissionsResult = {
+    assignments: { // Assignment submissions.
+        assignmentid: number; // Assignment id.
+        submissions: AddonModAssignSubmission[];
+    }[];
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_assign_get_submission_status.
+ */
+export type AddonModAssignGetSubmissionStatusResult = {
+    gradingsummary?: AddonModAssignSubmissionGradingSummary; // Grading information.
+    lastattempt?: AddonModAssignSubmissionAttempt; // Last attempt information.
+    feedback?: AddonModAssignSubmissionFeedback; // Feedback for the last attempt.
+    previousattempts?: AddonModAssignSubmissionPreviousAttempt[]; // List all the previous attempts did by the user.
+    warnings?: CoreWSExternalWarning[];
+};

@@ -15,8 +15,8 @@
 import { Component, Optional, Injector } from '@angular/core';
 import { Content } from 'ionic-angular';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
-import { AddonModSurveyProvider } from '../../providers/survey';
-import { AddonModSurveyHelperProvider } from '../../providers/helper';
+import { AddonModSurveyProvider, AddonModSurveySurvey } from '../../providers/survey';
+import { AddonModSurveyHelperProvider, AddonModSurveyQuestionFormatted } from '../../providers/helper';
 import { AddonModSurveyOfflineProvider } from '../../providers/offline';
 import { AddonModSurveySyncProvider } from '../../providers/sync';
 
@@ -31,8 +31,8 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
     component = AddonModSurveyProvider.COMPONENT;
     moduleName = 'survey';
 
-    survey: any;
-    questions: any;
+    survey: AddonModSurveySurvey;
+    questions: AddonModSurveyQuestionFormatted[];
     answers = {};
 
     protected userId: number;
@@ -103,7 +103,7 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
         return this.surveyProvider.getSurvey(this.courseId, this.module.id).then((survey) => {
             this.survey = survey;
 
-            this.description = survey.intro || survey.description;
+            this.description = survey.intro;
             this.dataRetrieved.emit(survey);
 
             if (sync) {
@@ -144,13 +144,13 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
             // Init answers object.
             this.questions.forEach((q) => {
                 if (q.name) {
-                    const isTextArea = q.multi && q.multi.length === 0 && q.type === 0;
+                    const isTextArea = q.multiArray && q.multiArray.length === 0 && q.type === 0;
                     this.answers[q.name] = q.required ? -1 : (isTextArea ? '' : '0');
                 }
 
-                if (q.multi && !q.multi.length && q.parent === 0 && q.type > 0) {
+                if (q.multiArray && !q.multiArray.length && q.parent === 0 && q.type > 0) {
                     // Options shown in a select. Remove all HTML.
-                    q.options = q.options.map((option) => {
+                    q.optionsArray = q.optionsArray.map((option) => {
                         return this.textUtils.cleanTags(option);
                     });
                 }

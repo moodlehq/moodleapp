@@ -14,7 +14,11 @@
 
 import { Component, OnDestroy, Optional } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
-import { AddonNotificationsProvider } from '../../providers/notifications';
+import {
+    AddonNotificationsProvider, AddonNotificationsNotificationPreferences, AddonNotificationsNotificationPreferencesProcessor,
+    AddonNotificationsNotificationPreferencesComponent, AddonNotificationsNotificationPreferencesNotification,
+    AddonNotificationsNotificationPreferencesNotificationProcessorState
+} from '../../providers/notifications';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSettingsHelper } from '@core/settings/providers/helper';
@@ -38,10 +42,10 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 export class AddonNotificationsSettingsPage implements OnDestroy {
     protected updateTimeout: any;
 
-    components: any[];
-    preferences: any;
+    components: AddonNotificationsNotificationPreferencesComponent[];
+    preferences: AddonNotificationsNotificationPreferences;
     preferencesLoaded: boolean;
-    currentProcessor: any;
+    currentProcessor: AddonNotificationsNotificationPreferencesProcessorFormatted;
     notifPrefsEnabled: boolean;
     canChangeSound: boolean;
     notificationSound: boolean;
@@ -99,7 +103,7 @@ export class AddonNotificationsSettingsPage implements OnDestroy {
             // Get display data of message output handlers (thery are displayed in the context menu),
             this.processorHandlers = [];
             if (preferences.processors) {
-                preferences.processors.forEach((processor) => {
+                preferences.processors.forEach((processor: AddonNotificationsNotificationPreferencesProcessorFormatted) => {
                     processor.supported = this.messageOutputDelegate.hasHandler(processor.name, true);
                     if (processor.hassettings && processor.supported) {
                         this.processorHandlers.push(this.messageOutputDelegate.getDisplayData(processor));
@@ -118,7 +122,7 @@ export class AddonNotificationsSettingsPage implements OnDestroy {
      *
      * @param processor Processor object.
      */
-    protected loadProcessor(processor: any): void {
+    protected loadProcessor(processor: AddonNotificationsNotificationPreferencesProcessorFormatted): void {
         if (!processor) {
             return;
         }
@@ -191,8 +195,9 @@ export class AddonNotificationsSettingsPage implements OnDestroy {
      * @param notification Notification object.
      * @param state State name, ['loggedin', 'loggedoff'].
      */
-    changePreference(notification: any, state: string): void {
-        const processorState = notification.currentProcessor[state];
+    changePreference(notification: AddonNotificationsNotificationPreferencesNotificationFormatted, state: string): void {
+        const processorState: AddonNotificationsNotificationPreferencesNotificationProcessorStateFormatted =
+                notification.currentProcessor[state];
         const preferenceName = notification.preferencekey + '_' + processorState.name;
         let value;
 
@@ -211,6 +216,7 @@ export class AddonNotificationsSettingsPage implements OnDestroy {
         }
 
         processorState.updating = true;
+
         this.userProvider.updateUserPreference(preferenceName, value).then(() => {
             // Update the preferences since they were modified.
             this.updatePreferencesAfterDelay();
@@ -264,3 +270,25 @@ export class AddonNotificationsSettingsPage implements OnDestroy {
         }
     }
 }
+
+/**
+ * Notification preferences notification with some calculated data.
+ */
+type AddonNotificationsNotificationPreferencesNotificationFormatted = AddonNotificationsNotificationPreferencesNotification & {
+    currentProcessor?: AddonNotificationsNotificationPreferencesProcessorFormatted; // Calculated in the app. Current processor.
+};
+
+/**
+ * Notification preferences processor with some calculated data.
+ */
+type AddonNotificationsNotificationPreferencesProcessorFormatted = AddonNotificationsNotificationPreferencesProcessor & {
+    supported?: boolean; // Calculated in the app. Whether the processor is supported in the app.
+};
+
+/**
+ * State in notification processor in notification preferences component with some calculated data.
+ */
+type AddonNotificationsNotificationPreferencesNotificationProcessorStateFormatted =
+        AddonNotificationsNotificationPreferencesNotificationProcessorState & {
+    updating?: boolean; // Calculated in the app. Whether the state is being updated.
+};

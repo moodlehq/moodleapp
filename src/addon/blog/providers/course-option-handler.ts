@@ -21,6 +21,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { AddonBlogEntriesComponent } from '../components/entries/entries';
 import { AddonBlogProvider } from './blog';
+import { CoreWSExternalFile } from '@providers/ws';
 
 /**
  * Course nav handler.
@@ -100,7 +101,7 @@ export class AddonBlogCourseOptionHandler implements CoreCourseOptionsHandler {
 
         return this.blogProvider.getEntries({courseid: course.id}).then((result) => {
             return result.entries.map((entry) => {
-                let files = [];
+                let files: CoreWSExternalFile[] = [];
 
                 if (entry.attachmentfiles && entry.attachmentfiles.length) {
                     files = entry.attachmentfiles;

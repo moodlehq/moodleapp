@@ -14,7 +14,9 @@
 
 import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavParams, ViewController } from 'ionic-angular';
-import { AddonMessagesProvider } from '../../providers/messages';
+import {
+    AddonMessagesProvider, AddonMessagesConversationFormatted, AddonMessagesConversationMember
+} from '../../providers/messages';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 
 /**
@@ -28,8 +30,8 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 export class AddonMessagesConversationInfoPage implements OnInit {
 
     loaded = false;
-    conversation: any;
-    members = [];
+    conversation: AddonMessagesConversationFormatted;
+    members: AddonMessagesConversationMember[] = [];
     canLoadMore = false;
     loadMoreError = false;
 

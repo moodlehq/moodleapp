@@ -19,7 +19,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
-import { AddonBadgesProvider } from '../../providers/badges';
+import { AddonBadgesProvider, AddonBadgesUserBadge } from '../../providers/badges';
 
 /**
  * Page that displays the list of calendar events.
@@ -38,7 +38,7 @@ export class AddonBadgesIssuedBadgePage {
 
     user: any = {};
     course: any = {};
-    badge: any = {};
+    badge: AddonBadgesUserBadge;
 
     badgeLoaded = false;
     currentTime = 0;

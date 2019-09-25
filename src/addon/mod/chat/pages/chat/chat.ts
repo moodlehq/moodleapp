@@ -20,7 +20,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { AddonModChatProvider } from '../../providers/chat';
+import { AddonModChatProvider, AddonModChatMessageWithUserData } from '../../providers/chat';
 import { Network } from '@ionic-native/network';
 import * as moment from 'moment';
 
@@ -37,7 +37,7 @@ export class AddonModChatChatPage {
 
     loaded = false;
     title: string;
-    messages = [];
+    messages: AddonModChatMessageWithUserData[] = [];
     newMessage: string;
     polling: any;
     isOnline: boolean;
@@ -46,7 +46,7 @@ export class AddonModChatChatPage {
     protected logger;
     protected courseId: number;
     protected chatId: number;
-    protected sessionId: number;
+    protected sessionId: string;
     protected lastTime = 0;
     protected oldContentHeight = 0;
     protected onlineObserver: any;
@@ -131,9 +131,9 @@ export class AddonModChatChatPage {
     /**
      * Convenience function to login the user.
      *
-     * @return Resolved when done.
+     * @return Promise resolved when done.
      */
-    protected loginUser(): Promise<any> {
+    protected loginUser(): Promise<void> {
         return this.chatProvider.loginUser(this.chatId).then((sessionId) => {
             this.sessionId = sessionId;
         });
@@ -144,12 +144,12 @@ export class AddonModChatChatPage {
      *
      * @return Promise resolved when done.
      */
-    protected fetchMessages(): Promise<any> {
+    protected fetchMessages(): Promise<void> {
         return this.chatProvider.getLatestMessages(this.sessionId, this.lastTime).then((messagesInfo) => {
             this.lastTime = messagesInfo.chatnewlasttime || 0;
 
             return this.chatProvider.getMessagesUserData(messagesInfo.messages, this.courseId).then((messages) => {
-                this.messages = this.messages.concat(messages);
+                this.messages = this.messages.concat(<AddonModChatMessageWithUserData[]> messages);
                 if (messages.length) {
                     // New messages or beeps, scroll to bottom.
                     setTimeout(() => this.scrollToBottom());
@@ -190,7 +190,7 @@ export class AddonModChatChatPage {
      *
      * @return Promised resolved when done.
      */
-    protected fetchMessagesInterval(): Promise<any> {
+    protected fetchMessagesInterval(): Promise<void> {
         this.logger.debug('Polling for messages');
         if (!this.isOnline || this.pollingRunning) {
             // Obviously we cannot check for new messages when the app is offline.
@@ -225,7 +225,7 @@ export class AddonModChatChatPage {
      * @param prevMessage Previous message object.
      * @return True if messages are from diferent days, false othetwise.
      */
-    showDate(message: any, prevMessage: any): boolean {
+    showDate(message: AddonModChatMessageWithUserData, prevMessage: AddonModChatMessageWithUserData): boolean {
         if (!prevMessage) {
             return true;
         }
@@ -267,7 +267,7 @@ export class AddonModChatChatPage {
         });
     }
 
-    reconnect(): Promise<any> {
+    reconnect(): Promise<void> {
         const modal = this.domUtils.showModalLoading();
 
         // Call startPolling would take a while for the first execution, so we'll execute it manually to check if it works now.

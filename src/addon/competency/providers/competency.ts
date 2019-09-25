@@ -17,6 +17,9 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 import { CoreSite } from '@classes/site';
+import { CoreCommentsArea } from '@core/comments/providers/comments';
+import { CoreUserSummary } from '@core/user/providers/user';
+import { CoreCourseSummary, CoreCourseModuleSummary } from '@core/course/providers/course';
 
 /**
  * Service to handle caompetency learning plans.
@@ -147,7 +150,7 @@ export class AddonCompetencyProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise to be resolved when the plans are retrieved.
      */
-    getLearningPlans(userId?: number, siteId?: string): Promise<any> {
+    getLearningPlans(userId?: number, siteId?: string): Promise<AddonCompetencyPlan[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
@@ -161,7 +164,9 @@ export class AddonCompetencyProvider {
                     updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
-            return site.read('tool_lp_data_for_plans_page', params, preSets).then((response) => {
+            return site.read('tool_lp_data_for_plans_page', params, preSets)
+                    .then((response: AddonCompetencyDataForPlansPageResult): any => {
+
                 if (response.plans) {
                     return response.plans;
                 }
@@ -176,9 +181,9 @@ export class AddonCompetencyProvider {
      *
      * @param planId ID of the plan.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise to be resolved when the plans are retrieved.
+     * @return Promise to be resolved when the plan is retrieved.
      */
-    getLearningPlan(planId: number, siteId?: string): Promise<any> {
+    getLearningPlan(planId: number, siteId?: string): Promise<AddonCompetencyDataForPlanPageResult> {
         return this.sitesProvider.getSite(siteId).then((site) => {
 
             this.logger.debug('Get plan ' + planId);
@@ -191,7 +196,9 @@ export class AddonCompetencyProvider {
                     updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
-            return site.read('tool_lp_data_for_plan_page', params, preSets).then((response) => {
+            return site.read('tool_lp_data_for_plan_page', params, preSets)
+                    .then((response: AddonCompetencyDataForPlanPageResult): any => {
+
                 if (response.plan) {
                     return response;
                 }
@@ -207,9 +214,11 @@ export class AddonCompetencyProvider {
      * @param planId ID of the plan.
      * @param competencyId ID of the competency.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise to be resolved when the plans are retrieved.
+     * @return Promise to be resolved when the competency is retrieved.
      */
-    getCompetencyInPlan(planId: number, competencyId: number, siteId?: string): Promise<any> {
+    getCompetencyInPlan(planId: number, competencyId: number, siteId?: string)
+            : Promise<AddonCompetencyUserCompetencySummaryInPlan> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
 
             this.logger.debug('Get competency ' + competencyId + ' in plan ' + planId);
@@ -223,7 +232,9 @@ export class AddonCompetencyProvider {
                     updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
-            return site.read('tool_lp_data_for_user_competency_summary_in_plan', params, preSets).then((response) => {
+            return site.read('tool_lp_data_for_user_competency_summary_in_plan', params, preSets)
+                    .then((response: AddonCompetencyUserCompetencySummaryInPlan): any => {
+
                 if (response.usercompetencysummary) {
                     return response;
                 }
@@ -241,10 +252,10 @@ export class AddonCompetencyProvider {
      * @param userId ID of the user. If not defined, current user.
      * @param siteId Site ID. If not defined, current site.
      * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @return Promise to be resolved when the plans are retrieved.
+     * @return Promise to be resolved when the competency is retrieved.
      */
     getCompetencyInCourse(courseId: number, competencyId: number, userId?: number, siteId?: string, ignoreCache?: boolean)
-            : Promise<any> {
+            : Promise<AddonCompetencyUserCompetencySummaryInCourse> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
@@ -266,7 +277,9 @@ export class AddonCompetencyProvider {
                 preSets.emergencyCache = false;
             }
 
-            return site.read('tool_lp_data_for_user_competency_summary_in_course', params, preSets).then((response) => {
+            return site.read('tool_lp_data_for_user_competency_summary_in_course', params, preSets)
+                    .then((response: AddonCompetencyUserCompetencySummaryInCourse): any => {
+
                 if (response.usercompetencysummary) {
                     return response;
                 }
@@ -283,9 +296,11 @@ export class AddonCompetencyProvider {
      * @param userId ID of the user. If not defined, current user.
      * @param siteId Site ID. If not defined, current site.
      * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @return Promise to be resolved when the plans are retrieved.
+     * @return Promise to be resolved when the competency summary is retrieved.
      */
-    getCompetencySummary(competencyId: number, userId?: number, siteId?: string, ignoreCache?: boolean): Promise<any> {
+    getCompetencySummary(competencyId: number, userId?: number, siteId?: string, ignoreCache?: boolean)
+            : Promise<AddonCompetencySummary> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
@@ -305,7 +320,9 @@ export class AddonCompetencyProvider {
                 preSets.emergencyCache = false;
             }
 
-            return site.read('tool_lp_data_for_user_competency_summary', params, preSets).then((response) => {
+            return site.read('tool_lp_data_for_user_competency_summary', params, preSets)
+                    .then((response: AddonCompetencyUserCompetencySummary): any => {
+
                 if (response.competency) {
                     return response.competency;
                 }
@@ -324,7 +341,9 @@ export class AddonCompetencyProvider {
      * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
      * @return Promise to be resolved when the course competencies are retrieved.
      */
-    getCourseCompetencies(courseId: number, userId?: number, siteId?: string, ignoreCache?: boolean): Promise<any> {
+    getCourseCompetencies(courseId: number, userId?: number, siteId?: string, ignoreCache?: boolean)
+            : Promise<AddonCompetencyDataForCourseCompetenciesPageResult> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
 
             this.logger.debug('Get course competencies for course ' + courseId);
@@ -342,7 +361,9 @@ export class AddonCompetencyProvider {
                 preSets.emergencyCache = false;
             }
 
-            return site.read('tool_lp_data_for_course_competencies_page', params, preSets).then((response) => {
+            return site.read('tool_lp_data_for_course_competencies_page', params, preSets)
+                    .then((response: AddonCompetencyDataForCourseCompetenciesPageResult): any => {
+
                 if (response.competencies) {
                     return response;
                 }
@@ -356,11 +377,13 @@ export class AddonCompetencyProvider {
                 return response;
             }
 
-            const promises = response.competencies.map((competency) =>
+            let promises: Promise<AddonCompetencyUserCompetencySummaryInCourse>[];
+
+            promises = response.competencies.map((competency) =>
                 this.getCompetencyInCourse(courseId, competency.competency.id, userId, siteId)
             );
 
-            return Promise.all(promises).then((responses: any[]) => {
+            return Promise.all(promises).then((responses: AddonCompetencyUserCompetencySummaryInCourse[]) => {
                 responses.forEach((resp, index) => {
                     response.competencies[index].usercompetencycourse = resp.usercompetencysummary.usercompetencycourse;
                 });
@@ -486,7 +509,7 @@ export class AddonCompetencyProvider {
      * @return Promise resolved when the WS call is successful.
      */
     logCompetencyInPlanView(planId: number, competencyId: number, planStatus: number, name?: string, userId?: number,
-            siteId?: string): Promise<any> {
+            siteId?: string): Promise<void> {
         if (planId && competencyId) {
 
             return this.sitesProvider.getSite(siteId).then((site) => {
@@ -509,7 +532,11 @@ export class AddonCompetencyProvider {
                     userid: userId
                 }, siteId);
 
-                return site.write(wsName, params, preSets);
+                return site.write(wsName, params, preSets).then((success: boolean) => {
+                    if (!success) {
+                        return Promise.reject(null);
+                    }
+                });
             });
         }
 
@@ -527,7 +554,7 @@ export class AddonCompetencyProvider {
      * @return Promise resolved when the WS call is successful.
      */
     logCompetencyInCourseView(courseId: number, competencyId: number, name?: string, userId?: number, siteId?: string)
-            : Promise<any> {
+            : Promise<void> {
 
         if (courseId && competencyId) {
             return this.sitesProvider.getSite(siteId).then((site) => {
@@ -548,7 +575,11 @@ export class AddonCompetencyProvider {
                     userid: userId
                 }, siteId);
 
-                return site.write(wsName, params, preSets);
+                return site.write(wsName, params, preSets).then((success: boolean) => {
+                    if (!success) {
+                        return Promise.reject(null);
+                    }
+                });
             });
         }
 
@@ -563,7 +594,7 @@ export class AddonCompetencyProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the WS call is successful.
      */
-    logCompetencyView(competencyId: number, name?: string, siteId?: string): Promise<any> {
+    logCompetencyView(competencyId: number, name?: string, siteId?: string): Promise<void> {
         if (competencyId) {
             return this.sitesProvider.getSite(siteId).then((site) => {
                 const params = {
@@ -576,10 +607,401 @@ export class AddonCompetencyProvider {
 
                 this.pushNotificationsProvider.logViewEvent(competencyId, name, 'competency', wsName, {}, siteId);
 
-                return site.write('core_competency_competency_viewed', params, preSets);
+                return site.write(wsName, params, preSets).then((success: boolean) => {
+                    if (!success) {
+                        return Promise.reject(null);
+                    }
+                });
             });
         }
 
         return Promise.reject(null);
     }
 }
+
+/**
+ * Data returned by competency's plan_exporter.
+ */
+export type AddonCompetencyPlan = {
+    name: string; // Name.
+    description: string; // Description.
+    descriptionformat: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    userid: number; // Userid.
+    templateid: number; // Templateid.
+    origtemplateid: number; // Origtemplateid.
+    status: number; // Status.
+    duedate: number; // Duedate.
+    reviewerid: number; // Reviewerid.
+    id: number; // Id.
+    timecreated: number; // Timecreated.
+    timemodified: number; // Timemodified.
+    usermodified: number; // Usermodified.
+    statusname: string; // Statusname.
+    isbasedontemplate: boolean; // Isbasedontemplate.
+    canmanage: boolean; // Canmanage.
+    canrequestreview: boolean; // Canrequestreview.
+    canreview: boolean; // Canreview.
+    canbeedited: boolean; // Canbeedited.
+    isactive: boolean; // Isactive.
+    isdraft: boolean; // Isdraft.
+    iscompleted: boolean; // Iscompleted.
+    isinreview: boolean; // Isinreview.
+    iswaitingforreview: boolean; // Iswaitingforreview.
+    isreopenallowed: boolean; // Isreopenallowed.
+    iscompleteallowed: boolean; // Iscompleteallowed.
+    isunlinkallowed: boolean; // Isunlinkallowed.
+    isrequestreviewallowed: boolean; // Isrequestreviewallowed.
+    iscancelreviewrequestallowed: boolean; // Iscancelreviewrequestallowed.
+    isstartreviewallowed: boolean; // Isstartreviewallowed.
+    isstopreviewallowed: boolean; // Isstopreviewallowed.
+    isapproveallowed: boolean; // Isapproveallowed.
+    isunapproveallowed: boolean; // Isunapproveallowed.
+    duedateformatted: string; // Duedateformatted.
+    commentarea: CoreCommentsArea;
+    reviewer?: CoreUserSummary;
+    template?: AddonCompetencyTemplate;
+    url: string; // Url.
+};
+
+/**
+ * Data returned by competency's template_exporter.
+ */
+export type AddonCompetencyTemplate = {
+    shortname: string; // Shortname.
+    description: string; // Description.
+    descriptionformat: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    duedate: number; // Duedate.
+    visible: boolean; // Visible.
+    contextid: number; // Contextid.
+    id: number; // Id.
+    timecreated: number; // Timecreated.
+    timemodified: number; // Timemodified.
+    usermodified: number; // Usermodified.
+    duedateformatted: string; // Duedateformatted.
+    cohortscount: number; // Cohortscount.
+    planscount: number; // Planscount.
+    canmanage: boolean; // Canmanage.
+    canread: boolean; // Canread.
+    contextname: string; // Contextname.
+    contextnamenoprefix: string; // Contextnamenoprefix.
+};
+
+/**
+ * Data returned by competency's competency_exporter.
+ */
+export type AddonCompetencyCompetency = {
+    shortname: string; // Shortname.
+    idnumber: string; // Idnumber.
+    description: string; // Description.
+    descriptionformat: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    sortorder: number; // Sortorder.
+    parentid: number; // Parentid.
+    path: string; // Path.
+    ruleoutcome: number; // Ruleoutcome.
+    ruletype: string; // Ruletype.
+    ruleconfig: string; // Ruleconfig.
+    scaleid: number; // Scaleid.
+    scaleconfiguration: string; // Scaleconfiguration.
+    competencyframeworkid: number; // Competencyframeworkid.
+    id: number; // Id.
+    timecreated: number; // Timecreated.
+    timemodified: number; // Timemodified.
+    usermodified: number; // Usermodified.
+};
+
+/**
+ * Data returned by competency's competency_path_exporter.
+ */
+export type AddonCompetencyPath = {
+    ancestors: AddonCompetencyPathNode[]; // Ancestors.
+    framework: AddonCompetencyPathNode;
+    pluginbaseurl: string; // Pluginbaseurl.
+    pagecontextid: number; // Pagecontextid.
+    showlinks: boolean; // @since 3.7. Showlinks.
+};
+
+/**
+ * Data returned by competency's path_node_exporter.
+ */
+export type AddonCompetencyPathNode = {
+    id: number; // Id.
+    name: string; // Name.
+    first: boolean; // First.
+    last: boolean; // Last.
+    position: number; // Position.
+};
+
+/**
+ * Data returned by competency's user_competency_exporter.
+ */
+export type AddonCompetencyUserCompetency = {
+    userid: number; // Userid.
+    competencyid: number; // Competencyid.
+    status: number; // Status.
+    reviewerid: number; // Reviewerid.
+    proficiency: boolean; // Proficiency.
+    grade: number; // Grade.
+    id: number; // Id.
+    timecreated: number; // Timecreated.
+    timemodified: number; // Timemodified.
+    usermodified: number; // Usermodified.
+    canrequestreview: boolean; // Canrequestreview.
+    canreview: boolean; // Canreview.
+    gradename: string; // Gradename.
+    isrequestreviewallowed: boolean; // Isrequestreviewallowed.
+    iscancelreviewrequestallowed: boolean; // Iscancelreviewrequestallowed.
+    isstartreviewallowed: boolean; // Isstartreviewallowed.
+    isstopreviewallowed: boolean; // Isstopreviewallowed.
+    isstatusidle: boolean; // Isstatusidle.
+    isstatusinreview: boolean; // Isstatusinreview.
+    isstatuswaitingforreview: boolean; // Isstatuswaitingforreview.
+    proficiencyname: string; // Proficiencyname.
+    reviewer?: CoreUserSummary;
+    statusname: string; // Statusname.
+    url: string; // Url.
+};
+
+/**
+ * Data returned by competency's user_competency_plan_exporter.
+ */
+export type AddonCompetencyUserCompetencyPlan = {
+    userid: number; // Userid.
+    competencyid: number; // Competencyid.
+    proficiency: boolean; // Proficiency.
+    grade: number; // Grade.
+    planid: number; // Planid.
+    sortorder: number; // Sortorder.
+    id: number; // Id.
+    timecreated: number; // Timecreated.
+    timemodified: number; // Timemodified.
+    usermodified: number; // Usermodified.
+    gradename: string; // Gradename.
+    proficiencyname: string; // Proficiencyname.
+};
+
+/**
+ * Data returned by competency's user_competency_summary_in_plan_exporter.
+ */
+export type AddonCompetencyUserCompetencySummaryInPlan = {
+    usercompetencysummary: AddonCompetencyUserCompetencySummary;
+    plan: AddonCompetencyPlan;
+};
+
+/**
+ * Data returned by competency's user_competency_summary_exporter.
+ */
+export type AddonCompetencyUserCompetencySummary = {
+    showrelatedcompetencies: boolean; // Showrelatedcompetencies.
+    cangrade: boolean; // Cangrade.
+    competency: AddonCompetencySummary;
+    user: CoreUserSummary;
+    usercompetency?: AddonCompetencyUserCompetency;
+    usercompetencyplan?: AddonCompetencyUserCompetencyPlan;
+    usercompetencycourse?: AddonCompetencyUserCompetencyCourse;
+    evidence: AddonCompetencyEvidence[]; // Evidence.
+    commentarea?: CoreCommentsArea;
+};
+
+/**
+ * Data returned by competency's competency_summary_exporter.
+ */
+export type AddonCompetencySummary = {
+    linkedcourses: CoreCourseSummary; // Linkedcourses.
+    relatedcompetencies: AddonCompetencyCompetency[]; // Relatedcompetencies.
+    competency: AddonCompetencyCompetency;
+    framework: AddonCompetencyFramework;
+    hascourses: boolean; // Hascourses.
+    hasrelatedcompetencies: boolean; // Hasrelatedcompetencies.
+    scaleid: number; // Scaleid.
+    scaleconfiguration: string; // Scaleconfiguration.
+    taxonomyterm: string; // Taxonomyterm.
+    comppath: AddonCompetencyPath;
+    pluginbaseurl: string; // @since 3.7. Pluginbaseurl.
+};
+
+/**
+ * Data returned by competency's competency_framework_exporter.
+ */
+export type AddonCompetencyFramework = {
+    shortname: string; // Shortname.
+    idnumber: string; // Idnumber.
+    description: string; // Description.
+    descriptionformat: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    visible: boolean; // Visible.
+    scaleid: number; // Scaleid.
+    scaleconfiguration: string; // Scaleconfiguration.
+    contextid: number; // Contextid.
+    taxonomies: string; // Taxonomies.
+    id: number; // Id.
+    timecreated: number; // Timecreated.
+    timemodified: number; // Timemodified.
+    usermodified: number; // Usermodified.
+    canmanage: boolean; // Canmanage.
+    competenciescount: number; // Competenciescount.
+    contextname: string; // Contextname.
+    contextnamenoprefix: string; // Contextnamenoprefix.
+};
+
+/**
+ * Data returned by competency's user_competency_course_exporter.
+ */
+export type AddonCompetencyUserCompetencyCourse = {
+    userid: number; // Userid.
+    courseid: number; // Courseid.
+    competencyid: number; // Competencyid.
+    proficiency: boolean; // Proficiency.
+    grade: number; // Grade.
+    id: number; // Id.
+    timecreated: number; // Timecreated.
+    timemodified: number; // Timemodified.
+    usermodified: number; // Usermodified.
+    gradename: string; // Gradename.
+    proficiencyname: string; // Proficiencyname.
+};
+
+/**
+ * Data returned by competency's evidence_exporter.
+ */
+export type AddonCompetencyEvidence = {
+    usercompetencyid: number; // Usercompetencyid.
+    contextid: number; // Contextid.
+    action: number; // Action.
+    actionuserid: number; // Actionuserid.
+    descidentifier: string; // Descidentifier.
+    desccomponent: string; // Desccomponent.
+    desca: string; // Desca.
+    url: string; // Url.
+    grade: number; // Grade.
+    note: string; // Note.
+    id: number; // Id.
+    timecreated: number; // Timecreated.
+    timemodified: number; // Timemodified.
+    usermodified: number; // Usermodified.
+    actionuser?: CoreUserSummary;
+    description: string; // Description.
+    gradename: string; // Gradename.
+    userdate: string; // Userdate.
+    candelete: boolean; // Candelete.
+};
+
+/**
+ * Data returned by competency's user_competency_summary_in_course_exporter.
+ */
+export type AddonCompetencyUserCompetencySummaryInCourse = {
+    usercompetencysummary: AddonCompetencyUserCompetencySummary;
+    course: CoreCourseSummary;
+    coursemodules: CoreCourseModuleSummary[]; // Coursemodules.
+    plans: AddonCompetencyPlan[]; // @since 3.7. Plans.
+    pluginbaseurl: string; // @since 3.7. Pluginbaseurl.
+};
+
+/**
+ * Data returned by competency's course_competency_settings_exporter.
+ */
+export type AddonCompetencyCourseCompetencySettings = {
+    courseid: number; // Courseid.
+    pushratingstouserplans: boolean; // Pushratingstouserplans.
+    id: number; // Id.
+    timecreated: number; // Timecreated.
+    timemodified: number; // Timemodified.
+    usermodified: number; // Usermodified.
+};
+
+/**
+ * Data returned by competency's course_competency_statistics_exporter.
+ */
+export type AddonCompetencyCourseCompetencyStatistics = {
+    competencycount: number; // Competencycount.
+    proficientcompetencycount: number; // Proficientcompetencycount.
+    proficientcompetencypercentage: number; // Proficientcompetencypercentage.
+    proficientcompetencypercentageformatted: string; // Proficientcompetencypercentageformatted.
+    leastproficient: AddonCompetencyCompetency[]; // Leastproficient.
+    leastproficientcount: number; // Leastproficientcount.
+    canbegradedincourse: boolean; // Canbegradedincourse.
+    canmanagecoursecompetencies: boolean; // Canmanagecoursecompetencies.
+};
+
+/**
+ * Data returned by competency's course_competency_exporter.
+ */
+export type AddonCompetencyCourseCompetency = {
+    courseid: number; // Courseid.
+    competencyid: number; // Competencyid.
+    sortorder: number; // Sortorder.
+    ruleoutcome: number; // Ruleoutcome.
+    id: number; // Id.
+    timecreated: number; // Timecreated.
+    timemodified: number; // Timemodified.
+    usermodified: number; // Usermodified.
+};
+
+/**
+ * Result of WS tool_lp_data_for_plans_page.
+ */
+export type AddonCompetencyDataForPlansPageResult = {
+    userid: number; // The learning plan user id.
+    plans: AddonCompetencyPlan[];
+    pluginbaseurl: string; // Url to the tool_lp plugin folder on this Moodle site.
+    navigation: string[];
+    canreaduserevidence: boolean; // Can the current user view the user's evidence.
+    canmanageuserplans: boolean; // Can the current user manage the user's plans.
+};
+
+/**
+ * Result of WS tool_lp_data_for_plan_page.
+ */
+export type AddonCompetencyDataForPlanPageResult = {
+    plan: AddonCompetencyPlan;
+    contextid: number; // Context ID.
+    pluginbaseurl: string; // Plugin base URL.
+    competencies: AddonCompetencyDataForPlanPageCompetency[];
+    competencycount: number; // Count of competencies.
+    proficientcompetencycount: number; // Count of proficientcompetencies.
+    proficientcompetencypercentage: number; // Percentage of competencies proficient.
+    proficientcompetencypercentageformatted: string; // Displayable percentage.
+};
+
+/**
+ * Competency data returned by tool_lp_data_for_plan_page.
+ */
+export type AddonCompetencyDataForPlanPageCompetency = {
+    competency: AddonCompetencyCompetency;
+    comppath: AddonCompetencyPath;
+    usercompetency?: AddonCompetencyUserCompetency;
+    usercompetencyplan?: AddonCompetencyUserCompetencyPlan;
+};
+
+/**
+ * Result of WS tool_lp_data_for_course_competencies_page.
+ */
+export type AddonCompetencyDataForCourseCompetenciesPageResult = {
+    courseid: number; // The current course id.
+    pagecontextid: number; // The current page context ID.
+    gradableuserid?: number; // Current user id, if the user is a gradable user.
+    canmanagecompetencyframeworks: boolean; // User can manage competency frameworks.
+    canmanagecoursecompetencies: boolean; // User can manage linked course competencies.
+    canconfigurecoursecompetencies: boolean; // User can configure course competency settings.
+    cangradecompetencies: boolean; // User can grade competencies.
+    settings: AddonCompetencyCourseCompetencySettings;
+    statistics: AddonCompetencyCourseCompetencyStatistics;
+    competencies: AddonCompetencyDataForCourseCompetenciesPageCompetency[];
+    manageurl: string; // Url to the manage competencies page.
+    pluginbaseurl: string; // @since 3.6. Url to the course competencies page.
+};
+
+/**
+ * Competency data returned by tool_lp_data_for_course_competencies_page.
+ */
+export type AddonCompetencyDataForCourseCompetenciesPageCompetency = {
+    competency: AddonCompetencyCompetency;
+    coursecompetency: AddonCompetencyCourseCompetency;
+    coursemodules: CoreCourseModuleSummary[];
+    usercompetencycourse?: AddonCompetencyUserCompetencyCourse;
+    ruleoutcomeoptions: {
+        value: number; // The option value.
+        text: string; // The name of the option.
+        selected: boolean; // If this is the currently selected option.
+    }[];
+    comppath: AddonCompetencyPath;
+    plans: AddonCompetencyPlan[]; // @since 3.7.
+};

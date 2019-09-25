@@ -79,7 +79,7 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
         const promises = [];
 
         promises.push(this.imscpProvider.getImscp(this.courseId, this.module.id).then((imscp) => {
-            this.description = imscp.intro || imscp.description;
+            this.description = imscp.intro;
             this.dataRetrieved.emit(imscp);
         }));
 

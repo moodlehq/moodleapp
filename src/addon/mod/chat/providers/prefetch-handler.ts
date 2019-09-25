@@ -23,7 +23,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { CoreUserProvider } from '@core/user/providers/user';
-import { AddonModChatProvider } from './chat';
+import { AddonModChatProvider, AddonModChatChat } from './chat';
 
 /**
  * Handler to prefetch chats.
@@ -116,12 +116,12 @@ export class AddonModChatPrefetchHandler extends CoreCourseActivityPrefetchHandl
      */
     protected prefetchChat(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
         // Prefetch chat and group info.
-        const promises = [
+        const promises: Promise<any>[] = [
             this.chatProvider.getChat(courseId, module.id, siteId),
             this.groupsProvider.getActivityGroupInfo(module.id, false, undefined, siteId)
         ];
 
-        return Promise.all(promises).then(([chat, groupInfo]: [any, CoreGroupInfo]) => {
+        return Promise.all(promises).then(([chat, groupInfo]: [AddonModChatChat, CoreGroupInfo]) => {
             const promises = [];
 
             let groupIds = [0];

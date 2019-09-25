@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreSite } from '@classes/site';
+import { CoreWSExternalWarning } from '@providers/ws';
 
 /**
  * Service to handle my files and site files.
@@ -73,7 +74,7 @@ export class AddonFilesProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the files.
      */
-    getFiles(params: any, siteId?: string): Promise<any[]> {
+    getFiles(params: any, siteId?: string): Promise<AddonFilesFile[]> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const preSets = {
@@ -82,15 +83,15 @@ export class AddonFilesProvider {
             };
 
             return site.read('core_files_get_files', params, preSets);
-        }).then((result) => {
-            const entries = [];
+        }).then((result: AddonFilesGetFilesResult) => {
+            const entries: AddonFilesFile[] = [];
 
             if (result.files) {
                 result.files.forEach((entry) => {
                     if (entry.isdir) {
                         // Create a "link" to load the folder.
                         entry.link = {
-                            contextid: entry.contextid || '',
+                            contextid: entry.contextid || null,
                             component: entry.component || '',
                             filearea: entry.filearea || '',
                             itemid: entry.itemid || 0,
@@ -135,7 +136,7 @@ export class AddonFilesProvider {
      *
      * @return Promise resolved with the files.
      */
-    getPrivateFiles(): Promise<any[]> {
+    getPrivateFiles(): Promise<AddonFilesFile[]> {
         return this.getFiles(this.getPrivateFilesRootParams());
     }
 
@@ -164,7 +165,7 @@ export class AddonFilesProvider {
      * @param siteId Site ID. If not defined, use current site.
      * @return Promise resolved with the info.
      */
-    getPrivateFilesInfo(userId?: number, siteId?: string): Promise<any> {
+    getPrivateFilesInfo(userId?: number, siteId?: string): Promise<AddonFilesGetUserPrivateFilesInfoResult> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
@@ -204,7 +205,7 @@ export class AddonFilesProvider {
      *
      * @return Promise resolved with the files.
      */
-    getSiteFiles(): Promise<any[]> {
+    getSiteFiles(): Promise<AddonFilesFile[]> {
         return this.getFiles(this.getSiteFilesRootParams());
     }
 
@@ -388,7 +389,7 @@ export class AddonFilesProvider {
      * @param siteid ID of the site. If not defined, use current site.
      * @return Promise resolved in success, rejected otherwise.
      */
-    moveFromDraftToPrivate(draftId: number, siteId?: string): Promise<any> {
+    moveFromDraftToPrivate(draftId: number, siteId?: string): Promise<null> {
         const params = {
                 draftid: draftId
             },
@@ -414,3 +415,63 @@ export class AddonFilesProvider {
         });
     }
 }
+
+/**
+ * File data returned by core_files_get_files.
+ */
+export type AddonFilesFile = {
+    contextid: number;
+    component: string;
+    filearea: string;
+    itemid: number;
+    filepath: string;
+    filename: string;
+    isdir: boolean;
+    url: string;
+    timemodified: number;
+    timecreated?: number; // Time created.
+    filesize?: number; // File size.
+    author?: string; // File owner.
+    license?: string; // File license.
+} & AddonFilesFileCalculatedData;
+
+/**
+ * Result of WS core_files_get_files.
+ */
+export type AddonFilesGetFilesResult = {
+    parents: {
+        contextid: number;
+        component: string;
+        filearea: string;
+        itemid: number;
+        filepath: string;
+        filename: string;
+    }[];
+    files: AddonFilesFile[];
+};
+
+/**
+ * Result of WS core_user_get_private_files_info.
+ */
+export type AddonFilesGetUserPrivateFilesInfoResult = {
+    filecount: number; // Number of files in the area.
+    foldercount: number; // Number of folders in the area.
+    filesize: number; // Total size of the files in the area.
+    filesizewithoutreferences: number; // Total size of the area excluding file references.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Calculated data for AddonFilesFile.
+ */
+export type AddonFilesFileCalculatedData = {
+    link?: { // Calculated in the app. A link to open the folder.
+        contextid?: number; // Folder's contextid.
+        component?: string; // Folder's component.
+        filearea?: string; // Folder's filearea.
+        itemid?: number; // Folder's itemid.
+        filepath?: string; // Folder's filepath.
+        filename?: string; // Folder's filename.
+    };
+    imgPath?: string; // Path to file icon's image.
+};

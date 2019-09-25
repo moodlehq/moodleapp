@@ -15,7 +15,7 @@
 import { Component, Optional, Injector } from '@angular/core';
 import { Content } from 'ionic-angular';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
-import { AddonModLtiProvider } from '../../providers/lti';
+import { AddonModLtiProvider, AddonModLtiLti } from '../../providers/lti';
 
 /**
  * Component that displays an LTI entry page.
@@ -28,7 +28,7 @@ export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityCompo
     component = AddonModLtiProvider.COMPONENT;
     moduleName = 'lti';
 
-    lti: any; // The LTI object.
+    lti: AddonModLtiLti; // The LTI object.
 
     protected fetchContentDefaultError = 'addon.mod_lti.errorgetlti';
 
@@ -65,7 +65,7 @@ export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityCompo
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
         return this.ltiProvider.getLti(this.courseId, this.module.id).then((ltiData) => {
             this.lti = ltiData;
-            this.description = this.lti.intro || this.description;
+            this.description = this.lti.intro;
             this.dataRetrieved.emit(this.lti);
         }).then(() => {
             // All data obtained, now fill the context menu.

@@ -22,6 +22,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonNotesOfflineProvider } from './notes-offline';
 import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
+import { CoreWSExternalWarning } from '@providers/ws';
 
 /**
  * Service to handle notes.
@@ -119,9 +120,9 @@ export class AddonNotesProvider {
      * @return Promise resolved when added, rejected otherwise. Promise resolved doesn't mean that notes
      *         have been added, the resolve param can contain errors for notes not sent.
      */
-    addNotesOnline(notes: any[], siteId?: string): Promise<any> {
+    addNotesOnline(notes: any[], siteId?: string): Promise<AddonNotesCreateNotesNote[]> {
         if (!notes || !notes.length) {
-            return Promise.resolve();
+            return Promise.resolve([]);
         }
 
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -142,7 +143,7 @@ export class AddonNotesProvider {
      * @return Promise resolved when deleted, rejected otherwise. Promise resolved doesn't mean that notes
      *         have been deleted, the resolve param can contain errors for notes not deleted.
      */
-    deleteNote(note: any, courseId: number, siteId?: string): Promise<void> {
+    deleteNote(note: AddonNotesNoteFormatted, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         if (note.offline) {
@@ -190,7 +191,7 @@ export class AddonNotesProvider {
                 notes: noteIds
             };
 
-            return site.write('core_notes_delete_notes', data).then((response) => {
+            return site.write('core_notes_delete_notes', data).then((response: CoreWSExternalWarning[]) => {
                 // A note was deleted, invalidate the course notes.
                 return this.invalidateNotes(courseId, undefined, siteId).catch(() => {
                     // Ignore errors.
@@ -288,7 +289,9 @@ export class AddonNotesProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise to be resolved when the notes are retrieved.
      */
-    getNotes(courseId: number, userId?: number, ignoreCache?: boolean, onlyOnline?: boolean, siteId?: string): Promise<any> {
+    getNotes(courseId: number, userId?: number, ignoreCache?: boolean, onlyOnline?: boolean, siteId?: string)
+            : Promise<AddonNotesGetCourseNotesResult> {
+
         this.logger.debug('Get notes for course ' + courseId);
 
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -310,7 +313,7 @@ export class AddonNotesProvider {
                 preSets.emergencyCache = false;
             }
 
-            return site.read('core_notes_get_course_notes', data, preSets).then((notes) => {
+            return site.read('core_notes_get_course_notes', data, preSets).then((notes: AddonNotesGetCourseNotesResult) => {
                 if (onlyOnline) {
                     return notes;
                 }
@@ -339,9 +342,11 @@ export class AddonNotesProvider {
      * @param notes Array of notes.
      * @param courseId ID of the course the notes belong to.
      * @param siteId Site ID. If not defined, current site.
-     * @return [description]
+     * @return Promise resolved when done.
      */
-    setOfflineDeletedNotes(notes: any[], courseId: number, siteId?: string): Promise<any> {
+    setOfflineDeletedNotes(notes: AddonNotesNoteFormatted[], courseId: number, siteId?: string)
+            : Promise<AddonNotesNoteFormatted[]> {
+
         return this.notesOffline.getCourseDeletedNotes(courseId, siteId).then((deletedNotes) => {
             notes.forEach((note) => {
                 note.deleted = deletedNotes.some((n) => n.noteid == note.id);
@@ -358,7 +363,7 @@ export class AddonNotesProvider {
      * @param courseId ID of the course the notes belong to.
      * @return Promise always resolved. Resolve param is the formatted notes.
      */
-    getNotesUserData(notes: any[], courseId: number): Promise<any> {
+    getNotesUserData(notes: AddonNotesNoteFormatted[], courseId: number): Promise<AddonNotesNoteFormatted[]> {
         const promises = notes.map((note) => {
             // Get the user profile to retrieve the user image.
             return this.userProvider.getProfile(note.userid, note.courseid, true).then((user) => {
@@ -400,7 +405,7 @@ export class AddonNotesProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the WS call is successful.
      */
-    logView(courseId: number, userId?: number, siteId?: string): Promise<any> {
+    logView(courseId: number, userId?: number, siteId?: string): Promise<AddonNotesViewNotesResult> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 courseid: courseId,
@@ -413,3 +418,57 @@ export class AddonNotesProvider {
         });
     }
 }
+
+/**
+ * Note data returned by core_notes_get_course_notes.
+ */
+export type AddonNotesNote = {
+    id: number; // Id of this note.
+    courseid: number; // Id of the course.
+    userid: number; // User id.
+    content: string; // The content text formated.
+    format: number; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    created: number; // Time created (timestamp).
+    lastmodified: number; // Time of last modification (timestamp).
+    usermodified: number; // User id of the creator of this note.
+    publishstate: string; // State of the note (i.e. draft, public, site).
+};
+
+/**
+ * Result of WS core_notes_get_course_notes.
+ */
+export type AddonNotesGetCourseNotesResult = {
+    sitenotes?: AddonNotesNote[]; // Site notes.
+    coursenotes?: AddonNotesNote[]; // Couse notes.
+    personalnotes?: AddonNotesNote[]; // Personal notes.
+    canmanagesystemnotes?: boolean; // @since 3.7. Whether the user can manage notes at system level.
+    canmanagecoursenotes?: boolean; // @since 3.7. Whether the user can manage notes at the given course.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Note returned by WS core_notes_create_notes.
+ */
+export type AddonNotesCreateNotesNote = {
+    clientnoteid?: string; // Your own id for the note.
+    noteid: number; // ID of the created note when successful, -1 when failed.
+    errormessage?: string; // Error message - if failed.
+};
+
+/**
+ * Result of WS core_notes_view_notes.
+ */
+export type AddonNotesViewNotesResult = {
+    status: boolean; // Status: true if success.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Notes with some calculated data.
+ */
+export type AddonNotesNoteFormatted = AddonNotesNote & {
+    offline?: boolean; // Calculated in the app. Whether it's an offline note.
+    deleted?: boolean; // Calculated in the app. Whether the note was deleted in offline.
+    userfullname?: string; // Calculated in the app. Full name of the user the note refers to.
+    userprofileimageurl?: string; // Calculated in the app. Avatar url of the user the note refers to.
+};

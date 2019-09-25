@@ -25,6 +25,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreConstants } from '@core/constants';
+import { CoreWSExternalFile } from '@providers/ws';
 
 /**
  * Handler to support resource modules.
@@ -146,7 +147,7 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
      */
     protected getResourceData(module: any, courseId: number, handlerData: CoreCourseModuleHandlerData): Promise<any> {
         const promises = [];
-        let infoFiles = [],
+        let infoFiles: CoreWSExternalFile[] = [],
             options: any = {};
 
         // Check if the button needs to be shown or not.

@@ -17,7 +17,7 @@ import { IonicPage, NavParams, ViewController } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { AddonModChatProvider } from '../../providers/chat';
+import { AddonModChatProvider, AddonModChatUser } from '../../providers/chat';
 import { Network } from '@ionic-native/network';
 
 /**
@@ -30,12 +30,12 @@ import { Network } from '@ionic-native/network';
 })
 export class AddonModChatUsersPage {
 
-    users = [];
+    users: AddonModChatUser[] = [];
     usersLoaded = false;
     currentUserId: number;
     isOnline: boolean;
 
-    protected sessionId: number;
+    protected sessionId: string;
     protected onlineObserver: any;
 
     constructor(navParams: NavParams, network: Network,  zone: NgZone, private appProvider: CoreAppProvider,
@@ -77,7 +77,7 @@ export class AddonModChatUsersPage {
      *
      * @param user User object.
      */
-     talkTo(user: any): void {
+     talkTo(user: AddonModChatUser): void {
         this.viewCtrl.dismiss({talkTo: user.fullname});
     }
 
@@ -86,7 +86,7 @@ export class AddonModChatUsersPage {
      *
      * @param user User object.
      */
-    beepTo(user: any): void {
+    beepTo(user: AddonModChatUser): void {
         this.viewCtrl.dismiss({beepTo: user.id});
     }
 
