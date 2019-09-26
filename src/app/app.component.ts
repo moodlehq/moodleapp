@@ -14,6 +14,7 @@
 
 import { Component, OnInit, NgZone } from '@angular/core';
 import { Platform, IonicApp } from 'ionic-angular';
+import { Network } from '@ionic-native/network';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLangProvider } from '@providers/lang';
@@ -42,7 +43,7 @@ export class MoodleMobileApp implements OnInit {
             private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider, private zone: NgZone,
             private appProvider: CoreAppProvider, private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider,
             private screenOrientation: ScreenOrientation, private urlSchemesProvider: CoreCustomURLSchemesProvider,
-            private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider) {
+            private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider, private network: Network) {
         this.logger = logger.getInstance('AppComponent');
 
         platform.ready().then(() => {
@@ -107,6 +108,22 @@ export class MoodleMobileApp implements OnInit {
         // Listen for sitepolicynotagreed event to accept the site policy.
         this.eventsProvider.on(CoreEventsProvider.SITE_POLICY_NOT_AGREED, (data) => {
             this.loginHelper.sitePolicyNotAgreed(data.siteId);
+        });
+
+        // Refresh online status when changes.
+        this.network.onchange().subscribe(() => {
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            this.zone.run(() => {
+                const isOnline = this.appProvider.isOnline();
+                document.body.classList.toggle('core-offline', !isOnline);
+                document.body.classList.toggle('core-online', isOnline);
+
+                if (isOnline) {
+                    setTimeout(() => {
+                        document.body.classList.remove('core-online');
+                    }, 3000);
+                }
+            });
         });
 
         // Check URLs loaded in any InAppBrowser.

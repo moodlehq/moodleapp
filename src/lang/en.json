@@ -293,5 +293,7 @@
     "wsfunctionnotavailable": "The web service function is not available.",
     "year": "year",
     "years": "years",
-    "yes": "Yes"
+    "yes": "Yes",
+    "youreoffline": "You are offline",
+    "youreonline": "You are back online"
 }
