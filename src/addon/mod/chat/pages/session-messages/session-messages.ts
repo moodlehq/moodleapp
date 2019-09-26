@@ -17,8 +17,8 @@ import { IonicPage, NavParams } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUserProvider } from '@core/user/providers/user';
-import { AddonModChatProvider, AddonModChatSessionMessageWithUserData } from '../../providers/chat';
-import { AddonModChatHelperProvider } from '../../providers/helper';
+import { AddonModChatProvider } from '../../providers/chat';
+import { AddonModChatHelperProvider, AddonModChatSessionMessageForView } from '../../providers/helper';
 
 /**
  * Page that displays list of chat session messages.
@@ -38,7 +38,7 @@ export class AddonModChatSessionMessagesPage {
     protected sessionEnd: number;
     protected groupId: number;
     protected loaded = false;
-    protected messages: AddonModChatSessionMessageWithUserData[] = [];
+    protected messages: AddonModChatSessionMessageForView[] = [];
 
     constructor(navParams: NavParams, private domUtils: CoreDomUtilsProvider, private chatProvider: AddonModChatProvider,
         sitesProvider: CoreSitesProvider, private chatHelper: AddonModChatHelperProvider, private userProvider: CoreUserProvider) {
@@ -61,7 +61,25 @@ export class AddonModChatSessionMessagesPage {
         return this.chatProvider.getSessionMessages(this.chatId, this.sessionStart, this.sessionEnd, this.groupId)
                 .then((messages) => {
             return this.chatProvider.getMessagesUserData(messages, this.courseId).then((messages) => {
+                this.messages = <AddonModChatSessionMessageForView[]> messages;
 
+                if (messages.length) {
+                    // Calculate which messages need to display the date or user data.
+                    for (let index = 0 ; index < this.messages.length; index++) {
+                        const message = this.messages[index];
+                        const prevMessage = index > 0 ? this.messages[index - 1] : null;
+
+                        this.chatHelper.formatMessage(this.currentUserId, message, prevMessage);
+
+                        if (message.beep && message.beep != this.currentUserId + '') {
+                            this.getUserFullname(message.beep).then((fullname) => {
+                                message.beepWho = fullname;
+                            });
+                        }
+                    }
+
+                    this.messages[this.messages.length - 1].showTail = true;
+                }
             });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.errorloadingcontent', true);

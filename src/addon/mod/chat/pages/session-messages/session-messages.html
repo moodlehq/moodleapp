@@ -35,7 +35,7 @@
 
                     <ion-badge text-wrap color="light" *ngIf="message.userid == currentUserId && message.beep && message.beep != 'all'">
                         <span><ion-icon name="notifications"></ion-icon> {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
-                        {{ 'addon.mod_chat.messageyoubeep' | translate:{$a: message.beepwho} }} </span>
+                        {{ 'addon.mod_chat.messageyoubeep' | translate:{$a: message.beepWho} }} </span>
                     </ion-badge>
 
                     <ion-badge text-wrap color="info" *ngIf="!message.issystem && !message.beep">

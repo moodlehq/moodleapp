@@ -1,4 +1,4 @@
-ion-app.app-root page-addon-mod-chat-session-messages {
+ion-app.app-root page-addon-mod-chat-session-messages.ion-page {
     @include message-page();
 
     .addon-mod-chat-notice {

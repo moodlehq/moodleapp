@@ -19,9 +19,8 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { AddonModChatProvider, AddonModChatMessageWithUserData } from '../../providers/chat';
-import { AddonModChatHelperProvider } from '../../providers/helper';
+import { AddonModChatProvider } from '../../providers/chat';
+import { AddonModChatHelperProvider, AddonModChatMessageForView } from '../../providers/helper';
 import { Network } from '@ionic-native/network';
 import { coreSlideInOut } from '@classes/animations';
 import { CoreSendMessageFormComponent } from '@components/send-message-form/send-message-form';
@@ -41,7 +40,7 @@ export class AddonModChatChatPage {
 
     loaded = false;
     title: string;
-    messages: AddonModChatMessageWithUserData[] = [];
+    messages: AddonModChatMessageForView[] = [];
     newMessage: string;
     polling: any;
     isOnline: boolean;
@@ -203,7 +202,7 @@ export class AddonModChatChatPage {
             return this.chatProvider.getMessagesUserData(messagesInfo.messages, this.courseId).then((messages) => {
                 if (messages.length) {
                     const previousLength = this.messages.length;
-                    this.messages = this.messages.concat(<AddonModChatMessageWithUserData[]> messages);
+                    this.messages = this.messages.concat(<AddonModChatMessageForView[]> messages);
 
                     // Calculate which messages need to display the date or user data.
                     for (let index = previousLength ; index < this.messages.length; index++) {
@@ -212,9 +211,9 @@ export class AddonModChatChatPage {
 
                         this.chatHelper.formatMessage(this.currentUserId, message, prevMessage);
 
-                        if (message.beep && message.beep != this.currentUserId) {
+                        if (message.beep && message.beep != this.currentUserId + '') {
                             this.getUserFullname(message.beep).then((fullname) => {
-                                message.beepwho = fullname;
+                                message.beepWho = fullname;
                             });
                         }
                     }

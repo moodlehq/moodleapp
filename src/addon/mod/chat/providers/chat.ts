@@ -20,6 +20,7 @@ import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
+import { AddonModChatMessageForView, AddonModChatSessionMessageForView } from './helper';
 
 /**
  * Service that provides some features for chats.
@@ -157,9 +158,9 @@ export class AddonModChatProvider {
      * @return Promise always resolved with the formatted messages.
      */
     getMessagesUserData(messages: (AddonModChatMessage | AddonModChatSessionMessage)[], courseId: number)
-            : Promise<(AddonModChatMessageWithUserData | AddonModChatSessionMessageWithUserData)[]> {
+            : Promise<(AddonModChatMessageForView | AddonModChatSessionMessageForView)[]> {
 
-        const promises = messages.map((message: AddonModChatMessageWithUserData | AddonModChatSessionMessageWithUserData) => {
+        const promises = messages.map((message: AddonModChatMessageForView | AddonModChatSessionMessageForView) => {
             return this.userProvider.getProfile(message.userid, courseId, true).then((user) => {
                 message.userfullname = user.fullname;
                 message.userprofileimageurl = user.profileimageurl;
@@ -448,7 +449,7 @@ export type AddonModChatMessage = {
 };
 
 /**
- * Message with user data
+ * Message with user data.
  */
 export type AddonModChatMessageWithUserData = AddonModChatMessage & AddonModChatMessageUserData;
 
@@ -484,7 +485,7 @@ export type AddonModChatSessionMessage = {
 };
 
 /**
- * Message with user data
+ * Session message with user data.
  */
 export type AddonModChatSessionMessageWithUserData = AddonModChatSessionMessage & AddonModChatMessageUserData;
 

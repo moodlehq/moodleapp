@@ -21,7 +21,7 @@ ion-app.app-root .ion-page {
     color: $core-dark-text-color;
     background-color: $core-dark-item-bg-color;
 
-    a {
+    a:not(.button) {
       color: $core-dark-link-color;
     }
 

@@ -16,10 +16,10 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import * as moment from 'moment';
-import AddonModChatMessageWithUserData from './chat';
+import { AddonModChatMessageWithUserData, AddonModChatSessionMessageWithUserData } from './chat';
 
 /**
- * Helper service that provides some features for quiz.
+ * Helper service that provides some features for chat.
  */
 @Injectable()
 export class AddonModChatHelperProvider {
@@ -39,14 +39,15 @@ export class AddonModChatHelperProvider {
      * @param  prevMessage Previous Message in a discussion (if any).
      * @return Message with additional info.
      */
-    formatMessage(currentUserId: number, message: AddonModChatMessageWithUserData,
-            prevMessage?: AddonModChatMessageWithUserData): any {
+    formatMessage(currentUserId: number, message: AddonModChatMessageForView | AddonModChatSessionMessageForView,
+            prevMessage?: AddonModChatMessageForView | AddonModChatSessionMessageForView): any {
         message.message = message.message.trim();
 
         message.showDate = this.showDate(message, prevMessage);
         message.beep = message.message.substr(0, 5) == 'beep ' && message.message.substr(5).trim();
 
-        message.special = message.issystem || message.system || !!message.beep;
+        message.special = (<AddonModChatSessionMessageForView> message).issystem || (<AddonModChatMessageForView> message).system ||
+            !!message.beep;
 
         if (message.message.substr(0, 4) == '/me ') {
             message.special = true;
@@ -72,7 +73,8 @@ export class AddonModChatHelperProvider {
      * @param prevMessage Previous message.
      * @return Whether user data should be shown.
      */
-    protected showUserData(currentUserId: number, message: any, prevMessage?: any): boolean {
+    protected showUserData(currentUserId: number, message: AddonModChatMessageForView | AddonModChatSessionMessageForView,
+            prevMessage?: AddonModChatMessageForView | AddonModChatSessionMessageForView): boolean {
         return message.userid != currentUserId &&
             (!prevMessage || prevMessage.userid != message.userid || message.showDate || prevMessage.special);
     }
@@ -84,7 +86,8 @@ export class AddonModChatHelperProvider {
      * @param nextMessage Next message.
      * @return Whether user data should be shown.
      */
-    protected showTail(message: AddonModChatMessageWithUserData, nextMessage?: AddonModChatMessageWithUserData): boolean {
+    protected showTail(message: AddonModChatMessageForView | AddonModChatSessionMessageForView,
+            nextMessage?: AddonModChatMessageForView | AddonModChatSessionMessageForView): boolean {
         return !nextMessage || nextMessage.userid != message.userid || nextMessage.showDate || nextMessage.special;
     }
 
@@ -95,7 +98,8 @@ export class AddonModChatHelperProvider {
      * @param  prevMessage Previous message object.
      * @return True if messages are from diferent days, false othetwise.
      */
-    protected showDate(message: AddonModChatMessageWithUserData, prevMessage: AddonModChatMessageWithUserData): boolean {
+    protected showDate(message: AddonModChatMessageForView | AddonModChatSessionMessageForView,
+            prevMessage: AddonModChatMessageForView | AddonModChatSessionMessageForView): boolean {
         if (!prevMessage) {
             return true;
         }
@@ -104,3 +108,25 @@ export class AddonModChatHelperProvider {
         return !moment(message.timestamp * 1000).isSame(prevMessage.timestamp * 1000, 'day');
     }
 }
+
+/**
+ * Special info for view usage.
+ */
+type AddonModChatInfoForView = {
+    showDate?: boolean; // If date should be displayed before the message.
+    beep?: string; // User id of the beeped user or 'all'.
+    special?: boolean; // True if is an special message (system, beep or command).
+    showUserData?: boolean; // If user data should be displayed.
+    showTail?: boolean; // If tail should be displayed (decoration).
+    beepWho?: string; // Fullname of the beeped user.
+};
+
+/**
+ * Message with data for view usage.
+ */
+export type AddonModChatMessageForView = AddonModChatMessageWithUserData & AddonModChatInfoForView;
+
+/**
+ * Session message with data for view usage.
+ */
+export type AddonModChatSessionMessageForView = AddonModChatSessionMessageWithUserData & AddonModChatInfoForView;

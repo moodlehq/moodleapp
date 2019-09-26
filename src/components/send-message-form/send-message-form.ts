@@ -19,7 +19,6 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreConstants } from '@core/constants';
 
 /**
@@ -47,8 +46,7 @@ export class CoreSendMessageFormComponent implements OnInit {
     protected sendOnEnter: boolean;
 
     constructor(private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider, configProvider: CoreConfigProvider,
-            eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider,
-            private domUtils: CoreDomUtilsProvider) {
+            eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider) {
 
         this.onSubmit = new EventEmitter();
         this.onResize = new EventEmitter();
