@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title><core-format-text [text]="course.fullname"></core-format-text></ion-title>
+        <ion-title><core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="course.id"></core-format-text></ion-title>
     </ion-navbar>
 </ion-header>
 <ion-content>
@@ -15,13 +15,13 @@
             </div>
             <a ion-item text-wrap (click)="openCourse()" [title]="course.fullname" [attr.detail-none]=" avoidOpenCourse || !canAccessCourse">
                 <core-icon name="fa-graduation-cap" fixed-width item-start></core-icon>
-                <h2><core-format-text [text]="course.fullname"></core-format-text></h2>
-                <p *ngIf="course.categoryname"><core-format-text [text]="course.categoryname"></core-format-text></p>
+                <h2><core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="course.id"></core-format-text></h2>
+                <p *ngIf="course.categoryname"><core-format-text [text]="course.categoryname" contextLevel="coursecat" [contextInstanceId]="course.categoryid"></core-format-text></p>
                 <p *ngIf="course.startdate">{{course.startdate * 1000 | coreFormatDate:"strftimedatefullshort" }} <span *ngIf="course.enddate"> - {{course.enddate * 1000 | coreFormatDate:"strftimedatefullshort" }}</span></p>
             </a>
 
             <ion-item text-wrap *ngIf="course.summary" detail-none>
-                <core-format-text [text]="course.summary" maxHeight="120"></core-format-text>
+                <core-format-text [text]="course.summary" maxHeight="120" contextLevel="course" [contextInstanceId]="course.id"></core-format-text>
             </ion-item>
 
             <ng-container text-wrap *ngIf="course.contacts && course.contacts.length">
@@ -36,8 +36,8 @@
             <ion-item text-wrap *ngIf="course.customfields" detail-none>
                 <ng-container *ngFor="let field of course.customfields">
                     <div *ngIf="field.value" class="core-customfield core-customfield_{{field.type}} core-customfield_{{field.shortname}}">
-                        <span class="core-customfieldname"><core-format-text [text]="field.name"></core-format-text></span><span class="core-customfieldseparator">: </span>
-                        <span class="core-customfieldvalue"><core-format-text [text]="field.value" maxHeight="120"></core-format-text></span>
+                        <span class="core-customfieldname"><core-format-text [text]="field.name" contextLevel="course" [contextInstanceId]="course.id"></core-format-text></span><span class="core-customfieldseparator">: </span>
+                        <span class="core-customfieldvalue"><core-format-text [text]="field.value" maxHeight="120" contextLevel="course" [contextInstanceId]="course.id"></core-format-text></span>
                     </div>
                 </ng-container>
             </ion-item>

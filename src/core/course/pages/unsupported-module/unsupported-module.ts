@@ -36,6 +36,7 @@ export class CoreCourseUnsupportedModulePage {
      * Expand the description.
      */
     expandDescription(): void {
-        this.textUtils.expandText(this.translate.instant('core.description'), this.module.description);
+        this.textUtils.expandText(this.translate.instant('core.description'), this.module.description, undefined, undefined,
+                [], true, 'module', this.module.id);
     }
 }

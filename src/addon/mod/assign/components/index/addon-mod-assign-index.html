@@ -17,7 +17,7 @@
     <!-- Description and intro attachments. -->
     <ion-card *ngIf="description" (click)="expandDescription($event)">
         <ion-item text-wrap>
-            <core-format-text [text]="description" [component]="component" [componentId]="componentId" maxHeight="120" (click)="expandDescription($event)"></core-format-text>
+            <core-format-text [text]="description" [component]="component" [componentId]="componentId" maxHeight="120" contextLevel="module" [contextInstanceId]="module.id" (click)="expandDescription($event)"></core-format-text>
         </ion-item>
     </ion-card>
 

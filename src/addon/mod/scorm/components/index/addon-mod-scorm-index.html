@@ -14,7 +14,7 @@
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
-    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id"></core-course-module-description>
 
     <!-- Warning message. -->
     <div *ngIf="scorm && scorm.warningMessage" class="core-info-card" icon-start>
@@ -98,8 +98,8 @@
                     <div *ngFor="let sco of toc" class="core-padding-{{sco.level}}">
                         <p *ngIf="sco.isvisible">
                             <img [src]="sco.image.url" [alt]="sco.image.description" />
-                            <a *ngIf="sco.prereq && sco.launch" (click)="open($event, sco.id)">{{ sco.title }}</a>
-                            <span *ngIf="!sco.prereq || !sco.launch">{{ sco.title }}</span>
+                            <a *ngIf="sco.prereq && sco.launch" (click)="open($event, sco.id)"><core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="module.id"></core-format-text></a>
+                            <span *ngIf="!sco.prereq || !sco.launch"><core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="module.id"></core-format-text></span>
                         </p>
                     </div>
                 </ion-item>

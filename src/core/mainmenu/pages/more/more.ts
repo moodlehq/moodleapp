@@ -33,6 +33,7 @@ export class CoreMainMenuMorePage implements OnDestroy {
     handlersLoaded: boolean;
     siteInfo: any;
     siteName: string;
+    siteHomeId: number;
     logoutLabel: string;
     showWeb: boolean;
     showHelp: boolean;
@@ -110,6 +111,7 @@ export class CoreMainMenuMorePage implements OnDestroy {
         this.siteInfo = currentSite.getInfo();
         this.siteName = currentSite.getSiteName();
         this.siteUrl = currentSite.getURL();
+        this.siteHomeId = currentSite.getSiteHomeId();
         this.logoutLabel = 'core.mainmenu.' + (config && config.tool_mobile_forcelogout == '1' ? 'logout' : 'changesite');
         this.showWeb = !currentSite.isFeatureDisabled('CoreMainMenuDelegate_website');
         this.showHelp = !currentSite.isFeatureDisabled('CoreMainMenuDelegate_help');

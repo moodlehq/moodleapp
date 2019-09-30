@@ -19,7 +19,7 @@
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
         <core-loading [hideUntil]="loaded" class="core-loading-center">
-            <core-course-module-description *ngIf="forum && forum.type != 'single'" [description]="description" [component]="component" [componentId]="componentId" [note]="descriptionNote"></core-course-module-description>
+            <core-course-module-description *ngIf="forum && forum.type != 'single'" [description]="description" [component]="component" [componentId]="componentId" [note]="descriptionNote" contextLevel="module" [contextInstanceId]="module.id"></core-course-module-description>
 
             <!-- Forum discussions found to be synchronized -->
             <ion-card class="core-warning-card" icon-start *ngIf="hasOffline || hasOfflineRatings">
@@ -45,7 +45,7 @@
                 <ng-container *ngFor="let discussion of offlineDiscussions">
                     <ion-item text-wrap (click)="openNewDiscussion(discussion.timecreated)" [attr.no-lines]="discussion.groupname" [class.core-split-item-selected]="discussion.timecreated == -selectedDiscussion">
                         <ion-avatar core-user-avatar [user]="discussion" item-start [courseId]="courseId"></ion-avatar>
-                        <h2><core-format-text [text]="discussion.subject"></core-format-text></h2>
+                        <h2><core-format-text [text]="discussion.subject" contextLevel="module" [contextInstanceId]="module.id"></core-format-text></h2>
                         <h3 *ngIf="discussion.userfullname">
                             <ion-note float-end padding-left><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ion-note>
                             {{discussion.userfullname}}
@@ -63,7 +63,7 @@
                         <h2>
                             <core-icon name="fa-map-pin" *ngIf="discussion.pinned"></core-icon>
                             <core-icon name="fa-star" class="addon-forum-star" *ngIf="!discussion.pinned && discussion.starred"></core-icon>
-                            <core-format-text [text]="discussion.subject"></core-format-text>
+                            <core-format-text [text]="discussion.subject" contextLevel="module" [contextInstanceId]="module.id"></core-format-text>
                         </h2>
                         <h3>
                             <ion-note float-end padding-left text-end>

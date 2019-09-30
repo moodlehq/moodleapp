@@ -57,6 +57,7 @@ export class AddonCalendarEventPage implements OnDestroy {
     notificationMax: string;
     notificationTimeText: string;
     event: any = {};
+    courseId: number;
     courseName: string;
     groupName: string;
     courseUrl = '';
@@ -250,11 +251,13 @@ export class AddonCalendarEventPage implements OnDestroy {
 
             // If the event belongs to a course, get the course name and the URL to view it.
             if (canGetById && event.course && event.course.id != this.siteHomeId) {
+                this.courseId = event.course.id;
                 this.courseName = event.course.fullname;
                 this.courseUrl = event.course.viewurl;
             } else if (event.courseid && event.courseid != this.siteHomeId) {
                 // Retrieve the course.
                 promises.push(this.coursesProvider.getUserCourse(event.courseid, true).then((course) => {
+                    this.courseId = course.id;
                     this.courseName = course.fullname;
                     this.courseUrl = currentSite ? this.textUtils.concatenatePaths(currentSite.siteUrl,
                             '/course/view.php?id=' + event.courseid) : '';

@@ -17,7 +17,7 @@
                     <ion-avatar item-start>
                         <img [src]="badge.badgeurl" [alt]="badge.name" item-start core-external-content>
                     </ion-avatar>
-                    <h2><core-format-text [text]="badge.name"></core-format-text></h2>
+                    <h2>{{ badge.name }}</h2>
                     <p>{{ badge.dateissued * 1000 | coreFormatDate :'strftimedatetimeshort' }}</p>
                     <ion-badge item-end color="danger" *ngIf="badge.dateexpire && currentTime >= badge.dateexpire">
                         {{ 'addon.badges.expired' | translate }}

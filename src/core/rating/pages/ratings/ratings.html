@@ -19,7 +19,7 @@
                 <ion-note item-end padding-left *ngIf="rating.timemodified">
                     {{ rating.timemodified | coreDateDayOrTime }}
                 </ion-note>
-                <h2><core-format-text [text]="rating.userfullname"></core-format-text></h2>
+                <h2>{{ rating.userfullname }}</h2>
                 <p>{{ rating.rating }}</p>
             </ion-item>
         </ion-list>

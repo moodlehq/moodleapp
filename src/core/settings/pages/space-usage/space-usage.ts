@@ -18,9 +18,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreFilterProvider } from '@core/filter/providers/filter';
 
 /**
  * Page that displays the space usage settings.
@@ -39,7 +39,7 @@ export class CoreSettingsSpaceUsagePage {
     totalEntries = 0;
 
     constructor(private filePoolProvider: CoreFilepoolProvider,
-            private sitesProvider: CoreSitesProvider, private textUtils: CoreTextUtilsProvider,
+            private sitesProvider: CoreSitesProvider, private filterProvider: CoreFilterProvider,
             private translate: TranslateService, private domUtils: CoreDomUtilsProvider, appProvider: CoreAppProvider,
             private courseProvider: CoreCourseProvider) {
         this.currentSiteId = this.sitesProvider.getCurrentSiteId();
@@ -162,7 +162,9 @@ export class CoreSettingsSpaceUsagePage {
      * @param siteData Site object with space usage.
      */
     deleteSiteStorage(siteData: any): void {
-        this.textUtils.formatText(siteData.siteName).then((siteName) => {
+        this.filterProvider.getFiltersAndFormatText(siteData.siteName, 'system', siteData.siteHomeId,
+                {clean: true, singleLine: true}, siteData.id).then((siteName) => {
+
             const title = this.translate.instant('core.settings.deletesitefilestitle');
             const message = this.translate.instant('core.settings.deletesitefiles', {sitename: siteName});
 

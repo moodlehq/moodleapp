@@ -36,6 +36,8 @@ export class CoreQuestionComponent implements OnInit {
     @Input() attemptId: number; // Attempt ID.
     @Input() usageId: number; // Usage ID.
     @Input() offlineEnabled?: boolean | string; // Whether the question can be answered in offline.
+    @Input() contextLevel?: string; // The context level.
+    @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Output() buttonClicked: EventEmitter<any>; // Will emit an event when a behaviour button is clicked.
     @Output() onAbort: EventEmitter<void>; // Will emit an event if the question should be aborted.
 
@@ -82,6 +84,8 @@ export class CoreQuestionComponent implements OnInit {
                     componentId: this.componentId,
                     attemptId: this.attemptId,
                     offlineEnabled: this.offlineEnabled,
+                    contextLevel: this.contextLevel,
+                    contextInstanceId: this.contextInstanceId,
                     buttonClicked: this.buttonClicked,
                     onAbort: this.onAbort
                 };

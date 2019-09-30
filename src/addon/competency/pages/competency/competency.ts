@@ -46,6 +46,8 @@ export class AddonCompetencyCompetencyPage {
     user: CoreUserSummary;
     competency: AddonCompetencyUserCompetencySummary;
     userCompetency: AddonCompetencyUserCompetencyPlan | AddonCompetencyUserCompetency | AddonCompetencyUserCompetencyCourse;
+    contextLevel: string;
+    contextInstanceId: number;
 
     constructor(private navCtrl: NavController, navParams: NavParams, private translate: TranslateService,
             private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
@@ -98,6 +100,15 @@ export class AddonCompetencyCompetencyPage {
         }
 
         return promise.then((competency) => {
+
+            // Calculate the context.
+            if (this.courseId) {
+                this.contextLevel = 'course';
+                this.contextInstanceId = this.courseId;
+            } else {
+                this.contextLevel = 'user';
+                this.contextInstanceId = this.userId || competency.usercompetencysummary.user.id;
+            }
 
             this.competency = competency.usercompetencysummary;
             this.userCompetency = this.competency.usercompetencyplan || this.competency.usercompetency;
@@ -155,6 +166,10 @@ export class AddonCompetencyCompetencyPage {
     openCompetencySummary(competencyId: number): void {
         // Decide which navCtrl to use. If this page is inside a split view, use the split view's master nav.
         const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
-        navCtrl.push('AddonCompetencyCompetencySummaryPage', {competencyId});
+        navCtrl.push('AddonCompetencyCompetencySummaryPage', {
+            competencyId,
+            contextLevel: this.contextLevel,
+            contextInstanceId: this.contextInstanceId
+        });
     }
 }

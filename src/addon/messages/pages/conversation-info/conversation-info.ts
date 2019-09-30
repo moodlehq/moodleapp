@@ -18,6 +18,7 @@ import {
     AddonMessagesProvider, AddonMessagesConversationFormatted, AddonMessagesConversationMember
 } from '../../providers/messages';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Page that displays the list of conversations, including group conversations.
@@ -34,12 +35,14 @@ export class AddonMessagesConversationInfoPage implements OnInit {
     members: AddonMessagesConversationMember[] = [];
     canLoadMore = false;
     loadMoreError = false;
+    siteHomeId: number;
 
     protected conversationId: number;
 
     constructor(private messagesProvider: AddonMessagesProvider, private domUtils: CoreDomUtilsProvider, navParams: NavParams,
-            protected viewCtrl: ViewController) {
+            protected viewCtrl: ViewController, sitesProvider: CoreSitesProvider) {
         this.conversationId = navParams.get('conversationId');
+        this.siteHomeId = sitesProvider.getCurrentSiteHomeId();
     }
 
     /**

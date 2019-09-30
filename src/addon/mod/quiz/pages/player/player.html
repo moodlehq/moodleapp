@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title><core-format-text *ngIf="quiz" [text]="quiz.name"></core-format-text></ion-title>
+        <ion-title><core-format-text *ngIf="quiz" [text]="quiz.name" contextLevel="module" [contextInstanceId]="quiz.coursemodule"></core-format-text></ion-title>
 
         <ion-buttons end>
             <button id="addon-mod_quiz-connection-error-button" ion-button icon-only [hidden]="!autoSaveError" (click)="showConnectionError($event)" [attr.aria-label]="'core.error' | translate">
@@ -54,11 +54,11 @@
                         <h2 *ngIf="!question.number" class="inline">{{ 'core.question.information' | translate }}</h2>
                         <ion-note text-wrap item-end *ngIf="question.status || question.readableMark">
                             <p *ngIf="question.status" class="block">{{question.status}}</p>
-                            <p *ngIf="question.readableMark"><core-format-text [text]="question.readableMark"></core-format-text></p>
+                            <p *ngIf="question.readableMark">{{ question.readableMark }}</p>
                         </ion-note>
                     </ion-item-divider>
                     <!-- Body of the question. -->
-                    <core-question text-wrap [question]="question" [component]="component" [componentId]="quiz.coursemodule" [attemptId]="attempt.id" [usageId]="attempt.uniqueid" [offlineEnabled]="offline" (onAbort)="abortQuiz()" (buttonClicked)="behaviourButtonClicked($event)"></core-question>
+                    <core-question text-wrap [question]="question" [component]="component" [componentId]="quiz.coursemodule" [attemptId]="attempt.id" [usageId]="attempt.uniqueid" [offlineEnabled]="offline" contextLevel="module" [contextInstanceId]="quiz.coursemodule" (onAbort)="abortQuiz()" (buttonClicked)="behaviourButtonClicked($event)"></core-question>
                 </ion-card>
             </div>
         </form>

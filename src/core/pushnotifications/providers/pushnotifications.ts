@@ -33,6 +33,7 @@ import { CoreConfigConstants } from '../../../configconstants';
 import { ILocalNotification } from '@ionic-native/local-notifications';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreSite } from '@classes/site';
+import { CoreFilterProvider } from '@core/filter/providers/filter';
 
 /**
  * Data needed to register a device in a Moodle site.
@@ -176,7 +177,8 @@ export class CorePushNotificationsProvider {
             private badge: Badge, private localNotificationsProvider: CoreLocalNotificationsProvider,
             private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider, private push: Push,
             private configProvider: CoreConfigProvider, private device: Device, private zone: NgZone,
-            private translate: TranslateService, private platform: Platform, private sitesFactory: CoreSitesFactoryProvider) {
+            private translate: TranslateService, private platform: Platform, private sitesFactory: CoreSitesFactoryProvider,
+            private filterProvider: CoreFilterProvider) {
         this.logger = logger.getInstance('CorePushNotificationsProvider');
         this.appDB = appProvider.getDB();
         this.appDB.createTablesFromSchema(this.appTablesSchema);
@@ -430,7 +432,7 @@ export class CorePushNotificationsProvider {
     onMessageReceived(notification: any): void {
         const data = notification ? notification.additionalData : {};
 
-        this.sitesProvider.getSite(data.site).then(() => {
+        this.sitesProvider.getSite(data.site).then((site) => {
 
             if (typeof data.customdata == 'string') {
                 data.customdata = this.textUtils.parseJSON(data.customdata, {});
@@ -451,13 +453,15 @@ export class CorePushNotificationsProvider {
                         extraFeatures = this.utils.isTrueOrOne(data.extrafeatures);
 
                     // Apply formatText to title and message.
-                    promises.push(this.textUtils.formatText(notification.title, true, true).then((formattedTitle) => {
-                        localNotif.title = formattedTitle;
+                    promises.push(this.filterProvider.getFiltersAndFormatText(notification.title, 'system', site.getSiteHomeId(),
+                            {clean: true, singleLine: true}, site.getId()).then((title) => {
+                        localNotif.title = title;
                     }).catch(() => {
                         localNotif.title = notification.title;
                     }));
 
-                    promises.push(this.textUtils.formatText(notification.message, true, true).catch(() => {
+                    promises.push(this.filterProvider.getFiltersAndFormatText(notification.message, 'system', site.getSiteHomeId(),
+                            {clean: true, singleLine: true}, site.getId()).catch(() => {
                         // Error formatting, use the original message.
                         return notification.message;
                     }).then((formattedMessage) => {

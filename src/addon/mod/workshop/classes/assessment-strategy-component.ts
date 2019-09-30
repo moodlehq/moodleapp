@@ -24,6 +24,7 @@ export class AddonModWorkshopAssessmentStrategyComponentBase {
     @Input() selectedValues: any[];
     @Input() fieldErrors: any;
     @Input() strategy: string;
+    @Input() moduleId: number;
 
     constructor() {
         // Nothing to do.

@@ -11,13 +11,13 @@
         <ion-card *ngIf="user">
             <ion-item text-wrap>
                 <ion-avatar core-user-avatar [user]="user" item-start></ion-avatar>
-                <h2><core-format-text [text]="user.fullname"></core-format-text></h2>
+                <h2>{{ user.fullname }}</h2>
             </ion-item>
        </ion-card>
         <ion-card *ngIf="plan">
             <ion-list>
                 <ion-item text-wrap *ngIf="plan.plan.description">
-                    <core-format-text [text]="plan.plan.description"></core-format-text>
+                    <core-format-text [text]="plan.plan.description" contextLevel="user" [contextInstanceId]="plan.plan.userid"></core-format-text>
                 </ion-item>
                 <ion-item text-wrap>
                     <strong>{{ 'addon.competency.status' | translate }}</strong>:

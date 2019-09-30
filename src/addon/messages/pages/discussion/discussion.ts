@@ -95,6 +95,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     isSelf = false;
     muteEnabled = false;
     muteIcon = 'volume-off';
+    siteHomeId: number;
 
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, navParams: NavParams,
             private userProvider: CoreUserProvider, private navCtrl: NavController, private messagesSync: AddonMessagesSyncProvider,
@@ -107,6 +108,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         this.currentUserId = sitesProvider.getCurrentSiteUserId();
         this.groupMessagingEnabled = this.messagesProvider.isGroupMessagingEnabled();
         this.muteEnabled = this.messagesProvider.isMuteConversationEnabled();
+        this.siteHomeId = sitesProvider.getCurrentSiteHomeId();
 
         this.logger = logger.getInstance('AddonMessagesDiscussionPage');
 

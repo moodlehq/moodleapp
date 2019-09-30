@@ -44,6 +44,7 @@ export class AddonQtypeGapSelectComponent extends CoreQuestionBaseComponent impl
      * The question has been rendered.
      */
     questionRendered(): void {
-        this.questionHelper.treatCorrectnessIconsClicks(this.element, this.component, this.componentId);
+        this.questionHelper.treatCorrectnessIconsClicks(this.element, this.component, this.componentId, this.contextLevel,
+                this.contextInstanceId);
     }
 }

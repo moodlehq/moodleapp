@@ -27,6 +27,8 @@ export class AddonUserProfileFieldTextareaComponent implements OnInit {
     @Input() edit = false; // True if editing the field. Defaults to false.
     @Input() disabled = false; // True if disabled. Defaults to false.
     @Input() form?: FormGroup; // Form where to add the form control.
+    @Input() contextLevel?: string; // The context level.
+    @Input() contextInstanceId?: number; // The instance ID related to the context.
 
     control: FormControl;
 

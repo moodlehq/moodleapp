@@ -25,7 +25,7 @@
                 <ion-icon item-start name="checkmark-circle" color="success" *ngIf="task.completed == '1'"></ion-icon>
 
                 <h2>{{task.title}}</h2>
-                <p *ngIf="task.details"><core-format-text [text]="task.details"></core-format-text></p>
+                <p *ngIf="task.details">{{ task.details }}</p>
                 <ion-icon item-end *ngIf="task.link && task.code != 'submit'" name="open"></ion-icon>
             </a>
         </ng-container>
@@ -41,7 +41,7 @@
     <ion-card *ngIf="description && workshop && workshop.phase == workshopPhases.PHASE_SETUP">
         <ion-item text-wrap>
             <h2>{{ 'core.description' | translate }}</h2>
-            <core-format-text [text]="description" [component]="component" [componentId]="componentId"></core-format-text>
+            <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id"></core-format-text>
         </ion-item>
     </ion-card>
 
@@ -51,7 +51,7 @@
             <ion-card *ngIf="workshop.conclusion">
                 <ion-item text-wrap>
                     <h2>{{ 'addon.mod_workshop.conclusion' | translate }}</h2>
-                    <core-format-text fullOnClick="true" [component]="component" [componentId]="workshop.cmid" [text]="workshop.conclusion"></core-format-text>
+                    <core-format-text fullOnClick="true" [component]="component" [componentId]="module.id" [text]="workshop.conclusion" contextLevel="module" [contextInstanceId]="module.id"></core-format-text>
                 </ion-item>
             </ion-card>
 
@@ -61,11 +61,11 @@
                 </ion-item-divider>
                 <ion-item text-wrap *ngIf="userGrades.submissionlongstrgrade">
                     <h2>{{ 'addon.mod_workshop.submissiongrade' | translate }}</h2>
-                    <core-format-text [text]="userGrades.submissionlongstrgrade"></core-format-text>
+                    {{ userGrades.submissionlongstrgrade }}
                 </ion-item>
                 <ion-item text-wrap *ngIf="userGrades.assessmentlongstrgrade">
                     <h2>{{ 'addon.mod_workshop.gradinggrade' | translate }}</h2>
-                    <core-format-text [text]="userGrades.assessmentlongstrgrade"></core-format-text>
+                    {{ userGrades.assessmentlongstrgrade }}
                 </ion-item>
             </ion-card>
         </ng-container>
@@ -74,7 +74,7 @@
         <ion-card *ngIf="workshop.phase == workshopPhases.PHASE_SUBMISSION && workshop.instructauthors">
             <ion-item text-wrap>
                 <h2>{{ 'addon.mod_workshop.areainstructauthors' | translate }}</h2>
-                <core-format-text fullOnClick="true" [component]="component" [componentId]="workshop.cmid" [text]="workshop.instructauthors"></core-format-text>
+                <core-format-text fullOnClick="true" [component]="component" [componentId]="module.id" [text]="workshop.instructauthors" contextLevel="module" [contextInstanceId]="module.id"></core-format-text>
             </ion-item>
         </ion-card>
 
@@ -122,7 +122,7 @@
             <ion-card *ngIf="workshop.phase == workshopPhases.PHASE_ASSESSMENT && workshop.instructreviewers">
                 <ion-item text-wrap>
                     <h2>{{ 'addon.mod_workshop.areainstructreviewers' | translate }}</h2>
-                    <core-format-text fullOnClick="true" [component]="component" [componentId]="workshop.cmid" [text]="workshop.instructreviewers"></core-format-text>
+                    <core-format-text fullOnClick="true" [component]="component" [componentId]="module.id" [text]="workshop.instructreviewers" contextLevel="module" [contextInstanceId]="module.id"></core-format-text>
                 </ion-item>
             </ion-card>
 

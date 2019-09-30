@@ -1,6 +1,6 @@
 <a ion-item text-wrap (click)="openCourse(course)" [class.item-disabled]="course.visible == 0" [title]="course.displayname || course.fullname">
     <core-icon name="fa-graduation-cap" fixed-width item-start></core-icon>
-    <h2><core-format-text [text]="course.displayname || course.fullname"></core-format-text></h2>
+    <h2><core-format-text [text]="course.displayname || course.fullname" contextLevel="course" [contextInstanceId]="course.id"></core-format-text></h2>
     <div item-end>
         <span *ngIf="!course.isEnrolled">
             <span ion-button icon-only clear color="gray" *ngFor="let instance of course.enrollment" [attr.aria-label]=" instance.name | translate">

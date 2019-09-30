@@ -552,7 +552,8 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         const modal = this.modalCtrl.create('AddonModWikiMapPage', {
             pages: this.subwikiPages,
             selected: this.currentPageObj && this.currentPageObj.id,
-            homeView: this.getWikiHomeView()
+            homeView: this.getWikiHomeView(),
+            moduleId: this.module.id
         }, { cssClass: 'core-modal-lateral',
             showBackdrop: true,
             enableBackdropDismiss: true,

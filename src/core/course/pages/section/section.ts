@@ -18,7 +18,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
@@ -30,6 +29,7 @@ import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay,
     CoreCourseOptionsMenuHandlerToDisplay } from '../../providers/options-delegate';
 import { CoreCourseSyncProvider } from '../../providers/sync';
 import { CoreCourseFormatComponent } from '../../components/format/format';
+import { CoreFilterProvider } from '@core/filter/providers/filter';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -75,7 +75,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     constructor(navParams: NavParams, private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
             private courseFormatDelegate: CoreCourseFormatDelegate, private courseOptionsDelegate: CoreCourseOptionsDelegate,
             private translate: TranslateService, private courseHelper: CoreCourseHelperProvider, eventsProvider: CoreEventsProvider,
-            private textUtils: CoreTextUtilsProvider, private coursesProvider: CoreCoursesProvider,
+            private coursesProvider: CoreCoursesProvider, private filterProvider: CoreFilterProvider,
             sitesProvider: CoreSitesProvider, private navCtrl: NavController, private injector: Injector,
             private prefetchDelegate: CoreCourseModulePrefetchDelegate, private syncProvider: CoreCourseSyncProvider,
             private utils: CoreUtilsProvider) {
@@ -263,7 +263,8 @@ export class CoreCourseSectionPage implements OnDestroy {
 
                     // Format the name of each section and check if it has content.
                     this.sections = sections.map((section) => {
-                        this.textUtils.formatText(section.name.trim(), true, true).then((name) => {
+                        this.filterProvider.getFiltersAndFormatText(section.name.trim(), 'course', this.course.id,
+                                {clean: true, singleLine: true}).then((name) => {
                             section.formattedName = name;
                         });
                         section.hasContent = this.courseHelper.sectionHasContent(section);

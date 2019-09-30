@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+        <ion-title><core-format-text [text]="title" contextLevel="module" [contextInstanceId]="scorm.coursemodule"></core-format-text></ion-title>
 
         <ion-buttons end>
             <button *ngIf="showToc && !loadingToc && toc && toc.length" ion-button icon-only (click)="openToc($event)"[attr.aria-label]="'addon.mod_scorm.toc' | translate" aria-haspopup="true">

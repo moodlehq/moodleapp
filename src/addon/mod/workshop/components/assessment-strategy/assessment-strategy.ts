@@ -51,7 +51,8 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit {
         edit: false,
         selectedValues: [],
         fieldErrors: {},
-        strategy: ''
+        strategy: '',
+        moduleId: 0
     };
     assessmentStrategyLoaded = false;
     notSupported = false;
@@ -101,6 +102,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit {
         this.data.workshopId = this.workshop.id;
         this.data.edit = this.edit;
         this.data.strategy = this.strategy;
+        this.data.moduleId = this.workshop.coursemodule;
 
         this.componentClass = this.strategyDelegate.getComponentForPlugin(this.injector, this.strategy);
         if (this.componentClass) {

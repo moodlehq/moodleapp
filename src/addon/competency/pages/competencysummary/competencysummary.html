@@ -10,7 +10,7 @@
     <core-loading [hideUntil]="competencyLoaded">
         <ion-card *ngIf="competency">
             <ion-item text-wrap *ngIf="competency.competency.description">
-                <core-format-text [text]="competency.competency.description"></core-format-text>
+                <core-format-text [text]="competency.competency.description" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"></core-format-text>
             </ion-item>
             <ion-item text-wrap>
                 <strong>{{ 'addon.competency.path' | translate }}</strong>

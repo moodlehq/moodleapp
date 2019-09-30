@@ -4,7 +4,7 @@
                 <!-- Site home main contents. -->
                 <ng-container *ngIf="section && section.hasContent">
                     <ion-item text-wrap *ngIf="section.summary">
-                        <core-format-text [text]="section.summary"></core-format-text>
+                        <core-format-text [text]="section.summary" contextLevel="course" [contextInstanceId]="siteHomeId"></core-format-text>
                     </ion-item>
 
                     <core-course-module *ngFor="let module of section.modules" [module]="module" [courseId]="siteHomeId" [downloadEnabled]="downloadEnabled" [section]="section"></core-course-module>

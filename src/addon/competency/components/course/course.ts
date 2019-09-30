@@ -86,7 +86,11 @@ export class AddonCompetencyCourseComponent {
      * @param competencyId
      */
     openCompetencySummary(competencyId: number): void {
-        this.navCtrl.push('AddonCompetencyCompetencySummaryPage', {competencyId});
+        this.navCtrl.push('AddonCompetencyCompetencySummaryPage', {
+            competencyId,
+            contextLevel: 'course',
+            contextInstanceId: this.courseId
+        });
     }
 
     /**

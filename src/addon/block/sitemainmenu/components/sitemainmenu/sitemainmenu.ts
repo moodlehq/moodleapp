@@ -30,6 +30,7 @@ import { CoreBlockBaseComponent } from '@core/block/classes/base-block-component
 export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent implements OnInit {
     @Input() downloadEnabled: boolean;
 
+    component = 'AddonBlockSiteMainMenu';
     mainMenuBlock: any;
     siteHomeId: number;
 

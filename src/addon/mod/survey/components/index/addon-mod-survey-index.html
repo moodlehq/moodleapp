@@ -14,10 +14,10 @@
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center safe-area-page">
 
-    <core-course-module-description *ngIf="survey && !survey.surveydone && !hasOffline" [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+    <core-course-module-description *ngIf="survey && !survey.surveydone && !hasOffline" [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id"></core-course-module-description>
 
     <!-- Survey already done -->
-    <ion-card padding *ngIf="survey && survey.surveydone">  
+    <ion-card padding *ngIf="survey && survey.surveydone">
         <p padding>{{ 'addon.mod_survey.surveycompletednograph' | translate }}</p>
         <a ion-button block icon-start [href]="externalUrl" core-link>
             <ion-icon name="open" start></ion-icon>

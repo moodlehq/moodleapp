@@ -30,10 +30,13 @@ import { CoreLinkDirective } from '../directives/link';
 import { CoreExternalContentDirective } from '../directives/external-content';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreFilterProvider } from '@core/filter/providers/filter';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
- * and CoreExternalContentDirective.
+ * and CoreExternalContentDirective. It also applies filters if needed.
+ *
+ * Please use this directive if your text needs to be filtered or it can contain links or media (images, audio, video).
  *
  * Example usage:
  * <core-format-text [text]="myText" [component]="component" [componentId]="componentId"></core-format-text>
@@ -55,6 +58,9 @@ export class CoreFormatTextDirective implements OnChanges {
     @Input() fullOnClick?: boolean | string; // Whether it should open a new page with the full contents on click.
     @Input() fullTitle?: string; // Title to use in full view. Defaults to "Description".
     @Input() highlight?: string; // Text to highlight.
+    @Input() filter?: boolean | string; // Whether to filter the text. If not defined, true if contextLevel and instanceId are set.
+    @Input() contextLevel?: string; // The context level of the text.
+    @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Output() afterRender?: EventEmitter<any>; // Called when the data is rendered.
 
     protected element: HTMLElement;
@@ -67,7 +73,8 @@ export class CoreFormatTextDirective implements OnChanges {
             private filepoolProvider: CoreFilepoolProvider, private appProvider: CoreAppProvider,
             private contentLinksHelper: CoreContentLinksHelperProvider, @Optional() private navCtrl: NavController,
             @Optional() private content: Content, @Optional() private svComponent: CoreSplitViewComponent,
-            private iframeUtils: CoreIframeUtilsProvider, private eventsProvider: CoreEventsProvider) {
+            private iframeUtils: CoreIframeUtilsProvider, private eventsProvider: CoreEventsProvider,
+            private filterProvider: CoreFilterProvider) {
         this.element = element.nativeElement;
         this.element.classList.add('opacity-hide'); // Hide contents until they're treated.
         this.afterRender = new EventEmitter();
@@ -275,8 +282,10 @@ export class CoreFormatTextDirective implements OnChanges {
             return;
         } else {
             // Open a new state with the contents.
+            const filter = this.utils.isTrueOrOne(this.filter);
+
             this.textUtils.expandText(this.fullTitle || this.translate.instant('core.description'), this.text,
-                this.component, this.componentId);
+                this.component, this.componentId, undefined, filter, this.contextLevel, this.contextInstanceId);
         }
     }
 
@@ -363,9 +372,26 @@ export class CoreFormatTextDirective implements OnChanges {
         }).then((siteInstance: CoreSite) => {
             site = siteInstance;
 
-            // Apply format text function.
-            return this.textUtils.formatText(this.text, this.utils.isTrueOrOne(this.clean),
-                this.utils.isTrueOrOne(this.singleLine), undefined, this.highlight);
+            if (this.contextLevel == 'course' && this.contextInstanceId <= 0) {
+                this.contextInstanceId = site.getSiteHomeId();
+            }
+
+            this.filter = typeof this.filter == 'undefined' ? !!(this.contextLevel && this.contextInstanceId) : !!this.filter;
+
+            const options = {
+                clean: this.utils.isTrueOrOne(this.clean),
+                singleLine: this.utils.isTrueOrOne(this.singleLine),
+                highlight: this.highlight,
+                filter: this.filter
+            };
+
+            if (this.filter) {
+                return this.filterProvider.getFiltersAndFormatText(this.text, this.contextLevel, this.contextInstanceId, options,
+                        site.getId());
+            } else {
+                return this.filterProvider.formatText(this.text, options);
+            }
+
         }).then((formatted) => {
             const div = document.createElement('div'),
                 canTreatVimeo = site && site.isVersionGreaterEqualThan(['3.3.4', '3.4']),

@@ -52,7 +52,7 @@
                 <!-- If no sitename show big siteurl. -->
                 <p *ngIf="!siteName" padding class="item-heading">{{siteUrl}}</p>
                 <!-- If sitename, show big sitename and small siteurl. -->
-                <p *ngIf="siteName" padding class="item-heading"><core-format-text [text]="siteName"></core-format-text></p>
+                <p *ngIf="siteName" padding class="item-heading"><core-format-text [text]="siteName" [filter]="false"></core-format-text></p>
                 <p *ngIf="siteName">{{siteUrl}}</p>
             </ion-item>
 
@@ -145,7 +145,7 @@
 
     <ion-list *ngIf="isMinor">
         <ion-item-divider text-wrap>
-            <p *ngIf="siteName" class="item-heading padding"><core-format-text [text]="siteName"></core-format-text></p>
+            <p *ngIf="siteName" class="item-heading padding"><core-format-text [text]="siteName" [filter]="false"></core-format-text></p>
         </ion-item-divider>
         <ion-item text-wrap>
             <p class="item-heading">{{ 'core.considereddigitalminor' | translate }}</p>

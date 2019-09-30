@@ -17,6 +17,8 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSite } from '@classes/site';
 import { CoreWSExternalWarning } from '@providers/ws';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreFilterDelegate } from './delegate';
 
 /**
  * Service to provide filter functionalities.
@@ -27,8 +29,13 @@ export class CoreFilterProvider {
     protected ROOT_CACHE_KEY = 'mmFilter:';
 
     protected logger;
+    protected FILTERS_NOT_TREATED = ['activitynames', 'censor', 'data', 'emailprotect', 'emoticon', 'glossary', 'tex', 'tidy',
+            'urltolink'];
 
-    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider) {
+    constructor(logger: CoreLoggerProvider,
+            private sitesProvider: CoreSitesProvider,
+            private textUtils: CoreTextUtilsProvider,
+            private filterDelegate: CoreFilterDelegate) {
         this.logger = logger.getInstance('CoreFilterProvider');
     }
 
@@ -41,7 +48,78 @@ export class CoreFilterProvider {
      */
     canGetAvailableInContext(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.wsAvailable('core_filters_get_available_in_context');
+            return this.canGetAvailableInContextInSite(site);
+        });
+    }
+
+    /**
+     * Returns whether or not WS get available in context is avalaible in a certain site.
+     *
+     * @param site Site. If not defined, current site.
+     * @return Promise resolved with true if ws is avalaible, false otherwise.
+     * @since 3.4
+     */
+    canGetAvailableInContextInSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.wsAvailable('core_filters_get_available_in_context');
+    }
+
+    /**
+     * Given some HTML code, this function returns the text as safe HTML.
+     *
+     * @param text The text to be formatted.
+     * @param options Formatting options.
+     * @param filters The filters to apply. Required if filter is set to true.
+     * @return Promise resolved with the formatted text.
+     */
+    formatText(text: string, options?: CoreFilterFormatTextOptions, filters?: CoreFilterFilter[]): Promise<string> {
+
+        if (!text || typeof text != 'string') {
+            // No need to do any filters and cleaning.
+            return Promise.resolve('');
+        }
+
+        // Clone object if needed so we can modify it.
+        options = options ? Object.assign({}, options) : {};
+
+        if (typeof options.clean == 'undefined') {
+            options.clean = false;
+        }
+
+        if (typeof options.filter == 'undefined') {
+            options.filter = true;
+        }
+
+        if (!options.contextLevel) {
+            options.filter  = false;
+        }
+
+        // @todo: Setup?
+
+        let promise: Promise<string>;
+
+        if (options.filter) {
+            promise = this.filterDelegate.filterText(text, filters, options);
+        } else {
+            promise = Promise.resolve(text);
+        }
+
+        return promise.then((text) => {
+
+            if (options.clean) {
+                text = this.textUtils.cleanTags(text, options.singleLine);
+            }
+
+            if (options.shortenLength > 0) {
+                text = this.textUtils.shortenText(text, options.shortenLength);
+            }
+
+            if (options.highlight) {
+                text = this.textUtils.highlightText(text, options.highlight);
+            }
+
+            return text;
         });
     }
 
@@ -75,12 +153,43 @@ export class CoreFilterProvider {
             : Promise<{[contextlevel: string]: {[instanceid: number]: CoreFilterFilter[]}}> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
+            let hasSystemContext = false,
+                hasSiteHomeContext = false;
+
+            const contextsToSend = contexts.slice(); // Copy the contexts array to be able to modify it.
+
+            // Check if any of the contexts is "system". We cannot use system context, so we'll have to use a wrokaround.
+            for (let i = 0; i < contextsToSend.length; i++) {
+                const context = contextsToSend[i];
+
+                if (context.contextlevel == 'system' && context.instanceid == site.getSiteHomeId()) {
+                    hasSystemContext = true;
+
+                    // Use course site home instead. Check if it's already in the list.
+                    hasSiteHomeContext = contextsToSend.some((context) => {
+                        return context.contextlevel == 'course' && context.instanceid == site.getSiteHomeId();
+                    });
+
+                    if (hasSiteHomeContext) {
+                        // Site home is already in list, remove this context from the list.
+                        contextsToSend.splice(i, 1);
+                    } else {
+                        // Site home not in list, use it instead of system.
+                        contextsToSend[i] = {
+                            contextlevel: 'course',
+                            instanceid: context.instanceid
+                        };
+                    }
+
+                    break;
+                }
+            }
 
             const data = {
-                    contexts: contexts,
+                    contexts: contextsToSend,
                 },
                 preSets = {
-                    cacheKey: this.getAvailableInContextsCacheKey(contexts),
+                    cacheKey: this.getAvailableInContextsCacheKey(contextsToSend),
                     updateFrequency: CoreSite.FREQUENCY_RARELY
                 };
 
@@ -91,11 +200,11 @@ export class CoreFilterProvider {
 
                 // Initialize all contexts.
                 contexts.forEach((context) => {
-                    classified[context.contextlevel] = {};
+                    classified[context.contextlevel] = classified[context.contextlevel] || {};
                     classified[context.contextlevel][context.instanceid] = [];
                 });
 
-                if (contexts.length == 1) {
+                if (contexts.length == 1 && !hasSystemContext) {
                     // Only 1 context, no need to iterate over the filters.
                     classified[contexts[0].contextlevel][contexts[0].instanceid] = result.filters;
 
@@ -103,6 +212,21 @@ export class CoreFilterProvider {
                 }
 
                 result.filters.forEach((filter) => {
+                    if (hasSystemContext && filter.contextlevel == 'course' && filter.instanceid == site.getSiteHomeId()) {
+                        if (hasSiteHomeContext) {
+                            // We need to return both site home and system. Add site home first.
+                            classified[filter.contextlevel][filter.instanceid].push(filter);
+
+                            // Now copy the object so it can be modified.
+                            filter = Object.assign({}, filter);
+                        }
+
+                        // Simulate the system context based on the inherited data.
+                        filter.contextlevel = 'system';
+                        filter.contextid = -1;
+                        filter.localstate = filter.inheritedstate;
+                    }
+
                     classified[filter.contextlevel][filter.instanceid].push(filter);
                 });
 
@@ -114,7 +238,7 @@ export class CoreFilterProvider {
     /**
      * Get the filters available in a certain context.
      *
-     * @param contextLevel The context level to check.
+     * @param contextLevel The context level to check: system, user, coursecat, course, module, block, ...
      * @param instanceId The instance ID.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the filters.
@@ -122,6 +246,48 @@ export class CoreFilterProvider {
     getAvailableInContext(contextLevel: string, instanceId: number, siteId?: string): Promise<CoreFilterFilter[]> {
         return this.getAvailableInContexts([{contextlevel: contextLevel, instanceid: instanceId}], siteId).then((result) => {
             return result[contextLevel][instanceId];
+        });
+    }
+
+    /**
+     * Get filters and format text.
+     *
+     * @param text Text to filter.
+     * @param contextLevel The context level.
+     * @param instanceId Instance ID related to the context.
+     * @param options Options for format text.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the formatted text.
+     */
+    getFiltersAndFormatText(text: string, contextLevel: string, instanceId: number, options?: CoreFilterFormatTextOptions,
+            siteId?: string): Promise<string> {
+
+        options.contextLevel = contextLevel;
+        options.instanceId = instanceId;
+        options.filter = false;
+
+        return this.canGetAvailableInContext(siteId).then((canGet) => {
+            if (!canGet) {
+                options.filter = true;
+
+                // We cannot check which filters are available, apply them all.
+                return this.filterDelegate.getEnabledFilters(contextLevel, instanceId);
+            }
+
+            // Check if site has any filter to treat.
+            return this.siteHasFiltersToTreat(siteId).then((hasFilters) => {
+                if (hasFilters) {
+                    options.filter = true;
+
+                    return this.getAvailableInContext(contextLevel, instanceId, siteId);
+                }
+
+                return [];
+            }).catch(() => {
+                return [];
+            });
+        }).then((filters) => {
+            return this.formatText(text, options, filters);
         });
     }
 
@@ -161,6 +327,36 @@ export class CoreFilterProvider {
     invalidateAvailableInContext(contextLevel: string, instanceId: number, siteId?: string): Promise<any> {
         return this.invalidateAvailableInContexts([{contextlevel: contextLevel, instanceid: instanceId}], siteId);
     }
+
+    /**
+     * Check if site has available any filter that should be treated by the app.
+     *
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether it has filters to treat.
+     */
+    siteHasFiltersToTreat(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+
+            // Get filters at site level.
+            return this.getAvailableInContext('system', site.getSiteHomeId(), site.getId()).then((filters) => {
+
+                for (let i = 0; i < filters.length; i++) {
+                    const filter = filters[i];
+
+                    if (this.FILTERS_NOT_TREATED.indexOf(filter.filter) != -1) {
+                        continue;
+                    }
+
+                    if (this.filterDelegate.hasHandler(filter.filter, true)) {
+                        // There is a filter to treat and is enabled.
+                        return true;
+                    }
+                }
+
+                return false;
+            });
+        });
+    }
 }
 
 /**
@@ -181,4 +377,17 @@ export type CoreFilterFilter = {
 export type CoreFilterGetAvailableInContextResult = {
     filters: CoreFilterFilter[]; // Available filters.
     warning: CoreWSExternalWarning[]; // List of warnings.
+};
+
+/**
+ * Options that can be passed to format text.
+ */
+export type CoreFilterFormatTextOptions = {
+    contextLevel?: string; // The context level where the text is.
+    instanceId?: number; // The instance id related to the context.
+    clean?: boolean; // If true all HTML will be removed. Default false.
+    filter?: boolean; // If true the string will be run through applicable filters as well. Default true.
+    singleLine?: boolean; // If true then new lines will be removed (all the text in a single line).
+    shortenLength?: number; // Number of characters to shorten the text.
+    highlight?: string; // Text to highlight.
 };

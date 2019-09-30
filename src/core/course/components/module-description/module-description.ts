@@ -40,6 +40,8 @@ export class CoreCourseModuleDescriptionComponent {
     @Input() component?: string; // Component for format text directive.
     @Input() componentId?: string | number; // Component ID to use in conjunction with the component.
     @Input() showFull?: string | boolean; // Whether to always display the full description.
+    @Input() contextLevel?: string; // The context level.
+    @Input() contextInstanceId?: number; // The instance ID related to the context.
 
     constructor() {
         // Nothing to do.

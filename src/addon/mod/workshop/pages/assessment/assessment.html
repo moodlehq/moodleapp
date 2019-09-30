@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+        <ion-title><core-format-text [text]="title" contextLevel="module" [contextInstanceId]="workshop && workshop.coursemodule"></core-format-text></ion-title>
         <ion-buttons end [hidden]="!evaluating">
             <button ion-button clear (click)="saveEvaluation()" [attr.aria-label]="'core.save' | translate">
                 {{ 'core.save' | translate }}
@@ -67,7 +67,7 @@
             <ion-item text-wrap>
                 <ion-avatar core-user-avatar *ngIf="evaluateGradingByProfile" [user]="evaluateGradingByProfile" item-start [courseId]="courseId" [userId]="evaluateGradingByProfile.id"></ion-avatar>
                 <h2 *ngIf="evaluateGradingByProfile && evaluateGradingByProfile.fullname">{{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateGradingByProfile.fullname} }}</h2>
-                <core-format-text [text]="evaluate.text"></core-format-text>
+                <core-format-text [text]="evaluate.text" contextLevel="module" [contextInstanceId]="workshop.coursemodule"></core-format-text>
             </ion-item>
         </ion-list>
     </core-loading>

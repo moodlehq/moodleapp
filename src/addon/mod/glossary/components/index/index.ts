@@ -132,6 +132,8 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
             this.description = glossary.intro || this.description;
             this.canAdd = (this.glossaryProvider.isPluginEnabledForEditing() && glossary.canaddentry) || false;
 
+            this.dataRetrieved.emit(this.glossary);
+
             if (!this.fetchMode) {
                 this.switchMode('letter_all');
             }

@@ -58,6 +58,7 @@ export class AddonMessagesSearchPage implements OnDestroy {
         loadMoreError: false
     };
     selectedResult = null;
+    siteHomeId: number;
 
     protected memberInfoObserver;
 
@@ -65,6 +66,8 @@ export class AddonMessagesSearchPage implements OnDestroy {
 
     constructor(private appProvider: CoreAppProvider, private domUtils: CoreDomUtilsProvider, eventsProvider: CoreEventsProvider,
             sitesProvider: CoreSitesProvider, private messagesProvider: AddonMessagesProvider) {
+
+        this.siteHomeId = sitesProvider.getCurrentSiteHomeId();
 
         // Update block status of a user.
         this.memberInfoObserver = eventsProvider.on(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, (data) => {

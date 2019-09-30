@@ -140,7 +140,8 @@ export class AddonModChatSessionsPage {
             chatId: this.chatId,
             groupId: this.groupId,
             sessionStart: session.sessionstart,
-            sessionEnd: session.sessionend
+            sessionEnd: session.sessionend,
+            cmId: this.cmId
         };
         this.splitviewCtrl.push('AddonModChatSessionMessagesPage', params);
     }

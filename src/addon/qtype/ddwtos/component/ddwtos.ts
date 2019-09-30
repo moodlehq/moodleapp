@@ -95,7 +95,8 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
                 this.questionInstance = new AddonQtypeDdwtosQuestion(this.loggerProvider, this.domUtils, this.element,
                         this.question, this.question.readOnly, this.inputIds, this.textUtils);
 
-                this.questionHelper.treatCorrectnessIconsClicks(this.element, this.component, this.componentId);
+                this.questionHelper.treatCorrectnessIconsClicks(this.element, this.component, this.componentId, this.contextLevel,
+                        this.contextInstanceId);
 
                 this.question.loaded = true;
             });

@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+        <ion-title><core-format-text [text]="title" contextLevel="module" [contextInstanceId]="moduleId"></core-format-text></ion-title>
 
         <ion-buttons end>
             <button ion-button clear (click)="save()" [attr.aria-label]="'core.save' | translate">
@@ -16,7 +16,7 @@
             <form name="addon-mod_assign-edit-form" *ngIf="userSubmission && userSubmission.plugins && userSubmission.plugins.length">
                 <!-- Submission statement. -->
                 <ion-item text-wrap *ngIf="submissionStatement">
-                    <ion-label><core-format-text [text]="submissionStatement"></core-format-text></ion-label>
+                    <ion-label><core-format-text [text]="submissionStatement" [filter]="false"></core-format-text></ion-label>
                     <ion-checkbox item-end name="submissionstatement" [(ngModel)]="submissionStatementAccepted"></ion-checkbox>
 
                     <!-- ion-checkbox doesn't use an input. Create a hidden input to hold the value. -->

@@ -30,10 +30,12 @@ export class AddonModScormTocPage {
     isReview: boolean;
     attemptToContinue: number;
     selected: number;
+    moduleId: number;
 
     constructor(navParams: NavParams, private viewCtrl: ViewController) {
         this.toc = navParams.get('toc') || [];
         this.attemptToContinue = navParams.get('attemptToContinue');
+        this.moduleId = navParams.get('moduleId');
 
         const mode = navParams.get('mode');
         this.selected = navParams.get('selected');

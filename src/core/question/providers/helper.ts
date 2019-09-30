@@ -691,8 +691,12 @@ export class CoreQuestionHelperProvider {
      * @param element DOM element.
      * @param component The component to use when viewing the feedback.
      * @param componentId An ID to use in conjunction with the component.
+     * @param contextLevel The context level.
+     * @param contextInstanceId Instance ID related to the context.
      */
-    treatCorrectnessIconsClicks(element: HTMLElement, component?: string, componentId?: number): void {
+    treatCorrectnessIconsClicks(element: HTMLElement, component?: string, componentId?: number, contextLevel?: string,
+            contextInstanceId?: number): void {
+
         const icons = <HTMLElement[]> Array.from(element.querySelectorAll('i.icon.questioncorrectnessicon[tappable]')),
             title = this.translate.instant('core.question.feedback');
 
@@ -703,7 +707,8 @@ export class CoreQuestionHelperProvider {
             if (span) {
                 // There's a hidden feedback, show it when the icon is clicked.
                 icon.addEventListener('click', (event) => {
-                    this.textUtils.expandText(title, span.innerHTML, component, componentId);
+                    this.textUtils.expandText(title, span.innerHTML, component, componentId, [], true, contextLevel,
+                            contextInstanceId);
                 });
             }
         });

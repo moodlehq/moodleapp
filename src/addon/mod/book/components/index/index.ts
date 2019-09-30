@@ -66,6 +66,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     showToc(event: MouseEvent): void {
         // Create the toc modal.
         const modal =  this.modalCtrl.create('AddonModBookTocPage', {
+            moduleId: this.module.id,
             chapters: this.chapters,
             selected: this.currentChapter
         }, { cssClass: 'core-modal-lateral',

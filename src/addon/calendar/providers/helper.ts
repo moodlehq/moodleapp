@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseProvider } from '@core/course/providers/course';
-import { AddonCalendarProvider, AddonCalendarCalendarEvent } from './calendar';
+import { AddonCalendarProvider } from './calendar';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigProvider } from '@providers/config';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -130,7 +130,7 @@ export class AddonCalendarHelperProvider {
      *
      * @param e Event to format.
      */
-    formatEventData(e: AddonCalendarCalendarEvent): void {
+    formatEventData(e: any): void {
         e.eventIcon = this.EVENTICONS[e.eventtype] || '';
         if (!e.eventIcon) {
             e.eventIcon = this.courseProvider.getModuleIconSrc(e.modulename);
@@ -138,6 +138,21 @@ export class AddonCalendarHelperProvider {
         }
 
         e.formattedType = this.calendarProvider.getEventType(e);
+
+        // Calculate context.
+        const categoryId = e.category ? e.category.id : e.categoryid,
+            courseId = e.course ? e.course.id : e.courseid;
+
+        if (categoryId > 0) {
+            e.contextLevel = 'category';
+            e.contextInstanceId = categoryId;
+        } else if (courseId > 0) {
+            e.contextLevel = 'course';
+            e.contextInstanceId = courseId;
+        } else {
+            e.contextLevel = 'user';
+            e.contextInstanceId = e.userid;
+        }
 
         if (typeof e.duration != 'undefined') {
             // It's an offline event, add some calculated data.
