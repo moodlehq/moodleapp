@@ -36,7 +36,7 @@ export class CoreCommentsModule {
     constructor(eventsProvider: CoreEventsProvider, cronDelegate: CoreCronDelegate, syncHandler: CoreCommentsSyncCronHandler) {
         // Reset comments page size.
         eventsProvider.on(CoreEventsProvider.LOGIN, () => {
-            CoreCommentsProvider.pageSize = null;
+            CoreCommentsProvider.pageSize = 1;
             CoreCommentsProvider.pageSizeOK = false;
         });
 
