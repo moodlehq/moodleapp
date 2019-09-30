@@ -36,6 +36,7 @@ export class CoreConstants {
     static SETTINGS_REPORT_IN_BACKGROUND = 'CoreSettingsReportInBackground'; // @deprecated since 3.5.0
     static SETTINGS_SEND_ON_ENTER = 'CoreSettingsSendOnEnter';
     static SETTINGS_FONT_SIZE = 'CoreSettingsFontSize';
+    static SETTINGS_COLOR_SCHEME = 'CoreSettingsColorScheme';
     static SETTINGS_ANALYTICS_ENABLED = 'CoreSettingsAnalyticsEnabled';
 
     // WS constants.

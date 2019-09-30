@@ -20,6 +20,9 @@ import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreConstants } from '@core/constants';
+import { CoreConfigProvider } from '@providers/config';
+import { CoreConfigConstants } from '../../../configconstants';
 import { TranslateService } from '@ngx-translate/core';
 
 /**
@@ -32,7 +35,8 @@ export class CoreSettingsHelper {
 
     constructor(loggerProvider: CoreLoggerProvider, private appProvider: CoreAppProvider, private cronDelegate: CoreCronDelegate,
             private eventsProvider: CoreEventsProvider, private filePoolProvider: CoreFilepoolProvider,
-            private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider, private translate: TranslateService) {
+            private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider, private translate: TranslateService,
+            private configProvider: CoreConfigProvider) {
         this.logger = loggerProvider.getInstance('CoreSettingsHelper');
     }
 
@@ -174,5 +178,51 @@ export class CoreSettingsHelper {
         });
 
         return syncPromise;
+    }
+
+    /**
+     * Init Settings related to DOM.
+     */
+    initDomSettings(): void {
+        // Set the font size based on user preference.
+        this.configProvider.get(CoreConstants.SETTINGS_FONT_SIZE, CoreConfigConstants.font_sizes[0].toString()).then((fontSize) => {
+            this.setFontSize(fontSize);
+        });
+
+        if (!!CoreConfigConstants.forceColorScheme) {
+            this.setColorScheme(CoreConfigConstants.forceColorScheme);
+        } else {
+            let defaultColorScheme = 'light';
+
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches ||
+                    window.matchMedia('(prefers-color-scheme: light)').matches) {
+                defaultColorScheme = 'auto';
+            }
+
+            this.configProvider.get(CoreConstants.SETTINGS_COLOR_SCHEME, defaultColorScheme).then((scheme) => {
+                this.setColorScheme(scheme);
+            });
+        }
+    }
+
+    /**
+     * Set document default font size.
+     *
+     * @param fontSize Font size in percentage.
+     */
+    setFontSize(fontSize: string): void {
+        document.documentElement.style.fontSize = fontSize + '%';
+    }
+
+    /**
+     * Set body color scheme.
+     *
+     * @param colorScheme Name of the color scheme.
+     */
+    setColorScheme(colorScheme: string): void {
+        document.body.classList.remove('scheme-light');
+        document.body.classList.remove('scheme-dark');
+        document.body.classList.remove('scheme-auto');
+        document.body.classList.add('scheme-' + colorScheme);
     }
 }

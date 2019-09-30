@@ -28,4 +28,8 @@ import { CoreSettingsHelper } from './providers/helper';
         CoreSettingsHelper
     ]
 })
-export class CoreSettingsModule {}
+export class CoreSettingsModule {
+    constructor(settingsHelper: CoreSettingsHelper) {
+        settingsHelper.initDomSettings();
+    }
+}

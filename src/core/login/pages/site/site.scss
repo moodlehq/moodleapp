@@ -1,38 +1,4 @@
 ion-app.app-root page-core-login-site {
-    .scroll-content {
-        background-color: $core-login-page-background-color;
-    }
-
-    img.login-logo {
-        width: 90%;
-        max-width: 300px;
-    }
-
-    .box {
-        padding: 16px;
-        margin: 8px;
-        background: $core-login-box-background-color;
-        border: 1px solid $core-login-box-background-border;
-        color: $core-login-box-text-color;
-    }
-
-    @if $core-login-button-outline {
-        .button-md.button-default-md, .button-ios.button-default-ios {
-            @extend .button-md-light;
-        }
-    }
-
-    @if $core-login-loading-color {
-        .core-loading-container {
-            color: $core-login-loading-color;
-
-            .spinner circle, .spinner line {
-                stroke: $core-login-loading-color;
-            }
-        }
-    }
-
-
     .item-input:last-child {
         margin-bottom: 20px;
     }
@@ -41,7 +7,7 @@ ion-app.app-root page-core-login-site {
         background: transparent;
 
         .searchbar-input {
-            background-color: $searchbar-ios-toolbar-input-background
+            background-color: $searchbar-ios-toolbar-input-background;
         }
     }
 }

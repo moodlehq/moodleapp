@@ -6,6 +6,9 @@ ion-app.app-root core-rich-text-editor {
     width: 100%;
     display: flex;
     flex-direction: column;
+    @include darkmode() {
+        background-color: $black;
+    }
 
     .core-rte-editor, .core-textarea {
         padding: 2px;
@@ -13,6 +16,10 @@ ion-app.app-root core-rich-text-editor {
         width: 100%;
         resize: none;
         background-color: $white;
+        @include darkmode() {
+            background-color: $black;
+            color: $white;
+        }
     }
 
     .core-rte-editor {
@@ -32,6 +39,10 @@ ion-app.app-root core-rich-text-editor {
             display: block;
             color: $gray-light;
             font-weight: bold;
+
+            @include darkmode() {
+                color: $gray;
+            }
         }
 
         // Make empty elements selectable (to move the cursor).
@@ -65,6 +76,10 @@ ion-app.app-root core-rich-text-editor {
         flex-grow: 0;
         flex-shrink: 0;
         background-color: $white;
+
+        @include darkmode() {
+            background-color: $black;
+        }
         @include padding(5px, null);
         border-top: 1px solid $gray;
 
@@ -90,12 +105,20 @@ ion-app.app-root core-rich-text-editor {
             color: $text-color;
             cursor: pointer;
 
+            @include darkmode() {
+                background-color: $black;
+                color: $core-dark-text-color;
+            }
+
             &.toolbar-button-enable {
                 width: 100%;
             }
 
             &:active, &[aria-pressed="true"] {
                 background-color: $gray;
+                @include darkmode() {
+                    background-color: $gray-dark;
+                }
             }
 
             &.toolbar-arrow {
@@ -107,6 +130,9 @@ ion-app.app-root core-rich-text-editor {
 
                 &:active {
                     background-color: $white;
+                    @include darkmode() {
+                        background-color: $black;
+                    }
                 }
 
                 &.toolbar-arrow-hidden {

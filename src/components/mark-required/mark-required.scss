@@ -4,4 +4,8 @@ ion-app.app-root .core-input-required-asterisk, ion-app.app-root .icon.core-inpu
     @include padding(null, null, null, 4px);
     line-height: 100%;
     vertical-align: top;
+
+    @include darkmode() {
+        color: $red-light !important;
+    }
 }

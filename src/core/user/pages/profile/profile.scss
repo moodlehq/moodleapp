@@ -9,7 +9,10 @@ ion-app.app-root page-core-user-profile {
         width: 30px;
         height: 30px;
         border-radius: 50%;
-        background-color: white;
+        background-color: $white;
+        @include darkmode() {
+            background: $core-dark-item-bg-color;
+        }
     }
     [core-user-avatar].item-avatar-center {
         display: inline-block;
@@ -26,10 +29,18 @@ ion-app.app-root page-core-user-profile {
         background: $list-background-color;
         border-bottom: 1px solid $list-border-color;
 
+        @include darkmode() {
+            background: $core-dark-item-bg-color;
+        }
+
         .core-user-profile-handler {
             background: $list-background-color;
             border: 0;
             color: $core-user-profile-communication-icons-color;
+
+            @include darkmode() {
+               background: $core-dark-item-bg-color;
+            }
 
             p {
                 margin: 0;

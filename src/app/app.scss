@@ -255,6 +255,10 @@ ion-app.app-root {
 
         &.core-shortened {
           color: $gray-darker;
+          @include darkmode() {
+            color: $white;
+          }
+
           overflow: hidden;
           min-height: 50px;
 
@@ -268,6 +272,10 @@ ion-app.app-root {
             z-index: 1001;
             background-color: $white;
             @include padding(null, null, null, 10px);
+            @include darkmode() {
+              color: $white;
+              background-color: $core-dark-item-bg-color;
+            }
           }
 
           &:before {
@@ -282,6 +290,15 @@ ion-app.app-root {
             background: -ms-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
             background: linear-gradient(to bottom, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
             z-index: 1000;
+
+            @include darkmode {
+              background: -moz-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), $core-dark-item-bg-color calc(100% - 15px));
+              background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba(255, 255, 255, 0)), color-stop(calc(100% - 15px), white));
+              background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), $core-dark-item-bg-color calc(100% - 15px));
+              background: -o-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), $core-dark-item-bg-color calc(100% - 15px));
+              background: -ms-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), $core-dark-item-bg-color calc(100% - 15px));
+              background: linear-gradient(to bottom, rgba(255, 255, 255, 0) calc(100% - 50px), $core-dark-item-bg-color calc(100% - 15px));
+            }
           }
         }
       }
@@ -466,6 +483,23 @@ ion-app.app-root {
     .select-text {
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+  }
+
+  @include darkmode() {
+    ion-select.core-button-select,
+    .core-button-select {
+      background-color: $core-dark-item-divider-bg-color;
+
+
+      &.select-md,
+      &.button-md,
+      &.select-ios,
+      &.button-ios,
+      &.select-wp,
+      &.button-wp {
+        background: $core-dark-item-divider-bg-color;
+      }
     }
   }
 
@@ -692,6 +726,10 @@ ion-app.app-root {
       @extend ion-card;
       border-bottom: 3px solid $color-base;
 
+      @include darkmode() {
+        background-color: $core-dark-item-bg-color;
+      }
+
       &[icon-start] {
         @include padding(null, null, null, 52px);
         position: relative;
@@ -712,6 +750,9 @@ ion-app.app-root {
       border-bottom: 3px solid $color-base !important;
       ion-icon {
         color: $color-base;
+      }
+      @include darkmode() {
+        background-color: $core-dark-item-bg-color;
       }
     }
 

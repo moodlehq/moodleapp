@@ -82,7 +82,44 @@ ion-app.app-root page-core-mainmenu-more {
             background-color: $core-more-divider-wp;
         }
     }
+
+    @include darkmode() {
+        ion-icon {
+            color: $core-dark-text-color;
+        }
+
+        .item-divider {
+            &.item-ios,
+            &.item-md,
+            &.item-wp {
+                color: $core-dark-text-color;
+                background-color: $core-dark-item-divider-bg-color;
+            }
+        }
+
+        .item-block {
+            &.item-ios,
+            &.item-md,
+            &.item-wp {
+                color: $core-dark-text-color;
+                background-color: $core-dark-item-bg-color;
+                p {
+                    color: $core-dark-text-color;
+                }
+
+            }
+
+            &.activated {
+                &.item-ios {
+                    background-color: $core-more-activated-background-ios;
+                }
+                &.item-md {
+                    background-color: $core-more-activated-background-md;
+                }
+                &.item-wp {
+                    background-color: $core-more-activated-background-wp;
+                }
+            }
+        }
+    }
 }
-
-
-

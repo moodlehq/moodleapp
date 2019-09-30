@@ -34,4 +34,9 @@ ion-app.app-root core-send-message-form {
     min-height: 0;
     align-self: self-end;
   }
+  @include darkmode() {
+    ion-icon.icon {
+      color: $gray-darker;
+    }
+  }
 }

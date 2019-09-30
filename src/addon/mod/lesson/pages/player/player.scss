@@ -26,6 +26,9 @@ ion-app.app-root page-addon-mod-lesson-player {
 
         tr:nth-child(odd) {
             background-color: $gray-lighter;
+            @include darkmode() {
+                background-color: $core-dark-item-divider-bg-color;
+            }
         }
 
         tr:last-child td {
@@ -52,13 +55,25 @@ ion-app.app-root page-addon-mod-lesson-player {
 
     .item-ios table {
         @extend .card-ios;
+        @include darkmode() {
+            color: $white;
+            background-color: $core-dark-item-bg-color;
+        }
     }
 
     .item-md table {
         @extend .card-md;
+        @include darkmode() {
+            color: $white;
+            background-color: $core-dark-item-bg-color;
+        }
     }
 
     .item-wp table {
         @extend .card-wp;
+        @include darkmode() {
+            color: $white;
+            background-color: $core-dark-item-bg-color;
+        }
     }
 }

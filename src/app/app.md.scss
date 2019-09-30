@@ -38,6 +38,10 @@ ion-app.app-root.md {
       @extend .card-md;
       @extend .card-content-md;
 
+      @include darkmode() {
+        background-color: $core-dark-item-bg-color;
+      }
+
       &[icon-start] {
         @include padding(null, null, null, $card-md-padding-left * 2 + 20);
 

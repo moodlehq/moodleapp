@@ -35,6 +35,10 @@ ion-app.app-root.wp {
       @extend .card-wp ;
       @extend .card-content-wp;
 
+      @include darkmode() {
+        background-color: $core-dark-item-bg-color;
+      }
+
       &[icon-start] {
         @include padding(null, null, null, $card-wp-padding-left * 2 + 20);
 
