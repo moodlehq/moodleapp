@@ -42,6 +42,7 @@
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
     <platform name="android">
+        <resource-file src="MainActivity.java" target="app/src/main/java/com/moodle/moodlemobile/MainActivity.java" />
         <resource-file src="google-services.json" target="app/google-services.json" />
         <splash qualifier="land-ldpi" src="resources/android/splash/drawable-land-ldpi-screen.png" />
         <splash qualifier="land-mdpi" src="resources/android/splash/drawable-land-mdpi-screen.png" />
