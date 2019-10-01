@@ -55,6 +55,8 @@ export class CoreSettingsAboutPage {
     storageType: string;
     localNotifAvailable: string;
     pushId: string;
+    siteUrl: string;
+    isPrefixedUrl: boolean;
 
     constructor(platform: Platform, device: Device, appProvider: CoreAppProvider, fileProvider: CoreFileProvider,
             initDelegate: CoreInitDelegate, langProvider: CoreLangProvider, sitesProvider: CoreSitesProvider,
@@ -114,5 +116,9 @@ export class CoreSettingsAboutPage {
 
         this.localNotifAvailable = localNotificationsProvider.isAvailable() ? 'core.yes' : 'core.no';
         this.pushId = pushNotificationsProvider.getPushId();
+
+        this.siteUrl = (currentSite && currentSite.getURL()) ||
+            (typeof CoreConfigConstants.siteurl == 'string' && CoreConfigConstants.siteurl);
+        this.isPrefixedUrl = !!CoreConfigConstants.siteurl;
     }
 }

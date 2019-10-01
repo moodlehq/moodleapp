@@ -5,9 +5,11 @@
 </ion-header>
 <ion-content>
     <ion-list>
-        <a ion-item core-user-link [userId]="siteInfo.userid">
+        <a ion-item core-user-link [userId]="siteInfo.userid" text-wrap>
             <ion-avatar core-user-avatar [user]="siteInfo" item-start></ion-avatar>
-            <p>{{siteInfo.fullname}}</p>
+            <h2>{{siteInfo.fullname}}</h2>
+            <ion-note>{{ siteName }}</ion-note>
+            <ion-note>{{ siteUrl }}</ion-note>
         </a>
         <ion-item-divider></ion-item-divider>
         <ion-item text-center *ngIf="(!handlers || !handlers.length) && !handlersLoaded">
