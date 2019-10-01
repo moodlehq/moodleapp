@@ -1,8 +1,9 @@
 ion-app.app-root page-core-mainmenu {
-    ion-icon {
+    ion-icon.tab-button-icon {
         text-overflow: unset;
         overflow: visible;
         text-align: center;
+        transition: margin 500ms ease-in-out, transform 300ms ease-in-out;
     }
 
     .ion-md-fa-graduation-cap,
@@ -40,4 +41,56 @@ ion-app.app-root page-core-mainmenu {
         font-size: 23px;
         height: 23px;
     }
+
+    .core-network-message {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding-left: 10px;
+        padding-right: 10px;
+        text-align: center;
+        color: white;
+        visibility: hidden;
+        height: 0;
+        transition: all 500ms ease-in-out;
+        opacity: .8;
+    }
+
+    .core-online-message,
+    .core-offline-message {
+        display: none;
+    }
+}
+
+
+.core-online ion-app.app-root page-core-mainmenu,
+.core-offline ion-app.app-root page-core-mainmenu {
+
+    core-ion-tabs[tabsplacement="bottom"] ion-icon.tab-button-icon {
+        margin-bottom: $core-network-message-height / 2;
+
+        &.icon-ios {
+            margin-bottom: 14px;
+        }
+    }
+
+    .core-network-message {
+        visibility: visible;
+        height: $core-network-message-height;
+        pointer-events: none;
+    }
+}
+
+.core-offline ion-app.app-root page-core-mainmenu .core-offline-message,
+.core-online ion-app.app-root page-core-mainmenu .core-online-message {
+    display: block;
+}
+
+.core-online ion-app.app-root page-core-mainmenu .core-network-message {
+    background: $green;
+}
+
+.core-offline ion-app.app-root page-core-mainmenu .core-network-message {
+    background: $red;
 }

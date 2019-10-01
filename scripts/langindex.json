@@ -1962,5 +1962,7 @@
   "core.wsfunctionnotavailable": "local_moodlemobileapp",
   "core.year": "moodle",
   "core.years": "moodle",
-  "core.yes": "moodle"
+  "core.yes": "moodle",
+  "core.youreoffline": "local_moodlemobileapp",
+  "core.youreonline": "local_moodlemobileapp"
 }

@@ -1960,5 +1960,7 @@
     "core.wsfunctionnotavailable": "The web service function is not available.",
     "core.year": "year",
     "core.years": "years",
-    "core.yes": "Yes"
+    "core.yes": "Yes",
+    "core.youreoffline": "You are offline",
+    "core.youreonline": "You are back online"
 }
