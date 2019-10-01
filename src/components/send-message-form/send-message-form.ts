@@ -39,6 +39,7 @@ export class CoreSendMessageFormComponent implements OnInit {
     @Input() message: string; // Input text.
     @Input() placeholder = ''; // Placeholder for the input area.
     @Input() showKeyboard = false; // If keyboard is shown or not.
+    @Input() sendDisabled = false; // If send is disabled.
     @Output() onSubmit: EventEmitter<string>; // Send data when submitting the message form.
     @Output() onResize: EventEmitter<void>; // Emit when resizing the textarea.
 
@@ -99,6 +100,10 @@ export class CoreSendMessageFormComponent implements OnInit {
      * @param other The name of the other key that was clicked, undefined if no other key.
      */
     enterClicked(e: Event, other: string): void {
+        if (this.sendDisabled) {
+            return;
+        }
+
         if (this.sendOnEnter && !other) {
             // Enter clicked, send the message.
             this.submitForm(e);

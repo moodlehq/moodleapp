@@ -60,7 +60,8 @@ ion-app.app-root core-ion-tabs {
             }
         }
 
-        .scroll-content, .fixed-content {
+        ion-content:not(.has-footer) > .scroll-content,
+        ion-content:not(.has-footer) > .fixed-content {
             margin-bottom: 0 !important;
         }
     }

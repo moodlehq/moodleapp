@@ -19,10 +19,11 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { AddonModChatProvider, AddonModChatMessageWithUserData } from '../../providers/chat';
+import { AddonModChatProvider } from '../../providers/chat';
+import { AddonModChatHelperProvider, AddonModChatMessageForView } from '../../providers/helper';
 import { Network } from '@ionic-native/network';
-import * as moment from 'moment';
+import { coreSlideInOut } from '@classes/animations';
+import { CoreSendMessageFormComponent } from '@components/send-message-form/send-message-form';
 
 /**
  * Page that displays a chat session.
@@ -31,17 +32,20 @@ import * as moment from 'moment';
 @Component({
     selector: 'page-addon-mod-chat-chat',
     templateUrl: 'chat.html',
+    animations: [coreSlideInOut]
 })
 export class AddonModChatChatPage {
     @ViewChild(Content) content: Content;
+    @ViewChild(CoreSendMessageFormComponent) sendMessageForm: CoreSendMessageFormComponent;
 
     loaded = false;
     title: string;
-    messages: AddonModChatMessageWithUserData[] = [];
+    messages: AddonModChatMessageForView[] = [];
     newMessage: string;
     polling: any;
     isOnline: boolean;
-    currentUserBeep: string;
+    currentUserId: number;
+    sending: boolean;
 
     protected logger;
     protected courseId: number;
@@ -53,17 +57,18 @@ export class AddonModChatChatPage {
     protected keyboardObserver: any;
     protected viewDestroyed = false;
     protected pollingRunning = false;
+    protected users = [];
 
     constructor(navParams: NavParams, logger: CoreLoggerProvider, network: Network,  zone: NgZone, private navCtrl: NavController,
             private chatProvider: AddonModChatProvider, private appProvider: CoreAppProvider, sitesProvider: CoreSitesProvider,
-            private modalCtrl: ModalController, private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
-            private eventsProvider: CoreEventsProvider) {
+            private modalCtrl: ModalController, private domUtils: CoreDomUtilsProvider,
+            private eventsProvider: CoreEventsProvider, private chatHelper: AddonModChatHelperProvider) {
 
         this.chatId = navParams.get('chatId');
         this.courseId = navParams.get('courseId');
         this.title = navParams.get('title');
         this.logger = logger.getInstance('AddonModChoiceChoicePage');
-        this.currentUserBeep = 'beep ' + sitesProvider.getCurrentSiteUserId();
+        this.currentUserId = sitesProvider.getCurrentSiteUserId();
         this.isOnline = this.appProvider.isOnline();
         this.onlineObserver = network.onchange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
@@ -116,16 +121,62 @@ export class AddonModChatChatPage {
      * Display the chat users modal.
      */
     showChatUsers(): void {
-        const modal = this.modalCtrl.create('AddonModChatUsersPage', {sessionId: this.sessionId});
+        // Create the toc modal.
+        const modal =  this.modalCtrl.create('AddonModChatUsersPage', {
+            sessionId: this.sessionId
+        }, { cssClass: 'core-modal-lateral',
+            showBackdrop: true,
+            enableBackdropDismiss: true,
+            enterAnimation: 'core-modal-lateral-transition',
+            leaveAnimation: 'core-modal-lateral-transition' });
+
         modal.onDidDismiss((data) => {
             if (data && data.talkTo) {
-                this.newMessage = `To ${data.talkTo}: `;
+                this.newMessage = `To ${data.talkTo}: ` + (this.sendMessageForm.message || '');
             }
             if (data && data.beepTo) {
                 this.sendMessage('', data.beepTo);
             }
+            if (data && data.users) {
+                this.users = data.users;
+            }
         });
-        modal.present();
+
+        modal.present({
+            ev: event
+        });
+    }
+
+    /**
+     * Get the user fullname for a beep.
+     *
+     * @param  id User Id before parsing.
+     * @return User fullname.
+     */
+    protected getUserFullname(id: string): Promise<string> {
+        if (isNaN(parseInt(id, 10))) {
+            return Promise.resolve(id);
+        }
+
+        const user = this.users.find((user) => user.id == id);
+
+        if (user) {
+            return Promise.resolve(user.fullname);
+        }
+
+        return this.chatProvider.getChatUsers(this.sessionId).then((data) => {
+            this.users = data.users;
+            const user = this.users.find((user) => user.id == id);
+
+            if (user) {
+                return user.fullname;
+            }
+
+            return id;
+        }).catch((error) => {
+            // Ignore errors.
+            return id;
+        });
     }
 
     /**
@@ -149,8 +200,26 @@ export class AddonModChatChatPage {
             this.lastTime = messagesInfo.chatnewlasttime || 0;
 
             return this.chatProvider.getMessagesUserData(messagesInfo.messages, this.courseId).then((messages) => {
-                this.messages = this.messages.concat(<AddonModChatMessageWithUserData[]> messages);
                 if (messages.length) {
+                    const previousLength = this.messages.length;
+                    this.messages = this.messages.concat(<AddonModChatMessageForView[]> messages);
+
+                    // Calculate which messages need to display the date or user data.
+                    for (let index = previousLength ; index < this.messages.length; index++) {
+                        const message = this.messages[index];
+                        const prevMessage = index > 0 ? this.messages[index - 1] : null;
+
+                        this.chatHelper.formatMessage(this.currentUserId, message, prevMessage);
+
+                        if (message.beep && message.beep != this.currentUserId + '') {
+                            this.getUserFullname(message.beep).then((fullname) => {
+                                message.beepWho = fullname;
+                            });
+                        }
+                    }
+
+                    this.messages[this.messages.length - 1].showTail = true;
+
                     // New messages or beeps, scroll to bottom.
                     setTimeout(() => this.scrollToBottom());
                 }
@@ -188,7 +257,7 @@ export class AddonModChatChatPage {
     /**
      * Convenience function to be called every certain time to fetch chat messages.
      *
-     * @return Promised resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchMessagesInterval(): Promise<void> {
         this.logger.debug('Polling for messages');
@@ -219,22 +288,6 @@ export class AddonModChatChatPage {
     }
 
     /**
-     * Check if the date should be displayed between messages (when the day changes at midnight for example).
-     *
-     * @param message New message object.
-     * @param prevMessage Previous message object.
-     * @return True if messages are from diferent days, false othetwise.
-     */
-    showDate(message: AddonModChatMessageWithUserData, prevMessage: AddonModChatMessageWithUserData): boolean {
-        if (!prevMessage) {
-            return true;
-        }
-
-        // Check if day has changed.
-        return !moment(message.timestamp * 1000).isSame(prevMessage.timestamp * 1000, 'day');
-    }
-
-    /**
      * Send a message to the chat.
      *
      * @param text Text of the nessage.
@@ -248,9 +301,8 @@ export class AddonModChatChatPage {
             // Silent error.
             return;
         }
-        text = this.textUtils.replaceNewLines(text, '<br>');
 
-        const modal = this.domUtils.showModalLoading('core.sending', true);
+        this.sending = true;
         this.chatProvider.sendMessage(this.sessionId, text, beep).then(() => {
             // Update messages to show the sent message.
             this.fetchMessagesInterval().catch(() => {
@@ -261,9 +313,11 @@ export class AddonModChatChatPage {
               messages without the keyboard being closed. */
             this.appProvider.closeKeyboard();
 
+            this.newMessage = text;
+
             this.domUtils.showErrorModalDefault(error, 'addon.mod_chat.errorwhilesendingmessage', true);
         }).finally(() => {
-            modal.dismiss();
+            this.sending = false;
         });
     }
 

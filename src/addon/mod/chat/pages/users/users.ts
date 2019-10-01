@@ -69,7 +69,7 @@ export class AddonModChatUsersPage {
      * Close the chat users modal.
      */
     closeModal(): void {
-        this.viewCtrl.dismiss();
+        this.viewCtrl.dismiss({users: this.users});
     }
 
     /**
@@ -77,8 +77,8 @@ export class AddonModChatUsersPage {
      *
      * @param user User object.
      */
-     talkTo(user: AddonModChatUser): void {
-        this.viewCtrl.dismiss({talkTo: user.fullname});
+    talkTo(user: AddonModChatUser): void {
+        this.viewCtrl.dismiss({talkTo: user.fullname, users: this.users});
     }
 
     /**
@@ -87,7 +87,7 @@ export class AddonModChatUsersPage {
      * @param user User object.
      */
     beepTo(user: AddonModChatUser): void {
-        this.viewCtrl.dismiss({beepTo: user.id});
+        this.viewCtrl.dismiss({beepTo: user.id, users: this.users});
     }
 
     /**
