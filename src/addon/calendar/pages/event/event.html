@@ -98,12 +98,11 @@
 
             <ng-container *ngIf="event.timestart + event.timeduration > currentTime">
                 <ion-item>
-                    <ion-label stacked><h2>{{ 'addon.calendar.setnewreminder' | translate }}</h2></ion-label>
-                    <ion-datetime [(ngModel)]="notificationTimeText" [placeholder]="'core.choosedots' | translate" [displayFormat]="notificationFormat" [min]="notificationMin" [max]="notificationMax"></ion-datetime>
+                    <button ion-button block color="primary" (click)="notificationPicker.open()">
+                        {{ 'addon.calendar.setnewreminder' | translate }}
+                    </button>
                 </ion-item>
-                <ion-item>
-                    <button ion-button block color="primary" (click)="addNotificationTime($event)" [disabled]="!notificationTimeText">{{ 'core.save' | translate }}</button>
-                </ion-item>
+                <ion-datetime #notificationPicker hidden [(ngModel)]="notificationTimeText" [displayFormat]="notificationFormat" [min]="notificationMin" [max]="notificationMax" [doneText]="'core.add' | translate"(ionChange)="addNotificationTime()"></ion-datetime>
             </ng-container>
         </ion-card>
     </core-loading>

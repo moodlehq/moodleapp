@@ -311,13 +311,8 @@ export class AddonCalendarEventPage implements OnDestroy {
 
     /**
      * Add a reminder for this event.
-     *
-     * @param e Click event.
      */
-    addNotificationTime(e: Event): void {
-        e.preventDefault();
-        e.stopPropagation();
-
+    addNotificationTime(): void {
         if (this.notificationTimeText && this.event && this.event.id) {
             let notificationTime = this.timeUtils.convertToTimestamp(this.notificationTimeText);
 
