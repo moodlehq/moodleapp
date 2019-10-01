@@ -503,6 +503,13 @@ ion-app.app-root {
     }
   }
 
+  button.core-button-select .core-button-select-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 2em;
+    white-space: nowrap;
+  }
+
   // File uploader.
   // -------------------------
   .core-fileuploader-file-handler {

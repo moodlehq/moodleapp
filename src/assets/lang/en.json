@@ -579,6 +579,7 @@
     "addon.mod_forum.favouriteupdated": "Your star option has been updated.",
     "addon.mod_forum.forumnodiscussionsyet": "There are no discussions yet in this forum.",
     "addon.mod_forum.group": "Group",
+    "addon.mod_forum.lastpost": "Last post",
     "addon.mod_forum.lockdiscussion": "Lock this discussion",
     "addon.mod_forum.lockupdated": "The lock option has been updated.",
     "addon.mod_forum.message": "Message",
