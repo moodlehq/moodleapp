@@ -82,12 +82,11 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
 
             this.dataRetrieved.emit(chat);
 
-            // All data obtained, now fill the context menu.
-            this.fillContextMenu(refresh);
-
             return this.chatProvider.areSessionsAvailable().then((available) => {
                 this.sessionsAvailable = available;
             });
+        }).finally(() => {
+            this.fillContextMenu(refresh);
         });
     }
 

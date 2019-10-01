@@ -163,12 +163,11 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
                     // We could load the main file but the download failed. Show error message.
                     this.domUtils.showErrorModal('core.errordownloadingsomefiles', true);
                 }
-
-                // All data obtained, now fill the context menu.
-                this.fillContextMenu(refresh);
             }).catch(() => {
                 // Ignore errors, they're handled inside the loadChapter function.
             });
+        }).finally(() => {
+            this.fillContextMenu(refresh);
         });
     }
 

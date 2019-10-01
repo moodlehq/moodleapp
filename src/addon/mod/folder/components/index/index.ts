@@ -126,8 +126,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
 
         return promise.then((folder) => {
             this.showModuleData(folder);
-
-            // All data obtained, now fill the context menu.
+        }).finally(() => {
             this.fillContextMenu(refresh);
         });
     }

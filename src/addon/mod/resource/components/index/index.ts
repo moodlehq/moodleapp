@@ -135,8 +135,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             } else {
                 this.mode = 'external';
             }
-        }).then(() => {
-            // All data obtained, now fill the context menu.
+        }).finally(() => {
             this.fillContextMenu(refresh);
         });
     }

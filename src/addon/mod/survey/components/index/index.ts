@@ -126,8 +126,7 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
             if (!this.survey.surveydone && !this.hasOffline) {
                 return this.fetchQuestions();
             }
-        }).then(() => {
-            // All data obtained, now fill the context menu.
+        }).finally(() => {
             this.fillContextMenu(refresh);
         });
     }

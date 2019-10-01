@@ -211,6 +211,8 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
                     this.lessonReady(refresh);
                 }
             });
+        }).finally(() => {
+            this.fillContextMenu(refresh);
         });
     }
 
@@ -336,9 +338,6 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             // Store the password in DB.
             this.lessonProvider.storePassword(this.lesson.id, this.password);
         }
-
-        // All data obtained, now fill the context menu.
-        this.fillContextMenu(refresh);
     }
 
     /**

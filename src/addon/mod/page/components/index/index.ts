@@ -127,8 +127,6 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
 
             // Get the page HTML.
             promises.push(this.pageHelper.getPageHtml(this.module.contents, this.module.id).then((content) => {
-                // All data obtained, now fill the context menu.
-                this.fillContextMenu(refresh);
 
                 this.contents = content;
 
@@ -139,6 +137,8 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
             }));
 
             return Promise.all(promises);
+        }).finally(() => {
+            this.fillContextMenu(refresh);
         });
     }
 }

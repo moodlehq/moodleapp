@@ -224,11 +224,10 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             });
 
         }).then(() => {
-            // All data obtained, now fill the context menu.
-            this.fillContextMenu(refresh);
-
             // Quiz is ready to be shown, move it to the variable that is displayed.
             this.quiz = this.quizData;
+        }).finally(() => {
+            this.fillContextMenu(refresh);
         });
     }
 

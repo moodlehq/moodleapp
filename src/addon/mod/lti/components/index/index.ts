@@ -67,8 +67,7 @@ export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityCompo
             this.lti = ltiData;
             this.description = this.lti.intro;
             this.dataRetrieved.emit(this.lti);
-        }).then(() => {
-            // All data obtained, now fill the context menu.
+        }).finally(() => {
             this.fillContextMenu(refresh);
         });
     }

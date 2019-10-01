@@ -231,8 +231,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
             });
         }).then(() => {
             return this.setPhaseInfo();
-        }).then(() => {
-            // All data obtained, now fill the context menu.
+        }).finally(() => {
             this.fillContextMenu(refresh);
         });
     }

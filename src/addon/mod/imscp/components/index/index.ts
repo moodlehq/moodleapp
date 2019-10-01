@@ -112,7 +112,7 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
                 this.domUtils.showErrorModal('core.errordownloadingsomefiles', true);
             }
 
-            // All data obtained, now fill the context menu.
+        }).finally(() => {
             this.fillContextMenu(refresh);
         });
     }
