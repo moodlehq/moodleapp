@@ -13,7 +13,7 @@
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
-    <core-course-module-description *ngIf="mode != 'iframe'" [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+    <core-course-module-description *ngIf="mode != 'iframe' && (mode != 'embedded' || displayDescription)" [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
 
     <ng-container *ngIf="mode == 'iframe'">
         <core-iframe [src]="src"></core-iframe>

@@ -13,8 +13,6 @@
 
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
-    <core-course-module-description *ngIf="description" [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
-
     <ion-card class="with-borders" *ngIf="phases">
         <a ion-item (click)="viewPhaseInfo()">
             <h2 stacked text-wrap>{{ phases[workshop.phase].title }}</h2>
@@ -38,6 +36,14 @@
         <ion-icon name="warning"></ion-icon>
         {{ 'core.hasdatatosync' | translate: {$a: moduleName} }}
     </div>
+
+    <!-- Description (setup phase only) -->
+    <ion-card *ngIf="description && workshop && workshop.phase == workshopPhases.PHASE_SETUP">
+        <ion-item text-wrap>
+            <h2>{{ 'core.description' | translate }}</h2>
+            <core-format-text [text]="description" [component]="component" [componentId]="componentId"></core-format-text>
+        </ion-item>
+    </ion-card>
 
     <div *ngIf="access && workshop && workshop.phase >= workshopPhases.PHASE_SUBMISSION">
         <!-- CLOSED PHASE -->

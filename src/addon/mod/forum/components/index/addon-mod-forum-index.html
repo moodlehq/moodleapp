@@ -19,7 +19,7 @@
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
         <core-loading [hideUntil]="loaded" class="core-loading-center">
-            <core-course-module-description [description]="description" [component]="component" [componentId]="componentId" [note]="descriptionNote"></core-course-module-description>
+            <core-course-module-description *ngIf="forum && forum.type != 'single'" [description]="description" [component]="component" [componentId]="componentId" [note]="descriptionNote"></core-course-module-description>
 
             <!-- Forum discussions found to be synchronized -->
             <ion-card class="core-warning-card" icon-start *ngIf="hasOffline || hasOfflineRatings">

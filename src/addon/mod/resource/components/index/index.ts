@@ -36,6 +36,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     mode: string;
     src: string;
     contentText: string;
+    displayDescription = true;
 
     constructor(injector: Injector, private resourceProvider: AddonModResourceProvider, private courseProvider: CoreCourseProvider,
             private appProvider: CoreAppProvider, private prefetchHandler: AddonModResourcePrefetchHandler,
@@ -96,6 +97,8 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
         }).then((resource) => {
             if (resource) {
                 this.description = resource.intro || resource.description;
+                const options = this.textUtils.unserialize(resource.displayoptions) || {};
+                this.displayDescription = typeof options.printintro == 'undefined' || !!options.printintro;
                 this.dataRetrieved.emit(resource);
             }
 
