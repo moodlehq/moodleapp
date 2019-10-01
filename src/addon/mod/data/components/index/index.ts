@@ -151,6 +151,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             promises.push(this.dataProvider.invalidateDatabaseAccessInformationData(this.data.id));
             promises.push(this.groupsProvider.invalidateActivityGroupInfo(this.data.coursemodule));
             promises.push(this.dataProvider.invalidateEntriesData(this.data.id));
+            promises.push(this.dataProvider.invalidateFieldsData(this.data.id));
 
             if (this.hasComments) {
                 this.eventsProvider.trigger(CoreCommentsProvider.REFRESH_COMMENTS_EVENT, {

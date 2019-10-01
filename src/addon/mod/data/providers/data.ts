@@ -830,6 +830,7 @@ export class AddonModDataProvider {
             // Do not invalidate module data before getting module info, we need it!
             ps.push(this.invalidateDatabaseData(courseId, siteId));
             ps.push(this.invalidateDatabaseWSData(data.id, siteId));
+            ps.push(this.invalidateFieldsData(data.id, siteId));
 
             return Promise.all(ps);
         }));
@@ -862,6 +863,19 @@ export class AddonModDataProvider {
     invalidateEntriesData(dataId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKeyStartingWith(this.getEntriesPrefixCacheKey(dataId));
+        });
+    }
+
+    /**
+     * Invalidates database fields data.
+     *
+     * @param dataId Data ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
+     */
+    invalidateFieldsData(dataId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getFieldsCacheKey(dataId));
         });
     }
 

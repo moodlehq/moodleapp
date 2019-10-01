@@ -216,6 +216,7 @@ export class AddonModDataEntryPage implements OnDestroy {
             promises.push(this.dataProvider.invalidateEntryData(this.data.id, this.entryId));
             promises.push(this.groupsProvider.invalidateActivityGroupInfo(this.data.coursemodule));
             promises.push(this.dataProvider.invalidateEntriesData(this.data.id));
+            promises.push(this.dataProvider.invalidateFieldsData(this.data.id));
 
             if (this.data.comments && this.entry && this.entry.id > 0 && this.commentsEnabled && this.comments) {
                 // Refresh comments. Don't add it to promises because we don't want the comments fetch to block the entry fetch.
