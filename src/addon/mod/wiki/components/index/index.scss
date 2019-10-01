@@ -12,6 +12,7 @@ ion-app.app-root addon-mod-wiki-index {
 
     .addon-mod_wiki-page-content {
         background-color: $white;
+        border-top: 1px solid $gray;
         @include darkmode() {
             background-color: $black;
         }
