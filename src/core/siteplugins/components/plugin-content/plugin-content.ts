@@ -107,6 +107,10 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
 
             this.onContentLoaded.emit(refresh);
         }).catch((error) => {
+            // Make it think it's loaded - otherwise it sticks on 'loading' and stops navigation working.
+            this.content = '<div></div>';
+            this.onContentLoaded.emit(refresh);
+
             this.domUtils.showErrorModalDefault(error, 'core.errorloadingcontent', true);
         }).finally(() => {
             this.dataLoaded = true;
