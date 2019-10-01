@@ -1,0 +1,16 @@
+ion-app.app-root {
+    .safe-area-page,
+    .safe-padding-horizontal {
+        core-course-module-description {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            .item-ios.item-block {
+                @include safe-area-padding-horizontal($item-ios-padding-end / 2, null);
+
+                .item-inner {
+                    @include safe-area-padding-horizontal(null, $item-ios-padding-end / 2);
+                }
+            }
+        }
+    }
+}

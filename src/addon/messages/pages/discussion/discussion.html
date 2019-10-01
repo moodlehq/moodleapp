@@ -25,7 +25,7 @@
     </core-navbar-buttons>
 </ion-header>
 <ion-content class="has-footer">
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="loaded" class="safe-area-page">
         <!-- Load previous messages. -->
         <core-infinite-loading [enabled]="canLoadMore" (action)="loadPrevious($event)" position="top" [error]="loadMoreError"></core-infinite-loading>
 
@@ -34,7 +34,7 @@
             <p text-center><i>{{ 'addon.messages.selfconversationdefaultmessage' | translate }}</i></p>
         </ng-container>
 
-        <ion-list class="addon-messages-discussion-container safe-area-page" [class.addon-messages-discussion-group]="isGroup" [attr.aria-live]="'polite'">
+        <ion-list class="addon-messages-discussion-container" [class.addon-messages-discussion-group]="isGroup" [attr.aria-live]="'polite'">
             <ng-container *ngFor="let message of messages; index as index; last as last">
                 <h6 text-center *ngIf="message.showDate" class="addon-messages-date">
                     {{ message.timecreated | coreFormatDate: "strftimedayshort" }}

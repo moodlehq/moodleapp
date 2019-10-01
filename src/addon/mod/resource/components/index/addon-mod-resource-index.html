@@ -11,7 +11,7 @@
 </core-navbar-buttons>
 
 <!-- Content. -->
-<core-loading [hideUntil]="loaded" class="core-loading-center">
+<core-loading [hideUntil]="loaded" class="core-loading-center safe-area-page">
 
     <core-course-module-description *ngIf="mode != 'iframe' && (mode != 'embedded' || displayDescription)" [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
 

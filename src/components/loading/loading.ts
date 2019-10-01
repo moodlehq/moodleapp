@@ -84,11 +84,13 @@ export class CoreLoadingComponent implements OnInit, OnChanges {
                     setTimeout(() => {
                         // Change CSS to force calculate height.
                         this.content.nativeElement.classList.add('core-loading-content');
+                        this.content.nativeElement.classList.remove('core-loading-content-loading');
                     }, 500);
                 });
             } else {
                 this.element.classList.remove('core-loading-loaded');
                 this.content.nativeElement.classList.remove('core-loading-content');
+                this.content.nativeElement.classList.add('core-loading-content-loading');
             }
 
             // Trigger the event after a timeout since the elements inside ngIf haven't been added to DOM yet.

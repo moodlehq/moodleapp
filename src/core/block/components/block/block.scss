@@ -19,7 +19,7 @@ ion-app.app-root core-block {
   }
 
   .item-divider {
-    @include safe-area-padding-horizontal(null, 0px);
+    @include padding-horizontal(null, 0px);
   }
 
   .item-divider .core-button-spinner {

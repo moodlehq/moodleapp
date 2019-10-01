@@ -22,12 +22,14 @@ ion-app.app-root core-block-course-blocks {
                 box-shadow: none !important;
                 flex-grow: 1;
                 max-width: 100%;
+                @include core-split-area-start();
             }
 
             div.core-course-blocks-side {
                 max-width: $core-side-blocks-max-width;
                 min-width: $core-side-blocks-min-width;
                 @include border-start(1px, solid, $list-md-border-color);
+                @include core-split-area-end();
             }
 
             .core-course-blocks-content,

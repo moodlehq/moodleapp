@@ -20,7 +20,7 @@ ion-app.app-root {
 
     core-file > .item.item-block > .item-inner {
         border-bottom: 0;
-        @include padding(null, 0, null, null);
+        @include safe-area-padding(null, 0px, null, null);
         .buttons {
             display: flex;
             flex-flow: row;

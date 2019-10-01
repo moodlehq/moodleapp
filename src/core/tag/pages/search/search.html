@@ -7,7 +7,7 @@
     <ion-refresher [enabled]="loaded" (ionRefresh)="refreshData($event)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <ion-grid>
+    <ion-grid class="safe-area-page">
         <ion-row>
             <ion-col col-12 [attr.col-sm-6]="collections && collections.length > 1 ? '' : null">
                 <core-search-box (onSubmit)="searchTags($event)" (onClear)="searchTags('')" [initialSearch]="query" [disabled]="searching" autocorrect="off" [spellcheck]="false" [autoFocus]="true" [lengthCheck]="0"></core-search-box>
@@ -20,7 +20,7 @@
             </ion-col>
         </ion-row>
     </ion-grid>
-    <core-loading [hideUntil]="loaded && !searching">
+    <core-loading [hideUntil]="loaded && !searching" class="safe-area-page">
         <core-empty-box *ngIf="!cloud || !cloud.tags || !cloud.tags.length" icon="pricetags" [message]="'core.tag.notagsfound' | translate: {$a: query}"></core-empty-box>
 
         <ng-container *ngIf="cloud && cloud.tags && cloud.tags.length > 0">

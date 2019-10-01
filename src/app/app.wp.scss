@@ -40,10 +40,10 @@ ion-app.app-root.wp {
       }
 
       &[icon-start] {
-        @include padding(null, null, null, $card-wp-padding-left * 2 + 20);
+        @include safe-area-padding(null, null, null, $card-wp-padding-left * 2 + 20);
 
         ion-icon {
-          @include position(null, null, null, $card-wp-padding-left);
+          @include safe-area-position(null, null, null, $card-wp-padding-left);
         }
       }
     }

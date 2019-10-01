@@ -31,11 +31,11 @@
             <h2>{{ 'addon.mod_url.pointingtourl' | translate }}</h2>
             <p>{{ url }}</p>
         </ion-item>
-        <div padding>
+        <ion-item text-wrap>
             <a ion-button block (click)="go()" icon-start>
                 <ion-icon name="link" start></ion-icon>
                 {{ 'addon.mod_url.accessurl' | translate }}
             </a>
-        </div>
+        </ion-item>
     </ion-list>
 </core-loading>
