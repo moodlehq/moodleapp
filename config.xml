@@ -44,24 +44,18 @@
     <platform name="android">
         <resource-file src="MainActivity.java" target="app/src/main/java/com/moodle/moodlemobile/MainActivity.java" />
         <resource-file src="google-services.json" target="app/google-services.json" />
-        <splash qualifier="land-ldpi" src="resources/android/splash/drawable-land-ldpi-screen.png" />
-        <splash qualifier="land-mdpi" src="resources/android/splash/drawable-land-mdpi-screen.png" />
-        <splash qualifier="land-hdpi" src="resources/android/splash/drawable-land-hdpi-screen.png" />
-        <splash qualifier="land-xhdpi" src="resources/android/splash/drawable-land-xhdpi-screen.png" />
-        <splash qualifier="land-xxhdpi" src="resources/android/splash/drawable-land-xxhdpi-screen.png" />
-        <splash qualifier="land-xxxhdpi" src="resources/android/splash/drawable-land-xxxhdpi-screen.png" />
-        <splash qualifier="port-ldpi" src="resources/android/splash/drawable-port-ldpi-screen.png" />
-        <splash qualifier="port-mdpi" src="resources/android/splash/drawable-port-mdpi-screen.png" />
-        <splash qualifier="port-hdpi" src="resources/android/splash/drawable-port-hdpi-screen.png" />
-        <splash qualifier="port-xhdpi" src="resources/android/splash/drawable-port-xhdpi-screen.png" />
-        <splash qualifier="port-xxhdpi" src="resources/android/splash/drawable-port-xxhdpi-screen.png" />
-        <splash qualifier="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
-        <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
-        <icon density="mdpi" src="resources/android/icon/drawable-mdpi-icon.png" />
-        <icon density="hdpi" src="resources/android/icon/drawable-hdpi-icon.png" />
-        <icon density="xhdpi" src="resources/android/icon/drawable-xhdpi-icon.png" />
-        <icon density="xxhdpi" src="resources/android/icon/drawable-xxhdpi-icon.png" />
-        <icon density="xxxhdpi" src="resources/android/icon/drawable-xxxhdpi-icon.png" />
+        <splash density="land-ldpi" qualifier="land-ldpi" src="resources/android/splash/drawable-land-ldpi-screen.png" />
+        <splash density="land-mdpi" qualifier="land-mdpi" src="resources/android/splash/drawable-land-mdpi-screen.png" />
+        <splash density="land-hdpi" qualifier="land-hdpi" src="resources/android/splash/drawable-land-hdpi-screen.png" />
+        <splash density="land-xhdpi" qualifier="land-xhdpi" src="resources/android/splash/drawable-land-xhdpi-screen.png" />
+        <splash density="land-xxhdpi" qualifier="land-xxhdpi" src="resources/android/splash/drawable-land-xxhdpi-screen.png" />
+        <splash density="land-xxxhdpi" qualifier="land-xxxhdpi" src="resources/android/splash/drawable-land-xxxhdpi-screen.png" />
+        <splash density="port-ldpi" qualifier="port-ldpi" src="resources/android/splash/drawable-port-ldpi-screen.png" />
+        <splash density="port-mdpi" qualifier="port-mdpi" src="resources/android/splash/drawable-port-mdpi-screen.png" />
+        <splash density="port-hdpi" qualifier="port-hdpi" src="resources/android/splash/drawable-port-hdpi-screen.png" />
+        <splash density="port-xhdpi" qualifier="port-xhdpi" src="resources/android/splash/drawable-port-xhdpi-screen.png" />
+        <splash density="port-xxhdpi" qualifier="port-xxhdpi" src="resources/android/splash/drawable-port-xxhdpi-screen.png" />
+        <splash density="port-xxxhdpi" qualifier="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
         <resource-file src="resources/android/icon/drawable-ldpi-smallicon.png" target="app/src/main/res/mipmap-ldpi/smallicon.png" />
         <resource-file src="resources/android/icon/drawable-mdpi-smallicon.png" target="app/src/main/res/mipmap-mdpi/smallicon.png" />
         <resource-file src="resources/android/icon/drawable-hdpi-smallicon.png" target="app/src/main/res/mipmap-hdpi/smallicon.png" />
@@ -78,6 +72,13 @@
         <resource-file src="resources/android/splash/drawable-port-xhdpi-screen.png" target="app/src/main/res/drawable-port-xhdpi/screen.png" />
         <resource-file src="resources/android/splash/drawable-port-xxhdpi-screen.png" target="app/src/main/res/drawable-port-xxhdpi/screen.png" />
         <resource-file src="resources/android/splash/drawable-port-xxxhdpi-screen.png" target="app/src/main/res/drawable-port-xxxhdpi/screen.png" />
+        <resource-file src="resources/values/colors.xml" target="/app/src/main/res/values/colors.xml" />
+        <icon background="@color/background" density="ldpi" foreground="resources/android/icon/ldpi-foreground.png" />
+        <icon background="@color/background" density="mdpi" foreground="resources/android/icon/mdpi-foreground.png" />
+        <icon background="@color/background" density="hdpi" foreground="resources/android/icon/hdpi-foreground.png" />
+        <icon background="@color/background" density="xhdpi" foreground="resources/android/icon/xhdpi-foreground.png" />
+        <icon background="@color/background" density="xxhdpi" foreground="resources/android/icon/xxhdpi-foreground.png" />
+        <icon background="@color/background" density="xxxhdpi" foreground="resources/android/icon/xxxhdpi-foreground.png" />
     </platform>
     <platform name="ios">
         <resource-file src="GoogleService-Info.plist" />
