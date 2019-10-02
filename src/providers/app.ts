@@ -171,6 +171,15 @@ export class CoreAppProvider {
     }
 
     /**
+     * Checks if the app is running in an Android mobile or tablet device.
+     *
+     * @return Whether the app is running in an Android mobile or tablet device.
+     */
+    isAndroid(): boolean {
+        return this.platform.is('android');
+    }
+
+    /**
      * Checks if the app is running in a desktop environment (not browser).
      *
      * @return Whether the app is running in a desktop environment (not browser).
@@ -179,6 +188,15 @@ export class CoreAppProvider {
         const process = (<any> window).process;
 
         return !!(process && process.versions && typeof process.versions.electron != 'undefined');
+    }
+
+    /**
+     * Checks if the app is running in an iOS mobile or tablet device.
+     *
+     * @return Whether the app is running in an iOS mobile or tablet device.
+     */
+    isIOS(): boolean {
+        return this.platform.is('ios');
     }
 
     /**

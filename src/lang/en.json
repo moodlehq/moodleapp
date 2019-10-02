@@ -273,6 +273,8 @@
     "unlimited": "Unlimited",
     "unzipping": "Unzipping",
     "upgraderunning": "Site is being upgraded, please retry later.",
+    "updaterequired": "App update required",
+    "updaterequireddesc": "Please update your app to version {{$a}}",
     "user": "User",
     "userdeleted": "This user account has been deleted",
     "userdetails": "User details",

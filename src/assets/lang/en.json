@@ -1920,6 +1920,8 @@
     "core.unknown": "Unknown",
     "core.unlimited": "Unlimited",
     "core.unzipping": "Unzipping",
+    "core.updaterequired": "App update required",
+    "core.updaterequireddesc": "Please update your app to version {{$a}}",
     "core.upgraderunning": "Site is being upgraded, please retry later.",
     "core.user": "User",
     "core.user.address": "Address",

@@ -1925,6 +1925,8 @@
   "core.unknown": "local_moodlemobileapp",
   "core.unlimited": "moodle",
   "core.unzipping": "local_moodlemobileapp",
+  "core.updaterequired": "local_moodlemobileapp",
+  "core.updaterequireddesc": "local_moodlemobileapp",
   "core.upgraderunning": "error",
   "core.user": "moodle",
   "core.user.address": "moodle",

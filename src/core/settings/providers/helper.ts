@@ -171,9 +171,9 @@ export class CoreSettingsHelper {
             });
         }));
 
-        const syncPromise = Promise.all(promises);
+        let syncPromise = Promise.all(promises);
         this.syncPromises[siteId] = syncPromise;
-        syncPromise.finally(() => {
+        syncPromise = syncPromise.finally(() => {
             delete this.syncPromises[siteId];
         });
 
