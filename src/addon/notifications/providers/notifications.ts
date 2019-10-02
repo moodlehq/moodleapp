@@ -449,6 +449,7 @@ export type AddonNotificationsNotificationPreferences = {
     disableall: number | boolean; // Whether all the preferences are disabled.
     processors: AddonNotificationsNotificationPreferencesProcessor[]; // Config form values.
     components: AddonNotificationsNotificationPreferencesComponent[]; // Available components.
+    enableall?: boolean; // Calculated in the app. Whether all the preferences are enabled.
 };
 
 /**
