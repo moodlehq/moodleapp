@@ -114,6 +114,9 @@
         <splash height="480" src="resources/ios/splash/Default~iphone.png" width="320" />
         <icon height="1024" src="resources/ios/icon/icon-1024.png" width="1024" />
         <splash height="2732" src="resources/ios/splash/Default@2x~universal~anyany.png" width="2732" />
+        <edit-config file="*-Info.plist" mode="merge" target="NSLocationWhenInUseUsageDescription">
+            <string>We need your location so you can attach it as part of your submissions.</string>
+        </edit-config>
     </platform>
     <plugin name="com-darryncampbell-cordova-plugin-intent" spec="^1.1.8" />
     <plugin name="cordova-android-support-gradle-release" spec="^3.0.1">
@@ -129,6 +132,9 @@
     <plugin name="cordova-plugin-file" spec="^6.0.2" />
     <plugin name="cordova-plugin-file-opener2" spec="2.0.19" />
     <plugin name="cordova-plugin-file-transfer" spec="^1.7.1" />
+    <plugin name="cordova-plugin-geolocation" spec="^4.0.2">
+        <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="We need your location so you can attach it as part of your submissions." />
+    </plugin>
     <plugin name="cordova-plugin-globalization" spec="^1.11.0" />
     <plugin name="cordova-plugin-inappbrowser" spec="^3.1.0" />
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.1.3" />
