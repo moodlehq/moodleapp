@@ -311,13 +311,8 @@ export class AddonCalendarEventPage implements OnDestroy {
 
     /**
      * Add a reminder for this event.
-     *
-     * @param e Click event.
      */
-    addNotificationTime(e: Event): void {
-        e.preventDefault();
-        e.stopPropagation();
-
+    addNotificationTime(): void {
         if (this.notificationTimeText && this.event && this.event.id) {
             let notificationTime = this.timeUtils.convertToTimestamp(this.notificationTimeText);
 
@@ -349,10 +344,22 @@ export class AddonCalendarEventPage implements OnDestroy {
         e.preventDefault();
         e.stopPropagation();
 
-        this.calendarProvider.deleteEventReminder(id).then(() => {
-            this.calendarProvider.getEventReminders(this.eventId).then((reminders) => {
-                this.reminders = reminders;
+        const message = this.translate.instant('core.areyousure');
+        const okText = this.translate.instant('core.delete');
+
+        this.domUtils.showConfirm(message, undefined, okText).then(() => {
+            const modal = this.domUtils.showModalLoading('core.deleting', true);
+            this.calendarProvider.deleteEventReminder(id).then(() => {
+                this.calendarProvider.getEventReminders(this.eventId).then((reminders) => {
+                    this.reminders = reminders;
+                });
+            }).catch((error) => {
+                this.domUtils.showErrorModalDefault(error, 'Error deleting reminder');
+            }).finally(() => {
+                modal.dismiss();
             });
+        }).catch(() => {
+            // Cancelled.
         });
     }
 
