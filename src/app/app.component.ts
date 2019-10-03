@@ -99,7 +99,7 @@ export class MoodleMobileApp implements OnInit {
 
         // Listen for passwordchange and usernotfullysetup events to open InAppBrowser.
         this.eventsProvider.on(CoreEventsProvider.PASSWORD_CHANGE_FORCED, (data) => {
-            this.loginHelper.openInAppForEdit(data.siteId, '/login/change_password.php', 'core.forcepasswordchangenotice', true);
+            this.loginHelper.passwordChangeForced(data.siteId);
         });
         this.eventsProvider.on(CoreEventsProvider.USER_NOT_FULLY_SETUP, (data) => {
             this.loginHelper.openInAppForEdit(data.siteId, '/user/edit.php', 'core.usernotfullysetup');

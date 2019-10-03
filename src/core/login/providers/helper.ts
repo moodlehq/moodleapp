@@ -32,6 +32,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreConfigConstants } from '../../../configconstants';
 import { CoreConstants } from '@core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
+import { CoreSite } from '@classes/site';
 
 /**
  * Data related to a SSO authentication.
@@ -365,6 +366,19 @@ export class CoreLoginHelperProvider {
         }
 
         return errors;
+    }
+
+    /**
+     * Returns the logout label of a site.
+     *
+     * @param site Site. If not defined, use current site.
+     * @return The string key.
+     */
+    getLogoutLabel(site?: CoreSite): string {
+        site = site || this.sitesProvider.getCurrentSite();
+        const config = site.getStoredConfig();
+
+        return 'core.mainmenu.' + (config && config.tool_mobile_forcelogout == '1' ? 'logout' : 'changesite');
     }
 
     /**
@@ -796,7 +810,7 @@ export class CoreLoginHelperProvider {
         this.utils.openInApp(siteUrl + '/login/forgot_password.php');
     }
 
-    /*
+    /**
      * Function to open in app browser to change password or complete user profile.
      *
      * @param siteId The site ID.
@@ -804,7 +818,7 @@ export class CoreLoginHelperProvider {
      * @param alertMessage The key of the message to display before opening the in app browser.
      * @param invalidateCache Whether to invalidate site's cache (e.g. when the user is forced to change password).
      */
-    openInAppForEdit(siteId: string, path: string, alertMessage: string, invalidateCache?: boolean): void {
+    openInAppForEdit(siteId: string, path: string, alertMessage?: string, invalidateCache?: boolean): void {
         if (!siteId || siteId !== this.sitesProvider.getCurrentSiteId()) {
             // Site that triggered the event is not current site, nothing to do.
             return;
@@ -824,13 +838,37 @@ export class CoreLoginHelperProvider {
             }
 
             // Open change password.
-            alertMessage = this.translate.instant(alertMessage) + '<br>' + this.translate.instant('core.redirectingtosite');
+            if (alertMessage) {
+                alertMessage = this.translate.instant(alertMessage) + '<br>' + this.translate.instant('core.redirectingtosite');
+            }
             currentSite.openInAppWithAutoLogin(siteUrl + path, undefined, alertMessage).then(() => {
                 this.waitingForBrowser = true;
             }).finally(() => {
                 this.isOpenEditAlertShown = false;
             });
         }
+    }
+
+    /**
+     * Function that should be called when password change is forced. Reserved for core use.
+     *
+     * @param siteId The site ID.
+     */
+    passwordChangeForced(siteId: string): void {
+        const currentSite = this.sitesProvider.getCurrentSite();
+        if (!currentSite || siteId !== currentSite.getId()) {
+            return; // Site that triggered the event is not current site.
+        }
+
+        const rootNavCtrl = this.appProvider.getRootNavController(),
+        activePage = rootNavCtrl.getActive();
+
+        // If current page is already change password, stop.
+        if (activePage && activePage.component && activePage.component.name == 'CoreLoginChangePasswordPage') {
+            return;
+        }
+
+        rootNavCtrl.setRoot('CoreLoginChangePasswordPage', {siteId});
     }
 
     /**
