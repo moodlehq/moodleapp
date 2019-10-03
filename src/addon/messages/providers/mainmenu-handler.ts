@@ -24,7 +24,7 @@ import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers/delegate';
 import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
-import { CoreFilterProvider } from '@core/filter/providers/filter';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Handler to inject an option into main menu.
@@ -49,7 +49,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
 
     constructor(private messagesProvider: AddonMessagesProvider, private sitesProvider: CoreSitesProvider,
             eventsProvider: CoreEventsProvider, private appProvider: CoreAppProvider,
-            private localNotificationsProvider: CoreLocalNotificationsProvider, private filterProvider: CoreFilterProvider,
+            private localNotificationsProvider: CoreLocalNotificationsProvider, private filterHelper: CoreFilterHelperProvider,
             private pushNotificationsProvider: CorePushNotificationsProvider, utils: CoreUtilsProvider,
             pushNotificationsDelegate: CorePushNotificationsDelegate, private emulatorHelper: CoreEmulatorHelperProvider) {
 
@@ -297,7 +297,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
             title: message.name || message.userfromfullname,
         };
 
-        return this.filterProvider.getFiltersAndFormatText(message.text, 'system', this.sitesProvider.getCurrentSiteHomeId(),
+        return this.filterHelper.getFiltersAndFormatText(message.text, 'system', this.sitesProvider.getCurrentSiteHomeId(),
                 {clean: true, singleLine: true}).catch(() => {
             return message.text;
         }).then((formattedText) => {

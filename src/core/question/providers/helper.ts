@@ -693,9 +693,10 @@ export class CoreQuestionHelperProvider {
      * @param componentId An ID to use in conjunction with the component.
      * @param contextLevel The context level.
      * @param contextInstanceId Instance ID related to the context.
+     * @param courseId Course ID the text belongs to. It can be used to improve performance with filters.
      */
     treatCorrectnessIconsClicks(element: HTMLElement, component?: string, componentId?: number, contextLevel?: string,
-            contextInstanceId?: number): void {
+            contextInstanceId?: number, courseId?: number): void {
 
         const icons = <HTMLElement[]> Array.from(element.querySelectorAll('i.icon.questioncorrectnessicon[tappable]')),
             title = this.translate.instant('core.question.feedback');
@@ -708,7 +709,7 @@ export class CoreQuestionHelperProvider {
                 // There's a hidden feedback, show it when the icon is clicked.
                 icon.addEventListener('click', (event) => {
                     this.textUtils.expandText(title, span.innerHTML, component, componentId, [], true, contextLevel,
-                            contextInstanceId);
+                            contextInstanceId, courseId);
                 });
             }
         });

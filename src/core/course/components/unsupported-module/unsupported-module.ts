@@ -24,7 +24,7 @@ import { CoreCourseModuleDelegate } from '../../providers/module-delegate';
     templateUrl: 'core-course-unsupported-module.html',
 })
 export class CoreCourseUnsupportedModuleComponent implements OnInit {
-    @Input() course: any; // The course to module belongs to.
+    @Input() courseId: number; // The course to module belongs to.
     @Input() module: any; // The module to render.
 
     isDisabledInSite: boolean;

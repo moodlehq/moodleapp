@@ -17,7 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreCourseProvider } from '../../providers/course';
-import { CoreFilterProvider } from '@core/filter/providers/filter';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Component to handle activity completion. It shows a checkbox with the current status, and allows manually changing
@@ -41,7 +41,7 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
     completionImage: string;
     completionDescription: string;
 
-    constructor(private filterProvider: CoreFilterProvider, private domUtils: CoreDomUtilsProvider,
+    constructor(private filterHelper: CoreFilterHelperProvider, private domUtils: CoreDomUtilsProvider,
             private translate: TranslateService, private courseProvider: CoreCourseProvider,
             private userProvider: CoreUserProvider) {
         this.completionChanged = new EventEmitter();
@@ -138,8 +138,8 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
         }
 
         if (moduleName) {
-            this.filterProvider.getFiltersAndFormatText(moduleName, 'module', this.moduleId,
-                    {clean: true, singleLine: true, shortenLength: 50}).then((modName) => {
+            this.filterHelper.getFiltersAndFormatText(moduleName, 'module', this.moduleId,
+                    {clean: true, singleLine: true, shortenLength: 50, courseId: this.completion.courseId}).then((modName) => {
 
                 let promise;
 

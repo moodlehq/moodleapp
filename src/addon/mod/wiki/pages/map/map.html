@@ -20,7 +20,7 @@
                     {{ letter.label }}
                 </ion-item-divider>
                 <a ion-item text-wrap *ngFor="let page of letter.pages" (click)="goToPage(page)" [class.core-nav-item-selected]="selected == page.id">
-                    <ion-icon name="home" item-start *ngIf="page.firstpage"></ion-icon> <core-format-text [text]="page.title" contextLevel="module" [contextInstanceId]="moduleId"></core-format-text>
+                    <ion-icon name="home" item-start *ngIf="page.firstpage"></ion-icon> <core-format-text [text]="page.title" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId"></core-format-text>
                     <ion-note *ngIf="!page.id" item-end>
                         <ion-icon name="time"></ion-icon>
                         <span text-wrap>{{ 'core.notsent' | translate }}</span>

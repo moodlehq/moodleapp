@@ -4,7 +4,7 @@
         <h2>
             <core-icon name="fa-map-pin" *ngIf="post.parent == 0 && post.pinned"></core-icon>
             <core-icon name="fa-star" class="addon-forum-star" *ngIf="post.parent == 0 && !post.pinned && post.starred"></core-icon>
-            <span [class.core-bold]="post.parent == 0"><core-format-text [text]="post.subject" contextLevel="module" [contextInstanceId]="forum && forum.cmid"></core-format-text></span>
+            <span [class.core-bold]="post.parent == 0"><core-format-text [text]="post.subject" contextLevel="module" [contextInstanceId]="forum && forum.cmid" [courseId]="courseId"></core-format-text></span>
         </h2>
         <p>
             <ion-note float-end padding-left *ngIf="!post.modified"><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ion-note>
@@ -20,7 +20,7 @@
     <div padding-bottom *ngIf="post.isprivatereply">
         <ion-note>{{ 'addon.mod_forum.postisprivatereply' | translate }}</ion-note>
     </div>
-    <core-format-text [component]="component" [componentId]="componentId" [text]="post.message" contextLevel="module" [contextInstanceId]="forum && forum.cmid"></core-format-text>
+    <core-format-text [component]="component" [componentId]="componentId" [text]="post.message" contextLevel="module" [contextInstanceId]="forum && forum.cmid" [courseId]="courseId"></core-format-text>
     <div no-lines>
         <ng-container *ngFor="let attachment of post.attachments">
             <!-- Files already attached to the submission. -->

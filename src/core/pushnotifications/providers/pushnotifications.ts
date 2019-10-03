@@ -34,6 +34,7 @@ import { ILocalNotification } from '@ionic-native/local-notifications';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreSite } from '@classes/site';
 import { CoreFilterProvider } from '@core/filter/providers/filter';
+import { CoreFilterDelegate } from '@core/filter/providers/delegate';
 
 /**
  * Data needed to register a device in a Moodle site.
@@ -178,7 +179,7 @@ export class CorePushNotificationsProvider {
             private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider, private push: Push,
             private configProvider: CoreConfigProvider, private device: Device, private zone: NgZone,
             private translate: TranslateService, private platform: Platform, private sitesFactory: CoreSitesFactoryProvider,
-            private filterProvider: CoreFilterProvider) {
+            private filterProvider: CoreFilterProvider, private filterDelegate: CoreFilterDelegate) {
         this.logger = logger.getInstance('CorePushNotificationsProvider');
         this.appDB = appProvider.getDB();
         this.appDB.createTablesFromSchema(this.appTablesSchema);
@@ -448,46 +449,67 @@ export class CorePushNotificationsProvider {
                             text: '',
                             channel: 'PushPluginChannel'
                         },
-                        promises = [],
+                        options = {
+                            clean: true,
+                            singleLine: true,
+                            contextLevel: 'system',
+                            instanceId: site.getSiteHomeId(),
+                            filter: true
+                        },
                         isAndroid = this.platform.is('android'),
                         extraFeatures = this.utils.isTrueOrOne(data.extrafeatures);
 
-                    // Apply formatText to title and message.
-                    promises.push(this.filterProvider.getFiltersAndFormatText(notification.title, 'system', site.getSiteHomeId(),
-                            {clean: true, singleLine: true}, site.getId()).then((title) => {
-                        localNotif.title = title;
-                    }).catch(() => {
-                        localNotif.title = notification.title;
-                    }));
-
-                    promises.push(this.filterProvider.getFiltersAndFormatText(notification.message, 'system', site.getSiteHomeId(),
-                            {clean: true, singleLine: true}, site.getId()).catch(() => {
-                        // Error formatting, use the original message.
-                        return notification.message;
-                    }).then((formattedMessage) => {
-                        if (extraFeatures && isAndroid && this.utils.isFalseOrZero(data.notif)) {
-                            // It's a message, use messaging style. Ionic Native doesn't specify this option.
-                            (<any> localNotif).text = [
-                                {
-                                    message: formattedMessage,
-                                    person: data.conversationtype == 2 ? data.userfromfullname : ''
-                                }
-                            ];
-                        } else {
-                            localNotif.text = formattedMessage;
+                    // Get the filters to apply to text and message. Don't use FIlterHelper to prevent circular dependencies.
+                    this.filterProvider.canGetAvailableInContext(site.getId()).then((canGet) => {
+                        if (!canGet) {
+                            // We cannot check which filters are available, apply them all.
+                            return this.filterDelegate.getEnabledFilters(options.contextLevel, options.instanceId);
                         }
-                    }));
 
-                    if (extraFeatures && isAndroid) {
-                        // Use a different icon if needed.
-                        localNotif.icon = notification.image;
-                        // This feature isn't supported by the official plugin, we use a fork.
-                        (<any> localNotif).iconType = data['image-type'];
-                    }
+                        return this.filterProvider.getAvailableInContext(options.contextLevel, options.instanceId, site.getId());
+                    }).catch(() => {
+                        return [];
+                    }).then((filters) => {
+                        const promises = [];
 
-                    Promise.all(promises).then(() => {
-                        this.localNotificationsProvider.schedule(localNotif, CorePushNotificationsProvider.COMPONENT, data.site,
-                                true);
+                        // Apply formatText to title and message.
+                        promises.push(this.filterProvider.formatText(notification.title, options, filters, site.getId())
+                                .then((title) => {
+                            localNotif.title = title;
+                        }).catch(() => {
+                            localNotif.title = notification.title;
+                        }));
+
+                        promises.push(this.filterProvider.formatText(notification.message, options, filters, site.getId())
+                                .catch(() => {
+                            // Error formatting, use the original message.
+                            return notification.message;
+                        }).then((formattedMessage) => {
+                            if (extraFeatures && isAndroid && this.utils.isFalseOrZero(data.notif)) {
+                                // It's a message, use messaging style. Ionic Native doesn't specify this option.
+                                (<any> localNotif).text = [
+                                    {
+                                        message: formattedMessage,
+                                        person: data.conversationtype == 2 ? data.userfromfullname : ''
+                                    }
+                                ];
+                            } else {
+                                localNotif.text = formattedMessage;
+                            }
+                        }));
+
+                        if (extraFeatures && isAndroid) {
+                            // Use a different icon if needed.
+                            localNotif.icon = notification.image;
+                            // This feature isn't supported by the official plugin, we use a fork.
+                            (<any> localNotif).iconType = data['image-type'];
+                        }
+
+                        Promise.all(promises).then(() => {
+                            this.localNotificationsProvider.schedule(localNotif, CorePushNotificationsProvider.COMPONENT, data.site,
+                                    true);
+                        });
+
                     });
                 }
 

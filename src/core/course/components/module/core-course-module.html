@@ -2,7 +2,7 @@
 
     <img item-start *ngIf="module.handlerData.icon" [src]="module.handlerData.icon" [alt]="module.modnametranslated" class="core-module-icon">
     <div class="core-module-title">
-        <core-format-text [text]="module.handlerData.title" contextLevel="module" [contextInstanceId]="module.id"></core-format-text>
+        <core-format-text [text]="module.handlerData.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
 
         <!-- Buttons. -->
         <div item-end *ngIf="module.uservisible !== false" class="buttons core-module-buttons" [ngClass]="{'core-button-completion': module.completiondata}">
@@ -27,9 +27,9 @@
         <ion-badge item-end *ngIf="module.visible !== 0 && module.isStealth" text-wrap>{{ 'core.course.hiddenoncoursepage' | translate }}</ion-badge>
         <div class="core-module-availabilityinfo" *ngIf="module.availabilityinfo" item-end>
             <ion-badge text-wrap>{{ 'core.restricted' | translate }}</ion-badge>
-            <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id" text-wrap></core-format-text>
+            <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" text-wrap></core-format-text>
         </div>
         <ion-badge item-end *ngIf="module.completiondata && module.completiondata.offline" color="warning" text-wrap>{{ 'core.course.manualcompletionnotsynced' | translate }}</ion-badge>
     </div>
-    <core-format-text class="core-module-description" *ngIf="module.description" maxHeight="80" [text]="module.description" contextLevel="module" [contextInstanceId]="module.id"></core-format-text>
+    <core-format-text class="core-module-description" *ngIf="module.description" maxHeight="80" [text]="module.description" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
 </ion-item>

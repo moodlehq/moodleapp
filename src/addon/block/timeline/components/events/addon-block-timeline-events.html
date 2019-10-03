@@ -5,7 +5,7 @@
     <ng-container *ngFor="let event of dayEvents.events">
         <a ion-item text-wrap detail-none class="core-course-module-handler item-media" (click)="action($event, event.url)" [title]="event.name">
             <img item-start [src]="event.iconUrl" alt="" role="presentation" *ngIf="event.iconUrl" class="core-module-icon">
-            <h2><core-format-text [text]="event.name" contextLevel="module" [contextInstanceId]="event.id"></core-format-text></h2>
+            <h2><core-format-text [text]="event.name" contextLevel="module" [contextInstanceId]="event.id" [courseId]="event.course.id"></core-format-text></h2>
             <p *ngIf="showCourse">
                 <core-format-text [text]="event.course.fullnamedisplay" contextLevel="course" [contextInstanceId]="event.course.id"></core-format-text>
             </p>

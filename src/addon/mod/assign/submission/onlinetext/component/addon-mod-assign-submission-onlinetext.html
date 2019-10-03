@@ -3,7 +3,7 @@
     <h2>{{ plugin.name }}</h2>
     <p *ngIf="words">{{ 'addon.mod_assign.numwords' | translate: {'$a': words} }}</p>
     <p>
-        <core-format-text [component]="component" [componentId]="assign.cmid" [maxHeight]="80" [fullOnClick]="true" [fullTitle]="plugin.name" [text]="text" contextLevel="module" [contextInstanceId]="assign.cmid"></core-format-text>
+        <core-format-text [component]="component" [componentId]="assign.cmid" [maxHeight]="80" [fullOnClick]="true" [fullTitle]="plugin.name" [text]="text" contextLevel="module" [contextInstanceId]="assign.cmid" [courseId]="assign.course"></core-format-text>
     </p>
 </ion-item>
 

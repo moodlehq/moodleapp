@@ -553,7 +553,8 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             pages: this.subwikiPages,
             selected: this.currentPageObj && this.currentPageObj.id,
             homeView: this.getWikiHomeView(),
-            moduleId: this.module.id
+            moduleId: this.module.id,
+            courseId: this.courseId
         }, { cssClass: 'core-modal-lateral',
             showBackdrop: true,
             enableBackdropDismiss: true,

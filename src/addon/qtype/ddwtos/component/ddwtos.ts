@@ -96,7 +96,7 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
                         this.question, this.question.readOnly, this.inputIds, this.textUtils);
 
                 this.questionHelper.treatCorrectnessIconsClicks(this.element, this.component, this.componentId, this.contextLevel,
-                        this.contextInstanceId);
+                        this.contextInstanceId, this.courseId);
 
                 this.question.loaded = true;
             });

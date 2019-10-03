@@ -29,7 +29,7 @@ import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay,
     CoreCourseOptionsMenuHandlerToDisplay } from '../../providers/options-delegate';
 import { CoreCourseSyncProvider } from '../../providers/sync';
 import { CoreCourseFormatComponent } from '../../components/format/format';
-import { CoreFilterProvider } from '@core/filter/providers/filter';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -75,7 +75,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     constructor(navParams: NavParams, private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
             private courseFormatDelegate: CoreCourseFormatDelegate, private courseOptionsDelegate: CoreCourseOptionsDelegate,
             private translate: TranslateService, private courseHelper: CoreCourseHelperProvider, eventsProvider: CoreEventsProvider,
-            private coursesProvider: CoreCoursesProvider, private filterProvider: CoreFilterProvider,
+            private coursesProvider: CoreCoursesProvider, private filterHelper: CoreFilterHelperProvider,
             sitesProvider: CoreSitesProvider, private navCtrl: NavController, private injector: Injector,
             private prefetchDelegate: CoreCourseModulePrefetchDelegate, private syncProvider: CoreCourseSyncProvider,
             private utils: CoreUtilsProvider) {
@@ -263,7 +263,7 @@ export class CoreCourseSectionPage implements OnDestroy {
 
                     // Format the name of each section and check if it has content.
                     this.sections = sections.map((section) => {
-                        this.filterProvider.getFiltersAndFormatText(section.name.trim(), 'course', this.course.id,
+                        this.filterHelper.getFiltersAndFormatText(section.name.trim(), 'course', this.course.id,
                                 {clean: true, singleLine: true}).then((name) => {
                             section.formattedName = name;
                         });

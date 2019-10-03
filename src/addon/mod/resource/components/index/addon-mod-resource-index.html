@@ -13,7 +13,7 @@
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center safe-area-page">
 
-    <core-course-module-description *ngIf="mode != 'iframe' && (mode != 'embedded' || displayDescription)" [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id"></core-course-module-description>
+    <core-course-module-description *ngIf="mode != 'iframe' && (mode != 'embedded' || displayDescription)" [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
     <ng-container *ngIf="mode == 'iframe'">
         <core-iframe [src]="src"></core-iframe>

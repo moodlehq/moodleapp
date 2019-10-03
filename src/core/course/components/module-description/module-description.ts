@@ -42,6 +42,7 @@ export class CoreCourseModuleDescriptionComponent {
     @Input() showFull?: string | boolean; // Whether to always display the full description.
     @Input() contextLevel?: string; // The context level.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
+    @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
 
     constructor() {
         // Nothing to do.

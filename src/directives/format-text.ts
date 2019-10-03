@@ -31,6 +31,7 @@ import { CoreExternalContentDirective } from '../directives/external-content';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreFilterProvider } from '@core/filter/providers/filter';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -61,6 +62,7 @@ export class CoreFormatTextDirective implements OnChanges {
     @Input() filter?: boolean | string; // Whether to filter the text. If not defined, true if contextLevel and instanceId are set.
     @Input() contextLevel?: string; // The context level of the text.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
+    @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     @Input() wsNotFiltered?: boolean | string; // If true it means the WS didn't filter the text for some reason.
     @Output() afterRender?: EventEmitter<any>; // Called when the data is rendered.
 
@@ -75,7 +77,7 @@ export class CoreFormatTextDirective implements OnChanges {
             private contentLinksHelper: CoreContentLinksHelperProvider, @Optional() private navCtrl: NavController,
             @Optional() private content: Content, @Optional() private svComponent: CoreSplitViewComponent,
             private iframeUtils: CoreIframeUtilsProvider, private eventsProvider: CoreEventsProvider,
-            private filterProvider: CoreFilterProvider) {
+            private filterProvider: CoreFilterProvider, private filterHelper: CoreFilterHelperProvider) {
         this.element = element.nativeElement;
         this.element.classList.add('opacity-hide'); // Hide contents until they're treated.
         this.afterRender = new EventEmitter();
@@ -286,7 +288,7 @@ export class CoreFormatTextDirective implements OnChanges {
             const filter = this.utils.isTrueOrOne(this.filter);
 
             this.textUtils.expandText(this.fullTitle || this.translate.instant('core.description'), this.text,
-                this.component, this.componentId, undefined, filter, this.contextLevel, this.contextInstanceId);
+                this.component, this.componentId, undefined, filter, this.contextLevel, this.contextInstanceId, this.courseId);
         }
     }
 
@@ -383,11 +385,12 @@ export class CoreFormatTextDirective implements OnChanges {
                 clean: this.utils.isTrueOrOne(this.clean),
                 singleLine: this.utils.isTrueOrOne(this.singleLine),
                 highlight: this.highlight,
+                courseId: this.courseId,
                 wsNotFiltered: this.utils.isTrueOrOne(this.wsNotFiltered)
             };
 
             if (this.filter) {
-                return this.filterProvider.getFiltersAndFormatText(this.text, this.contextLevel, this.contextInstanceId, options,
+                return this.filterHelper.getFiltersAndFormatText(this.text, this.contextLevel, this.contextInstanceId, options,
                         site.getId());
             } else {
                 return this.filterProvider.formatText(this.text, options);

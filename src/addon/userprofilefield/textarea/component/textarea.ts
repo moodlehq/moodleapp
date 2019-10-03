@@ -29,6 +29,7 @@ export class AddonUserProfileFieldTextareaComponent implements OnInit {
     @Input() form?: FormGroup; // Form where to add the form control.
     @Input() contextLevel?: string; // The context level.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
+    @Input() courseId?: number; // The course the field belongs to (if any).
 
     control: FormControl;
 

@@ -14,7 +14,7 @@
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center safe-area-page">
 
-    <core-course-module-description *ngIf="survey && !survey.surveydone && !hasOffline" [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id"></core-course-module-description>
+    <core-course-module-description *ngIf="survey && !survey.surveydone && !hasOffline" [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
     <!-- Survey already done -->
     <ion-card padding *ngIf="survey && survey.surveydone">

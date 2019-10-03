@@ -35,6 +35,7 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
     @Input() title?: string;
     @Input() displaySpinner = true; // Whether to display the loading spinner.
     @Output() onLoading: EventEmitter<boolean>; // Eevent that indicates whether the component is loading data.
+    @Input() courseId?: number; // Course ID the comments belong to. It can be used to improve performance with filters.
 
     commentsLoaded = false;
     commentsCount: string;
@@ -155,6 +156,7 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
                 itemId: this.itemId,
                 area: this.area,
                 title: this.title,
+                courseId: this.courseId
             });
         }
     }

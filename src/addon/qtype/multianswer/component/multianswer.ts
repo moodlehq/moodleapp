@@ -45,6 +45,6 @@ export class AddonQtypeMultiAnswerComponent extends CoreQuestionBaseComponent im
      */
     questionRendered(): void {
         this.questionHelper.treatCorrectnessIconsClicks(this.element, this.component, this.componentId, this.contextLevel,
-                this.contextInstanceId);
+                this.contextInstanceId, this.courseId);
     }
 }

@@ -28,11 +28,13 @@ export class AddonModBookTocPage {
     moduleId: number;
     chapters: AddonModBookTocChapter[];
     selected: number;
+    courseId: number;
 
     constructor(navParams: NavParams, private viewCtrl: ViewController) {
         this.moduleId = navParams.get('moduleId');
         this.chapters = navParams.get('chapters') || [];
         this.selected = navParams.get('selected');
+        this.courseId = navParams.get('courseId');
     }
 
     /**

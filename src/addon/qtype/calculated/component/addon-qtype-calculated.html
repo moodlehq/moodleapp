@@ -1,6 +1,6 @@
 <section ion-list class="addon-qtype-calculated-container" *ngIf="question.text || question.text === ''">
     <ion-item text-wrap>
-        <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"></core-format-text></p>
+        <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text></p>
     </ion-item>
 
     <!-- Display unit options before the answer input. -->

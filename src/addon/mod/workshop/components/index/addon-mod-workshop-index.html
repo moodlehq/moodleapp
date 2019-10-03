@@ -41,7 +41,7 @@
     <ion-card *ngIf="description && workshop && workshop.phase == workshopPhases.PHASE_SETUP">
         <ion-item text-wrap>
             <h2>{{ 'core.description' | translate }}</h2>
-            <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id"></core-format-text>
+            <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
         </ion-item>
     </ion-card>
 
@@ -51,7 +51,7 @@
             <ion-card *ngIf="workshop.conclusion">
                 <ion-item text-wrap>
                     <h2>{{ 'addon.mod_workshop.conclusion' | translate }}</h2>
-                    <core-format-text fullOnClick="true" [component]="component" [componentId]="module.id" [text]="workshop.conclusion" contextLevel="module" [contextInstanceId]="module.id"></core-format-text>
+                    <core-format-text fullOnClick="true" [component]="component" [componentId]="module.id" [text]="workshop.conclusion" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
                 </ion-item>
             </ion-card>
 
@@ -74,7 +74,7 @@
         <ion-card *ngIf="workshop.phase == workshopPhases.PHASE_SUBMISSION && workshop.instructauthors">
             <ion-item text-wrap>
                 <h2>{{ 'addon.mod_workshop.areainstructauthors' | translate }}</h2>
-                <core-format-text fullOnClick="true" [component]="component" [componentId]="module.id" [text]="workshop.instructauthors" contextLevel="module" [contextInstanceId]="module.id"></core-format-text>
+                <core-format-text fullOnClick="true" [component]="component" [componentId]="module.id" [text]="workshop.instructauthors" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
             </ion-item>
         </ion-card>
 
@@ -122,7 +122,7 @@
             <ion-card *ngIf="workshop.phase == workshopPhases.PHASE_ASSESSMENT && workshop.instructreviewers">
                 <ion-item text-wrap>
                     <h2>{{ 'addon.mod_workshop.areainstructreviewers' | translate }}</h2>
-                    <core-format-text fullOnClick="true" [component]="component" [componentId]="module.id" [text]="workshop.instructreviewers" contextLevel="module" [contextInstanceId]="module.id"></core-format-text>
+                    <core-format-text fullOnClick="true" [component]="component" [componentId]="module.id" [text]="workshop.instructreviewers" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
                 </ion-item>
             </ion-card>
 

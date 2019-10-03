@@ -352,9 +352,10 @@ export class CoreTextUtilsProvider {
      * @param filter Whether the text should be filtered.
      * @param contextLevel The context level.
      * @param instanceId The instance ID related to the context.
+     * @param courseId Course ID the text belongs to. It can be used to improve performance with filters.
      */
     expandText(title: string, text: string, component?: string, componentId?: string | number, files?: any[],
-            filter?: boolean, contextLevel?: string, instanceId?: number): void {
+            filter?: boolean, contextLevel?: string, instanceId?: number, courseId?: number): void {
         if (text.length > 0) {
             const params: any = {
                 title: title,
@@ -364,7 +365,8 @@ export class CoreTextUtilsProvider {
                 files: files,
                 filter: filter,
                 contextLevel: contextLevel,
-                instanceId: instanceId
+                instanceId: instanceId,
+                courseId: courseId
             };
 
             // Open a modal with the contents.

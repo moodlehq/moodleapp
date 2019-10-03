@@ -14,7 +14,7 @@
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
-    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id"></core-course-module-description>
+    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
     <ng-container *ngIf="showTabs">
         <core-tabs [hideUntil]="tabsReady" [selectedIndex]="firstSelectedTab">
@@ -98,7 +98,7 @@
             </ion-item>
             <ion-item text-wrap *ngIf="access.canedititems && feedback.page_after_submit">
                 <h2>{{ 'addon.mod_feedback.page_after_submit' | translate }}</h2>
-                <core-format-text [component]="component" [componentId]="componentId" [text]="feedback.page_after_submit" contextLevel="module" [contextInstanceId]="module.id"></core-format-text>
+                <core-format-text [component]="component" [componentId]="componentId" [text]="feedback.page_after_submit" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
             </ion-item>
             <ng-container *ngIf="!access.isempty">
                 <ion-item text-wrap>
@@ -145,8 +145,8 @@
 
             <ion-list *ngIf="items && items.length">
                 <ion-item text-wrap *ngFor="let item of items" class="core-analysis">
-                    <h2>{{item.number}}. <core-format-text [component]="component" [componentId]="componentId" [text]="item.name" contextLevel="module" [contextInstanceId]="module.id"></core-format-text></h2>
-                    <p><core-format-text [component]="component" [componentId]="componentId" [text]="item.label" contextLevel="module" [contextInstanceId]="module.id"></core-format-text></p>
+                    <h2>{{item.number}}. <core-format-text [component]="component" [componentId]="componentId" [text]="item.name" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></h2>
+                    <p><core-format-text [component]="component" [componentId]="componentId" [text]="item.label" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></p>
                     <ng-container [ngSwitch]="item.template">
                         <ng-container *ngSwitchCase="'numeric'">
                             <ul>
@@ -162,7 +162,7 @@
                             </ul>
                         </ng-container>
                         <ng-container *ngSwitchCase="'chart'">
-                            <core-chart [type]="item.chartType" [data]="item.chartData" [labels]="item.labels" height="300" contextLevel="module" [contextInstanceId]="module.id" [wsNotFiltered]="true"></core-chart>
+                            <core-chart [type]="item.chartType" [data]="item.chartData" [labels]="item.labels" height="300" contextLevel="module" [contextInstanceId]="module.id" [wsNotFiltered]="true" [courseId]="courseId"></core-chart>
                             <p *ngIf="item.average">{{ 'addon.mod_feedback.average' | translate }}: {{item.average | number : '1.2-2'}}</p>
                         </ng-container>
                     </ng-container>

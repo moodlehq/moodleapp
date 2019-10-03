@@ -27,9 +27,11 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 })
 export class CoreCourseUnsupportedModulePage {
     module: any;
+    courseId: number;
 
     constructor(navParams: NavParams, private translate: TranslateService, private textUtils: CoreTextUtilsProvider) {
         this.module = navParams.get('module') || {};
+        this.courseId = navParams.get('courseId');
     }
 
     /**
@@ -37,6 +39,6 @@ export class CoreCourseUnsupportedModulePage {
      */
     expandDescription(): void {
         this.textUtils.expandText(this.translate.instant('core.description'), this.module.description, undefined, undefined,
-                [], true, 'module', this.module.id);
+                [], true, 'module', this.module.id, this.courseId);
     }
 }

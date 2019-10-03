@@ -47,6 +47,7 @@ export class CoreCommentsViewerPage implements OnDestroy {
     area: string;
     page: number;
     title: string;
+    courseId: number;
     canLoadMore = false;
     loadMoreError = false;
     canAddComments = false;
@@ -74,6 +75,7 @@ export class CoreCommentsViewerPage implements OnDestroy {
         this.itemId = navParams.get('itemId');
         this.area = navParams.get('area') || '';
         this.title = navParams.get('title') || this.translate.instant('core.comments.comments');
+        this.courseId = navParams.get('courseId');
         this.page = 0;
 
         // Refresh data if comments are synchronized automatically.

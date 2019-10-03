@@ -7,7 +7,7 @@
             <ion-icon name="information-circle"></ion-icon>
             {{ 'core.question.howtodraganddrop' | translate }}
         </p>
-        <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" #questiontext></core-format-text></p>
+        <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" #questiontext></core-format-text></p>
         <core-format-text *ngIf="question.answers" [component]="component" [componentId]="componentId" [text]="question.answers" [filter]="false" (afterRender)="questionRendered()"></core-format-text>
         <div class="drags"></div>
     </ion-item>

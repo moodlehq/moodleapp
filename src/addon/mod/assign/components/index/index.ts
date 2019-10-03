@@ -134,7 +134,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
         if (this.assign && (this.description || this.assign.introattachments)) {
             this.textUtils.expandText(this.translate.instant('core.description'), this.description, this.component,
-                    this.module.id, this.assign.introattachments, true, 'module', this.module.id);
+                    this.module.id, this.assign.introattachments, true, 'module', this.module.id, this.courseId);
         }
     }
 

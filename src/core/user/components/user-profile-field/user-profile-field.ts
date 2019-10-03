@@ -31,6 +31,7 @@ export class CoreUserProfileFieldComponent implements OnInit {
     @Input() registerAuth?: string; // Register auth method. E.g. 'email'.
     @Input() contextLevel?: string; // The context level.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
+    @Input() courseId?: number; // Course ID the field belongs to (if any). It can be used to improve performance with filters.
 
     componentClass: any; // The class of the component to render.
     data: any = {}; // Data to pass to the component.
@@ -55,6 +56,7 @@ export class CoreUserProfileFieldComponent implements OnInit {
             this.data.registerAuth = this.registerAuth;
             this.data.contextLevel = this.contextLevel;
             this.data.contextInstanceId = this.contextInstanceId;
+            this.data.courseId = this.courseId;
         }
     }
 }

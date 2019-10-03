@@ -56,7 +56,7 @@
                     <h2>{{ 'core.user.interests' | translate}}</h2>
                     <p>{{ user.interests }}</p>
                 </ion-item>
-                <core-user-profile-field *ngFor="let field of user.customfields" [field]="field" contextLevel="course" [contextInstanceId]="courseId"></core-user-profile-field>
+                <core-user-profile-field *ngFor="let field of user.customfields" [field]="field" contextLevel="course" [contextInstanceId]="courseId" [courseId]="courseId"></core-user-profile-field>
             </ion-item-group>
             <ion-item-group *ngIf="user.description">
                 <ion-item-divider>{{ 'core.user.description' | translate}}</ion-item-divider>

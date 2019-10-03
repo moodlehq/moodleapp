@@ -31,7 +31,7 @@ import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
 import { AddonCalendarHelperProvider } from '../../providers/helper';
 import { AddonCalendarSyncProvider } from '../../providers/calendar-sync';
 import { CoreSite } from '@classes/site';
-import { CoreFilterProvider } from '@core/filter/providers/filter';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Page that displays a form to create/edit an event.
@@ -93,7 +93,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
             private calendarSync: AddonCalendarSyncProvider,
             private fb: FormBuilder,
             private syncProvider: CoreSyncProvider,
-            private filterProvider: CoreFilterProvider,
+            private filterHelper: CoreFilterHelperProvider,
             @Optional() private svComponent: CoreSplitViewComponent) {
 
         this.eventId = navParams.get('eventId');
@@ -244,7 +244,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
                     // Format the name of the courses.
                     const subPromises = [];
                     courses.forEach((course) => {
-                        subPromises.push(this.filterProvider.getFiltersAndFormatText(course.fullname, 'course', course.id)
+                        subPromises.push(this.filterHelper.getFiltersAndFormatText(course.fullname, 'course', course.id)
                                 .then((text) => {
                             course.fullname = text;
                         }).catch(() => {

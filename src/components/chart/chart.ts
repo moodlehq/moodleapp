@@ -15,6 +15,7 @@
 import { Component, Input, OnDestroy, OnInit, ElementRef, OnChanges, ViewChild } from '@angular/core';
 import { Chart } from 'chart.js';
 import { CoreFilterProvider } from '@core/filter/providers/filter';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
@@ -49,12 +50,14 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
     @Input() filter?: boolean | string; // Whether to filter labels. If not defined, true if contextLevel and instanceId are set.
     @Input() contextLevel?: string; // The context level of the text.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
+    @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     @Input() wsNotFiltered?: boolean | string; // If true it means the WS didn't filter the labels for some reason.
     @ViewChild('canvas') canvas: ElementRef;
 
     chart: any;
 
-    constructor(protected filterProvider: CoreFilterProvider, private utils: CoreUtilsProvider) { }
+    constructor(protected filterProvider: CoreFilterProvider, private utils: CoreUtilsProvider,
+            private filterHelper: CoreFilterHelperProvider) { }
 
     /**
      * Component being initialized.
@@ -140,10 +143,11 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
         const options = {
             clean: true,
             singleLine: true,
+            courseId: this.courseId,
             wsNotFiltered: this.utils.isTrueOrOne(this.wsNotFiltered)
         };
 
-        return this.filterProvider.getFilters(this.contextLevel, this.contextInstanceId, options).then((filters) => {
+        return this.filterHelper.getFilters(this.contextLevel, this.contextInstanceId, options).then((filters) => {
             const promises = [];
 
             this.labels.forEach((label, i) => {

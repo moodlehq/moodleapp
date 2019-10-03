@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title><core-format-text [text]="title" contextLevel="module" [contextInstanceId]="lesson && lesson.coursemodule"></core-format-text></ion-title>
+        <ion-title><core-format-text [text]="title" contextLevel="module" [contextInstanceId]="lesson && lesson.coursemodule" [courseId]="courseId"></core-format-text></ion-title>
 
         <ion-buttons end>
             <button *ngIf="displayMenu || mediaFile" ion-button icon-only [attr.aria-label]="'addon.mod_lesson.lessonmenu' | translate" (click)="menuModal.present()">
@@ -33,14 +33,14 @@
             <ion-card *ngIf="!eolData && !processData">
                 <!-- Content page. -->
                 <ion-item text-wrap *ngIf="!question && pageContent">
-                    <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="pageContent" contextLevel="module" [contextInstanceId]="lesson.coursemodule"></core-format-text>
+                    <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="pageContent" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text>
                 </ion-item>
 
                 <!-- Question page. -->
                 <!-- We need to set ngIf loaded to make formGroup directive restart every time a page changes, see MOBILE-2540. -->
                 <form *ngIf="question && loaded" ion-list [formGroup]="questionForm">
                     <ion-item-divider text-wrap *ngIf="pageContent">
-                        <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="pageContent" contextLevel="module" [contextInstanceId]="lesson.coursemodule"></core-format-text>
+                        <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="pageContent" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text>
                     </ion-item-divider>
 
                     <input *ngFor="let input of question.hiddenInputs" type="hidden" [name]="input.name" [value]="input.value" />
@@ -61,7 +61,7 @@
                             </ion-item>
                             <ion-item text-wrap *ngIf="!question.textarea && question.useranswer">
                                 <p class="item-heading">{{ 'addon.mod_lesson.youranswer' | translate }}</p>
-                                <p><core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="question.useranswer" contextLevel="module" [contextInstanceId]="lesson.coursemodule"></core-format-text></p>
+                                <p><core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="question.useranswer" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text></p>
                             </ion-item>
                         </ng-container>
 
@@ -71,7 +71,7 @@
                             <div *ngIf="!question.multi" radio-group [formControlName]="question.controlName">
                                 <ion-item text-wrap *ngFor="let option of question.options">
                                     <ion-label>
-                                        <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="option.text" contextLevel="module" [contextInstanceId]="lesson.coursemodule"></core-format-text>
+                                        <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="option.text" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text>
                                     </ion-label>
                                     <ion-radio [id]="option.id" [value]="option.value" [disabled]="option.disabled"></ion-radio>
                                 </ion-item>
@@ -81,7 +81,7 @@
                             <ng-container *ngIf="question.multi">
                                 <ion-item text-wrap *ngFor="let option of question.options">
                                     <ion-label>
-                                        <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="option.text" contextLevel="module" [contextInstanceId]="lesson.coursemodule"></core-format-text>
+                                        <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="option.text" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text>
                                     </ion-label>
                                     <ion-checkbox [id]="option.id" [formControlName]="option.name" item-end></ion-checkbox>
                                 </ion-item>
@@ -94,7 +94,7 @@
                                 <ion-grid item-content>
                                     <ion-row>
                                         <ion-col>
-                                            <p><core-format-text id="addon-mod_lesson-matching-{{row.id}}" [component]="component" [componentId]="lesson.coursemodule" [text]="row.text" contextLevel="module" [contextInstanceId]="lesson.coursemodule"></core-format-text></p>
+                                            <p><core-format-text id="addon-mod_lesson-matching-{{row.id}}" [component]="component" [componentId]="lesson.coursemodule" [text]="row.text" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text></p>
                                         </ion-col>
                                         <ion-col>
                                             <ion-select [id]="row.id" [formControlName]="row.name" [attr.aria-labelledby]="'addon-mod_lesson-matching-' + row.id" interface="action-sheet">
@@ -186,12 +186,12 @@
                     <ng-container *ngIf="eolData.activitylink.value.formatted">
                         <!-- Activity link was successfully formatted, render the button. -->
                         <a ion-button block text-wrap color="light" [href]="eolData.activitylink.value.href" core-link [capture]="true" class="button-no-uppercase">
-                            <core-format-text [text]="eolData.activitylink.value.label" contextLevel="module" [contextInstanceId]="lesson.coursemodule"></core-format-text>
+                            <core-format-text [text]="eolData.activitylink.value.label" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text>
                         </a>
                     </ng-container>
                     <ng-container *ngIf="!eolData.activitylink.value.formatted">
                         <!-- Activity link wasn't formatted, render the original link. -->
-                        <core-format-text [text]="eolData.activitylink.value.label" contextLevel="module" [contextInstanceId]="lesson.coursemodule"></core-format-text>
+                        <core-format-text [text]="eolData.activitylink.value.label" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text>
                     </ng-container>
                 </ion-item>
             </ion-card>
@@ -203,7 +203,7 @@
                 </ion-item>
                 <ion-item text-wrap *ngIf="!processData.reviewmode || review">
                     <p *ngIf="!processData.reviewmode">
-                        <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="processData.feedback" contextLevel="module" [contextInstanceId]="lesson.coursemodule"></core-format-text>
+                        <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="processData.feedback" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text>
                     </p>
                     <div *ngIf="review">
                         <p>{{ 'addon.mod_lesson.gotoendoflesson' | translate }}</p>

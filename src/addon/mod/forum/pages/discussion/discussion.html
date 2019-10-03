@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title *ngIf="discussion"><core-format-text [text]="discussion.subject" contextLevel="module" [contextInstanceId]="cmId"></core-format-text></ion-title>
+        <ion-title *ngIf="discussion"><core-format-text [text]="discussion.subject" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId"></core-format-text></ion-title>
         <ion-buttons end>
             <!-- The context menu will be added in here. -->
         </ion-buttons>

@@ -33,6 +33,7 @@ export class CoreViewerTextPage {
     filter: boolean; // Whether to filter the text.
     contextLevel: string; // The context level.
     instanceId: number; // The instance ID related to the context.
+    courseId: number; // Course ID the text belongs to. It can be used to improve performance with filters.
 
     constructor(private viewCtrl: ViewController, params: NavParams, textUtils: CoreTextUtilsProvider) {
         this.title = params.get('title');
@@ -43,6 +44,7 @@ export class CoreViewerTextPage {
         this.filter = params.get('filter');
         this.contextLevel = params.get('contextLevel');
         this.instanceId = params.get('instanceId');
+        this.courseId = params.get('courseId');
     }
 
     /**

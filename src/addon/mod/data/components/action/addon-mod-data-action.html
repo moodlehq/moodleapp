@@ -22,15 +22,15 @@
     <ion-icon name="thumbs-down"></ion-icon>
 </a>
 
-<core-comments *ngIf="action == 'comments' && mode == 'list'" contextLevel="module" [instanceId]="database.coursemodule" component="mod_data" [itemId]="entry.id" area="database_entry"></core-comments>
+<core-comments *ngIf="action == 'comments' && mode == 'list'" contextLevel="module" [instanceId]="database.coursemodule" component="mod_data" [itemId]="entry.id" area="database_entry" [courseId]="database.course"></core-comments>
 
 <span *ngIf="action == 'timeadded'">{{ entry.timecreated * 1000 |  coreFormatDate }}</span>
 <span *ngIf="action == 'timemodified'">{{ entry.timemodified * 1000 |  coreFormatDate }}</span>
 
-<a *ngIf="action == 'userpicture'" core-user-link [courseId]="database.courseid" [userId]="entry.userid" [title]="entry.fullname">
+<a *ngIf="action == 'userpicture'" core-user-link [courseId]="database.course" [userId]="entry.userid" [title]="entry.fullname">
     <img class="avatar-round" [src]="userPicture" [alt]="'core.pictureof' | translate:{$a: entry.fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'" role="presentation">
 </a>
 
-<a *ngIf="action == 'user' && entry" core-user-link [courseId]="database.courseid" [userId]="entry.userid" [title]="entry.fullname">{{entry.fullname}}</a>
+<a *ngIf="action == 'user' && entry" core-user-link [courseId]="database.course" [userId]="entry.userid" [title]="entry.fullname">{{entry.fullname}}</a>
 
 <core-tag-list *ngIf="tagsEnabled && action == 'tags' && entry" [tags]="entry.tags"></core-tag-list>
