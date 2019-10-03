@@ -15,7 +15,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreFilterDefaultHandler } from '@core/filter/providers/default-filter';
-import { CoreFilterFilter } from '@core/filter/providers/filter';
+import { CoreFilterFilter, CoreFilterFormatTextOptions } from '@core/filter/providers/filter';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 
 /**
@@ -36,9 +36,11 @@ export class AddonFilterMediaPluginHandler extends CoreFilterDefaultHandler {
      * @param text The text to filter.
      * @param filter The filter.
      * @param options Options passed to the filters.
+     * @param siteId Site ID. If not defined, current site.
      * @return Filtered text (or promise resolved with the filtered text).
      */
-    filter(text: string, filter: CoreFilterFilter, options: any): string | Promise<string> {
+    filter(text: string, filter: CoreFilterFilter, options: CoreFilterFormatTextOptions, siteId?: string)
+            : string | Promise<string> {
 
         const div = document.createElement('div');
         div.innerHTML = text;

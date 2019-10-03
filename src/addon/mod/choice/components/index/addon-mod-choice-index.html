@@ -73,7 +73,7 @@
                         <ion-icon item-start name="warning" color="warning"></ion-icon> {{ 'addon.mod_choice.resultsnotsynced' | translate }}
                     </ion-item>
                     <ion-item>
-                        <core-chart type="pie" [data]="data" [labels]="labels" height="300"></core-chart>
+                        <core-chart type="pie" [data]="data" [labels]="labels" height="300" contextLevel="module" [contextInstanceId]="module.id"></core-chart>
                     </ion-item>
                 </ion-col>
                 <ion-col *ngIf="choice.publish && results" col-12 col-lg-7>

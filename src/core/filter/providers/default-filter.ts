@@ -14,7 +14,8 @@
 
 import { Injectable } from '@angular/core';
 import { CoreFilterHandler } from './delegate';
-import { CoreFilterFilter } from './filter';
+import { CoreFilterFilter, CoreFilterFormatTextOptions } from './filter';
+import { CoreSite } from '@classes/site';
 
 /**
  * Default handler used when the module doesn't have a specific implementation.
@@ -34,9 +35,11 @@ export class CoreFilterDefaultHandler implements CoreFilterHandler {
      * @param text The text to filter.
      * @param filter The filter.
      * @param options Options passed to the filters.
+     * @param siteId Site ID. If not defined, current site.
      * @return Filtered text (or promise resolved with the filtered text).
      */
-    filter(text: string, filter: CoreFilterFilter, options: any): string | Promise<string> {
+    filter(text: string, filter: CoreFilterFilter, options: CoreFilterFormatTextOptions, siteId?: string)
+            : string | Promise<string> {
         return text;
     }
 
@@ -50,15 +53,13 @@ export class CoreFilterDefaultHandler implements CoreFilterHandler {
     }
 
     /**
-     * Setup the filter to be used.
+     * Check if the filter should be applied in a certain site based on some filter options.
      *
-     * Please notice this method iwill be called for each piece of text being filtered, so it is responsible
-     * for controlling its own execution cardinality.
-     *
-     * @param filter The filter.
-     * @return Promise resolved when done, or nothing if it's synchronous.
+     * @param options Options.
+     * @param site Site.
+     * @return Whether filter should be applied.
      */
-    setup(filter: CoreFilterFilter): void | Promise<any> {
-        // Nothing to do.
+    shouldBeApplied(options: CoreFilterFormatTextOptions, site?: CoreSite): boolean {
+        return true;
     }
 }

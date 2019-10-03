@@ -16,9 +16,10 @@ import { Injectable } from '@angular/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreFilterFilter } from './filter';
+import { CoreFilterFilter, CoreFilterFormatTextOptions } from './filter';
 import { CoreFilterDefaultHandler } from './default-filter';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
+import { CoreSite } from '@classes/site';
 
 /**
  * Interface that all filter handlers must implement.
@@ -35,20 +36,19 @@ export interface CoreFilterHandler extends CoreDelegateHandler {
      * @param text The text to filter.
      * @param filter The filter.
      * @param options Options passed to the filters.
+     * @param siteId Site ID. If not defined, current site.
      * @return Filtered text (or promise resolved with the filtered text).
      */
-    filter(text: string, filter: CoreFilterFilter, options: any): string | Promise<string>;
+    filter(text: string, filter: CoreFilterFilter, options: CoreFilterFormatTextOptions, siteId?: string): string | Promise<string>;
 
     /**
-     * Setup the filter to be used.
+     * Check if the filter should be applied in a certain site based on some filter options.
      *
-     * Please notice this method iwill be called for each piece of text being filtered, so it is responsible
-     * for controlling its own execution cardinality.
-     *
-     * @param filter The filter.
-     * @return Promise resolved when done, or nothing if it's synchronous.
+     * @param options Options.
+     * @param site Site.
+     * @return Whether filter should be applied.
      */
-    setup(filter: CoreFilterFilter): void | Promise<any>;
+    shouldBeApplied(options: CoreFilterFormatTextOptions, site?: CoreSite): boolean;
 }
 
 /**
@@ -71,12 +71,10 @@ export class CoreFilterDelegate extends CoreDelegate {
      * @param filters Filters to apply.
      * @param options Options passed to the filters.
      * @param skipFilters Names of filters that shouldn't be applied.
+     * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the filtered text.
      */
-    filterText(text: string, filters: CoreFilterFilter[], options?: any, skipFilters?: string[]): Promise<string> {
-        if (!text || typeof text != 'string') {
-            return Promise.resolve('');
-        }
+    filterText(text: string, filters: CoreFilterFilter[], options?: any, skipFilters?: string[], siteId?: string): Promise<string> {
 
         // Wait for filters to be initialized.
         return this.handlersInitPromise.then(() => {
@@ -98,7 +96,7 @@ export class CoreFilterDelegate extends CoreDelegate {
                 }
 
                 promise = promise.then((text) => {
-                    return this.executeFunctionOnEnabled(filter.filter, 'filter', [text, filter, options]);
+                    return this.executeFunctionOnEnabled(filter.filter, 'filter', [text, filter, options, siteId]);
                 });
             });
 
@@ -138,18 +136,48 @@ export class CoreFilterDelegate extends CoreDelegate {
     }
 
     /**
-     * Setup filters to be applied to some content.
+     * Check if at least 1 filter should be applied in a certain site and with certain options.
      *
-     * @param filters Filters to apply.
-     * @return Promise resolved when done.
+     * @param filter Filter to check.
+     * @param options Options passed to the filters.
+     * @param site Site. If not defined, current site.
+     * @return {Promise<boolean>} Promise resolved with true: whether the filter should be applied.
      */
-    setupFilters(filters: CoreFilterFilter[]): Promise<any> {
-        const promises: Promise<any>[] = [];
+    shouldBeApplied(filters: CoreFilterFilter[], options: CoreFilterFormatTextOptions, site?: CoreSite): Promise<boolean> {
+        // Wait for filters to be initialized.
+        return this.handlersInitPromise.then(() => {
+            const promises = [];
+            let shouldBeApplied = false;
 
-        filters.forEach((filter) => {
-            promises.push(this.executeFunctionOnEnabled(filter.filter, 'setup', [filter]));
+            filters.forEach((filter) => {
+                promises.push(this.shouldFilterBeApplied(filter, options, site).then((applied) => {
+                    if (applied) {
+                        shouldBeApplied = applied;
+                    }
+                }));
+            });
+
+            return Promise.all(promises).then(() => {
+                return shouldBeApplied;
+            });
         });
+    }
 
-        return Promise.all(promises);
+    /**
+     * Check whether a filter should be applied in a certain site and with certain options.
+     *
+     * @param filter Filter to check.
+     * @param options Options passed to the filters.
+     * @param site Site. If not defined, current site.
+     * @return {Promise<boolean>} Promise resolved with true: whether the filter should be applied.
+     */
+    protected shouldFilterBeApplied(filter: CoreFilterFilter, options: CoreFilterFormatTextOptions, site?: CoreSite)
+            : Promise<boolean> {
+
+        if (!this.hasHandler(filter.filter, true)) {
+            return Promise.resolve(false);
+        }
+
+        return Promise.resolve(this.executeFunctionOnEnabled(filter.filter, 'shouldBeApplied', [options, site]));
     }
 }

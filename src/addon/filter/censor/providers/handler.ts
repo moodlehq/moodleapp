@@ -15,6 +15,8 @@
 
 import { Injectable } from '@angular/core';
 import { CoreFilterDefaultHandler } from '@core/filter/providers/default-filter';
+import { CoreFilterFormatTextOptions } from '@core/filter/providers/filter';
+import { CoreSite } from '@classes/site';
 
 /**
  * Handler to support the Word censorship filter.
@@ -28,5 +30,16 @@ export class AddonFilterCensorHandler extends CoreFilterDefaultHandler {
         super();
 
         // This filter is handled by Moodle, nothing to do in the app.
+    }
+
+    /**
+     * Check if the filter should be applied in a certain site based on some filter options.
+     *
+     * @param options Options.
+     * @param site Site.
+     * @return Whether filter should be applied.
+     */
+    shouldBeApplied(options: CoreFilterFormatTextOptions, site?: CoreSite): boolean {
+        return false;
     }
 }

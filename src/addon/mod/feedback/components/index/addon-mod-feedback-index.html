@@ -162,7 +162,7 @@
                             </ul>
                         </ng-container>
                         <ng-container *ngSwitchCase="'chart'">
-                            <core-chart [type]="item.chartType" [data]="item.chartData" [labels]="item.labels" height="300"></core-chart>
+                            <core-chart [type]="item.chartType" [data]="item.chartData" [labels]="item.labels" height="300" contextLevel="module" [contextInstanceId]="module.id" [wsNotFiltered]="true"></core-chart>
                             <p *ngIf="item.average">{{ 'addon.mod_feedback.average' | translate }}: {{item.average | number : '1.2-2'}}</p>
                         </ng-container>
                     </ng-container>

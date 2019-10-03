@@ -23,7 +23,7 @@
                         <div item-content class="addon-mod_feedback-form-content" *ngIf="item.template">
                             <ng-container [ngSwitch]="item.template">
                                 <ng-container *ngSwitchCase="'label'">
-                                    <p><core-format-text [component]="component" [componentId]="componentId" [text]="item.presentation" contextLevel="module" [contextInstanceId]="module.id"></core-format-text></p>
+                                    <p><core-format-text [component]="component" [componentId]="componentId" [text]="item.presentation" contextLevel="module" [contextInstanceId]="module.id" [wsNotFiltered]="true"></core-format-text></p>
                                 </ng-container>
                                 <ng-container *ngSwitchCase="'textfield'">
                                     <ion-input type="text" [(ngModel)]="item.value" autocorrect="off" name="{{item.typ}}_{{item.id}}" maxlength="{{item.maxlength}}" [required]="item.required"></ion-input>
@@ -38,20 +38,20 @@
                                 <ng-container *ngSwitchCase="'multichoice-r'">
                                     <ion-list radio-group [(ngModel)]="item.value" [required]="item.required" name="{{item.typ}}_{{item.id}}">
                                         <ion-item *ngFor="let option of item.choices">
-                                            <ion-label><core-format-text  [component]="component" [componentId]="componentId" [text]="option.label" contextLevel="module" [contextInstanceId]="module.id"></core-format-text></ion-label>
+                                            <ion-label><core-format-text  [component]="component" [componentId]="componentId" [text]="option.label" contextLevel="module" [contextInstanceId]="module.id" [wsNotFiltered]="true"></core-format-text></ion-label>
                                             <ion-radio [value]="option.value"></ion-radio>
                                         </ion-item>
                                     </ion-list>
                                 </ng-container>
                                 <ion-list *ngSwitchCase="'multichoice-c'">
                                     <ion-item *ngFor="let option of item.choices">
-                                        <ion-label><core-format-text [component]="component" [componentId]="componentId" [text]="option.label" contextLevel="module" [contextInstanceId]="module.id"></core-format-text></ion-label>
+                                        <ion-label><core-format-text [component]="component" [componentId]="componentId" [text]="option.label" contextLevel="module" [contextInstanceId]="module.id" [wsNotFiltered]="true"></core-format-text></ion-label>
                                         <ion-checkbox [required]="item.required" name="{{item.typ}}_{{item.id}}" [(ngModel)]="option.checked" value="option.value"></ion-checkbox>
                                     </ion-item>
                                 </ion-list>
                                 <ng-container *ngSwitchCase="'multichoice-d'">
                                     <ion-select [required]="item.required" name="{{item.typ}}_{{item.id}}" [(ngModel)]="item.value" interface="action-sheet">
-                                        <ion-option *ngFor="let option of item.choices" [value]="option.value"><core-format-text  [component]="component" [componentId]="componentId" [text]="option.label" contextLevel="module" [contextInstanceId]="module.id"></core-format-text></ion-option>
+                                        <ion-option *ngFor="let option of item.choices" [value]="option.value"><core-format-text  [component]="component" [componentId]="componentId" [text]="option.label" contextLevel="module" [contextInstanceId]="module.id" [wsNotFiltered]="true"></core-format-text></ion-option>
                                     </ion-select>
                                 </ng-container>
                                 <ng-container *ngSwitchCase="'captcha'">

@@ -29,8 +29,6 @@ export class CoreFilterProvider {
     protected ROOT_CACHE_KEY = 'mmFilter:';
 
     protected logger;
-    protected FILTERS_NOT_TREATED = ['activitynames', 'censor', 'data', 'emailprotect', 'emoticon', 'glossary', 'tex', 'tidy',
-            'urltolink'];
 
     constructor(logger: CoreLoggerProvider,
             private sitesProvider: CoreSitesProvider,
@@ -71,9 +69,11 @@ export class CoreFilterProvider {
      * @param text The text to be formatted.
      * @param options Formatting options.
      * @param filters The filters to apply. Required if filter is set to true.
+     * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the formatted text.
      */
-    formatText(text: string, options?: CoreFilterFormatTextOptions, filters?: CoreFilterFilter[]): Promise<string> {
+    formatText(text: string, options?: CoreFilterFormatTextOptions, filters?: CoreFilterFilter[], siteId?: string)
+            : Promise<string> {
 
         if (!text || typeof text != 'string') {
             // No need to do any filters and cleaning.
@@ -95,12 +95,10 @@ export class CoreFilterProvider {
             options.filter  = false;
         }
 
-        // @todo: Setup?
-
         let promise: Promise<string>;
 
         if (options.filter) {
-            promise = this.filterDelegate.filterText(text, filters, options);
+            promise = this.filterDelegate.filterText(text, filters, options, [], siteId);
         } else {
             promise = Promise.resolve(text);
         }
@@ -250,17 +248,18 @@ export class CoreFilterProvider {
     }
 
     /**
-     * Get filters and format text.
+     * Get the filters in a certain context, performing some checks like the site version.
+     * It's recommended to use this function instead of canGetAvailableInContext because this function will check if
+     * it's really needed to call the WS.
      *
-     * @param text Text to filter.
      * @param contextLevel The context level.
      * @param instanceId Instance ID related to the context.
      * @param options Options for format text.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the formatted text.
+     * @return Promise resolved with the filters.
      */
-    getFiltersAndFormatText(text: string, contextLevel: string, instanceId: number, options?: CoreFilterFormatTextOptions,
-            siteId?: string): Promise<string> {
+    getFilters(contextLevel: string, instanceId: number, options?: CoreFilterFormatTextOptions, siteId?: string)
+            : Promise<CoreFilterFilter[]> {
 
         options.contextLevel = contextLevel;
         options.instanceId = instanceId;
@@ -275,7 +274,7 @@ export class CoreFilterProvider {
             }
 
             // Check if site has any filter to treat.
-            return this.siteHasFiltersToTreat(siteId).then((hasFilters) => {
+            return this.siteHasFiltersToTreat(options, siteId).then((hasFilters) => {
                 if (hasFilters) {
                     options.filter = true;
 
@@ -286,8 +285,24 @@ export class CoreFilterProvider {
             }).catch(() => {
                 return [];
             });
-        }).then((filters) => {
-            return this.formatText(text, options, filters);
+        });
+    }
+
+    /**
+     * Get filters and format text.
+     *
+     * @param text Text to filter.
+     * @param contextLevel The context level.
+     * @param instanceId Instance ID related to the context.
+     * @param options Options for format text.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the formatted text.
+     */
+    getFiltersAndFormatText(text: string, contextLevel: string, instanceId: number, options?: CoreFilterFormatTextOptions,
+            siteId?: string): Promise<string> {
+
+        return this.getFilters(contextLevel, instanceId, options, siteId).then((filters) => {
+            return this.formatText(text, options, filters, siteId);
         });
     }
 
@@ -331,29 +346,19 @@ export class CoreFilterProvider {
     /**
      * Check if site has available any filter that should be treated by the app.
      *
+     * @param options Options passed to the filters.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with boolean: whether it has filters to treat.
      */
-    siteHasFiltersToTreat(siteId?: string): Promise<boolean> {
+    siteHasFiltersToTreat(options?: CoreFilterFormatTextOptions, siteId?: string): Promise<boolean> {
+        options = options || {};
+
         return this.sitesProvider.getSite(siteId).then((site) => {
 
             // Get filters at site level.
             return this.getAvailableInContext('system', site.getSiteHomeId(), site.getId()).then((filters) => {
 
-                for (let i = 0; i < filters.length; i++) {
-                    const filter = filters[i];
-
-                    if (this.FILTERS_NOT_TREATED.indexOf(filter.filter) != -1) {
-                        continue;
-                    }
-
-                    if (this.filterDelegate.hasHandler(filter.filter, true)) {
-                        // There is a filter to treat and is enabled.
-                        return true;
-                    }
-                }
-
-                return false;
+                return this.filterDelegate.shouldBeApplied(filters, options, site);
             });
         });
     }
@@ -390,4 +395,5 @@ export type CoreFilterFormatTextOptions = {
     singleLine?: boolean; // If true then new lines will be removed (all the text in a single line).
     shortenLength?: number; // Number of characters to shorten the text.
     highlight?: string; // Text to highlight.
+    wsNotFiltered?: boolean; // If true it means the WS didn't filter the text for some reason.
 };

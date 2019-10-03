@@ -61,6 +61,7 @@ export class CoreFormatTextDirective implements OnChanges {
     @Input() filter?: boolean | string; // Whether to filter the text. If not defined, true if contextLevel and instanceId are set.
     @Input() contextLevel?: string; // The context level of the text.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
+    @Input() wsNotFiltered?: boolean | string; // If true it means the WS didn't filter the text for some reason.
     @Output() afterRender?: EventEmitter<any>; // Called when the data is rendered.
 
     protected element: HTMLElement;
@@ -382,7 +383,7 @@ export class CoreFormatTextDirective implements OnChanges {
                 clean: this.utils.isTrueOrOne(this.clean),
                 singleLine: this.utils.isTrueOrOne(this.singleLine),
                 highlight: this.highlight,
-                filter: this.filter
+                wsNotFiltered: this.utils.isTrueOrOne(this.wsNotFiltered)
             };
 
             if (this.filter) {
