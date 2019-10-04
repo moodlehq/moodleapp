@@ -16,6 +16,7 @@ import { Component, } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
+import { CoreEventsProvider } from '@providers/events';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -39,8 +40,12 @@ export class CoreSettingsSpaceUsagePage {
     totalEntries = 0;
 
     constructor(private filePoolProvider: CoreFilepoolProvider,
-            private sitesProvider: CoreSitesProvider, private filterHelper: CoreFilterHelperProvider,
-            private translate: TranslateService, private domUtils: CoreDomUtilsProvider, appProvider: CoreAppProvider,
+            private eventsProvider: CoreEventsProvider,
+            private sitesProvider: CoreSitesProvider,
+            private filterHelper: CoreFilterHelperProvider,
+            private translate: TranslateService,
+            private domUtils: CoreDomUtilsProvider,
+            appProvider: CoreAppProvider,
             private courseProvider: CoreCourseProvider) {
         this.currentSiteId = this.sitesProvider.getCurrentSiteId();
     }
@@ -196,6 +201,8 @@ export class CoreSettingsSpaceUsagePage {
                         });
                     }
                 }).finally(() => {
+                    this.eventsProvider.trigger(CoreEventsProvider.SITE_STORAGE_DELETED, {}, site.getId());
+
                     this.calcSiteClearRows(site).then((rows) => {
                         siteData.cacheEntries = rows;
                     });

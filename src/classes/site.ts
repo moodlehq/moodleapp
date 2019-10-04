@@ -1036,15 +1036,7 @@ export class CoreSite {
             preSets.omitExpires = preSets.omitExpires || preSets.forceOffline || !this.appProvider.isOnline();
 
             if (!preSets.omitExpires) {
-                let expirationDelay = this.UPDATE_FREQUENCIES[preSets.updateFrequency] ||
-                        this.UPDATE_FREQUENCIES[CoreSite.FREQUENCY_USUALLY];
-
-                if (this.appProvider.isNetworkAccessLimited()) {
-                    // Not WiFi, increase the expiration delay a 50% to decrease the data usage in this case.
-                    expirationDelay *= 1.5;
-                }
-
-                expirationTime = entry.expirationTime + expirationDelay;
+                expirationTime = entry.expirationTime + this.getExpirationDelay(preSets.updateFrequency);
 
                 if (now > expirationTime) {
                     this.logger.debug('Cached element found, but it is expired');
@@ -1165,7 +1157,9 @@ export class CoreSite {
 
         this.logger.debug('Invalidate all the cache for site: ' + this.id);
 
-        return this.db.updateRecords(CoreSite.WS_CACHE_TABLE, { expirationTime: 0 });
+        return this.db.updateRecords(CoreSite.WS_CACHE_TABLE, { expirationTime: 0 }).finally(() => {
+            this.eventsProvider.trigger(CoreEventsProvider.WS_CACHE_INVALIDATED, {}, this.getId());
+        });
     }
 
     /**
@@ -1874,5 +1868,22 @@ export class CoreSite {
      */
     setLocalSiteConfig(name: string, value: number | string): Promise<any> {
         return this.db.insertRecord(CoreSite.CONFIG_TABLE, { name: name, value: value });
+    }
+
+    /**
+     * Get a certain cache expiration delay.
+     *
+     * @param updateFrequency The update frequency of the entry.
+     * @return {number} Expiration delay.
+     */
+    getExpirationDelay(updateFrequency?: number): number {
+        let expirationDelay = this.UPDATE_FREQUENCIES[updateFrequency] || this.UPDATE_FREQUENCIES[CoreSite.FREQUENCY_USUALLY];
+
+        if (this.appProvider.isNetworkAccessLimited()) {
+            // Not WiFi, increase the expiration delay a 50% to decrease the data usage in this case.
+            expirationDelay *= 1.5;
+        }
+
+        return expirationDelay;
     }
 }

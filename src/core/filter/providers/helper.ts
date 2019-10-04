@@ -13,10 +13,12 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreAppProvider } from '@providers/app';
+import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreFilterDelegate } from './delegate';
-import { CoreFilterProvider, CoreFilterFilter, CoreFilterFormatTextOptions } from './filter';
+import { CoreFilterProvider, CoreFilterFilter, CoreFilterFormatTextOptions, CoreFilterClassifiedFilters } from './filter';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreSite } from '@classes/site';
 
@@ -28,12 +30,36 @@ export class CoreFilterHelperProvider {
 
     protected logger;
 
+    /**
+     * When a module context is requested, we request all the modules in a course to decrease WS calls. If there are a lot of
+     * modules, checking the cache of all contexts can be really slow, so we use this memory cache to speed up the process.
+     */
+    protected moduleContextsCache: {
+        [siteId: string]: {
+            [courseId: number]: {
+                contexts: CoreFilterClassifiedFilters,
+                time: number
+            }
+        }
+    } = {};
+
     constructor(logger: CoreLoggerProvider,
+            eventsProvider: CoreEventsProvider,
+            private appProvider: CoreAppProvider,
             private sitesProvider: CoreSitesProvider,
             private filterDelegate: CoreFilterDelegate,
             private courseProvider: CoreCourseProvider,
             private filterProvider: CoreFilterProvider) {
+
         this.logger = logger.getInstance('CoreFilterHelperProvider');
+
+        eventsProvider.on(CoreEventsProvider.WS_CACHE_INVALIDATED, (data) => {
+            delete this.moduleContextsCache[data.siteId];
+        });
+
+        eventsProvider.on(CoreEventsProvider.SITE_STORAGE_DELETED, (data) => {
+            delete this.moduleContextsCache[data.siteId];
+        });
     }
 
     /**
@@ -79,55 +105,64 @@ export class CoreFilterHelperProvider {
     getFilters(contextLevel: string, instanceId: number, options?: CoreFilterFormatTextOptions, siteId?: string)
             : Promise<CoreFilterFilter[]> {
 
-        let site: CoreSite;
-
         options.contextLevel = contextLevel;
         options.instanceId = instanceId;
         options.filter = false;
 
-        return this.sitesProvider.getSite(siteId).then((s) => {
-            site = s;
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            siteId = site.getId();
 
-            return this.filterProvider.canGetAvailableInContext(siteId);
-        }).then((canGet) => {
-            if (!canGet) {
-                options.filter = true;
-
-                // We cannot check which filters are available, apply them all.
-                return this.filterDelegate.getEnabledFilters(contextLevel, instanceId);
-            }
-
-            let promise: Promise<boolean>;
-
-            if (instanceId == site.getSiteHomeId() && (contextLevel == 'system' || contextLevel == 'course')) {
-                // No need to check the site filters because we're requesting the same context, so we'd do the same twice.
-                promise = Promise.resolve(true);
-            } else {
-                // Check if site has any filter to treat.
-                promise = this.siteHasFiltersToTreat(options, siteId);
-            }
-
-            return promise.then((hasFilters) => {
-                if (hasFilters) {
+            return this.filterProvider.canGetAvailableInContext(siteId).then((canGet) => {
+                if (!canGet) {
                     options.filter = true;
 
-                    if (contextLevel == 'module' && options.courseId) {
-                        // Get all the modules filters with a single call to decrease the number of WS calls.
-                        return this.getCourseModulesContexts(options.courseId, site.getId()).then((contexts) => {
-
-                            return this.filterProvider.getAvailableInContexts(contexts, site.getId()).then((filters) => {
-                                return filters[contextLevel][instanceId] || [];
-                            });
-                        });
-                    }
-
-                    return this.filterProvider.getAvailableInContext(contextLevel, instanceId, siteId);
+                    // We cannot check which filters are available, apply them all.
+                    return this.filterDelegate.getEnabledFilters(contextLevel, instanceId);
                 }
 
-                return [];
-            }).catch(() => {
-                return [];
+                let promise: Promise<boolean>;
+
+                if (instanceId == site.getSiteHomeId() && (contextLevel == 'system' || contextLevel == 'course')) {
+                    // No need to check the site filters because we're requesting the same context, so we'd do the same twice.
+                    promise = Promise.resolve(true);
+                } else {
+                    // Check if site has any filter to treat.
+                    promise = this.siteHasFiltersToTreat(options, siteId);
+                }
+
+                return promise.then((hasFilters) => {
+                    if (hasFilters) {
+                        options.filter = true;
+
+                        if (contextLevel == 'module' && options.courseId) {
+                            // Get all the modules filters with a single call to decrease the number of WS calls.
+                            // Check the memory cache first to speed up the process.
+
+                            const result = this.getFromMemoryCache(options.courseId, contextLevel, instanceId, site);
+                            if (result) {
+                                return result;
+                            }
+
+                            return this.getCourseModulesContexts(options.courseId, siteId).then((contexts) => {
+
+                                return this.filterProvider.getAvailableInContexts(contexts, siteId).then((filters) => {
+                                    this.storeInMemoryCache(options.courseId, filters, siteId);
+
+                                    return filters[contextLevel][instanceId] || [];
+                                });
+                            });
+                        }
+
+                        return this.filterProvider.getAvailableInContext(contextLevel, instanceId, siteId);
+                    }
+
+                    return [];
+                });
             });
+        }).catch((error) => {
+            this.logger.error('Error getting filters, return an empty array', error, contextLevel, instanceId);
+
+            return [];
         });
     }
 
@@ -150,6 +185,32 @@ export class CoreFilterHelperProvider {
     }
 
     /**
+     * Get module context filters from the memory cache.
+     *
+     * @param courseId Course the module belongs to.
+     * @param contextLevel Context level.
+     * @param instanceId Instance ID.
+     * @param site Site.
+     * @return The filters, undefined if not found.
+     */
+    protected getFromMemoryCache(courseId: number, contextLevel: string, instanceId: number, site: CoreSite): CoreFilterFilter[] {
+
+        const siteId = site.getId();
+
+        // Check if we have the context in the memory cache.
+        if (this.moduleContextsCache[siteId] && this.moduleContextsCache[siteId][courseId]) {
+            const cachedCourse = this.moduleContextsCache[siteId][courseId];
+
+            if (!this.appProvider.isOnline() ||
+                    Date.now() <= cachedCourse.time + site.getExpirationDelay(CoreSite.FREQUENCY_RARELY)) {
+
+                // We can use cache, return the filters if found.
+                return cachedCourse.contexts[contextLevel] && cachedCourse.contexts[contextLevel][instanceId];
+            }
+        }
+    }
+
+    /**
      * Check if site has available any filter that should be treated by the app.
      *
      * @param options Options passed to the filters.
@@ -167,5 +228,19 @@ export class CoreFilterHelperProvider {
                 return this.filterDelegate.shouldBeApplied(filters, options, site);
             });
         });
+    }
+
+    /**
+     * Store filters in the memory cache.
+     *
+     * @param contexts Filters to store, classified by contextlevel and instanceid
+     * @param siteId Site ID.
+     */
+    protected storeInMemoryCache(courseId: number, contexts: CoreFilterClassifiedFilters, siteId: string): void {
+        this.moduleContextsCache[siteId] = this.moduleContextsCache[siteId] || {};
+        this.moduleContextsCache[siteId][courseId] = {
+            contexts: contexts,
+            time: Date.now()
+        };
     }
 }

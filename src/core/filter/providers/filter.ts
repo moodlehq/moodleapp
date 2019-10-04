@@ -13,6 +13,8 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreAppProvider } from '@providers/app';
+import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSite } from '@classes/site';
@@ -30,11 +32,36 @@ export class CoreFilterProvider {
 
     protected logger;
 
+    /**
+     * Store the contexts in memory to speed up the process, it can take a lot of time otherwise.
+     */
+    protected contextsCache: {
+        [siteId: string]: {
+            [contextlevel: string]: {
+                [instanceid: number]: {
+                    filters: CoreFilterFilter[],
+                    time: number
+                }
+            }
+        }
+    } = {};
+
     constructor(logger: CoreLoggerProvider,
+            eventsProvider: CoreEventsProvider,
             private sitesProvider: CoreSitesProvider,
             private textUtils: CoreTextUtilsProvider,
-            private filterDelegate: CoreFilterDelegate) {
+            private filterDelegate: CoreFilterDelegate,
+            private appProvider: CoreAppProvider) {
+
         this.logger = logger.getInstance('CoreFilterProvider');
+
+        eventsProvider.on(CoreEventsProvider.WS_CACHE_INVALIDATED, (data) => {
+            delete this.contextsCache[data.siteId];
+        });
+
+        eventsProvider.on(CoreEventsProvider.SITE_STORAGE_DELETED, (data) => {
+            delete this.contextsCache[data.siteId];
+        });
     }
 
     /**
@@ -148,9 +175,19 @@ export class CoreFilterProvider {
      * @return Promise resolved with the filters classified by context.
      */
     getAvailableInContexts(contexts: {contextlevel: string, instanceid: number}[], siteId?: string)
-            : Promise<{[contextlevel: string]: {[instanceid: number]: CoreFilterFilter[]}}> {
+            : Promise<CoreFilterClassifiedFilters> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
+            siteId = site.getId();
+
+            const result = this.getFromMemoryCache(contexts, site);
+
+            if (result) {
+                return result;
+            }
+
+            this.contextsCache[siteId] = this.contextsCache[siteId] || {};
+
             let hasSystemContext = false,
                 hasSiteHomeContext = false;
 
@@ -194,7 +231,7 @@ export class CoreFilterProvider {
             return site.read('core_filters_get_available_in_context', data, preSets)
                     .then((result: CoreFilterGetAvailableInContextResult) => {
 
-                const classified: {[contextlevel: string]: {[instanceid: number]: CoreFilterFilter[]}} = {};
+                const classified: CoreFilterClassifiedFilters = {};
 
                 // Initialize all contexts.
                 contexts.forEach((context) => {
@@ -205,6 +242,7 @@ export class CoreFilterProvider {
                 if (contexts.length == 1 && !hasSystemContext) {
                     // Only 1 context, no need to iterate over the filters.
                     classified[contexts[0].contextlevel][contexts[0].instanceid] = result.filters;
+                    this.storeInMemoryCache(classified, siteId);
 
                     return classified;
                 }
@@ -228,6 +266,8 @@ export class CoreFilterProvider {
                     classified[filter.contextlevel][filter.instanceid].push(filter);
                 });
 
+                this.storeInMemoryCache(classified, siteId);
+
                 return classified;
             });
         });
@@ -245,6 +285,45 @@ export class CoreFilterProvider {
         return this.getAvailableInContexts([{contextlevel: contextLevel, instanceid: instanceId}], siteId).then((result) => {
             return result[contextLevel][instanceId];
         });
+    }
+
+    /**
+     * Get contexts filters from the memory cache.
+     *
+     * @param contexts Contexts to get.
+     * @param site Site.
+     * @return The filters classified by context and instance.
+     */
+    protected getFromMemoryCache(contexts: {contextlevel: string, instanceid: number}[], site: CoreSite)
+            : CoreFilterClassifiedFilters {
+
+        if (this.contextsCache[site.getId()]) {
+            // Check if we have the contexts in the memory cache.
+            const siteContexts = this.contextsCache[site.getId()],
+                isOnline = this.appProvider.isOnline(),
+                result: CoreFilterClassifiedFilters = {};
+            let allFound = true;
+
+            for (let i = 0; i < contexts.length; i++) {
+                const context = contexts[i],
+                    cachedCtxt = siteContexts[context.contextlevel] && siteContexts[context.contextlevel][context.instanceid];
+
+                // Check the context isn't "expired". The time stored in this cache will not match the one in the site cache.
+                if (cachedCtxt && (!isOnline ||
+                        Date.now() <= cachedCtxt.time + site.getExpirationDelay(CoreSite.FREQUENCY_RARELY))) {
+
+                    result[context.contextlevel] = result[context.contextlevel] || {};
+                    result[context.contextlevel][context.instanceid] = cachedCtxt.filters;
+                } else {
+                    allFound = false;
+                    break;
+                }
+            }
+
+            if (allFound) {
+                return result;
+            }
+        }
     }
 
     /**
@@ -283,6 +362,26 @@ export class CoreFilterProvider {
     invalidateAvailableInContext(contextLevel: string, instanceId: number, siteId?: string): Promise<any> {
         return this.invalidateAvailableInContexts([{contextlevel: contextLevel, instanceid: instanceId}], siteId);
     }
+
+    /**
+     * Store filters in the memory cache.
+     *
+     * @param filters Filters to store, classified by contextlevel and instanceid
+     * @param siteId Site ID.
+     */
+    protected storeInMemoryCache(filters: CoreFilterClassifiedFilters, siteId: string): void {
+
+        for (const contextLevel in filters) {
+            this.contextsCache[siteId][contextLevel] = this.contextsCache[siteId][contextLevel] || {};
+
+            for (const instanceId in filters[contextLevel]) {
+                this.contextsCache[siteId][contextLevel][instanceId] = {
+                    filters: filters[contextLevel][instanceId],
+                    time: Date.now()
+                };
+            }
+        }
+    }
 }
 
 /**
@@ -318,4 +417,13 @@ export type CoreFilterFormatTextOptions = {
     highlight?: string; // Text to highlight.
     wsNotFiltered?: boolean; // If true it means the WS didn't filter the text for some reason.
     courseId?: number; // Course ID the text belongs to. It can be used to improve performance.
+};
+
+/**
+ * Filters classified by context and instance.
+ */
+export type CoreFilterClassifiedFilters = {
+    [contextlevel: string]: {
+        [instanceid: number]: CoreFilterFilter[]
+    }
 };

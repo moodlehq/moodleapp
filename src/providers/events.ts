@@ -62,6 +62,8 @@ export class CoreEventsProvider {
     static SEND_ON_ENTER_CHANGED = 'send_on_enter_changed';
     static MAIN_MENU_OPEN = 'main_menu_open';
     static SELECT_COURSE_TAB = 'select_course_tab';
+    static WS_CACHE_INVALIDATED = 'ws_cache_invalidated';
+    static SITE_STORAGE_DELETED = 'site_storage_deleted';
 
     protected logger;
     protected observables: { [s: string]: Subject<any> } = {};

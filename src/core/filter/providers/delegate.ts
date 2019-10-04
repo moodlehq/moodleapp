@@ -96,7 +96,12 @@ export class CoreFilterDelegate extends CoreDelegate {
                 }
 
                 promise = promise.then((text) => {
-                    return this.executeFunctionOnEnabled(filter.filter, 'filter', [text, filter, options, siteId]);
+                    return Promise.resolve(this.executeFunctionOnEnabled(filter.filter, 'filter', [text, filter, options, siteId]))
+                            .catch((error) => {
+                        this.logger.error('Error applying filter' + filter.filter, error);
+
+                        return text;
+                    });
                 });
             });
 
