@@ -50,7 +50,6 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
         loading: '',
         text: ''
     };
-    siteHomeId: number;
 
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, translate: TranslateService,
             private messagesProvider: AddonMessagesProvider, private domUtils: CoreDomUtilsProvider, navParams: NavParams,
@@ -60,7 +59,6 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
         this.search.loading =  translate.instant('core.searching');
         this.loadingMessages = translate.instant('core.loading');
         this.siteId = sitesProvider.getCurrentSiteId();
-        this.siteHomeId = sitesProvider.getCurrentSiteHomeId();
 
         // Update discussions when new message is received.
         this.newMessagesObserver = eventsProvider.on(AddonMessagesProvider.NEW_MESSAGE_EVENT, (data) => {

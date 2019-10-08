@@ -35,14 +35,12 @@ export class AddonMessagesConversationInfoPage implements OnInit {
     members: AddonMessagesConversationMember[] = [];
     canLoadMore = false;
     loadMoreError = false;
-    siteHomeId: number;
 
     protected conversationId: number;
 
     constructor(private messagesProvider: AddonMessagesProvider, private domUtils: CoreDomUtilsProvider, navParams: NavParams,
             protected viewCtrl: ViewController, sitesProvider: CoreSitesProvider) {
         this.conversationId = navParams.get('conversationId');
-        this.siteHomeId = sitesProvider.getCurrentSiteHomeId();
     }
 
     /**

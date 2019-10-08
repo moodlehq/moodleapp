@@ -453,7 +453,7 @@ export class CorePushNotificationsProvider {
                             clean: true,
                             singleLine: true,
                             contextLevel: 'system',
-                            instanceId: site.getSiteHomeId(),
+                            instanceId: 0,
                             filter: true
                         },
                         isAndroid = this.platform.is('android'),

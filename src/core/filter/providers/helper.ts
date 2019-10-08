@@ -122,7 +122,7 @@ export class CoreFilterHelperProvider {
 
                 let promise: Promise<boolean>;
 
-                if (instanceId == site.getSiteHomeId() && (contextLevel == 'system' || contextLevel == 'course')) {
+                if (contextLevel == 'system' || (contextLevel == 'course' && instanceId == site.getSiteHomeId())) {
                     // No need to check the site filters because we're requesting the same context, so we'd do the same twice.
                     promise = Promise.resolve(true);
                 } else {
@@ -223,7 +223,7 @@ export class CoreFilterHelperProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
 
             // Get filters at site level.
-            return this.filterProvider.getAvailableInContext('system', site.getSiteHomeId(), site.getId()).then((filters) => {
+            return this.filterProvider.getAvailableInContext('system', 0, site.getId()).then((filters) => {
 
                 return this.filterDelegate.shouldBeApplied(filters, options, site);
             });

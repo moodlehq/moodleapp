@@ -18,8 +18,8 @@
             <div class="item-avatar-center">
                 <img class="avatar" [src]="conversation.imageurl" core-external-content [alt]="conversation.name" role="presentation" onError="this.src='assets/img/group-avatar.png'">
             </div>
-            <h2><core-format-text [text]="conversation.name" contextLevel="system" [contextInstanceId]="siteHomeId"></core-format-text></h2>
-            <p><core-format-text *ngIf="conversation.subname" [text]="conversation.subname" contextLevel="system" [contextInstanceId]="siteHomeId"></core-format-text></p>
+            <h2><core-format-text [text]="conversation.name" contextLevel="system" [contextInstanceId]="0"></core-format-text></h2>
+            <p><core-format-text *ngIf="conversation.subname" [text]="conversation.subname" contextLevel="system" [contextInstanceId]="0"></core-format-text></p>
             <p>{{ 'addon.messages.numparticipants' | translate:{$a: conversation.membercount} }}</p>
         </ion-item>
 

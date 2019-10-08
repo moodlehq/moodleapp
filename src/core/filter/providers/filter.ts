@@ -197,7 +197,7 @@ export class CoreFilterProvider {
             for (let i = 0; i < contextsToSend.length; i++) {
                 const context = contextsToSend[i];
 
-                if (context.contextlevel == 'system' && context.instanceid == site.getSiteHomeId()) {
+                if (context.contextlevel == 'system') {
                     hasSystemContext = true;
 
                     // Use course site home instead. Check if it's already in the list.
@@ -212,7 +212,7 @@ export class CoreFilterProvider {
                         // Site home not in list, use it instead of system.
                         contextsToSend[i] = {
                             contextlevel: 'course',
-                            instanceid: context.instanceid
+                            instanceid: site.getSiteHomeId()
                         };
                     }
 
@@ -259,6 +259,7 @@ export class CoreFilterProvider {
 
                         // Simulate the system context based on the inherited data.
                         filter.contextlevel = 'system';
+                        filter.instanceid = 0;
                         filter.contextid = -1;
                         filter.localstate = filter.inheritedstate;
                     }

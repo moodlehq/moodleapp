@@ -49,7 +49,7 @@ export class CoreSitePickerComponent implements OnInit {
 
             sites.forEach((site: any) => {
                 // Format the site name.
-                promises.push(this.filterHelper.getFiltersAndFormatText(site.siteName, 'system', site.siteHomeId,
+                promises.push(this.filterHelper.getFiltersAndFormatText(site.siteName, 'system', 0,
                         {clean: true, singleLine: true}, site.getId()).catch(() => {
                     return site.siteName;
                 }).then((formatted) => {

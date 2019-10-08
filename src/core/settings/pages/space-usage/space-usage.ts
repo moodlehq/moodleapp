@@ -167,7 +167,7 @@ export class CoreSettingsSpaceUsagePage {
      * @param siteData Site object with space usage.
      */
     deleteSiteStorage(siteData: any): void {
-        this.filterHelper.getFiltersAndFormatText(siteData.siteName, 'system', siteData.siteHomeId,
+        this.filterHelper.getFiltersAndFormatText(siteData.siteName, 'system', 0,
                 {clean: true, singleLine: true}, siteData.id).then((siteName) => {
 
             const title = this.translate.instant('core.settings.deletesitefilestitle');

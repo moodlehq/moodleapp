@@ -40,7 +40,6 @@ export class AddonNotificationsListPage {
     loadMoreError = false;
     canMarkAllNotificationsAsRead = false;
     loadingMarkAllNotificationsAsRead = false;
-    siteHomeId: number;
 
     protected isCurrentView: boolean;
     protected cronObserver: CoreEventObserver;
@@ -52,8 +51,6 @@ export class AddonNotificationsListPage {
             private utils: CoreUtilsProvider, private notificationsProvider: AddonNotificationsProvider,
             private pushNotificationsDelegate: CorePushNotificationsDelegate,
             private notificationsHelper: AddonNotificationsHelperProvider) {
-
-        this.siteHomeId = sitesProvider.getCurrentSite().getSiteHomeId();
     }
 
     /**

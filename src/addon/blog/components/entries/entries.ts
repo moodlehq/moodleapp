@@ -104,7 +104,7 @@ export class AddonBlogEntriesComponent implements OnInit {
             this.contextInstanceId = this.courseId;
         } else {
             this.contextLevel = 'system';
-            this.contextInstanceId = this.siteHomeId;
+            this.contextInstanceId = 0;
         }
 
         this.commentsEnabled = !this.commentsProvider.areCommentsDisabledInSite();

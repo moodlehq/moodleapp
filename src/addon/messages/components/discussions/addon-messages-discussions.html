@@ -15,7 +15,7 @@
             <a ion-item text-wrap *ngFor="let result of search.results" [title]="result.fullname" (click)="gotoDiscussion(result.userid, result.messageid)" [class.core-split-item-selected]="result.userid == discussionUserId" class="addon-message-discussion">
                 <ion-avatar core-user-avatar [user]="result" item-start [checkOnline]="result.showonlinestatus"></ion-avatar>
                 <h2>{{ result.fullname }}</h2>
-                <p><core-format-text clean="true" singleLine="true" [text]="result.lastmessage" contextLevel="system" [contextInstanceId]="siteHomeId"></core-format-text></p>
+                <p><core-format-text clean="true" singleLine="true" [text]="result.lastmessage" contextLevel="system" [contextInstanceId]="0"></core-format-text></p>
             </a>
         </ion-list>
 
@@ -27,7 +27,7 @@
                     <span *ngIf="discussion.unread" class="core-primary-circle"></span>
                     <span *ngIf="discussion.message.timecreated > 0">{{discussion.message.timecreated / 1000 | coreDateDayOrTime}}</span>
                 </ion-note>
-                <p><core-format-text clean="true" singleLine="true" [text]="discussion.message.message" contextLevel="system" [contextInstanceId]="siteHomeId"></core-format-text></p>
+                <p><core-format-text clean="true" singleLine="true" [text]="discussion.message.message" contextLevel="system" [contextInstanceId]="0"></core-format-text></p>
             </a>
         </ion-list>
 

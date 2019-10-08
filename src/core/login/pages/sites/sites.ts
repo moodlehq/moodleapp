@@ -86,7 +86,7 @@ export class CoreLoginSitesPage {
         const site = this.sites[index],
             siteName = site.siteName;
 
-        this.filterHelper.getFiltersAndFormatText(siteName, 'system', site.siteHomeId, {clean: true, singleLine: true}, site.id)
+        this.filterHelper.getFiltersAndFormatText(siteName, 'system', 0, {clean: true, singleLine: true}, site.id)
                 .then((siteName) => {
 
             this.domUtils.showConfirm(this.translate.instant('core.login.confirmdeletesite', { sitename: siteName })).then(() => {

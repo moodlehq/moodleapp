@@ -67,7 +67,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     };
     typeGroup = AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP;
     currentListEl: HTMLElement;
-    siteHomeId: number;
 
     protected loadingString: string;
     protected siteId: string;
@@ -96,7 +95,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         // Conversation to load.
         this.conversationId = navParams.get('conversationId') || false;
         this.discussionUserId = !this.conversationId && (navParams.get('discussionUserId') || false);
-        this.siteHomeId = sitesProvider.getCurrentSiteHomeId();
 
         // Update conversations when new message is received.
         this.newMessagesObserver = eventsProvider.on(AddonMessagesProvider.NEW_MESSAGE_EVENT, (data) => {

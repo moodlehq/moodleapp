@@ -45,7 +45,6 @@ export class CoreCoursesDashboardPage implements OnDestroy {
     tabsReady = false;
     searchEnabled: boolean;
     tabs = [];
-    siteHomeId: number;
     siteName: string;
     blocks: any[];
     dashboardEnabled = false;
@@ -134,7 +133,6 @@ export class CoreCoursesDashboardPage implements OnDestroy {
      * Load the site name.
      */
     protected loadSiteName(): void {
-        this.siteHomeId = this.sitesProvider.getCurrentSiteHomeId();
         this.siteName = this.sitesProvider.getCurrentSite().getSiteName();
     }
 
