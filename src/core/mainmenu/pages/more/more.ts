@@ -18,6 +18,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../providers/delegate';
 import { CoreMainMenuProvider, CoreMainMenuCustomItem } from '../../providers/mainmenu';
+import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 
 /**
  * Page that displays the list of main menu options that aren't in the tabs.
@@ -46,7 +47,7 @@ export class CoreMainMenuMorePage implements OnDestroy {
 
     constructor(private menuDelegate: CoreMainMenuDelegate, private sitesProvider: CoreSitesProvider,
             private navCtrl: NavController, private mainMenuProvider: CoreMainMenuProvider,
-            eventsProvider: CoreEventsProvider) {
+            eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider) {
 
         this.langObserver = eventsProvider.on(CoreEventsProvider.LANGUAGE_CHANGED, this.loadSiteInfo.bind(this));
         this.updateSiteObserver = eventsProvider.on(CoreEventsProvider.SITE_UPDATED, this.loadSiteInfo.bind(this),
@@ -104,13 +105,12 @@ export class CoreMainMenuMorePage implements OnDestroy {
      * Load the site info required by the view.
      */
     protected loadSiteInfo(): void {
-        const currentSite = this.sitesProvider.getCurrentSite(),
-            config = currentSite.getStoredConfig();
+        const currentSite = this.sitesProvider.getCurrentSite();
 
         this.siteInfo = currentSite.getInfo();
         this.siteName = currentSite.getSiteName();
         this.siteUrl = currentSite.getURL();
-        this.logoutLabel = 'core.mainmenu.' + (config && config.tool_mobile_forcelogout == '1' ? 'logout' : 'changesite');
+        this.logoutLabel = this.loginHelper.getLogoutLabel(currentSite);
         this.showWeb = !currentSite.isFeatureDisabled('CoreMainMenuDelegate_website');
         this.showHelp = !currentSite.isFeatureDisabled('CoreMainMenuDelegate_help');
 
