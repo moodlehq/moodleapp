@@ -28,6 +28,7 @@ import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModWikiProvider } from './wiki';
 import { AddonModWikiSyncProvider } from './wiki-sync';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Handler to prefetch wikis.
@@ -39,14 +40,23 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
     component = AddonModWikiProvider.COMPONENT;
     updatesNames = /^.*files$|^pages$/;
 
-    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
-            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
-            domUtils: CoreDomUtilsProvider, protected wikiProvider: AddonModWikiProvider, protected userProvider: CoreUserProvider,
-            protected textUtils: CoreTextUtilsProvider, protected courseHelper: CoreCourseHelperProvider,
-            protected groupsProvider: CoreGroupsProvider, protected gradesHelper: CoreGradesHelperProvider,
+    constructor(translate: TranslateService,
+            appProvider: CoreAppProvider,
+            utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider,
+            filepoolProvider: CoreFilepoolProvider,
+            sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider,
+            filterHelper: CoreFilterHelperProvider,
+            protected wikiProvider: AddonModWikiProvider,
+            protected userProvider: CoreUserProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected courseHelper: CoreCourseHelperProvider,
+            protected groupsProvider: CoreGroupsProvider,
+            protected gradesHelper: CoreGradesHelperProvider,
             protected syncProvider: AddonModWikiSyncProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
     }
 
     /**

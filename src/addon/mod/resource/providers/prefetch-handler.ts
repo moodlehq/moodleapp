@@ -24,6 +24,7 @@ import { CoreCourseResourcePrefetchHandlerBase } from '@core/course/classes/reso
 import { AddonModResourceProvider } from './resource';
 import { AddonModResourceHelperProvider } from './helper';
 import { CoreConstants } from '@core/constants';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Handler to prefetch resources.
@@ -34,12 +35,18 @@ export class AddonModResourcePrefetchHandler extends CoreCourseResourcePrefetchH
     modName = 'resource';
     component = AddonModResourceProvider.COMPONENT;
 
-    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
-            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
-            domUtils: CoreDomUtilsProvider, protected resourceProvider: AddonModResourceProvider,
+    constructor(translate: TranslateService,
+            appProvider: CoreAppProvider,
+            utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider,
+            filepoolProvider: CoreFilepoolProvider,
+            sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider,
+            filterHelper: CoreFilterHelperProvider,
+            protected resourceProvider: AddonModResourceProvider,
             protected resourceHelper: AddonModResourceHelperProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
     }
 
     /**

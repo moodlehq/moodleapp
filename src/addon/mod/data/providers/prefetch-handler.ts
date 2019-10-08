@@ -27,6 +27,7 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/acti
 import { AddonModDataProvider, AddonModDataEntry } from './data';
 import { AddonModDataSyncProvider } from './sync';
 import { AddonModDataHelperProvider } from './helper';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Handler to prefetch databases.
@@ -38,14 +39,22 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
     component = AddonModDataProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$|^entries$|^gradeitems$|^outcomes$|^comments$|^ratings/;
 
-    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
-            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
-            domUtils: CoreDomUtilsProvider, protected dataProvider: AddonModDataProvider,
-            protected timeUtils: CoreTimeUtilsProvider, protected dataHelper: AddonModDataHelperProvider,
-            protected groupsProvider: CoreGroupsProvider, protected commentsProvider: CoreCommentsProvider,
+    constructor(translate: TranslateService,
+            appProvider: CoreAppProvider,
+            utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider,
+            filepoolProvider: CoreFilepoolProvider,
+            sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider,
+            filterHelper: CoreFilterHelperProvider,
+            protected dataProvider: AddonModDataProvider,
+            protected timeUtils: CoreTimeUtilsProvider,
+            protected dataHelper: AddonModDataHelperProvider,
+            protected groupsProvider: CoreGroupsProvider,
+            protected commentsProvider: CoreCommentsProvider,
             protected syncProvider: AddonModDataSyncProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
     }
 
     /**

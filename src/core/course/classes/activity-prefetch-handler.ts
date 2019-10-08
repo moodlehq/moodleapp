@@ -101,10 +101,11 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
         }
 
         const prefetchPromise = this.setDownloading(module.id, siteId).then(() => {
-            // Package marked as downloading, get module info to be able to handle links.
+            // Package marked as downloading, get module info to be able to handle links. Get module filters too.
             return Promise.all([
                 this.courseProvider.getModuleBasicInfo(module.id, siteId),
                 this.courseProvider.getModule(module.id, courseId, undefined, false, true, siteId),
+                this.filterHelper.getFilters('module', module.id, {courseId: courseId})
             ]);
         }).then(() => {
             // Call the download function, send all the params except downloadFn. This includes all params passed after siteId.

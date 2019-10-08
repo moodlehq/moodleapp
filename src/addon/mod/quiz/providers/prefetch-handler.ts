@@ -28,6 +28,7 @@ import { AddonModQuizHelperProvider } from './helper';
 import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
 import { AddonModQuizSyncProvider } from './quiz-sync';
 import { CoreConstants } from '@core/constants';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Handler to prefetch quizzes.
@@ -41,13 +42,22 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
 
     protected syncProvider: AddonModQuizSyncProvider; // It will be injected later to prevent circular dependencies.
 
-    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
-            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
-            domUtils: CoreDomUtilsProvider, protected injector: Injector, protected quizProvider: AddonModQuizProvider,
-            protected textUtils: CoreTextUtilsProvider, protected quizHelper: AddonModQuizHelperProvider,
-            protected accessRuleDelegate: AddonModQuizAccessRuleDelegate, protected questionHelper: CoreQuestionHelperProvider) {
+    constructor(translate: TranslateService,
+            appProvider: CoreAppProvider,
+            utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider,
+            filepoolProvider: CoreFilepoolProvider,
+            sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider,
+            filterHelper: CoreFilterHelperProvider,
+            protected injector: Injector,
+            protected quizProvider: AddonModQuizProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected quizHelper: AddonModQuizHelperProvider,
+            protected accessRuleDelegate: AddonModQuizAccessRuleDelegate,
+            protected questionHelper: CoreQuestionHelperProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
     }
 
     /**

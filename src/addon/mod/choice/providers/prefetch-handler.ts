@@ -24,6 +24,7 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/acti
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModChoiceSyncProvider } from './sync';
 import { AddonModChoiceProvider } from './choice';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Handler to prefetch choices.
@@ -37,12 +38,19 @@ export class AddonModChoicePrefetchHandler extends CoreCourseActivityPrefetchHan
 
     protected syncProvider: AddonModChoiceSyncProvider; // It will be injected later to prevent circular dependencies.
 
-    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
-            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
-            domUtils: CoreDomUtilsProvider, protected choiceProvider: AddonModChoiceProvider,
-            protected userProvider: CoreUserProvider, protected injector: Injector) {
+    constructor(translate: TranslateService,
+            appProvider: CoreAppProvider,
+            utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider,
+            filepoolProvider: CoreFilepoolProvider,
+            sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider,
+            filterHelper: CoreFilterHelperProvider,
+            protected choiceProvider: AddonModChoiceProvider,
+            protected userProvider: CoreUserProvider,
+            protected injector: Injector) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
     }
 
     /**

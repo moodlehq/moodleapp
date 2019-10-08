@@ -105,6 +105,7 @@ export class CoreFilterHelperProvider {
     getFilters(contextLevel: string, instanceId: number, options?: CoreFilterFormatTextOptions, siteId?: string)
             : Promise<CoreFilterFilter[]> {
 
+        options = options || {};
         options.contextLevel = contextLevel;
         options.instanceId = instanceId;
         options.filter = false;

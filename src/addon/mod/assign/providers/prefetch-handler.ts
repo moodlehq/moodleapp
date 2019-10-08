@@ -31,6 +31,7 @@ import { AddonModAssignHelperProvider, AddonModAssignSubmissionFormatted } from 
 import { AddonModAssignSyncProvider } from './assign-sync';
 import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Handler to prefetch assigns.
@@ -42,16 +43,26 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
     component = AddonModAssignProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$|^submissions$|^grades$|^gradeitems$|^outcomes$|^comments$/;
 
-    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
-            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
-            domUtils: CoreDomUtilsProvider, protected assignProvider: AddonModAssignProvider,
-            protected textUtils: CoreTextUtilsProvider, protected feedbackDelegate: AddonModAssignFeedbackDelegate,
-            protected submissionDelegate: AddonModAssignSubmissionDelegate, protected courseHelper: CoreCourseHelperProvider,
-            protected groupsProvider: CoreGroupsProvider, protected gradesHelper: CoreGradesHelperProvider,
-            protected userProvider: CoreUserProvider, protected assignHelper: AddonModAssignHelperProvider,
+    constructor(translate: TranslateService,
+            appProvider: CoreAppProvider,
+            utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider,
+            filepoolProvider: CoreFilepoolProvider,
+            sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider,
+            filterHelper: CoreFilterHelperProvider,
+            protected assignProvider: AddonModAssignProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected feedbackDelegate: AddonModAssignFeedbackDelegate,
+            protected submissionDelegate: AddonModAssignSubmissionDelegate,
+            protected courseHelper: CoreCourseHelperProvider,
+            protected groupsProvider: CoreGroupsProvider,
+            protected gradesHelper: CoreGradesHelperProvider,
+            protected userProvider: CoreUserProvider,
+            protected assignHelper: AddonModAssignHelperProvider,
             protected syncProvider: AddonModAssignSyncProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
     }
 
     /**
