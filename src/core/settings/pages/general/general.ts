@@ -133,7 +133,7 @@ export class CoreSettingsGeneralPage {
      */
     languageChanged(): void {
         this.langProvider.changeCurrentLanguage(this.selectedLanguage).finally(() => {
-            this.eventsProvider.trigger(CoreEventsProvider.LANGUAGE_CHANGED);
+            this.eventsProvider.trigger(CoreEventsProvider.LANGUAGE_CHANGED, this.selectedLanguage);
         });
     }
 

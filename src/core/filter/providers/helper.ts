@@ -178,10 +178,12 @@ export class CoreFilterHelperProvider {
      * @return Promise resolved with the formatted text.
      */
     getFiltersAndFormatText(text: string, contextLevel: string, instanceId: number, options?: CoreFilterFormatTextOptions,
-            siteId?: string): Promise<string> {
+            siteId?: string): Promise<{text: string, filters: CoreFilterFilter[]}> {
 
         return this.getFilters(contextLevel, instanceId, options, siteId).then((filters) => {
-            return this.filterProvider.formatText(text, options, filters, siteId);
+            return this.filterProvider.formatText(text, options, filters, siteId).then((text) => {
+                return {text: text, filters: filters};
+            });
         });
     }
 

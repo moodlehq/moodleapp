@@ -51,10 +51,10 @@ export class CoreSitePickerComponent implements OnInit {
                 // Format the site name.
                 promises.push(this.filterHelper.getFiltersAndFormatText(site.siteName, 'system', 0,
                         {clean: true, singleLine: true}, site.getId()).catch(() => {
-                    return site.siteName;
-                }).then((formatted) => {
+                    return {text: site.siteName};
+                }).then((result) => {
                     site.fullNameAndSiteName = this.translate.instant('core.fullnameandsitename',
-                        { fullname: site.fullName, sitename: formatted });
+                        { fullname: site.fullName, sitename: result.text });
                 }));
             });
 

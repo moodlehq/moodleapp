@@ -168,10 +168,10 @@ export class CoreSettingsSpaceUsagePage {
      */
     deleteSiteStorage(siteData: any): void {
         this.filterHelper.getFiltersAndFormatText(siteData.siteName, 'system', 0,
-                {clean: true, singleLine: true}, siteData.id).then((siteName) => {
+                {clean: true, singleLine: true}, siteData.id).then((result) => {
 
             const title = this.translate.instant('core.settings.deletesitefilestitle');
-            const message = this.translate.instant('core.settings.deletesitefiles', {sitename: siteName});
+            const message = this.translate.instant('core.settings.deletesitefiles', {sitename: result.text});
 
             this.domUtils.showConfirm(message, title).then(() => {
                 return this.sitesProvider.getSite(siteData.id);

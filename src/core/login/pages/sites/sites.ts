@@ -87,9 +87,10 @@ export class CoreLoginSitesPage {
             siteName = site.siteName;
 
         this.filterHelper.getFiltersAndFormatText(siteName, 'system', 0, {clean: true, singleLine: true}, site.id)
-                .then((siteName) => {
+                .then((result) => {
 
-            this.domUtils.showConfirm(this.translate.instant('core.login.confirmdeletesite', { sitename: siteName })).then(() => {
+            this.domUtils.showConfirm(this.translate.instant('core.login.confirmdeletesite', { sitename: result.text }))
+                    .then(() => {
                 this.sitesProvider.deleteSite(site.id).then(() => {
                     this.sites.splice(index, 1);
                     this.showDelete = false;

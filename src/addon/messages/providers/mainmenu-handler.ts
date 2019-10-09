@@ -298,9 +298,9 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
         };
 
         return this.filterHelper.getFiltersAndFormatText(message.text, 'system', 0, {clean: true, singleLine: true}).catch(() => {
-            return message.text;
-        }).then((formattedText) => {
-            data['text'] = formattedText;
+            return {text: message.text};
+        }).then((result) => {
+            data['text'] = result.text;
 
             return data;
         });
