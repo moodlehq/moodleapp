@@ -12,5 +12,9 @@ module.exports = {
   copyConfig: {
     src: ['{{ROOT}}/src/config.json'],
     dest: '{{WWW}}/'
-  }
+  },
+  copyMathJax: {
+    src: ['{{ROOT}}/node_modules/mathjax/**/*'],
+    dest: '{{WWW}}/lib/mathjax'
+  },
 };
