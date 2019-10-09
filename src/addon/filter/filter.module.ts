@@ -14,6 +14,7 @@
 
 import { NgModule } from '@angular/core';
 import { AddonFilterActivityNamesModule } from './activitynames/activitynames.module';
+import { AddonFilterAlgebraModule } from './algebra/algebra.module';
 import { AddonFilterCensorModule } from './censor/censor.module';
 import { AddonFilterDataModule } from './data/data.module';
 import { AddonFilterEmailProtectModule } from './emailprotect/emailprotect.module';
@@ -29,6 +30,7 @@ import { AddonFilterUrlToLinkModule } from './urltolink/urltolink.module';
     declarations: [],
     imports: [
         AddonFilterActivityNamesModule,
+        AddonFilterAlgebraModule,
         AddonFilterCensorModule,
         AddonFilterDataModule,
         AddonFilterEmailProtectModule,
