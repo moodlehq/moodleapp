@@ -28,6 +28,7 @@ import { CORE_CONTENTLINKS_PROVIDERS } from '@core/contentlinks/contentlinks.mod
 import { CORE_COURSE_PROVIDERS } from '@core/course/course.module';
 import { CORE_COURSES_PROVIDERS } from '@core/courses/courses.module';
 import { CORE_FILEUPLOADER_PROVIDERS } from '@core/fileuploader/fileuploader.module';
+import { CORE_FILTER_PROVIDERS } from '@core/filter/filter.module';
 import { CORE_GRADES_PROVIDERS } from '@core/grades/grades.module';
 import { CORE_LOGIN_PROVIDERS } from '@core/login/login.module';
 import { CORE_MAINMENU_PROVIDERS } from '@core/mainmenu/mainmenu.module';
@@ -234,7 +235,8 @@ export class CoreCompileProvider {
                 .concat(ADDON_MOD_QUIZ_PROVIDERS).concat(ADDON_MOD_RESOURCE_PROVIDERS).concat(ADDON_MOD_SCORM_PROVIDERS)
                 .concat(ADDON_MOD_SURVEY_PROVIDERS).concat(ADDON_MOD_URL_PROVIDERS).concat(ADDON_MOD_WIKI_PROVIDERS)
                 .concat(ADDON_MOD_WORKSHOP_PROVIDERS).concat(ADDON_NOTES_PROVIDERS).concat(ADDON_NOTIFICATIONS_PROVIDERS)
-                .concat(CORE_PUSHNOTIFICATIONS_PROVIDERS).concat(ADDON_REMOTETHEMES_PROVIDERS).concat(CORE_BLOCK_PROVIDERS);
+                .concat(CORE_PUSHNOTIFICATIONS_PROVIDERS).concat(ADDON_REMOTETHEMES_PROVIDERS).concat(CORE_BLOCK_PROVIDERS)
+                .concat(CORE_FILTER_PROVIDERS);
 
         // We cannot inject anything to this constructor. Use the Injector to inject all the providers into the instance.
         for (const i in providers) {
