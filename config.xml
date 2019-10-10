@@ -170,6 +170,7 @@
     <plugin name="cordova-plugin-local-notification" spec="https://github.com/moodlemobile/cordova-plugin-local-notification.git#moodle" />
     <plugin name="cordova-plugin-media-capture" spec="3.0.3" />
     <plugin name="cordova-plugin-network-information" spec="2.0.2" />
+    <plugin name="cordova-plugin-qrscanner" spec="https://github.com/moodlemobile/cordova-plugin-qrscanner.git#dist" />
     <plugin name="cordova-plugin-screen-orientation" spec="3.0.2" />
     <plugin name="cordova-plugin-splashscreen" spec="5.0.3" />
     <plugin name="cordova-plugin-statusbar" spec="2.4.3" />

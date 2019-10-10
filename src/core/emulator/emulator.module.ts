@@ -31,6 +31,7 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
 import { MediaCapture } from '@ionic-native/media-capture';
 import { Network } from '@ionic-native/network';
 import { Push } from '@ionic-native/push';
+import { QRScanner } from '@ionic-native/qr-scanner';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SQLite } from '@ionic-native/sqlite';
@@ -51,12 +52,14 @@ import { LocalNotificationsMock } from './providers/local-notifications';
 import { MediaCaptureMock } from './providers/media-capture';
 import { NetworkMock } from './providers/network';
 import { PushMock } from './providers/push';
+import { QRScannerMock } from './providers/qr-scanner';
 import { ZipMock } from './providers/zip';
 
 import { CoreEmulatorHelperProvider } from './providers/helper';
 import { CoreEmulatorCaptureHelperProvider } from './providers/capture-helper';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFileProvider } from '@providers/file';
+import { CoreLoggerProvider } from '@providers/logger';
 import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
@@ -80,6 +83,7 @@ export const IONIC_NATIVE_PROVIDERS = [
     MediaCapture,
     Network,
     Push,
+    QRScanner,
     SplashScreen,
     StatusBar,
     SQLite,
@@ -204,6 +208,13 @@ export const IONIC_NATIVE_PROVIDERS = [
             useFactory: (appProvider: CoreAppProvider): Push => {
                 // Use platform instead of CoreAppProvider to prevent circular dependencies.
                 return appProvider.isMobile() ? new Push() : new PushMock(appProvider);
+            }
+        },
+        {
+            provide: QRScanner,
+            deps: [CoreAppProvider, CoreLoggerProvider],
+            useFactory: (appProvider: CoreAppProvider, loggerProvider: CoreLoggerProvider): QRScanner => {
+                return appProvider.isMobile() ? new QRScanner() : new QRScannerMock(loggerProvider);
             }
         },
         SplashScreen,
