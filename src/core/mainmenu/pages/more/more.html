@@ -31,6 +31,10 @@
                 <h2>{{item.label}}</h2>
             </a>
         </div>
+        <a ion-item *ngIf="showScanQR" (click)="scanQR()">
+            <core-icon name="fa-qrcode" item-start aria-hidden="true"></core-icon>
+            <h2>{{ 'core.scanqr' | translate }}</h2>
+        </a>
         <a *ngIf="showWeb" ion-item [href]="siteInfo.siteurl" core-link autoLogin="yes" title="{{ 'core.mainmenu.website' | translate }}">
             <ion-icon name="globe" item-start aria-hidden="true"></ion-icon>
             <h2>{{ 'core.mainmenu.website' | translate }}</h2>
