@@ -270,15 +270,16 @@ export class AddonModForumHelperProvider {
      * This function is inefficient because it needs to fetch all discussion pages in the worst case.
      *
      * @param forumId Forum ID.
+     * @param cmId Forum cmid
      * @param discussionId Discussion ID.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the discussion data.
      */
-    getDiscussionById(forumId: number, discussionId: number, siteId?: string): Promise<any> {
+    getDiscussionById(forumId: number, cmId: number, discussionId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const findDiscussion = (page: number): Promise<any> => {
-            return this.forumProvider.getDiscussions(forumId, undefined, page, false, siteId).then((response) => {
+            return this.forumProvider.getDiscussions(forumId, cmId, undefined, page, false, siteId).then((response) => {
                 if (response.discussions && response.discussions.length > 0) {
                     // Note that discussion.id is the main post ID but discussion ID is discussion.discussion.
                     const discussion = response.discussions.find((discussion) => discussion.discussion == discussionId);

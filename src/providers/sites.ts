@@ -360,7 +360,7 @@ export class CoreSitesProvider {
     // Site schema for this provider.
     protected siteSchema: CoreSiteSchema = {
         name: 'CoreSitesProvider',
-        version: 1,
+        version: 2,
         canBeCleared: [ CoreSite.WS_CACHE_TABLE ],
         tables: [
             {
@@ -382,6 +382,14 @@ export class CoreSitesProvider {
                     {
                         name: 'expirationTime',
                         type: 'INTEGER'
+                    },
+                    {
+                        name: 'component',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'componentId',
+                        type: 'INTEGER'
                     }
                 ]
             },
@@ -399,7 +407,27 @@ export class CoreSitesProvider {
                     }
                 ]
             }
-        ]
+        ],
+        async migrate (db: SQLiteDB, oldVersion: number, siteId: string): Promise<any> {
+            if (oldVersion && oldVersion < 2) {
+                const newTable = CoreSite.WS_CACHE_TABLE;
+                const oldTable = 'wscache';
+
+                try {
+                    await db.tableExists(oldTable);
+                } catch (error) {
+                    // Old table does not exist, ignore.
+                    return;
+                }
+                // Cannot use insertRecordsFrom because there are extra fields, so manually code INSERT INTO.
+                await db.execute(
+                    'INSERT INTO ' + newTable + ' ' +
+                    'SELECT id, data, key, expirationTime, NULL as component, NULL as componentId ' +
+                    'FROM ' + oldTable);
+
+                return await db.dropTable(oldTable);
+            }
+        }
     };
 
     constructor(logger: CoreLoggerProvider,

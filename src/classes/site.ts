@@ -127,6 +127,17 @@ export interface CoreSiteWSPreSets {
      * Defaults to CoreSite.FREQUENCY_USUALLY.
      */
     updateFrequency?: number;
+
+    /**
+     * Component name. Optionally included if this request is being made on behalf of a specific
+     * component (e.g. activity).
+     */
+    component?: string;
+
+    /**
+     * Component id. Optionally included when 'component' is set.
+     */
+    componentId?: number;
 }
 
 /**
@@ -197,7 +208,7 @@ export class CoreSite {
     protected wsProvider: CoreWSProvider;
 
     // Variables for the database.
-    static WS_CACHE_TABLE = 'wscache';
+    static WS_CACHE_TABLE = 'ws_cache';
     static CONFIG_TABLE = 'core_site_config';
 
     // Versions of Moodle releases.
@@ -1126,6 +1137,13 @@ export class CoreSite {
 
             if (preSets.cacheKey) {
                 entry.key = preSets.cacheKey;
+            }
+
+            if (preSets.component) {
+                entry.component = preSets.component;
+                if (preSets.componentId) {
+                    entry.componentId = preSets.componentId;
+                }
             }
 
             return this.db.insertRecord(CoreSite.WS_CACHE_TABLE, entry);

@@ -514,7 +514,14 @@ export class CoreSitePluginsProvider {
                 promises.push(this.callWS(method, params, {cacheKey: cacheKey}));
             } else {
                 // It's a method to get content.
-                promises.push(this.getContent(component, method, args).then((result) => {
+                const preSets = {
+                    component: component,
+                    componentId: undefined
+                };
+                if (module) {
+                    preSets.componentId = module.id;
+                }
+                promises.push(this.getContent(component, method, args, preSets).then((result) => {
                     const subPromises = [];
 
                     // Prefetch the files in the content.

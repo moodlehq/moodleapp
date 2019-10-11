@@ -354,7 +354,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             this.page = 0;
         }
 
-        return this.forumProvider.getDiscussions(this.forum.id, this.selectedSortOrder.value, this.page).then((response) => {
+        return this.forumProvider.getDiscussions(this.forum.id, this.forum.cmid,
+                this.selectedSortOrder.value, this.page).then((response) => {
             let promise;
             if (this.usesGroups) {
                 promise = this.forumProvider.formatDiscussionsGroups(this.forum.cmid, response.discussions);

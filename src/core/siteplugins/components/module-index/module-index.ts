@@ -37,6 +37,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     @ViewChild(CoreSitePluginsPluginContentComponent) content: CoreSitePluginsPluginContentComponent;
 
     component: string;
+    componentId: number;
     method: string;
     args: any;
     initResult: any;
@@ -77,6 +78,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
 
             if (handler) {
                 this.component = handler.plugin.component;
+                this.componentId = this.module.id;
                 this.method = handler.handlerSchema.method;
                 this.args = {
                     courseid: this.courseId,
