@@ -71,6 +71,11 @@
                 <core-icon name="fa-eraser"></core-icon>
             </button>
         </ion-slide>
+        <ion-slide *ngIf="canScanQR">
+            <button [disabled]="!rteEnabled" (click)="scanQR($event)" (mousedown)="stopBubble($event)">
+                <core-icon name="fa-qrcode"></core-icon>
+            </button>
+        </ion-slide>
         <ion-slide>
             <button [attr.aria-pressed]="!rteEnabled" (click)="toggleEditor($event)" (mousedown)="mouseDownAction($event)" [title]=" 'core.editor.toggle' | translate">
                 <core-icon name="fa-code"></core-icon>
