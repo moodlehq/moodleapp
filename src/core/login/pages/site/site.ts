@@ -58,6 +58,7 @@ export class CoreLoginSitePage {
     loadingSites = false;
     onlyWrittenSite = false;
     searchFnc: Function;
+    showScanQR: boolean;
 
     constructor(navParams: NavParams,
             protected navCtrl: NavController,
@@ -74,6 +75,7 @@ export class CoreLoginSitePage {
             protected utils: CoreUtilsProvider) {
 
         this.showKeyboard = !!navParams.get('showKeyboard');
+        this.showScanQR = this.utils.canScanQR();
 
         let url = '';
 
@@ -356,4 +358,17 @@ export class CoreLoginSitePage {
       };
     }
 
+    /**
+     * Scan a QR code and put its text in the URL input.
+     */
+    scanQR(): void {
+        // Scan for a QR code.
+        this.utils.scanQR().then((text) => {
+            if (text) {
+                this.siteForm.controls.siteUrl.setValue(text);
+
+                this.connect(new Event('click'), text);
+            }
+        });
+    }
 }

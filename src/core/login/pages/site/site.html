@@ -47,6 +47,11 @@
                     <ion-option *ngFor="let site of fixedSites" [value]="site.url">{{site.name}}</ion-option>
                 </ion-select>
             </ion-item>
+
+            <a *ngIf="showScanQR" ion-button block color="light" margin-top icon-start (click)="scanQR()">
+                <core-icon name="fa-qrcode" aria-hidden="true"></core-icon>
+                {{ 'core.scanqr' | translate }}
+            </a>
         </form>
 
         <!-- Pick the site from a list of fixed sites. -->
