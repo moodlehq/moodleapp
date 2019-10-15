@@ -76,7 +76,7 @@ export class AddonModPageHelperProvider {
                 AddonModPageProvider.COMPONENT, moduleId);
         } else {
             // We return the live URL.
-            promise = Promise.resolve(this.sitesProvider.getCurrentSite().fixPluginfileURL(indexUrl));
+            promise = this.sitesProvider.getCurrentSite().checkAndFixPluginfileURL(indexUrl);
         }
 
         return promise.then((url) => {

@@ -230,6 +230,8 @@ export class CoreSite {
     protected ongoingRequests: { [cacheId: string]: Promise<any> } = {};
     protected requestQueue: RequestQueueItem[] = [];
     protected requestQueueTimeout = null;
+    protected tokenPluginFileWorks: boolean;
+    protected tokenPluginFileWorksPromise: Promise<boolean>;
 
     /**
      * Create a site.
@@ -1227,6 +1229,18 @@ export class CoreSite {
     }
 
     /**
+     * Check if tokenpluginfile can be used, and fix the URL afterwards.
+     *
+     * @param url The url to be fixed.
+     * @return Promise resolved with the fixed URL.
+     */
+    checkAndFixPluginfileURL(url: string): Promise<string> {
+        return this.checkTokenPluginFile(url).then(() => {
+            return this.fixPluginfileURL(url);
+        });
+    }
+
+    /**
      * Generic function for adding the wstoken to Moodle urls and for pointing to the correct script.
      * Uses CoreUtilsProvider.fixPluginfileURL, passing site's token.
      *
@@ -1234,7 +1248,10 @@ export class CoreSite {
      * @return Fixed URL.
      */
     fixPluginfileURL(url: string): string {
-        return this.urlUtils.fixPluginfileURL(url, this.token, this.siteUrl);
+        const accessKey = this.tokenPluginFileWorks || typeof this.tokenPluginFileWorks == 'undefined' ?
+                this.infos && this.infos.userprivateaccesskey : undefined;
+
+        return this.urlUtils.fixPluginfileURL(url, this.token, this.siteUrl, accessKey);
     }
 
     /**
@@ -1885,5 +1902,45 @@ export class CoreSite {
         }
 
         return expirationDelay;
+    }
+
+    /*
+     * Check if tokenpluginfile script works in the site.
+     *
+     * @param url URL to check.
+     * @return Promise resolved with boolean: whether it works or not.
+     */
+    checkTokenPluginFile(url: string): Promise<boolean> {
+        if (!this.infos || !this.infos.userprivateaccesskey) {
+            // No access key, cannot use tokenpluginfile.
+            return Promise.resolve(false);
+        } else if (typeof this.tokenPluginFileWorks != 'undefined') {
+            // Already checked.
+            return Promise.resolve(this.tokenPluginFileWorks);
+        } else if (this.tokenPluginFileWorksPromise) {
+            // Check ongoing, use the same promise.
+            return this.tokenPluginFileWorksPromise;
+        } else if (!this.appProvider.isOnline()) {
+            // Not online, cannot check it. Assume it's working, but don't save the result.
+            return Promise.resolve(true);
+        } else if (!this.urlUtils.isPluginFileUrl(url)) {
+            // Not a pluginfile URL, ignore it.
+            return Promise.resolve(false);
+        }
+
+        url = this.fixPluginfileURL(url);
+
+        this.tokenPluginFileWorksPromise = this.wsProvider.performHead(url).then((result) => {
+            return result.ok;
+        }).catch((error) => {
+            // Error performing head request.
+            return false;
+        }).then((result) => {
+            this.tokenPluginFileWorks = result;
+
+            return result;
+        });
+
+        return this.tokenPluginFileWorksPromise;
     }
 }

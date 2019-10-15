@@ -82,7 +82,7 @@ export class AddonModResourceHelperProvider {
             // Error getting directory, there was an error downloading or we're in browser. Return online URL.
             if (this.appProvider.isOnline() && mainFile.fileurl) {
                 // This URL is going to be injected in an iframe, we need this to make it work.
-                return Promise.resolve(this.sitesProvider.getCurrentSite().fixPluginfileURL(mainFile.fileurl));
+                return this.sitesProvider.getCurrentSite().checkAndFixPluginfileURL(mainFile.fileurl);
             }
 
             return Promise.reject(null);

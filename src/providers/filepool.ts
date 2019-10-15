@@ -1321,7 +1321,7 @@ export class CoreFilepoolProvider {
      */
     protected fixPluginfileURL(siteId: string, fileUrl: string): Promise<string> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.fixPluginfileURL(fileUrl);
+            return site.checkAndFixPluginfileURL(fileUrl);
         });
     }
 
@@ -1416,6 +1416,10 @@ export class CoreFilepoolProvider {
 
         // Decode URL.
         url = this.textUtils.decodeHTML(this.textUtils.decodeURIComponent(url));
+
+        // If site supports it, since 3.8 we use tokenpluginfile instead of pluginfile.
+        // For compatibility with files already downloaded, we need to use pluginfile to calculate the file ID.
+        url = url.replace(/\/tokenpluginfile\.php\/[^\/]+\//, '/webservice/pluginfile.php/');
 
         if (url.indexOf('/webservice/pluginfile') !== -1) {
             // Remove attributes that do not matter.

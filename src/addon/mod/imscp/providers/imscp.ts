@@ -245,7 +245,7 @@ export class AddonModImscpProvider {
 
                 if (indexUrl) {
                     return this.sitesProvider.getSite(siteId).then((site) => {
-                        return site.fixPluginfileURL(indexUrl);
+                        return site.checkAndFixPluginfileURL(indexUrl);
                     });
                 }
             }

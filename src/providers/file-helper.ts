@@ -119,7 +119,8 @@ export class CoreFileHelperProvider {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         return this.sitesProvider.getSite(siteId).then((site) => {
-            const fixedUrl = site.fixPluginfileURL(fileUrl);
+            return site.checkAndFixPluginfileURL(fileUrl);
+        }).then((fixedUrl) => {
 
             if (this.fileProvider.isAvailable()) {
                 let promise;
