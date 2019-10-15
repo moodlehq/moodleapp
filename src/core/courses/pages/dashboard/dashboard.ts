@@ -236,10 +236,12 @@ export class CoreCoursesDashboardPage implements OnDestroy {
     protected loadFallbackBlocks(): void {
         this.blocks = [
             {
-                name: 'myoverview'
+                name: 'myoverview',
+                visible: true
             },
             {
-                name: 'timeline'
+                name: 'timeline',
+                visible: true
             }
         ];
     }
