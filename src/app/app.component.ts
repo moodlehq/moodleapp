@@ -110,19 +110,21 @@ export class MoodleMobileApp implements OnInit {
             this.loginHelper.sitePolicyNotAgreed(data.siteId);
         });
 
-        // Refresh online status when changes.
-        this.network.onchange().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            this.zone.run(() => {
-                const isOnline = this.appProvider.isOnline();
-                document.body.classList.toggle('core-offline', !isOnline);
-                document.body.classList.toggle('core-online', isOnline);
+        this.platform.ready().then(() => {
+            // Refresh online status when changes.
+            this.network.onchange().subscribe(() => {
+                // Execute the callback in the Angular zone, so change detection doesn't stop working.
+                this.zone.run(() => {
+                    const isOnline = this.appProvider.isOnline();
+                    document.body.classList.toggle('core-offline', !isOnline);
+                    document.body.classList.toggle('core-online', isOnline);
 
-                if (isOnline) {
-                    setTimeout(() => {
-                        document.body.classList.remove('core-online');
-                    }, 3000);
-                }
+                    if (isOnline) {
+                        setTimeout(() => {
+                            document.body.classList.remove('core-online');
+                        }, 3000);
+                    }
+                });
             });
         });
 
