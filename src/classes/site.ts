@@ -1101,6 +1101,25 @@ export class CoreSite {
     }
 
     /**
+     * Gets the size of cached data for a specific component or component instance.
+     *
+     * @param component Component name
+     * @param componentId Optional component id (if not included, returns sum for whole component)
+     * @return Promise resolved when we have calculated the size
+     */
+    getComponentCacheSize(component: string, componentId?: string): Promise<number> {
+        const params = [component];
+        let extraClause = '';
+        if (componentId) {
+            params.push(componentId);
+            extraClause = ' AND componentId = ?';
+        }
+
+        return this.db.getFieldSql('SELECT SUM(length(data)) FROM ' + CoreSite.WS_CACHE_TABLE +
+                ' WHERE component = ?' + extraClause, params);
+    }
+
+    /**
      * Save a WS response to cache.
      *
      * @param method The WebService method.
@@ -1171,6 +1190,29 @@ export class CoreSite {
         }
 
         return this.db.deleteRecords(CoreSite.WS_CACHE_TABLE, { id: id });
+    }
+
+    /**
+     * Deletes WS cache entries for all methods relating to a specific component (and
+     * optionally component id).
+     *
+     * @param component Component name.
+     * @param componentId Component id.
+     * @return Promise resolved when the entries are deleted.
+     */
+    deleteComponentFromCache(component: string, componentId?: string): Promise<any> {
+        if (!this.db) {
+            return Promise.reject(null);
+        }
+
+        const params = {
+            component: component
+        } as any;
+        if (componentId) {
+            params.componentId = componentId;
+        }
+
+        return this.db.deleteRecords(CoreSite.WS_CACHE_TABLE, params);
     }
 
     /*

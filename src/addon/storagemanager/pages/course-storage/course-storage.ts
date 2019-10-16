@@ -20,6 +20,7 @@ import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreConstants } from '@core/constants';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Page that displays the amount of file storage used by each activity on the course, and allows
@@ -39,6 +40,7 @@ export class AddonStorageManagerCourseStoragePage {
     totalSize: number;
 
     constructor(navParams: NavParams,
+            private sitesProvider: CoreSitesProvider,
             private courseProvider: CoreCourseProvider,
             private prefetchDelegate: CoreCourseModulePrefetchDelegate,
             private courseHelperProvider: CoreCourseHelperProvider,
@@ -70,7 +72,7 @@ export class AddonStorageManagerCourseStoragePage {
                     // But these aren't necessarily consistent, for example mod_frog vs mmaModFrog.
                     // There is nothing enforcing correct values.
                     // Most modules which have large files are downloadable, so I think this is sufficient.
-                    const promise = this.prefetchDelegate.getModuleDownloadedSize(module, this.course.id).
+                    const promise = this.prefetchDelegate.getModuleTotalSize(module, this.course.id).
                         then((size) => {
                             // There are some cases where the return from this is not a valid number.
                             if (!isNaN(size)) {
@@ -185,7 +187,13 @@ export class AddonStorageManagerCourseStoragePage {
         modules.forEach((module) => {
             // Remove the files.
             const promise = this.prefetchDelegate.removeModuleFiles(module, this.course.id).then(() => {
-                // When the files are removed, update the size.
+                const handler = this.prefetchDelegate.getPrefetchHandlerFor(module);
+                if (handler) {
+
+                    return this.sitesProvider.getCurrentSite().deleteComponentFromCache(handler.component, module.id);
+                }
+            }).then(() => {
+                // When the files and cache are removed, update the size.
                 module.parentSection.totalSize -= module.totalSize;
                 this.totalSize -= module.totalSize;
                 module.totalSize = 0;
