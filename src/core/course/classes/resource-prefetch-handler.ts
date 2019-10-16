@@ -87,6 +87,8 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
                 promises.push(downloadFn(siteId, files, this.component, module.id));
             }
 
+            promises.push(this.filterHelper.getFilters('module', module.id, {courseId: courseId}));
+
             return Promise.all(promises);
         });
 

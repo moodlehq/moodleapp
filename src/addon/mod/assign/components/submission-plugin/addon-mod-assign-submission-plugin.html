@@ -8,7 +8,7 @@
                 {{ 'addon.mod_assign.submissionnotsupported' | translate }}
             </ion-badge>
             <p *ngIf="text">
-                <core-format-text [component]="component" [componentId]="assign.cmid" [maxHeight]="80" [fullOnClick]="true" [fullTitle]="plugin.name" [text]="text"></core-format-text>
+                <core-format-text [component]="component" [componentId]="assign.cmid" [maxHeight]="80" [fullOnClick]="true" [fullTitle]="plugin.name" [text]="text" contextLevel="module" [contextInstanceId]="assign.cmid" [courseId]="assign.course"></core-format-text>
             </p>
             <core-file *ngFor="let file of files" [file]="file" [component]="component" [componentId]="assign.cmid" [alwaysDownload]="true"></core-file>
         </ion-item>

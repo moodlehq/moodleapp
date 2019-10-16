@@ -299,7 +299,7 @@ export class AddonCompetencyProvider {
      * @return Promise to be resolved when the competency summary is retrieved.
      */
     getCompetencySummary(competencyId: number, userId?: number, siteId?: string, ignoreCache?: boolean)
-            : Promise<AddonCompetencySummary> {
+            : Promise<AddonCompetencyUserCompetencySummary> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
@@ -324,7 +324,7 @@ export class AddonCompetencyProvider {
                     .then((response: AddonCompetencyUserCompetencySummary): any => {
 
                 if (response.competency) {
-                    return response.competency;
+                    return response;
                 }
 
                 return Promise.reject(null);

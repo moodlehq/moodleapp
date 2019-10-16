@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title><core-format-text [text]="module.name"></core-format-text></ion-title>
+        <ion-title><core-format-text [text]="module.name" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></ion-title>
 
         <ion-buttons end>
             <core-context-menu>
@@ -11,5 +11,5 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <core-course-unsupported-module [module]="module"></core-course-unsupported-module>
+    <core-course-unsupported-module [module]="module" [courseId]="courseId"></core-course-unsupported-module>
 </ion-content>

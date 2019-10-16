@@ -22,7 +22,7 @@
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
 
-        <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+        <core-course-module-description [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
         <!-- Glossary entries found to be synchronized -->
         <ion-card class="core-warning-card" icon-start *ngIf="hasOffline || hasOfflineRatings">

@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+        <ion-title><core-format-text [text]="title" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId"></core-format-text></ion-title>
         <ion-buttons end>
             <button *ngIf="loaded" ion-button icon-only (click)="showChatUsers()">
                 <ion-icon name="people"></ion-icon>
@@ -43,7 +43,7 @@
 
                     <ion-badge text-wrap color="info" *ngIf="!message.system && !message.beep">
                         <span><core-icon name="fa-asterisk"></core-icon> {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
-                            <strong>{{ message.userfullname }} <core-format-text [text]="message.message" (afterRender)="last && scrollToBottom()"></core-format-text></strong></span>
+                            <strong>{{ message.userfullname }} <core-format-text [text]="message.message" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" (afterRender)="last && scrollToBottom()"></core-format-text></strong></span>
                     </ion-badge>
                 </div>
 
@@ -56,7 +56,7 @@
                     </h2>
 
                     <p class="addon-message-text">
-                        <core-format-text [text]="message.message" (afterRender)="last && scrollToBottom()"></core-format-text>
+                        <core-format-text [text]="message.message" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" (afterRender)="last && scrollToBottom()"></core-format-text>
                     </p>
                     <div class="tail" *ngIf="message.showTail"></div>
                 </ion-item>

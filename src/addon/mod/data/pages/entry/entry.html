@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+        <ion-title><core-format-text [text]="title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></ion-title>
     </ion-navbar>
 </ion-header>
 <ion-content>
@@ -32,7 +32,7 @@
         <core-rating-aggregate *ngIf="data && entry && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="data.coursemodule" [itemId]="entry.id" [courseId]="courseId" [aggregateMethod]="data.assessed" [scaleId]="data.scale"></core-rating-aggregate>
 
         <ion-item *ngIf="data && data.comments && entry && entry.id > 0 && commentsEnabled">
-            <core-comments contextLevel="module" [instanceId]="data.coursemodule" component="mod_data" [itemId]="entry.id" area="database_entry" [displaySpinner]="false" (onLoading)="setLoadingComments($event)"></core-comments>
+            <core-comments contextLevel="module" [instanceId]="data.coursemodule" component="mod_data" [itemId]="entry.id" area="database_entry" [displaySpinner]="false" [courseId]="courseId" (onLoading)="setLoadingComments($event)"></core-comments>
         </ion-item>
 
         <ion-grid *ngIf="previousOffset != null || nextOffset != null">

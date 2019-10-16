@@ -17,6 +17,7 @@ import { CoreCourseOptionsHandler, CoreCourseOptionsHandlerData } from '@core/co
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { AddonCompetencyCourseComponent } from '../components/course/course';
 import { AddonCompetencyProvider } from '../providers/competency';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Course nav handler.
@@ -26,7 +27,7 @@ export class AddonCompetencyCourseOptionHandler implements CoreCourseOptionsHand
     name = 'AddonCompetency';
     priority = 300;
 
-    constructor(private competencyProvider: AddonCompetencyProvider) {}
+    constructor(private competencyProvider: AddonCompetencyProvider, protected filterHelper: CoreFilterHelperProvider) {}
 
     /**
      * Whether or not the handler is enabled ona site level.
@@ -110,6 +111,18 @@ export class AddonCompetencyCourseOptionHandler implements CoreCourseOptionsHand
 
                     promises.push(this.competencyProvider.getCompetencySummary(competency.competency.id, undefined, undefined,
                             true));
+
+                    if (competency.coursemodules) {
+                        competency.coursemodules.forEach((module) => {
+                            promises.push(this.filterHelper.getFilters('module', module.id, {courseId: course.id}));
+                        });
+                    }
+
+                    if (competency.plans) {
+                        competency.plans.forEach((plan) => {
+                            promises.push(this.filterHelper.getFilters('user', plan.userid));
+                        });
+                    }
                 });
             }
 

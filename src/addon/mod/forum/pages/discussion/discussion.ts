@@ -309,6 +309,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
 
                 this.forumId = forum.id;
                 this.cmId = forum.cmid;
+                this.courseId = forum.course;
                 this.forum = forum;
                 this.availabilityMessage = this.forumHelper.getAvailabilityMessage(forum);
 

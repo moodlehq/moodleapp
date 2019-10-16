@@ -28,7 +28,7 @@
                 </ion-select>
             </ion-item>
             <ion-item text-wrap *ngIf="!edit && data.assessment.feedbackauthor">
-                <core-format-text [component]="component" [componentId]="componentId" [text]="data.assessment.feedbackauthor"></core-format-text>
+                <core-format-text [component]="component" [componentId]="componentId" [text]="data.assessment.feedbackauthor" contextLevel="module" [contextInstanceId]="workshop.coursemodule" [courseId]="workshop.course"></core-format-text>
             </ion-item>
             <ion-item *ngIf="!edit && workshop.overallfeedbackfiles && data.assessment.feedbackattachmentfiles && data.assessment.feedbackattachmentfiles.length">
                 <div no-lines>

@@ -40,7 +40,7 @@
 
                     <ion-badge text-wrap color="info" *ngIf="!message.issystem && !message.beep">
                         <span><core-icon name="fa-asterisk"></core-icon> {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
-                            <strong>{{ message.userfullname }} <core-format-text [text]="message.message"></core-format-text></strong></span>
+                            <strong>{{ message.userfullname }} <core-format-text [text]="message.message" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId"></core-format-text></strong></span>
                     </ion-badge>
                 </div>
 
@@ -53,7 +53,7 @@
                     </h2>
 
                     <p class="addon-message-text">
-                        <core-format-text [text]="message.message"></core-format-text>
+                        <core-format-text [text]="message.message" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId"></core-format-text>
                     </p>
                     <div class="tail" *ngIf="message.showTail"></div>
                 </ion-item>

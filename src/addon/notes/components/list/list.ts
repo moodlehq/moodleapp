@@ -103,6 +103,10 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
             return this.notesProvider.getNotes(this.courseId, this.userId).then((notes) => {
                 const notesList: AddonNotesNoteFormatted[] = notes[this.type + 'notes'] || [];
 
+                notesList.forEach((note) => {
+                    note.content = this.textUtils.decodeHTML(note.content);
+                });
+
                 return this.notesProvider.setOfflineDeletedNotes(notesList, this.courseId).then((notesList) => {
 
                     this.hasOffline = notesList.some((note) => note.offline || note.deleted);

@@ -13,10 +13,10 @@
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center safe-area-page">
 
-    <core-course-module-description *ngIf="displayDescription" [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+    <core-course-module-description *ngIf="displayDescription" [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
     <div padding>
-        <core-format-text [component]="component" [componentId]="componentId" [text]="contents"></core-format-text>
+        <core-format-text [component]="component" [componentId]="componentId" [text]="contents" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
         <p padding-bottom class="addon-mod_page-timemodified" *ngIf="displayTimemodified && page && page.timemodified">
             {{ 'core.lastmodified' | translate}}: {{ page.timemodified * 1000 | coreFormatDate }}
         </p>

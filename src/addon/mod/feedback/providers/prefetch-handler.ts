@@ -26,6 +26,7 @@ import { AddonModFeedbackHelperProvider } from './helper';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreGroupsProvider } from '@providers/groups';
 import { AddonModFeedbackSyncProvider } from './sync';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Handler to prefetch feedbacks.
@@ -39,14 +40,21 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
 
     protected syncProvider: AddonModFeedbackSyncProvider; // It will be injected later to prevent circular dependencies.
 
-    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
-            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
-            domUtils: CoreDomUtilsProvider, protected feedbackProvider: AddonModFeedbackProvider,
+    constructor(translate: TranslateService,
+            appProvider: CoreAppProvider,
+            utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider,
+            filepoolProvider: CoreFilepoolProvider,
+            sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider,
+            filterHelper: CoreFilterHelperProvider,
+            protected feedbackProvider: AddonModFeedbackProvider,
             protected feedbackHelper: AddonModFeedbackHelperProvider,
-            protected timeUtils: CoreTimeUtilsProvider, protected groupsProvider: CoreGroupsProvider,
+            protected timeUtils: CoreTimeUtilsProvider,
+            protected groupsProvider: CoreGroupsProvider,
             protected injector: Injector) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
     }
 
     /**

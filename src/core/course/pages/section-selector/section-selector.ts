@@ -30,11 +30,14 @@ export class CoreCourseSectionSelectorPage {
     stealthModulesSectionId = CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
     sections: any;
     selected: number;
+    courseId: number;
 
     constructor(navParams: NavParams, courseHelper: CoreCourseHelperProvider, private viewCtrl: ViewController) {
         this.sections = navParams.get('sections');
         this.selected = navParams.get('selected');
         const course = navParams.get('course');
+
+        this.courseId = course && course.id;
 
         if (course && course.enablecompletion && course.courseformatoptions && course.courseformatoptions.coursedisplay == 1 &&
                 course.completionusertracked !== false) {

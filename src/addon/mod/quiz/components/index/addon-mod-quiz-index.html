@@ -14,7 +14,7 @@
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
-    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
     <!-- Access rules description messages. -->
     <ion-card *ngIf="(quiz && quiz.gradeMethodReadable) || (accessRules && accessRules.length) || syncTime">
@@ -73,11 +73,11 @@
             <ion-item text-wrap *ngIf="gradeOverridden">{{ 'core.course.overriddennotice' | translate }}</ion-item>
             <ion-item text-wrap *ngIf="gradebookFeedback">
                 <p class="item-heading">{{ 'addon.mod_quiz.comment' | translate }}</p>
-                <p><core-format-text [component]="component" [componentId]="componentId" [text]="gradebookFeedback"></core-format-text></p>
+                <p><core-format-text [component]="component" [componentId]="componentId" [text]="gradebookFeedback" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></p>
             </ion-item>
             <ion-item text-wrap *ngIf="quiz.showFeedbackColumn && overallFeedback">
                 <p class="item-heading">{{ 'addon.mod_quiz.overallfeedback' | translate }}</p>
-                <p><core-format-text [component]="component" [componentId]="componentId" [text]="overallFeedback"></core-format-text></p>
+                <p><core-format-text [component]="component" [componentId]="componentId" [text]="overallFeedback" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></p>
             </ion-item>
         </ion-list>
     </ion-card>

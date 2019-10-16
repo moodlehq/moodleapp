@@ -42,6 +42,7 @@ export class AddonBlogEntriesComponent implements OnInit {
     protected userPageLoaded = 0;
     protected canLoadMoreEntries = false;
     protected canLoadMoreUserEntries = true;
+    protected siteHomeId: number;
 
     @ViewChild(Content) content: Content;
 
@@ -55,11 +56,14 @@ export class AddonBlogEntriesComponent implements OnInit {
     component = AddonBlogProvider.COMPONENT;
     commentsEnabled: boolean;
     tagsEnabled: boolean;
+    contextLevel: string;
+    contextInstanceId: number;
 
     constructor(protected blogProvider: AddonBlogProvider, protected domUtils: CoreDomUtilsProvider,
             protected userProvider: CoreUserProvider, sitesProvider: CoreSitesProvider, protected utils: CoreUtilsProvider,
             protected commentsProvider: CoreCommentsProvider, private tagProvider: CoreTagProvider) {
         this.currentUserId = sitesProvider.getCurrentSiteUserId();
+        this.siteHomeId = sitesProvider.getCurrentSiteHomeId();
     }
 
     /**
@@ -89,6 +93,18 @@ export class AddonBlogEntriesComponent implements OnInit {
 
         if (this.tagId) {
             this.filter['tagid'] = this.tagId;
+        }
+
+        // Calculate the context level.
+        if (this.userId && !this.courseId && !this.cmId) {
+            this.contextLevel = 'user';
+            this.contextInstanceId = this.userId;
+        } else if (this.courseId && this.courseId != this.siteHomeId) {
+            this.contextLevel = 'course';
+            this.contextInstanceId = this.courseId;
+        } else {
+            this.contextLevel = 'system';
+            this.contextInstanceId = 0;
         }
 
         this.commentsEnabled = !this.commentsProvider.areCommentsDisabledInSite();
@@ -132,6 +148,18 @@ export class AddonBlogEntriesComponent implements OnInit {
                     default:
                         entry.publishTranslated = 'privacy:unknown';
                         break;
+                }
+
+                // Calculate the context. This code was inspired by calendar events, Moodle doesn't do this for blogs.
+                if (entry.moduleid || entry.coursemoduleid) {
+                    entry.contextLevel = 'module';
+                    entry.contextInstanceId = entry.moduleid || entry.coursemoduleid;
+                } else if (entry.courseid) {
+                    entry.contextLevel = 'course';
+                    entry.contextInstanceId = entry.courseid;
+                } else {
+                    entry.contextLevel = 'user';
+                    entry.contextInstanceId = entry.userid;
                 }
 
                 return this.userProvider.getProfile(entry.userid, entry.courseid, true).then((user) => {
@@ -245,4 +273,6 @@ export class AddonBlogEntriesComponent implements OnInit {
 type AddonBlogPostFormatted = AddonBlogPost & {
     publishTranslated?: string; // Calculated in the app. Key of the string to translate the publish state of the post.
     user?: any; // Calculated in the app. Data of the user that wrote the post.
+    contextLevel?: string; // Calculated in the app. The context level of the entry.
+    contextInstanceId?: number; // Calculated in the app. The context instance id.
 };

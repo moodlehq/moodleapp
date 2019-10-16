@@ -1,6 +1,6 @@
 <section ion-list *ngIf="question.text || question.text === ''">
     <ion-item text-wrap class="addon-qtype-shortanswer-text">
-        <core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text>
+        <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text>
     </ion-item>
     <ion-item *ngIf="!question.input.isInline" text-wrap ngClass="core-{{question.input.correctIconColor}}-item">
         <ion-label stacked>{{ 'addon.mod_quiz.answercolon' | translate }}</ion-label>

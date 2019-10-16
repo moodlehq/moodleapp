@@ -20,6 +20,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '../providers/course';
 import { CoreCourseModulePrefetchHandler } from '../providers/module-prefetch-delegate';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Base prefetch handler to be registered in CoreCourseModulePrefetchDelegate. Prefetch handlers should inherit either
@@ -59,9 +60,14 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      */
     protected downloadPromises: { [s: string]: { [s: string]: Promise<any> } } = {};
 
-    constructor(protected translate: TranslateService, protected appProvider: CoreAppProvider, protected utils: CoreUtilsProvider,
-            protected courseProvider: CoreCourseProvider, protected filepoolProvider: CoreFilepoolProvider,
-            protected sitesProvider: CoreSitesProvider, protected domUtils: CoreDomUtilsProvider) { }
+    constructor(protected translate: TranslateService,
+            protected appProvider: CoreAppProvider,
+            protected utils: CoreUtilsProvider,
+            protected courseProvider: CoreCourseProvider,
+            protected filepoolProvider: CoreFilepoolProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected filterHelper: CoreFilterHelperProvider) { }
 
     /**
      * Add an ongoing download to the downloadPromises list. When the promise finishes it will be removed.

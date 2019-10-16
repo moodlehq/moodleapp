@@ -80,6 +80,21 @@ export class CoreDelegate {
     protected updatePromises: {[siteId: string]: {[name: string]: Promise<any>}} = {};
 
     /**
+     * Whether handlers have been initialized.
+     */
+    protected handlersInitialized = false;
+
+    /**
+     * Promise to wait for handlers to be initialized.
+     */
+    protected handlersInitPromise: Promise<any>;
+
+    /**
+     * Function to resolve the handlers init promise.
+     */
+    protected handlersInitResolve: (value?: any) => void;
+
+    /**
      * Constructor of the Delegate.
      *
      * @param delegateName Delegate name used for logging purposes.
@@ -91,6 +106,10 @@ export class CoreDelegate {
     constructor(delegateName: string, protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
             protected eventsProvider?: CoreEventsProvider) {
         this.logger = this.loggerProvider.getInstance(delegateName);
+
+        this.handlersInitPromise = new Promise((resolve): void => {
+            this.handlersInitResolve = resolve;
+        });
 
         if (eventsProvider) {
             // Update handlers on this cases.
@@ -315,6 +334,9 @@ export class CoreDelegate {
 
             // Verify that this call is the last one that was started.
             if (this.isLastUpdateCall(now)) {
+                this.handlersInitialized = true;
+                this.handlersInitResolve();
+
                 this.updateData();
             }
         });

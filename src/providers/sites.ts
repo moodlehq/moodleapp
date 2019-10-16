@@ -113,6 +113,11 @@ export interface CoreSiteBasicInfo {
      * Badge to display in the site.
      */
     badge?: number;
+
+    /**
+     * Site home ID.
+     */
+    siteHomeId?: number;
 }
 
 /**
@@ -1130,7 +1135,8 @@ export class CoreSitesProvider {
                             siteUrl: site.siteUrl,
                             fullName: siteInfo && siteInfo.fullname,
                             siteName: CoreConfigConstants.sitename ? CoreConfigConstants.sitename : siteInfo && siteInfo.sitename,
-                            avatar: siteInfo && siteInfo.userpictureurl
+                            avatar: siteInfo && siteInfo.userpictureurl,
+                            siteHomeId: siteInfo && siteInfo.siteid || 1
                         };
                     formattedSites.push(basicInfo);
                 }

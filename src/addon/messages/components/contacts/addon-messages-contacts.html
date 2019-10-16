@@ -20,7 +20,7 @@
                     <!-- Don't show deleted users -->
                     <a ion-item text-wrap *ngIf="contact.profileimageurl || contact.profileimageurlsmall"  [title]="contact.fullname" (click)="gotoDiscussion(contact.id)" [class.core-split-item-selected]="contact.id == discussionUserId" class="addon-messages-conversation-item">
                         <ion-avatar core-user-avatar [user]="contact" item-start [checkOnline]="contact.showonlinestatus"></ion-avatar>
-                        <h2><core-format-text [text]="contact.fullname"></core-format-text></h2>
+                        <h2>{{ contact.fullname }}</h2>
                     </a>
                 </ng-container>
             </ng-container>

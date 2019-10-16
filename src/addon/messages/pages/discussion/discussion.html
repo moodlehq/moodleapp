@@ -3,7 +3,7 @@
         <ion-title>
             <img *ngIf="loaded && !otherMember && conversationImage" class="core-bar-button-image" [src]="conversationImage" [alt]="title" onError="this.src='assets/img/group-avatar.png'" core-external-content role="presentation" [siteId]="siteId || null">
             <ion-avatar *ngIf="loaded && otherMember" class="core-bar-button-image" core-user-avatar [user]="otherMember" [linkProfile]="false" [checkOnline]="otherMember.showonlinestatus" item-start (click)="showInfo && viewInfo()"></ion-avatar>
-            <core-format-text [text]="title" (click)="showInfo && !isGroup && viewInfo()"></core-format-text>
+            <core-format-text [text]="title" contextLevel="system" [contextInstanceId]="0" (click)="showInfo && !isGroup && viewInfo()"></core-format-text>
             <core-icon *ngIf="conversation && conversation.isfavourite" name="fa-star" [label]="'core.favourites' | translate"></core-icon>
             <core-icon *ngIf="conversation && conversation.ismuted" name="volume-off" [label]="'addon.messages.mutedconversation' | translate"></core-icon>
         </ion-title>
@@ -58,7 +58,7 @@
 
                     <!-- Some messages have <p> and some others don't. Add a <p> so they all have same styles. -->
                     <p class="addon-message-text">
-                        <core-format-text (afterRender)="last && scrollToBottom()" [text]="message.text"></core-format-text>
+                        <core-format-text (afterRender)="last && scrollToBottom()" [text]="message.text" contextLevel="system" [contextInstanceId]="0"></core-format-text>
                     </p>
 
                     <button ion-button icon-only clear="true" *ngIf="!message.sending && showDelete" (click)="deleteMessage(message, index)" class="addon-messages-delete-button" [@coreSlideInOut]="'fromRight'" [attr.aria-label]=" 'addon.messages.deletemessage' | translate">

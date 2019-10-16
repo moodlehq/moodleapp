@@ -19,12 +19,12 @@ import { CoreCronHandler } from '@providers/cron';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreAppProvider } from '@providers/app';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers/delegate';
 import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Handler to inject an option into main menu.
@@ -49,7 +49,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
 
     constructor(private messagesProvider: AddonMessagesProvider, private sitesProvider: CoreSitesProvider,
             eventsProvider: CoreEventsProvider, private appProvider: CoreAppProvider,
-            private localNotificationsProvider: CoreLocalNotificationsProvider, private textUtils: CoreTextUtilsProvider,
+            private localNotificationsProvider: CoreLocalNotificationsProvider, private filterHelper: CoreFilterHelperProvider,
             private pushNotificationsProvider: CorePushNotificationsProvider, utils: CoreUtilsProvider,
             pushNotificationsDelegate: CorePushNotificationsDelegate, private emulatorHelper: CoreEmulatorHelperProvider) {
 
@@ -297,7 +297,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
             title: message.name || message.userfromfullname,
         };
 
-        return this.textUtils.formatText(message.text, true, true).catch(() => {
+        return this.filterHelper.getFiltersAndFormatText(message.text, 'system', 0, {clean: true, singleLine: true}).catch(() => {
             return message.text;
         }).then((formattedText) => {
             data['text'] = formattedText;

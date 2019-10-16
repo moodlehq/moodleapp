@@ -18,7 +18,7 @@
             <!-- If no sitename show big siteurl. -->
             <p *ngIf="!siteName" class="item-heading core-siteurl">{{siteUrl}}</p>
             <!-- If sitename, show big sitename and small siteurl. -->
-            <p *ngIf="siteName" class="item-heading core-sitename"><core-format-text [text]="siteName"></core-format-text></p>
+            <p *ngIf="siteName" class="item-heading core-sitename"><core-format-text [text]="siteName" [filter]="false"></core-format-text></p>
             <p *ngIf="siteName" class="core-siteurl">{{siteUrl}}</p>
 
             <p *ngIf="!isLoggedOut">

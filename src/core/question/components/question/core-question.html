@@ -23,10 +23,10 @@
 
 <!-- Question feedback. -->
 <ion-item text-wrap class="core-question-feedback-container" *ngIf="question.feedbackHtml">
-    <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.feedbackHtml"></core-format-text></p>
+    <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.feedbackHtml" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text></p>
 </ion-item>
 
 <!-- Question comment. -->
 <ion-item text-wrap class="core-question-comment" *ngIf="question.commentHtml">
-    <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.commentHtml"></core-format-text></p>
+    <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.commentHtml" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text></p>
 </ion-item>

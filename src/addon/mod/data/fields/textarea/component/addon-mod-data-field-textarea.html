@@ -6,4 +6,4 @@
     <core-input-errors *ngIf="error && mode == 'edit'" [control]="form.controls['f_'+field.id]" [errorText]="error"></core-input-errors>
 </span>
 
-<core-format-text *ngIf="isShowOrListMode() && value" [text]="format(value)" [component]="component" [componentId]="componentId"></core-format-text>
+<core-format-text *ngIf="isShowOrListMode() && value" [text]="format(value)" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="componentId" [courseId]="database.course"></core-format-text>

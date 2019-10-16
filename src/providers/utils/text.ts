@@ -349,15 +349,24 @@ export class CoreTextUtilsProvider {
      * @param component Component to link the embedded files to.
      * @param componentId An ID to use in conjunction with the component.
      * @param files List of files to display along with the text.
+     * @param filter Whether the text should be filtered.
+     * @param contextLevel The context level.
+     * @param instanceId The instance ID related to the context.
+     * @param courseId Course ID the text belongs to. It can be used to improve performance with filters.
      */
-    expandText(title: string, text: string, component?: string, componentId?: string | number, files?: any[]): void {
+    expandText(title: string, text: string, component?: string, componentId?: string | number, files?: any[],
+            filter?: boolean, contextLevel?: string, instanceId?: number, courseId?: number): void {
         if (text.length > 0) {
             const params: any = {
                 title: title,
                 content: text,
                 component: component,
                 componentId: componentId,
-                files: files
+                files: files,
+                filter: filter,
+                contextLevel: contextLevel,
+                instanceId: instanceId,
+                courseId: courseId
             };
 
             // Open a modal with the contents.
@@ -398,6 +407,7 @@ export class CoreTextUtilsProvider {
      * @param shortenLength Number of characters to shorten the text.
      * @param highlight Text to highlight.
      * @return Promise resolved with the formatted text.
+     * @deprecated since 3.8.0. Please use CoreFilterProvider.formatText instead.
      */
     formatText(text: string, clean?: boolean, singleLine?: boolean, shortenLength?: number, highlight?: string): Promise<string> {
         return this.treatMultilangTags(text).then((formatted) => {
@@ -732,6 +742,7 @@ export class CoreTextUtilsProvider {
      *
      * @param text The text to be treated.
      * @return Promise resolved with the formatted text.
+     * @deprecated since 3.8.0. Now this is handled by AddonFilterMultilangHandler.
      */
     treatMultilangTags(text: string): Promise<string> {
         if (!text || typeof text != 'string') {

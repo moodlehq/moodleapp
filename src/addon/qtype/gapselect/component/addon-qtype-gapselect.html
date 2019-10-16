@@ -1,5 +1,5 @@
 <section ion-list class="addon-qtype-gapselect-container" *ngIf="question.text || question.text === ''">
     <ion-item text-wrap>
-        <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.text" (afterRender)="questionRendered()"></core-format-text></p>
+        <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" (afterRender)="questionRendered()"></core-format-text></p>
     </ion-item>
 </section>

@@ -19,7 +19,7 @@
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
-    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
     <!-- Data done in offline but not synchronized -->
     <div class="core-warning-card" icon-start *ngIf="hasOffline || hasOfflineRatings">

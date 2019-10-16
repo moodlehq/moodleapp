@@ -31,6 +31,7 @@ import { CoreCompileProvider } from '@core/compile/providers/compile';
 import { CoreQuestionProvider } from '@core/question/providers/question';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 // Delegates
 import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
@@ -84,21 +85,39 @@ export class CoreSitePluginsHelperProvider {
     protected logger;
     protected courseRestrictHandlers = {};
 
-    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
-            private mainMenuDelegate: CoreMainMenuDelegate, private moduleDelegate: CoreCourseModuleDelegate,
-            private userDelegate: CoreUserDelegate, private langProvider: CoreLangProvider, private http: Http,
-            private sitePluginsProvider: CoreSitePluginsProvider, private prefetchDelegate: CoreCourseModulePrefetchDelegate,
-            private compileProvider: CoreCompileProvider, private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider,
-            private courseOptionsDelegate: CoreCourseOptionsDelegate, private eventsProvider: CoreEventsProvider,
-            private courseFormatDelegate: CoreCourseFormatDelegate, private profileFieldDelegate: CoreUserProfileFieldDelegate,
-            private textUtils: CoreTextUtilsProvider, private filepoolProvider: CoreFilepoolProvider,
-            private settingsDelegate: CoreSettingsDelegate, private questionDelegate: CoreQuestionDelegate,
-            private questionBehaviourDelegate: CoreQuestionBehaviourDelegate, private questionProvider: CoreQuestionProvider,
-            private messageOutputDelegate: AddonMessageOutputDelegate, private accessRulesDelegate: AddonModQuizAccessRuleDelegate,
-            private assignSubmissionDelegate: AddonModAssignSubmissionDelegate, private translate: TranslateService,
-            private assignFeedbackDelegate: AddonModAssignFeedbackDelegate, private appProvider: CoreAppProvider,
+    constructor(logger: CoreLoggerProvider,
+            private sitesProvider: CoreSitesProvider,
+            private domUtils: CoreDomUtilsProvider,
+            private mainMenuDelegate: CoreMainMenuDelegate,
+            private moduleDelegate: CoreCourseModuleDelegate,
+            private userDelegate: CoreUserDelegate,
+            private langProvider: CoreLangProvider,
+            private http: Http,
+            private sitePluginsProvider: CoreSitePluginsProvider,
+            private prefetchDelegate: CoreCourseModulePrefetchDelegate,
+            private compileProvider: CoreCompileProvider,
+            private utils: CoreUtilsProvider,
+            private urlUtils: CoreUrlUtilsProvider,
+            private courseOptionsDelegate: CoreCourseOptionsDelegate,
+            private eventsProvider: CoreEventsProvider,
+            private courseFormatDelegate: CoreCourseFormatDelegate,
+            private profileFieldDelegate: CoreUserProfileFieldDelegate,
+            private textUtils: CoreTextUtilsProvider,
+            private filepoolProvider: CoreFilepoolProvider,
+            private settingsDelegate: CoreSettingsDelegate,
+            private questionDelegate: CoreQuestionDelegate,
+            private questionBehaviourDelegate: CoreQuestionBehaviourDelegate,
+            private questionProvider: CoreQuestionProvider,
+            private messageOutputDelegate: AddonMessageOutputDelegate,
+            private accessRulesDelegate: AddonModQuizAccessRuleDelegate,
+            private assignSubmissionDelegate: AddonModAssignSubmissionDelegate,
+            private translate: TranslateService,
+            private assignFeedbackDelegate: AddonModAssignFeedbackDelegate,
+            private appProvider: CoreAppProvider,
             private workshopAssessmentStrategyDelegate: AddonWorkshopAssessmentStrategyDelegate,
-            private courseProvider: CoreCourseProvider, private blockDelegate: CoreBlockDelegate) {
+            private courseProvider: CoreCourseProvider,
+            private blockDelegate: CoreBlockDelegate,
+            private filterHelper: CoreFilterHelperProvider) {
 
         this.logger = logger.getInstance('CoreSitePluginsHelperProvider');
 
@@ -820,7 +839,7 @@ export class CoreSitePluginsHelperProvider {
         if (handlerSchema.offlinefunctions && Object.keys(handlerSchema.offlinefunctions).length) {
             // Register the prefetch handler.
             this.prefetchDelegate.registerHandler(new CoreSitePluginsModulePrefetchHandler(this.translate, this.appProvider,
-                this.utils, this.courseProvider, this.filepoolProvider, this.sitesProvider, this.domUtils,
+                this.utils, this.courseProvider, this.filepoolProvider, this.sitesProvider, this.domUtils, this.filterHelper,
                 this.sitePluginsProvider, plugin.component, uniqueName, modName, handlerSchema));
         }
 

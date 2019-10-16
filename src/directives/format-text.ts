@@ -30,10 +30,14 @@ import { CoreLinkDirective } from '../directives/link';
 import { CoreExternalContentDirective } from '../directives/external-content';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreFilterProvider } from '@core/filter/providers/filter';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
- * and CoreExternalContentDirective.
+ * and CoreExternalContentDirective. It also applies filters if needed.
+ *
+ * Please use this directive if your text needs to be filtered or it can contain links or media (images, audio, video).
  *
  * Example usage:
  * <core-format-text [text]="myText" [component]="component" [componentId]="componentId"></core-format-text>
@@ -55,6 +59,11 @@ export class CoreFormatTextDirective implements OnChanges {
     @Input() fullOnClick?: boolean | string; // Whether it should open a new page with the full contents on click.
     @Input() fullTitle?: string; // Title to use in full view. Defaults to "Description".
     @Input() highlight?: string; // Text to highlight.
+    @Input() filter?: boolean | string; // Whether to filter the text. If not defined, true if contextLevel and instanceId are set.
+    @Input() contextLevel?: string; // The context level of the text.
+    @Input() contextInstanceId?: number; // The instance ID related to the context.
+    @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
+    @Input() wsNotFiltered?: boolean | string; // If true it means the WS didn't filter the text for some reason.
     @Output() afterRender?: EventEmitter<any>; // Called when the data is rendered.
 
     protected element: HTMLElement;
@@ -67,7 +76,8 @@ export class CoreFormatTextDirective implements OnChanges {
             private filepoolProvider: CoreFilepoolProvider, private appProvider: CoreAppProvider,
             private contentLinksHelper: CoreContentLinksHelperProvider, @Optional() private navCtrl: NavController,
             @Optional() private content: Content, @Optional() private svComponent: CoreSplitViewComponent,
-            private iframeUtils: CoreIframeUtilsProvider, private eventsProvider: CoreEventsProvider) {
+            private iframeUtils: CoreIframeUtilsProvider, private eventsProvider: CoreEventsProvider,
+            private filterProvider: CoreFilterProvider, private filterHelper: CoreFilterHelperProvider) {
         this.element = element.nativeElement;
         this.element.classList.add('opacity-hide'); // Hide contents until they're treated.
         this.afterRender = new EventEmitter();
@@ -275,8 +285,10 @@ export class CoreFormatTextDirective implements OnChanges {
             return;
         } else {
             // Open a new state with the contents.
+            const filter = this.utils.isTrueOrOne(this.filter);
+
             this.textUtils.expandText(this.fullTitle || this.translate.instant('core.description'), this.text,
-                this.component, this.componentId);
+                this.component, this.componentId, undefined, filter, this.contextLevel, this.contextInstanceId, this.courseId);
         }
     }
 
@@ -363,9 +375,27 @@ export class CoreFormatTextDirective implements OnChanges {
         }).then((siteInstance: CoreSite) => {
             site = siteInstance;
 
-            // Apply format text function.
-            return this.textUtils.formatText(this.text, this.utils.isTrueOrOne(this.clean),
-                this.utils.isTrueOrOne(this.singleLine), undefined, this.highlight);
+            if (this.contextLevel == 'course' && this.contextInstanceId <= 0) {
+                this.contextInstanceId = site.getSiteHomeId();
+            }
+
+            this.filter = typeof this.filter == 'undefined' ? !!(this.contextLevel && this.contextInstanceId) : !!this.filter;
+
+            const options = {
+                clean: this.utils.isTrueOrOne(this.clean),
+                singleLine: this.utils.isTrueOrOne(this.singleLine),
+                highlight: this.highlight,
+                courseId: this.courseId,
+                wsNotFiltered: this.utils.isTrueOrOne(this.wsNotFiltered)
+            };
+
+            if (this.filter) {
+                return this.filterHelper.getFiltersAndFormatText(this.text, this.contextLevel, this.contextInstanceId, options,
+                        site.getId());
+            } else {
+                return this.filterProvider.formatText(this.text, options);
+            }
+
         }).then((formatted) => {
             const div = document.createElement('div'),
                 canTreatVimeo = site && site.isVersionGreaterEqualThan(['3.3.4', '3.4']),
@@ -425,7 +455,6 @@ export class CoreFormatTextDirective implements OnChanges {
             });
 
             videos.forEach((video) => {
-                this.treatVideoFilters(video, navCtrl);
                 this.treatMedia(video);
             });
 
@@ -550,40 +579,6 @@ export class CoreFormatTextDirective implements OnChanges {
     }
 
     /**
-     * Treat video filters. Currently only treating youtube video using video JS.
-     *
-     * @param el Video element.
-     * @param navCtrl NavController to use.
-     */
-    protected treatVideoFilters(video: HTMLElement, navCtrl: NavController): void {
-        // Treat Video JS Youtube video links and translate them to iframes.
-        if (!video.classList.contains('video-js')) {
-            return;
-        }
-
-        const data = this.textUtils.parseJSON(video.getAttribute('data-setup') || video.getAttribute('data-setup-lazy') || '{}'),
-            youtubeData = data.techOrder && data.techOrder[0] && data.techOrder[0] == 'youtube' &&
-                    this.parseYoutubeUrl(data.sources && data.sources[0] && data.sources[0].src);
-
-        if (!youtubeData || !youtubeData.videoId) {
-            return;
-        }
-
-        const iframe = document.createElement('iframe');
-        iframe.id = video.id;
-        iframe.src = 'https://www.youtube.com/embed/' + youtubeData.videoId; // Don't apply other params to align with Moodle web.
-        iframe.setAttribute('frameborder', '0');
-        iframe.setAttribute('allowfullscreen', '1');
-        iframe.width = '100%';
-        iframe.height = '300';
-
-        // Replace video tag by the iframe.
-        video.parentNode.replaceChild(iframe, video);
-
-        this.iframeUtils.treatFrame(iframe, false, navCtrl);
-    }
-
-    /**
      * Add media adapt class and apply CoreExternalContentDirective to the media element and its sources and tracks.
      *
      * @param element Video or audio to treat.
@@ -692,55 +687,5 @@ export class CoreFormatTextDirective implements OnChanges {
         }
 
         this.iframeUtils.treatFrame(iframe, false, navCtrl);
-    }
-
-    /**
-     * Parse a YouTube URL.
-     * Based on Youtube.parseUrl from Moodle media/player/videojs/amd/src/Youtube-lazy.js
-     *
-     * @param url URL of the video.
-     */
-    protected parseYoutubeUrl(url: string): {videoId: string, listId?: string, start?: number} {
-        const result = {
-            videoId: null,
-            listId: null,
-            start: null
-        };
-
-        if (!url) {
-            return result;
-        }
-
-        url = this.textUtils.decodeHTML(url);
-
-        // Get the video ID.
-        let match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-
-        if (match && match[2].length === 11) {
-            result.videoId = match[2];
-        }
-
-        // Now get the playlist (if any).
-        match = url.match(/[?&]list=([^#\&\?]+)/);
-
-        if (match && match[1]) {
-            result.listId = match[1];
-        }
-
-        // Now get the start time (if any).
-        match = url.match(/[?&]start=(\d+)/);
-
-        if (match && match[1]) {
-            result.start = parseInt(match[1], 10);
-        } else {
-            // No start param, but it could have a time param.
-            match = url.match(/[?&]t=(\d+h)?(\d+m)?(\d+s)?/);
-            if (match) {
-                result.start = (match[1] ? parseInt(match[1], 10) * 3600 : 0) + (match[2] ? parseInt(match[2], 10) * 60 : 0) +
-                        (match[3] ? parseInt(match[3], 10) : 0);
-            }
-        }
-
-        return result;
     }
 }

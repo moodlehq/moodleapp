@@ -25,6 +25,7 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/acti
 import { CoreGroupsProvider } from '@providers/groups';
 import { AddonModForumProvider } from './forum';
 import { AddonModForumSyncProvider } from './sync';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Handler to prefetch forums.
@@ -43,12 +44,13 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
             filepoolProvider: CoreFilepoolProvider,
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
+            filterHelper: CoreFilterHelperProvider,
             private userProvider: CoreUserProvider,
             private groupsProvider: CoreGroupsProvider,
             private forumProvider: AddonModForumProvider,
             private syncProvider: AddonModForumSyncProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
     }
 
     /**

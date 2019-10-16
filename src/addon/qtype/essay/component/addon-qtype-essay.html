@@ -1,7 +1,7 @@
 <section ion-list *ngIf="question.text || question.text === ''">
     <!-- Question text. -->
     <ion-item text-wrap>
-        <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text></p>
+        <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text></p>
     </ion-item>
 
     <!-- Textarea. -->
@@ -20,7 +20,7 @@
             <p class="core-question-warning">{{ 'core.question.errorinlinefilesnotsupported' | translate }}</p>
         </ion-item>
         <ion-item text-wrap>
-            <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.textarea.text"></core-format-text></p>
+            <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.textarea.text" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text></p>
         </ion-item>
     </ng-container>
 
@@ -31,7 +31,7 @@
 
     <!-- Answer to the question and attachments (reviewing). -->
     <ion-item text-wrap *ngIf="!question.textarea && (question.answer || (!question.attachments.length && !question.allowsAttachments))">
-        <p><core-format-text [ngClass]='{"core-monospaced": question.isMonospaced}' [component]="component" [componentId]="componentId" [text]="question.answer"></core-format-text></p>
+        <p><core-format-text [ngClass]='{"core-monospaced": question.isMonospaced}' [component]="component" [componentId]="componentId" [text]="question.answer" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text></p>
     </ion-item>
 
     <ion-item *ngIf="!question.textarea && question.attachments && question.attachments.length">

@@ -24,7 +24,7 @@
                 <core-rich-text-editor item-content [control]="editForm.controls['content']" formControlName="content" [placeholder]="'addon.mod_workshop.submissioncontent' | translate"  name="content" [component]="component" [componentId]="componentId"></core-rich-text-editor>
             </ion-item>
 
-            <core-attachments *ngIf="fileAvailable" [files]="submission.attachmentfiles" [maxSize]="workshop.maxbytes" [maxSubmissions]="workshop.nattachments" [component]="component" [componentId]="workshop.cmid" allowOffline="true" [acceptedTypes]="workshop.submissionfiletypes" [required]="fileRequired"></core-attachments>
+            <core-attachments *ngIf="fileAvailable" [files]="submission.attachmentfiles" [maxSize]="workshop.maxbytes" [maxSubmissions]="workshop.nattachments" [component]="component" [componentId]="workshop.coursemodule" allowOffline="true" [acceptedTypes]="workshop.submissionfiletypes" [required]="fileRequired"></core-attachments>
         </form>
     </core-loading>
 </ion-content>

@@ -25,6 +25,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { AddonModScormProvider } from './scorm';
 import { AddonModScormSyncProvider } from './scorm-sync';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Progress event used when downloading a SCORM.
@@ -58,12 +59,20 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
 
     protected syncProvider: AddonModScormSyncProvider; // It will be injected later to prevent circular dependencies.
 
-    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
-            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
-            domUtils: CoreDomUtilsProvider, protected fileProvider: CoreFileProvider, protected textUtils: CoreTextUtilsProvider,
-             protected scormProvider: AddonModScormProvider, protected injector: Injector) {
+    constructor(translate: TranslateService,
+            appProvider: CoreAppProvider,
+            utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider,
+            filepoolProvider: CoreFilepoolProvider,
+            sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider,
+            filterHelper: CoreFilterHelperProvider,
+            protected fileProvider: CoreFileProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected scormProvider: AddonModScormProvider,
+            protected injector: Injector) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
     }
 
     /**

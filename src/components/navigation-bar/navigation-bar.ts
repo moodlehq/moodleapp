@@ -35,6 +35,9 @@ export class CoreNavigationBarComponent {
     @Input() title?: string; // Title to show when seeing the info (new page).
     @Input() component?: string; // Component the bar belongs to.
     @Input() componentId?: number; // Component ID.
+    @Input() contextLevel?: string; // The context level.
+    @Input() contextInstanceId?: number; // The instance ID related to the context.
+    @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     @Output() action?: EventEmitter<any>; // Function to call when an arrow is clicked. Will receive as a param the item to load.
 
     constructor(private textUtils: CoreTextUtilsProvider) {
@@ -42,6 +45,7 @@ export class CoreNavigationBarComponent {
     }
 
     showInfo(): void {
-        this.textUtils.expandText(this.title, this.info, this.component, this.componentId);
+        this.textUtils.expandText(this.title, this.info, this.component, this.componentId, [], true, this.contextLevel,
+                this.contextInstanceId, this.courseId);
     }
 }

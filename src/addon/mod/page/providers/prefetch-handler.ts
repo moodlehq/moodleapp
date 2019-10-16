@@ -23,6 +23,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseResourcePrefetchHandlerBase } from '@core/course/classes/resource-prefetch-handler';
 import { AddonModPageProvider } from './page';
 import { AddonModPageHelperProvider } from './helper';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Handler to prefetch pages.
@@ -34,12 +35,18 @@ export class AddonModPagePrefetchHandler extends CoreCourseResourcePrefetchHandl
     component = AddonModPageProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$/;
 
-    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
-            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
-            domUtils: CoreDomUtilsProvider, protected pageProvider: AddonModPageProvider,
+    constructor(translate: TranslateService,
+            appProvider: CoreAppProvider,
+            utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider,
+            filepoolProvider: CoreFilepoolProvider,
+            sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider,
+            filterHelper: CoreFilterHelperProvider,
+            protected pageProvider: AddonModPageProvider,
             protected pageHelper: AddonModPageHelperProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
     }
 
     /**

@@ -27,7 +27,7 @@
                 <ion-icon item-start name="checkmark-circle" color="success" *ngIf="task.completed == '1'"></ion-icon>
 
                 <h2 text-wrap>{{task.title}}</h2>
-                <p *ngIf="task.details"><core-format-text [text]="task.details"></core-format-text></p>
+                <p *ngIf="task.details" [innerHTML]="task.details"></p>
                 <ion-icon item-end *ngIf="task.link && task.code != 'submit'" name="open"></ion-icon>
             </a>
         </ng-container>

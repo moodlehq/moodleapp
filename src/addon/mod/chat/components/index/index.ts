@@ -95,7 +95,12 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
      */
     enterChat(): void {
         const title = this.chat.name || this.moduleName;
-        this.navCtrl.push('AddonModChatChatPage', {chatId: this.chat.id, courseId: this.courseId, title: title });
+        this.navCtrl.push('AddonModChatChatPage', {
+            chatId: this.chat.id,
+            courseId: this.courseId,
+            title: title,
+            cmId: this.module.id
+        });
     }
 
     /**

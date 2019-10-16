@@ -26,6 +26,8 @@ import { IonicPage, NavParams, ViewController } from 'ionic-angular';
 export class AddonModWikiMapPage {
     map: any[] = []; // Map of pages, categorized by letter.
     selected: number;
+    moduleId: number;
+    courseId: number;
     homeView: ViewController;
 
     constructor(navParams: NavParams, protected viewCtrl: ViewController) {
@@ -33,6 +35,8 @@ export class AddonModWikiMapPage {
 
         this.selected = navParams.get('selected');
         this.homeView = navParams.get('homeView');
+        this.moduleId = navParams.get('moduleId');
+        this.courseId = navParams.get('courseId');
     }
 
     /**

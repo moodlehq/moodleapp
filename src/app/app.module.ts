@@ -82,6 +82,7 @@ import { CoreCommentsModule } from '@core/comments/comments.module';
 import { CoreBlockModule } from '@core/block/block.module';
 import { CoreRatingModule } from '@core/rating/rating.module';
 import { CoreTagModule } from '@core/tag/tag.module';
+import { CoreFilterModule } from '@core/filter/filter.module';
 
 // Addon modules.
 import { AddonBadgesModule } from '@addon/badges/badges.module';
@@ -147,6 +148,7 @@ import { AddonRemoteThemesModule } from '@addon/remotethemes/remotethemes.module
 import { AddonQbehaviourModule } from '@addon/qbehaviour/qbehaviour.module';
 import { AddonQtypeModule } from '@addon/qtype/qtype.module';
 import { AddonStorageManagerModule } from '@addon/storagemanager/storagemanager.module';
+import { AddonFilterModule } from '@addon/filter/filter.module';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
@@ -227,6 +229,7 @@ export const WP_PROVIDER: any = null;
         CoreRatingModule,
         CorePushNotificationsModule,
         CoreTagModule,
+        CoreFilterModule,
         AddonBadgesModule,
         AddonBlogModule,
         AddonCalendarModule,
@@ -288,7 +291,8 @@ export const WP_PROVIDER: any = null;
         AddonRemoteThemesModule,
         AddonQbehaviourModule,
         AddonQtypeModule,
-        AddonStorageManagerModule
+        AddonStorageManagerModule,
+        AddonFilterModule
     ],
     bootstrap: [IonicApp],
     entryComponents: [

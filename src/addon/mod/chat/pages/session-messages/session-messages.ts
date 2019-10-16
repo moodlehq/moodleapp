@@ -31,14 +31,15 @@ import { AddonModChatHelperProvider, AddonModChatSessionMessageForView } from '.
 export class AddonModChatSessionMessagesPage {
 
     currentUserId: number;
+    cmId: number;
+    messages: AddonModChatSessionMessageForView[] = [];
+    loaded = false;
 
     protected courseId: number;
     protected chatId: number;
     protected sessionStart: number;
     protected sessionEnd: number;
     protected groupId: number;
-    protected loaded = false;
-    protected messages: AddonModChatSessionMessageForView[] = [];
 
     constructor(navParams: NavParams, private domUtils: CoreDomUtilsProvider, private chatProvider: AddonModChatProvider,
         sitesProvider: CoreSitesProvider, private chatHelper: AddonModChatHelperProvider, private userProvider: CoreUserProvider) {
@@ -47,6 +48,7 @@ export class AddonModChatSessionMessagesPage {
         this.groupId = navParams.get('groupId');
         this.sessionStart = navParams.get('sessionStart');
         this.sessionEnd = navParams.get('sessionEnd');
+        this.cmId = navParams.get('cmId');
         this.currentUserId = sitesProvider.getCurrentSiteUserId();
 
         this.fetchMessages();

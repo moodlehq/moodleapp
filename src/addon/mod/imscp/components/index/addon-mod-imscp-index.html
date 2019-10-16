@@ -16,8 +16,7 @@
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center safe-area-page">
     <div class="addon-mod-imscp-container">
-        <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
-        <core-navigation-bar [previous]="previousItem" [next]="nextItem" (action)="loadItem($event)" [info]="description" [title]="'core.description' | translate" [component]="component" [componentId]="componentId"></core-navigation-bar>
+        <core-navigation-bar [previous]="previousItem" [next]="nextItem" (action)="loadItem($event)" [info]="description" [title]="'core.description' | translate" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-navigation-bar>
         <core-iframe [src]="src"></core-iframe>
     </div>
 </core-loading>

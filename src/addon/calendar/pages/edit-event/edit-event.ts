@@ -21,7 +21,6 @@ import { CoreGroupsProvider } from '@providers/groups';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
@@ -32,6 +31,7 @@ import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
 import { AddonCalendarHelperProvider } from '../../providers/helper';
 import { AddonCalendarSyncProvider } from '../../providers/calendar-sync';
 import { CoreSite } from '@classes/site';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Page that displays a form to create/edit an event.
@@ -81,7 +81,6 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
             private navCtrl: NavController,
             private translate: TranslateService,
             private domUtils: CoreDomUtilsProvider,
-            private textUtils: CoreTextUtilsProvider,
             private timeUtils: CoreTimeUtilsProvider,
             private eventsProvider: CoreEventsProvider,
             private groupsProvider: CoreGroupsProvider,
@@ -94,6 +93,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
             private calendarSync: AddonCalendarSyncProvider,
             private fb: FormBuilder,
             private syncProvider: CoreSyncProvider,
+            private filterHelper: CoreFilterHelperProvider,
             @Optional() private svComponent: CoreSplitViewComponent) {
 
         this.eventId = navParams.get('eventId');
@@ -244,7 +244,8 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
                     // Format the name of the courses.
                     const subPromises = [];
                     courses.forEach((course) => {
-                        subPromises.push(this.textUtils.formatText(course.fullname).then((text) => {
+                        subPromises.push(this.filterHelper.getFiltersAndFormatText(course.fullname, 'course', course.id)
+                                .then((text) => {
                             course.fullname = text;
                         }).catch(() => {
                             // Ignore errors.

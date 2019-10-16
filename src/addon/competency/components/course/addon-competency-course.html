@@ -30,7 +30,7 @@
         <ion-card *ngIf="user">
              <ion-item text-wrap>
                 <ion-avatar core-user-avatar [user]="user" item-start></ion-avatar>
-                <h2><core-format-text [text]="user.fullname"></core-format-text></h2>
+                <h2>{{ user.fullname }}</h2>
             </ion-item>
         </ion-card>
         <core-empty-box *ngIf="competencies && competencies.statistics.competencycount == 0" icon="ribbon" message="{{ 'addon.competency.nocompetenciesincourse' | translate }}"></core-empty-box>
@@ -43,7 +43,7 @@
                 </ion-item>
                 <ion-item text-wrap>
                     <p *ngIf="competency.competency.description">
-                        <core-format-text [text]=" competency.competency.description "></core-format-text>
+                        <core-format-text [text]="competency.competency.description" contextLevel="course" [contextInstanceId]="courseId"></core-format-text>
                     </p>
                     <div>
                         <strong>{{ 'addon.competency.path' | translate }}</strong>
@@ -59,9 +59,7 @@
                     <div *ngIf="competencies.statistics.canmanagecoursecompetencies">
                         <strong>{{ 'addon.competency.uponcoursecompletion' | translate }}</strong>
                          <ng-container *ngFor="let ruleoutcome of competency.ruleoutcomeoptions">
-                            <span *ngIf="ruleoutcome.selected">
-                                <core-format-text [text]="ruleoutcome.text"></core-format-text>
-                            </span>
+                            <span *ngIf="ruleoutcome.selected">{{ ruleoutcome.text }}</span>
                         </ng-container>
                     </div>
                     <div>
@@ -71,7 +69,7 @@
                         </p>
                         <a ion-item text-wrap *ngFor="let activity of competency.coursemodules" [href]="activity.url" [title]="activity.name" core-link capture="true" class="core-course-module-handler item-media">
                             <img item-start [src]="activity.iconurl" core-external-content alt="" role="presentation" *ngIf="activity.iconurl" class="core-module-icon">
-                            <core-format-text [text]="activity.name"></core-format-text>
+                            <core-format-text [text]="activity.name" contextLevel="module" [contextInstanceId]="activity.id" [courseId]="courseId"></core-format-text>
                         </a>
                     </div>
                     <div *ngIf="competency.plans">
@@ -80,7 +78,7 @@
                             {{ 'addon.competency.nouserplanswithcompetency' | translate }}
                         </p>
                         <a ion-item text-wrap *ngFor="let plan of competency.plans" [href]="plan.url" [title]="plan.name" core-link capture="true">
-                            <core-format-text [text]="plan.name"></core-format-text>
+                            <core-format-text [text]="plan.name" contextLevel="user" [contextInstanceId]="plan.userid"></core-format-text>
                         </a>
                     </div>
                 </ion-item>

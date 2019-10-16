@@ -18,9 +18,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider, CoreSiteBasicInfo } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 import { CoreLoginHelperProvider } from '../../providers/helper';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Page that displays the list of stored sites.
@@ -35,7 +35,7 @@ export class CoreLoginSitesPage {
     showDelete: boolean;
     protected logger;
 
-    constructor(private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
+    constructor(private domUtils: CoreDomUtilsProvider, private filterHelper: CoreFilterHelperProvider,
             private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider, logger: CoreLoggerProvider,
             private translate: TranslateService, private pushNotificationsProvider: CorePushNotificationsProvider) {
         this.logger = logger.getInstance('CoreLoginSitesPage');
@@ -86,7 +86,9 @@ export class CoreLoginSitesPage {
         const site = this.sites[index],
             siteName = site.siteName;
 
-        this.textUtils.formatText(siteName).then((siteName) => {
+        this.filterHelper.getFiltersAndFormatText(siteName, 'system', 0, {clean: true, singleLine: true}, site.id)
+                .then((siteName) => {
+
             this.domUtils.showConfirm(this.translate.instant('core.login.confirmdeletesite', { sitename: siteName })).then(() => {
                 this.sitesProvider.deleteSite(site.id).then(() => {
                     this.sites.splice(index, 1);

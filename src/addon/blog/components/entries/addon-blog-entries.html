@@ -13,7 +13,7 @@
                 <ion-item text-wrap>
                     <ion-avatar core-user-avatar [user]="entry.user" item-start [courseId]="entry.courseid"></ion-avatar>
                     <h2>
-                        <core-format-text [text]="entry.subject"></core-format-text>
+                        <core-format-text [text]="entry.subject" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"></core-format-text>
                         <ion-note float-end padding-left text-end>
                             {{ 'addon.blog.' + entry.publishTranslated | translate}}
                         </ion-note>
@@ -27,7 +27,7 @@
                 </ion-item>
                 <ion-card-content>
                     <ion-item>
-                        <core-format-text [text]="entry.summary" [component]="this.component" [componentId]="entry.id"></core-format-text>
+                        <core-format-text [text]="entry.summary" [component]="this.component" [componentId]="entry.id" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"></core-format-text>
                     </ion-item>
                     <ion-item text-wrap *ngIf="tagsEnabled && entry.tags && entry.tags.length > 0">
                         <div item-start>{{ 'core.tag.tags' | translate }}:</div>

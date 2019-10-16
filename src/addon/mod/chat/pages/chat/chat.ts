@@ -46,6 +46,7 @@ export class AddonModChatChatPage {
     isOnline: boolean;
     currentUserId: number;
     sending: boolean;
+    cmId: number;
 
     protected logger;
     protected courseId: number;
@@ -67,6 +68,8 @@ export class AddonModChatChatPage {
         this.chatId = navParams.get('chatId');
         this.courseId = navParams.get('courseId');
         this.title = navParams.get('title');
+        this.cmId = navParams.get('cmId');
+
         this.logger = logger.getInstance('AddonModChoiceChoicePage');
         this.currentUserId = sitesProvider.getCurrentSiteUserId();
         this.isOnline = this.appProvider.isOnline();

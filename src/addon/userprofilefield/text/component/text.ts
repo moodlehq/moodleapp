@@ -28,6 +28,9 @@ export class AddonUserProfileFieldTextComponent implements OnInit {
     @Input() edit = false; // True if editing the field. Defaults to false.
     @Input() disabled = false; // True if disabled. Defaults to false.
     @Input() form?: FormGroup; // Form where to add the form control.
+    @Input() contextLevel?: string; // The context level.
+    @Input() contextInstanceId?: number; // The instance ID related to the context.
+    @Input() courseId?: number; // The course the field belongs to (if any).
 
     constructor(private fb: FormBuilder, protected utils: CoreUtilsProvider) { }
 

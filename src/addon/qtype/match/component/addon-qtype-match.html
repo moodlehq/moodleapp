@@ -1,12 +1,12 @@
 <section ion-list class="addon-qtype-match-container" *ngIf="question.loaded">
     <ion-item text-wrap>
-        <core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text>
+        <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text>
     </ion-item>
     <ion-item text-wrap *ngFor="let row of question.rows">
         <ion-grid item-content no-margin no-padding>
             <ion-row no-margin>
                 <ion-col>
-                    <p><core-format-text id="addon-qtype-match-question-{{row.id}}" [component]="component" [componentId]="componentId" [text]="row.text"></core-format-text></p>
+                    <p><core-format-text id="addon-qtype-match-question-{{row.id}}" [component]="component" [componentId]="componentId" [text]="row.text" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text></p>
                 </ion-col>
                 <ion-col>
                     <label class="accesshide" for="{{row.id}}" *ngIf="row.accessibilityLabel">{{ row.accessibilityLabel }}</label>

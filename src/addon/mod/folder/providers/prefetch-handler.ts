@@ -22,6 +22,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseResourcePrefetchHandlerBase } from '@core/course/classes/resource-prefetch-handler';
 import { AddonModFolderProvider } from './folder';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Handler to prefetch folders.
@@ -32,11 +33,17 @@ export class AddonModFolderPrefetchHandler extends CoreCourseResourcePrefetchHan
     modName = 'folder';
     component = AddonModFolderProvider.COMPONENT;
 
-    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
-            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
-            domUtils: CoreDomUtilsProvider, protected folderProvider: AddonModFolderProvider) {
+    constructor(translate: TranslateService,
+            appProvider: CoreAppProvider,
+            utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider,
+            filepoolProvider: CoreFilepoolProvider,
+            sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider,
+            filterHelper: CoreFilterHelperProvider,
+            protected folderProvider: AddonModFolderProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
     }
 
     /**

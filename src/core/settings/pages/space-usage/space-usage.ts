@@ -16,11 +16,12 @@ import { Component, } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
+import { CoreEventsProvider } from '@providers/events';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Page that displays the space usage settings.
@@ -39,8 +40,12 @@ export class CoreSettingsSpaceUsagePage {
     totalEntries = 0;
 
     constructor(private filePoolProvider: CoreFilepoolProvider,
-            private sitesProvider: CoreSitesProvider, private textUtils: CoreTextUtilsProvider,
-            private translate: TranslateService, private domUtils: CoreDomUtilsProvider, appProvider: CoreAppProvider,
+            private eventsProvider: CoreEventsProvider,
+            private sitesProvider: CoreSitesProvider,
+            private filterHelper: CoreFilterHelperProvider,
+            private translate: TranslateService,
+            private domUtils: CoreDomUtilsProvider,
+            appProvider: CoreAppProvider,
             private courseProvider: CoreCourseProvider) {
         this.currentSiteId = this.sitesProvider.getCurrentSiteId();
     }
@@ -162,7 +167,9 @@ export class CoreSettingsSpaceUsagePage {
      * @param siteData Site object with space usage.
      */
     deleteSiteStorage(siteData: any): void {
-        this.textUtils.formatText(siteData.siteName).then((siteName) => {
+        this.filterHelper.getFiltersAndFormatText(siteData.siteName, 'system', 0,
+                {clean: true, singleLine: true}, siteData.id).then((siteName) => {
+
             const title = this.translate.instant('core.settings.deletesitefilestitle');
             const message = this.translate.instant('core.settings.deletesitefiles', {sitename: siteName});
 
@@ -194,6 +201,8 @@ export class CoreSettingsSpaceUsagePage {
                         });
                     }
                 }).finally(() => {
+                    this.eventsProvider.trigger(CoreEventsProvider.SITE_STORAGE_DELETED, {}, site.getId());
+
                     this.calcSiteClearRows(site).then((rows) => {
                         siteData.cacheEntries = rows;
                     });

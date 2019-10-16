@@ -2,6 +2,6 @@
     <!-- "Seen" hidden input -->
     <input *ngIf="question.seenInput" type="hidden" [name]="question.seenInput.name" [value]="question.seenInput.value" >
     <ion-item text-wrap class="item item-text-wrap">
-        <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text></p>
+        <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text></p>
     </ion-item>
 </section>

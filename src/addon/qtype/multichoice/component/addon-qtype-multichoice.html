@@ -1,16 +1,16 @@
 <section ion-list *ngIf="question.text || question.text === ''">
     <!-- Question text first. -->
     <ion-item text-wrap>
-        <core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text>
-        <core-format-text [component]="component" [componentId]="componentId" [text]="question.prompt" *ngIf="question.prompt"></core-format-text>
+        <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text>
+        <span *ngIf="question.prompt">{{ question.prompt }}</span>
     </ion-item>
 
     <!-- Checkbox for multiple choice. -->
     <ng-container *ngIf="question.multi">
         <ion-item text-wrap *ngFor="let option of question.options">
             <ion-label [color]='(option.isCorrect === 1 ? "success": "") +  (option.isCorrect === 0 ? "danger": "")'>
-                <core-format-text [component]="component" [componentId]="componentId" [text]="option.text"></core-format-text>
-                <div *ngIf="option.feedback" class="specificfeedback"><core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback"></core-format-text></div>
+                <core-format-text [component]="component" [componentId]="componentId" [text]="option.text" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text>
+                <div *ngIf="option.feedback" class="specificfeedback"><core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text></div>
             </ion-label>
             <ion-checkbox [attr.name]="option.name" [(ngModel)]="option.checked" [disabled]="option.disabled" item-end [color]='(option.isCorrect === 1 ? "success": "") +  (option.isCorrect === 0 ? "danger": "")'></ion-checkbox>
             <core-icon item-content *ngIf="option.isCorrect === 1" class="core-correct-icon" name="fa-check" color="success"></core-icon>
@@ -25,8 +25,8 @@
     <div *ngIf="!question.multi" radio-group [(ngModel)]="question.singleChoiceModel" [name]="question.optionsName">
         <ion-item text-wrap *ngFor="let option of question.options">
             <ion-label>
-                <core-format-text [component]="component" [componentId]="componentId" [text]="option.text"></core-format-text>
-                <div *ngIf="option.feedback" class="specificfeedback"><core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback"></core-format-text></div>
+                <core-format-text [component]="component" [componentId]="componentId" [text]="option.text" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text>
+                <div *ngIf="option.feedback" class="specificfeedback"><core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text></div>
             </ion-label>
             <ion-radio [value]="option.value" [disabled]="option.disabled" [color]='(option.isCorrect === 1 ? "success": "") +  (option.isCorrect === 0 ? "danger": "")'></ion-radio>
             <core-icon item-content *ngIf="option.isCorrect === 1" class="core-correct-icon" name="fa-check" color="success"></core-icon>

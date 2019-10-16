@@ -11,7 +11,7 @@
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
-    <core-course-module-description *ngIf="displayDescription" [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+    <core-course-module-description *ngIf="displayDescription" [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
     <div *ngIf="shouldIframe || (shouldEmbed && isOther)" class="addon-mod_url-embedded-url">
         <core-iframe [src]="url"></core-iframe>

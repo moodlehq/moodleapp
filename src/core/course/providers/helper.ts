@@ -38,6 +38,7 @@ import { CoreConstants } from '@core/constants';
 import { CoreSite } from '@classes/site';
 import { CoreLoggerProvider } from '@providers/logger';
 import * as moment from 'moment';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Prefetch info of a module.
@@ -108,16 +109,28 @@ export class CoreCourseHelperProvider {
     protected courseDwnPromises: { [s: string]: { [id: number]: Promise<any> } } = {};
     protected logger;
 
-    constructor(private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
-            private moduleDelegate: CoreCourseModuleDelegate, private prefetchDelegate: CoreCourseModulePrefetchDelegate,
-            private filepoolProvider: CoreFilepoolProvider, private sitesProvider: CoreSitesProvider,
-            private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider,
-            private utils: CoreUtilsProvider, private translate: TranslateService, private loginHelper: CoreLoginHelperProvider,
-            private courseOptionsDelegate: CoreCourseOptionsDelegate, private siteHomeProvider: CoreSiteHomeProvider,
-            private eventsProvider: CoreEventsProvider, private fileHelper: CoreFileHelperProvider,
-            private appProvider: CoreAppProvider, private fileProvider: CoreFileProvider, private injector: Injector,
-            private coursesProvider: CoreCoursesProvider, private courseOffline: CoreCourseOfflineProvider,
-            loggerProvider: CoreLoggerProvider) {
+    constructor(private courseProvider: CoreCourseProvider,
+            private domUtils: CoreDomUtilsProvider,
+            private moduleDelegate: CoreCourseModuleDelegate,
+            private prefetchDelegate: CoreCourseModulePrefetchDelegate,
+            private filepoolProvider: CoreFilepoolProvider,
+            private sitesProvider: CoreSitesProvider,
+            private textUtils: CoreTextUtilsProvider,
+            private timeUtils: CoreTimeUtilsProvider,
+            private utils: CoreUtilsProvider,
+            private translate: TranslateService,
+            private loginHelper: CoreLoginHelperProvider,
+            private courseOptionsDelegate: CoreCourseOptionsDelegate,
+            private siteHomeProvider: CoreSiteHomeProvider,
+            private eventsProvider: CoreEventsProvider,
+            private fileHelper: CoreFileHelperProvider,
+            private appProvider: CoreAppProvider,
+            private fileProvider: CoreFileProvider,
+            private injector: Injector,
+            private coursesProvider: CoreCoursesProvider,
+            private courseOffline: CoreCourseOfflineProvider,
+            loggerProvider: CoreLoggerProvider,
+            private filterHelper: CoreFilterHelperProvider) {
 
         this.logger = loggerProvider.getInstance('CoreCourseHelperProvider');
     }
@@ -1269,6 +1282,8 @@ export class CoreCourseHelperProvider {
             if (!sectionWithModules || typeof sectionWithModules.modules[0].completion == 'undefined') {
                 promises.push(this.courseProvider.getActivitiesCompletionStatus(course.id));
             }
+
+            promises.push(this.filterHelper.getFilters('course', course.id));
 
             return this.utils.allPromises(promises);
         }).then(() => {

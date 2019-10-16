@@ -18,12 +18,12 @@
         <!-- Index/Preview tab. -->
         <core-tab [title]="'addon.mod_lesson.preview' | translate" (ionSelect)="indexSelected()">
             <ng-template>
-                <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+                <core-course-module-description [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
                 <!-- Prevent access messages. Only show the first one. -->
                 <div class="core-info-card" icon-start *ngIf="lesson && preventMessages && preventMessages.length">
                     <ion-icon name="information-circle"></ion-icon>
-                    <core-format-text [component]="component" [componentId]="componentId" [text]="preventMessages[0].message"></core-format-text>
+                    <span [innerHTML]="preventMessages[0].message"></span>
                 </div>
 
                 <!-- Lesson has data to be synchronized -->

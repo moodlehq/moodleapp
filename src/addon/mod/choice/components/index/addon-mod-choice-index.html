@@ -14,7 +14,7 @@
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
-    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
     <!-- Activity availability messages -->
     <ion-card class="core-info-card" icon-start *ngIf="choiceNotOpenYet">
@@ -24,7 +24,7 @@
     </ion-card>
     <ion-card class="core-info-card" icon-start *ngIf="choiceClosed">
         <ion-icon name="information-circle"></ion-icon>
-        <p *ngIf="options && options.length">{{ 'addon.mod_choice.yourselection' | translate }} <core-format-text [text]="options[0].text"></core-format-text></p>
+        <p *ngIf="options && options.length">{{ 'addon.mod_choice.yourselection' | translate }} <core-format-text [text]="options[0].text" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></p>
         <p>{{ 'addon.mod_choice.expired' | translate:{$a: closeTimeReadable} }}</p>
     </ion-card>
 
@@ -43,13 +43,13 @@
     <ion-card *ngIf="options && options.length">
         <ng-container *ngIf="choice.allowmultiple">
             <ion-item text-wrap *ngFor="let option of options">
-                <ion-label><core-format-text [text]="option.text"></core-format-text> <span *ngIf="choice.limitanswers && option.countanswers >= option.maxanswers">{{ 'addon.mod_choice.full' | translate }}</span></ion-label>
+                <ion-label><core-format-text [text]="option.text" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text> <span *ngIf="choice.limitanswers && option.countanswers >= option.maxanswers">{{ 'addon.mod_choice.full' | translate }}</span></ion-label>
                 <ion-checkbox item-end [(ngModel)]="option.checked" [disabled]="option.disabled || !canEdit"></ion-checkbox>
             </ion-item>
         </ng-container>
         <ng-container *ngIf="!choice.allowmultiple">
             <ion-item text-wrap *ngFor="let option of options" radio-group [(ngModel)]="selectedOption.id">
-                <ion-label><core-format-text [text]="option.text"></core-format-text> <span *ngIf="choice.limitanswers && option.countanswers >= option.maxanswers">{{ 'addon.mod_choice.full' | translate }}</span></ion-label>
+                <ion-label><core-format-text [text]="option.text" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text> <span *ngIf="choice.limitanswers && option.countanswers >= option.maxanswers">{{ 'addon.mod_choice.full' | translate }}</span></ion-label>
                 <ion-radio color="primary" [value]="option.id" [disabled]="option.disabled || !canEdit"></ion-radio>
             </ion-item>
         </ng-container>
@@ -73,13 +73,13 @@
                         <ion-icon item-start name="warning" color="warning"></ion-icon> {{ 'addon.mod_choice.resultsnotsynced' | translate }}
                     </ion-item>
                     <ion-item>
-                        <core-chart type="pie" [data]="data" [labels]="labels" height="300"></core-chart>
+                        <core-chart type="pie" [data]="data" [labels]="labels" height="300" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-chart>
                     </ion-item>
                 </ion-col>
                 <ion-col *ngIf="choice.publish && results" col-12 col-lg-7>
                     <ion-item-group *ngFor="let result of results">
                         <ion-item-divider text-wrap>
-                            <h2><core-format-text [text]="result.text"></core-format-text></h2>
+                            <h2><core-format-text [text]="result.text" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></h2>
                             <p>{{ 'addon.mod_choice.numberofuser' | translate }}: {{ result.numberofuser }} ({{ 'core.percentagenumber' | translate: {$a: result.percentageamountfixed} }})</p>
                         </ion-item-divider>
                         <a ion-item *ngFor="let user of result.userresponses" core-user-link [courseId]="courseid" [userId]="user.userid" [title]="user.fullname" text-wrap>

@@ -55,7 +55,7 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
                 event.preventDefault();
                 event.stopPropagation();
 
-                navCtrl.push('CoreCourseUnsupportedModulePage', { module: module }, options);
+                navCtrl.push('CoreCourseUnsupportedModulePage', { module: module, courseId: courseId }, options);
             }
         };
 

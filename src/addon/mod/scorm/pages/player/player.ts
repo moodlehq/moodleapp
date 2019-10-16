@@ -392,7 +392,9 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
             toc: this.toc,
             attemptToContinue: this.attemptToContinue,
             mode: this.mode,
-            selected: this.currentSco && this.currentSco.id
+            selected: this.currentSco && this.currentSco.id,
+            moduleId: this.scorm.coursemodule,
+            courseId: this.scorm.course
         }, { cssClass: 'core-modal-lateral',
             showBackdrop: true,
             enableBackdropDismiss: true,

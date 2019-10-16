@@ -30,6 +30,10 @@ export class CoreViewerTextPage {
     component: string; // Component to use in format-text.
     componentId: string | number; // Component ID to use in format-text.
     files: any[]; // List of files.
+    filter: boolean; // Whether to filter the text.
+    contextLevel: string; // The context level.
+    instanceId: number; // The instance ID related to the context.
+    courseId: number; // Course ID the text belongs to. It can be used to improve performance with filters.
 
     constructor(private viewCtrl: ViewController, params: NavParams, textUtils: CoreTextUtilsProvider) {
         this.title = params.get('title');
@@ -37,6 +41,10 @@ export class CoreViewerTextPage {
         this.component = params.get('component');
         this.componentId = params.get('componentId');
         this.files = params.get('files');
+        this.filter = params.get('filter');
+        this.contextLevel = params.get('contextLevel');
+        this.instanceId = params.get('instanceId');
+        this.courseId = params.get('courseId');
     }
 
     /**
