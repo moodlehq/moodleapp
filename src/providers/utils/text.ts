@@ -76,6 +76,24 @@ export class CoreTextUtilsProvider {
             private sanitizer: DomSanitizer, private platform: Platform) { }
 
     /**
+     * Add ending slash from a path or URL.
+     *
+     * @param {string} text Text to treat.
+     * @return {string} Treated text.
+     */
+    addEndingSlash(text: string): string {
+        if (!text) {
+            return '';
+        }
+
+        if (text.slice(-1) != '/') {
+            return text + '/';
+        }
+
+        return text;
+    }
+
+    /**
      * Given an address as a string, return a URL to open the address in maps.
      *
      * @param address The address.
