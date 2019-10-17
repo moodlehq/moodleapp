@@ -16,6 +16,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreCustomURLSchemesProvider } from '@providers/urlschemes';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../providers/delegate';
@@ -50,16 +51,17 @@ export class CoreMainMenuMorePage implements OnDestroy {
     protected langObserver;
     protected updateSiteObserver;
 
-    constructor(private menuDelegate: CoreMainMenuDelegate,
-            private sitesProvider: CoreSitesProvider,
-            private navCtrl: NavController,
-            private mainMenuProvider: CoreMainMenuProvider,
+    constructor(protected menuDelegate: CoreMainMenuDelegate,
+            protected sitesProvider: CoreSitesProvider,
+            protected navCtrl: NavController,
+            protected mainMenuProvider: CoreMainMenuProvider,
             eventsProvider: CoreEventsProvider,
-            private loginHelper: CoreLoginHelperProvider,
-            private utils: CoreUtilsProvider,
-            private linkHelper: CoreContentLinksHelperProvider,
-            private textUtils: CoreTextUtilsProvider,
-            private translate: TranslateService) {
+            protected loginHelper: CoreLoginHelperProvider,
+            protected utils: CoreUtilsProvider,
+            protected linkHelper: CoreContentLinksHelperProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected urlSchemesProvider: CoreCustomURLSchemesProvider,
+            protected translate: TranslateService) {
 
         this.langObserver = eventsProvider.on(CoreEventsProvider.LANGUAGE_CHANGED, this.loadSiteInfo.bind(this));
         this.updateSiteObserver = eventsProvider.on(CoreEventsProvider.SITE_UPDATED, this.loadSiteInfo.bind(this),
@@ -175,8 +177,10 @@ export class CoreMainMenuMorePage implements OnDestroy {
         // Scan for a QR code.
         this.utils.scanQR().then((text) => {
             if (text) {
-                // Check if it's a URL. We basically check it has a protocol and doesn't include any space.
-                if (/^[^:]{2,}:\/\/[^ ]+$/i.test(text)) {
+                if (this.urlSchemesProvider.isCustomURL(text)) {
+                    // Is a custom URL scheme, handle it.
+                    this.urlSchemesProvider.handleCustomURL(text);
+                } else if (/^[^:]{2,}:\/\/[^ ]+$/i.test(text)) { // Check if it's a URL.
                     // Check if the app can handle the URL.
                     this.linkHelper.handleLink(text, undefined, this.navCtrl, true, true).then((treated) => {
                         if (!treated) {

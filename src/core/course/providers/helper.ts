@@ -1269,14 +1269,17 @@ export class CoreCourseHelperProvider {
             // Get the module.
             return this.courseProvider.getModule(moduleId, courseId, sectionId, false, false, siteId, modName);
         }).then((module) => {
-            module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, sectionId, false);
 
-            if (navCtrl && module.handlerData && module.handlerData.action) {
+            if (navCtrl && this.sitesProvider.isLoggedIn() && this.sitesProvider.getCurrentSiteId() == site.getId()) {
                 // If the link handler for this module passed through navCtrl, we can use the module's handler to navigate cleanly.
                 // Otherwise, we will redirect below.
-                modal.dismiss();
+                module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, sectionId, false);
 
-                return module.handlerData.action(new Event('click'), navCtrl, module, courseId, undefined, modParams);
+                if (module.handlerData && module.handlerData.action) {
+                    modal.dismiss();
+
+                    return module.handlerData.action(new Event('click'), navCtrl, module, courseId, undefined, modParams);
+                }
             }
 
             this.logger.warn('navCtrl was not passed to navigateToModule by the link handler for ' + module.modname);

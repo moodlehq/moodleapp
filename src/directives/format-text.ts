@@ -35,6 +35,7 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreFilterProvider, CoreFilterFilter, CoreFilterFormatTextOptions } from '@core/filter/providers/filter';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 import { CoreFilterDelegate } from '@core/filter/providers/delegate';
+import { CoreCustomURLSchemesProvider } from '@providers/urlschemes';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -87,13 +88,14 @@ export class CoreFormatTextDirective implements OnChanges {
             protected contentLinksHelper: CoreContentLinksHelperProvider,
             @Optional() protected navCtrl: NavController,
             @Optional() protected content: Content, @Optional()
-            protected svComponent: CoreSplitViewComponent,
+            @Optional() protected svComponent: CoreSplitViewComponent,
             protected iframeUtils: CoreIframeUtilsProvider,
             protected eventsProvider: CoreEventsProvider,
             protected filterProvider: CoreFilterProvider,
             protected filterHelper: CoreFilterHelperProvider,
             protected filterDelegate: CoreFilterDelegate,
             protected viewContainerRef: ViewContainerRef,
+            protected urlSchemesProvider: CoreCustomURLSchemesProvider
             ) {
 
         this.element = element.nativeElement;
@@ -467,7 +469,7 @@ export class CoreFormatTextDirective implements OnChanges {
             anchors.forEach((anchor) => {
                 // Angular 2 doesn't let adding directives dynamically. Create the CoreLinkDirective manually.
                 const linkDir = new CoreLinkDirective(anchor, this.domUtils, this.utils, this.sitesProvider, this.urlUtils,
-                    this.contentLinksHelper, this.navCtrl, this.content, this.svComponent, this.textUtils);
+                    this.contentLinksHelper, this.navCtrl, this.content, this.svComponent, this.textUtils, this.urlSchemesProvider);
                 linkDir.capture = true;
                 linkDir.ngOnInit();
 

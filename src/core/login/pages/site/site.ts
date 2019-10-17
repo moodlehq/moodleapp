@@ -17,6 +17,7 @@ import { IonicPage, NavController, ModalController, AlertController, NavParams }
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider, CoreSiteCheckResponse, CoreLoginSiteInfo } from '@providers/sites';
+import { CoreCustomURLSchemesProvider } from '@providers/urlschemes';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
@@ -72,7 +73,8 @@ export class CoreLoginSitePage {
             protected domUtils: CoreDomUtilsProvider,
             protected eventsProvider: CoreEventsProvider,
             protected translate: TranslateService,
-            protected utils: CoreUtilsProvider) {
+            protected utils: CoreUtilsProvider,
+            private urlSchemesProvider: CoreCustomURLSchemesProvider) {
 
         this.showKeyboard = !!navParams.get('showKeyboard');
         this.showScanQR = this.utils.canScanQR();
@@ -365,9 +367,14 @@ export class CoreLoginSitePage {
         // Scan for a QR code.
         this.utils.scanQR().then((text) => {
             if (text) {
-                this.siteForm.controls.siteUrl.setValue(text);
+                if (this.urlSchemesProvider.isCustomURL(text)) {
+                    this.urlSchemesProvider.handleCustomURL(text);
+                } else {
+                    // Not a custom URL scheme, put the text in the field.
+                    this.siteForm.controls.siteUrl.setValue(text);
 
-                this.connect(new Event('click'), text);
+                    this.connect(new Event('click'), text);
+                }
             }
         });
     }

@@ -54,12 +54,19 @@ export class CoreCustomURLSchemesProvider {
     protected logger;
     protected lastUrls = {};
 
-    constructor(logger: CoreLoggerProvider, private appProvider: CoreAppProvider, private utils: CoreUtilsProvider,
-            private loginHelper: CoreLoginHelperProvider, private linksHelper: CoreContentLinksHelperProvider,
-            private initDelegate: CoreInitDelegate, private domUtils: CoreDomUtilsProvider, private urlUtils: CoreUrlUtilsProvider,
-            private sitesProvider: CoreSitesProvider, private textUtils: CoreTextUtilsProvider,
-            private linksDelegate: CoreContentLinksDelegate, private translate: TranslateService,
-            private sitePluginsProvider: CoreSitePluginsProvider) {
+    constructor(logger: CoreLoggerProvider,
+            protected appProvider: CoreAppProvider,
+            protected utils: CoreUtilsProvider,
+            protected loginHelper: CoreLoginHelperProvider,
+            protected linksHelper: CoreContentLinksHelperProvider,
+            protected initDelegate: CoreInitDelegate,
+            protected domUtils: CoreDomUtilsProvider,
+            protected urlUtils: CoreUrlUtilsProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected linksDelegate: CoreContentLinksDelegate,
+            protected translate: TranslateService,
+            protected sitePluginsProvider: CoreSitePluginsProvider) {
         this.logger = logger.getInstance('CoreCustomURLSchemesProvider');
     }
 
@@ -282,8 +289,7 @@ export class CoreCustomURLSchemesProvider {
      * @return Promise resolved with the data.
      */
     protected getCustomURLData(url: string): Promise<CoreCustomURLSchemesParams> {
-        const urlScheme = CoreConfigConstants.customurlscheme + '://';
-        if (url.indexOf(urlScheme) == -1) {
+        if (!this.isCustomURL(url)) {
             return Promise.reject(null);
         }
 
@@ -291,7 +297,7 @@ export class CoreCustomURLSchemesProvider {
         this.logger.debug('Treating custom URL scheme: ' + url);
 
         // Delete the sso scheme from the URL.
-        url = url.replace(urlScheme, '');
+        url = this.removeCustomURLScheme(url);
 
         // Detect if there's a user specified.
         const username = this.urlUtils.getUsernameFromUrl(url);
@@ -344,8 +350,7 @@ export class CoreCustomURLSchemesProvider {
      * @return Promise resolved with the data.
      */
     protected getCustomURLLinkData(url: string): Promise<CoreCustomURLSchemesParams> {
-        const contentLinksScheme = CoreConfigConstants.customurlscheme + '://link=';
-        if (url.indexOf(contentLinksScheme) == -1) {
+        if (!this.isCustomURLLink(url)) {
             return Promise.reject(null);
         }
 
@@ -353,7 +358,7 @@ export class CoreCustomURLSchemesProvider {
         this.logger.debug('Treating custom URL scheme with link param: ' + url);
 
         // Delete the sso scheme from the URL.
-        url = url.replace(contentLinksScheme, '');
+        url = this.removeCustomURLLinkScheme(url);
 
         // Detect if there's a user specified.
         const username = this.urlUtils.getUsernameFromUrl(url);
@@ -408,8 +413,7 @@ export class CoreCustomURLSchemesProvider {
      * @return Promise resolved with the data.
      */
     protected getCustomURLTokenData(url: string): Promise<CoreCustomURLSchemesParams> {
-        const ssoScheme = CoreConfigConstants.customurlscheme + '://token=';
-        if (url.indexOf(ssoScheme) == -1) {
+        if (!this.isCustomURLToken(url)) {
             return Promise.reject(null);
         }
 
@@ -428,7 +432,7 @@ export class CoreCustomURLSchemesProvider {
         this.logger.debug('App launched by URL with an SSO');
 
         // Delete the sso scheme from the URL.
-        url = url.replace(ssoScheme, '');
+        url = this.removeCustomURLTokenScheme(url);
 
         // Some platforms like Windows add a slash at the end. Remove it.
         // Some sites add a # at the end of the URL. If it's there, remove it.
@@ -487,6 +491,36 @@ export class CoreCustomURLSchemesProvider {
         }
 
         return url.indexOf(CoreConfigConstants.customurlscheme + '://token=') != -1;
+    }
+
+    /**
+     * Remove the scheme from a custom URL.
+     *
+     * @param url URL to treat.
+     * @return URL without scheme.
+     */
+    removeCustomURLScheme(url: string): string {
+        return url.replace(CoreConfigConstants.customurlscheme + '://', '');
+    }
+
+    /**
+     * Remove the scheme and the "link=" prefix from a link custom URL.
+     *
+     * @param url URL to treat.
+     * @return URL without scheme and prefix.
+     */
+    removeCustomURLLinkScheme(url: string): string {
+        return url.replace(CoreConfigConstants.customurlscheme + '://link=', '');
+    }
+
+    /**
+     * Remove the scheme and the "token=" prefix from a token custom URL.
+     *
+     * @param url URL to treat.
+     * @return URL without scheme and prefix.
+     */
+    removeCustomURLTokenScheme(url: string): string {
+        return url.replace(CoreConfigConstants.customurlscheme + '://token=', '');
     }
 }
 
