@@ -86,7 +86,7 @@
         <!-- Ungrouped users. -->
         <div *ngIf="assign.teamsubmission && summary && summary.warnofungroupedusers" class="core-info-card" icon-start>
             <ion-icon name="information-circle"></ion-icon>
-            {{ 'addon.mod_assign.ungroupedusers' | translate }}
+            {{ 'addon.mod_assign.'+summary.warnofungroupedusers | translate }}
         </div>
     </ion-list>
 

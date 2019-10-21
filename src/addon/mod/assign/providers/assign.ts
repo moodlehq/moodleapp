@@ -55,6 +55,10 @@ export class AddonModAssignProvider {
     static NEED_GRADING = 'needgrading';
     static GRADED_FOLLOWUP_SUBMIT = 'gradedfollowupsubmit';
 
+    // Group submissions warnings.
+    static WARN_GROUPS_REQUIRED = 'warnrequired';
+    static WARN_GROUPS_OPTIONAL = 'warnoptional';
+
     // Events.
     static SUBMISSION_SAVED_EVENT = 'addon_mod_assign_submission_saved';
     static SUBMITTED_FOR_GRADING_EVENT = 'addon_mod_assign_submitted_for_grading';
@@ -1396,7 +1400,7 @@ export type AddonModAssignSubmissionGradingSummary = {
     submissionsenabled: boolean; // Whether submissions are enabled or not.
     submissionssubmittedcount: number; // Number of submissions in submitted status.
     submissionsneedgradingcount: number; // Number of submissions that need grading.
-    warnofungroupedusers: string; // Whether we need to warn people about groups.
+    warnofungroupedusers: string | boolean; // Whether we need to warn people about groups.
 };
 
 /**

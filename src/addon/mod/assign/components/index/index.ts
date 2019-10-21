@@ -235,6 +235,21 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
         return this.assignProvider.getSubmissionStatus(this.assign.id, undefined, this.group).then((response) => {
             this.summary = response.gradingsummary;
+            if (typeof this.summary.warnofungroupedusers == 'boolean' && this.summary.warnofungroupedusers) {
+                this.summary.warnofungroupedusers = 'ungroupedusers';
+            } else {
+                switch (this.summary.warnofungroupedusers) {
+                    case AddonModAssignProvider.WARN_GROUPS_REQUIRED:
+                        this.summary.warnofungroupedusers = 'ungroupedusers';
+                        break;
+                    case AddonModAssignProvider.WARN_GROUPS_OPTIONAL:
+                        this.summary.warnofungroupedusers = 'ungroupedusersoptional';
+                        break;
+                    default:
+                        this.summary.warnofungroupedusers = '';
+                        break;
+                }
+            }
 
             this.needsGradingAvalaible = response.gradingsummary && response.gradingsummary.submissionsneedgradingcount > 0 &&
                     this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.2');
