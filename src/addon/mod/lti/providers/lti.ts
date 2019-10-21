@@ -207,7 +207,12 @@ export class AddonModLtiProvider {
 
         // Generate launcher and open it.
         return this.generateLauncher(url, params).then((url) => {
-            this.utils.openInApp(url);
+            if (this.appProvider.isMobile()) {
+                this.utils.openInApp(url);
+            } else {
+                // In desktop open in browser, we found some cases where inapp caused JS issues.
+                this.utils.openInBrowser(url);
+            }
         });
     }
 
