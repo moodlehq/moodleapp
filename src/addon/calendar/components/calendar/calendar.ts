@@ -21,7 +21,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { AddonCalendarProvider, AddonCalendarWeek } from '../../providers/calendar';
-import { AddonCalendarHelperProvider } from '../../providers/helper';
+import { AddonCalendarHelperProvider, AddonCalendarFilter } from '../../providers/helper';
 import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreAppProvider } from '@providers/app';
@@ -36,7 +36,7 @@ import { CoreAppProvider } from '@providers/app';
 export class AddonCalendarCalendarComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     @Input() initialYear: number | string; // Initial year to load.
     @Input() initialMonth: number | string; // Initial month to load.
-    @Input() filter: any; // Filter to apply.
+    @Input() filter: AddonCalendarFilter; // Filter to apply.
     @Input() canNavigate?: string | boolean; // Whether to include arrows to change the month. Defaults to true.
     @Input() displayNavButtons?: string | boolean; // Whether to display nav buttons created by this component. Defaults to true.
     @Output() onEventClicked = new EventEmitter<number>();

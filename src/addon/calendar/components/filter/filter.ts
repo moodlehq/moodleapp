@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@ import { Component } from '@angular/core';
 import { NavParams } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { AddonCalendarProvider } from '../../providers/calendar';
-import { AddonCalendarHelperProvider } from '../../providers/helper';
+import { AddonCalendarHelperProvider, AddonCalendarFilter } from '../../providers/helper';
 
 /**
- * Component to display a list of courses.
+ * Component to display the events filter that includes events types and a list of courses.
  */
 @Component({
     selector: 'addon-calendar-filter-popover',
@@ -35,7 +35,16 @@ export class AddonCalendarFilterPopoverComponent {
 
     constructor(navParams: NavParams, protected eventsProvider: CoreEventsProvider) {
         this.courses = navParams.get('courses') || [];
-        const filter = navParams.get('filter') || {};
+        const filter: AddonCalendarFilter = navParams.get('filter') || {
+            filtered: false,
+            courseId: null,
+            categoryId: null,
+            course: true,
+            group: true,
+            site: true,
+            user: true,
+            category: true
+        };
         this.courseId = filter.courseId || -1;
 
         this.typeKeys = AddonCalendarProvider.ALL_TYPES.map((name) => {

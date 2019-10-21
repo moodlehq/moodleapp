@@ -16,7 +16,7 @@ import { Component, ViewChild, OnDestroy, NgZone } from '@angular/core';
 import { IonicPage, Content, NavParams, NavController, PopoverController } from 'ionic-angular';
 import { AddonCalendarProvider, AddonCalendarGetEventsEvent } from '../../providers/calendar';
 import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
-import { AddonCalendarHelperProvider } from '../../providers/helper';
+import { AddonCalendarHelperProvider, AddonCalendarFilter } from '../../providers/helper';
 import { AddonCalendarSyncProvider } from '../../providers/calendar-sync';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCoursesHelperProvider } from '@core/courses/providers/helper';
@@ -81,7 +81,16 @@ export class AddonCalendarListPage implements OnDestroy {
     hasOffline = false;
     isOnline = false;
     syncIcon: string; // Sync icon.
-    filter = {};
+    filter: AddonCalendarFilter = {
+        filtered: false,
+        courseId: null,
+        categoryId: null,
+        course: false,
+        group: false,
+        site: false,
+        user: false,
+        category: false
+    };
 
     constructor(
             navParams: NavParams,

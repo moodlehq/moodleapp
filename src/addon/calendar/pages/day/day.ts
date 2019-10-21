@@ -22,7 +22,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { AddonCalendarProvider, AddonCalendarCalendarEvent } from '../../providers/calendar';
 import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
-import { AddonCalendarHelperProvider } from '../../providers/helper';
+import { AddonCalendarHelperProvider, AddonCalendarFilter } from '../../providers/helper';
 import { AddonCalendarSyncProvider } from '../../providers/calendar-sync';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCoursesHelperProvider } from '@core/courses/providers/helper';
@@ -76,7 +76,16 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     syncIcon: string;
     isCurrentDay: boolean;
     isPastDay: boolean;
-    filter = {};
+    filter: AddonCalendarFilter = {
+        filtered: false,
+        courseId: null,
+        categoryId: null,
+        course: true,
+        group: true,
+        site: true,
+        user: true,
+        category: true
+    };
 
     constructor(localNotificationsProvider: CoreLocalNotificationsProvider,
             navParams: NavParams,

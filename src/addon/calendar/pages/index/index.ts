@@ -21,7 +21,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { AddonCalendarProvider } from '../../providers/calendar';
 import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
-import { AddonCalendarHelperProvider } from '../../providers/helper';
+import { AddonCalendarHelperProvider, AddonCalendarFilter } from '../../providers/helper';
 import { AddonCalendarCalendarComponent } from '../../components/calendar/calendar';
 import { AddonCalendarUpcomingEventsComponent } from '../../components/upcoming-events/upcoming-events';
 import { AddonCalendarFilterPopoverComponent } from '../../components/filter/filter';
@@ -66,7 +66,16 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     syncIcon: string;
     showCalendar = true;
     loadUpcoming = false;
-    filter = {};
+    filter: AddonCalendarFilter = {
+        filtered: false,
+        courseId: null,
+        categoryId: null,
+        course: true,
+        group: true,
+        site: true,
+        user: true,
+        category: true
+    };
 
     constructor(localNotificationsProvider: CoreLocalNotificationsProvider,
             navParams: NavParams,
@@ -95,7 +104,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
         AddonCalendarProvider.ALL_TYPES.forEach((name) => {
             this.filter[name] = true;
         });
-        this.filter['courseId'] = navParams.get('courseId');
+        this.filter.courseId = navParams.get('courseId');
 
         // Listen for events added. When an event is added, reload the data.
         this.newEventObserver = eventsProvider.on(AddonCalendarProvider.NEW_EVENT_EVENT, (data) => {
@@ -218,12 +227,12 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             this.hasOffline = false;
 
             // Load courses for the popover.
-            promises.push(this.coursesHelper.getCoursesForPopover(this.filter['courseId']).then((data) => {
+            promises.push(this.coursesHelper.getCoursesForPopover(this.filter.courseId).then((data) => {
                 this.courses = data.courses;
             }));
 
             // Check if user can create events.
-            promises.push(this.calendarHelper.canEditEvents(this.filter['courseId']).then((canEdit) => {
+            promises.push(this.calendarHelper.canEditEvents(this.filter.courseId).then((canEdit) => {
                 this.canCreate = canEdit;
             }));
 
@@ -315,8 +324,8 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             year: data.year
         };
 
-        if (this.filter['courseId']) {
-            params.courseId = this.filter['courseId'];
+        if (this.filter.courseId) {
+            params.courseId = this.filter.courseId;
         }
 
         this.navCtrl.push('AddonCalendarDayPage', params);
@@ -349,8 +358,8 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
         if (eventId) {
             params.eventId = eventId;
         }
-        if (this.filter['courseId']) {
-            params.courseId = this.filter['courseId'];
+        if (this.filter.courseId) {
+            params.courseId = this.filter.courseId;
         }
 
         this.navCtrl.push('AddonCalendarEditEventPage', params);

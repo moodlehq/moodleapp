@@ -18,7 +18,7 @@ import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { AddonCalendarProvider, AddonCalendarCalendarEvent } from '../../providers/calendar';
-import { AddonCalendarHelperProvider } from '../../providers/helper';
+import { AddonCalendarHelperProvider, AddonCalendarFilter } from '../../providers/helper';
 import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreConstants } from '@core/constants';
@@ -31,7 +31,7 @@ import { CoreConstants } from '@core/constants';
     templateUrl: 'addon-calendar-upcoming-events.html',
 })
 export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, OnDestroy {
-    @Input() filter: any; // Filter to apply.
+    @Input() filter: AddonCalendarFilter; // Filter to apply.
     @Output() onEventClicked = new EventEmitter<number>();
 
     filteredEvents = [];

@@ -317,7 +317,7 @@ export class AddonCalendarHelperProvider {
      * @param categories Categories indexed by ID.
      * @return Filtered events.
      */
-    getFilteredEvents(events: any[], filter: any, categories: any): any[] {
+    getFilteredEvents(events: any[], filter: AddonCalendarFilter, categories: any): any[] {
         // Do not filter.
         if (!filter.filtered) {
             return events;
@@ -515,3 +515,17 @@ export class AddonCalendarHelperProvider {
         return this.refreshAfterChangeEvents([{event: event, repeated: repeated}], siteId);
     }
 }
+
+/**
+ * Calculated data for Calendar filtering.
+ */
+export type AddonCalendarFilter = {
+    filtered: boolean; // If filter enabled (some filters applied).
+    courseId: number; // Course Id to filter.
+    categoryId: string; // Category Id to filter.
+    course: boolean, // Filter to show course events.
+    group: boolean, // Filter to show group events.
+    site: boolean, // Filter to show show site events.
+    user: boolean, // Filter to show user events.
+    category: boolean // Filter to show category events.
+};
