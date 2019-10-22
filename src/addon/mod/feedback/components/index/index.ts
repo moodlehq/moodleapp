@@ -113,9 +113,11 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
         super.ngOnInit();
 
         this.loadContent(false, true).then(() => {
-            this.feedbackProvider.logView(this.feedback.id, this.feedback.name).catch(() => {
-                // Ignore errors.
-            });
+            if (this.feedback) {
+                this.feedbackProvider.logView(this.feedback.id, this.feedback.name).catch(() => {
+                    // Ignore errors.
+                });
+            }
         }).finally(() => {
             this.tabsReady = true;
         });
@@ -199,10 +201,12 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
             // Now fill the context menu.
             this.fillContextMenu(refresh);
 
-            // Check if there are responses stored in offline.
-            return this.feedbackOffline.hasFeedbackOfflineData(this.feedback.id).then((hasOffline) => {
-                this.hasOffline = hasOffline;
-            });
+            if (this.feedback) {
+                // Check if there are responses stored in offline.
+                return this.feedbackOffline.hasFeedbackOfflineData(this.feedback.id).then((hasOffline) => {
+                    this.hasOffline = hasOffline;
+                });
+            }
         });
     }
 

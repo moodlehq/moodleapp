@@ -47,7 +47,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     timeAvailableFromReadable: string | boolean;
     timeAvailableTo: number | boolean;
     timeAvailableToReadable: string | boolean;
-    isEmpty = false;
+    isEmpty = true;
     groupInfo: CoreGroupInfo;
     entries = [];
     firstEntry = false;

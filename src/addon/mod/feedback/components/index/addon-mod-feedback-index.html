@@ -37,7 +37,7 @@
         </core-tabs>
     </ng-container>
 
-    <ng-container *ngIf="!showTabs">
+    <ng-container *ngIf="feedback && !showTabs">
         <ng-container *ngTemplateOutlet="tabOverview"></ng-container>
     </ng-container>
 </core-loading>

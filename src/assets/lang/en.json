@@ -1316,7 +1316,7 @@
     "core.back": "Back",
     "core.block.blocks": "Blocks",
     "core.cancel": "Cancel",
-    "core.cannotconnect": "Cannot connect: Verify that you have correctly typed the URL and that your site uses Moodle 2.4 or later.",
+    "core.cannotconnect": "Cannot connect: Verify that you have correctly typed the URL and that your site uses Moodle 3.1 or later.",
     "core.cannotdownloadfiles": "File downloading is disabled. Please contact your site administrator.",
     "core.captureaudio": "Record audio",
     "core.capturedimage": "Taken picture.",
