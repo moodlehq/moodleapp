@@ -115,14 +115,19 @@ export class MoodleMobileApp implements OnInit {
             this.network.onchange().subscribe(() => {
                 // Execute the callback in the Angular zone, so change detection doesn't stop working.
                 this.zone.run(() => {
-                    const isOnline = this.appProvider.isOnline();
-                    document.body.classList.toggle('core-offline', !isOnline);
-                    document.body.classList.toggle('core-online', isOnline);
+                    const isOnline = this.appProvider.isOnline(),
+                        hadOfflineMessage = document.body.classList.contains('core-offline');
 
-                    if (isOnline) {
+                    document.body.classList.toggle('core-offline', !isOnline);
+
+                    if (isOnline && hadOfflineMessage) {
+                        document.body.classList.add('core-online');
+
                         setTimeout(() => {
                             document.body.classList.remove('core-online');
                         }, 3000);
+                    } else if (!isOnline) {
+                        document.body.classList.remove('core-online');
                     }
                 });
             });
