@@ -425,7 +425,7 @@ export class CoreFormatTextDirective implements OnChanges {
                     return res.text;
                 });
             } else {
-                return this.filterProvider.formatText(this.text, result.options);
+                return this.filterProvider.formatText(this.text, result.options, [], site.getId());
             }
 
         }).then((formatted) => {

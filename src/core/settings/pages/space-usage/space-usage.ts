@@ -21,7 +21,7 @@ import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCourseProvider } from '@core/course/providers/course';
-import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CoreFilterProvider } from '@core/filter/providers/filter';
 
 /**
  * Page that displays the space usage settings.
@@ -42,7 +42,7 @@ export class CoreSettingsSpaceUsagePage {
     constructor(private filePoolProvider: CoreFilepoolProvider,
             private eventsProvider: CoreEventsProvider,
             private sitesProvider: CoreSitesProvider,
-            private filterHelper: CoreFilterHelperProvider,
+            private filterProvider: CoreFilterProvider,
             private translate: TranslateService,
             private domUtils: CoreDomUtilsProvider,
             appProvider: CoreAppProvider,
@@ -167,11 +167,11 @@ export class CoreSettingsSpaceUsagePage {
      * @param siteData Site object with space usage.
      */
     deleteSiteStorage(siteData: any): void {
-        this.filterHelper.getFiltersAndFormatText(siteData.siteName, 'system', 0,
-                {clean: true, singleLine: true}, siteData.id).then((result) => {
+        this.filterProvider.formatText(siteData.siteName, {clean: true, singleLine: true, filter: false}, [], siteData.id)
+                .then((siteName) => {
 
             const title = this.translate.instant('core.settings.deletesitefilestitle');
-            const message = this.translate.instant('core.settings.deletesitefiles', {sitename: result.text});
+            const message = this.translate.instant('core.settings.deletesitefiles', {sitename: siteName});
 
             this.domUtils.showConfirm(message, title).then(() => {
                 return this.sitesProvider.getSite(siteData.id);
