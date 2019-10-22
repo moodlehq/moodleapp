@@ -122,6 +122,12 @@ ion-app.app-root {
     @include core-items();
   }
 
+  ion-header ion-title .toolbar-title .MathJax_Display {
+    display: inline-block !important;
+    margin: 0;
+    width: auto;
+  }
+
   .core-oauth-icon, .item.core-oauth-icon, .list .item.core-oauth-icon {
     min-height: 32px;
     img, .label {
@@ -716,6 +722,17 @@ ion-app.app-root {
 
   .header .toolbar-ios {
     height: $toolbar-ios-height;
+    max-height: $toolbar-ios-height;
+  }
+
+  .header .toolbar-wp {
+    height: $toolbar-wp-height;
+    max-height: $toolbar-wp-height;
+  }
+
+  .header .toolbar-md {
+    height: $toolbar-md-height;
+    max-height: $toolbar-md-height;
   }
 
   // Footer with auto height.
