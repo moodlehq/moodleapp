@@ -334,10 +334,16 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         this.showFilter = !this.showFilter;
         this.courses.filter = '';
         this.filteredCourses = this.courses[this.showFilter ? 'all' : this.selectedFilter];
+    }
+
+    /**
+     * Popover closed after clicking switch filter.
+     */
+    switchFilterClosed(): void {
         if (this.showFilter) {
             setTimeout(() => {
                 this.searchbar.setFocus();
-            }, 500);
+            });
         }
     }
 

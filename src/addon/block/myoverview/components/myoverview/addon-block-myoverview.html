@@ -9,7 +9,7 @@
         <ion-spinner *ngIf="!prefetchCoursesData[selectedFilter].icon || prefetchCoursesData[selectedFilter].icon == 'spinner'"></ion-spinner>
     </div>
     <core-context-menu item-end>
-        <core-context-menu-item *ngIf="loaded && showFilterSwitchButton()" [priority]="1000" [content]="'core.courses.filtermycourses' | translate" (action)="switchFilter()" iconAction="funnel"></core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && showFilterSwitchButton()" [priority]="1000" [content]="'core.courses.filtermycourses' | translate" (action)="switchFilter()" iconAction="funnel" (onClosed)="switchFilterClosed()"></core-context-menu-item>
         <core-context-menu-item *ngIf="loaded && showSortFilter" [priority]="900" content="{{('core.sortby' | translate) + ' ' + ('addon.block_myoverview.title' | translate)}}" (action)="switchSort('fullname')" [iconAction]="sort == 'fullname' ? 'radio-button-on' : 'radio-button-off'"></core-context-menu-item>
         <core-context-menu-item *ngIf="loaded && showSortFilter" [priority]="800" content="{{('core.sortby' | translate) + ' ' + ('addon.block_myoverview.lastaccessed' | translate)}}" (action)="switchSort('lastaccess')" [iconAction]="sort == 'lastaccess' ? 'radio-button-on' : 'radio-button-off'"></core-context-menu-item>
     </core-context-menu>
