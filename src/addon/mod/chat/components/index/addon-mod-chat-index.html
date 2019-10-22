@@ -18,7 +18,7 @@
         <ion-icon name="time"></ion-icon> {{ 'addon.mod_chat.sessionstart' | translate:{$a: chatInfo} }}
     </ion-card>
 
-    <div padding>
+    <div padding *ngIf="chat">
         <a ion-button block color="primary" (click)="enterChat()">{{ 'addon.mod_chat.enterchat' | translate }}</a>
         <a ion-button block color="light" margin-top *ngIf="sessionsAvailable" (click)="viewSessions()">{{ 'addon.mod_chat.viewreport' | translate }}</a>
     </div>
