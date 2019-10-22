@@ -17,6 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreFilterDefaultHandler } from '@core/filter/providers/default-filter';
 import { CoreFilterFilter, CoreFilterFormatTextOptions } from '@core/filter/providers/filter';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
 
 /**
  * Handler to support the Multimedia filter.
@@ -26,7 +27,8 @@ export class AddonFilterMediaPluginHandler extends CoreFilterDefaultHandler {
     name = 'AddonFilterMediaPluginHandler';
     filterName = 'mediaplugin';
 
-    constructor(private textUtils: CoreTextUtilsProvider) {
+    constructor(private textUtils: CoreTextUtilsProvider,
+            private urlUtils: CoreUrlUtilsProvider) {
         super();
     }
 
@@ -74,9 +76,18 @@ export class AddonFilterMediaPluginHandler extends CoreFilterDefaultHandler {
             return;
         }
 
-        const iframe = document.createElement('iframe');
+        const iframe = document.createElement('iframe'),
+            params: any = {};
+
+        if (youtubeData.listId !== null) {
+            params.list = youtubeData.listId;
+        }
+        if (youtubeData.start !== null) {
+            params.start = youtubeData.start;
+        }
+
         iframe.id = video.id;
-        iframe.src = 'https://www.youtube.com/embed/' + youtubeData.videoId; // Don't apply other params to align with Moodle web.
+        iframe.src = this.urlUtils.addParamsToUrl('https://www.youtube.com/embed/' + youtubeData.videoId, params);
         iframe.setAttribute('frameborder', '0');
         iframe.setAttribute('allowfullscreen', '1');
         iframe.width = '100%';
